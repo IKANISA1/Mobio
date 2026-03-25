@@ -1,0 +1,93 @@
+name: mobi_app
+description: "MOBI — Executive mobility platform for ride booking, biometric payments, and fleet management."
+publish_to: 'none'
+version: 1.0.0+2
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Icons
+  cupertino_icons: ^1.0.8
+
+  # State Management
+  flutter_riverpod: ^3.3.1
+
+  # Networking
+  dio: ^5.9.2
+
+  # Local Storage
+  shared_preferences: ^2.5.4
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  # UI & Design
+  google_fonts: ^8.0.2
+  flutter_animate: ^4.5.2
+  shimmer: ^3.0.0
+  cached_network_image: ^3.4.1
+
+  # Utilities
+  intl: ^0.20.2
+  logger: ^2.7.0
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.9.0
+  supabase_flutter: ^2.12.0
+  flutter_secure_storage: ^9.2.4
+  url_launcher: ^6.3.2
+  lucide_icons: ^0.257.0
+  flutter_typeahead: ^5.2.0
+  geolocator: ^13.0.2
+  permission_handler: ^11.4.0
+  connectivity_plus: ^7.0.0
+  flutter_native_splash: ^2.4.4
+
+  # BioPay ML Pipeline
+  camera: ^0.11.1
+  google_mlkit_face_detection: ^0.12.0
+  tflite_flutter: ^0.11.0
+
+  # BioPay QR
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^6.0.0
+  firebase_core: ^4.6.0
+  firebase_crashlytics: ^5.1.0
+  image_gallery_saver_plus: ^4.0.1
+  app_settings: ^7.0.0
+  video_player: ^2.9.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.0
+  freezed: ^3.2.3
+  json_serializable: ^6.11.0
+  flutter_launcher_icons: ^0.14.4
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/ml/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "icon/mobi_icon.png"
+  adaptive_icon_background: "#0C0F10"
+  adaptive_icon_foreground: "icon/mobi_icon.png"
+  min_sdk_android: 24
+  web:
+    generate: true
+    image_path: "icon/mobi_icon.png"
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: "icon/mobi_icon.png"
+  android_12:
+    image: "icon/mobi_icon.png"
+    icon_background_color: "#FFFFFF"
+    color: "#FFFFFF"

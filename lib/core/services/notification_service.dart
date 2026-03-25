@@ -1,0 +1,196 @@
+import 'dart:async';
+import 'package:mobi_app/core/utils/app_logger.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+/// Data class representing an in-app notification.
+class AppNotification {
+  final String id;
+  final String userId;
+  final String type;
+  final String title;
+  final String? body;
+  final Map<String, dynamic> metadata;
+  final bool isRead;
+  final String createdAt;
+
+  const AppNotification({
+    required this.id,
+    required this.userId,
+    required this.type,
+    required this.title,
+    this.body,
+    this.metadata = const {},
+    this.isRead = false,
+    required this.createdAt,
+  });
+
+  factory AppNotification.fromJson(Map<String, dynamic> json) {
+    return AppNotification(
+      id: json['id'] as String,
+      userId: json['user_id'] as String,
+      type: json['type'] as String? ?? 'general',
+      title: json['title'] as String? ?? '',
+      body: json['body'] as String?,
+      metadata: (json['metadata'] as Map<String, dynamic>?) ?? {},
+      isRead: json['is_read'] as bool? ?? false,
+      createdAt: json['created_at'] as String? ?? '',
+    );
+  }
+}
+
+/// Service for in-app notifications via Supabase.
+///
+/// Handles:
+/// - Fetching unread/all notifications
+/// - Marking notifications as read
+/// - Realtime subscription for live updates
+class NotificationService {
+  final SupabaseClient _supabase;
+  RealtimeChannel? _channel;
+  final _notificationController =
+      StreamController<AppNotification>.broadcast();
+
+  NotificationService({SupabaseClient? supabase})
+      : _supabase = supabase ?? Supabase.instance.client;
+
+  String? get _currentUserId => _supabase.auth.currentUser?.id;
+
+  /// Stream of incoming notifications (realtime).
+  Stream<AppNotification> get onNotification => _notificationController.stream;
+
+  // ---------------------------------------------------------------------------
+  // Read
+  // ---------------------------------------------------------------------------
+
+  /// Fetches all notifications for the current user, newest first.
+  Future<List<AppNotification>> getNotifications({int limit = 50}) async {
+    final userId = _currentUserId;
+    if (userId == null) return [];
+
+    try {
+      final rows = await _supabase
+          .from('notifications')
+          .select()
+          .eq('user_id', userId)
+          .order('created_at', ascending: false)
+          .limit(limit);
+
+      return rows
+          .map<AppNotification>(
+            (row) => AppNotification.fromJson(row),
+          )
+          .toList();
+    } catch (e) {
+      AppLogger.error('Error fetching notifications: $e');
+      return [];
+    }
+  }
+
+  /// Fetches only unread notifications.
+  Future<List<AppNotification>> getUnreadNotifications() async {
+    final userId = _currentUserId;
+    if (userId == null) return [];
+
+    try {
+      final rows = await _supabase
+          .from('notifications')
+          .select()
+          .eq('user_id', userId)
+          .eq('is_read', false)
+          .order('created_at', ascending: false);
+
+      return rows
+          .map<AppNotification>(
+            (row) => AppNotification.fromJson(row),
+          )
+          .toList();
+    } catch (e) {
+      AppLogger.error('Error fetching unread notifications: $e');
+      return [];
+    }
+  }
+
+  /// Returns the count of unread notifications.
+  Future<int> getUnreadCount() async {
+    final unread = await getUnreadNotifications();
+    return unread.length;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Update
+  // ---------------------------------------------------------------------------
+
+  /// Marks a single notification as read.
+  Future<void> markAsRead(String notificationId) async {
+    try {
+      await _supabase
+          .from('notifications')
+          .update({'is_read': true})
+          .eq('id', notificationId);
+    } catch (e) {
+      AppLogger.error('Error marking notification as read: $e');
+    }
+  }
+
+  /// Marks all unread notifications as read for the current user.
+  Future<void> markAllAsRead() async {
+    final userId = _currentUserId;
+    if (userId == null) return;
+
+    try {
+      await _supabase
+          .from('notifications')
+          .update({'is_read': true})
+          .eq('user_id', userId)
+          .eq('is_read', false);
+    } catch (e) {
+      AppLogger.error('Error marking all notifications as read: $e');
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Realtime
+  // ---------------------------------------------------------------------------
+
+  /// Starts listening for new notifications in realtime.
+  /// Call [stopListening] when done.
+  void startListening() {
+    final userId = _currentUserId;
+    if (userId == null) return;
+
+    _channel = _supabase
+        .channel('notifications_$userId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: 'notifications',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'user_id',
+            value: userId,
+          ),
+          callback: (payload) {
+            try {
+              final notification =
+                  AppNotification.fromJson(payload.newRecord);
+              _notificationController.add(notification);
+            } catch (e) {
+              AppLogger.error('Error parsing realtime notification: $e');
+            }
+          },
+        )
+        .subscribe();
+  }
+
+  /// Stops the realtime subscription.
+  void stopListening() {
+    _channel?.unsubscribe();
+    _channel = null;
+  }
+
+  /// Disposes of resources.
+  void dispose() {
+    stopListening();
+    _notificationController.close();
+  }
+}

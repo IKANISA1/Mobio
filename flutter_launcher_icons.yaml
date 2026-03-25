@@ -1,0 +1,7 @@
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "icon/mobi_icon.png"
+  adaptive_icon_background: "#0C0F10"
+  adaptive_icon_foreground: "icon/mobi_icon.png"
+  min_sdk_android: 24
