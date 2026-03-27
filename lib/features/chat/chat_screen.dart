@@ -131,7 +131,7 @@ class _TripChatScreenState extends State<TripChatScreen> {
       if (mounted) {
         setState(() => _isLoading = false);
       }
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted) {
         return;
       }
@@ -265,7 +265,7 @@ class _TripChatScreenState extends State<TripChatScreen> {
       }
 
       unawaited(_requestReplySuggestions());
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted) {
         return;
       }
@@ -308,7 +308,7 @@ class _TripChatScreenState extends State<TripChatScreen> {
         _replySuggestions = assist.suggestions;
         _isGeneratingSuggestions = false;
       });
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted || _conversation?.id != conversationId) {
         return;
       }
@@ -355,7 +355,7 @@ class _TripChatScreenState extends State<TripChatScreen> {
       }
 
       setState(() => _isAutocompleting = false);
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted || _conversation?.id != conversationId) {
         return;
       }
@@ -573,7 +573,7 @@ class _TripChatScreenState extends State<TripChatScreen> {
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
       physics: const BouncingScrollPhysics(),
       itemCount: _tripConversations.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 16),
+      separatorBuilder: (_, _) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
         final conversation = _tripConversations[index];
         final peerProfile =
@@ -687,7 +687,7 @@ class _TripChatScreenState extends State<TripChatScreen> {
                 padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
                 physics: const BouncingScrollPhysics(),
                 itemCount: messages.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final message = messages[index];
                   return _buildMessageBubble(context, message);
@@ -995,11 +995,11 @@ class _ChatLoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
+    return const Padding(
+      padding: EdgeInsets.fromLTRB(24, 16, 24, 120),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           LoadingSkeleton(height: 88),
           SizedBox(height: 16),
           LoadingSkeleton(height: 132),

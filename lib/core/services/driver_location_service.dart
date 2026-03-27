@@ -75,7 +75,7 @@ class DriverLocationService {
       return data
           .map((row) => NearbyDriver.fromJson(row as Map<String, dynamic>))
           .toList();
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error finding nearby drivers: $e');
       return [];
     }
@@ -120,7 +120,7 @@ class DriverLocationService {
         'vehicle_type_id': ?vehicleTypeId,
         'is_online': true,
       });
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error updating driver location: $e');
     }
   }
@@ -139,7 +139,7 @@ class DriverLocationService {
           .from('driver_locations')
           .update({'is_online': isOnline})
           .eq('driver_id', userId);
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error toggling online status: $e');
     }
   }
@@ -170,7 +170,7 @@ class DriverLocationService {
         return response;
       }
       return {'nearby_driver_count': 0, 'scheduled_trip_count': 0};
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error fetching discover summary: $e');
       return {'nearby_driver_count': 0, 'scheduled_trip_count': 0};
     }
@@ -188,7 +188,7 @@ class DriverLocationService {
         'rpc_set_driver_online_status',
         params: {'p_is_online': isOnline},
       );
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error setting driver online status via RPC: $e');
     }
   }

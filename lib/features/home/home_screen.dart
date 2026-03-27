@@ -1,21 +1,27 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/constants/app_constants.dart';
+import 'package:mobi_app/core/services/ai_content_service.dart';
+import 'package:mobi_app/core/services/driver_location_service.dart';
+import 'package:mobi_app/core/services/notification_service.dart';
+import 'package:mobi_app/core/services/ride_request_service.dart';
+import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_shadows.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/core/constants/app_constants.dart';
-import 'package:mobi_app/core/services/driver_location_service.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/models/vehicle_type.dart';
-import 'package:mobi_app/shared/widgets/driver_card.dart';
-import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
-import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
-import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
+import 'package:mobi_app/shared/widgets/driver_card.dart';
+import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
+import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
+import 'package:mobi_app/shared/widgets/ride_request_sheet.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
-import 'package:mobi_app/core/services/ai_content_service.dart';
+import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 
 /// Home (Discover) screen matching transito design.
 class HomeScreen extends StatefulWidget {
@@ -45,27 +51,108 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = true;
   bool _isDriverOnline = false;
   int _nearbyCount = 0;
+  int _unreadCount = 0;
+  List<Trip> _nearbyPreview = [];
+  List<Trip> _scheduledPreview = [];
   final _driverLocationService = DriverLocationService();
+  final _tripService = TripService();
+  final _notificationService = NotificationService();
+  final _rideRequestService = RideRequestService();
+  StreamSubscription<AppNotification>? _notifSub;
 
   @override
   void initState() {
     super.initState();
-    _loadLocationAndCount();
+    _loadData();
+    _loadUnreadCount();
+    _listenForIncomingRequests();
   }
 
-  Future<void> _loadLocationAndCount() async {
+  @override
+  void dispose() {
+    _notifSub?.cancel();
+    _notificationService.dispose();
+    super.dispose();
+  }
+
+  /// Listens for realtime notifications — if one is a ride request, show the sheet.
+  void _listenForIncomingRequests() {
+    _notificationService.startListening();
+    _notifSub = _notificationService.onNotification.listen((notif) {
+      // Update badge
+      setState(() => _unreadCount++);
+
+      // If it's a ride request/offer, auto-show the response sheet
+      final rideRequestTypes = {
+        'ride_request_received',
+        'ride_offer_received',
+      };
+      if (rideRequestTypes.contains(notif.type)) {
+        final requestId = notif.metadata['ride_request_id'] as String?;
+        if (requestId != null && mounted) {
+          _showIncomingRequest(requestId);
+        }
+      }
+    });
+  }
+
+  Future<void> _showIncomingRequest(String requestId) async {
+    final request = await _rideRequestService.getById(requestId);
+    if (request == null || !request.isPending || !mounted) return;
+
+    showRideRequestSheet(context, request: request);
+  }
+
+  Future<void> _loadUnreadCount() async {
+    try {
+      final count = await _notificationService.getUnreadCount();
+      if (mounted) setState(() => _unreadCount = count);
+    } on Object catch (_) {
+      // Silently fail — badge is non-critical
+    }
+  }
+
+  Future<void> _loadData() async {
     setState(() => _isLoading = true);
-    if (mounted) {
-      setState(() {
-        _nearbyCount = 0;
-        _isLoading = false;
-      });
+    try {
+      // Fetch nearby + scheduled in parallel
+      final results = await Future.wait([
+        _tripService.getNearbyTrips(),
+        _tripService.getMyTrips(),
+      ]);
+
+      final nearby = results[0];
+      final myTrips = results[1];
+
+      // Get scheduled trips (active/upcoming)
+      final scheduled = myTrips
+          .where((t) => t.status == 'active' || t.status == null)
+          .take(3)
+          .toList();
+
+      if (mounted) {
+        setState(() {
+          _nearbyCount = nearby.length;
+          _nearbyPreview = nearby.take(3).toList();
+          _scheduledPreview = scheduled;
+          _isLoading = false;
+        });
+      }
+    } on Object catch (_) {
+      if (mounted) {
+        setState(() {
+          _nearbyCount = 0;
+          _nearbyPreview = [];
+          _scheduledPreview = [];
+          _isLoading = false;
+        });
+      }
     }
   }
 
   void _switchVehicle(VehicleType v) {
     setState(() => _vehicle = v);
-    _loadLocationAndCount();
+    _loadData();
   }
 
   void _toggleDriverOnline(bool value) {
@@ -79,8 +166,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final mediaPadding = MediaQuery.paddingOf(context);
     final isDriver = widget.mode == 'driver';
-    final List<Trip> nearbyPreview = [];
-    final List<Trip> scheduledPreview = [];
 
     return SoftGradient(
       category: PromoCategory.nearbyDrivers,
@@ -190,9 +275,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       )
-                    : nearbyPreview.isNotEmpty
+                    : _nearbyPreview.isNotEmpty
                     ? Column(
-                        children: nearbyPreview
+                        children: _nearbyPreview
                             .map(
                               (trip) => Padding(
                                 padding: const EdgeInsets.only(bottom: 16),
@@ -223,9 +308,9 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: scheduledPreview.isNotEmpty
+                child: _scheduledPreview.isNotEmpty
                     ? Column(
-                        children: scheduledPreview
+                        children: _scheduledPreview
                             .map(
                               (trip) => Padding(
                                 padding: const EdgeInsets.only(bottom: 16),
@@ -234,7 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             )
                             .toList(),
                       )
-                    : AiEmptyState(
+                    : const AiEmptyState(
                         title: 'No scheduled trips.',
                         subtitle: 'Tap Nearby to find drivers.',
                         icon: LucideIcons.calendar,
@@ -281,7 +366,49 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        if (isDriver) const SizedBox(width: 12),
+
+        // Notification bell with unread badge
+        SizedBox(
+          width: 40,
+          height: 40,
+          child: Stack(
+            children: [
+              Center(
+                child: Icon(
+                  LucideIcons.bell,
+                  size: 22,
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
+              if (_unreadCount > 0)
+                Positioned(
+                  right: 4,
+                  top: 4,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 1,
+                    ),
+                    constraints: const BoxConstraints(minWidth: 18),
+                    decoration: BoxDecoration(
+                      color: cs.error,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      _unreadCount > 99 ? '99+' : '$_unreadCount',
+                      textAlign: TextAlign.center,
+                      style: AppTypography.labelSm.copyWith(
+                        fontSize: 10,
+                        color: cs.onError,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        if (isDriver) const SizedBox(width: 8),
         if (isDriver)
           Row(
             mainAxisSize: MainAxisSize.min,

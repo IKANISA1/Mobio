@@ -33,7 +33,7 @@ class PlacesService {
       final results = await _connectivity.checkConnectivity();
       return results.isNotEmpty &&
           !results.every((r) => r == ConnectivityResult.none);
-    } catch (_) {
+    } on Object catch (_) {
       return true;
     }
   }
@@ -70,7 +70,7 @@ class PlacesService {
           );
         }
         AppLogger.warning('$operationName server error (attempt ${attempt + 1}/$_maxRetries): $e');
-      } catch (e, stack) {
+      } on Object catch (e, stack) {
         lastError = e;
         if (kDebugMode) debugPrint('🔴 [$operationName] Unexpected ${e.runtimeType}: $e\n$stack');
       }

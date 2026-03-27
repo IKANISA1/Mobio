@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/router/app_router.dart';
+import 'package:mobi_app/core/services/push_notification_service.dart';
 import 'package:mobi_app/core/theme/app_theme.dart';
 import 'package:mobi_app/core/theme/theme_provider.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
@@ -78,6 +79,12 @@ Future<void> main() async {
           anonKey: SupabaseConfig.anonKey,
         );
         await _ensureAnonymousAuth();
+      }
+
+      // Initialize push notifications (after Firebase + Supabase)
+      await PushNotificationService.instance.initialize();
+      if (SupabaseConfig.isConfigured) {
+        unawaited(PushNotificationService.instance.registerToken());
       }
 
       // Initialize theme provider (reads persisted preference)
@@ -169,7 +176,7 @@ class MobiMainApp extends ConsumerWidget {
 /// Cached GoRouter instance — created once per app lifecycle.
 final _routerProvider = Provider<GoRouter>((ref) => createRouter());
 
-Future<void> _ensureAnonymousAuth() async {
+Future<bool> _ensureAnonymousAuth() async {
   const maxRetries = 3;
   const baseDelay = Duration(milliseconds: 800);
 
@@ -181,7 +188,7 @@ Future<void> _ensureAnonymousAuth() async {
         if (kDebugMode) {
           debugPrint('✅ [auth] Existing session found');
         }
-        return;
+        return true;
       }
 
       if (kDebugMode) {
@@ -194,7 +201,7 @@ Future<void> _ensureAnonymousAuth() async {
         if (kDebugMode) {
           debugPrint('✅ [auth] Anonymous session created');
         }
-        return;
+        return true;
       }
 
       if (kDebugMode) {
@@ -215,4 +222,5 @@ Future<void> _ensureAnonymousAuth() async {
   }
 
   if (kDebugMode) debugPrint('❌ [auth] All $maxRetries attempts exhausted');
+  return false;
 }

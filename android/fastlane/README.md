@@ -15,6 +15,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## Android
 
+### android build_and_deploy
+
+```sh
+[bundle exec] fastlane android build_and_deploy
+```
+
+Build AAB with Supabase env vars from .env, then upload to Google Play (production draft)
+
 ### android deploy
 
 ```sh

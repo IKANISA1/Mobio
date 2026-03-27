@@ -1,20 +1,19 @@
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:app_settings/app_settings.dart';
-import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/core/services/location_service.dart';
+import 'package:mobi_app/core/services/ai_content_service.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
+import 'package:mobi_app/core/services/location_service.dart';
+import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/models/vehicle_type.dart';
-import 'package:mobi_app/shared/widgets/driver_card.dart';
-import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
-import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
-import 'package:mobi_app/core/services/ai_content_service.dart';
+import 'package:mobi_app/shared/widgets/driver_card.dart';
+import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
+import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
+import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 
 /// Nearby screen with list-first browsing.
 class NearbyScreen extends StatefulWidget {
@@ -31,7 +30,6 @@ class _NearbyScreenState extends State<NearbyScreen> {
   VehicleType _vehicle = VehicleType.cab;
   bool _isLoading = true;
   double? _userLat;
-  double? _userLng;
   final _locationService = LocationService();
   final _driverLocationService = DriverLocationService();
   List<NearbyDriver> _nearbyDrivers = [];
@@ -49,7 +47,6 @@ class _NearbyScreenState extends State<NearbyScreen> {
     if (mounted && position != null) {
       setState(() {
         _userLat = position.latitude;
-        _userLng = position.longitude;
       });
 
       final drivers = await _driverLocationService.findNearbyDrivers(
@@ -81,7 +78,6 @@ class _NearbyScreenState extends State<NearbyScreen> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final mediaPadding = MediaQuery.paddingOf(context);
 
     final List<Trip> driverTrips;

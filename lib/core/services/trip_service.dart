@@ -12,6 +12,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class TripService {
   final SupabaseClient _supabase;
 
+  /// Minimum interval between trip creation calls (prevents double-tap / DoS).
+  static const _createCooldown = Duration(seconds: 3);
+  static DateTime? _lastCreateTime;
+
   TripService({SupabaseClient? supabase})
     : _supabase = supabase ?? Supabase.instance.client;
 
@@ -42,6 +46,16 @@ class TripService {
       throw Exception('User must be authenticated to create a trip.');
     }
 
+    // Debounce: reject rapid duplicate submissions
+    final now = DateTime.now();
+    if (_lastCreateTime != null &&
+        now.difference(_lastCreateTime!) < _createCooldown) {
+      throw Exception(
+        'Please wait a moment before creating another trip.',
+      );
+    }
+    _lastCreateTime = now;
+
     try {
       final row = await _supabase
           .from('trips')
@@ -65,7 +79,7 @@ class TripService {
           .single();
 
       return Trip.fromJson(row);
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error creating trip: $e');
       rethrow;
     }
@@ -86,7 +100,7 @@ class TripService {
 
       if (row == null) return null;
       return Trip.fromJson(row);
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error fetching trip $tripId: $e');
       return null;
     }
@@ -106,7 +120,7 @@ class TripService {
           .order('departure_time', ascending: true);
 
       return rows.map<Trip>(Trip.fromJson).toList();
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error fetching my trips: $e');
       return [];
     }
@@ -133,7 +147,7 @@ class TripService {
           .limit(50);
 
       return rows.map<Trip>(Trip.fromJson).toList();
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error fetching nearby trips: $e');
       return [];
     }
@@ -144,13 +158,29 @@ class TripService {
   // ---------------------------------------------------------------------------
 
   /// Cancels a trip by setting status to 'cancelled' and is_active to false.
+  ///
+  /// Only the trip author can cancel their own trip. RLS enforces this at the
+  /// database layer, but this explicit check provides proper error feedback.
   Future<void> cancelTrip(String tripId) async {
+    final userId = _currentUserId;
+    if (userId == null) {
+      throw Exception('User must be authenticated to cancel a trip.');
+    }
+
     try {
-      await _supabase
+      final rows = await _supabase
           .from('trips')
           .update({'status': 'cancelled', 'is_active': false})
-          .eq('id', tripId);
-    } catch (e) {
+          .eq('id', tripId)
+          .eq('author_id', userId)
+          .select('id');
+
+      if ((rows as List).isEmpty) {
+        throw Exception(
+          'Trip not found or you do not have permission to cancel it.',
+        );
+      }
+    } on Object catch (e) {
       AppLogger.error('Error cancelling trip $tripId: $e');
       rethrow;
     }

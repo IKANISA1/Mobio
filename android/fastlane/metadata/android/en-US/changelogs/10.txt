@@ -1,0 +1,7 @@
+• Ride Request & Offer — passengers request rides from nearby drivers, drivers offer rides to passengers
+• Push notifications for ride requests, offers, acceptances and declines
+• Home screen shows live nearby drivers and scheduled trips
+• Notification bell with unread count badge
+• Incoming ride requests auto-display with Accept, Decline and Chat
+• 34% smaller app size (optimized native libraries)
+• Enhanced security and build configuration

@@ -33,7 +33,6 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
 
   // Parsed QR data
   String? _biopayId;
-  String? _displayName;
   String? _amount;
   String? _currency;
   String? _ussdString;
@@ -85,18 +84,16 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
 
       final amount = uri.queryParameters['amount'];
       final currency = uri.queryParameters['currency'];
-      final displayName = uri.queryParameters['name'];
       final ussdString = uri.queryParameters['ussd'];
 
       setState(() {
         _biopayId = biopayId;
-        _displayName = displayName;
         _amount = amount;
         _currency = currency;
         _ussdString = ussdString;
         _phase = _ScanPhase.resolved;
       });
-    } catch (e) {
+    } on Object catch (e) {
       setState(() {
         _phase = _ScanPhase.error;
         _errorMessage = 'Failed to parse QR: $e';
@@ -113,7 +110,6 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     setState(() {
       _phase = _ScanPhase.scanning;
       _biopayId = null;
-      _displayName = null;
       _amount = null;
       _currency = null;
       _ussdString = null;
@@ -530,97 +526,99 @@ class _ViewfinderPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     // Top-left
-    canvas.drawLine(
-      Offset(left, top + cornerLength),
-      Offset(left, top + borderRadius),
-      cornerPaint,
-    );
-    canvas.drawArc(
-      Rect.fromLTWH(left, top, borderRadius * 2, borderRadius * 2),
-      3.14159,
-      1.5708,
-      false,
-      cornerPaint,
-    );
-    canvas.drawLine(
-      Offset(left + borderRadius, top),
-      Offset(left + cornerLength, top),
-      cornerPaint,
-    );
+    canvas
+      ..drawLine(
+        Offset(left, top + cornerLength),
+        Offset(left, top + borderRadius),
+        cornerPaint,
+      )
+      ..drawArc(
+        Rect.fromLTWH(left, top, borderRadius * 2, borderRadius * 2),
+        3.14159,
+        1.5708,
+        false,
+        cornerPaint,
+      )
+      ..drawLine(
+        Offset(left + borderRadius, top),
+        Offset(left + cornerLength, top),
+        cornerPaint,
+      );
 
     // Top-right
     final right = left + viewfinderSize;
-    canvas.drawLine(
-      Offset(right - cornerLength, top),
-      Offset(right - borderRadius, top),
-      cornerPaint,
-    );
-    canvas.drawArc(
-      Rect.fromLTWH(
-        right - borderRadius * 2,
-        top,
-        borderRadius * 2,
-        borderRadius * 2,
-      ),
-      -1.5708,
-      1.5708,
-      false,
-      cornerPaint,
-    );
-    canvas.drawLine(
-      Offset(right, top + borderRadius),
-      Offset(right, top + cornerLength),
-      cornerPaint,
-    );
+    canvas
+      ..drawLine(
+        Offset(right - cornerLength, top),
+        Offset(right - borderRadius, top),
+        cornerPaint,
+      )
+      ..drawArc(
+        Rect.fromLTWH(
+          right - borderRadius * 2,
+          top,
+          borderRadius * 2,
+          borderRadius * 2,
+        ),
+        -1.5708,
+        1.5708,
+        false,
+        cornerPaint,
+      )
+      ..drawLine(
+        Offset(right, top + borderRadius),
+        Offset(right, top + cornerLength),
+        cornerPaint,
+      );
 
     // Bottom-left
     final bottom = top + viewfinderSize;
-    canvas.drawLine(
-      Offset(left, bottom - cornerLength),
-      Offset(left, bottom - borderRadius),
-      cornerPaint,
-    );
-    canvas.drawArc(
-      Rect.fromLTWH(
-        left,
-        bottom - borderRadius * 2,
-        borderRadius * 2,
-        borderRadius * 2,
-      ),
-      1.5708,
-      1.5708,
-      false,
-      cornerPaint,
-    );
-    canvas.drawLine(
-      Offset(left + borderRadius, bottom),
-      Offset(left + cornerLength, bottom),
-      cornerPaint,
-    );
-
-    // Bottom-right
-    canvas.drawLine(
-      Offset(right - cornerLength, bottom),
-      Offset(right - borderRadius, bottom),
-      cornerPaint,
-    );
-    canvas.drawArc(
-      Rect.fromLTWH(
-        right - borderRadius * 2,
-        bottom - borderRadius * 2,
-        borderRadius * 2,
-        borderRadius * 2,
-      ),
-      0,
-      1.5708,
-      false,
-      cornerPaint,
-    );
-    canvas.drawLine(
-      Offset(right, bottom - borderRadius),
-      Offset(right, bottom - cornerLength),
-      cornerPaint,
-    );
+    canvas
+      ..drawLine(
+        Offset(left, bottom - cornerLength),
+        Offset(left, bottom - borderRadius),
+        cornerPaint,
+      )
+      ..drawArc(
+        Rect.fromLTWH(
+          left,
+          bottom - borderRadius * 2,
+          borderRadius * 2,
+          borderRadius * 2,
+        ),
+        1.5708,
+        1.5708,
+        false,
+        cornerPaint,
+      )
+      ..drawLine(
+        Offset(left + borderRadius, bottom),
+        Offset(left + cornerLength, bottom),
+        cornerPaint,
+      )
+      // Bottom-right
+      ..drawLine(
+        Offset(right - cornerLength, bottom),
+        Offset(right - borderRadius, bottom),
+        cornerPaint,
+      )
+      ..drawArc(
+        Rect.fromLTWH(
+          right - borderRadius * 2,
+          bottom - borderRadius * 2,
+          borderRadius * 2,
+          borderRadius * 2,
+        ),
+        0,
+        1.5708,
+        false,
+        cornerPaint,
+      )
+      ..drawLine(
+        Offset(right, bottom - borderRadius),
+        Offset(right, bottom - cornerLength),
+        cornerPaint,
+      );
   }
 
   @override

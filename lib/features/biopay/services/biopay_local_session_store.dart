@@ -80,7 +80,7 @@ class BiopayLocalSessionStore {
       return BiopayLocalSession.fromJson(
         jsonDecode(raw) as Map<String, dynamic>,
       );
-    } catch (_) {
+    } on Object catch (_) {
       return null;
     }
   }
@@ -88,7 +88,7 @@ class BiopayLocalSessionStore {
   static Future<String?> _defaultSecureRead(String key) async {
     try {
       return await _secureStorage.read(key: key).timeout(_secureStorageTimeout);
-    } catch (_) {
+    } on Object catch (_) {
       return null;
     }
   }
@@ -99,7 +99,7 @@ class BiopayLocalSessionStore {
           .write(key: key, value: value)
           .timeout(_secureStorageTimeout);
       return true;
-    } catch (_) {
+    } on Object catch (_) {
       return false;
     }
   }
@@ -107,7 +107,7 @@ class BiopayLocalSessionStore {
   static Future<void> _defaultSecureDelete(String key) async {
     try {
       await _secureStorage.delete(key: key).timeout(_secureStorageTimeout);
-    } catch (_) {
+    } on Object catch (_) {
       // Ignore secure storage cleanup failures in test environments.
     }
   }

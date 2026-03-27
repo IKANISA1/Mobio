@@ -1,6 +1,24 @@
 default_platform(:android)
 
 platform :android do
+  desc "Build AAB with Supabase env vars from .env, then upload to Google Play (production draft)"
+  lane :build_and_deploy do
+    # Build via the release script — it sources .env and hard-fails if
+    # SUPABASE_URL, SUPABASE_ANON_KEY, or PRIVACY_POLICY_URL are missing.
+    sh("cd ../.. && ./scripts/release/build_android_release.sh appbundle")
+
+    upload_to_play_store(
+      track: "production",
+      aab: "../build/app/outputs/bundle/release/app-release.aab",
+      mapping: "../build/app/outputs/mapping/release/mapping.txt",
+      skip_upload_apk: true,
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: false,
+      release_status: "draft",
+    )
+  end
+
   desc "Upload AAB, screenshots, metadata, and mapping to Google Play (production draft)"
   lane :deploy do
     upload_to_play_store(
@@ -18,11 +36,13 @@ platform :android do
   desc "Upload metadata and screenshots only (no binary)"
   lane :metadata do
     upload_to_play_store(
+      track: "production",
       skip_upload_aab: true,
       skip_upload_apk: true,
       skip_upload_metadata: false,
       skip_upload_images: false,
       skip_upload_screenshots: false,
+      release_status: "draft",
     )
   end
 

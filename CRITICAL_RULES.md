@@ -62,6 +62,31 @@
 
 ---
 
+## Rule 5: SUPABASE_URL and SUPABASE_ANON_KEY Must Be Set for Every Build
+
+> [!CAUTION]
+> **This is the #1 production blocker.** An APK/AAB built without these flags ships a dead app — no auth, no data, no BioPay, nothing works.
+
+- **Every** `flutter build apk`, `flutter build appbundle`, and `flutter run` command **MUST** include `--dart-define=SUPABASE_URL=...` and `--dart-define=SUPABASE_ANON_KEY=...`.
+- **Never run bare `flutter build appbundle`** — it produces an AAB that crashes on the config-error screen in production.
+- The **only** sanctioned way to build a release binary is via the release script:
+  ```bash
+  ./scripts/release/build_android_release.sh appbundle   # AAB for Play Store
+  ./scripts/release/build_android_release.sh apk         # APK for sideloading
+  ```
+- The script sources `.env` automatically and **hard-fails** if `SUPABASE_URL`, `SUPABASE_ANON_KEY`, or `PRIVACY_POLICY_URL` are missing.
+- If building manually (not recommended), the full command is:
+  ```bash
+  flutter build appbundle --release \
+    --dart-define=SUPABASE_URL=https://your-project.supabase.co \
+    --dart-define=SUPABASE_ANON_KEY=your-anon-key \
+    --dart-define=PRIVACY_POLICY_URL=https://your-domain/privacy-policy.html
+  ```
+- **Agent enforcement**: Any AI agent or CI pipeline that calls `flutter build apk` or `flutter build appbundle` **without** these `--dart-define` flags is producing **invalid output** and must be stopped immediately.
+- Runtime guard: `main.dart` throws `StateError` in release mode if `SupabaseConfig.isConfigured` is `false`. This is intentional — it is better to crash on launch than to ship a silently broken app.
+
+---
+
 ## Quick Reference
 
 | Rule | One-Liner |
@@ -70,3 +95,4 @@
 | **2. Default Country** | Rwanda (RW) — always pre-selected, never prompted |
 | **3. UI Integrity** | Follow `design.md` exactly — no ad-hoc styles |
 | **4. Auth Method** | Supabase anonymous auth — no login wall |
+| **5. Build Env Vars** | `SUPABASE_URL` + `SUPABASE_ANON_KEY` mandatory on every APK/AAB build — use `./scripts/release/build_android_release.sh` |

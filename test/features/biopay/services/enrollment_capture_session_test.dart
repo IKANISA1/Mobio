@@ -50,16 +50,16 @@ void main() {
     });
 
     test('buildAggregate rejects incomplete sessions', () {
-      final session = EnrollmentCaptureSession();
-      session.addSample(List<double>.filled(192, 0.25), qualityScore: 0.9);
+      final session = EnrollmentCaptureSession()
+        ..addSample(List<double>.filled(192, 0.25), qualityScore: 0.9);
 
       expect(session.buildAggregate, throwsStateError);
     });
 
     test('reset clears stored samples', () {
-      final session = EnrollmentCaptureSession();
-      session.addSample(List<double>.filled(192, 0.2), qualityScore: 0.9);
-      session.reset();
+      final session = EnrollmentCaptureSession()
+        ..addSample(List<double>.filled(192, 0.2), qualityScore: 0.9)
+        ..reset();
 
       expect(session.sampleCount, 0);
       expect(session.progress, 0.0);

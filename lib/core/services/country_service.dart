@@ -30,7 +30,7 @@ class CountryService {
           .map((r) => Country.fromJson(r as Map<String, dynamic>))
           .toList();
       return _cached!;
-    } catch (_) {
+    } on Object catch (_) {
       // Offline fallback
       _cached = Country.fallbackCountries;
       return _cached!;

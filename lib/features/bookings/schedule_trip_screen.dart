@@ -1,29 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
-
-import 'package:mobi_app/core/theme/app_colors.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/services/ai_content_service.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
 import 'package:mobi_app/core/services/location_service.dart';
 import 'package:mobi_app/core/services/places_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
+import 'package:mobi_app/core/theme/app_colors.dart';
+import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/place.dart';
 import 'package:mobi_app/models/route_info.dart';
 import 'package:mobi_app/models/vehicle_type.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
-import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
-import 'package:mobi_app/shared/widgets/place_autocomplete_field.dart';
-import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
+import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
+import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
+import 'package:mobi_app/shared/widgets/place_autocomplete_field.dart';
 import 'package:mobi_app/shared/widgets/route_map_card.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
-import 'package:mobi_app/core/services/ai_content_service.dart';
-import 'package:intl/intl.dart';
+import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 
 /// Schedule Trip screen with route preview map.
 class ScheduleTripScreen extends StatefulWidget {
@@ -134,7 +132,7 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
       if (mounted && details != null) {
         _onOriginSelected(details);
       }
-    } catch (e) {
+    } on Object catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to get current location.')),
@@ -250,7 +248,7 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
         );
         widget.onBack();
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (mounted) {
         setState(() => _isSubmitting = false);
         ScaffoldMessenger.of(context).showSnackBar(

@@ -151,7 +151,7 @@ class BioPayService {
         status: profile.status,
         isRemoteProfileLoaded: true,
       );
-    } catch (error, stackTrace) {
+    } on Object catch (error, stackTrace) {
       AppLogger.warning(
         'BioPay hub fell back to local session only: $error',
         error: error,
@@ -296,7 +296,7 @@ class BioPayService {
           )
           .eq('id', userId)
           .maybeSingle();
-    } catch (error, stackTrace) {
+    } on Object catch (error, stackTrace) {
       AppLogger.warning(
         'Unable to load current profile for BioPay hub: $error',
         error: error,

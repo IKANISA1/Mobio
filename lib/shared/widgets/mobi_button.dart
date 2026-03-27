@@ -89,10 +89,10 @@ class MobiButton extends StatelessWidget {
           ),
         );
       case MobiButtonVariant.whatsapp:
-        return _ButtonColors(
+        return const _ButtonColors(
           bg: AppColors.whatsappGreen,
           fg: Colors.white,
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [AppColors.whatsappGreen, AppColors.whatsappDark],

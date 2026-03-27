@@ -139,7 +139,7 @@ class ChatAiService {
         return fallback;
       }
       return assist;
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.warning(
         'Chat AI suggestions failed, using fallback.',
         error: error,

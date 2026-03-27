@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/theme/app_colors.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 
@@ -98,7 +98,7 @@ class _BioPayScreenState extends State<BioPayScreen> {
       ),
       child: Row(
         children: [
-          Icon(LucideIcons.shieldCheck, size: 34, color: AppColors.primary),
+          const Icon(LucideIcons.shieldCheck, size: 34, color: AppColors.primary),
           const SizedBox(width: 14),
           Text(
             'BioPay',

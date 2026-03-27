@@ -117,7 +117,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
 
       _managedProfile = profile;
       setState(() => _phase = _EnrollPhase.ready);
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted) return;
       setState(() {
         _phase = _EnrollPhase.error;
@@ -142,7 +142,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
         setState(() => _handleType = handleType);
         _momoValueController.text = handleValue;
       }
-    } catch (_) {
+    } on Object catch (_) {
       // Prefill is best-effort and should never block enrollment.
     }
   }
@@ -277,7 +277,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
 
       // Start live image stream instead of polling
       await controller.startImageStream(_onCameraFrame);
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted) return;
       setState(() {
         _phase = _EnrollPhase.error;
@@ -386,7 +386,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       // Clean up the temporary capture file
       try {
         await File(capture.path).delete();
-      } catch (_) {}
+      } on Object catch (_) {}
 
       final landmarks = FaceAlignmentService.extractLandmarks(landmarkFace);
       if (landmarks == null) {
@@ -444,7 +444,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       if (_cameraController != null && !_hasSubmitted) {
         await _cameraController!.startImageStream(_onCameraFrame);
       }
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted) return;
       setState(() {
         _phase = _EnrollPhase.error;
@@ -528,7 +528,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
         _result = result;
         _phase = _EnrollPhase.success;
       });
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted) return;
       setState(() {
         _phase = _EnrollPhase.error;

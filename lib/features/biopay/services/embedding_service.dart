@@ -56,7 +56,7 @@ class EmbeddingService {
           options.addDelegate(GpuDelegate());
           usingGpu = true;
         }
-      } catch (e) {
+      } on Object catch (e) {
         _log.w('[BioPay] GPU delegate unavailable, using CPU: $e');
         usingGpu = false;
       }
@@ -67,7 +67,7 @@ class EmbeddingService {
           _modelPath,
           options: options,
         );
-      } catch (e) {
+      } on Object catch (e) {
         // If GPU delegate caused the failure, retry without it
         if (usingGpu) {
           _log.w('[BioPay] GPU init failed, retrying CPU-only: $e');
@@ -82,12 +82,45 @@ class EmbeddingService {
         }
       }
 
-      final outputDim = interpreter.getOutputTensor(0).shape.last;
+      final outputShape = interpreter.getOutputTensor(0).shape;
+      final outputDim = outputShape.last;
+      _log.d(
+        '[BioPay] Model output tensor shape: $outputShape '
+        '(expected dim: $expectedEmbeddingDim)',
+      );
+
       if (outputDim != expectedEmbeddingDim) {
-        interpreter.close();
-        throw EmbeddingServiceException(
-          'Expected a $expectedEmbeddingDim-dimensional BioPay model, got $outputDim.',
-        );
+        // GPU delegate on some chipsets (Mali, Adreno) can silently
+        // reshape output tensors. Retry with CPU-only before giving up.
+        if (usingGpu) {
+          _log.w(
+            '[BioPay] GPU delegate produced wrong output shape $outputShape '
+            '(expected $expectedEmbeddingDim-dim). Falling back to CPU.',
+          );
+          interpreter.close();
+          usingGpu = false;
+          final cpuOptions = InterpreterOptions()..threads = 2;
+          interpreter = await Interpreter.fromAsset(
+            _modelPath,
+            options: cpuOptions,
+          );
+          final cpuShape = interpreter.getOutputTensor(0).shape;
+          final cpuDim = cpuShape.last;
+          if (cpuDim != expectedEmbeddingDim) {
+            interpreter.close();
+            throw EmbeddingServiceException(
+              'BioPay model output shape $cpuShape does not match contract. '
+              'Expected $expectedEmbeddingDim-dim, got $cpuDim-dim.',
+            );
+          }
+        } else {
+          interpreter.close();
+          throw EmbeddingServiceException(
+            'BioPay model output shape $outputShape does not match contract. '
+            'Expected $expectedEmbeddingDim-dim, got $outputDim-dim. '
+            'Ensure the correct mobilefacenet.tflite (192-dim) is bundled.',
+          );
+        }
       }
 
       _interpreter = interpreter;
@@ -103,7 +136,7 @@ class EmbeddingService {
 
     try {
       await _initializing;
-    } catch (e) {
+    } on Object catch (e) {
       if (e is EmbeddingServiceException) rethrow;
       throw EmbeddingServiceException('Failed to load MobileFaceNet model: $e');
     } finally {

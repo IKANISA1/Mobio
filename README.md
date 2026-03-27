@@ -39,6 +39,7 @@ Rwanda-first mobility app with BioPay biometric payments, trip scheduling, and r
 | 2 | **Default country = Rwanda (RW)** | Pre-selected everywhere: dialing code `+250`, currency `RWF`, MoMo `MTN MoMo`. Never prompt user to choose. |
 | 3 | **UI = `design.md` only** | No ad-hoc styles. Every color, font, spacing, shadow, and component MUST follow [`design.md`](./design.md). Update the spec first, then code. |
 | 4 | **Auth = Supabase anonymous** | `signInAnonymously()` at splash. No login wall, no sign-up form. Admin OTP is the only exception. |
+| 5 | **Build env vars = mandatory** | Every `flutter build apk/appbundle` **MUST** pass `--dart-define=SUPABASE_URL=...` and `--dart-define=SUPABASE_ANON_KEY=...`. Use `./scripts/release/build_android_release.sh`. |
 
 ---
 

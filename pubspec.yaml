@@ -1,7 +1,7 @@
 name: mobi_app
 description: "Mobio — Pan-African peer-to-peer ride-sharing marketplace with BioPay payments and trip scheduling."
 publish_to: 'none'
-version: 1.0.0+6
+version: 1.0.0+10
 
 environment:
   sdk: ^3.10.8
@@ -57,10 +57,11 @@ dependencies:
   firebase_crashlytics: ^5.1.0
   image_gallery_saver_plus: ^4.0.1
   app_settings: ^7.0.0
-  video_player: ^2.9.2
   go_router: ^17.1.0
   flutter_localizations:
     sdk: flutter
+  firebase_messaging: ^16.1.3
+  flutter_local_notifications: ^21.0.0
 
 dev_dependencies:
   flutter_test:

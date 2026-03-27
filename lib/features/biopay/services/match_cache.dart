@@ -36,7 +36,7 @@ class MatchCache {
           _entries.add(entry);
         }
       }
-    } catch (_) {
+    } on Object catch (_) {
       await prefs.remove(_prefsKey);
     }
   }

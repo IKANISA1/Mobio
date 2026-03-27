@@ -18,7 +18,7 @@ class UssdLauncherService {
       final canOpen = await canLaunchUrl(uri);
       if (!canOpen) return false;
       return await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } catch (_) {
+    } on Object catch (_) {
       return false;
     }
   }

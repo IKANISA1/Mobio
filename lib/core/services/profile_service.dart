@@ -35,7 +35,7 @@ class ProfileService {
           .eq('id', userId)
           .maybeSingle();
       return row;
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error fetching profile: $e');
       return null;
     }
@@ -50,7 +50,7 @@ class ProfileService {
           .eq('id', userId)
           .maybeSingle();
       return row;
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error fetching profile $userId: $e');
       return null;
     }
@@ -88,7 +88,7 @@ class ProfileService {
       if (payload.isEmpty) return;
 
       await _supabase.rpc('rpc_update_profile', params: {'p_payload': payload});
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error updating profile via RPC: $e');
       rethrow;
     }
@@ -129,6 +129,11 @@ class ProfileService {
   }
 
   /// Legacy: Updates the current user's profile fields directly.
+  ///
+  /// **Deprecated:** Use [updateProfileViaRpc] or [saveProfileSettings]
+  /// instead. This method bypasses the server-side field restrictions enforced
+  /// by the `rpc_update_profile` RPC.
+  @Deprecated('Use updateProfileViaRpc() instead — direct table writes bypass RPC field protections')
   Future<void> updateProfile({
     String? phone,
     String? countryCode,
@@ -154,7 +159,7 @@ class ProfileService {
 
     try {
       await _supabase.from('profiles').update(updates).eq('id', userId);
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error updating profile: $e');
       rethrow;
     }
@@ -171,7 +176,7 @@ class ProfileService {
         'rpc_enable_driver_mode',
         params: {'p_vehicle_type': vehicleType},
       );
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error enabling driver mode: $e');
       rethrow;
     }
@@ -181,7 +186,7 @@ class ProfileService {
   Future<void> disableDriverMode() async {
     try {
       await _supabase.rpc('rpc_disable_driver_mode');
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error disabling driver mode: $e');
       rethrow;
     }
@@ -217,7 +222,7 @@ class ProfileService {
         'average_score': total / ratings.length,
         'total_ratings': ratings.length,
       };
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error fetching user rating: $e');
       return {'average_score': 0.0, 'total_ratings': 0};
     }

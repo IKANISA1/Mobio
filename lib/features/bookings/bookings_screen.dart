@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/services/trip_service.dart';
-import 'package:mobi_app/models/trip.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
-import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
-import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
-import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
-import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
-import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
-import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/core/services/ai_content_service.dart';
+import 'package:mobi_app/core/services/ride_request_service.dart';
+import 'package:mobi_app/core/services/trip_service.dart';
+import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/models/trip.dart';
+import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
+import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
+import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
+import 'package:mobi_app/shared/widgets/soft_gradient.dart';
+import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
+import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Bookings screen with live data from TripService.
@@ -45,6 +46,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
   List<Trip> _myTrips = [];
   List<Trip> _nearbyTrips = [];
   final _tripService = TripService();
+  final _rideRequestService = RideRequestService();
+  final Set<String> _requestedTripIds = {};
 
   @override
   void initState() {
@@ -86,7 +89,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
           _isLoading = false;
         });
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -118,7 +121,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
       DateTime? tripDate;
       try {
         tripDate = DateTime.tryParse(trip.departureDate);
-      } catch (_) {}
+      } on Object catch (_) {}
 
       if (tripDate == null) {
         grouped['LATER']!.add(trip);
@@ -344,7 +347,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
               padding: const EdgeInsets.only(left: 0, bottom: 12),
               child: _buildSectionLabel(section),
             ),
-            ...sectionTrips.map((trip) => _buildTripCard(trip)),
+            ...sectionTrips.map(_buildTripCard),
             const SizedBox(height: 24),
           ],
         ),
@@ -520,6 +523,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
                         ),
                       ),
                     )
+                  else if (isNearby && trip.id != null)
+                    _buildRequestOfferButton(trip)
                   else
                     const SizedBox.shrink(),
                   Material(
@@ -611,7 +616,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
           );
           _loadTrips(); // Refresh
         }
-      } catch (e) {
+      } on Object catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(
             context,
@@ -639,5 +644,99 @@ class _BookingsScreenState extends State<BookingsScreen> {
         ],
       ),
     );
+  }
+
+  /// Builds a "REQUEST" or "OFFER" button for nearby trip cards.
+  ///
+  /// - If the nearby trip is from a driver → current user (passenger) sees "REQUEST"
+  /// - If the nearby trip is from a passenger → current user (driver) sees "OFFER"
+  Widget _buildRequestOfferButton(Trip trip) {
+    final cs = Theme.of(context).colorScheme;
+    final isDriver = trip.role == 'driver';
+    final label = isDriver ? 'REQUEST' : 'OFFER';
+    final doneLabel = isDriver ? 'REQUESTED' : 'OFFERED';
+    final icon = isDriver ? LucideIcons.send : LucideIcons.gift;
+    const doneIcon = LucideIcons.checkCircle;
+    final isDone = _requestedTripIds.contains(trip.id);
+
+    return Material(
+      color: isDone ? cs.primaryContainer : cs.primary,
+      borderRadius: BorderRadius.circular(20),
+      elevation: isDone ? 0 : 2,
+      shadowColor: cs.primary.withValues(alpha: 0.3),
+      child: InkWell(
+        onTap: isDone ? null : () => _handleRequestOffer(trip),
+        borderRadius: BorderRadius.circular(20),
+        splashColor: cs.onPrimary.withValues(alpha: 0.2),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                isDone ? doneIcon : icon,
+                size: 14,
+                color: isDone ? cs.primary : cs.onPrimary,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                isDone ? doneLabel : label,
+                style: AppTypography.labelSm.copyWith(
+                  letterSpacing: 1,
+                  color: isDone ? cs.primary : cs.onPrimary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleRequestOffer(Trip trip) async {
+    final isDriver = trip.role == 'driver';
+
+    try {
+      if (isDriver) {
+        // Current user is passenger, requesting a ride from this driver
+        await _rideRequestService.sendRequest(
+          responderId: trip.authorId,
+          tripId: trip.id,
+          metadata: {
+            'vehicle_type': trip.vehicleTypeStr,
+            'route': '${trip.origin} → ${trip.destination}',
+            'source': 'nearby_trips',
+          },
+        );
+      } else {
+        // Current user is driver, offering a ride to this passenger
+        await _rideRequestService.sendOffer(
+          responderId: trip.authorId,
+          tripId: trip.id!,
+          metadata: {
+            'route': '${trip.origin} → ${trip.destination}',
+            'source': 'nearby_trips',
+          },
+        );
+      }
+
+      if (mounted) {
+        setState(() => _requestedTripIds.add(trip.id!));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isDriver ? 'Ride request sent!' : 'Ride offer sent!',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        );
+      }
+    } on Object catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$e')),
+        );
+      }
+    }
   }
 }

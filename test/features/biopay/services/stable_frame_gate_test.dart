@@ -23,9 +23,11 @@ void main() {
     test('resets on quality failure', () {
       final gate = StableFrameGate.scan();
 
-      gate.onFrame(isQualityAcceptable: true, trackingId: 1);
-      gate.onFrame(isQualityAcceptable: true, trackingId: 1);
-      gate.onFrame(isQualityAcceptable: false, trackingId: 1);
+      // ignore: cascade_invocations
+      gate
+        ..onFrame(isQualityAcceptable: true, trackingId: 1)
+        ..onFrame(isQualityAcceptable: true, trackingId: 1)
+        ..onFrame(isQualityAcceptable: false, trackingId: 1);
 
       expect(gate.stableCount, 0);
       expect(gate.onFrame(isQualityAcceptable: true, trackingId: 1), false);
@@ -34,9 +36,11 @@ void main() {
     test('resets on face change', () {
       final gate = StableFrameGate.scan();
 
-      gate.onFrame(isQualityAcceptable: true, trackingId: 1);
-      gate.onFrame(isQualityAcceptable: true, trackingId: 1);
-      gate.onFrame(isQualityAcceptable: true, trackingId: 2);
+      // ignore: cascade_invocations
+      gate
+        ..onFrame(isQualityAcceptable: true, trackingId: 1)
+        ..onFrame(isQualityAcceptable: true, trackingId: 1)
+        ..onFrame(isQualityAcceptable: true, trackingId: 2);
 
       expect(gate.stableCount, 0);
     });

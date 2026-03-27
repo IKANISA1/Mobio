@@ -45,7 +45,7 @@ class _BiopayPrivacyScreenState extends State<BiopayPrivacyScreen> {
       setState(() {
         _hubState = hubState;
       });
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted) return;
       setState(() {
         _errorMessage = 'Unable to load BioPay privacy details: $error';
@@ -87,7 +87,7 @@ class _BiopayPrivacyScreenState extends State<BiopayPrivacyScreen> {
       if (!mounted) return;
       _showSnackBar('BioPay Face ID deleted for this device.');
       await _loadHubState();
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted) return;
       _showSnackBar('Unable to delete BioPay Face ID: $error');
     } finally {
@@ -275,21 +275,21 @@ class _BiopayPrivacyScreenState extends State<BiopayPrivacyScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              _InfoCard(
+              const _InfoCard(
                 icon: LucideIcons.scanFace,
                 title: 'What BioPay captures',
                 body:
                     'A numeric face embedding plus quality and device metadata used to enroll or match a BioPay profile. Raw face photos are not persisted after processing.',
               ),
               const SizedBox(height: 16),
-              _InfoCard(
+              const _InfoCard(
                 icon: LucideIcons.database,
                 title: 'How it is used',
                 body:
                     'The embedding is used to link your BioPay Face ID and to match BioPay recipients during face scan payments. Camera permission is only used for BioPay capture and scan flows.',
               ),
               const SizedBox(height: 16),
-              _InfoCard(
+              const _InfoCard(
                 icon: LucideIcons.slidersHorizontal,
                 title: 'Your controls',
                 body:

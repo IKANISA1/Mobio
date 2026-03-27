@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
@@ -86,13 +85,13 @@ class AiContentService {
   factory AiContentService() => _instance ??= AiContentService._();
   AiContentService._();
 
-  Box? _box;
+  Box<dynamic>? _box;
 
   /// Initialize the Hive cache box. Call once at app startup.
   Future<void> init() async {
     try {
       _box = await Hive.openBox(_boxName);
-    } catch (e) {
+    } on Object catch (e) {
       debugPrint('AiContentService: Failed to open cache box: $e');
     }
   }
@@ -163,7 +162,7 @@ class AiContentService {
 
       _setAssetCache(cacheKey, assets);
       return assets;
-    } catch (e) {
+    } on Object catch (e) {
       debugPrint('AiContentService: Failed to fetch images: $e');
       return [];
     }
@@ -216,7 +215,7 @@ class AiContentService {
 
       _setAssetCache(cacheKey, [asset]);
       return asset;
-    } catch (e) {
+    } on Object catch (e) {
       debugPrint('AiContentService: Failed to fetch video: $e');
       return null;
     }
@@ -253,13 +252,13 @@ class AiContentService {
       }
 
       return data
-          .whereType<Map>()
+          .whereType<Map<dynamic, dynamic>>()
           .map(
             (item) =>
-                PromoAsset.fromJson(Map<String, dynamic>.from(item as Map)),
+                PromoAsset.fromJson(Map<String, dynamic>.from(item)),
           )
           .toList(growable: false);
-    } catch (_) {
+    } on Object catch (_) {
       return null;
     }
   }
@@ -268,7 +267,7 @@ class AiContentService {
     try {
       _box?.put(key, assets.map((asset) => asset.toJson()).toList());
       _box?.put('${key}_ts', DateTime.now().millisecondsSinceEpoch);
-    } catch (_) {}
+    } on Object catch (_) {}
   }
 
   PromoAsset _toPromoAsset({
@@ -404,7 +403,7 @@ class AiContentService {
     for (final key in const ['customMetadata', 'userMetadata', 'metadata']) {
       final nested = metadata[key];
       if (nested is Map) {
-        flat.addAll(Map<String, dynamic>.from(nested as Map));
+        flat.addAll(Map<String, dynamic>.from(nested));
       }
     }
     return flat;
@@ -427,10 +426,10 @@ class AiContentService {
     final safeTextY = capture(r'(?:^|[_-])sy(?:_|-)?([01](?:\.\d+)?)');
 
     return {
-      if (focusX != null) 'focus_x': focusX,
-      if (focusY != null) 'focus_y': focusY,
-      if (safeTextX != null) 'safe_text_x': safeTextX,
-      if (safeTextY != null) 'safe_text_y': safeTextY,
+      'focus_x': ?focusX,
+      'focus_y': ?focusY,
+      'safe_text_x': ?safeTextX,
+      'safe_text_y': ?safeTextY,
     };
   }
 }

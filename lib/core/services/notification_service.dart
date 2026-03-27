@@ -80,7 +80,7 @@ class NotificationService {
             AppNotification.fromJson,
           )
           .toList();
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error fetching notifications: $e');
       return [];
     }
@@ -104,16 +104,29 @@ class NotificationService {
             AppNotification.fromJson,
           )
           .toList();
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error fetching unread notifications: $e');
       return [];
     }
   }
 
-  /// Returns the count of unread notifications.
+  /// Returns the count of unread notifications using a server-side count query.
   Future<int> getUnreadCount() async {
-    final unread = await getUnreadNotifications();
-    return unread.length;
+    final userId = _currentUserId;
+    if (userId == null) return 0;
+
+    try {
+      final result = await _supabase
+          .from('notifications')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('is_read', false)
+          .count(CountOption.exact);
+      return result.count;
+    } on Object catch (e) {
+      AppLogger.error('Error fetching unread count: $e');
+      return 0;
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -127,7 +140,7 @@ class NotificationService {
           .from('notifications')
           .update({'is_read': true})
           .eq('id', notificationId);
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error marking notification as read: $e');
     }
   }
@@ -143,7 +156,7 @@ class NotificationService {
           .update({'is_read': true})
           .eq('user_id', userId)
           .eq('is_read', false);
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error marking all notifications as read: $e');
     }
   }
@@ -174,7 +187,7 @@ class NotificationService {
               final notification =
                   AppNotification.fromJson(payload.newRecord);
               _notificationController.add(notification);
-            } catch (e) {
+            } on Object catch (e) {
               AppLogger.error('Error parsing realtime notification: $e');
             }
           },

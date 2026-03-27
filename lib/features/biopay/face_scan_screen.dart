@@ -156,7 +156,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
 
       // Start live image stream instead of takePicture polling
       await controller.startImageStream(_onCameraFrame);
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted) return;
       setState(() {
         _phase = _ScanPhase.error;
@@ -264,7 +264,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
       final decodedImage = await _decodeImage(capture.path);
       try {
         await File(capture.path).delete();
-      } catch (_) {}
+      } on Object catch (_) {}
 
       final transform = await FaceAlignmentService.computeAffineTransform(
         landmarks,
@@ -298,7 +298,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
           _statusMessage = BiopayStrings.scanNoMatch;
         });
       }
-    } catch (error) {
+    } on Object catch (error) {
       await _releaseCamera();
       if (!mounted) return;
       setState(() {
@@ -376,7 +376,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('BioPay report submitted.')));
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Unable to report BioPay match: $error')),

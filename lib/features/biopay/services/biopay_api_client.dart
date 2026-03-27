@@ -147,7 +147,7 @@ class BiopayApiClient {
         statusCode: response.status,
         rawData: response.data,
       );
-    } catch (e) {
+    } on Object catch (e) {
       if (e is BiopayApiException) rethrow;
       throw BiopayApiException(
         action: action,

@@ -6,8 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
+import 'package:mobi_app/core/services/push_notification_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/core/utils/navigation_utils.dart';
 import 'package:mobi_app/features/admin/admin_auth_screen.dart';
 import 'package:mobi_app/features/admin/admin_dashboard_screen.dart';
 import 'package:mobi_app/features/admin/admin_users_screen.dart';
@@ -23,19 +25,7 @@ import 'package:mobi_app/shared/widgets/mobi_bottom_nav.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Safe pop helper — falls back to root if nothing to pop
-// ─────────────────────────────────────────────────────────────────────────────
-
-/// Safely pops the navigation stack. If there is nothing to pop (e.g. the
-/// user deep-linked directly to a sub-screen), navigates to root instead.
-void _safePop(BuildContext context) {
-  if (context.canPop()) {
-    context.pop();
-  } else {
-    context.go('/');
-  }
-}
+// _safePop is provided by core/utils/navigation_utils.dart (safePop)
 
 String _chatPathForTrip(Trip trip) {
   final query = <String, String>{'peerId': trip.authorId};
@@ -124,6 +114,11 @@ class _MobiShellState extends ConsumerState<MobiShell> {
     _notificationService?.stopListening();
     if (currentUser != null) {
       _notificationService?.startListening();
+      // Re-register FCM token for push notifications on auth change
+      unawaited(PushNotificationService.instance.registerToken());
+    } else {
+      // User signed out — unregister device token
+      unawaited(PushNotificationService.instance.unregisterToken());
     }
   }
 
@@ -246,7 +241,7 @@ class AdminAuthScreenWrapper extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AdminAuthScreen(
-      onBack: () => _safePop(context),
+      onBack: () => safePop(context),
       onSuccess: () {
         ref.read(roleProvider.notifier).set('admin');
         context.go('/admin'); // Intentional: clear stack on admin success
@@ -268,7 +263,7 @@ class NearbyScreenWrapper extends ConsumerWidget {
         bottom: false,
         child: NearbyScreen(
           onChat: (t) => context.push(_chatPathForTrip(t)),
-          onBack: () => _safePop(context),
+          onBack: () => safePop(context),
         ),
       ),
     );
@@ -292,7 +287,7 @@ class BookingsScreenWrapper extends ConsumerWidget {
           onModeChanged: (m) => ref.read(modeProvider.notifier).set(m),
           onSchedule: () => context.push('/schedule'),
           onTripDetails: (id) => context.push('/trip/$id'),
-          onBack: () => _safePop(context),
+          onBack: () => safePop(context),
         ),
       ),
     );
@@ -309,7 +304,7 @@ class ScheduleTripScreenWrapper extends ConsumerWidget {
     return ScheduleTripScreen(
       mode: mode,
       onModeChanged: (m) => ref.read(modeProvider.notifier).set(m),
-      onBack: () => _safePop(context),
+      onBack: () => safePop(context),
     );
   }
 }

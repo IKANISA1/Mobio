@@ -20,9 +20,6 @@
 -keep class com.google.zxing.** { *; }
 -dontwarn com.google.zxing.**
 
-# ── Google Maps ──
--keep class com.google.android.gms.maps.** { *; }
-
 # ── Supabase / OkHttp / Retrofit ──
 -dontwarn okhttp3.**
 -dontwarn okio.**
@@ -41,3 +38,11 @@
 -dontwarn com.google.android.play.core.tasks.OnFailureListener
 -dontwarn com.google.android.play.core.tasks.OnSuccessListener
 -dontwarn com.google.android.play.core.tasks.Task
+
+# ── Flutter Local Notifications ──
+-keep class com.dexterous.** { *; }
+-dontwarn com.dexterous.**
+
+# ── Firebase Messaging ──
+-keep class com.google.firebase.messaging.** { *; }
+-dontwarn com.google.firebase.messaging.**

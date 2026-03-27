@@ -191,7 +191,7 @@ class AdminService {
     try {
       final data = await _supabase.rpc('get_dashboard_stats');
       return AdminDashboardStats.fromJson(data as Map<String, dynamic>?);
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error fetching admin dashboard stats: $error');
       rethrow;
     }
@@ -219,7 +219,7 @@ class AdminService {
           .whereType<Map<String, dynamic>>()
           .map(AdminUserListItem.fromJson)
           .toList();
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error fetching admin users: $error');
       rethrow;
     }
@@ -234,7 +234,7 @@ class AdminService {
         'rpc_admin_update_user_role',
         params: {'p_user_id': userId, 'p_role': role},
       );
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error updating admin user role: $error');
       rethrow;
     }
@@ -248,7 +248,7 @@ class AdminService {
           .whereType<Map<String, dynamic>>()
           .map(AdminWhatsappNumberItem.fromJson)
           .toList();
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error fetching admin WhatsApp numbers: $error');
       rethrow;
     }
@@ -282,7 +282,7 @@ class AdminService {
       }
 
       return AdminWhatsappNumberItem.fromJson(typedRows.first);
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error upserting admin WhatsApp number: $error');
       rethrow;
     }
@@ -305,7 +305,7 @@ class AdminService {
       }
 
       return AdminWhatsappNumberItem.fromJson(typedRows.first);
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error updating admin WhatsApp number status: $error');
       rethrow;
     }
@@ -325,7 +325,7 @@ class AdminService {
           .whereType<Map<String, dynamic>>()
           .map(AdminAccessAttemptItem.fromJson)
           .toList();
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error fetching admin access attempts: $error');
       rethrow;
     }
@@ -354,7 +354,7 @@ class AdminService {
           .whereType<Map<String, dynamic>>()
           .map(AdminNotificationItem.fromJson)
           .toList();
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error fetching admin notifications: $error');
       rethrow;
     }
@@ -372,7 +372,7 @@ class AdminService {
           .update({'is_read': true})
           .eq('id', notificationId)
           .eq('user_id', userId);
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error marking admin notification as read: $error');
       rethrow;
     }
@@ -391,8 +391,62 @@ class AdminService {
           .eq('user_id', userId)
           .eq('is_read', false)
           .like('type', 'admin_%');
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error marking all admin notifications as read: $error');
+      rethrow;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Broadcast Notifications (Promo + Announcements)
+  // ---------------------------------------------------------------------------
+
+  /// Sends a promotional notification to ALL users.
+  ///
+  /// Returns the number of notifications created.
+  /// Only callable by admin users (enforced server-side).
+  Future<int> sendPromoNotification({
+    required String title,
+    String? body,
+    Map<String, dynamic>? metadata,
+  }) async {
+    try {
+      final result = await _supabase.rpc(
+        'rpc_admin_send_promo',
+        params: {
+          'p_title': title,
+          'p_body': body,
+          'p_metadata': metadata ?? {},
+        },
+      );
+      return (result as int?) ?? 0;
+    } on Object catch (error) {
+      AppLogger.error('Error sending promo notification: $error');
+      rethrow;
+    }
+  }
+
+  /// Sends a system announcement to ALL users.
+  ///
+  /// Returns the number of notifications created.
+  /// Only callable by admin users (enforced server-side).
+  Future<int> sendSystemAnnouncement({
+    required String title,
+    String? body,
+    Map<String, dynamic>? metadata,
+  }) async {
+    try {
+      final result = await _supabase.rpc(
+        'rpc_admin_send_announcement',
+        params: {
+          'p_title': title,
+          'p_body': body,
+          'p_metadata': metadata ?? {},
+        },
+      );
+      return (result as int?) ?? 0;
+    } on Object catch (error) {
+      AppLogger.error('Error sending system announcement: $error');
       rethrow;
     }
   }

@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/services/ai_content_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
+import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/route_map_card.dart';
-import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
-import 'package:mobi_app/core/services/ai_content_service.dart';
+import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Trip Details screen — loads real data from TripService.
@@ -59,7 +58,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
           if (trip == null) _error = 'Trip not found.';
         });
       }
-    } catch (e) {
+    } on Object catch (_) {
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -114,7 +113,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
         );
         widget.onBack();
       }
-    } catch (e) {
+    } on Object catch (e) {
       if (mounted) {
         setState(() => _isCancelling = false);
         ScaffoldMessenger.of(
@@ -224,12 +223,12 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
   }
 
   Widget _buildLoading() {
-    return Expanded(
+    return const Expanded(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
+        padding: EdgeInsets.fromLTRB(24, 16, 24, 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             LoadingSkeleton(height: 32, width: 120),
             SizedBox(height: 16),
             LoadingSkeleton(height: 80),

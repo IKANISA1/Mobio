@@ -52,7 +52,7 @@ class LocationService {
 
       _cachedPosition = position;
       return position;
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error getting current position: $e');
       return _cachedPosition; // return stale cache on error
     }
@@ -72,7 +72,7 @@ class LocationService {
         _cachedPosition = last;
       }
       return last;
-    } catch (e) {
+    } on Object catch (e) {
       AppLogger.error('Error getting last known position: $e');
       return null;
     }

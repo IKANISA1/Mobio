@@ -74,8 +74,9 @@ class _PlaceAutocompleteFieldState extends State<PlaceAutocompleteField> {
 
   @override
   void dispose() {
-    _controller.removeListener(_onTextChanged);
-    _controller.dispose();
+    _controller
+      ..removeListener(_onTextChanged)
+      ..dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -238,7 +239,7 @@ class _PlaceAutocompleteFieldState extends State<PlaceAutocompleteField> {
                 );
               }
               return [];
-            } catch (e, stack) {
+            } on Object catch (e, stack) {
               if (kDebugMode) debugPrint('❌ [widget] Unexpected error: $e\n$stack');
               return [];
             }

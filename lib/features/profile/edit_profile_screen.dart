@@ -83,7 +83,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         remoteHandle = await _countryService.parseBiopayUssd(
           hubState.ussdString,
         );
-      } catch (_) {
+      } on Object catch (_) {
         remoteHandle = null;
       }
 
@@ -141,7 +141,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _initialVehicleType = resolvedVehicleType;
         _isLoading = false;
       });
-    } catch (_) {
+    } on Object catch (_) {
       if (!mounted) return;
       setState(() {
         _countries = countries;
@@ -201,7 +201,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (!mounted) return;
       _showSnackBar('Profile updated.');
       widget.onBack();
-    } catch (error) {
+    } on Object catch (error) {
       _showSnackBar('Unable to save profile: $error');
     } finally {
       if (mounted) {

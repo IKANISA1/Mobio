@@ -37,6 +37,7 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -87,6 +88,18 @@ android {
             )
         }
     }
+
+    // 16 KB page size compatibility (required by Google Play for targetSdk 35+)
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+            // Strip x86_64 native libs bundled by plugins (ML Kit, TFLite).
+            // abiFilters only controls the app module's own NDK output — plugin
+            // pre-built .so files bypass it. These x86_64 binaries are NOT
+            // 16-KB page aligned and will be rejected by Google Play.
+            excludes += setOf("lib/x86_64/**", "lib/x86/**")
+        }
+    }
 }
 
 flutter {
@@ -94,6 +107,9 @@ flutter {
 }
 
 dependencies {
+    // Core library desugaring (required by flutter_local_notifications for java.time APIs)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+
     // Modular Play libraries (replacing deprecated monolithic play:core which is
     // incompatible with targetSdkVersion 34+).
     // feature-delivery: required when R8 shrinks Flutter release builds; Flutter's

@@ -97,7 +97,7 @@ class _GetQrScreenState extends State<GetQrScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('QR saved to gallery.')),
       );
-    } catch (e) {
+    } on Object catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to save QR: $e')),

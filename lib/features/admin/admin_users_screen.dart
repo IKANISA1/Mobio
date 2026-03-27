@@ -38,7 +38,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       if (!mounted) return;
 
       setState(() => _users = users);
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted) return;
 
       setState(() => _loadError = error.toString());
@@ -63,7 +63,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       ),
       builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
-        final roles = const ['passenger', 'driver', 'admin'];
+        const roles = ['passenger', 'driver', 'admin'];
 
         return SafeArea(
           top: false,
@@ -134,7 +134,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     try {
       await _adminService.updateUserRole(userId: user.id, role: nextRole);
       await _loadUsers();
-    } catch (error) {
+    } on Object catch (error) {
       if (!mounted) return;
 
       setState(() => _loadError = error.toString());

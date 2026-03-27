@@ -36,7 +36,7 @@ class ChatService {
       }
 
       return ChatConversation.fromJson(response);
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error getting chat conversation: $error');
       rethrow;
     }
@@ -55,7 +55,7 @@ class ChatService {
       }
 
       return ChatConversation.fromJson(row);
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error loading conversation $conversationId: $error');
       return null;
     }
@@ -75,7 +75,7 @@ class ChatService {
           .whereType<Map<String, dynamic>>()
           .map(ChatConversation.fromJson)
           .toList();
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error listing trip conversations: $error');
       return [];
     }
@@ -99,7 +99,7 @@ class ChatService {
           .toList()
           .reversed
           .toList();
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error loading recent chat messages: $error');
       return [];
     }
@@ -113,10 +113,14 @@ class ChatService {
         .order('created_at', ascending: true)
         .map(
           (rows) => rows
-              .map((row) => ChatMessageModel.fromJson(row))
+              .map(ChatMessageModel.fromJson)
               .toList(growable: false),
         );
   }
+
+  /// Minimum interval between message sends (prevents spam / double-tap).
+  static const _sendCooldown = Duration(seconds: 1);
+  static DateTime? _lastSendTime;
 
   Future<void> sendMessage({
     required String conversationId,
@@ -128,6 +132,14 @@ class ChatService {
       return;
     }
 
+    // Debounce: reject rapid duplicate sends
+    final now = DateTime.now();
+    if (_lastSendTime != null &&
+        now.difference(_lastSendTime!) < _sendCooldown) {
+      return; // silently skip — UI handles "sending" state
+    }
+    _lastSendTime = now;
+
     try {
       await _supabase.from('chat_messages').insert({
         'conversation_id': conversationId,
@@ -135,7 +147,7 @@ class ChatService {
         'message_type': 'text',
         'body': trimmed,
       });
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error sending chat message: $error');
       rethrow;
     }
@@ -154,7 +166,7 @@ class ChatService {
           .eq('conversation_id', conversationId)
           .filter('sender_id', 'neq', userId)
           .isFilter('read_at', null);
-    } catch (error) {
+    } on Object catch (error) {
       AppLogger.error('Error marking conversation read: $error');
     }
   }
