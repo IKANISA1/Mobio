@@ -48,6 +48,7 @@ app.*.map.json
 android/key.properties
 *.jks
 *.keystore
+android/fastlane/play-store-service-account.json
 
 # Environment / secrets
 .env
