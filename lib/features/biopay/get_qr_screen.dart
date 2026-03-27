@@ -3,15 +3,12 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-
 import 'package:mobi_app/core/services/country_service.dart';
-import 'package:mobi_app/core/theme/app_colors.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -314,10 +311,10 @@ class _GetQrScreenState extends State<GetQrScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(LucideIcons.shieldCheck, size: 18, color: const Color(0xFF1A1A2E)),
+                      const Icon(LucideIcons.shieldCheck, size: 18, color: Color(0xFF1A1A2E)),
                       const SizedBox(width: 6),
                       Text(
-                        'MOBI Pay',
+                        'Mobio Pay',
                         style: AppTypography.titleMd.copyWith(
                           color: const Color(0xFF1A1A2E),
                           letterSpacing: -0.3,

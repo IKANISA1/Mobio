@@ -2,7 +2,7 @@ abstract final class BiopayStrings {
   static const registerTitle = 'Face ID';
   static const registerSubtitle = 'Link your Face ID.';
   static const registerConsent =
-      'By continuing, you agree to securely store your face embedding for BioPay.';
+      'BioPay creates a face embedding on-device, sends it securely to Mobio for matching, and lets you delete it later from Privacy & Data.';
 
   static const reenrollTitle = 'Re-link Face ID';
   static const reenrollSubtitle = 'Update your secure face embedding.';
@@ -17,7 +17,8 @@ abstract final class BiopayStrings {
 
   // Quality guidance — English
   static const qualityLowLight = 'Move to a brighter area';
-  static const qualityTooBright = 'Too bright — reduce lighting or move to shade';
+  static const qualityTooBright =
+      'Too bright — reduce lighting or move to shade';
   static const qualityFaceTooSmall = 'Move closer to the camera';
   static const qualityMultipleFaces = 'Only one face should be visible';
   static const qualityYawTooHigh = 'Face the camera directly';

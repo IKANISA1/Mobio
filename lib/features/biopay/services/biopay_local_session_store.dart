@@ -1,9 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:mobi_app/features/biopay/models/biopay_models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../models/biopay_models.dart';
 
 typedef BiopaySecureRead = Future<String?> Function(String key);
 typedef BiopaySecureWrite = Future<bool> Function(String key, String value);

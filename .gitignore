@@ -53,3 +53,8 @@ android/key.properties
 .env
 .env.*
 !.env.example
+supabase/.temp/
+
+# Build runner generated files
+*.freezed.dart
+*.g.dart

@@ -1,4 +1,4 @@
-# MOBI AI Promotional Prompts
+# Mobio AI Promotional Prompts
 
 These prompts are used by the `generate-promo-content` Supabase Edge Function to generate the marketing imagery and videos for the application's empty states. 
 

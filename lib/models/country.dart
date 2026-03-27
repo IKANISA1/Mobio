@@ -85,7 +85,10 @@ class Country {
     return ussdCodeFormat.replaceAll('{CODE}', code);
   }
 
-  /// Hardcoded fallback list (used only if Supabase is unreachable).
+  /// Offline-only fallback. The definitive list of supported countries is
+  /// managed in the Supabase `countries` table and fetched at runtime by
+  /// [CountryService]. This static list is used only when the network is
+  /// unreachable (e.g. first launch with no connectivity).
   static const List<Country> fallbackCountries = [
     Country(id: 'KE', name: 'Kenya',    flag: '🇰🇪', dialingCode: '+254', currency: 'KES', currencyName: 'Kenyan Shilling',    phonePlaceholder: '712 345 678', telecomProvider: 'Safaricom',    momoBrand: 'M-Pesa',   ussdNumberFormat: '*334*1*{PHONE}#',    ussdCodeFormat: '*334*0*{CODE}#',    sortOrder: 1),
     Country(id: 'UG', name: 'Uganda',   flag: '🇺🇬', dialingCode: '+256', currency: 'UGX', currencyName: 'Ugandan Shilling',   phonePlaceholder: '770 000 000', telecomProvider: 'MTN Uganda',   momoBrand: 'MTN MoMo', ussdNumberFormat: '*165*1*{PHONE}#',    ussdCodeFormat: '*165*5*{CODE}#',    sortOrder: 2),

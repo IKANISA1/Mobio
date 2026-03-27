@@ -1,6 +1,6 @@
 {
-    "name": "mobi_app",
-    "short_name": "mobi_app",
+    "name": "Mobio",
+    "short_name": "Mobio",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

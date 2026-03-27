@@ -27,41 +27,45 @@ class MobiButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = _getColors(context);
-    return SizedBox(
-      width: width,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: isLoading ? null : onPressed,
-          borderRadius: BorderRadius.circular(100),
-          splashColor: Colors.transparent,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: padding ?? const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-            decoration: BoxDecoration(
-              gradient: colors.gradient,
-              color: colors.gradient == null ? colors.bg : null,
-              borderRadius: BorderRadius.circular(100),
-              boxShadow: AppShadows.premium,
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.1),
-                width: 1,
+    return Semantics(
+      button: true,
+      enabled: !isLoading && onPressed != null,
+      child: SizedBox(
+        width: width,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: isLoading ? null : onPressed,
+            borderRadius: BorderRadius.circular(100),
+            splashColor: Colors.transparent,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: padding ?? const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+              decoration: BoxDecoration(
+                gradient: colors.gradient,
+                color: colors.gradient == null ? colors.bg : null,
+                borderRadius: BorderRadius.circular(100),
+                boxShadow: AppShadows.premium,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.1),
+                  width: 1,
+                ),
               ),
-            ),
-            child: Center(
-              child: isLoading
-                  ? SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        color: colors.fg,
+              child: Center(
+                child: isLoading
+                    ? SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: colors.fg,
+                        ),
+                      )
+                    : DefaultTextStyle(
+                        style: AppTypography.titleMd.copyWith(color: colors.fg),
+                        child: child,
                       ),
-                    )
-                  : DefaultTextStyle(
-                      style: AppTypography.titleMd.copyWith(color: colors.fg),
-                      child: child,
-                    ),
+              ),
             ),
           ),
         ),
@@ -86,12 +90,12 @@ class MobiButton extends StatelessWidget {
         );
       case MobiButtonVariant.whatsapp:
         return _ButtonColors(
-          bg: cs.primary,
+          bg: AppColors.whatsappGreen,
           fg: Colors.white,
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [cs.primary, cs.primary],
+            colors: [AppColors.whatsappGreen, AppColors.whatsappDark],
           ),
         );
       case MobiButtonVariant.ghost:
@@ -111,12 +115,12 @@ class MobiButton extends StatelessWidget {
         );
       case MobiButtonVariant.success:
         return _ButtonColors(
-          bg: cs.primary,
+          bg: AppColors.surfaceTint,
           fg: cs.onPrimary,
-          gradient: LinearGradient(
+          gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [cs.primary, AppColors.primaryDim],
+            colors: [AppColors.surfaceTint, AppColors.primaryDim],
           ),
         );
     }

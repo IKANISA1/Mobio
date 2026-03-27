@@ -426,7 +426,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         mainAxisSize: MainAxisSize.min,
         children: BiopayHandleType.values.map((type) {
           final isActive = _handleType == type;
-          return GestureDetector(
+          return _TappableSelector(
             onTap: !interactive
                 ? null
                 : () => setState(() {
@@ -443,7 +443,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
               decoration: BoxDecoration(
                 color: isActive ? Theme.of(context).colorScheme.primary : Colors.transparent,
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(24),
               ),
               child: Text(
                 type.label,
@@ -572,7 +572,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildVehicleGrid(ColorScheme cs, MobiThemeExtension ext) {
     final vehicles = [
       (VehicleType.moto, 'Moto', LucideIcons.zap),
-      (VehicleType.cab, 'Cab', LucideIcons.car),
+      (VehicleType.cab, 'Taxi', LucideIcons.car),
       (VehicleType.trike, 'Trike', LucideIcons.truck),
       (VehicleType.truck, 'Truck', LucideIcons.truck),
       (VehicleType.private_, 'Private', LucideIcons.shield),
@@ -598,7 +598,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               final (vehicle, label, icon) = entry;
               final isSelected = _vehicleType == vehicle;
               return Expanded(
-                child: GestureDetector(
+                child: _TappableSelector(
                   onTap: () => setState(() => _vehicleType = vehicle),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -610,7 +610,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           color: isSelected
                               ? Theme.of(context).colorScheme.primaryContainer
                               : ext.surfaceContainerLowest,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(24),
                           border: Border.all(
                             color: isSelected
                                 ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.45)
@@ -701,7 +701,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required MobiThemeExtension ext,
     required Widget child,
   }) {
-    return Container(
+    return DecoratedBox(
       decoration: BoxDecoration(
         color: ext.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(22),
@@ -725,7 +725,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(vertical: 12),
             itemCount: _countries.length,
-            separatorBuilder: (_, __) =>
+            separatorBuilder: (_, _) =>
                 Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.1)),
             itemBuilder: (context, index) {
               final country = _countries[index];
@@ -763,6 +763,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+/// Selector with scale + opacity press feedback matching design.md §9B.
+class _TappableSelector extends StatefulWidget {
+  final VoidCallback? onTap;
+  final Widget child;
+
+  const _TappableSelector({required this.onTap, required this.child});
+
+  @override
+  State<_TappableSelector> createState() => _TappableSelectorState();
+}
+
+class _TappableSelectorState extends State<_TappableSelector> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTap,
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) => setState(() => _pressed = false),
+      onTapCancel: () => setState(() => _pressed = false),
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedScale(
+        scale: _pressed ? 0.95 : 1.0,
+        duration: const Duration(milliseconds: 100),
+        child: AnimatedOpacity(
+          opacity: _pressed ? 0.8 : 1.0,
+          duration: const Duration(milliseconds: 100),
+          child: widget.child,
+        ),
+      ),
     );
   }
 }

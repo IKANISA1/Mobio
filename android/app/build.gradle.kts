@@ -1,5 +1,6 @@
 import java.io.FileInputStream
 import java.util.Properties
+import org.gradle.api.GradleException
 
 plugins {
     id("com.android.application")
@@ -15,6 +16,14 @@ val keystorePropertiesFile = rootProject.file("key.properties")
 val keystoreProperties = Properties()
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+val isReleaseTaskRequested = gradle.startParameter.taskNames.any { taskName ->
+    taskName.contains("Release", ignoreCase = true)
+}
+if (isReleaseTaskRequested && !keystorePropertiesFile.exists()) {
+    throw GradleException(
+        "Missing android/key.properties. Release builds must use the production signing config.",
+    )
 }
 
 val localPropertiesFile = rootProject.file("local.properties")
@@ -43,6 +52,13 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
         multiDexEnabled = true
+
+        // TensorFlow Lite's bundled x86_64 binaries are not 16 KB-page compatible.
+        // Ship only Android device ABIs in production bundles until upstream x86_64
+        // artifacts are rebuilt for the Play requirement.
+        ndk {
+            abiFilters += setOf("armeabi-v7a", "arm64-v8a")
+        }
     }
 
     signingConfigs {
@@ -78,7 +94,11 @@ flutter {
 }
 
 dependencies {
-    // Required when R8 shrinks Flutter release builds; Flutter's deferred component
-    // support references Play Core classes even when the app does not use split delivery.
-    implementation("com.google.android.play:core:1.10.3")
+    // Modular Play libraries (replacing deprecated monolithic play:core which is
+    // incompatible with targetSdkVersion 34+).
+    // feature-delivery: required when R8 shrinks Flutter release builds; Flutter's
+    // deferred component support references Play Core classes even without split delivery.
+    implementation("com.google.android.play:feature-delivery:2.1.0")
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:review:2.0.2")
 }

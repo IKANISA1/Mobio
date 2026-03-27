@@ -1,6 +1,6 @@
+import 'dart:isolate';
 import 'dart:math' as math;
 import 'dart:typed_data';
-import 'dart:isolate';
 
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 
@@ -42,7 +42,7 @@ class FaceAlignmentService {
   static Future<Float64List> computeAffineTransform(
     List<math.Point<double>> sourceLandmarks,
   ) async {
-    return await Isolate.run(() => _computeAffine(sourceLandmarks));
+    return Isolate.run(() => _computeAffine(sourceLandmarks));
   }
 
   /// Synchronous affine transform computation (runs in isolate).
@@ -116,7 +116,7 @@ class FaceAlignmentService {
     required int srcWidth,
     required int srcHeight,
   }) async {
-    return await Isolate.run(
+    return Isolate.run(
       () => _applyTransformSync(
         pixelData: pixelData,
         transform: transform,

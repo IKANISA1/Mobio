@@ -1,7 +1,7 @@
 name: mobi_app
-description: "MOBI — Executive mobility platform for ride booking, biometric payments, and fleet management."
+description: "Mobio — Pan-African peer-to-peer ride-sharing marketplace with BioPay payments and trip scheduling."
 publish_to: 'none'
-version: 1.0.0+2
+version: 1.0.0+6
 
 environment:
   sdk: ^3.10.8
@@ -48,7 +48,7 @@ dependencies:
   # BioPay ML Pipeline
   camera: ^0.11.1
   google_mlkit_face_detection: ^0.12.0
-  tflite_flutter: ^0.11.0
+  tflite_flutter: ^0.12.1
 
   # BioPay QR
   qr_flutter: ^4.1.0
@@ -58,6 +58,9 @@ dependencies:
   image_gallery_saver_plus: ^4.0.1
   app_settings: ^7.0.0
   video_player: ^2.9.2
+  go_router: ^17.1.0
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
@@ -68,10 +71,12 @@ dev_dependencies:
   json_serializable: ^6.11.0
   flutter_launcher_icons: ^0.14.4
 flutter:
+  generate: true
   uses-material-design: true
 
   assets:
     - assets/ml/
+    - icon/
 
 flutter_launcher_icons:
   android: true
@@ -86,8 +91,13 @@ flutter_launcher_icons:
 
 flutter_native_splash:
   color: "#FFFFFF"
-  image: "icon/mobi_icon.png"
+  color_dark: "#0C0F10"
+  image: "icon/mobi_splash.png"
+  image_dark: "icon/mobi_splash.png"
   android_12:
-    image: "icon/mobi_icon.png"
+    image: "icon/mobi_splash.png"
+    image_dark: "icon/mobi_splash.png"
     icon_background_color: "#FFFFFF"
+    icon_background_color_dark: "#0C0F10"
     color: "#FFFFFF"
+    color_dark: "#0C0F10"

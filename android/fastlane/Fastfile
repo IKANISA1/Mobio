@@ -1,0 +1,55 @@
+default_platform(:android)
+
+platform :android do
+  desc "Upload AAB, screenshots, metadata, and mapping to Google Play (production draft)"
+  lane :deploy do
+    upload_to_play_store(
+      track: "production",
+      aab: "../build/app/outputs/bundle/release/app-release.aab",
+      mapping: "../build/app/outputs/mapping/release/mapping.txt",
+      skip_upload_apk: true,
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: false,
+      release_status: "draft",
+    )
+  end
+
+  desc "Upload metadata and screenshots only (no binary)"
+  lane :metadata do
+    upload_to_play_store(
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: false,
+    )
+  end
+
+  desc "Upload AAB only to internal track"
+  lane :upload_aab do
+    upload_to_play_store(
+      track: "internal",
+      aab: "../build/app/outputs/bundle/release/app-release.aab",
+      mapping: "../build/app/outputs/mapping/release/mapping.txt",
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      release_status: "draft",
+    )
+  end
+
+  desc "Promote internal to production"
+  lane :promote_to_production do
+    upload_to_play_store(
+      track: "internal",
+      track_promote_to: "production",
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
+end

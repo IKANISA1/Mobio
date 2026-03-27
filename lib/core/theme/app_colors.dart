@@ -79,7 +79,7 @@ class _DarkPalette {
   Color get inverseOnSurface => const Color(0xFF9B9D9E);
   Color get outline => const Color(0xFF586064);
   Color get outlineVariant => const Color(0xFF44474A);
-  Color get onPrimary => const Color(0xFF003915);
+  Color get onPrimary => const Color(0xFFE4FFE2);
   Color get primaryContainer => const Color(0xFF005221);
   Color get onPrimaryContainer => const Color(0xFF66FF8E);
   Color get onPrimaryFixed => const Color(0xFF004A1E);

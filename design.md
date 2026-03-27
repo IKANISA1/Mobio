@@ -1,4 +1,4 @@
-# MOBI — UI Design System Specification
+# Mobio — UI Design System Specification
 
 > **Version**: 1.0 · **Last updated**: 2026-03-25
 > **Source of truth files**: `lib/core/theme/`, `lib/shared/widgets/`
@@ -7,7 +7,7 @@
 
 ## 1. Design Philosophy: "Claymorphic Utility"
 
-MOBI's visual language blends **Claymorphism** (soft, tactile 3D surfaces) with **Material Design 3** structural tokens. The result is an interface that feels premium and "physical" — cards press in, buttons have weight — while maintaining the rigor of a financial & logistics platform.
+Mobio's visual language blends **Claymorphism** (soft, tactile 3D surfaces) with **Material Design 3** structural tokens. The result is an interface that feels premium and "physical" — cards press in, buttons have weight — while maintaining the rigor of a financial & logistics platform.
 
 ### Core Pillars
 
@@ -340,14 +340,21 @@ ClayCard(
 
 ### 7I. SoftGradient
 
-**Ambient background wrapper** for screens.
+**Full-screen promotional background wrapper** for screens. Fetches AI-generated promo media from Supabase and displays as ambient background. Cards/containers sit on top with their own opaque surfaces.
+
+| Layer | Behavior |
+|---|---|
+| **Video** (priority) | `VideoPlayer` loops silently, reduced-motion respects `disableAnimations` |
+| **Image carousel** (fallback) | `CachedNetworkImage`, 10s rotation, 800ms crossfade |
+| **Radial gradient** (final fallback) | `RadialGradient`, center `topRight`, radius `1.5`, `surfaceContainerLow → surface` |
+| **Status bar scrim** (if media) | Linear gradient `surface@45% → transparent`, height = `statusBar + 56` |
 
 | Property | Value |
 |---|---|
-| Type | RadialGradient |
-| Center | `topRight` |
-| Radius | `1.5` |
-| Colors | `surfaceContainerLow → background` |
+| Category | `PromoCategory` enum (per-screen) |
+| Timer | 10s image rotation |
+| Layout | `Stack` with `StackFit.expand`, child on top |
+
 
 ### 7J. DriverCard
 
@@ -443,7 +450,8 @@ Scaffold(
 | Navigation | Method |
 |---|---|
 | Tab switching | `AnimatedSwitcher` (300ms, easeOutCubic) with `KeyedSubtree` |
-| Sub-screen push | State-machine in `app.dart` (no `Navigator`) |
+| Sub-screen push | `GoRouter` with `context.push()` / `context.go()` |
+| Dialog dismiss | `Navigator.pop(context)` (standard Flutter dialog pattern) |
 | System back | `PopScope` with custom `onPopInvokedWithResult` |
 
 ### 10C. Content Width
@@ -455,7 +463,7 @@ Scaffold(
 
 ## 11. Dual-Mode Theming (Dark & Light)
 
-MOBI supports full **Dark** and **Light** mode with user toggle + persistence.
+Mobio supports full **Dark** and **Light** mode with user toggle + persistence.
 Default is **Dark**. Mode-dependent tokens live in `AppColors.dark` / `AppColors.light`;
 custom surface containers live in [MobiThemeExtension](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/core/theme/mobi_theme_extension.dart).
 
@@ -503,20 +511,20 @@ Managed by [ThemeProvider](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/core/theme/
 
 ### Architecture
 
-1. `ThemeProvider` (ChangeNotifier) stores `ThemeMode` and persists to `SharedPreferences` (key: `mobi_theme_mode`)
-2. `ThemeProviderScope` (InheritedNotifier) wraps `MaterialApp` in `main.dart`
-3. `MaterialApp` receives `theme: AppTheme.lightTheme`, `darkTheme: AppTheme.darkTheme`, `themeMode: provider.mode`
-4. `SystemChrome.setSystemUIOverlayStyle` reacts to mode changes (status bar + nav bar icons)
+1. `ThemeProvider` (ChangeNotifier) stores the current binary `ThemeMode` (`dark` / `light`) and persists to `SharedPreferences` (key: `mobi_theme_mode`)
+2. `ThemeProvider` is created during startup in `main.dart`, initialized before `runApp`, and injected through Riverpod
+3. `MobiMainApp` listens to `ThemeProvider` with `ListenableBuilder`, then passes `theme: AppTheme.lightTheme`, `darkTheme: AppTheme.darkTheme`, and `themeMode: provider.mode` into `MaterialApp`
+4. `SystemChrome.setSystemUIOverlayStyle` reacts to theme changes from the same listener (status bar + nav bar icons/colors)
 5. All widgets resolve colors via `Theme.of(context).colorScheme` or `Theme.of(context).extension<MobiThemeExtension>()!`
 
 ### Usage
 
 ```dart
 // Toggle theme
-ThemeProvider.of(context).toggleTheme();
+ref.read(themeProviderProvider).toggleTheme();
 
 // Read current mode
-final isDark = ThemeProvider.of(context).isDark;
+final isDark = ref.read(themeProviderProvider).isDark;
 
 // Resolve colors in any widget
 final cs = Theme.of(context).colorScheme;
@@ -593,5 +601,14 @@ final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 | DriverCard | [driver_card.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/shared/widgets/driver_card.dart) |
 | LoadingSkeleton | [loading_skeleton.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/shared/widgets/loading_skeleton.dart) |
 | SoftGradient | [soft_gradient.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/shared/widgets/soft_gradient.dart) |
+| AiEmptyState | [ai_empty_state.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/shared/widgets/ai_empty_state.dart) |
+| PlaceAutocompleteField | [place_autocomplete_field.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/shared/widgets/place_autocomplete_field.dart) |
+| PermissionAccessDialog | [permission_access_dialog.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/shared/widgets/permission_access_dialog.dart) |
+| RouteMapCard | [route_map_card.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/shared/widgets/route_map_card.dart) |
+| PromoImageCarousel | [promo_image_carousel.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/shared/widgets/promo_image_carousel.dart) |
+| PromoVideoPlayer | [promo_video_player.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/shared/widgets/promo_video_player.dart) |
+| WhatsAppIcon | [whatsapp_icon.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/shared/widgets/whatsapp_icon.dart) |
+| WhatsAppInput | [whatsapp_input.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/shared/widgets/whatsapp_input.dart) |
+| WhatsAppModal | [whatsapp_modal.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/shared/widgets/whatsapp_modal.dart) |
 | App Shell | [app.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/app.dart) |
 | Constants | [app_constants.dart](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/core/constants/app_constants.dart) |

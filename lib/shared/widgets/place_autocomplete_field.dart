@@ -1,14 +1,15 @@
 import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-
-import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/services/places_exception.dart';
 import 'package:mobi_app/core/services/places_service.dart';
+import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/place.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 class PlaceAutocompleteField extends StatefulWidget {
   final String label;
@@ -227,18 +228,18 @@ class _PlaceAutocompleteFieldState extends State<PlaceAutocompleteField> {
                 nearLat: widget.userLat,
                 nearLng: widget.userLng,
               );
-              debugPrint('🔍 [widget] suggestionsCallback got ${results.length} results for "$pattern"');
+              if (kDebugMode) debugPrint('🔍 [widget] suggestionsCallback got ${results.length} results for "$pattern"');
               return results;
             } on PlacesException catch (e) {
-              debugPrint('❌ [widget] PlacesException: $e');
-              if (mounted) {
+              if (kDebugMode) debugPrint('❌ [widget] PlacesException: $e');
+              if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(e.userMessage)),
                 );
               }
               return [];
             } catch (e, stack) {
-              debugPrint('❌ [widget] Unexpected error: $e\n$stack');
+              if (kDebugMode) debugPrint('❌ [widget] Unexpected error: $e\n$stack');
               return [];
             }
           },

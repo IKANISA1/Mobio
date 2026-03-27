@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobi_app/core/services/places_exception.dart';
 import 'package:mobi_app/models/place.dart';
 import 'package:mobi_app/models/route_info.dart';
-import 'package:mobi_app/core/services/places_exception.dart';
 
 /// Unit tests for Places models and PlacesException contract.
 /// Verifies that edge-function response shapes are correctly parsed.
@@ -9,7 +9,7 @@ void main() {
   group('PlacePrediction', () {
     test('parses from edge function suggestion shape', () {
       // Simulates data after manual mapping in PlacesService
-      final prediction = PlacePrediction(
+      const prediction = PlacePrediction(
         placeId: 'ChIJLU7jZClu5kcR4PcOOO6p3I0',
         description: 'Kigali International Airport, KG 555 St, Kigali',
       );
@@ -19,7 +19,7 @@ void main() {
     });
 
     test('serializes to and from JSON', () {
-      final original = PlacePrediction(
+      const original = PlacePrediction(
         placeId: 'abc123',
         description: 'Test Place',
       );
@@ -34,7 +34,7 @@ void main() {
 
   group('PlaceDetails', () {
     test('holds complete place data with coordinates', () {
-      final details = PlaceDetails(
+      const details = PlaceDetails(
         placeId: 'place-1',
         formattedAddress: 'Nyarugenge, Kigali, Rwanda',
         latitude: -1.9441,
@@ -47,7 +47,7 @@ void main() {
     });
 
     test('serializes to and from JSON', () {
-      final original = PlaceDetails(
+      const original = PlaceDetails(
         placeId: 'p1',
         formattedAddress: 'Test',
         latitude: 1.5,
@@ -62,7 +62,7 @@ void main() {
     });
 
     test('zero coordinates indicate geocoding failure', () {
-      final fallback = PlaceDetails(
+      const fallback = PlaceDetails(
         placeId: 'p2',
         formattedAddress: 'Partial result',
         latitude: 0,
@@ -77,7 +77,7 @@ void main() {
 
   group('RouteInfo', () {
     test('parses from compute_route response shape', () {
-      final route = RouteInfo(
+      const route = RouteInfo(
         distanceMeters: 130500,
         duration: '7200s',
         encodedPolyline: 'abc123polyline',
@@ -91,7 +91,7 @@ void main() {
     });
 
     test('defaults travelMode to DRIVE', () {
-      final route = RouteInfo(
+      const route = RouteInfo(
         distanceMeters: 5000,
         duration: '300s',
         encodedPolyline: '',
@@ -101,7 +101,7 @@ void main() {
     });
 
     test('serializes to and from JSON', () {
-      final original = RouteInfo(
+      const original = RouteInfo(
         distanceMeters: 42000,
         duration: '2400s',
         encodedPolyline: 'test_poly',

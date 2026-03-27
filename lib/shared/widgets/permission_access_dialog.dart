@@ -26,7 +26,7 @@ class PermissionAccessDialogConfig {
     return const PermissionAccessDialogConfig(
       title: 'BIOPAY CAMERA ACCESS',
       message:
-          'Allow camera access so MOBI can capture and match BioPay faces on-device.',
+          'Allow camera access so Mobio can create a BioPay face embedding on-device and securely send it to Mobio for enrollment or matching.',
       icon: LucideIcons.scanFace,
     );
   }
@@ -35,7 +35,7 @@ class PermissionAccessDialogConfig {
     return const PermissionAccessDialogConfig(
       title: 'LOCATION ACCESS',
       message:
-          'Allow location access so MOBI can show nearby places first and auto-fill your pickup point.',
+          'Allow location access so Mobio can show nearby places first and auto-fill your pickup point.',
       icon: LucideIcons.mapPin,
       primaryButtonLabel: 'ENABLE LOCATION',
     );
@@ -145,9 +145,7 @@ class PermissionAccessDialog extends StatelessWidget {
                   ),
                   child: Text(
                     config.primaryButtonLabel,
-                    style: AppTypography.labelMd.copyWith(
-                      color: cs.onPrimary,
-                    ),
+                    style: AppTypography.labelMd.copyWith(color: cs.onPrimary),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -160,9 +158,7 @@ class PermissionAccessDialog extends StatelessWidget {
                   ),
                   child: Text(
                     config.secondaryButtonLabel,
-                    style: AppTypography.labelMd.copyWith(
-                      color: cs.onSurface,
-                    ),
+                    style: AppTypography.labelMd.copyWith(color: cs.onSurface),
                   ),
                 ),
               ],

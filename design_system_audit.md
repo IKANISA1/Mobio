@@ -1,4 +1,4 @@
-# MOBI Design System Compliance Audit
+# Mobio Design System Compliance Audit
 
 > **Audit date**: 2026-03-25 · **Files audited**: 19 feature screens + 16 shared widgets + 4 theme files
 > **Reference**: [design.md](file:///Volumes/PRO-G40/MOBI/mobi_app/design.md)
@@ -31,7 +31,7 @@ The design system tokens (`AppColors`, `AppTypography`, `AppShadows`) and shared
 
 | # | Finding | Spec (design.md) | Actual | Fix |
 |---|---|---|---|---|
-| 1 | Header title "MOBI" | `AppTypography.headlineMd` (22px) | Inline `GoogleFonts.manrope(fontSize: 24)` | Use `AppTypography.headlineMd` |
+| 1 | Header title "Mobio" | `AppTypography.headlineMd` (22px) | Inline `GoogleFonts.manrope(fontSize: 24)` | Use `AppTypography.headlineMd` |
 | 2 | Hero card radius | `40px` (default ClayCard) | `32px` | Set `borderRadius: 40` or use primary gradient ClayCard variant |
 | 3 | Hero card shadow | `AppShadows.premium` or `AppShadows.clayButton` | Inline `BoxShadow(primary@25%, blur:40)` | Use `AppShadows.premium` |
 | 4 | Hero text style | `AppTypography.displayLg` (48px) | Inline `GoogleFonts.manrope(fontSize: titleSize)` | Use `displayLg` with responsive sizing |

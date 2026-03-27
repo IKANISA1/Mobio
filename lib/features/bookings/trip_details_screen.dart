@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
@@ -8,10 +9,12 @@ import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
-import 'package:mobi_app/shared/widgets/whatsapp_icon.dart';
+import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/route_map_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
+import 'package:mobi_app/core/services/ai_content_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Trip Details screen — loads real data from TripService.
 class TripDetailsScreen extends StatefulWidget {
@@ -70,7 +73,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).extension<MobiThemeExtension>()!.surfaceContainerHigh,
+        backgroundColor: Theme.of(
+          context,
+        ).extension<MobiThemeExtension>()!.surfaceContainerHigh,
         title: Text('Cancel Trip', style: AppTypography.titleLg),
         content: Text(
           'Are you sure you want to cancel this trip?',
@@ -83,7 +88,12 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('YES', style: AppTypography.titleMd.copyWith(color: Theme.of(context).colorScheme.error)),
+            child: Text(
+              'YES',
+              style: AppTypography.titleMd.copyWith(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
           ),
         ],
       ),
@@ -107,16 +117,34 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isCancelling = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to cancel trip: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to cancel trip: $e')));
       }
     }
   }
 
+  void _openChat() {
+    final trip = _trip;
+    final currentUserId = Supabase.instance.client.auth.currentUser?.id;
+    if (trip == null || trip.id == null || currentUserId == null) {
+      return;
+    }
+
+    final query = <String, String>{'tripId': trip.id!};
+
+    if (trip.authorId != currentUserId) {
+      query['peerId'] = trip.authorId;
+    }
+
+    context.push(Uri(path: '/chat', queryParameters: query).toString());
+  }
+
   String _formatTripId(String? id) {
     if (id == null || id.isEmpty) return '#—';
-    final short = id.length >= 8 ? id.substring(0, 8).toUpperCase() : id.toUpperCase();
+    final short = id.length >= 8
+        ? id.substring(0, 8).toUpperCase()
+        : id.toUpperCase();
     return '#$short';
   }
 
@@ -139,44 +167,60 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).extension<MobiThemeExtension>()!.surfaceContainerLow,
+      backgroundColor: Theme.of(
+        context,
+      ).extension<MobiThemeExtension>()!.surfaceContainerLow,
       body: SoftGradient(
+        category: PromoCategory.scheduledTrips,
+        visibilityMode: SoftGradientVisibilityMode.reading,
+        allowMotion: true,
         child: Column(
-        children: [
-          // Header
-          SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TappableIconButton(
-                    icon: LucideIcons.chevronLeft,
-                    onTap: widget.onBack,
+          children: [
+            // Header
+            SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
+                child: MobiSurfacePanel(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
                   ),
-                  Text(
-                    'Trip Details',
-                    style: AppTypography.titleLg.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+                  borderRadius: 30,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TappableIconButton(
+                        icon: LucideIcons.chevronLeft,
+                        onTap: widget.onBack,
+                      ),
+                      Text(
+                        'Trip Details',
+                        style: AppTypography.titleLg.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 40), // Balance the back button
+                    ],
                   ),
-                  const SizedBox(width: 40), // Balance the back button
-                ],
+                ),
               ),
             ),
-          ),
 
-          // Content
-          if (_isLoading)
-            _buildLoading()
-          else if (_error != null)
-            _buildError()
-          else
-            _buildContent(),
-        ],
+            // Content
+            if (_isLoading)
+              _buildLoading()
+            else if (_error != null)
+              _buildError()
+            else
+              _buildContent(),
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   Widget _buildLoading() {
@@ -208,17 +252,26 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(LucideIcons.alertTriangle, size: 40, color: Theme.of(context).colorScheme.error),
+              Icon(
+                LucideIcons.alertTriangle,
+                size: 40,
+                color: Theme.of(context).colorScheme.error,
+              ),
               const SizedBox(height: 16),
               Text(
                 _error ?? 'Something went wrong',
-                style: AppTypography.titleMd.copyWith(color: Theme.of(context).colorScheme.error),
+                style: AppTypography.titleMd.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               MobiButton(
                 onPressed: widget.onBack,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
                 child: Text(
                   'GO BACK',
                   style: AppTypography.labelLg.copyWith(
@@ -241,11 +294,13 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
     final timeDisplay = trip.departureTime.isNotEmpty
         ? trip.departureTime
         : trip.time.isNotEmpty
-            ? trip.time
-            : '—';
+        ? trip.time
+        : '—';
     final statusLabel = (trip.status ?? 'active').toUpperCase();
     final isCancelled = trip.status == 'cancelled';
     final vehicleLabel = trip.vehicleTypeStr.toUpperCase();
+    final currentUserId = Supabase.instance.client.auth.currentUser?.id;
+    final isTripOwner = currentUserId != null && trip.authorId == currentUserId;
 
     return Expanded(
       child: SingleChildScrollView(
@@ -347,7 +402,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                   Container(
                     width: 200,
                     height: 1,
-                    color: Theme.of(context).extension<MobiThemeExtension>()!.surfaceContainer,
+                    color: Theme.of(
+                      context,
+                    ).extension<MobiThemeExtension>()!.surfaceContainer,
                   ),
                   const SizedBox(height: 32),
 
@@ -366,13 +423,17 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.primaryContainer,
-                                    borderRadius: BorderRadius.circular(16),
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primaryContainer,
+                                    borderRadius: BorderRadius.circular(24),
                                   ),
                                   child: Icon(
                                     _vehicleIcon(trip.vehicleTypeStr),
                                     size: 24,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -409,12 +470,18 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                     Container(
                       width: double.infinity,
                       height: 1,
-                      color: Theme.of(context).extension<MobiThemeExtension>()!.surfaceContainer,
+                      color: Theme.of(
+                        context,
+                      ).extension<MobiThemeExtension>()!.surfaceContainer,
                     ),
                     const SizedBox(height: 24),
                     Row(
                       children: [
-                        Icon(LucideIcons.refreshCw, size: 20, color: Theme.of(context).colorScheme.primary),
+                        Icon(
+                          LucideIcons.refreshCw,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
@@ -438,7 +505,7 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                 padding: const EdgeInsets.only(bottom: 24),
                 child: ClayCard(
                   padding: const EdgeInsets.all(24),
-                  borderRadius: 32,
+                  borderRadius: 40,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -458,8 +525,10 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
             // Expiry notice
             ClayCard(
               padding: const EdgeInsets.all(24),
-              borderRadius: 32,
-              color: Theme.of(context).extension<MobiThemeExtension>()!.surfaceContainerLow,
+              borderRadius: 40,
+              color: Theme.of(
+                context,
+              ).extension<MobiThemeExtension>()!.surfaceContainerLow,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -483,7 +552,9 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
                         Text(
                           'Expires 60m after departure.',
                           style: AppTypography.bodySm.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -494,20 +565,22 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
             ),
             const SizedBox(height: 32),
 
-            // Open WhatsApp button
+            // In-app chat button
             MobiButton(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 20),
-              onPressed: () {
-                // TODO: Wire to real WhatsApp link using trip.whatsapp
-              },
+              onPressed: _openChat,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const WhatsAppIcon(size: 24, color: Colors.white),
+                  const Icon(
+                    LucideIcons.messageCircle,
+                    size: 24,
+                    color: Colors.white,
+                  ),
                   const SizedBox(width: 12),
                   Text(
-                    'OPEN WHATSAPP',
+                    isTripOwner ? 'VIEW TRIP CHATS' : 'OPEN CHAT',
                     style: AppTypography.titleMd.copyWith(
                       fontWeight: FontWeight.w700,
                       color: Theme.of(context).colorScheme.onPrimary,

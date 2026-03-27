@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
-import 'package:mobi_app/shared/widgets/whatsapp_icon.dart';
 
 /// Driver card matching transito DriverCard exactly.
-/// WhatsApp button now uses Material ripple for instant feedback.
+/// Chat action keeps WhatsApp's immediacy, but stays inside MOBI.
 class DriverCard extends StatelessWidget {
   final Trip trip;
-  final VoidCallback onWhatsApp;
+  final VoidCallback onChat;
 
-  const DriverCard({
-    super.key,
-    required this.trip,
-    required this.onWhatsApp,
-  });
+  const DriverCard({super.key, required this.trip, required this.onChat});
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +56,10 @@ class DriverCard extends StatelessWidget {
                   children: [
                     // Vehicle type badge
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: cs.secondaryContainer,
                         borderRadius: BorderRadius.circular(100),
@@ -83,7 +82,10 @@ class DriverCard extends StatelessWidget {
                     // Distance badge
                     if (trip.price != null)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: ext.surfaceContainer,
                           borderRadius: BorderRadius.circular(100),
@@ -100,22 +102,31 @@ class DriverCard extends StatelessWidget {
               ],
             ),
           ),
-          // WhatsApp button — Material ripple for instant feedback
-          SizedBox(
-            width: 48,
-            height: 48,
-            child: Material(
-              color: cs.primary,
-              shape: const CircleBorder(),
-              elevation: 4,
-              shadowColor: cs.primary.withValues(alpha: 0.4),
-              child: InkWell(
-                onTap: onWhatsApp,
-                customBorder: const CircleBorder(),
-                splashColor: Colors.white.withValues(alpha: 0.3),
-                highlightColor: Colors.white.withValues(alpha: 0.15),
-                child: const Center(
-                  child: WhatsAppIcon(size: 24, color: Colors.white),
+          // In-app chat button — keeps the rounded high-contrast affordance.
+          Semantics(
+            button: true,
+            label: 'Open in-app chat with $driverId',
+            excludeSemantics: true,
+            child: SizedBox(
+              width: 48,
+              height: 48,
+              child: Material(
+                color: cs.primary,
+                shape: const CircleBorder(),
+                elevation: 4,
+                shadowColor: cs.primary.withValues(alpha: 0.4),
+                child: InkWell(
+                  onTap: onChat,
+                  customBorder: const CircleBorder(),
+                  splashColor: cs.onPrimary.withValues(alpha: 0.22),
+                  highlightColor: cs.onPrimary.withValues(alpha: 0.12),
+                  child: Center(
+                    child: Icon(
+                      LucideIcons.messageCircle,
+                      size: 22,
+                      color: cs.onPrimary,
+                    ),
+                  ),
                 ),
               ),
             ),

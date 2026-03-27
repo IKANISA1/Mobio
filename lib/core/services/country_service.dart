@@ -1,6 +1,6 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:mobi_app/models/country.dart';
 import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
+import 'package:mobi_app/models/country.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service for fetching countries from Supabase `countries` table.
 ///

@@ -16,8 +16,8 @@ import 'package:mobi_app/features/biopay/services/face_alignment_service.dart';
 import 'package:mobi_app/features/biopay/services/face_detection_service.dart';
 import 'package:mobi_app/features/biopay/services/stable_frame_gate.dart';
 import 'package:mobi_app/features/biopay/services/ussd_launcher_service.dart';
-import 'package:mobi_app/features/biopay/widgets/oval_painter.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
+import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 
 class FaceScanScreen extends StatefulWidget {
   const FaceScanScreen({super.key, required this.onBack});
@@ -41,11 +41,11 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
   CameraController? _cameraController;
   CameraDescription? _selectedCamera;
   _ScanPhase _phase = _ScanPhase.loading;
-  ScannerState _scannerState = ScannerState.searching;
   String _statusMessage = 'Preparing camera...';
   String? _errorMessage;
   MatchResult? _matchResult;
   bool _isProcessingFrame = false;
+  bool _isCameraDenied = false;
 
   @override
   void initState() {
@@ -66,18 +66,35 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
   Future<void> _prepareScanner({required bool promptForPermission}) async {
     setState(() {
       _phase = _ScanPhase.loading;
-      _scannerState = ScannerState.searching;
       _statusMessage = 'Preparing camera...';
       _errorMessage = null;
       _matchResult = null;
+      _isCameraDenied = false;
     });
 
-    // Request camera permission directly — no dialog gate
+    // Show the permission pre-prompt dialog on first attempt
+    if (promptForPermission) {
+      final action = await PermissionAccessDialog.show(
+        context,
+        config: PermissionAccessDialogConfig.biopayCamera(),
+      );
+      if (!mounted) return;
+      if (action != PermissionAccessDialogAction.grantAccess) {
+        setState(() {
+          _phase = _ScanPhase.error;
+          _isCameraDenied = true;
+          _errorMessage = 'Camera access is required to scan faces.';
+        });
+        return;
+      }
+    }
+
     final hasAccess = await _permissionService.ensureBiopayCameraAccess();
     if (!mounted) return;
     if (!hasAccess) {
       setState(() {
         _phase = _ScanPhase.error;
+        _isCameraDenied = true;
         _errorMessage = 'Camera access is required to scan faces.';
       });
       return;
@@ -134,7 +151,6 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
 
       setState(() {
         _phase = _ScanPhase.scanning;
-        _scannerState = ScannerState.searching;
         _statusMessage = BiopayStrings.scanSearching;
       });
 
@@ -144,7 +160,6 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
       if (!mounted) return;
       setState(() {
         _phase = _ScanPhase.error;
-        _scannerState = ScannerState.error;
         _errorMessage = 'Unable to start BioPay scanner: $error';
       });
     }
@@ -169,7 +184,6 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
       if (faces.isEmpty) {
         _gate.reset();
         setState(() {
-          _scannerState = ScannerState.searching;
           _statusMessage = BiopayStrings.scanSearching;
         });
         return;
@@ -178,7 +192,6 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
       if (faces.length > 1) {
         _gate.reset();
         setState(() {
-          _scannerState = ScannerState.error;
           _statusMessage = BiopayStrings.qualityMultipleFaces;
         });
         return;
@@ -191,7 +204,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
       // Estimate brightness from the Y (luminance) plane of NV21/YUV.
       final yPlane = image.planes.first.bytes;
       double brightnessSum = 0;
-      final sampleStride = 8;
+      const sampleStride = 8;
       int count = 0;
       for (int i = 0; i < yPlane.length; i += sampleStride) {
         brightnessSum += yPlane[i];
@@ -212,7 +225,6 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
 
       if (!quality.isAcceptable) {
         setState(() {
-          _scannerState = ScannerState.searching;
           _statusMessage = _messageForQualityIssue(quality.issues.first);
         });
         return;
@@ -220,7 +232,6 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
 
       if (!isStable) {
         setState(() {
-          _scannerState = ScannerState.locked;
           _statusMessage = BiopayStrings.scanLocked;
         });
         return;
@@ -231,7 +242,6 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
 
       setState(() {
         _phase = _ScanPhase.processing;
-        _scannerState = ScannerState.locked;
         _statusMessage = BiopayStrings.scanMatching;
       });
 
@@ -240,7 +250,6 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
         _gate.reset();
         setState(() {
           _phase = _ScanPhase.error;
-          _scannerState = ScannerState.error;
           _errorMessage =
               'Keep your eyes and nose visible for BioPay matching.';
         });
@@ -280,14 +289,12 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
         setState(() {
           _matchResult = result;
           _phase = _ScanPhase.matched;
-          _scannerState = ScannerState.captured;
         });
       } else {
         _gate.reset();
         setState(() {
           _matchResult = null;
           _phase = _ScanPhase.noMatch;
-          _scannerState = ScannerState.noMatch;
           _statusMessage = BiopayStrings.scanNoMatch;
         });
       }
@@ -296,7 +303,6 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
       if (!mounted) return;
       setState(() {
         _phase = _ScanPhase.error;
-        _scannerState = ScannerState.error;
         _errorMessage = 'BioPay scan failed: $error';
       });
     }
@@ -364,7 +370,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
       await _bioPayService.reportProfile(
         biopayId: result!.biopayId!,
         reason: 'not me',
-        notes: 'Reported from MOBI BioPay face scan',
+        notes: 'Reported from Mobio BioPay face scan',
       );
       if (!mounted) return;
       ScaffoldMessenger.of(
@@ -449,7 +455,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
                 children: [
                   // Fullscreen camera preview
                   if (showCamera)
-                    Positioned.fill(child: CameraPreview(_cameraController!)),
+                    Positioned.fill(child: RepaintBoundary(child: CameraPreview(_cameraController!))),
 
                   // Viewfinder overlay when actively scanning
                   if (isActiveScanning) _buildViewfinderOverlay(),
@@ -488,7 +494,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
                   // Processing overlay
                   if (_phase == _ScanPhase.processing)
                     Positioned.fill(
-                      child: Container(
+                      child: ColoredBox(
                         color: Colors.black.withValues(alpha: 0.6),
                         child: Center(
                           child: Column(
@@ -585,7 +591,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
         const SizedBox(height: 24),
         Center(
           child: Text(
-            result.displayName ?? 'BioPay Match',
+            'BioPay Match',
             style: AppTypography.headlineLg,
             textAlign: TextAlign.center,
           ),
@@ -725,6 +731,8 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
 
   /// Content for error result (used inside the bottom sheet overlay).
   Widget _buildErrorContent() {
+    if (_isCameraDenied) return _buildCameraDeniedContent();
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -778,6 +786,84 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
             'GO BACK',
             style: AppTypography.labelMd.copyWith(
               color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Camera-specific denied state with "OPEN SETTINGS" deep link.
+  Widget _buildCameraDeniedContent() {
+    final cs = Theme.of(context).colorScheme;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 84,
+          height: 84,
+          decoration: BoxDecoration(
+            color: cs.primary.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(28),
+          ),
+          child: Icon(
+            LucideIcons.cameraOff,
+            color: cs.primary,
+            size: 42,
+          ),
+        ),
+        const SizedBox(height: 24),
+        Text(
+          'Camera access required',
+          style: AppTypography.headlineMd.copyWith(
+            letterSpacing: -1,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'BioPay needs camera access to scan and match faces securely on-device. '
+          'Please enable camera access in your device settings.',
+          style: AppTypography.bodyMd.copyWith(
+            color: cs.onSurfaceVariant,
+            height: 1.5,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 24),
+        MobiButton(
+          width: double.infinity,
+          onPressed: () async {
+            await _permissionService.openAppPermissionSettings();
+          },
+          child: Text(
+            'OPEN SETTINGS',
+            style: AppTypography.labelMd.copyWith(
+              color: cs.onPrimary,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        MobiButton(
+          width: double.infinity,
+          variant: MobiButtonVariant.ghost,
+          onPressed: () => _prepareScanner(promptForPermission: true),
+          child: Text(
+            'TRY AGAIN',
+            style: AppTypography.labelMd.copyWith(
+              color: cs.onSurface,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        MobiButton(
+          width: double.infinity,
+          variant: MobiButtonVariant.ghost,
+          onPressed: widget.onBack,
+          child: Text(
+            'GO BACK',
+            style: AppTypography.labelMd.copyWith(
+              color: cs.onSurfaceVariant,
             ),
           ),
         ),
@@ -866,25 +952,23 @@ class _FaceViewfinderPainter extends CustomPainter {
     final r = borderRadius;
     final cl = cornerLength;
 
-    // Top-left
-    canvas.drawLine(Offset(left, top + cl), Offset(left, top + r), cornerPaint);
-    canvas.drawArc(Rect.fromLTWH(left, top, r * 2, r * 2), 3.14159, 1.5708, false, cornerPaint);
-    canvas.drawLine(Offset(left + r, top), Offset(left + cl, top), cornerPaint);
-
-    // Top-right
-    canvas.drawLine(Offset(right - cl, top), Offset(right - r, top), cornerPaint);
-    canvas.drawArc(Rect.fromLTWH(right - r * 2, top, r * 2, r * 2), -1.5708, 1.5708, false, cornerPaint);
-    canvas.drawLine(Offset(right, top + r), Offset(right, top + cl), cornerPaint);
-
-    // Bottom-left
-    canvas.drawLine(Offset(left, bottom - cl), Offset(left, bottom - r), cornerPaint);
-    canvas.drawArc(Rect.fromLTWH(left, bottom - r * 2, r * 2, r * 2), 1.5708, 1.5708, false, cornerPaint);
-    canvas.drawLine(Offset(left + r, bottom), Offset(left + cl, bottom), cornerPaint);
-
-    // Bottom-right
-    canvas.drawLine(Offset(right - cl, bottom), Offset(right - r, bottom), cornerPaint);
-    canvas.drawArc(Rect.fromLTWH(right - r * 2, bottom - r * 2, r * 2, r * 2), 0, 1.5708, false, cornerPaint);
-    canvas.drawLine(Offset(right, bottom - r), Offset(right, bottom - cl), cornerPaint);
+    canvas
+      // Top-left
+      ..drawLine(Offset(left, top + cl), Offset(left, top + r), cornerPaint)
+      ..drawArc(Rect.fromLTWH(left, top, r * 2, r * 2), 3.14159, 1.5708, false, cornerPaint)
+      ..drawLine(Offset(left + r, top), Offset(left + cl, top), cornerPaint)
+      // Top-right
+      ..drawLine(Offset(right - cl, top), Offset(right - r, top), cornerPaint)
+      ..drawArc(Rect.fromLTWH(right - r * 2, top, r * 2, r * 2), -1.5708, 1.5708, false, cornerPaint)
+      ..drawLine(Offset(right, top + r), Offset(right, top + cl), cornerPaint)
+      // Bottom-left
+      ..drawLine(Offset(left, bottom - cl), Offset(left, bottom - r), cornerPaint)
+      ..drawArc(Rect.fromLTWH(left, bottom - r * 2, r * 2, r * 2), 1.5708, 1.5708, false, cornerPaint)
+      ..drawLine(Offset(left + r, bottom), Offset(left + cl, bottom), cornerPaint)
+      // Bottom-right
+      ..drawLine(Offset(right - cl, bottom), Offset(right - r, bottom), cornerPaint)
+      ..drawArc(Rect.fromLTWH(right - r * 2, bottom - r * 2, r * 2, r * 2), 0, 1.5708, false, cornerPaint)
+      ..drawLine(Offset(right, bottom - r), Offset(right, bottom - cl), cornerPaint);
   }
 
   @override

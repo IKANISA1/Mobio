@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Data class representing a nearby driver returned by the RPC.
 class NearbyDriver {
   final String driverId;
-  final String displayName;
+  final String memberId;
   final String vehicleTypeId;
   final double latitude;
   final double longitude;
@@ -12,7 +12,7 @@ class NearbyDriver {
 
   const NearbyDriver({
     required this.driverId,
-    required this.displayName,
+    required this.memberId,
     required this.vehicleTypeId,
     required this.latitude,
     required this.longitude,
@@ -22,7 +22,7 @@ class NearbyDriver {
   factory NearbyDriver.fromJson(Map<String, dynamic> json) {
     return NearbyDriver(
       driverId: json['driver_id'] as String,
-      displayName: json['display_name'] as String? ?? '',
+      memberId: json['member_id'] as String? ?? '',
       vehicleTypeId: json['vehicle_type_id'] as String? ?? 'cab',
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),

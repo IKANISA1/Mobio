@@ -26,7 +26,7 @@
     <ul>
         <li><strong>Account Information:</strong> Phone number (used for WhatsApp OTP authentication), display name, and profile preferences.</li>
         <li><strong>Location Data:</strong> With your permission, we collect your device's location to show nearby drivers, provide route calculations, and enable ride booking. Location data is only collected while the app is in use.</li>
-        <li><strong>Camera &amp; Biometric Data:</strong> If you use BioPay, we access your camera for face enrollment and verification. Facial embeddings (mathematical representations) are generated on-device and stored securely. We do not store raw facial images on our servers.</li>
+        <li><strong>Camera &amp; Biometric Data:</strong> If you use BioPay, we access your camera for face enrollment and verification. A facial embedding (a mathematical representation of facial features) is generated on-device and transmitted securely to MOBI so we can enroll or match a BioPay profile. We do not store raw facial images on our servers after processing.</li>
         <li><strong>Trip Data:</strong> Origin, destination, departure times, and booking preferences for trips you create.</li>
         <li><strong>Device Information:</strong> Device model, OS version, and app version for crash reporting and performance monitoring.</li>
     </ul>
@@ -41,13 +41,13 @@
     </ul>
 
     <h2>3. Data Storage &amp; Security</h2>
-    <p>Your data is stored securely using Supabase (hosted in EU data centers) with row-level security policies. All communication between the app and our servers uses TLS encryption. Biometric embeddings are encrypted at rest. We do not sell or share your personal data with third parties for marketing purposes.</p>
+    <p>Your data is stored using Supabase infrastructure with access controls and row-level security policies where applicable. All communication between the app and our servers uses TLS encryption. We do not sell or share your personal data with third parties for marketing purposes.</p>
 
     <h2>4. Third-Party Services</h2>
     <ul>
         <li><strong>Supabase:</strong> Backend infrastructure and authentication.</li>
         <li><strong>Google Maps Platform:</strong> Maps display and route calculations (proxied through our secure server).</li>
-        <li><strong>Google ML Kit:</strong> On-device face detection (no data sent to Google).</li>
+        <li><strong>Google ML Kit:</strong> On-device face detection. Facial embeddings are generated inside the app and are not sent to Google.</li>
     </ul>
 
     <h2>5. Your Rights</h2>
@@ -55,13 +55,13 @@
     <ul>
         <li>Access, update, or delete your personal data at any time.</li>
         <li>Revoke camera or location permissions through your device settings.</li>
-        <li>Delete your BioPay biometric profile from the app.</li>
+        <li>Delete your BioPay biometric profile from the app's Privacy &amp; Data screen.</li>
         <li>Request a copy of all data we hold about you.</li>
         <li>Delete your account by contacting us.</li>
     </ul>
 
     <h2>6. Data Retention</h2>
-    <p>We retain your data for as long as your account is active. Trip history is retained for 12 months. Biometric data is deleted immediately upon profile deletion. You may request complete data erasure at any time.</p>
+    <p>We retain your data for as long as your account is active. Trip history is retained for 12 months. BioPay face embeddings are retained until you delete your BioPay profile or request data erasure. You may request complete data erasure at any time.</p>
 
     <h2>7. Children's Privacy</h2>
     <p>Our App is not intended for children under the age of 16. We do not knowingly collect personal information from children.</p>

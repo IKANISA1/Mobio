@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/models/vehicle_type.dart';
+import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/models/vehicle_type.dart';
 
 /// Returns the icon for a vehicle type, matching transito getVehicleIcon.
 IconData getVehicleIcon(VehicleType type) {
@@ -33,7 +34,7 @@ class VehicleFilterChips extends StatelessWidget {
 
   static const _types = [
     (VehicleType.moto, 'Moto', LucideIcons.zap),
-    (VehicleType.cab, 'Cab', LucideIcons.car),
+    (VehicleType.cab, 'Taxi', LucideIcons.car),
     (VehicleType.trike, 'Trike', LucideIcons.truck),
     (VehicleType.truck, 'Truck', LucideIcons.layoutGrid),
     (VehicleType.private_, 'Private', LucideIcons.shield),
@@ -52,31 +53,34 @@ class VehicleFilterChips extends StatelessWidget {
           final isSelected = selected == type;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: _TappableChip(
-              isSelected: isSelected,
-              onTap: () => onSelected(type),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    icon,
-                    size: 16,
-                    color: isSelected
-                        ? cs.onSecondaryContainer
-                        : cs.onSurface,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
+            child: Semantics(
+              selected: isSelected,
+              button: true,
+              label: '$label vehicle filter',
+              child: _TappableChip(
+                isSelected: isSelected,
+                onTap: () => onSelected(type),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      icon,
+                      size: 16,
                       color: isSelected
                           ? cs.onSecondaryContainer
                           : cs.onSurface,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Text(
+                      label,
+                      style: AppTypography.chipText.copyWith(
+                        color: isSelected
+                            ? cs.onSecondaryContainer
+                            : cs.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
@@ -150,14 +154,23 @@ class _TappableChipState extends State<_TappableChip>
           decoration: BoxDecoration(
             color: widget.isSelected
                 ? cs.secondaryContainer
-                : ext.surfaceContainerLowest,
+                : ext.surfaceContainerLowest.withValues(
+                    alpha: ext.surfacePanelAlpha,
+                  ),
             borderRadius: BorderRadius.circular(100),
+            border: Border.all(
+              color: widget.isSelected
+                  ? cs.secondary.withValues(alpha: 0.16)
+                  : cs.outlineVariant.withValues(alpha: ext.cardBorderAlpha),
+            ),
             boxShadow: widget.isSelected
                 ? null
                 : [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 4,
+                      color: Colors.black.withValues(
+                        alpha: ext.controlShadowAlpha * 0.7,
+                      ),
+                      blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
                   ],

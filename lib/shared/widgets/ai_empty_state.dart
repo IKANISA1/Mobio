@@ -1,233 +1,114 @@
 import 'package:flutter/material.dart';
-
-
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/core/services/ai_content_service.dart';
-import 'package:mobi_app/shared/widgets/promo_image_carousel.dart';
-import 'package:mobi_app/shared/widgets/promo_video_player.dart';
+import 'package:mobi_app/shared/widgets/glass_card.dart';
 
-/// Unified empty state widget with AI-generated promotional backgrounds.
+/// Foreground-only empty state card.
 ///
-/// Replaces static "no data" containers across the app with dynamic
-/// image carousels or video backgrounds, turning empty screens into
-/// engaging, brand-reinforcing moments.
-///
-/// Falls back gracefully to a simple gradient if content is unavailable.
-class AiEmptyState extends StatefulWidget {
-  /// The promotional content category to display.
-  final PromoCategory category;
-
-  /// Primary empty state text (e.g., "No nearby drivers found.").
+/// Screen promo media is rendered by [SoftGradient]. This widget intentionally
+/// stays media-free so each screen has a single background layer.
+class AiEmptyState extends StatelessWidget {
   final String title;
-
-  /// Optional subtitle text (e.g., "Pull down to refresh.").
   final String? subtitle;
-
-  /// Optional icon to display above the title.
   final IconData? icon;
-
-  /// Whether to try loading a video background (only for full-screen surfaces).
-  final bool useVideo;
-
-  /// Height of the container. Null = intrinsic sizing.
   final double? height;
-
-  /// Optional action callback (e.g., for retry or navigate).
   final VoidCallback? onAction;
-
-  /// Optional action label text.
   final String? actionLabel;
 
   const AiEmptyState({
     super.key,
-    required this.category,
     required this.title,
     this.subtitle,
     this.icon,
-    this.useVideo = false,
     this.height,
     this.onAction,
     this.actionLabel,
   });
 
   @override
-  State<AiEmptyState> createState() => _AiEmptyStateState();
-}
-
-class _AiEmptyStateState extends State<AiEmptyState> {
-  final _service = AiContentService();
-  List<String> _imageUrls = [];
-  String? _videoUrl;
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadContent();
-  }
-
-  Future<void> _loadContent() async {
-    try {
-      final images = await _service.fetchPromoImages(widget.category);
-
-      String? video;
-      if (widget.useVideo) {
-        video = await _service.fetchPromoVideo(widget.category);
-      }
-
-      if (mounted) {
-        setState(() {
-          _imageUrls = images;
-          _videoUrl = video;
-          _isLoading = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-    final containerHeight = widget.height ?? 260;
+    final containerHeight = height ?? 260;
 
-    return Container(
+    return SizedBox(
       height: containerHeight,
-      decoration: BoxDecoration(
-        color: ext.surfaceContainerLowest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(40),
-        border: Border.all(
-          color: cs.outlineVariant,
-          width: 1,
-          strokeAlign: BorderSide.strokeAlignInside,
+      child: ClayCard(
+        borderRadius: 40,
+        color: ext.surfaceContainerLowest.withValues(
+          alpha: ext.surfacePanelAlpha,
         ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Background: video, image carousel, or gradient fallback
-          _buildBackground(cs, ext, containerHeight),
-
-          // Content overlay
-          Positioned.fill(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (widget.icon != null) ...[
-                    Icon(
-                      widget.icon,
-                      size: 40,
-                      color: cs.onSurfaceVariant.withValues(alpha: 0.6),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (icon != null) ...[
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: cs.primaryContainer.withValues(alpha: 0.48),
+                      borderRadius: BorderRadius.circular(24),
                     ),
-                    const SizedBox(height: 16),
-                  ],
+                    child: Icon(icon, size: 32, color: cs.primary),
+                  ),
+                  const SizedBox(height: 18),
+                ],
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.titleLg.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 10),
                   Text(
-                    widget.title,
+                    subtitle!,
                     textAlign: TextAlign.center,
                     style: AppTypography.bodyMd.copyWith(
                       color: cs.onSurfaceVariant,
-                      fontWeight: FontWeight.w500,
                     ),
                   ),
-                  if (widget.subtitle != null) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.subtitle!,
-                      textAlign: TextAlign.center,
-                      style: AppTypography.bodySm.copyWith(
-                        color: cs.onSurfaceVariant.withValues(alpha: 0.7),
-                      ),
-                    ),
-                  ],
-                  if (widget.onAction != null && widget.actionLabel != null) ...[
-                    const SizedBox(height: 16),
-                    GestureDetector(
-                      onTap: widget.onAction,
-                      child: Container(
+                ],
+                if (onAction != null && actionLabel != null) ...[
+                  const SizedBox(height: 20),
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: onAction,
+                      borderRadius: BorderRadius.circular(999),
+                      splashColor: cs.primary.withValues(alpha: 0.14),
+                      child: Ink(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
-                          vertical: 10,
+                          vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: cs.primary.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(100),
+                          color: cs.primaryContainer,
+                          borderRadius: BorderRadius.circular(999),
                           border: Border.all(
-                            color: cs.primary.withValues(alpha: 0.3),
+                            color: cs.primary.withValues(alpha: 0.22),
                           ),
                         ),
                         child: Text(
-                          widget.actionLabel!,
+                          actionLabel!,
                           style: AppTypography.labelLg.copyWith(
-                            color: cs.primary,
-                            fontWeight: FontWeight.w600,
+                            color: cs.onPrimaryContainer,
+                            fontWeight: FontWeight.w700,
                             letterSpacing: 0,
                           ),
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ],
-              ),
+              ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBackground(ColorScheme cs, MobiThemeExtension ext, double height) {
-    // Loading state
-    if (_isLoading) {
-      return _buildGradientFallback(cs, ext);
-    }
-
-    // Video background (if available and requested)
-    if (widget.useVideo && _videoUrl != null) {
-      return PromoVideoPlayer(
-        videoUrl: _videoUrl!,
-        height: height,
-        borderRadius: 0, // Parent already clips
-        fallback: _imageUrls.isNotEmpty
-            ? PromoImageCarousel(
-                imageUrls: _imageUrls,
-                height: height,
-                borderRadius: 0,
-                showIndicators: false,
-              )
-            : _buildGradientFallback(cs, ext),
-      );
-    }
-
-    // Image carousel
-    if (_imageUrls.isNotEmpty) {
-      return PromoImageCarousel(
-        imageUrls: _imageUrls,
-        height: height,
-        borderRadius: 0, // Parent already clips
-        showIndicators: _imageUrls.length > 1,
-      );
-    }
-
-    // Gradient-only fallback for no content
-    return _buildGradientFallback(cs, ext);
-  }
-
-  Widget _buildGradientFallback(ColorScheme cs, MobiThemeExtension ext) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            ext.surfaceContainerLow,
-            cs.surface,
-          ],
         ),
       ),
     );

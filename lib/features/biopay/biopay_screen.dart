@@ -4,6 +4,7 @@ import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 
 class BioPayScreen extends StatefulWidget {
   const BioPayScreen({
@@ -11,6 +12,7 @@ class BioPayScreen extends StatefulWidget {
     this.onGetQR,
     this.onScanQR,
     this.onFaceScan,
+    this.onPrivacyCenter,
     this.onManage,
     this.onEnroll,
   });
@@ -18,6 +20,7 @@ class BioPayScreen extends StatefulWidget {
   final VoidCallback? onGetQR;
   final VoidCallback? onScanQR;
   final VoidCallback? onFaceScan;
+  final VoidCallback? onPrivacyCenter;
   final VoidCallback? onManage;
   final VoidCallback? onEnroll;
 
@@ -28,41 +31,56 @@ class BioPayScreen extends StatefulWidget {
 class _BioPayScreenState extends State<BioPayScreen> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 144),
-        children: [
-          _buildBrandHeader(),
-          const SizedBox(height: 22),
-          _buildActionTile(
-            icon: LucideIcons.qrCode,
-            label: 'Get QR\nCode',
-            subtitle: 'Generate a MoMo QR for any number',
-            accent: AppColors.primary,
-            accentBackground: Theme.of(context).colorScheme.primaryContainer,
-            onTap: widget.onGetQR,
-          ),
-          const SizedBox(height: 16),
-          _buildActionTile(
-            icon: LucideIcons.scanLine,
-            label: 'Scan QR\nCode',
-            subtitle: 'Scan to pay via MoMo or BioPay',
-            accent: AppColors.secondaryFixed,
-            accentBackground: Theme.of(context).colorScheme.secondaryContainer,
-            onTap: widget.onScanQR,
-          ),
-          const SizedBox(height: 16),
-          _buildActionTile(
-            icon: LucideIcons.scanFace,
-            label: 'Face Scan',
-            subtitle: 'Pay someone by scanning their face',
-            accent: AppColors.tertiaryFixed,
-            accentBackground: Theme.of(context).colorScheme.tertiaryContainer,
-            onTap: widget.onFaceScan,
-          ),
-        ],
+    return SoftGradient(
+      visibilityMode: SoftGradientVisibilityMode.reading,
+      allowMotion: true,
+      child: SafeArea(
+        bottom: false,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 144),
+          children: [
+            _buildBrandHeader(),
+            const SizedBox(height: 22),
+            _buildActionTile(
+              icon: LucideIcons.qrCode,
+              label: 'Get QR',
+              subtitle: 'Generate QR Code',
+              accent: AppColors.primary,
+              accentBackground: Theme.of(context).colorScheme.primaryContainer,
+              onTap: widget.onGetQR,
+            ),
+            const SizedBox(height: 16),
+            _buildActionTile(
+              icon: LucideIcons.scanLine,
+              label: 'Scan QR',
+              subtitle: 'Scan to pay',
+              accent: AppColors.secondaryFixed,
+              accentBackground: Theme.of(
+                context,
+              ).colorScheme.secondaryContainer,
+              onTap: widget.onScanQR,
+            ),
+            const SizedBox(height: 16),
+            _buildActionTile(
+              icon: LucideIcons.scanFace,
+              label: 'Face Scan',
+              subtitle: 'Scan face to pay',
+              accent: AppColors.tertiaryFixed,
+              accentBackground: Theme.of(context).colorScheme.tertiaryContainer,
+              onTap: widget.onFaceScan,
+            ),
+            const SizedBox(height: 16),
+            _buildActionTile(
+              icon: LucideIcons.shieldCheck,
+              label: 'Privacy & Data',
+              subtitle: 'Review face data controls',
+              accent: AppColors.primary,
+              accentBackground: Theme.of(context).colorScheme.primaryContainer,
+              onTap: widget.onPrivacyCenter,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -72,7 +90,9 @@ class _BioPayScreenState extends State<BioPayScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
       decoration: BoxDecoration(
-        color: Theme.of(context).extension<MobiThemeExtension>()!.surfaceContainerLow,
+        color: Theme.of(
+          context,
+        ).extension<MobiThemeExtension>()!.surfaceContainerLow,
         borderRadius: BorderRadius.circular(40),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
@@ -82,15 +102,12 @@ class _BioPayScreenState extends State<BioPayScreen> {
           const SizedBox(width: 14),
           Text(
             'BioPay',
-            style: AppTypography.headlineLg.copyWith(
-              color: AppColors.primary,
-            ),
+            style: AppTypography.headlineLg.copyWith(color: AppColors.primary),
           ),
         ],
       ),
     );
   }
-
 
   // ─── Action tile (Get QR / Scan QR / Face Scan) ───
   Widget _buildActionTile({
@@ -142,7 +159,9 @@ class _BioPayScreenState extends State<BioPayScreen> {
           Icon(
             LucideIcons.arrowRight,
             size: 22,
-            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.58),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurfaceVariant.withValues(alpha: 0.58),
           ),
         ],
       ),

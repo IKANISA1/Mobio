@@ -40,8 +40,8 @@ void main() {
 
   group('estimateBrightness', () {
     test('all-black pixels return 0.0', () {
-      final width = 4;
-      final height = 4;
+      const width = 4;
+      const height = 4;
       final rgba = List<int>.filled(width * height * 4, 0);
       final result = service.estimateBrightness(
         rgba,
@@ -53,8 +53,8 @@ void main() {
     });
 
     test('all-white pixels return ~1.0', () {
-      final width = 4;
-      final height = 4;
+      const width = 4;
+      const height = 4;
       // RGBA where RGB are all 255
       final rgba = <int>[];
       for (int i = 0; i < width * height; i++) {
@@ -70,8 +70,8 @@ void main() {
     });
 
     test('mid-gray pixels return ~0.5', () {
-      final width = 4;
-      final height = 4;
+      const width = 4;
+      const height = 4;
       final rgba = <int>[];
       for (int i = 0; i < width * height; i++) {
         rgba.addAll([128, 128, 128, 255]);
@@ -96,8 +96,8 @@ void main() {
     });
 
     test('sub-region brightness estimation', () {
-      final width = 8;
-      final height = 8;
+      const width = 8;
+      const height = 8;
       // All black except a 4x4 white region in center
       final rgba = List<int>.filled(width * height * 4, 0);
       for (int y = 2; y < 6; y++) {

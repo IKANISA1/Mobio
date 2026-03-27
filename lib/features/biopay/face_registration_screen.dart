@@ -1,22 +1,22 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-
 import 'package:lucide_icons/lucide_icons.dart';
-
 import 'package:mobi_app/core/theme/app_colors.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
 class FaceRegistrationScreen extends StatefulWidget {
   const FaceRegistrationScreen({
     super.key,
     required this.onBack,
     this.onEnroll,
+    this.onPrivacyCenter,
   });
 
   final VoidCallback onBack;
   final VoidCallback? onEnroll;
+  final VoidCallback? onPrivacyCenter;
 
   @override
   State<FaceRegistrationScreen> createState() => _FaceRegistrationScreenState();
@@ -53,7 +53,9 @@ class _FaceRegistrationScreenState extends State<FaceRegistrationScreen> {
                         width: 52,
                         height: 52,
                         decoration: BoxDecoration(
-                          color: Theme.of(context).extension<MobiThemeExtension>()!.surfaceContainerHigh,
+                          color: Theme.of(context)
+                              .extension<MobiThemeExtension>()!
+                              .surfaceContainerHigh,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -68,9 +70,7 @@ class _FaceRegistrationScreenState extends State<FaceRegistrationScreen> {
                   Expanded(
                     child: Text(
                       title,
-                      style: AppTypography.titleMd.copyWith(
-                        letterSpacing: 0.6,
-                      ),
+                      style: AppTypography.titleMd.copyWith(letterSpacing: 0.6),
                     ),
                   ),
                 ],
@@ -79,10 +79,8 @@ class _FaceRegistrationScreenState extends State<FaceRegistrationScreen> {
               Expanded(
                 child: Column(
                   children: [
-                    Expanded(
-                      child: Center(
-                        child: const _RegistrationHero(isLoading: false),
-                      ),
+                    const Expanded(
+                      child: Center(child: _RegistrationHero(isLoading: false)),
                     ),
 
                     Text(
@@ -118,15 +116,27 @@ class _FaceRegistrationScreenState extends State<FaceRegistrationScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                      buttonLabel,
-                                      style: AppTypography.labelLg.copyWith(
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: 2.0,
-                                        color: Theme.of(context).colorScheme.onPrimary,
-                                      ),
-                                    ),
+                                buttonLabel,
+                                style: AppTypography.labelLg.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 2.0,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
+                                ),
+                              ),
                             ),
                           ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: widget.onPrivacyCenter,
+                      child: Text(
+                        'VIEW PRIVACY & DATA',
+                        style: AppTypography.labelMd.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ),
@@ -154,9 +164,9 @@ class _RegistrationHero extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          CustomPaint(
-            size: const Size.square(330),
-            painter: const _RegistrationHaloPainter(),
+          const CustomPaint(
+            size: Size.square(330),
+            painter: _RegistrationHaloPainter(),
           ),
           Icon(
             Icons.account_circle_outlined,
@@ -230,7 +240,7 @@ class _RegistrationHaloPainter extends CustomPainter {
       ..color = AppColors.primary.withValues(alpha: 0.65);
 
     const dashCount = 56;
-    final dashSweep = (2 * math.pi) / dashCount * 0.46;
+    const dashSweep = (2 * math.pi) / dashCount * 0.46;
     for (var i = 0; i < dashCount; i++) {
       final startAngle = (2 * math.pi / dashCount) * i;
       canvas.drawArc(

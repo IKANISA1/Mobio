@@ -1,16 +1,16 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobi_app/core/theme/app_colors.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/services/otp_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/core/services/otp_service.dart';
-import 'package:mobi_app/shared/widgets/whatsapp_input.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/shared/widgets/whatsapp_input.dart';
 
-/// Clean, minimalist WhatsApp OTP sign-in screen.
+/// Platform-admin WhatsApp OTP sign-in screen.
 class AdminAuthScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSuccess;
@@ -129,12 +129,12 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
                 icon: LucideIcons.chevronLeft,
                 onTap: _step == 'otp'
                     ? () => setState(() {
-                          _step = 'phone';
-                          _error = null;
-                          for (final c in _otpControllers) {
-                            c.clear();
-                          }
-                        })
+                        _step = 'phone';
+                        _error = null;
+                        for (final c in _otpControllers) {
+                          c.clear();
+                        }
+                      })
                     : widget.onBack,
               ),
 
@@ -142,7 +142,7 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
 
               // Title
               Text(
-                _step == 'phone' ? 'Sign in' : 'Enter code',
+                _step == 'phone' ? 'Admin Access' : 'Enter code',
                 style: AppTypography.headlineLg.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -153,7 +153,7 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
               // Subtitle
               Text(
                 _step == 'phone'
-                    ? 'We\'ll send a code to your WhatsApp'
+                    ? 'Enter the approved WhatsApp number for platform admin.'
                     : 'Sent to $_fullPhone',
                 style: AppTypography.bodySm.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -164,6 +164,16 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
 
               // Phone or OTP input
               if (_step == 'phone') _buildPhoneInput() else _buildOtpInput(),
+
+              if (_step == 'phone') ...[
+                const SizedBox(height: 12),
+                Text(
+                  'If this number is not approved, contact admin.',
+                  style: AppTypography.bodySm.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
 
               // Error
               if (_error != null) ...[
@@ -195,7 +205,7 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
       onChanged: (v) => setState(() => _number = v),
       countryCode: _countryCode,
       onCountryCodeChanged: (v) => setState(() => _countryCode = v),
-      label: 'Phone number',
+      label: 'WhatsApp number',
     );
   }
 
@@ -220,7 +230,9 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
             decoration: InputDecoration(
               counterText: '',
               filled: true,
-              fillColor: Theme.of(context).extension<MobiThemeExtension>()!.surfaceContainerLow,
+              fillColor: Theme.of(
+                context,
+              ).extension<MobiThemeExtension>()!.surfaceContainerLow,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide.none,
@@ -267,8 +279,8 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
         _loading
             ? ''
             : (hasCooldown
-                ? 'Resend in ${_cooldown}s'
-                : (isPhone ? 'Continue' : 'Verify')),
+                  ? 'Resend in ${_cooldown}s'
+                  : (isPhone ? 'Continue' : 'Verify')),
         style: AppTypography.titleMd.copyWith(
           color: Theme.of(context).colorScheme.onPrimary,
           fontWeight: FontWeight.w700,

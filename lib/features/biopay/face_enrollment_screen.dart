@@ -4,29 +4,31 @@ import 'dart:ui' as ui;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/router/app_router.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
 import 'package:mobi_app/core/services/biopay_service.dart';
 import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
-import 'package:mobi_app/core/theme/app_colors.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
-import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/biopay/biopay_strings.dart';
+import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
 import 'package:mobi_app/features/biopay/models/biopay_models.dart';
+import 'package:mobi_app/features/biopay/services/embedding_service.dart';
 import 'package:mobi_app/features/biopay/services/enrollment_capture_session.dart';
 import 'package:mobi_app/features/biopay/services/face_alignment_service.dart';
 import 'package:mobi_app/features/biopay/services/face_detection_service.dart';
-import 'package:mobi_app/features/biopay/services/embedding_service.dart';
 import 'package:mobi_app/features/biopay/services/stable_frame_gate.dart';
+import 'package:mobi_app/features/biopay/widgets/biopay_consent_dialog.dart';
 import 'package:mobi_app/features/biopay/widgets/oval_painter.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
+import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 
 class FaceEnrollmentScreen extends StatefulWidget {
   const FaceEnrollmentScreen({
@@ -157,11 +159,14 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
     );
   }
 
-  /// Derive a display name from the handle value (backend requires ≥2 chars).
+  /// Derive a display name for the BioPay backend (not shown to users).
+  /// The API requires ≥2 chars; we use a generic anonymous identifier.
   String _deriveDisplayName() {
-    final value = _momoValueController.text.trim();
-    if (value.length >= 2) return value;
-    return 'BioPay User';
+    return 'Mobio User';
+  }
+
+  Future<void> _openPrivacyCenter() {
+    return context.push(AppRoutes.biopayPrivacy);
   }
 
   Future<void> _startCaptureFlow() async {
@@ -169,15 +174,27 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
     if (!widget.isReEnrollment) {
       final value = _momoValueController.text.trim();
       if (value.isEmpty) {
-        _showSnackBar(_handleType == BiopayHandleType.number
-            ? 'Enter your MoMo phone number.'
-            : 'Enter your MoMo agent code.');
+        _showSnackBar(
+          _handleType == BiopayHandleType.number
+              ? 'Enter your MoMo phone number.'
+              : 'Enter your MoMo agent code.',
+        );
         return;
       }
       if (_handleType == BiopayHandleType.number && value.length < 9) {
         _showSnackBar('Phone number must be at least 9 digits.');
         return;
       }
+    }
+
+    final consentAction = await BiopayConsentDialog.show(context);
+    if (!mounted) return;
+    if (consentAction == BiopayConsentDialogAction.viewPrivacyCenter) {
+      await _openPrivacyCenter();
+      return;
+    }
+    if (consentAction != BiopayConsentDialogAction.continueFlow) {
+      return;
     }
 
     final action = await PermissionAccessDialog.show(
@@ -212,9 +229,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
     });
 
     try {
-      _faceDetectionService.initialize(
-        mode: FaceDetectorMode.accurate,
-      );
+      _faceDetectionService.initialize(mode: FaceDetectorMode.accurate);
       await _embeddingService.initialize();
 
       final cameras = await availableCameras();
@@ -317,7 +332,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       // Estimate brightness from Y (luminance) plane
       final yPlane = image.planes.first.bytes;
       double brightnessSum = 0;
-      final sampleStride = 8;
+      const sampleStride = 8;
       int count = 0;
       for (int i = 0; i < yPlane.length; i += sampleStride) {
         brightnessSum += yPlane[i];
@@ -398,8 +413,10 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       );
       final embedding = _embeddingService.getEmbedding(alignedFace);
 
-      final sizeScore =
-          ((quality.faceWidthRatio - 0.25) / 0.35).clamp(0.0, 1.0);
+      final sizeScore = ((quality.faceWidthRatio - 0.25) / 0.35).clamp(
+        0.0,
+        1.0,
+      );
       final yawScore = (1 - (quality.yawAngle.abs() / 20)).clamp(0.0, 1.0);
       final qualityScore = (sizeScore * 0.5) + (yawScore * 0.5);
 
@@ -600,7 +617,9 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+          CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.primary,
+          ),
           const SizedBox(height: 16),
           Text(
             _statusMessage,
@@ -650,7 +669,9 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).extension<MobiThemeExtension>()!.surfaceContainerLow,
+            color: Theme.of(
+              context,
+            ).extension<MobiThemeExtension>()!.surfaceContainerLow,
             borderRadius: BorderRadius.circular(18),
           ),
           padding: const EdgeInsets.all(4),
@@ -706,7 +727,9 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
           onPressed: _startCaptureFlow,
           child: Text(
             'START FACE CAPTURE',
-            style: AppTypography.labelMd.copyWith(color: Theme.of(context).colorScheme.onPrimary),
+            style: AppTypography.labelMd.copyWith(
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -715,7 +738,21 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
             BiopayStrings.registerConsent,
             textAlign: TextAlign.center,
             style: AppTypography.bodySm.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Center(
+          child: TextButton(
+            onPressed: _openPrivacyCenter,
+            child: Text(
+              'VIEW PRIVACY & DATA',
+              style: AppTypography.labelMd.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           ),
         ),
@@ -730,7 +767,6 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       children: [
         if (profile != null) ...[
           _infoRow('BioPay ID', profile.biopayId),
-          _infoRow('Display name', profile.displayName),
           _infoRow('Payment string', profile.ussdString),
           _infoRow(
             'Management code',
@@ -746,7 +782,9 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
           onPressed: _startCaptureFlow,
           child: Text(
             'START RE-ENROLLMENT',
-            style: AppTypography.labelMd.copyWith(color: Theme.of(context).colorScheme.onPrimary),
+            style: AppTypography.labelMd.copyWith(
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
           ),
         ),
       ],
@@ -755,7 +793,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
 
   /// Builds a camera preview that fills the available parent space.
   Widget _buildCameraFill(CameraController controller) {
-    return CameraPreview(controller);
+    return RepaintBoundary(child: CameraPreview(controller));
   }
 
   Widget _buildCaptureView() {
@@ -837,13 +875,17 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
           LinearProgressIndicator(
             value: _session.progress,
             minHeight: 8,
-            backgroundColor: Theme.of(context).extension<MobiThemeExtension>()!.surfaceContainerLow,
-            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
+            backgroundColor: Theme.of(
+              context,
+            ).extension<MobiThemeExtension>()!.surfaceContainerLow,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Theme.of(context).colorScheme.primary,
+            ),
             borderRadius: BorderRadius.circular(999),
           ),
           const SizedBox(height: 12),
           Text(
-            'Hold the phone steady while MOBI captures 5 stable face samples.',
+            'Hold the phone steady while Mobio captures 5 stable face samples.',
             textAlign: TextAlign.center,
             style: AppTypography.bodyMd.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -859,7 +901,9 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+          CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.primary,
+          ),
           const SizedBox(height: 20),
           Text(
             _statusMessage,
@@ -868,7 +912,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'MOBI is finalizing your BioPay profile.',
+            'Mobio is finalizing your BioPay profile.',
             style: AppTypography.bodyMd.copyWith(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
@@ -894,7 +938,9 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
                   width: 84,
                   height: 84,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.14),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(28),
                   ),
                   child: Icon(
@@ -926,10 +972,14 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.18),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.18),
                       ),
                     ),
                     child: Column(
@@ -945,7 +995,9 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
                         Text(
                           BiopayStrings.managementCodeBody,
                           style: AppTypography.bodyMd.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -993,7 +1045,9 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
                 width: 84,
                 height: 84,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.error.withValues(alpha: 0.14),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.error.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(28),
                 ),
                 child: Icon(
@@ -1005,9 +1059,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
               const SizedBox(height: 24),
               Text(
                 'BioPay enrollment failed',
-                style: AppTypography.headlineMd.copyWith(
-                  letterSpacing: -1,
-                ),
+                style: AppTypography.headlineMd.copyWith(letterSpacing: -1),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
@@ -1069,7 +1121,9 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
           decoration: InputDecoration(
             hintText: hintText,
             filled: true,
-            fillColor: Theme.of(context).extension<MobiThemeExtension>()!.surfaceContainerLow,
+            fillColor: Theme.of(
+              context,
+            ).extension<MobiThemeExtension>()!.surfaceContainerLow,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,

@@ -53,7 +53,7 @@ class FaceDetectionService {
     final inputImage = _convertCameraImage(image, camera);
     if (inputImage == null) return [];
 
-    return await _detector!.processImage(inputImage);
+    return _detector!.processImage(inputImage);
   }
 
   /// Detect faces in an encoded image file written by the camera package.

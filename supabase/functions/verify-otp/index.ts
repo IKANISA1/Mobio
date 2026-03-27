@@ -1,171 +1,384 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+import { tryRecordAdminAccessAttempt } from "../_shared/admin-access.ts";
+import {
+  adminDisplayName,
+  adminEmailForPhone,
+  localWhatsappNumber,
+  normalizePhone,
+  resolveAdminWhatsappNumberByPhone,
+  type AdminWhatsappNumberRow,
+} from "../_shared/admin-whatsapp.ts";
+import {
+  errorResponse,
+  handleCors,
+  jsonResponse,
+  methodNotAllowed,
+} from "../_shared/http.ts";
+import { hashOtpCode } from "../_shared/otp-security.ts";
+import { createAdminClient, createAnonClient } from "../_shared/supabase.ts";
+
+type ExistingProfileRow = {
+  id?: string;
+  name: string | null;
+  display_name?: string | null;
+  location?: string | null;
+  vehicle?: string | null;
+  category?: string | null;
+  vehicle_type?: string | null;
+  whatsapp?: string | null;
+  country_code?: string | null;
+  avatar_url?: string | null;
+  created_at?: string | null;
 };
 
-serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+function normalizeCode(value: unknown): string {
+  if (typeof value != "string") {
+    throw new Error("Phone and 6-digit code required");
+  }
+
+  const digits = value.replace(/\D/g, "");
+  if (digits.length != 6) {
+    throw new Error("Phone and 6-digit code required");
+  }
+
+  return digits;
+}
+
+async function loadExistingProfileSeed(
+  supabase: ReturnType<typeof createAdminClient>,
+  authUserId: string,
+  normalizedPhone: string,
+): Promise<ExistingProfileRow | null> {
+  const selectClause =
+    "id, name, display_name, location, vehicle, category, vehicle_type, whatsapp, country_code, avatar_url, created_at";
+
+  const { data: authUserProfile, error: authUserProfileError } = await supabase
+    .from("profiles")
+    .select(selectClause)
+    .eq("id", authUserId)
+    .maybeSingle();
+
+  if (authUserProfileError) {
+    throw authUserProfileError;
+  }
+
+  if (authUserProfile) {
+    return authUserProfile as ExistingProfileRow;
+  }
+
+  const { data: phoneProfiles, error: phoneProfilesError } = await supabase
+    .from("profiles")
+    .select(selectClause)
+    .eq("phone", normalizedPhone)
+    .order("created_at", { ascending: false })
+    .limit(1);
+
+  if (phoneProfilesError) {
+    throw phoneProfilesError;
+  }
+
+  return ((phoneProfiles as ExistingProfileRow[] | null) ?? [])[0] ?? null;
+}
+
+async function ensureAdminUserSession(
+  supabase: ReturnType<typeof createAdminClient>,
+  anonClient: ReturnType<typeof createAnonClient>,
+  adminNumber: AdminWhatsappNumberRow,
+  normalizedPhone: string,
+) {
+  const displayName = adminDisplayName(adminNumber);
+  const email = adminEmailForPhone(normalizedPhone);
+  const password = `${crypto.randomUUID()}${crypto.randomUUID()}`;
+
+  let authUser = null;
+
+  const { data: usersData } = await supabase.auth.admin.listUsers({
+    page: 1,
+    perPage: 1000,
+  });
+
+  authUser = (usersData?.users ?? []).find((user) =>
+    user.phone == normalizedPhone ||
+    user.email?.toLowerCase() == email.toLowerCase()
+  ) ?? null;
+
+  if (!authUser) {
+    const { data, error } = await supabase.auth.admin.createUser({
+      email,
+      email_confirm: true,
+      phone: normalizedPhone,
+      phone_confirm: true,
+      password,
+      user_metadata: {
+        name: displayName,
+        display_name: displayName,
+        phone: normalizedPhone,
+      },
+      app_metadata: {
+        role: "admin",
+        provider: "admin_whatsapp_otp",
+      },
+    });
+
+    if (error || !data.user) {
+      throw error ?? new Error("Unable to create admin auth user.");
+    }
+
+    authUser = data.user;
+  } else {
+    const { error } = await supabase.auth.admin.updateUserById(authUser.id, {
+      email,
+      email_confirm: true,
+      phone: normalizedPhone,
+      phone_confirm: true,
+      password,
+      user_metadata: {
+        name: displayName,
+        display_name: displayName,
+        phone: normalizedPhone,
+      },
+      app_metadata: {
+        role: "admin",
+        provider: "admin_whatsapp_otp",
+      },
+    });
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  const profileSeed = await loadExistingProfileSeed(
+    supabase,
+    authUser.id,
+    normalizedPhone,
+  );
+  const countryCode = profileSeed?.country_code?.trim() ||
+    adminNumber.country_code;
+  const whatsapp = profileSeed?.whatsapp?.trim() ||
+    localWhatsappNumber(normalizedPhone, countryCode);
+
+  const { error: upsertError } = await supabase.from("profiles").upsert({
+    id: authUser.id,
+    name: profileSeed?.name ?? displayName,
+    display_name: profileSeed?.display_name ?? displayName,
+    phone: normalizedPhone,
+    role: "admin",
+    location: profileSeed?.location ?? null,
+    vehicle: profileSeed?.vehicle ?? null,
+    category: profileSeed?.category ?? null,
+    is_driver: false,
+    vehicle_type: profileSeed?.vehicle_type ?? "cab",
+    whatsapp,
+    country_code: countryCode,
+    avatar_url: profileSeed?.avatar_url ?? null,
+  });
+
+  if (upsertError) {
+    throw upsertError;
+  }
+
+  const { data: signInData, error: signInError } = await anonClient.auth
+    .signInWithPassword({
+      email,
+      password,
+    });
+
+  if (signInError || !signInData.session) {
+    throw signInError ?? new Error("Unable to create admin session.");
+  }
+
+  return {
+    userId: authUser.id,
+    session: signInData.session,
+  };
+}
+
+Deno.serve(async (req: Request) => {
+  const corsResponse = handleCors(req);
+  if (corsResponse) {
+    return corsResponse;
+  }
+
+  if (req.method != "POST") {
+    return methodNotAllowed("POST", req);
   }
 
   try {
-    const { phone, code } = await req.json();
+    const body = await req.json();
+    const phone = normalizePhone(body?.phone, "Phone and 6-digit code required");
+    const code = normalizeCode(body?.code);
+    const supabase = createAdminClient();
+    const anonClient = createAnonClient();
+    const adminNumber = await resolveAdminWhatsappNumberByPhone(supabase, phone);
 
-    if (!phone || !code || code.length !== 6) {
-      return new Response(
-        JSON.stringify({ success: false, message: "Phone and 6-digit code required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    if (!adminNumber) {
+      await tryRecordAdminAccessAttempt({
+        supabase,
+        phone,
+        status: "verify_denied",
+        reason: "WhatsApp number is not allowlisted for platform admin.",
+        metadata: {
+          stage: "verify_otp",
+        },
+        request: req,
+      });
+
+      return errorResponse(
+        "This WhatsApp number is not approved for platform admin. Contact admin.",
+        403,
+        undefined,
+        req,
       );
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
-
-    // Find latest unexpired, unverified code for this phone
     const { data: otpRows, error: fetchError } = await supabase
       .from("otp_codes")
-      .select("*")
+      .select("id, code, code_hash, attempts, expires_at")
       .eq("phone", phone)
       .eq("verified", false)
       .gte("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false })
       .limit(1);
 
-    if (fetchError || !otpRows || otpRows.length === 0) {
-      return new Response(
-        JSON.stringify({ success: false, message: "No active code. Request a new one." }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    if (fetchError || !otpRows || otpRows.length == 0) {
+      await tryRecordAdminAccessAttempt({
+        supabase,
+        phone,
+        status: "verify_denied",
+        reason: "No active OTP was available for verification.",
+        matchedAdminNumberId: adminNumber.id,
+        metadata: {
+          stage: "verify_otp",
+        },
+        request: req,
+      });
+
+      return errorResponse(
+        "No active code. Request a new one.",
+        400,
+        undefined,
+        req,
       );
     }
 
     const otpRecord = otpRows[0];
 
-    // Check max attempts (5)
     if (otpRecord.attempts >= 5) {
-      return new Response(
-        JSON.stringify({
+      await tryRecordAdminAccessAttempt({
+        supabase,
+        phone,
+        status: "locked_out",
+        reason: "Maximum OTP verification attempts exceeded.",
+        matchedAdminNumberId: adminNumber.id,
+        metadata: {
+          stage: "verify_otp",
+        },
+        request: req,
+      });
+
+      return jsonResponse(
+        {
           success: false,
           message: "Too many attempts. Request a new code.",
           attemptsRemaining: 0,
-        }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        },
+        429,
+        req,
       );
     }
 
-    // Increment attempts
     await supabase
       .from("otp_codes")
       .update({ attempts: otpRecord.attempts + 1 })
       .eq("id", otpRecord.id);
 
-    // Verify code
-    if (otpRecord.code !== code) {
-      const remaining = 4 - otpRecord.attempts;
-      return new Response(
-        JSON.stringify({
+    const codeHash = otpRecord.code_hash
+      ? await hashOtpCode(code)
+      : null;
+    const isValidCode = otpRecord.code_hash
+      ? codeHash == otpRecord.code_hash
+      : otpRecord.code == code;
+
+    if (!isValidCode) {
+      const remaining = Math.max(0, 4 - otpRecord.attempts);
+
+      await tryRecordAdminAccessAttempt({
+        supabase,
+        phone,
+        status: "invalid_code",
+        reason: "Incorrect OTP provided.",
+        matchedAdminNumberId: adminNumber.id,
+        metadata: {
+          attempts_remaining: remaining,
+          stage: "verify_otp",
+        },
+        request: req,
+      });
+
+      return jsonResponse(
+        {
           success: false,
-          message: `Invalid code. ${remaining} attempt${remaining !== 1 ? "s" : ""} left.`,
+          message: `Invalid code. ${remaining} attempt${
+            remaining == 1 ? "" : "s"
+          } left.`,
           attemptsRemaining: remaining,
-        }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        },
+        400,
+        req,
       );
     }
 
-    // Mark as verified
-    await supabase
-      .from("otp_codes")
-      .update({ verified: true })
-      .eq("id", otpRecord.id);
-
-    // Create or get user via Supabase Auth admin API
-    const cleanPhone = phone.replace(/[^+\d]/g, "");
-
-    // Try to find existing user by phone
-    const { data: existingUsers } = await supabase.auth.admin.listUsers();
-    const existingUser = existingUsers?.users?.find(
-      (u: any) => u.phone === cleanPhone
+    await supabase.from("otp_codes").update({ verified: true }).eq(
+      "id",
+      otpRecord.id,
     );
 
-    let userId: string;
+    const { userId, session } = await ensureAdminUserSession(
+      supabase,
+      anonClient,
+      adminNumber,
+      phone,
+    );
 
-    if (existingUser) {
-      userId = existingUser.id;
-    } else {
-      // Create new user with phone
-      const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
-        phone: cleanPhone,
-        phone_confirm: true,
-      });
+    await tryRecordAdminAccessAttempt({
+      supabase,
+      phone,
+      status: "verified",
+      reason: "Admin OTP verified successfully.",
+      matchedAdminNumberId: adminNumber.id,
+      metadata: {
+        user_id: userId,
+        stage: "verify_otp",
+      },
+      request: req,
+    });
 
-      if (createError || !newUser?.user) {
-        console.error("Create user error:", createError);
-        return new Response(
-          JSON.stringify({ success: false, message: "Account creation failed" }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      userId = newUser.user.id;
-    }
-
-    // Generate session tokens
-    const { data: sessionData, error: sessionError } =
-      await supabase.auth.admin.generateLink({
-        type: "magiclink",
-        email: `${cleanPhone.replace("+", "")}@phone.mobi.rw`,
-      });
-
-    // Fallback: just return success without session
-    // The client can use signInWithOtp or direct session creation
-    // For now, generate a token pair via admin
-    let session = null;
-
-    // Try creating a session directly
-    try {
-      // Use the admin API to create a direct session
-      const { data: signInData, error: signInError } =
-        await supabase.auth.admin.generateLink({
-          type: "magiclink",
-          email: `${cleanPhone.replace("+", "")}@phone.mobi.rw`,
-        });
-
-      if (signInData?.properties?.hashed_token) {
-        // Verify the token to get a real session
-        const { data: verifyData } = await supabase.auth.verifyOtp({
-          token_hash: signInData.properties.hashed_token,
-          type: "email",
-        });
-
-        if (verifyData?.session) {
-          session = {
-            access_token: verifyData.session.access_token,
-            refresh_token: verifyData.session.refresh_token,
-          };
-        }
-      }
-    } catch (sessionErr) {
-      console.error("Session generation error:", sessionErr);
-      // Still return success — user is verified, just no session token
-    }
-
-    return new Response(
-      JSON.stringify({
+    return jsonResponse(
+      {
         success: true,
         message: "Verified",
         userId,
-        session,
-      }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        session: {
+          access_token: session.access_token,
+          refresh_token: session.refresh_token,
+          expires_at: session.expires_at,
+          expires_in: session.expires_in,
+          token_type: session.token_type,
+          user: session.user,
+        },
+      },
+      200,
+      req,
     );
-  } catch (err) {
-    console.error("verify-otp error:", err);
-    return new Response(
-      JSON.stringify({ success: false, message: "Internal error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+  } catch (error) {
+    if (error instanceof Error &&
+      error.message == "Phone and 6-digit code required") {
+      return errorResponse(error.message, 400, undefined, req);
+    }
+
+    console.error("verify-otp error:", error);
+    return errorResponse("Internal error", 500, undefined, req);
   }
 });

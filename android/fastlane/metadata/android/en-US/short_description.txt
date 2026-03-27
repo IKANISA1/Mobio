@@ -1,0 +1,1 @@
+Rwanda's peer-to-peer ride-sharing app with BioPay biometric payments.

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/models/country.dart';
 
 /// WhatsApp phone input with country code picker.
@@ -69,7 +69,7 @@ class _WhatsAppInputState extends State<WhatsAppInput> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
+        DecoratedBox(
           decoration: BoxDecoration(
             color: ext.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(20),

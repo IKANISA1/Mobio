@@ -37,12 +37,14 @@ class _ClayCardState extends State<ClayCard>
       duration: const Duration(milliseconds: 120),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.97).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-    _opacityAnimation = Tween<double>(begin: 1.0, end: 0.85).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.97,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _opacityAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.85,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -65,13 +67,17 @@ class _ClayCardState extends State<ClayCard>
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
-    final card = Container(
+    final card = DecoratedBox(
       decoration: BoxDecoration(
         color: widget.color ?? ext.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(widget.borderRadius),
         boxShadow: ext.clayCardShadow,
+        border: Border.all(
+          color: cs.outlineVariant.withValues(alpha: ext.cardBorderAlpha),
+        ),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -89,24 +95,24 @@ class _ClayCardState extends State<ClayCard>
 
     if (widget.onTap == null) return card;
 
-    return GestureDetector(
-      onTap: widget.onTap,
-      onTapDown: _handleTapDown,
-      onTapUp: _handleTapUp,
-      onTapCancel: _handleTapCancel,
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _scaleAnimation.value,
-            child: Opacity(
-              opacity: _opacityAnimation.value,
-              child: child,
-            ),
-          );
-        },
-        child: card,
+    return Semantics(
+      button: true,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        onTapDown: _handleTapDown,
+        onTapUp: _handleTapUp,
+        onTapCancel: _handleTapCancel,
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _scaleAnimation.value,
+              child: Opacity(opacity: _opacityAnimation.value, child: child),
+            );
+          },
+          child: card,
+        ),
       ),
     );
   }

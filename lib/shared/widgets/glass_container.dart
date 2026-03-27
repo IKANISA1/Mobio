@@ -27,7 +27,7 @@ class GlassCard extends StatelessWidget {
       borderRadius: br,
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
-        child: Container(
+        child: DecoratedBox(
           decoration: BoxDecoration(
             color: ext.surfaceContainerLowest.withValues(alpha: ext.glassCardBgAlpha),
             borderRadius: br,

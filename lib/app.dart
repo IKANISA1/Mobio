@@ -1,221 +1,137 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/core/theme/theme_provider.dart';
-import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
-import 'package:mobi_app/features/home/home_screen.dart';
-import 'package:mobi_app/features/nearby/nearby_screen.dart';
-import 'package:mobi_app/features/bookings/bookings_screen.dart';
-import 'package:mobi_app/features/bookings/schedule_trip_screen.dart';
-import 'package:mobi_app/features/bookings/trip_details_screen.dart';
-import 'package:mobi_app/features/biopay/biopay_screen.dart';
-import 'package:mobi_app/features/biopay/get_qr_screen.dart';
-import 'package:mobi_app/features/biopay/scan_qr_screen.dart';
-import 'package:mobi_app/features/biopay/face_scan_screen.dart';
-import 'package:mobi_app/features/biopay/face_registration_screen.dart';
-import 'package:mobi_app/features/biopay/face_enrollment_screen.dart';
-import 'package:mobi_app/features/profile/profile_screen.dart';
-import 'package:mobi_app/features/profile/edit_profile_screen.dart';
+import 'package:mobi_app/core/services/profile_service.dart';
+import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/admin/admin_auth_screen.dart';
 import 'package:mobi_app/features/admin/admin_dashboard_screen.dart';
 import 'package:mobi_app/features/admin/admin_users_screen.dart';
+import 'package:mobi_app/features/biopay/biopay_screen.dart';
+import 'package:mobi_app/features/bookings/bookings_screen.dart';
+import 'package:mobi_app/features/bookings/schedule_trip_screen.dart';
+import 'package:mobi_app/features/home/home_screen.dart';
+import 'package:mobi_app/features/nearby/nearby_screen.dart';
+import 'package:mobi_app/features/profile/profile_screen.dart';
+import 'package:mobi_app/models/trip.dart';
+import 'package:mobi_app/providers/app_providers.dart';
 import 'package:mobi_app/shared/widgets/mobi_bottom_nav.dart';
-import 'package:mobi_app/shared/widgets/whatsapp_modal.dart';
+import 'package:mobi_app/shared/widgets/mobi_button.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Main app shell with 3-tab navigation: Discover / BioPay / Profile.
-/// Sub-screens (Nearby, Bookings, Schedule, etc.) are pushed as overlays.
-class MobiApp extends StatefulWidget {
-  const MobiApp({super.key});
+// ─────────────────────────────────────────────────────────────────────────────
+// Safe pop helper — falls back to root if nothing to pop
+// ─────────────────────────────────────────────────────────────────────────────
 
-  @override
-  State<MobiApp> createState() => _MobiAppState();
+/// Safely pops the navigation stack. If there is nothing to pop (e.g. the
+/// user deep-linked directly to a sub-screen), navigates to root instead.
+void _safePop(BuildContext context) {
+  if (context.canPop()) {
+    context.pop();
+  } else {
+    context.go('/');
+  }
 }
 
-class _MobiAppState extends State<MobiApp> {
-  // ─── Navigation state ───
-  String _screen = 'main';
-  // Screen values: 'main' | 'admin-auth' | 'schedule' |
-  //   'trip-details' | 'edit-profile' | 'nearby' | 'bookings' |
-  //   'get-qr' | 'scan-qr' | 'face-scan' | 'face-register' | 'face-enroll'
+String _chatPathForTrip(Trip trip) {
+  final query = <String, String>{'peerId': trip.authorId};
 
-  String _role = 'passenger'; // 'passenger' | 'admin'
-  int _tabIndex = 0; // 0=Discover, 1=BioPay, 2=Profile
+  if (trip.id != null && trip.id!.isNotEmpty && trip.id != trip.authorId) {
+    query['tripId'] = trip.id!;
+  }
 
-  // ─── App state ───
-  String _mode = 'passenger'; // 'passenger' | 'driver'
-  Trip? _activeTrip;
-  String? _selectedTripId;
+  return Uri(path: '/chat', queryParameters: query).toString();
+}
 
+// ─────────────────────────────────────────────────────────────────────────────
+// MobiShell — Bottom nav shell for StatefulShellRoute
+// ─────────────────────────────────────────────────────────────────────────────
 
+/// Main app shell with 3-tab navigation: Discover / BioPay / Profile.
+/// Used as the [StatefulShellRoute] builder. Sub-screens push via
+/// the root navigator and appear over the bottom nav.
+class MobiShell extends ConsumerStatefulWidget {
+  final StatefulNavigationShell navigationShell;
+  const MobiShell({super.key, required this.navigationShell});
 
+  @override
+  ConsumerState<MobiShell> createState() => _MobiShellState();
+}
+
+class _MobiShellState extends ConsumerState<MobiShell> {
   // ─── Notifications ───
   final NotificationService? _notificationService = SupabaseConfig.isConfigured
       ? NotificationService()
       : null;
-  // ignore: unused_field — stored for future badge display
-  final int _unreadCount = 0;
-
-  @override
-  void dispose() {
-    _notificationService?.dispose();
-    super.dispose();
-  }
+  final ProfileService _profileService = ProfileService();
+  StreamSubscription<AuthState>? _authSubscription;
 
   @override
   void initState() {
     super.initState();
     if (!SupabaseConfig.isConfigured) {
-      _screen = 'config-error';
+      return;
     }
-  }
 
-  /// Whether the system back button should be allowed to exit the app.
-  bool get _canPop {
-    // Only allow real exit from the Discover root when no overlay is showing.
-    return _screen == 'main' && _tabIndex == 0 && _activeTrip == null;
-  }
-
-  /// Handle Android system back: navigate within the app state machine.
-  void _handleBackNavigation(bool didPop, Object? result) {
-    if (didPop) return; // Already popped (exit allowed)
-
-    setState(() {
-      if (_activeTrip != null) {
-        _activeTrip = null;
-      } else if (_screen != 'main') {
-        // Any sub-screen → return to main shell
-        _screen = 'main';
-      } else if (_tabIndex != 0) {
-        // Non-Discover tab → go to Discover
-        _tabIndex = 0;
-      }
+    _syncNotificationListener();
+    unawaited(_syncRoleFromSession());
+    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
+      _,
+    ) {
+      _syncNotificationListener();
+      unawaited(_syncRoleFromSession());
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    // No splash handling needed since native splash was kept
-
-
-    if (_screen == 'config-error') {
-      return const _ConfigErrorScreen();
-    }
-
-    // Wrap everything in PopScope for system back button handling
-    return PopScope(
-      canPop: _canPop,
-      onPopInvokedWithResult: _handleBackNavigation,
-      child: _buildScreenContent(),
-    );
+  void dispose() {
+    _authSubscription?.cancel();
+    _notificationService?.dispose();
+    super.dispose();
   }
 
-  Widget _buildScreenContent() {
+  Future<void> _syncRoleFromSession() async {
+    if (!mounted || !SupabaseConfig.isConfigured) {
+      return;
+    }
+
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    if (currentUser == null) {
+      ref.read(roleProvider.notifier).set('passenger');
+      return;
+    }
+
+    final profile = await _profileService.getMyProfile();
+    if (!mounted) {
+      return;
+    }
+
+    ref
+        .read(roleProvider.notifier)
+        .set(profile?['role'] == 'admin' ? 'admin' : 'passenger');
+  }
+
+  void _syncNotificationListener() {
+    if (!SupabaseConfig.isConfigured) {
+      return;
+    }
+
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    _notificationService?.stopListening();
+    if (currentUser != null) {
+      _notificationService?.startListening();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final role = ref.watch(roleProvider);
 
-    // Admin auth
-    if (_screen == 'admin-auth') {
-      return AdminAuthScreen(
-        onBack: () => setState(() => _screen = 'main'),
-        onSuccess: () => setState(() {
-          _role = 'admin';
-          _tabIndex = 0;
-          _screen = 'main';
-        }),
-      );
-    }
-
-
-
-    // Schedule trip
-    if (_screen == 'schedule') {
-      return ScheduleTripScreen(
-        mode: _mode,
-        onModeChanged: (m) => setState(() => _mode = m),
-        onBack: () => setState(() => _screen = 'main'),
-      );
-    }
-
-    // Trip details
-    if (_screen == 'trip-details' && _selectedTripId != null) {
-      return TripDetailsScreen(
-        tripId: _selectedTripId!,
-        onBack: () => setState(() => _screen = 'main'),
-      );
-    }
-
-    // Edit profile
-    if (_screen == 'edit-profile') {
-      return EditProfileScreen(
-        onBack: () => setState(() => _screen = 'main'),
-      );
-    }
-
-    // Nearby (full page — accessed from Discover tab)
-    if (_screen == 'nearby') {
-      return Scaffold(
-        backgroundColor: cs.surface,
-        body: SafeArea(
-          bottom: false,
-          child: NearbyScreen(
-            onWhatsApp: (t) => setState(() => _activeTrip = t),
-            onBack: () => setState(() => _screen = 'main'),
-          ),
-        ),
-      );
-    }
-
-    // Bookings (full page — accessed from Discover tab)
-    if (_screen == 'bookings') {
-      return Scaffold(
-        backgroundColor: cs.surface,
-        body: SafeArea(
-          bottom: false,
-          child: BookingsScreen(
-            mode: _mode,
-            onModeChanged: (m) => setState(() => _mode = m),
-            onSchedule: () => setState(() => _screen = 'schedule'),
-            onTripDetails: (id) => setState(() {
-              _selectedTripId = id;
-              _screen = 'trip-details';
-            }),
-            onBack: () => setState(() => _screen = 'main'),
-          ),
-        ),
-      );
-    }
-
-    // BioPay: Get QR
-    if (_screen == 'get-qr') {
-      return GetQrScreen(onBack: () => setState(() => _screen = 'main'));
-    }
-
-    // BioPay: Scan QR
-    if (_screen == 'scan-qr') {
-      return ScanQrScreen(onBack: () => setState(() => _screen = 'main'));
-    }
-
-    // BioPay: Face Scan
-    if (_screen == 'face-scan') {
-      return FaceScanScreen(onBack: () => setState(() => _screen = 'main'));
-    }
-
-    // BioPay: Face Registration (manual link)
-    if (_screen == 'face-register') {
-      return FaceRegistrationScreen(
-        onBack: () => setState(() => _screen = 'main'),
-        onEnroll: () => setState(() => _screen = 'face-enroll'),
-      );
-    }
-
-    // BioPay: Face Enrollment (camera-based)
-    if (_screen == 'face-enroll') {
-      return FaceEnrollmentScreen(
-        onBack: () => setState(() => _screen = 'main'),
-      );
-    }
-
-    // Main shell with 3-tab bottom nav
     return Scaffold(
       backgroundColor: cs.surface,
       body: Stack(
@@ -223,111 +139,187 @@ class _MobiAppState extends State<MobiApp> {
           // Content — SafeArea keeps headers below the status bar
           SafeArea(
             bottom: false,
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              switchInCurve: Curves.easeOutCubic,
-              switchOutCurve: Curves.easeInCubic,
-              child: KeyedSubtree(
-                key: ValueKey(
-                  _role == 'admin' ? 'admin_$_tabIndex' : 'tab_$_tabIndex',
-                ),
-                child: _buildContent(),
-              ),
-            ),
+            // StatefulNavigationShell owns branch navigator keys. Keeping it
+            // mounted exactly once avoids duplicate GlobalKey assertions during
+            // tab switches and hot reload.
+            child: widget.navigationShell,
           ),
 
           // Bottom nav
           MobiBottomNav(
-            currentIndex: _tabIndex,
-            isAdmin: _role == 'admin',
-            onTap: (i) => setState(() {
-              _tabIndex = i;
-            }),
-          ),
-
-          // WhatsApp modal overlay
-          if (_activeTrip != null)
-            WhatsAppModal(
-              driverName: _activeTrip!.authorName.split(' ').first,
-              onOpen: () {
-                // TODO: launch WhatsApp URL
-                setState(() => _activeTrip = null);
-              },
-              onDismiss: () => setState(() => _activeTrip = null),
+            currentIndex: widget.navigationShell.currentIndex,
+            isAdmin: role == 'admin',
+            onTap: (i) => widget.navigationShell.goBranch(
+              i,
+              initialLocation: i == widget.navigationShell.currentIndex,
             ),
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildContent() {
-    final themeProvider = ThemeProvider.of(context);
+// ─────────────────────────────────────────────────────────────────────────────
+// Wrapper widgets — bridge GoRouter ↔ existing screen widgets via Riverpod
+// ─────────────────────────────────────────────────────────────────────────────
 
-    if (_role == 'admin') {
-      switch (_tabIndex) {
-        case 0:
-          return const AdminDashboardScreen();
-        case 1:
-          return const AdminUsersScreen();
-        case 2:
-          return ProfileScreen(
-            isDarkMode: themeProvider.isDark,
-            onDarkModeChanged: (_) => themeProvider.toggleTheme(),
-            onExitAdmin: () => setState(() {
-              _role = 'passenger';
-              _tabIndex = 0;
-            }),
-            onEditProfile: () => setState(() => _screen = 'edit-profile'),
-            onAdminGateway: () {},
-            onFaceRegister: () => setState(() => _screen = 'face-register'),
-          );
-        default:
-          return const AdminDashboardScreen();
-      }
+/// Discover tab wrapper — passes shell state to [HomeScreen].
+class HomeScreenWrapper extends ConsumerWidget {
+  const HomeScreenWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final role = ref.watch(roleProvider);
+    if (role == 'admin') {
+      return const AdminDashboardScreen();
     }
 
-    // Passenger/Driver — 3 tabs: Discover(0), BioPay(1), Profile(2)
-    switch (_tabIndex) {
-      case 0:
-        return HomeScreen(
-          mode: _mode,
-          onModeChanged: (m) => setState(() => _mode = m),
-          onWhatsApp: (t) => setState(() => _activeTrip = t),
-          onViewNearby: () => setState(() => _screen = 'nearby'),
-          onViewBookings: () => setState(() => _screen = 'bookings'),
-          onSchedule: () => setState(() => _screen = 'schedule'),
-        );
-      case 1:
-        return BioPayScreen(
-          onGetQR: () => setState(() => _screen = 'get-qr'),
-          onScanQR: () => setState(() => _screen = 'scan-qr'),
-          onFaceScan: () => setState(() => _screen = 'face-scan'),
-          onManage: () => setState(() => _screen = 'edit-profile'),
-          onEnroll: () => setState(() => _screen = 'face-enroll'),
-        );
-      case 2:
-        return ProfileScreen(
-          isDarkMode: themeProvider.isDark,
-          onDarkModeChanged: (_) => themeProvider.toggleTheme(),
-          onEditProfile: () => setState(() => _screen = 'edit-profile'),
-          onAdminGateway: () => setState(() => _screen = 'admin-auth'),
-          onFaceRegister: () => setState(() => _screen = 'face-register'),
-        );
-      default:
-        return HomeScreen(
-          mode: _mode,
-          onModeChanged: (m) => setState(() => _mode = m),
-          onWhatsApp: (t) => setState(() => _activeTrip = t),
-          onViewNearby: () => setState(() => _screen = 'nearby'),
-          onViewBookings: () => setState(() => _screen = 'bookings'),
-          onSchedule: () => setState(() => _screen = 'schedule'),
-        );
-    }
+    final mode = ref.watch(modeProvider);
+    return HomeScreen(
+      mode: mode,
+      onModeChanged: (m) => ref.read(modeProvider.notifier).set(m),
+      onChat: (t) => context.push(_chatPathForTrip(t)),
+      onViewNearby: () => context.push('/nearby'),
+      onViewBookings: () => context.push('/bookings'),
+      onSchedule: () => context.push('/schedule'),
+    );
   }
 }
 
-class _ConfigErrorScreen extends StatelessWidget {
-  const _ConfigErrorScreen();
+/// BioPay tab wrapper.
+class BioPayScreenWrapper extends ConsumerWidget {
+  const BioPayScreenWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final role = ref.watch(roleProvider);
+    if (role == 'admin') {
+      return const AdminUsersScreen();
+    }
+
+    return BioPayScreen(
+      onGetQR: () => context.push('/biopay/qr'),
+      onScanQR: () => context.push('/biopay/scan'),
+      onFaceScan: () => context.push('/biopay/face-scan'),
+      onPrivacyCenter: () => context.push('/biopay/privacy'),
+      onManage: () => context.push('/edit-profile'),
+      onEnroll: () => context.push('/biopay/enroll'),
+    );
+  }
+}
+
+/// Profile tab wrapper.
+class ProfileScreenWrapper extends ConsumerWidget {
+  const ProfileScreenWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final role = ref.watch(roleProvider);
+    final themeProvider = ref.read(themeProviderProvider);
+    return ListenableBuilder(
+      listenable: themeProvider,
+      builder: (context, _) => ProfileScreen(
+        isDarkMode: themeProvider.isDark,
+        onDarkModeChanged: themeProvider.setDarkMode,
+        onEditProfile: () => context.push('/edit-profile'),
+        onPrivacyCenter: () => context.push('/biopay/privacy'),
+        onAdminGateway: () => context.push('/admin-auth'),
+        onFaceRegister: () => context.push('/biopay/register'),
+        onExitAdmin: role == 'admin'
+            ? () {
+                ref.read(roleProvider.notifier).set('passenger');
+                context.go(
+                  '/profile',
+                ); // Intentional: clear stack on exit admin
+              }
+            : null,
+      ),
+    );
+  }
+}
+
+/// Admin auth screen wrapper.
+class AdminAuthScreenWrapper extends ConsumerWidget {
+  const AdminAuthScreenWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return AdminAuthScreen(
+      onBack: () => _safePop(context),
+      onSuccess: () {
+        ref.read(roleProvider.notifier).set('admin');
+        context.go('/admin'); // Intentional: clear stack on admin success
+      },
+    );
+  }
+}
+
+/// Nearby screen wrapper.
+class NearbyScreenWrapper extends ConsumerWidget {
+  const NearbyScreenWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      backgroundColor: cs.surface,
+      body: SafeArea(
+        bottom: false,
+        child: NearbyScreen(
+          onChat: (t) => context.push(_chatPathForTrip(t)),
+          onBack: () => _safePop(context),
+        ),
+      ),
+    );
+  }
+}
+
+/// Bookings screen wrapper.
+class BookingsScreenWrapper extends ConsumerWidget {
+  const BookingsScreenWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mode = ref.watch(modeProvider);
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      backgroundColor: cs.surface,
+      body: SafeArea(
+        bottom: false,
+        child: BookingsScreen(
+          mode: mode,
+          onModeChanged: (m) => ref.read(modeProvider.notifier).set(m),
+          onSchedule: () => context.push('/schedule'),
+          onTripDetails: (id) => context.push('/trip/$id'),
+          onBack: () => _safePop(context),
+        ),
+      ),
+    );
+  }
+}
+
+/// Schedule trip screen wrapper.
+class ScheduleTripScreenWrapper extends ConsumerWidget {
+  const ScheduleTripScreenWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mode = ref.watch(modeProvider);
+    return ScheduleTripScreen(
+      mode: mode,
+      onModeChanged: (m) => ref.read(modeProvider.notifier).set(m),
+      onBack: () => _safePop(context),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Config error screen
+// ─────────────────────────────────────────────────────────────────────────────
+
+class ConfigErrorScreen extends StatelessWidget {
+  const ConfigErrorScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -360,36 +352,73 @@ class _ConfigErrorScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Unable to start mobi',
-                    style: TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w800,
+                    'Unable to start Mobio',
+                    style: AppTypography.headlineLg.copyWith(
                       color: cs.onSurface,
-                      height: 1.05,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'This APK was built without SUPABASE_URL and SUPABASE_ANON_KEY.',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                    style: AppTypography.bodyLg.copyWith(
                       color: cs.onSurfaceVariant,
-                      height: 1.45,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Rebuild the app with --dart-define values for both keys before running device UAT.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                    'Rebuild the app with --dart-define values for both keys '
+                    'before running device UAT.',
+                    style: AppTypography.bodyMd.copyWith(
                       color: cs.onSurfaceVariant,
-                      height: 1.5,
                     ),
                   ),
                 ],
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 404 Not Found screen
+// ─────────────────────────────────────────────────────────────────────────────
+
+class NotFoundScreen extends StatelessWidget {
+  const NotFoundScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      backgroundColor: cs.surface,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '404',
+                  style: AppTypography.heroNumber.copyWith(
+                    color: cs.onSurface.withValues(alpha: 0.15),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Page not found',
+                  style: AppTypography.titleLg.copyWith(color: cs.onSurface),
+                ),
+                const SizedBox(height: 24),
+                MobiButton(
+                  variant: MobiButtonVariant.ghost,
+                  onPressed: () => context.go('/'),
+                  child: const Text('Back to Home'),
+                ),
+              ],
             ),
           ),
         ),

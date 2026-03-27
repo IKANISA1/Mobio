@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'app_colors.dart';
-import 'app_shadows.dart';
-import 'mobi_theme_extension.dart';
+import 'package:mobi_app/core/theme/app_colors.dart';
+import 'package:mobi_app/core/theme/app_shadows.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
 class AppTheme {
   AppTheme._();
 
   // ═══ Dark Theme ═══
   static ThemeData get darkTheme {
-    final d = AppColors.dark;
+    const d = AppColors.dark;
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
@@ -51,9 +51,15 @@ class AppTheme {
           clayCardShadow: AppShadows.clayCard,
           clayButtonShadow: AppShadows.clayButton,
           clayCardGradientWhiteAlpha: 0.03,
-          glassCardBgAlpha: 0.4,
-          glassCardBorderWhiteAlpha: 0.05,
-          glassCardGradientWhiteAlpha: 0.02,
+          glassCardBgAlpha: 0.46,
+          glassCardBorderWhiteAlpha: 0.07,
+          glassCardGradientWhiteAlpha: 0.03,
+          surfacePanelAlpha: 0.94,
+          surfacePanelBorderAlpha: 0.26,
+          surfacePanelShadowAlpha: 0.22,
+          cardBorderAlpha: 0.12,
+          controlTrackAlpha: 0.68,
+          controlShadowAlpha: 0.2,
         ),
       ],
       textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
@@ -69,7 +75,7 @@ class AppTheme {
 
   // ═══ Light Theme ═══
   static ThemeData get lightTheme {
-    final l = AppColors.light;
+    const l = AppColors.light;
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
@@ -111,9 +117,15 @@ class AppTheme {
           clayCardShadow: AppShadows.lightClayCard,
           clayButtonShadow: AppShadows.lightClayButton,
           clayCardGradientWhiteAlpha: 0.4,
-          glassCardBgAlpha: 0.6,
-          glassCardBorderWhiteAlpha: 0.2,
-          glassCardGradientWhiteAlpha: 0.1,
+          glassCardBgAlpha: 0.62,
+          glassCardBorderWhiteAlpha: 0.18,
+          glassCardGradientWhiteAlpha: 0.09,
+          surfacePanelAlpha: 0.97,
+          surfacePanelBorderAlpha: 0.16,
+          surfacePanelShadowAlpha: 0.06,
+          cardBorderAlpha: 0.08,
+          controlTrackAlpha: 0.56,
+          controlShadowAlpha: 0.12,
         ),
       ],
       textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme),

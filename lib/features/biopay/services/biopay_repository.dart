@@ -1,7 +1,7 @@
-import '../models/biopay_models.dart';
-import 'biopay_api_client.dart';
-import 'biopay_local_session_store.dart';
-import 'match_cache.dart';
+import 'package:mobi_app/features/biopay/models/biopay_models.dart';
+import 'package:mobi_app/features/biopay/services/biopay_api_client.dart';
+import 'package:mobi_app/features/biopay/services/biopay_local_session_store.dart';
+import 'package:mobi_app/features/biopay/services/match_cache.dart';
 
 class BiopayRepository {
   final BiopayApiClient _apiClient;
@@ -22,7 +22,7 @@ class BiopayRepository {
     required List<double> embedding,
     required double qualityScore,
     required String clientInstallId,
-    int consentVersion = 1,
+    int consentVersion = 2,
     String modelVersion = 'mobilefacenet_float32_v1',
   }) async {
     final response = await _apiClient.enrollFace(

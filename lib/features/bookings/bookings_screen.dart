@@ -11,8 +11,8 @@ import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
-import 'package:mobi_app/shared/widgets/whatsapp_icon.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
+import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/core/services/ai_content_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -144,124 +144,135 @@ class _BookingsScreenState extends State<BookingsScreen> {
     final grouped = _groupTrips(_currentTrips);
 
     return SoftGradient(
+      category: _activeToggle == 0
+          ? PromoCategory.scheduledTrips
+          : PromoCategory.nearbyTrips,
+      visibilityMode: SoftGradientVisibilityMode.reading,
+      allowMotion: true,
       child: SafeArea(
         bottom: false,
-      child: Stack(
-        children: [
-          RefreshIndicator(
-            onRefresh: _loadTrips,
-            color: Theme.of(context).colorScheme.primary,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(
-                parent: BouncingScrollPhysics(),
-              ),
-              padding: EdgeInsets.only(bottom: 176 + mediaPadding.bottom),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-                    child: Row(
-                      children: [
-                        if (widget.onBack != null)
-                          TappableIconButton(
-                            icon: LucideIcons.chevronLeft,
-                            onTap: widget.onBack,
-                          )
-                        else
-                          const TappableIconButton(
-                            icon: LucideIcons.menu,
-                          ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            'Scheduled',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTypography.headlineMd.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
+        child: Stack(
+          children: [
+            RefreshIndicator(
+              onRefresh: _loadTrips,
+              color: Theme.of(context).colorScheme.primary,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                padding: EdgeInsets.only(bottom: 176 + mediaPadding.bottom),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                      child: MobiSurfacePanel(
+                        padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+                        borderRadius: 36,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                if (widget.onBack != null)
+                                  TappableIconButton(
+                                    icon: LucideIcons.chevronLeft,
+                                    onTap: widget.onBack,
+                                  )
+                                else
+                                  const TappableIconButton(
+                                    icon: LucideIcons.menu,
+                                  ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Text(
+                                    'Scheduled',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTypography.headlineMd.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Title
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          _activeToggle == 0 ? 'My Trips' : 'Nearby Trips',
-                          style: AppTypography.displayLg,
+                            const SizedBox(height: 18),
+                            SizedBox(
+                              width: double.infinity,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  _activeToggle == 0
+                                      ? 'My Trips'
+                                      : 'Nearby Trips',
+                                  style: AppTypography.displayLg,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 18),
+                            MobiToggle(
+                              labels: const ['MINE', 'NEARBY'],
+                              selectedIndex: _activeToggle,
+                              onChanged: _switchToggle,
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 24),
+                    const SizedBox(height: 8),
 
-                  // Mine/Nearby toggle
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: MobiToggle(
-                      labels: const ['MINE', 'NEARBY'],
-                      selectedIndex: _activeToggle,
-                      onChanged: _switchToggle,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Content
-                  if (_isLoading)
-                    ..._buildLoadingState()
-                  else if (_error != null)
-                    _buildErrorState()
-                  else if (_currentTrips.isEmpty)
-                    _buildEmptyState()
-                  else
-                    ..._buildTripSections(grouped),
-                ],
-              ),
-            ),
-          ),
-
-          // FAB
-          Positioned(
-            bottom: 112 + mediaPadding.bottom,
-            right: 32,
-            child: GestureDetector(
-              onTap: widget.onSchedule,
-              child: Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
+                    // Content
+                    if (_isLoading)
+                      ..._buildLoadingState()
+                    else if (_error != null)
+                      _buildErrorState()
+                    else if (_currentTrips.isEmpty)
+                      _buildEmptyState()
+                    else
+                      ..._buildTripSections(grouped),
                   ],
                 ),
-                child: const Icon(
-                  LucideIcons.plus,
-                  size: 28,
-                  color: Colors.white,
+              ),
+            ),
+
+            // FAB
+            Positioned(
+              bottom: 112 + mediaPadding.bottom,
+              right: 32,
+              child: SizedBox(
+                width: 64,
+                height: 64,
+                child: Material(
+                  color: Theme.of(context).colorScheme.primary,
+                  shape: const CircleBorder(),
+                  elevation: 8,
+                  shadowColor: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.4),
+                  child: InkWell(
+                    onTap: widget.onSchedule,
+                    customBorder: const CircleBorder(),
+                    splashColor: Colors.white.withValues(alpha: 0.2),
+                    child: const Center(
+                      child: Icon(
+                        LucideIcons.plus,
+                        size: 28,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   List<Widget> _buildLoadingState() {
@@ -272,8 +283,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 8, bottom: 12),
-              child: Text(section, style: AppTypography.labelSm),
+              padding: const EdgeInsets.only(left: 0, bottom: 12),
+              child: _buildSectionLabel(section),
             ),
             ...List.generate(
               2,
@@ -289,17 +300,13 @@ class _BookingsScreenState extends State<BookingsScreen> {
     }).toList();
   }
 
-
-
   Widget _buildErrorState() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: AiEmptyState(
-        category: PromoCategory.errorRetry,
         title: 'Something went wrong',
         subtitle: 'Pull down to retry.',
         icon: LucideIcons.alertTriangle,
-        useVideo: true,
         height: 220,
         onAction: _loadTrips,
         actionLabel: 'RETRY',
@@ -307,15 +314,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
     );
   }
 
-
-
   Widget _buildEmptyState() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: AiEmptyState(
-        category: _activeToggle == 0
-            ? PromoCategory.scheduledTrips
-            : PromoCategory.nearbyTrips,
         title: _activeToggle == 0
             ? 'No trips scheduled yet.'
             : 'No nearby trips found.',
@@ -323,7 +325,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
             ? 'Tap + to create one.'
             : 'Pull down to refresh.',
         icon: _activeToggle == 0 ? LucideIcons.calendar : LucideIcons.mapPin,
-        useVideo: true,
         height: 260,
       ),
     );
@@ -340,8 +341,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 8, bottom: 12),
-              child: Text(section, style: AppTypography.labelSm),
+              padding: const EdgeInsets.only(left: 0, bottom: 12),
+              child: _buildSectionLabel(section),
             ),
             ...sectionTrips.map((trip) => _buildTripCard(trip)),
             const SizedBox(height: 24),
@@ -349,6 +350,23 @@ class _BookingsScreenState extends State<BookingsScreen> {
         ),
       );
     }).toList();
+  }
+
+  Widget _buildSectionLabel(String label) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+
+    return MobiSurfacePanel(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      borderRadius: 999,
+      color: ext.surfaceContainerLowest.withValues(
+        alpha: ext.surfacePanelAlpha,
+      ),
+      child: Text(
+        label,
+        style: AppTypography.labelSm.copyWith(color: cs.onSurfaceVariant),
+      ),
+    );
   }
 
   Widget _buildTripCard(Trip trip) {
@@ -418,14 +436,20 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.4),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
                       ],
                     ),
                     child: const Center(
-                      child: WhatsAppIcon(size: 24, color: Colors.white),
+                      child: Icon(
+                        LucideIcons.messageCircle,
+                        size: 22,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
               ],
@@ -461,44 +485,79 @@ class _BookingsScreenState extends State<BookingsScreen> {
               padding: const EdgeInsets.only(top: 16),
               decoration: BoxDecoration(
                 border: Border(
-                  top: BorderSide(color: Theme.of(context).extension<MobiThemeExtension>()!.surfaceContainer, width: 1),
+                  top: BorderSide(
+                    color: Theme.of(
+                      context,
+                    ).extension<MobiThemeExtension>()!.surfaceContainer,
+                    width: 1,
+                  ),
                 ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   if (!isNearby && trip.status != 'cancelled')
-                    GestureDetector(
-                      onTap: () => _cancelTrip(trip),
-                      child: Text(
-                        'CANCEL TRIP',
-                        style: AppTypography.labelSm.copyWith(
-                          letterSpacing: 1.5,
-                          color: Theme.of(context).colorScheme.error,
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => _cancelTrip(trip),
+                        borderRadius: BorderRadius.circular(24),
+                        splashColor: Theme.of(
+                          context,
+                        ).colorScheme.error.withValues(alpha: 0.12),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 8,
+                          ),
+                          child: Text(
+                            'CANCEL TRIP',
+                            style: AppTypography.labelSm.copyWith(
+                              letterSpacing: 1.5,
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                          ),
                         ),
                       ),
                     )
                   else
                     const SizedBox.shrink(),
-                  GestureDetector(
-                    onTap: () => widget.onTripDetails(trip.id ?? ''),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'DETAILS',
-                          style: AppTypography.labelSm.copyWith(
-                            letterSpacing: 1.5,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => widget.onTripDetails(trip.id ?? ''),
+                      borderRadius: BorderRadius.circular(24),
+                      splashColor: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.12),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 8,
                         ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          LucideIcons.arrowRight,
-                          size: 12,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'DETAILS',
+                              style: AppTypography.labelSm.copyWith(
+                                letterSpacing: 1.5,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              LucideIcons.arrowRight,
+                              size: 12,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ],
@@ -514,7 +573,9 @@ class _BookingsScreenState extends State<BookingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).extension<MobiThemeExtension>()!.surfaceContainerHigh,
+        backgroundColor: Theme.of(
+          context,
+        ).extension<MobiThemeExtension>()!.surfaceContainerHigh,
         title: Text('Cancel Trip', style: AppTypography.titleLg),
         content: Text(
           'Are you sure you want to cancel this trip?',
@@ -527,7 +588,12 @@ class _BookingsScreenState extends State<BookingsScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text('YES', style: AppTypography.titleMd.copyWith(color: Theme.of(context).colorScheme.error)),
+            child: Text(
+              'YES',
+              style: AppTypography.titleMd.copyWith(
+                color: Theme.of(context).colorScheme.error,
+              ),
+            ),
           ),
         ],
       ),
@@ -569,12 +635,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
             Icon(icon, size: 10, color: fg),
             const SizedBox(width: 4),
           ],
-          Text(
-            text,
-            style: AppTypography.labelSm.copyWith(
-              color: fg,
-            ),
-          ),
+          Text(text, style: AppTypography.labelSm.copyWith(color: fg)),
         ],
       ),
     );

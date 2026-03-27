@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/features/biopay/services/ussd_launcher_service.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 /// Scan QR Screen — real camera-based QR scanner for BioPay identity resolution.
 ///
@@ -300,14 +300,14 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
 
   Widget _buildProcessingOverlay() {
     return Positioned.fill(
-      child: Container(
+      child: ColoredBox(
         color: Colors.black.withValues(alpha: 0.7),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 'Processing...',
                 style: AppTypography.bodyMd.copyWith(color: Colors.white),
@@ -338,9 +338,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
         ),
         const SizedBox(height: 24),
         Text(
-          _displayName?.trim().isNotEmpty == true
-              ? _displayName!
-              : 'BioPay QR Scanned',
+           'BioPay QR Scanned',
           style: AppTypography.headlineMd.copyWith(
             letterSpacing: -1,
           ),

@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mobi_app/core/services/places_exception.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/models/place.dart';
@@ -56,10 +57,10 @@ class PlacesService {
         return await action().timeout(timeout);
       } on TimeoutException catch (e) {
         lastError = e;
-        debugPrint('⏱️ [$operationName] timed out (attempt ${attempt + 1}/$_maxRetries)');
+        if (kDebugMode) debugPrint('⏱️ [$operationName] timed out (attempt ${attempt + 1}/$_maxRetries)');
       } on FunctionException catch (e) {
         lastError = e;
-        debugPrint('🔴 [$operationName] FunctionException: status=${e.status}, reasonPhrase=${e.reasonPhrase}, details=${e.details}');
+        if (kDebugMode) debugPrint('🔴 [$operationName] FunctionException: status=${e.status}, reasonPhrase=${e.reasonPhrase}');
         final status = e.status;
         if (status >= 400 && status < 500) {
           throw PlacesException(
@@ -71,7 +72,7 @@ class PlacesService {
         AppLogger.warning('$operationName server error (attempt ${attempt + 1}/$_maxRetries): $e');
       } catch (e, stack) {
         lastError = e;
-        debugPrint('🔴 [$operationName] Unexpected ${e.runtimeType}: $e\n$stack');
+        if (kDebugMode) debugPrint('🔴 [$operationName] Unexpected ${e.runtimeType}: $e\n$stack');
       }
 
       if (attempt < _maxRetries - 1) {
@@ -119,7 +120,7 @@ class PlacesService {
         // Verify session is present (anonymous auth from splash)
         final session = _supabase.auth.currentSession;
         if (session == null) {
-          debugPrint('⚠️ [autocomplete] NO AUTH SESSION — edge function will reject');
+          if (kDebugMode) debugPrint('⚠️ [autocomplete] NO AUTH SESSION — edge function will reject');
         }
 
         final body = <String, dynamic>{
@@ -146,7 +147,7 @@ class PlacesService {
         if (data == null) return [];
 
         if (data is! Map) {
-          debugPrint('⚠️ [autocomplete] unexpected response type: ${data.runtimeType}');
+          if (kDebugMode) debugPrint('⚠️ [autocomplete] unexpected response type: ${data.runtimeType}');
           return [];
         }
 
@@ -191,10 +192,10 @@ class PlacesService {
 
         final place = data['place'];
         return PlaceDetails(
-          placeId: place['placeId'] ?? '',
-          formattedAddress: place['label'] ?? '',
-          latitude: place['position']?['latitude']?.toDouble() ?? 0.0,
-          longitude: place['position']?['longitude']?.toDouble() ?? 0.0,
+          placeId: (place['placeId'] as String?) ?? '',
+          formattedAddress: (place['label'] as String?) ?? '',
+          latitude: (place['position']?['latitude'] as num?)?.toDouble() ?? 0.0,
+          longitude: (place['position']?['longitude'] as num?)?.toDouble() ?? 0.0,
         );
       },
     );
@@ -219,10 +220,10 @@ class PlacesService {
 
         final place = data['place'];
         return PlaceDetails(
-          placeId: place['placeId'] ?? '',
-          formattedAddress: place['label'] ?? '',
-          latitude: place['position']?['latitude']?.toDouble() ?? lat,
-          longitude: place['position']?['longitude']?.toDouble() ?? lng,
+          placeId: (place['placeId'] as String?) ?? '',
+          formattedAddress: (place['label'] as String?) ?? '',
+          latitude: (place['position']?['latitude'] as num?)?.toDouble() ?? lat,
+          longitude: (place['position']?['longitude'] as num?)?.toDouble() ?? lng,
         );
       },
     );

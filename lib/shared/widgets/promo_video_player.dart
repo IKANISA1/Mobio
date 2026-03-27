@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+import 'package:mobi_app/core/services/ai_content_service.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 
@@ -10,8 +11,8 @@ import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 /// for text legibility. Falls back to a gradient surface if video fails.
 /// Respects the platform's reduced-motion setting.
 class PromoVideoPlayer extends StatefulWidget {
-  /// Network URL of the promotional video.
-  final String videoUrl;
+  /// Promotional video asset with focal-point metadata.
+  final PromoAsset asset;
 
   /// Height of the video container.
   final double height;
@@ -24,7 +25,7 @@ class PromoVideoPlayer extends StatefulWidget {
 
   const PromoVideoPlayer({
     super.key,
-    required this.videoUrl,
+    required this.asset,
     this.height = 280,
     this.borderRadius = 40,
     this.fallback,
@@ -48,7 +49,7 @@ class _PromoVideoPlayerState extends State<PromoVideoPlayer> {
   Future<void> _initializeVideo() async {
     try {
       _controller = VideoPlayerController.networkUrl(
-        Uri.parse(widget.videoUrl),
+        Uri.parse(widget.asset.url),
       );
 
       await _controller!.initialize();
@@ -89,10 +90,7 @@ class _PromoVideoPlayerState extends State<PromoVideoPlayer> {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    ext.surfaceContainerLow,
-                    cs.surface,
-                  ],
+                  colors: [ext.surfaceContainerLow, cs.surface],
                 ),
               ),
             ),
@@ -110,6 +108,7 @@ class _PromoVideoPlayerState extends State<PromoVideoPlayer> {
             if (_initialized && _controller != null)
               FittedBox(
                 fit: BoxFit.cover,
+                alignment: widget.asset.focusAlignment,
                 child: SizedBox(
                   width: _controller!.value.size.width,
                   height: _controller!.value.size.height,
@@ -119,10 +118,7 @@ class _PromoVideoPlayerState extends State<PromoVideoPlayer> {
             else
               Container(
                 color: ext.surfaceContainer,
-                child: LoadingSkeleton(
-                  height: widget.height,
-                  borderRadius: 0,
-                ),
+                child: LoadingSkeleton(height: widget.height, borderRadius: 0),
               ),
 
             // Dark gradient overlay
@@ -133,8 +129,8 @@ class _PromoVideoPlayerState extends State<PromoVideoPlayer> {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      cs.surface.withValues(alpha: 0.3),
-                      cs.surface.withValues(alpha: 0.85),
+                      cs.surface.withValues(alpha: 0.4),
+                      cs.surface.withValues(alpha: 0.92),
                     ],
                     stops: const [0.0, 1.0],
                   ),

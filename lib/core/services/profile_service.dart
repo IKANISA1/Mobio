@@ -1,5 +1,5 @@
-import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
+import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
 import 'package:mobi_app/models/vehicle_type.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -63,8 +63,6 @@ class ProfileService {
   /// Updates the current user's profile via `rpc_update_profile` RPC.
   /// Only non-null fields will be sent.
   Future<void> updateProfileViaRpc({
-    String? name,
-    String? displayName,
     String? phone,
     String? whatsapp,
     String? countryCode,
@@ -75,8 +73,6 @@ class ProfileService {
   }) async {
     try {
       final payload = <String, dynamic>{};
-      if (name != null) payload['name'] = name;
-      if (displayName != null) payload['display_name'] = displayName;
       if (phone != null) payload['phone'] = phone;
       if (whatsapp != null) payload['whatsapp'] = whatsapp;
       if (countryCode != null) payload['country_code'] = countryCode;
@@ -134,7 +130,6 @@ class ProfileService {
 
   /// Legacy: Updates the current user's profile fields directly.
   Future<void> updateProfile({
-    String? displayName,
     String? phone,
     String? countryCode,
     String? role,
@@ -147,7 +142,6 @@ class ProfileService {
     }
 
     final updates = <String, dynamic>{};
-    if (displayName != null) updates['display_name'] = displayName;
     if (phone != null) updates['phone'] = phone;
     if (countryCode != null) updates['country_code'] = countryCode;
     if (role != null) updates['role'] = role;

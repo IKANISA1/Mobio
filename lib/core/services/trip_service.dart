@@ -13,7 +13,7 @@ class TripService {
   final SupabaseClient _supabase;
 
   TripService({SupabaseClient? supabase})
-      : _supabase = supabase ?? Supabase.instance.client;
+    : _supabase = supabase ?? Supabase.instance.client;
 
   String? get _currentUserId => _supabase.auth.currentUser?.id;
 
@@ -43,22 +43,26 @@ class TripService {
     }
 
     try {
-      final row = await _supabase.from('trips').insert({
-        'author_id': userId,
-        'origin': origin,
-        'origin_lat': originLat,
-        'origin_lng': originLng,
-        'destination': destination,
-        'dest_lat': destLat,
-        'dest_lng': destLng,
-        'departure_date': departureDate,
-        'departure_time': departureTime,
-        'role': role,
-        'vehicle_type': vehicleType,
-        'is_recurring': isRecurring,
-        'recurring_days': recurringDays,
-        'note': note,
-      }).select().single();
+      final row = await _supabase
+          .from('trips')
+          .insert({
+            'author_id': userId,
+            'origin': origin,
+            'origin_lat': originLat,
+            'origin_lng': originLng,
+            'destination': destination,
+            'dest_lat': destLat,
+            'dest_lng': destLng,
+            'departure_date': departureDate,
+            'departure_time': departureTime,
+            'role': role,
+            'vehicle_type': vehicleType,
+            'is_recurring': isRecurring,
+            'recurring_days': recurringDays,
+            'note': note,
+          })
+          .select()
+          .single();
 
       return Trip.fromJson(row);
     } catch (e) {
@@ -101,7 +105,7 @@ class TripService {
           .order('departure_date', ascending: true)
           .order('departure_time', ascending: true);
 
-      return rows.map<Trip>((row) => Trip.fromJson(row)).toList();
+      return rows.map<Trip>(Trip.fromJson).toList();
     } catch (e) {
       AppLogger.error('Error fetching my trips: $e');
       return [];
@@ -116,7 +120,7 @@ class TripService {
       var query = _supabase
           .from('trips')
           .select()
-          .eq('status', 'active')
+          .or('status.eq.active,status.eq.approved')
           .eq('is_active', true);
 
       if (userId != null) {
@@ -128,7 +132,7 @@ class TripService {
           .order('departure_time', ascending: true)
           .limit(50);
 
-      return rows.map<Trip>((row) => Trip.fromJson(row)).toList();
+      return rows.map<Trip>(Trip.fromJson).toList();
     } catch (e) {
       AppLogger.error('Error fetching nearby trips: $e');
       return [];

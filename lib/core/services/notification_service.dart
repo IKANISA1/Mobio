@@ -77,7 +77,7 @@ class NotificationService {
 
       return rows
           .map<AppNotification>(
-            (row) => AppNotification.fromJson(row),
+            AppNotification.fromJson,
           )
           .toList();
     } catch (e) {
@@ -101,7 +101,7 @@ class NotificationService {
 
       return rows
           .map<AppNotification>(
-            (row) => AppNotification.fromJson(row),
+            AppNotification.fromJson,
           )
           .toList();
     } catch (e) {

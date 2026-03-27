@@ -59,13 +59,9 @@ class BiopayHubState {
   String get codeDisplay => biopayId ?? 'Not linked';
 
   String get displayNameDisplay {
-    final normalized = displayName?.trim();
-    if (normalized == null || normalized.isEmpty) {
-      return isLinked
-          ? 'BioPay linked on this device'
-          : 'Link BioPay on this device';
-    }
-    return normalized;
+    return isLinked
+        ? 'BioPay linked on this device'
+        : 'Link BioPay on this device';
   }
 
   String get statusLabel {
@@ -219,7 +215,7 @@ class BioPayService {
     required String ussdString,
     required List<double> embedding,
     required double qualityScore,
-    int consentVersion = 1,
+    int consentVersion = 2,
   }) async {
     final installId = await getInstallId();
     return _repository.enrollFace(

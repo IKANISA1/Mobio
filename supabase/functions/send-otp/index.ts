@@ -1,34 +1,66 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import {
+  notifyAdminsOfDeniedAccess,
+  tryRecordAdminAccessAttempt,
+} from "../_shared/admin-access.ts";
+import {
+  normalizePhone,
+  resolveAdminWhatsappNumberByPhone,
+} from "../_shared/admin-whatsapp.ts";
+import {
+  errorResponse,
+  handleCors,
+  jsonResponse,
+  methodNotAllowed,
+} from "../_shared/http.ts";
+import { hashOtpCode } from "../_shared/otp-security.ts";
+import { createAdminClient } from "../_shared/supabase.ts";
+import { sendWhatsappCloudOtp } from "../_shared/whatsapp-cloud.ts";
 
-serve(async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+Deno.serve(async (req: Request) => {
+  const corsResponse = handleCors(req);
+  if (corsResponse) {
+    return corsResponse;
+  }
+
+  if (req.method != "POST") {
+    return methodNotAllowed("POST", req);
   }
 
   try {
-    const { phone } = await req.json();
+    const body = await req.json();
+    const phone = normalizePhone(body?.phone, "Valid WhatsApp number required");
+    const supabase = createAdminClient();
 
-    if (!phone || typeof phone !== "string" || phone.length < 10) {
-      return new Response(
-        JSON.stringify({ success: false, message: "Valid phone number required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    const adminNumber = await resolveAdminWhatsappNumberByPhone(supabase, phone);
+    if (!adminNumber) {
+      await tryRecordAdminAccessAttempt({
+        supabase,
+        phone,
+        status: "denied_not_allowlisted",
+        reason: "WhatsApp number is not allowlisted for platform admin.",
+        metadata: {
+          stage: "send_otp",
+        },
+        request: req,
+      });
+
+      try {
+        await notifyAdminsOfDeniedAccess(supabase, phone);
+      } catch (notificationError) {
+        console.error("send-otp admin notification error:", notificationError);
+      }
+
+      return errorResponse(
+        "This WhatsApp number is not approved for platform admin. Contact admin.",
+        403,
+        undefined,
+        req,
       );
     }
 
-    // Service-role client to bypass RLS
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
-
-    // Rate limit: check for recent OTP (last 60s)
-    const { data: recent } = await supabase
+    const { data: recent, error: recentError } = await supabase
       .from("otp_codes")
       .select("created_at")
       .eq("phone", phone)
@@ -36,52 +68,113 @@ serve(async (req: Request) => {
       .order("created_at", { ascending: false })
       .limit(1);
 
-    if (recent && recent.length > 0) {
-      const sentAt = new Date(recent[0].created_at).getTime();
+    if (recentError) {
+      throw recentError;
+    }
+
+    if ((recent ?? []).length > 0) {
+      const sentAt = new Date(recent![0].created_at).getTime();
       const retryAfter = Math.ceil((sentAt + 60_000 - Date.now()) / 1000);
-      return new Response(
-        JSON.stringify({
+
+      await tryRecordAdminAccessAttempt({
+        supabase,
+        phone,
+        status: "rate_limited",
+        reason: "OTP request throttled by resend cooldown.",
+        matchedAdminNumberId: adminNumber.id,
+        metadata: {
+          retry_after_seconds: retryAfter,
+          stage: "send_otp",
+        },
+        request: req,
+      });
+
+      return jsonResponse(
+        {
           success: false,
           message: `Please wait ${retryAfter}s before requesting another code`,
           retryAfterSeconds: retryAfter,
-        }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        },
+        429,
+        req,
       );
     }
 
-    // Generate 6-digit code
     const code = String(Math.floor(100000 + Math.random() * 900000));
+    const codeHash = await hashOtpCode(code);
+    const expiresAt = new Date(Date.now() + 5 * 60_000).toISOString();
 
-    // Store with 5-minute expiry
-    const { error: insertError } = await supabase.from("otp_codes").insert({
-      phone,
-      code,
-      expires_at: new Date(Date.now() + 5 * 60_000).toISOString(),
-    });
+    const { data: insertedOtp, error: insertError } = await supabase
+      .from("otp_codes")
+      .insert({
+        phone,
+        code: "000000",
+        code_hash: codeHash,
+        expires_at: expiresAt,
+      })
+      .select("id")
+      .single();
 
     if (insertError) {
-      console.error("Insert error:", insertError);
-      return new Response(
-        JSON.stringify({ success: false, message: "Failed to generate code" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      throw insertError;
     }
 
-    // Log OTP server-side (in production, send via WhatsApp Business API)
-    console.log(`[OTP] ${phone} → ${code}`);
+    try {
+      await sendWhatsappCloudOtp({
+        code,
+        recipientPhone: phone,
+      });
+    } catch (deliveryError) {
+      await supabase.from("otp_codes").delete().eq("id", insertedOtp.id);
 
-    // Cleanup old expired codes
-    await supabase.rpc("cleanup_expired_otps").catch(() => {});
+      await tryRecordAdminAccessAttempt({
+        supabase,
+        phone,
+        status: "delivery_failed",
+        reason: "WhatsApp Cloud OTP delivery failed.",
+        matchedAdminNumberId: adminNumber.id,
+        metadata: {
+          stage: "send_otp",
+        },
+        request: req,
+      });
 
-    return new Response(
-      JSON.stringify({ success: true, message: "Code sent" }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      throw deliveryError;
+    }
+
+    try {
+      await supabase.rpc("cleanup_expired_otps");
+    } catch {
+      // Cleanup should never block OTP delivery.
+    }
+
+    await tryRecordAdminAccessAttempt({
+      supabase,
+      phone,
+      status: "otp_sent",
+      reason: "OTP dispatched to allowlisted admin number.",
+      matchedAdminNumberId: adminNumber.id,
+      metadata: {
+        stage: "send_otp",
+      },
+      request: req,
+    });
+
+    return jsonResponse(
+      {
+        success: true,
+        message: "OTP sent to your WhatsApp",
+      },
+      200,
+      req,
     );
-  } catch (err) {
-    console.error("send-otp error:", err);
-    return new Response(
-      JSON.stringify({ success: false, message: "Internal error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+  } catch (error) {
+    if (error instanceof Error &&
+      error.message == "Valid WhatsApp number required") {
+      return errorResponse(error.message, 400, undefined, req);
+    }
+
+    console.error("send-otp error:", error);
+    return errorResponse("Internal error", 500, undefined, req);
   }
 });

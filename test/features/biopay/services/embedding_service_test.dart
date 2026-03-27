@@ -7,7 +7,7 @@ import 'package:mobi_app/features/biopay/services/embedding_service.dart';
 void main() {
   group('EmbeddingService.preprocessRgb', () {
     test('converts 112x112 RGB bytes to normalized Float32', () {
-      final pixelCount = 112 * 112 * 3;
+      const pixelCount = 112 * 112 * 3;
       final rgbPixels = Uint8List(pixelCount);
 
       // Set all pixels to 127.5 → should normalize to ~0.0

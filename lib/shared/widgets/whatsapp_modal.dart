@@ -6,13 +6,11 @@ import 'package:mobi_app/shared/widgets/whatsapp_icon.dart';
 
 /// WhatsApp modal bottom sheet matching transito overlay.
 class WhatsAppModal extends StatelessWidget {
-  final String driverName;
   final VoidCallback onOpen;
   final VoidCallback onDismiss;
 
   const WhatsAppModal({
     super.key,
-    required this.driverName,
     required this.onOpen,
     required this.onDismiss,
   });
@@ -21,7 +19,7 @@ class WhatsAppModal extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    return Container(
+    return ColoredBox(
       color: cs.onSurface.withValues(alpha: 0.4),
       child: SafeArea(
         child: Padding(
@@ -57,7 +55,7 @@ class WhatsAppModal extends StatelessWidget {
                     const SizedBox(height: 24),
                     // Title
                     Text(
-                      'Connect with $driverName',
+                      'Connect on WhatsApp',
                       style: AppTypography.displayMd.copyWith(
                         color: cs.onSurface,
                       ),

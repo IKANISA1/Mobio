@@ -11,6 +11,7 @@ class TappableIconButton extends StatelessWidget {
   final double size;
   final Color? color;
   final double touchTargetSize;
+  final String? semanticLabel;
 
   const TappableIconButton({
     super.key,
@@ -19,26 +20,32 @@ class TappableIconButton extends StatelessWidget {
     this.size = 24,
     this.color,
     this.touchTargetSize = 48,
+    this.semanticLabel,
   });
 
   @override
   Widget build(BuildContext context) {
     final resolvedColor = color ?? Theme.of(context).colorScheme.primary;
-    return SizedBox(
-      width: touchTargetSize,
-      height: touchTargetSize,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(touchTargetSize / 2),
-          splashColor: resolvedColor.withValues(alpha: 0.15),
-          highlightColor: resolvedColor.withValues(alpha: 0.08),
-          child: Center(
-            child: Icon(
-              icon,
-              size: size,
-              color: resolvedColor,
+    return Semantics(
+      button: true,
+      label: semanticLabel ?? 'Icon button',
+      excludeSemantics: true,
+      child: SizedBox(
+        width: touchTargetSize,
+        height: touchTargetSize,
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(touchTargetSize / 2),
+            splashColor: resolvedColor.withValues(alpha: 0.15),
+            highlightColor: resolvedColor.withValues(alpha: 0.08),
+            child: Center(
+              child: Icon(
+                icon,
+                size: size,
+                color: resolvedColor,
+              ),
             ),
           ),
         ),
