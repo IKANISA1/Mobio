@@ -67,7 +67,8 @@ class _PlaceAutocompleteFieldState extends State<PlaceAutocompleteField> {
   @override
   void didUpdateWidget(covariant PlaceAutocompleteField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.initialValue != oldWidget.initialValue && widget.initialValue != _controller.text) {
+    if (widget.initialValue != oldWidget.initialValue &&
+        widget.initialValue != _controller.text) {
       _controller.text = widget.initialValue;
     }
   }
@@ -108,16 +109,16 @@ class _PlaceAutocompleteFieldState extends State<PlaceAutocompleteField> {
               formattedAddress: prediction.description,
               latitude: 0,
               longitude: 0,
-            )
+            ),
           );
         }
       }
     } on PlacesException catch (e) {
       if (mounted) {
         setState(() => _isLoadingDetails = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.userMessage)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.userMessage)));
         widget.onPlaceSelected(
           PlaceDetails(
             placeId: prediction.placeId,
@@ -209,12 +210,15 @@ class _PlaceAutocompleteFieldState extends State<PlaceAutocompleteField> {
                       ],
                     ),
                   ),
-                  if (widget.trailing != null && !_showClear)
-                    widget.trailing!,
+                  if (widget.trailing != null && !_showClear) widget.trailing!,
                   if (_showClear)
                     IconButton(
                       onPressed: _clearData,
-                      icon: Icon(LucideIcons.x, size: 20, color: cs.onSurfaceVariant),
+                      icon: Icon(
+                        LucideIcons.x,
+                        size: 20,
+                        color: cs.onSurfaceVariant,
+                      ),
                       visualDensity: VisualDensity.compact,
                     ),
                 ],
@@ -229,18 +233,24 @@ class _PlaceAutocompleteFieldState extends State<PlaceAutocompleteField> {
                 nearLat: widget.userLat,
                 nearLng: widget.userLng,
               );
-              if (kDebugMode) debugPrint('🔍 [widget] suggestionsCallback got ${results.length} results for "$pattern"');
+              if (kDebugMode) {
+                debugPrint(
+                  '🔍 [widget] suggestionsCallback got ${results.length} results for "$pattern"',
+                );
+              }
               return results;
             } on PlacesException catch (e) {
               if (kDebugMode) debugPrint('❌ [widget] PlacesException: $e');
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(e.userMessage)),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(e.userMessage)));
               }
               return [];
             } on Object catch (e, stack) {
-              if (kDebugMode) debugPrint('❌ [widget] Unexpected error: $e\n$stack');
+              if (kDebugMode) {
+                debugPrint('❌ [widget] Unexpected error: $e\n$stack');
+              }
               return [];
             }
           },
@@ -273,9 +283,7 @@ class _PlaceAutocompleteFieldState extends State<PlaceAutocompleteField> {
                     child: Icon(
                       isQuery ? LucideIcons.search : LucideIcons.mapPin,
                       size: 16,
-                      color: isQuery
-                          ? cs.primary
-                          : cs.onSurfaceVariant,
+                      color: isQuery ? cs.primary : cs.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -311,7 +319,10 @@ class _PlaceAutocompleteFieldState extends State<PlaceAutocompleteField> {
                   if (!isQuery && distance != null && distance > 0) ...[
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: cs.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
@@ -334,9 +345,7 @@ class _PlaceAutocompleteFieldState extends State<PlaceAutocompleteField> {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               'No places found',
-              style: AppTypography.bodyMd.copyWith(
-                color: cs.onSurfaceVariant,
-              ),
+              style: AppTypography.bodyMd.copyWith(color: cs.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
           ),

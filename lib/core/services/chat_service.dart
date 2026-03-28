@@ -112,9 +112,7 @@ class ChatService {
         .eq('conversation_id', conversationId)
         .order('created_at', ascending: true)
         .map(
-          (rows) => rows
-              .map(ChatMessageModel.fromJson)
-              .toList(growable: false),
+          (rows) => rows.map(ChatMessageModel.fromJson).toList(growable: false),
         );
   }
 

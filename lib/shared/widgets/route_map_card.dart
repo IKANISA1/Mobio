@@ -68,10 +68,7 @@ class RouteMapCard extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  ext.surfaceContainerHighest,
-                  ext.surfaceContainerLow,
-                ],
+                colors: [ext.surfaceContainerHighest, ext.surfaceContainerLow],
               ),
               borderRadius: BorderRadius.circular(24),
             ),
@@ -81,9 +78,7 @@ class RouteMapCard extends StatelessWidget {
               children: [
                 Text(
                   'ROUTE SUMMARY',
-                  style: AppTypography.labelSm.copyWith(
-                    color: cs.primary,
-                  ),
+                  style: AppTypography.labelSm.copyWith(color: cs.primary),
                 ),
                 const SizedBox(height: 18),
                 _routeStop(
@@ -185,9 +180,7 @@ class RouteMapCard extends StatelessWidget {
                 value,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: AppTypography.titleMd.copyWith(
-                  color: cs.onSurface,
-                ),
+                style: AppTypography.titleMd.copyWith(color: cs.onSurface),
               ),
             ],
           ),

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/services/ai_content_service.dart';
+
 import 'package:mobi_app/core/services/chat_ai_service.dart';
 import 'package:mobi_app/core/services/chat_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
@@ -444,16 +444,9 @@ class _TripChatScreenState extends State<TripChatScreen> {
   @override
   Widget build(BuildContext context) {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-    final category = _trip == null
-        ? PromoCategory.nearbyDrivers
-        : PromoCategory.scheduledTrips;
-
     return Scaffold(
       backgroundColor: ext.surfaceContainerLow,
       body: SoftGradient(
-        category: category,
-        visibilityMode: SoftGradientVisibilityMode.reading,
-        allowMotion: true,
         child: SafeArea(
           bottom: false,
           child: Column(
@@ -555,8 +548,8 @@ class _TripChatScreenState extends State<TripChatScreen> {
               const SizedBox(height: 16),
               Text('No chats yet', style: AppTypography.titleLg),
               const SizedBox(height: 8),
-                Text(
-                  trip == null
+              Text(
+                trip == null
                     ? 'Users will appear here once someone starts a chat in Mobio.'
                     : 'When riders contact you about ${trip.origin} to ${trip.destination}, their threads will appear here.',
                 style: AppTypography.bodyMd.copyWith(

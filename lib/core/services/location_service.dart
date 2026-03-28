@@ -6,8 +6,7 @@ import 'package:mobi_app/core/utils/app_logger.dart';
 /// Caches last known position for fast autocomplete bias without blocking GPS.
 class LocationService {
   LocationService({AppPermissionService? permissionService})
-      : _permissionService =
-            permissionService ?? AppPermissionService.instance;
+    : _permissionService = permissionService ?? AppPermissionService.instance;
 
   final AppPermissionService _permissionService;
 
@@ -86,7 +85,10 @@ class LocationService {
     double endLng,
   ) {
     final meters = Geolocator.distanceBetween(
-      startLat, startLng, endLat, endLng,
+      startLat,
+      startLng,
+      endLat,
+      endLng,
     );
     return meters / 1000.0;
   }

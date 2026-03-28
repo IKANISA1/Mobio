@@ -16,7 +16,8 @@ class EnrollmentCaptureSession {
     if (embedding.isEmpty) {
       throw ArgumentError('Embedding must not be empty');
     }
-    if (_embeddings.isNotEmpty && embedding.length != _embeddings.first.length) {
+    if (_embeddings.isNotEmpty &&
+        embedding.length != _embeddings.first.length) {
       throw ArgumentError(
         'Expected ${_embeddings.first.length}-dim embedding, got ${embedding.length}',
       );

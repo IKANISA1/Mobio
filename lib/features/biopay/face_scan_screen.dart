@@ -10,6 +10,7 @@ import 'package:mobi_app/core/services/app_permission_service.dart';
 import 'package:mobi_app/core/services/biopay_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/features/biopay/biopay_strings.dart';
+import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/features/biopay/models/biopay_models.dart';
 import 'package:mobi_app/features/biopay/services/embedding_service.dart';
 import 'package:mobi_app/features/biopay/services/face_alignment_service.dart';
@@ -37,12 +38,14 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
   final _embeddingService = EmbeddingService();
   final _gate = StableFrameGate.scan();
   final _ussdLauncher = UssdLauncherService();
+  final _countryService = CountryService();
 
   CameraController? _cameraController;
   CameraDescription? _selectedCamera;
   _ScanPhase _phase = _ScanPhase.loading;
   String _statusMessage = 'Preparing camera...';
   String? _errorMessage;
+  String? _targetMomoBrand;
   MatchResult? _matchResult;
   bool _isProcessingFrame = false;
   bool _isCameraDenied = false;
@@ -50,7 +53,11 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
   @override
   void initState() {
     super.initState();
-    _prepareScanner(promptForPermission: true);
+    // Defer to after the first frame so the widget tree is fully built
+    // before we show the permission dialog overlay.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _prepareScanner(promptForPermission: true);
+    });
   }
 
   @override
@@ -87,6 +94,11 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
         });
         return;
       }
+
+      // Let the dialog dismiss animation complete completely
+      // to avoid freezing the Flutter modal barrier when the OS pauses the Activity
+      // for the native permission prompt.
+      await Future.delayed(const Duration(milliseconds: 350));
     }
 
     final hasAccess = await _permissionService.ensureBiopayCameraAccess();
@@ -286,8 +298,20 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
 
       if (!mounted) return;
       if (result.isMatch) {
+        String? targetBrand;
+        if (result.ussdString != null && result.ussdString!.isNotEmpty) {
+          final handle = await _countryService.parseBiopayUssd(
+            result.ussdString!,
+          );
+          if (handle != null) {
+            final tc = await _countryService.findById(handle.countryId);
+            targetBrand = tc?.momoBrand;
+          }
+        }
+
         setState(() {
           _matchResult = result;
+          _targetMomoBrand = targetBrand;
           _phase = _ScanPhase.matched;
         });
       } else {
@@ -398,8 +422,8 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
   @override
   Widget build(BuildContext context) {
     // Always fullscreen camera layout — phase-specific content overlaid on top
-    final bool showCamera = _cameraController != null &&
-        _cameraController!.value.isInitialized;
+    final bool showCamera =
+        _cameraController != null && _cameraController!.value.isInitialized;
     final bool isActiveScanning =
         _phase == _ScanPhase.scanning || _phase == _ScanPhase.processing;
     final bool isResultPhase =
@@ -428,7 +452,11 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
                       child: const SizedBox(
                         width: 44,
                         height: 44,
-                        child: Icon(LucideIcons.x, size: 20, color: Colors.white),
+                        child: Icon(
+                          LucideIcons.x,
+                          size: 20,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -437,8 +465,8 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
                     isActiveScanning
                         ? 'SCANNING FACE'
                         : isResultPhase
-                            ? 'FACE SCAN'
-                            : 'INITIALIZING…',
+                        ? 'FACE SCAN'
+                        : 'INITIALIZING…',
                     style: AppTypography.titleLg.copyWith(
                       color: Colors.white,
                       letterSpacing: -0.3,
@@ -455,19 +483,27 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
                 children: [
                   // Fullscreen camera preview
                   if (showCamera)
-                    Positioned.fill(child: RepaintBoundary(child: CameraPreview(_cameraController!))),
+                    Positioned.fill(
+                      child: RepaintBoundary(
+                        child: CameraPreview(_cameraController!),
+                      ),
+                    ),
 
                   // Viewfinder overlay when actively scanning
                   if (isActiveScanning) _buildViewfinderOverlay(),
 
                   // Bottom status pill for scanning / loading
-                  if (_phase == _ScanPhase.scanning || _phase == _ScanPhase.loading)
+                  if (_phase == _ScanPhase.scanning ||
+                      _phase == _ScanPhase.loading)
                     Positioned(
                       bottom: 100,
                       left: 24,
                       right: 24,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 14,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.58),
                           borderRadius: BorderRadius.circular(18),
@@ -487,7 +523,9 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
                   if (_phase == _ScanPhase.loading)
                     Positioned.fill(
                       child: Center(
-                        child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+                        child: CircularProgressIndicator(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                     ),
 
@@ -500,11 +538,15 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+                              CircularProgressIndicator(
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                               const SizedBox(height: 20),
                               Text(
                                 BiopayStrings.scanMatching,
-                                style: AppTypography.titleMd.copyWith(color: Colors.white),
+                                style: AppTypography.titleMd.copyWith(
+                                  color: Colors.white,
+                                ),
                               ),
                             ],
                           ),
@@ -519,13 +561,20 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
                       left: 0,
                       right: 0,
                       child: ClipRRect(
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(28),
+                        ),
                         child: Material(
                           color: Theme.of(context).colorScheme.surface,
                           child: SafeArea(
                             top: false,
                             child: Padding(
-                              padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+                              padding: const EdgeInsets.fromLTRB(
+                                24,
+                                28,
+                                24,
+                                24,
+                              ),
                               child: switch (_phase) {
                                 _ScanPhase.matched => _buildMatchedContent(),
                                 _ScanPhase.noMatch => _buildNoMatchContent(),
@@ -578,7 +627,9 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
             width: 84,
             height: 84,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.14),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(28),
             ),
             child: Icon(
@@ -610,10 +661,14 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.18),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.18),
               ),
             ),
             child: Column(
@@ -645,7 +700,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
               ? null
               : () => _launchUssd(result.ussdString!),
           child: Text(
-            'PAY WITH USSD',
+            'PAY VIA ${(_targetMomoBrand ?? 'USSD').toUpperCase()}',
             style: AppTypography.labelMd.copyWith(
               color: Theme.of(context).colorScheme.onPrimary,
             ),
@@ -688,7 +743,9 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
           width: 84,
           height: 84,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.14),
+            color: Theme.of(
+              context,
+            ).colorScheme.secondary.withValues(alpha: 0.14),
             borderRadius: BorderRadius.circular(28),
           ),
           child: Icon(
@@ -700,9 +757,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
         const SizedBox(height: 24),
         Text(
           'No BioPay match',
-          style: AppTypography.headlineMd.copyWith(
-            letterSpacing: -1,
-          ),
+          style: AppTypography.headlineMd.copyWith(letterSpacing: -1),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
@@ -752,9 +807,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
         const SizedBox(height: 24),
         Text(
           'BioPay scan failed',
-          style: AppTypography.headlineMd.copyWith(
-            letterSpacing: -1,
-          ),
+          style: AppTypography.headlineMd.copyWith(letterSpacing: -1),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
@@ -806,18 +859,12 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
             color: cs.primary.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(28),
           ),
-          child: Icon(
-            LucideIcons.cameraOff,
-            color: cs.primary,
-            size: 42,
-          ),
+          child: Icon(LucideIcons.cameraOff, color: cs.primary, size: 42),
         ),
         const SizedBox(height: 24),
         Text(
           'Camera access required',
-          style: AppTypography.headlineMd.copyWith(
-            letterSpacing: -1,
-          ),
+          style: AppTypography.headlineMd.copyWith(letterSpacing: -1),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
@@ -838,9 +885,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
           },
           child: Text(
             'OPEN SETTINGS',
-            style: AppTypography.labelMd.copyWith(
-              color: cs.onPrimary,
-            ),
+            style: AppTypography.labelMd.copyWith(color: cs.onPrimary),
           ),
         ),
         const SizedBox(height: 12),
@@ -850,9 +895,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
           onPressed: () => _prepareScanner(promptForPermission: true),
           child: Text(
             'TRY AGAIN',
-            style: AppTypography.labelMd.copyWith(
-              color: cs.onSurface,
-            ),
+            style: AppTypography.labelMd.copyWith(color: cs.onSurface),
           ),
         ),
         const SizedBox(height: 12),
@@ -862,9 +905,7 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
           onPressed: widget.onBack,
           child: Text(
             'GO BACK',
-            style: AppTypography.labelMd.copyWith(
-              color: cs.onSurfaceVariant,
-            ),
+            style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
           ),
         ),
       ],
@@ -955,20 +996,60 @@ class _FaceViewfinderPainter extends CustomPainter {
     canvas
       // Top-left
       ..drawLine(Offset(left, top + cl), Offset(left, top + r), cornerPaint)
-      ..drawArc(Rect.fromLTWH(left, top, r * 2, r * 2), 3.14159, 1.5708, false, cornerPaint)
+      ..drawArc(
+        Rect.fromLTWH(left, top, r * 2, r * 2),
+        3.14159,
+        1.5708,
+        false,
+        cornerPaint,
+      )
       ..drawLine(Offset(left + r, top), Offset(left + cl, top), cornerPaint)
       // Top-right
       ..drawLine(Offset(right - cl, top), Offset(right - r, top), cornerPaint)
-      ..drawArc(Rect.fromLTWH(right - r * 2, top, r * 2, r * 2), -1.5708, 1.5708, false, cornerPaint)
+      ..drawArc(
+        Rect.fromLTWH(right - r * 2, top, r * 2, r * 2),
+        -1.5708,
+        1.5708,
+        false,
+        cornerPaint,
+      )
       ..drawLine(Offset(right, top + r), Offset(right, top + cl), cornerPaint)
       // Bottom-left
-      ..drawLine(Offset(left, bottom - cl), Offset(left, bottom - r), cornerPaint)
-      ..drawArc(Rect.fromLTWH(left, bottom - r * 2, r * 2, r * 2), 1.5708, 1.5708, false, cornerPaint)
-      ..drawLine(Offset(left + r, bottom), Offset(left + cl, bottom), cornerPaint)
+      ..drawLine(
+        Offset(left, bottom - cl),
+        Offset(left, bottom - r),
+        cornerPaint,
+      )
+      ..drawArc(
+        Rect.fromLTWH(left, bottom - r * 2, r * 2, r * 2),
+        1.5708,
+        1.5708,
+        false,
+        cornerPaint,
+      )
+      ..drawLine(
+        Offset(left + r, bottom),
+        Offset(left + cl, bottom),
+        cornerPaint,
+      )
       // Bottom-right
-      ..drawLine(Offset(right - cl, bottom), Offset(right - r, bottom), cornerPaint)
-      ..drawArc(Rect.fromLTWH(right - r * 2, bottom - r * 2, r * 2, r * 2), 0, 1.5708, false, cornerPaint)
-      ..drawLine(Offset(right, bottom - r), Offset(right, bottom - cl), cornerPaint);
+      ..drawLine(
+        Offset(right - cl, bottom),
+        Offset(right - r, bottom),
+        cornerPaint,
+      )
+      ..drawArc(
+        Rect.fromLTWH(right - r * 2, bottom - r * 2, r * 2, r * 2),
+        0,
+        1.5708,
+        false,
+        cornerPaint,
+      )
+      ..drawLine(
+        Offset(right, bottom - r),
+        Offset(right, bottom - cl),
+        cornerPaint,
+      );
   }
 
   @override

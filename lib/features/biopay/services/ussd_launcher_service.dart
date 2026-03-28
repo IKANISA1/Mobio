@@ -32,28 +32,4 @@ class UssdLauncherService {
     cleaned = cleaned.replaceAll('#', '%23');
     return cleaned;
   }
-
-  /// Build the full USSD string for a MoMo P2P payment.
-  ///
-  /// Format: `*182*1*1*{localPhone}#`
-  /// [recipientPhone] can be in any recognized format:
-  /// - `+250788123456`
-  /// - `0788123456`
-  /// - `788123456`
-  static String buildMoMoUssd(String recipientPhone) {
-    final digits = recipientPhone.replaceAll(RegExp(r'\D'), '');
-    String localPhone;
-
-    if (digits.startsWith('250') && digits.length == 12) {
-      localPhone = '0${digits.substring(3)}';
-    } else if (digits.startsWith('0') && digits.length == 10) {
-      localPhone = digits;
-    } else if (digits.length == 9) {
-      localPhone = '0$digits';
-    } else {
-      localPhone = digits;
-    }
-
-    return '*182*1*1*$localPhone#';
-  }
 }

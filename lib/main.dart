@@ -8,12 +8,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/router/app_router.dart';
 import 'package:mobi_app/core/services/push_notification_service.dart';
 import 'package:mobi_app/core/theme/app_theme.dart';
 import 'package:mobi_app/core/theme/theme_provider.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
+import 'package:mobi_app/features/splash/splash_screen.dart';
 import 'package:mobi_app/l10n/app_localizations.dart';
 import 'package:mobi_app/providers/app_providers.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -25,6 +27,9 @@ Future<void> main() async {
       final WidgetsBinding widgetsBinding =
           WidgetsFlutterBinding.ensureInitialized();
       FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+      // Disable runtime font fetching — fonts are pre-bundled in assets/google_fonts/
+      GoogleFonts.config.allowRuntimeFetching = false;
 
       // In release mode, show a blank container instead of red error screen
       if (!kDebugMode) {
@@ -128,11 +133,27 @@ Future<void> main() async {
   );
 }
 
-class MobiMainApp extends ConsumerWidget {
+class MobiMainApp extends ConsumerStatefulWidget {
   const MobiMainApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MobiMainApp> createState() => _MobiMainAppState();
+}
+
+class _MobiMainAppState extends ConsumerState<MobiMainApp> {
+  bool _showSplash = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Show the Flutter claymorphism splash for 1.2s, then fade to main app
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (mounted) setState(() => _showSplash = false);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final themeProvider = ref.read(themeProviderProvider);
     final router = ref.watch(_routerProvider);
     return ListenableBuilder(
@@ -144,29 +165,47 @@ class MobiMainApp extends ConsumerWidget {
 
         // Set system UI style reactively based on theme
         final isDark = themeProvider.isDark;
-        SystemChrome.setSystemUIOverlayStyle(
-          SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: isDark
-                ? Brightness.light
-                : Brightness.dark,
-            statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-            systemNavigationBarColor: activeTheme.colorScheme.surface,
-            systemNavigationBarIconBrightness: isDark
-                ? Brightness.light
-                : Brightness.dark,
-          ),
+        // During splash, use light icons (green bg); after, use theme-based
+        final statusIconBrightness = _showSplash
+            ? Brightness.light
+            : (isDark ? Brightness.light : Brightness.dark);
+        final overlayStyle = SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: statusIconBrightness,
+          statusBarBrightness: _showSplash
+              ? Brightness.dark
+              : (isDark ? Brightness.dark : Brightness.light),
+          systemNavigationBarColor: _showSplash
+              ? const Color(0xFF004A1E)
+              : activeTheme.colorScheme.surface,
+          systemNavigationBarIconBrightness: Brightness.light,
         );
 
-        return MaterialApp.router(
-          title: 'Mobio',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: themeProvider.mode,
-          routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: overlayStyle,
+          child: MaterialApp.router(
+            title: 'Mobio',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.mode,
+            routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            builder: (context, child) {
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 800),
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                child: _showSplash
+                    ? const MobiSplashScreen(key: ValueKey('splash'))
+                    : KeyedSubtree(
+                        key: const ValueKey('app'),
+                        child: child ?? const SizedBox.shrink(),
+                      ),
+              );
+            },
+          ),
         );
       },
     );

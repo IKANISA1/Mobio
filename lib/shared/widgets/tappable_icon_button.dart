@@ -41,11 +41,7 @@ class TappableIconButton extends StatelessWidget {
             splashColor: resolvedColor.withValues(alpha: 0.15),
             highlightColor: resolvedColor.withValues(alpha: 0.08),
             child: Center(
-              child: Icon(
-                icon,
-                size: size,
-                color: resolvedColor,
-              ),
+              child: Icon(icon, size: size, color: resolvedColor),
             ),
           ),
         ),

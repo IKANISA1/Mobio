@@ -1,16 +1,15 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/services/otp_service.dart';
+import 'package:mobi_app/core/services/admin_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 import 'package:mobi_app/shared/widgets/whatsapp_input.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-/// Platform-admin WhatsApp OTP sign-in screen.
+/// Admin access screen — checks phone against admin allowlist.
+/// No OTP. If approved → instant access. If not → contact admin popup.
 class AdminAuthScreen extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSuccess;
@@ -26,91 +25,136 @@ class AdminAuthScreen extends StatefulWidget {
 }
 
 class _AdminAuthScreenState extends State<AdminAuthScreen> {
-  String _step = 'phone'; // 'phone' | 'otp'
   String _number = '';
   String _countryCode = '+250';
-  String _fullPhone = '';
   bool _loading = false;
   String? _error;
-  int _cooldown = 0;
-  Timer? _cooldownTimer;
+  final _adminService = AdminService();
 
-  // OTP
-  final _otpControllers = List.generate(6, (_) => TextEditingController());
-  final _otpFocuses = List.generate(6, (_) => FocusNode());
-
-  @override
-  void dispose() {
-    _cooldownTimer?.cancel();
-    for (final c in _otpControllers) {
-      c.dispose();
-    }
-    for (final f in _otpFocuses) {
-      f.dispose();
-    }
-    super.dispose();
-  }
-
-  void _startCooldown(int seconds) {
-    _cooldown = seconds;
-    _cooldownTimer?.cancel();
-    _cooldownTimer = Timer.periodic(const Duration(seconds: 1), (t) {
-      setState(() => _cooldown--);
-      if (_cooldown <= 0) t.cancel();
-    });
-  }
-
-  String get _otpValue => _otpControllers.map((c) => c.text).join();
-
-  Future<void> _sendOtp() async {
+  Future<void> _checkAccess() async {
     if (_number.length < 6) return;
-    setState(() {
-      _loading = true;
-      _error = null;
-    });
-    _fullPhone = '$_countryCode$_number';
 
-    final result = await OtpService.sendOtp(_fullPhone);
-    if (!mounted) return;
-
-    setState(() => _loading = false);
-
-    if (result.success) {
-      setState(() => _step = 'otp');
-      _startCooldown(60);
-      Future.delayed(const Duration(milliseconds: 100), () {
-        _otpFocuses[0].requestFocus();
-      });
-    } else {
-      if (result.retryAfterSeconds != null) {
-        _startCooldown(result.retryAfterSeconds!);
-      }
-      setState(() => _error = result.message);
-    }
-  }
-
-  Future<void> _verifyOtp() async {
-    final code = _otpValue;
-    if (code.length != 6) return;
     setState(() {
       _loading = true;
       _error = null;
     });
 
-    final result = await OtpService.verifyOtp(_fullPhone, code);
-    if (!mounted) return;
+    final fullPhone = '$_countryCode$_number';
+    final isAdmin = await _adminService.checkAdminAccess(fullPhone);
 
+    if (!mounted) return;
     setState(() => _loading = false);
 
-    if (result.success) {
+    if (isAdmin) {
       widget.onSuccess();
     } else {
-      setState(() => _error = result.message);
-      // Clear OTP fields on failure
-      for (final c in _otpControllers) {
-        c.clear();
+      _showContactAdminDialog();
+    }
+  }
+
+  void _showContactAdminDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) {
+        final cs = Theme.of(ctx).colorScheme;
+        final ext = Theme.of(ctx).extension<MobiThemeExtension>()!;
+
+        return Dialog(
+          backgroundColor: cs.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(28, 32, 28, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: cs.errorContainer,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(LucideIcons.shieldOff, size: 28, color: cs.error),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Access Denied',
+                  style: AppTypography.headlineMd.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'This number is not registered as an admin. Contact the platform admin to request access.',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.bodyMd.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                MobiButton(
+                  width: double.infinity,
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                    _openWhatsApp();
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        LucideIcons.messageCircle,
+                        size: 18,
+                        color: cs.onPrimary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Contact Admin',
+                        style: AppTypography.titleMd.copyWith(
+                          color: cs.onPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: Text(
+                    'Go Back',
+                    style: AppTypography.labelLg.copyWith(
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _openWhatsApp() async {
+    const adminNumber = '+250795588248';
+    final message = Uri.encodeComponent(
+      'Hello, I would like to request admin access to Mobio.',
+    );
+    final uri = Uri.parse(
+      'https://wa.me/${adminNumber.replaceAll('+', '')}?text=$message',
+    );
+
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } on Object catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open WhatsApp.')),
+        );
       }
-      _otpFocuses[0].requestFocus();
     }
   }
 
@@ -124,25 +168,15 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Back button
               TappableIconButton(
                 icon: LucideIcons.chevronLeft,
-                onTap: _step == 'otp'
-                    ? () => setState(() {
-                        _step = 'phone';
-                        _error = null;
-                        for (final c in _otpControllers) {
-                          c.clear();
-                        }
-                      })
-                    : widget.onBack,
+                onTap: widget.onBack,
               ),
 
               const SizedBox(height: 40),
 
-              // Title
               Text(
-                _step == 'phone' ? 'Admin Access' : 'Enter code',
+                'Admin Access',
                 style: AppTypography.headlineLg.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
@@ -150,11 +184,8 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
 
               const SizedBox(height: 8),
 
-              // Subtitle
               Text(
-                _step == 'phone'
-                    ? 'Enter the approved WhatsApp number for platform admin.'
-                    : 'Sent to $_fullPhone',
+                'Enter the approved WhatsApp number.',
                 style: AppTypography.bodySm.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
@@ -162,20 +193,14 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
 
               const SizedBox(height: 36),
 
-              // Phone or OTP input
-              if (_step == 'phone') _buildPhoneInput() else _buildOtpInput(),
+              WhatsAppInput(
+                value: _number,
+                onChanged: (v) => setState(() => _number = v),
+                countryCode: _countryCode,
+                onCountryCodeChanged: (v) => setState(() => _countryCode = v),
+                label: 'WhatsApp number',
+              ),
 
-              if (_step == 'phone') ...[
-                const SizedBox(height: 12),
-                Text(
-                  'If this number is not approved, contact admin.',
-                  style: AppTypography.bodySm.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-
-              // Error
               if (_error != null) ...[
                 const SizedBox(height: 16),
                 Text(
@@ -188,102 +213,22 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
 
               const Spacer(),
 
-              // Action button
-              _buildActionButton(),
+              MobiButton(
+                onPressed: _loading || _number.length < 6 ? null : _checkAccess,
+                isLoading: _loading,
+                width: double.infinity,
+                child: Text(
+                  _loading ? '' : 'Continue',
+                  style: AppTypography.titleMd.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
 
               const SizedBox(height: 16),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPhoneInput() {
-    return WhatsAppInput(
-      value: _number,
-      onChanged: (v) => setState(() => _number = v),
-      countryCode: _countryCode,
-      onCountryCodeChanged: (v) => setState(() => _countryCode = v),
-      label: 'WhatsApp number',
-    );
-  }
-
-  Widget _buildOtpInput() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(6, (i) {
-        return Container(
-          width: 46,
-          height: 56,
-          margin: EdgeInsets.only(right: i < 5 ? 8 : 0),
-          child: TextField(
-            controller: _otpControllers[i],
-            focusNode: _otpFocuses[i],
-            textAlign: TextAlign.center,
-            keyboardType: TextInputType.number,
-            maxLength: 1,
-            style: AppTypography.headlineMd.copyWith(
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0,
-            ),
-            decoration: InputDecoration(
-              counterText: '',
-              filled: true,
-              fillColor: Theme.of(
-                context,
-              ).extension<MobiThemeExtension>()!.surfaceContainerLow,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.primary,
-                  width: 1.5,
-                ),
-              ),
-            ),
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            onChanged: (v) {
-              if (v.isNotEmpty && i < 5) {
-                _otpFocuses[i + 1].requestFocus();
-              }
-              if (v.isEmpty && i > 0) {
-                _otpFocuses[i - 1].requestFocus();
-              }
-              // Auto-verify when all 6 digits entered
-              if (_otpValue.length == 6) {
-                _verifyOtp();
-              }
-            },
-          ),
-        );
-      }),
-    );
-  }
-
-  Widget _buildActionButton() {
-    final isPhone = _step == 'phone';
-    final enabled = isPhone ? _number.length >= 6 : _otpValue.length == 6;
-    final hasCooldown = isPhone && _cooldown > 0;
-
-    return MobiButton(
-      onPressed: _loading || !enabled || hasCooldown
-          ? null
-          : (isPhone ? _sendOtp : _verifyOtp),
-      isLoading: _loading,
-      width: double.infinity,
-      child: Text(
-        _loading
-            ? ''
-            : (hasCooldown
-                  ? 'Resend in ${_cooldown}s'
-                  : (isPhone ? 'Continue' : 'Verify')),
-        style: AppTypography.titleMd.copyWith(
-          color: Theme.of(context).colorScheme.onPrimary,
-          fontWeight: FontWeight.w700,
         ),
       ),
     );

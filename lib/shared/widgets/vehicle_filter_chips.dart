@@ -3,8 +3,9 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/vehicle_type.dart';
+import 'package:mobi_app/models/vehicle_type_model.dart';
 
-/// Returns the icon for a vehicle type, matching transito getVehicleIcon.
+/// Returns the icon for a [VehicleType] enum value.
 IconData getVehicleIcon(VehicleType type) {
   switch (type) {
     case VehicleType.moto:
@@ -20,63 +21,75 @@ IconData getVehicleIcon(VehicleType type) {
   }
 }
 
-/// Vehicle type filter chip list matching transito.
-/// Uses scale + opacity feedback on press for instant responsiveness.
+/// Returns the icon for a vehicle type ID string.
+///
+/// Used for backward compatibility where only a string ID is available.
+IconData getVehicleIconFromId(String id) {
+  switch (id) {
+    case 'moto':
+      return LucideIcons.zap;
+    case 'cab':
+      return LucideIcons.car;
+    case 'trike':
+      return LucideIcons.truck;
+    case 'truck':
+      return LucideIcons.layoutGrid;
+    case 'private':
+    case 'private_':
+      return LucideIcons.shield;
+    default:
+      return LucideIcons.car;
+  }
+}
+
+/// DB-driven vehicle type filter chip list.
+///
+/// Renders chips with vehicle images (local asset fallback) and labels
+/// from the dynamic [VehicleTypeModel] list fetched from Supabase.
 class VehicleFilterChips extends StatelessWidget {
-  final VehicleType selected;
-  final ValueChanged<VehicleType> onSelected;
+  final String selectedId;
+  final ValueChanged<String> onSelected;
+  final List<VehicleTypeModel> vehicleTypes;
 
   const VehicleFilterChips({
     super.key,
-    required this.selected,
+    required this.selectedId,
     required this.onSelected,
+    required this.vehicleTypes,
   });
-
-  static const _types = [
-    (VehicleType.moto, 'Moto', LucideIcons.zap),
-    (VehicleType.cab, 'Taxi', LucideIcons.car),
-    (VehicleType.trike, 'Trike', LucideIcons.truck),
-    (VehicleType.truck, 'Truck', LucideIcons.layoutGrid),
-    (VehicleType.private_, 'Private', LucideIcons.shield),
-  ];
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+    if (vehicleTypes.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       physics: const BouncingScrollPhysics(),
       child: Row(
-        children: _types.map((entry) {
-          final (type, label, icon) = entry;
-          final isSelected = selected == type;
+        children: vehicleTypes.map((vt) {
+          final isSelected = selectedId == vt.id;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: Semantics(
               selected: isSelected,
               button: true,
-              label: '$label vehicle filter',
+              label: '${vt.label} vehicle filter',
               child: _TappableChip(
                 isSelected: isSelected,
-                onTap: () => onSelected(type),
+                onTap: () => onSelected(vt.id),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      icon,
-                      size: 16,
-                      color: isSelected
-                          ? cs.onSecondaryContainer
-                          : cs.onSurface,
-                    ),
+                    _VehicleImage(vehicleType: vt, size: 24),
                     const SizedBox(width: 8),
                     Text(
-                      label,
+                      vt.label,
                       style: AppTypography.chipText.copyWith(
                         color: isSelected
-                            ? cs.onSecondaryContainer
-                            : cs.onSurface,
+                            ? Theme.of(context).colorScheme.onSecondaryContainer
+                            : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -85,6 +98,30 @@ class VehicleFilterChips extends StatelessWidget {
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+}
+
+/// Renders a vehicle image: network URL → local asset → Lucide icon fallback.
+class _VehicleImage extends StatelessWidget {
+  final VehicleTypeModel vehicleType;
+  final double size;
+
+  const _VehicleImage({required this.vehicleType, this.size = 24});
+
+  @override
+  Widget build(BuildContext context) {
+    // Try local asset (always bundled)
+    return Image.asset(
+      vehicleType.localAssetPath,
+      width: size,
+      height: size,
+      fit: BoxFit.contain,
+      errorBuilder: (_, __, ___) => Icon(
+        vehicleType.icon,
+        size: size * 0.7,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
     );
   }

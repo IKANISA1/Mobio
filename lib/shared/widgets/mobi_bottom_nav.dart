@@ -119,17 +119,13 @@ class _TappableNavItemState extends State<_TappableNavItem> {
                 width: widget.isActive ? 48 : 40,
                 height: widget.isActive ? 48 : 40,
                 decoration: BoxDecoration(
-                  color: widget.isActive
-                      ? cs.primary
-                      : Colors.transparent,
+                  color: widget.isActive ? cs.primary : Colors.transparent,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   widget.icon,
                   size: widget.isActive ? 22 : 20,
-                  color: widget.isActive
-                      ? cs.onPrimary
-                      : cs.onSurfaceVariant,
+                  color: widget.isActive ? cs.onPrimary : cs.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 4),
@@ -144,9 +140,7 @@ class _TappableNavItemState extends State<_TappableNavItem> {
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.3,
-                  color: widget.isActive
-                      ? cs.primary
-                      : cs.onSurfaceVariant,
+                  color: widget.isActive ? cs.primary : cs.onSurfaceVariant,
                 ),
               ),
             ],

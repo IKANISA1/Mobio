@@ -1,6 +1,6 @@
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
-import 'package:mobi_app/models/vehicle_type.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service for profile CRUD operations via Supabase.
@@ -100,31 +100,29 @@ class ProfileService {
     required BiopayHandleType biopayHandleType,
     required String biopayHandleValue,
     required bool isDriver,
-    required VehicleType vehicleType,
+    required String vehicleTypeId,
     required bool previousIsDriver,
-    required VehicleType previousVehicleType,
+    required String previousVehicleTypeId,
   }) async {
     await updateProfileViaRpc(
       whatsapp: whatsapp,
       countryCode: countryCode,
-      vehicleType: isDriver ? _vehicleTypeToStorage(vehicleType) : null,
+      vehicleType: isDriver ? vehicleTypeId : null,
       bioPayHandleType: biopayHandleType.storageValue,
       bioPayHandleValue: biopayHandleValue.trim(),
     );
 
     if (previousIsDriver != isDriver) {
       if (isDriver) {
-        await enableDriverMode(vehicleType: _vehicleTypeToStorage(vehicleType));
+        await enableDriverMode(vehicleType: vehicleTypeId);
       } else {
         await disableDriverMode();
       }
       return;
     }
 
-    if (isDriver && previousVehicleType != vehicleType) {
-      await updateProfileViaRpc(
-        vehicleType: _vehicleTypeToStorage(vehicleType),
-      );
+    if (isDriver && previousVehicleTypeId != vehicleTypeId) {
+      await updateProfileViaRpc(vehicleType: vehicleTypeId);
     }
   }
 
@@ -133,7 +131,9 @@ class ProfileService {
   /// **Deprecated:** Use [updateProfileViaRpc] or [saveProfileSettings]
   /// instead. This method bypasses the server-side field restrictions enforced
   /// by the `rpc_update_profile` RPC.
-  @Deprecated('Use updateProfileViaRpc() instead — direct table writes bypass RPC field protections')
+  @Deprecated(
+    'Use updateProfileViaRpc() instead — direct table writes bypass RPC field protections',
+  )
   Future<void> updateProfile({
     String? phone,
     String? countryCode,
@@ -251,19 +251,4 @@ class ProfileService {
   }
 
   // ---------------------------------------------------------------------------
-
-  String _vehicleTypeToStorage(VehicleType vehicleType) {
-    switch (vehicleType) {
-      case VehicleType.private_:
-        return 'private';
-      case VehicleType.moto:
-        return 'moto';
-      case VehicleType.cab:
-        return 'cab';
-      case VehicleType.trike:
-        return 'trike';
-      case VehicleType.truck:
-        return 'truck';
-    }
-  }
 }

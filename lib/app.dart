@@ -197,9 +197,6 @@ class BioPayScreenWrapper extends ConsumerWidget {
       onGetQR: () => context.push('/biopay/qr'),
       onScanQR: () => context.push('/biopay/scan'),
       onFaceScan: () => context.push('/biopay/face-scan'),
-      onPrivacyCenter: () => context.push('/biopay/privacy'),
-      onManage: () => context.push('/edit-profile'),
-      onEnroll: () => context.push('/biopay/enroll'),
     );
   }
 }
@@ -218,9 +215,8 @@ class ProfileScreenWrapper extends ConsumerWidget {
         isDarkMode: themeProvider.isDark,
         onDarkModeChanged: themeProvider.setDarkMode,
         onEditProfile: () => context.push('/edit-profile'),
-        onPrivacyCenter: () => context.push('/biopay/privacy'),
         onAdminGateway: () => context.push('/admin-auth'),
-        onFaceRegister: () => context.push('/biopay/register'),
+        onFaceRegister: () => context.push('/biopay/enroll'),
         onExitAdmin: role == 'admin'
             ? () {
                 ref.read(roleProvider.notifier).set('passenger');

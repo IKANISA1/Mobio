@@ -25,16 +25,18 @@ void main() {
       expect(result, closeTo(-1.0, 1e-6));
     });
 
-    test('192-dimensional normalized vectors have similarity ~1.0 when equal',
-        () {
-      final rng = math.Random(42);
-      final v = List.generate(192, (_) => rng.nextDouble() * 2 - 1);
-      final norm = math.sqrt(v.fold<double>(0, (s, x) => s + x * x));
-      final normalized = v.map((x) => x / norm).toList();
+    test(
+      '192-dimensional normalized vectors have similarity ~1.0 when equal',
+      () {
+        final rng = math.Random(42);
+        final v = List.generate(192, (_) => rng.nextDouble() * 2 - 1);
+        final norm = math.sqrt(v.fold<double>(0, (s, x) => s + x * x));
+        final normalized = v.map((x) => x / norm).toList();
 
-      final result = _cosineSimilarity(normalized, normalized);
-      expect(result, closeTo(1.0, 1e-6));
-    });
+        final result = _cosineSimilarity(normalized, normalized);
+        expect(result, closeTo(1.0, 1e-6));
+      },
+    );
 
     test('different 192D vectors have similarity < 1.0', () {
       final rng = math.Random(42);

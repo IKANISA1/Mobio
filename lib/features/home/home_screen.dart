@@ -3,20 +3,21 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
-import 'package:mobi_app/core/services/ai_content_service.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
 import 'package:mobi_app/core/services/ride_request_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
+import 'package:mobi_app/core/services/vehicle_type_service.dart';
 import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_shadows.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/trip.dart';
-import 'package:mobi_app/models/vehicle_type.dart';
+import 'package:mobi_app/models/vehicle_type_model.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
 import 'package:mobi_app/shared/widgets/driver_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
 import 'package:mobi_app/shared/widgets/ride_request_sheet.dart';
@@ -47,13 +48,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  VehicleType _vehicle = VehicleType.cab;
+  String _vehicleId = 'cab';
   bool _isLoading = true;
+  bool _hasError = false;
   bool _isDriverOnline = false;
   int _nearbyCount = 0;
   int _unreadCount = 0;
   List<Trip> _nearbyPreview = [];
   List<Trip> _scheduledPreview = [];
+  List<VehicleTypeModel> _vehicleTypes = [];
   final _driverLocationService = DriverLocationService();
   final _tripService = TripService();
   final _notificationService = NotificationService();
@@ -63,6 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _loadVehicleTypes();
     _loadData();
     _loadUnreadCount();
     _listenForIncomingRequests();
@@ -83,10 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() => _unreadCount++);
 
       // If it's a ride request/offer, auto-show the response sheet
-      final rideRequestTypes = {
-        'ride_request_received',
-        'ride_offer_received',
-      };
+      final rideRequestTypes = {'ride_request_received', 'ride_offer_received'};
       if (rideRequestTypes.contains(notif.type)) {
         final requestId = notif.metadata['ride_request_id'] as String?;
         if (requestId != null && mounted) {
@@ -113,7 +114,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadData() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
     try {
       // Fetch nearby + scheduled in parallel
       final results = await Future.wait([
@@ -145,13 +149,19 @@ class _HomeScreenState extends State<HomeScreen> {
           _nearbyPreview = [];
           _scheduledPreview = [];
           _isLoading = false;
+          _hasError = true;
         });
       }
     }
   }
 
-  void _switchVehicle(VehicleType v) {
-    setState(() => _vehicle = v);
+  Future<void> _loadVehicleTypes() async {
+    final types = await VehicleTypeService().getAll();
+    if (mounted) setState(() => _vehicleTypes = types);
+  }
+
+  void _switchVehicle(String id) {
+    setState(() => _vehicleId = id);
     _loadData();
   }
 
@@ -168,165 +178,187 @@ class _HomeScreenState extends State<HomeScreen> {
     final isDriver = widget.mode == 'driver';
 
     return SoftGradient(
-      category: PromoCategory.nearbyDrivers,
-      visibilityMode: SoftGradientVisibilityMode.reading,
-      allowMotion: true,
       child: SafeArea(
         bottom: false,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.only(bottom: 136 + mediaPadding.bottom),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-                child: MobiSurfacePanel(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
-                  borderRadius: 36,
-                  child: Column(
+        child: RefreshIndicator.adaptive(
+          onRefresh: _loadData,
+          color: cs.primary,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            padding: EdgeInsets.only(bottom: 136 + mediaPadding.bottom),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                  child: MobiSurfacePanel(
+                    padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+                    borderRadius: 36,
+                    child: Column(
+                      children: [
+                        _buildHeader(isDriver, cs, ext),
+                        const SizedBox(height: 18),
+                        MobiToggle(
+                          labels: isDriver
+                              ? const ['Passenger', 'Driver Mode']
+                              : const ['Passenger', 'Driver'],
+                          selectedIndex: isDriver ? 1 : 0,
+                          onChanged: (i) => widget.onModeChanged(
+                            i == 0 ? 'passenger' : 'driver',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: _TappableContainer(
+                    onTap: widget.onViewNearby,
+                    child: _buildHeroCard(isDriver),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
                     children: [
-                      _buildHeader(isDriver, cs, ext),
-                      const SizedBox(height: 18),
-                      MobiToggle(
-                        labels: isDriver
-                            ? const ['Passenger', 'Driver Mode']
-                            : const ['Passenger', 'Driver'],
-                        selectedIndex: isDriver ? 1 : 0,
-                        onChanged: (i) => widget.onModeChanged(
-                          i == 0 ? 'passenger' : 'driver',
+                      Expanded(
+                        child: _buildActionTile(
+                          context: context,
+                          icon: LucideIcons.mapPin,
+                          label: 'Nearby',
+                          subtitle: 'Find nearby drivers',
+                          color: Theme.of(context).colorScheme.primary,
+                          onTap: widget.onViewNearby,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildActionTile(
+                          context: context,
+                          icon: LucideIcons.calendarCheck,
+                          label: 'Schedule',
+                          subtitle: 'Schedule a trip',
+                          color: Theme.of(context).colorScheme.secondary,
+                          onTap: () => widget.onSchedule?.call(),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: _TappableContainer(
-                  onTap: widget.onViewNearby,
-                  child: _buildHeroCard(isDriver),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _buildActionTile(
-                        context: context,
-                        icon: LucideIcons.mapPin,
-                        label: 'Nearby',
-                        subtitle: 'Find nearby drivers',
-                        color: Theme.of(context).colorScheme.primary,
-                        onTap: widget.onViewNearby,
-                      ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: MobiSurfacePanel(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildActionTile(
-                        context: context,
-                        icon: LucideIcons.calendarCheck,
-                        label: 'Schedule',
-                        subtitle: 'Manage your trips',
-                        color: Theme.of(context).colorScheme.secondary,
-                        onTap: () => widget.onViewBookings?.call(),
-                      ),
+                    borderRadius: 32,
+                    child: VehicleFilterChips(
+                      selectedId: _vehicleId,
+                      onSelected: _switchVehicle,
+                      vehicleTypes: _vehicleTypes,
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: MobiSurfacePanel(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 12,
-                  ),
-                  borderRadius: 32,
-                  child: VehicleFilterChips(
-                    selected: _vehicle,
-                    onSelected: _switchVehicle,
                   ),
                 ),
-              ),
-              const SizedBox(height: 32),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: _buildSectionHeader(
-                  context: context,
-                  title: isDriver ? 'Nearby Passengers' : 'Nearby Drivers',
-                  onViewAll: widget.onViewNearby,
+                const SizedBox(height: 32),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: _buildSectionHeader(
+                    context: context,
+                    title: isDriver ? 'Nearby Passengers' : 'Nearby Drivers',
+                    onViewAll: widget.onViewNearby,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: _isLoading
-                    ? Column(
-                        children: List.generate(
-                          2,
-                          (_) => const Padding(
-                            padding: EdgeInsets.only(bottom: 16),
-                            child: LoadingSkeleton(height: 100),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: _hasError
+                      ? MobiErrorState(
+                          title: 'Unable to load data',
+                          subtitle: 'Pull down to refresh or tap to retry.',
+                          icon: LucideIcons.wifiOff,
+                          onRetry: _loadData,
+                          height: 240,
+                        )
+                      : _isLoading
+                      ? Column(
+                          children: List.generate(
+                            2,
+                            (_) => const Padding(
+                              padding: EdgeInsets.only(bottom: 16),
+                              child: LoadingSkeleton.card(height: 100),
+                            ),
                           ),
-                        ),
-                      )
-                    : _nearbyPreview.isNotEmpty
-                    ? Column(
-                        children: _nearbyPreview
-                            .map(
-                              (trip) => Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: DriverCard(
-                                  trip: trip,
-                                  onChat: () => widget.onChat(trip),
+                        )
+                      : _nearbyPreview.isNotEmpty
+                      ? Column(
+                          children: _nearbyPreview
+                              .map(
+                                (trip) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: DriverCard(
+                                    trip: trip,
+                                    onChat: () => widget.onChat(trip),
+                                  ),
                                 ),
-                              ),
-                            )
-                            .toList(),
-                      )
-                    : AiEmptyState(
-                        title:
-                            'No nearby ${isDriver ? "passengers" : "drivers"} found.',
-                        icon: LucideIcons.mapPin,
-                        height: 200,
-                      ),
-              ),
-              const SizedBox(height: 32),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: _buildSectionHeader(
-                  context: context,
-                  title: 'Scheduled',
-                  onViewAll: () => widget.onViewBookings?.call(),
+                              )
+                              .toList(),
+                        )
+                      : AiEmptyState(
+                          title:
+                              'No nearby ${isDriver ? "passengers" : "drivers"} found.',
+                          icon: LucideIcons.mapPin,
+                          height: 200,
+                        ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: _scheduledPreview.isNotEmpty
-                    ? Column(
-                        children: _scheduledPreview
-                            .map(
-                              (trip) => Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: _buildScheduledCard(context, trip),
-                              ),
-                            )
-                            .toList(),
-                      )
-                    : const AiEmptyState(
-                        title: 'No scheduled trips.',
-                        subtitle: 'Tap Nearby to find drivers.',
-                        icon: LucideIcons.calendar,
-                        height: 200,
-                      ),
-              ),
-            ],
+                const SizedBox(height: 32),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: _buildSectionHeader(
+                    context: context,
+                    title: 'Scheduled',
+                    onViewAll: () => widget.onViewBookings?.call(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: _isLoading
+                      ? Column(
+                          children: List.generate(
+                            2,
+                            (_) => const Padding(
+                              padding: EdgeInsets.only(bottom: 16),
+                              child: LoadingSkeleton.card(height: 100),
+                            ),
+                          ),
+                        )
+                      : _scheduledPreview.isNotEmpty
+                      ? Column(
+                          children: _scheduledPreview
+                              .map(
+                                (trip) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: _buildScheduledCard(context, trip),
+                                ),
+                              )
+                              .toList(),
+                        )
+                      : const AiEmptyState(
+                          title: 'No scheduled trips.',
+                          subtitle: 'Tap Nearby to find drivers.',
+                          icon: LucideIcons.calendar,
+                          height: 200,
+                        ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -345,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Transform.scale(
                     scale: 1.38,
                     child: Image.asset(
-                      'icon/mobi_splash.png',
+                      'icon/mobi_logo_transparent.png',
                       fit: BoxFit.contain,
                       filterQuality: FilterQuality.high,
                     ),
@@ -445,9 +477,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHeroCard(bool isDriver) {
-    final heroText = isDriver
-        ? '$_nearbyCount\nPassengers\nNear You'
-        : '$_nearbyCount\nDrivers\nNear You';
+    final heroText = _nearbyCount > 0
+        ? '$_nearbyCount\n${isDriver ? "Passengers" : "Drivers"}\nNear You'
+        : '${isDriver ? "Passengers" : "Drivers"} Near You';
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -476,6 +508,7 @@ class _HomeScreenState extends State<HomeScreen> {
             heroText,
             maxLines: 4,
             overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
             style: AppTypography.displayLg.copyWith(
               fontSize: titleSize,
               height: 1.05,
@@ -656,8 +689,8 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _buildChip(
                 context: context,
-                icon: _vehicleIcon(trip.effectiveVehicleType),
-                label: trip.effectiveVehicleType.label.toUpperCase(),
+                icon: getVehicleIconFromId(trip.vehicleTypeStr),
+                label: trip.vehicleTypeStr.toUpperCase(),
               ),
               const SizedBox(width: 8),
               _buildChip(
@@ -670,21 +703,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
-  }
-
-  IconData _vehicleIcon(VehicleType type) {
-    switch (type) {
-      case VehicleType.moto:
-        return LucideIcons.zap;
-      case VehicleType.cab:
-        return LucideIcons.car;
-      case VehicleType.trike:
-        return LucideIcons.truck;
-      case VehicleType.truck:
-        return LucideIcons.truck;
-      case VehicleType.private_:
-        return LucideIcons.car;
-    }
   }
 
   Widget _buildChip({

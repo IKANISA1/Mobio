@@ -11,8 +11,12 @@ void main() {
 
     test('returns value between 100000 and 999999', () {
       final ids = [
-        'a', 'abc', 'test-uuid', '00000000-0000-0000-0000-000000000000',
-        'ffffffff-ffff-ffff-ffff-ffffffffffff', '中文测试',
+        'a',
+        'abc',
+        'test-uuid',
+        '00000000-0000-0000-0000-000000000000',
+        'ffffffff-ffff-ffff-ffff-ffffffffffff',
+        '中文测试',
       ];
       for (final id in ids) {
         final result = int.parse(AppConstants.getDriverId(id));

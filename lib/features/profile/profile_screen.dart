@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
@@ -15,7 +16,7 @@ class ProfileScreen extends StatefulWidget {
   final bool isDarkMode;
   final ValueChanged<bool> onDarkModeChanged;
   final VoidCallback onEditProfile;
-  final VoidCallback onPrivacyCenter;
+
   final VoidCallback onAdminGateway;
   final VoidCallback? onFaceRegister;
   final VoidCallback? onExitAdmin;
@@ -25,7 +26,7 @@ class ProfileScreen extends StatefulWidget {
     required this.isDarkMode,
     required this.onDarkModeChanged,
     required this.onEditProfile,
-    required this.onPrivacyCenter,
+
     required this.onAdminGateway,
     this.onFaceRegister,
     this.onExitAdmin,
@@ -61,13 +62,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (profile != null && mounted) {
         final year = await _profileService.getMemberSinceYear();
         setState(() {
-          _userCode =
-              (profile['member_id'] as String?) ??
-              (profile['id'] as String).substring(0, 6).toUpperCase();
+          final memberId = profile['member_id'] as String?;
+          if (memberId != null && memberId.isNotEmpty) {
+            _userCode = memberId
+                .replaceAll(RegExp(r'[^0-9]'), '')
+                .padLeft(6, '0')
+                .substring(0, 6);
+          } else {
+            // Derive a stable 6-digit numeric code from the UUID
+            final rawId = profile['id'] as String;
+            final hash = rawId.hashCode.abs();
+            _userCode = (hash % 1000000).toString().padLeft(6, '0');
+          }
           _memberSince = year ?? 2024;
         });
       }
-    } on Object catch (_) {
+    } on Object catch (e, st) {
+      log('Error loading profile: $e', stackTrace: st);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -80,8 +91,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (_isLoading) {
       return SoftGradient(
-        visibilityMode: SoftGradientVisibilityMode.reading,
-        allowMotion: true,
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 80, 24, 160),
           child: Column(
@@ -104,8 +113,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     return SoftGradient(
-      visibilityMode: SoftGradientVisibilityMode.reading,
-      allowMotion: true,
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 80, 24, 160),
         child: Column(
@@ -133,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Premium Member • Since $_memberSince',
+                    'Member • Since $_memberSince',
                     style: AppTypography.bodySm.copyWith(
                       color: cs.onSurfaceVariant,
                     ),
@@ -188,7 +195,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'Set up biometrics for payments',
+                              'Secure payments with your face',
                               style: AppTypography.bodySm.copyWith(
                                 color: cs.onPrimary.withValues(alpha: 0.7),
                               ),
@@ -214,14 +221,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: LucideIcons.user,
               label: 'Edit Profile',
               onTap: widget.onEditProfile,
-            ),
-            const SizedBox(height: 16),
-
-            _buildSettingsCard(
-              context: context,
-              icon: LucideIcons.shieldCheck,
-              label: 'Privacy & Data',
-              onTap: widget.onPrivacyCenter,
             ),
             const SizedBox(height: 16),
 

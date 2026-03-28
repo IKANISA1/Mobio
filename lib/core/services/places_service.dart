@@ -18,11 +18,9 @@ class PlacesService {
   /// Base delay for exponential backoff.
   static const _baseDelay = Duration(milliseconds: 800);
 
-  PlacesService({
-    SupabaseClient? supabase,
-    Connectivity? connectivity,
-  })  : _supabase = supabase ?? Supabase.instance.client,
-        _connectivity = connectivity ?? Connectivity();
+  PlacesService({SupabaseClient? supabase, Connectivity? connectivity})
+    : _supabase = supabase ?? Supabase.instance.client,
+      _connectivity = connectivity ?? Connectivity();
 
   // ---------------------------------------------------------------------------
   // Resilience helpers
@@ -57,10 +55,18 @@ class PlacesService {
         return await action().timeout(timeout);
       } on TimeoutException catch (e) {
         lastError = e;
-        if (kDebugMode) debugPrint('⏱️ [$operationName] timed out (attempt ${attempt + 1}/$_maxRetries)');
+        if (kDebugMode) {
+          debugPrint(
+            '⏱️ [$operationName] timed out (attempt ${attempt + 1}/$_maxRetries)',
+          );
+        }
       } on FunctionException catch (e) {
         lastError = e;
-        if (kDebugMode) debugPrint('🔴 [$operationName] FunctionException: status=${e.status}, reasonPhrase=${e.reasonPhrase}');
+        if (kDebugMode) {
+          debugPrint(
+            '🔴 [$operationName] FunctionException: status=${e.status}, reasonPhrase=${e.reasonPhrase}',
+          );
+        }
         final status = e.status;
         if (status >= 400 && status < 500) {
           throw PlacesException(
@@ -69,10 +75,16 @@ class PlacesService {
             cause: e,
           );
         }
-        AppLogger.warning('$operationName server error (attempt ${attempt + 1}/$_maxRetries): $e');
+        AppLogger.warning(
+          '$operationName server error (attempt ${attempt + 1}/$_maxRetries): $e',
+        );
       } on Object catch (e, stack) {
         lastError = e;
-        if (kDebugMode) debugPrint('🔴 [$operationName] Unexpected ${e.runtimeType}: $e\n$stack');
+        if (kDebugMode) {
+          debugPrint(
+            '🔴 [$operationName] Unexpected ${e.runtimeType}: $e\n$stack',
+          );
+        }
       }
 
       if (attempt < _maxRetries - 1) {
@@ -120,7 +132,11 @@ class PlacesService {
         // Verify session is present (anonymous auth from splash)
         final session = _supabase.auth.currentSession;
         if (session == null) {
-          if (kDebugMode) debugPrint('⚠️ [autocomplete] NO AUTH SESSION — edge function will reject');
+          if (kDebugMode) {
+            debugPrint(
+              '⚠️ [autocomplete] NO AUTH SESSION — edge function will reject',
+            );
+          }
         }
 
         final body = <String, dynamic>{
@@ -130,12 +146,8 @@ class PlacesService {
 
         // Pass user location for proximity bias
         if (nearLat != null && nearLng != null) {
-          body['near'] = {
-            'latitude': nearLat,
-            'longitude': nearLng,
-          };
+          body['near'] = {'latitude': nearLat, 'longitude': nearLng};
         }
-
 
         final response = await _supabase.functions.invoke(
           'maps-gateway',
@@ -147,7 +159,11 @@ class PlacesService {
         if (data == null) return [];
 
         if (data is! Map) {
-          if (kDebugMode) debugPrint('⚠️ [autocomplete] unexpected response type: ${data.runtimeType}');
+          if (kDebugMode) {
+            debugPrint(
+              '⚠️ [autocomplete] unexpected response type: ${data.runtimeType}',
+            );
+          }
           return [];
         }
 
@@ -159,14 +175,16 @@ class PlacesService {
 
         final List<PlacePrediction> predictions = [];
         for (final suggestion in suggestions) {
-          predictions.add(PlacePrediction(
-            placeId: suggestion['placeId']?.toString() ?? '',
-            description: suggestion['label']?.toString() ?? '',
-            primaryText: suggestion['primaryText'] as String?,
-            secondaryText: suggestion['secondaryText'] as String?,
-            distanceMeters: (suggestion['distanceMeters'] as num?)?.toInt(),
-            predictionType: suggestion['type']?.toString() ?? 'place',
-          ));
+          predictions.add(
+            PlacePrediction(
+              placeId: suggestion['placeId']?.toString() ?? '',
+              description: suggestion['label']?.toString() ?? '',
+              primaryText: suggestion['primaryText'] as String?,
+              secondaryText: suggestion['secondaryText'] as String?,
+              distanceMeters: (suggestion['distanceMeters'] as num?)?.toInt(),
+              predictionType: suggestion['type']?.toString() ?? 'place',
+            ),
+          );
         }
         return predictions;
       },
@@ -181,10 +199,7 @@ class PlacesService {
       action: () async {
         final response = await _supabase.functions.invoke(
           'maps-gateway',
-          body: {
-            'action': 'place_details',
-            'placeId': placeId,
-          },
+          body: {'action': 'place_details', 'placeId': placeId},
         );
 
         final data = response.data;
@@ -195,7 +210,8 @@ class PlacesService {
           placeId: (place['placeId'] as String?) ?? '',
           formattedAddress: (place['label'] as String?) ?? '',
           latitude: (place['position']?['latitude'] as num?)?.toDouble() ?? 0.0,
-          longitude: (place['position']?['longitude'] as num?)?.toDouble() ?? 0.0,
+          longitude:
+              (place['position']?['longitude'] as num?)?.toDouble() ?? 0.0,
         );
       },
     );
@@ -223,7 +239,8 @@ class PlacesService {
           placeId: (place['placeId'] as String?) ?? '',
           formattedAddress: (place['label'] as String?) ?? '',
           latitude: (place['position']?['latitude'] as num?)?.toDouble() ?? lat,
-          longitude: (place['position']?['longitude'] as num?)?.toDouble() ?? lng,
+          longitude:
+              (place['position']?['longitude'] as num?)?.toDouble() ?? lng,
         );
       },
     );

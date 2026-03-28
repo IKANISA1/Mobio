@@ -29,10 +29,14 @@ class GlassCard extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: ext.surfaceContainerLowest.withValues(alpha: ext.glassCardBgAlpha),
+            color: ext.surfaceContainerLowest.withValues(
+              alpha: ext.glassCardBgAlpha,
+            ),
             borderRadius: br,
             border: Border.all(
-              color: Colors.white.withValues(alpha: ext.glassCardBorderWhiteAlpha),
+              color: Colors.white.withValues(
+                alpha: ext.glassCardBorderWhiteAlpha,
+              ),
               width: 1,
             ),
             gradient: LinearGradient(
@@ -44,10 +48,7 @@ class GlassCard extends StatelessWidget {
               ],
             ),
           ),
-          child: Padding(
-            padding: padding ?? EdgeInsets.zero,
-            child: child,
-          ),
+          child: Padding(padding: padding ?? EdgeInsets.zero, child: child),
         ),
       ),
     );

@@ -47,16 +47,15 @@ class _RideRequestSheetState extends State<_RideRequestSheet> {
   bool _isProcessing = false;
   String? _actionResult;
 
-  bool get _isPending =>
-      widget.request.isPending && _actionResult == null;
+  bool get _isPending => widget.request.isPending && _actionResult == null;
 
-  String get _typeLabel =>
-      widget.request.type == RideRequestType.offer ? 'Ride Offer' : 'Ride Request';
+  String get _typeLabel => widget.request.type == RideRequestType.offer
+      ? 'Ride Offer'
+      : 'Ride Request';
 
-  IconData get _typeIcon =>
-      widget.request.type == RideRequestType.offer
-          ? LucideIcons.gift
-          : LucideIcons.send;
+  IconData get _typeIcon => widget.request.type == RideRequestType.offer
+      ? LucideIcons.gift
+      : LucideIcons.send;
 
   Future<void> _accept() async {
     if (_isProcessing) return;
@@ -79,9 +78,9 @@ class _RideRequestSheetState extends State<_RideRequestSheet> {
     } on Object catch (e) {
       if (!mounted) return;
       setState(() => _isProcessing = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to accept: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to accept: $e')));
     }
   }
 
@@ -99,9 +98,9 @@ class _RideRequestSheetState extends State<_RideRequestSheet> {
     } on Object catch (e) {
       if (!mounted) return;
       setState(() => _isProcessing = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to decline: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to decline: $e')));
     }
   }
 

@@ -5,9 +5,10 @@ import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/services/push_notification_service.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/core/utils/navigation_utils.dart';
-import 'package:mobi_app/features/biopay/biopay_privacy_screen.dart';
+
+import 'package:mobi_app/features/admin/admin_vehicle_types_screen.dart';
 import 'package:mobi_app/features/biopay/face_enrollment_screen.dart';
-import 'package:mobi_app/features/biopay/face_registration_screen.dart';
+
 import 'package:mobi_app/features/biopay/face_scan_screen.dart';
 import 'package:mobi_app/features/biopay/get_qr_screen.dart';
 import 'package:mobi_app/features/biopay/scan_qr_screen.dart';
@@ -31,15 +32,14 @@ abstract class AppRoutes {
   static const String adminDashboard = '/admin';
   static const String adminUsers = '/admin/users';
   static const String adminProfile = '/admin/profile';
+  static const String adminVehicleTypes = '/admin/vehicle-types';
   static const String getQr = '/biopay/qr';
   static const String scanQr = '/biopay/scan';
   static const String faceScan = '/biopay/face-scan';
-  static const String faceRegister = '/biopay/register';
   static const String faceEnroll = '/biopay/enroll';
-  static const String biopayPrivacy = '/biopay/privacy';
+
   static const String configError = '/config-error';
 }
-
 
 /// Admin route guard — validates server-side role before allowing admin UI.
 ///
@@ -49,9 +49,8 @@ String? _adminRouteGuard(GoRouterState state) {
   final path = state.matchedLocation;
 
   // Only guard admin-specific routes (except admin-auth which is the login screen)
-  final isAdminRoute = path == '/admin' ||
-      path.startsWith('/admin/') ||
-      path == '/admin-auth';
+  final isAdminRoute =
+      path == '/admin' || path.startsWith('/admin/') || path == '/admin-auth';
   if (!isAdminRoute || path == '/admin-auth') return null;
 
   // Check if user has an active session with admin profile
@@ -195,6 +194,12 @@ GoRouter createRouter() {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const AdminAuthScreenWrapper(),
       ),
+      GoRoute(
+        path: '/admin/vehicle-types',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            AdminVehicleTypesScreen(onBack: () => safePop(context)),
+      ),
 
       // ── BioPay sub-screens ──
       GoRoute(
@@ -215,26 +220,12 @@ GoRouter createRouter() {
         builder: (context, state) =>
             FaceScanScreen(onBack: () => safePop(context)),
       ),
-      GoRoute(
-        path: '/biopay/register',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => FaceRegistrationScreen(
-          onBack: () => safePop(context),
-          onEnroll: () => context.push('/biopay/enroll'),
-          onPrivacyCenter: () => context.push('/biopay/privacy'),
-        ),
-      ),
+
       GoRoute(
         path: '/biopay/enroll',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
             FaceEnrollmentScreen(onBack: () => safePop(context)),
-      ),
-      GoRoute(
-        path: '/biopay/privacy',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            BiopayPrivacyScreen(onBack: () => safePop(context)),
       ),
     ],
   );

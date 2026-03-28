@@ -74,9 +74,7 @@ void main() {
     // Test the L2 normalization logic directly
     test('normalized vector has unit length', () {
       final vector = [3.0, 4.0]; // norm = 5.0
-      final norm = math.sqrt(
-        vector.fold<double>(0, (s, v) => s + v * v),
-      );
+      final norm = math.sqrt(vector.fold<double>(0, (s, v) => s + v * v));
       final normalized = vector.map((v) => v / norm).toList();
 
       final resultNorm = math.sqrt(
@@ -87,9 +85,7 @@ void main() {
 
     test('zero vector is not modified', () {
       final vector = [0.0, 0.0, 0.0];
-      final norm = math.sqrt(
-        vector.fold<double>(0, (s, v) => s + v * v),
-      );
+      final norm = math.sqrt(vector.fold<double>(0, (s, v) => s + v * v));
       // norm ≈ 0, so normalization should leave vector unchanged
       expect(norm, lessThan(1e-10));
     });
@@ -97,9 +93,7 @@ void main() {
     test('192-dimensional random vector normalizes to unit', () {
       final rng = math.Random(42);
       final vector = List.generate(192, (_) => rng.nextDouble() * 2 - 1);
-      final norm = math.sqrt(
-        vector.fold<double>(0, (s, v) => s + v * v),
-      );
+      final norm = math.sqrt(vector.fold<double>(0, (s, v) => s + v * v));
       final normalized = vector.map((v) => v / norm).toList();
 
       final resultNorm = math.sqrt(

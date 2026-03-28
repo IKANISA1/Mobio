@@ -50,9 +50,7 @@ class TripService {
     final now = DateTime.now();
     if (_lastCreateTime != null &&
         now.difference(_lastCreateTime!) < _createCooldown) {
-      throw Exception(
-        'Please wait a moment before creating another trip.',
-      );
+      throw Exception('Please wait a moment before creating another trip.');
     }
     _lastCreateTime = now;
 

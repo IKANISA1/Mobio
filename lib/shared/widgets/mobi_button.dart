@@ -40,7 +40,9 @@ class MobiButton extends StatelessWidget {
             splashColor: Colors.transparent,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              padding: padding ?? const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+              padding:
+                  padding ??
+                  const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
               decoration: BoxDecoration(
                 gradient: colors.gradient,
                 color: colors.gradient == null ? colors.bg : null,
@@ -99,10 +101,7 @@ class MobiButton extends StatelessWidget {
           ),
         );
       case MobiButtonVariant.ghost:
-        return _ButtonColors(
-          bg: ext.surfaceContainerHigh,
-          fg: cs.onSurface,
-        );
+        return _ButtonColors(bg: ext.surfaceContainerHigh, fg: cs.onSurface);
       case MobiButtonVariant.danger:
         return _ButtonColors(
           bg: cs.error,

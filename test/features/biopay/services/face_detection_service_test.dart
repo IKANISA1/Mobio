@@ -103,7 +103,7 @@ void main() {
       for (int y = 2; y < 6; y++) {
         for (int x = 2; x < 6; x++) {
           final offset = (y * width + x) * 4;
-          rgba[offset] = 255;     // R
+          rgba[offset] = 255; // R
           rgba[offset + 1] = 255; // G
           rgba[offset + 2] = 255; // B
           rgba[offset + 3] = 255; // A

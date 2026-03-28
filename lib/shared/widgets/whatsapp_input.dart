@@ -64,9 +64,7 @@ class _WhatsAppInputState extends State<WhatsAppInput> {
       children: [
         Text(
           widget.label.toUpperCase(),
-          style: AppTypography.labelSm.copyWith(
-            color: cs.onSurfaceVariant,
-          ),
+          style: AppTypography.labelSm.copyWith(color: cs.onSurfaceVariant),
         ),
         const SizedBox(height: 8),
         DecoratedBox(
@@ -81,13 +79,13 @@ class _WhatsAppInputState extends State<WhatsAppInput> {
               GestureDetector(
                 onTap: () => _showCountryPicker(context),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 18,
+                  ),
                   decoration: BoxDecoration(
                     border: Border(
-                      right: BorderSide(
-                        color: ext.surfaceContainer,
-                        width: 1,
-                      ),
+                      right: BorderSide(color: ext.surfaceContainer, width: 1),
                     ),
                   ),
                   child: Row(
@@ -122,7 +120,10 @@ class _WhatsAppInputState extends State<WhatsAppInput> {
                       color: cs.onSurfaceVariant.withValues(alpha: 0.3),
                     ),
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 18,
+                    ),
                   ),
                 ),
               ),
@@ -151,7 +152,10 @@ class _WhatsAppInputState extends State<WhatsAppInput> {
               mainAxisSize: MainAxisSize.min,
               children: _countries.map((country) {
                 return ListTile(
-                  leading: Text(country.flag, style: const TextStyle(fontSize: 24)),
+                  leading: Text(
+                    country.flag,
+                    style: const TextStyle(fontSize: 24),
+                  ),
                   title: Text(
                     country.name,
                     style: AppTypography.titleMd.copyWith(

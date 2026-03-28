@@ -187,6 +187,21 @@ class AdminService {
 
   String? get currentUserId => _supabase.auth.currentUser?.id;
 
+  /// Checks if [phoneE164] is an approved admin number.
+  /// Returns `true` if the number exists and is active.
+  Future<bool> checkAdminAccess(String phoneE164) async {
+    try {
+      final result = await _supabase.rpc(
+        'rpc_check_admin_access',
+        params: {'p_phone_e164': phoneE164},
+      );
+      return result == true;
+    } on Object catch (error) {
+      AppLogger.error('Error checking admin access: $error');
+      return false;
+    }
+  }
+
   Future<AdminDashboardStats> getDashboardStats() async {
     try {
       final data = await _supabase.rpc('get_dashboard_stats');

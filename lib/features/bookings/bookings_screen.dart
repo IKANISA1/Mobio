@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
-import 'package:mobi_app/core/services/ai_content_service.dart';
+
 import 'package:mobi_app/core/services/ride_request_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -147,11 +147,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
     final grouped = _groupTrips(_currentTrips);
 
     return SoftGradient(
-      category: _activeToggle == 0
-          ? PromoCategory.scheduledTrips
-          : PromoCategory.nearbyTrips,
-      visibilityMode: SoftGradientVisibilityMode.reading,
-      allowMotion: true,
       child: SafeArea(
         bottom: false,
         child: Stack(
@@ -159,17 +154,15 @@ class _BookingsScreenState extends State<BookingsScreen> {
             RefreshIndicator(
               onRefresh: _loadTrips,
               color: Theme.of(context).colorScheme.primary,
-              child: SingleChildScrollView(
+              child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(
                   parent: BouncingScrollPhysics(),
                 ),
-                padding: EdgeInsets.only(bottom: 176 + mediaPadding.bottom),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                slivers: [
+                  // Header
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                    sliver: SliverToBoxAdapter(
                       child: MobiSurfacePanel(
                         padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
                         borderRadius: 36,
@@ -226,20 +219,23 @@ class _BookingsScreenState extends State<BookingsScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    const SizedBox(height: 8),
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
-                    // Content
-                    if (_isLoading)
-                      ..._buildLoadingState()
-                    else if (_error != null)
-                      _buildErrorState()
-                    else if (_currentTrips.isEmpty)
-                      _buildEmptyState()
-                    else
-                      ..._buildTripSections(grouped),
-                  ],
-                ),
+                  // Content
+                  if (_isLoading)
+                    ..._buildLoadingSlivers()
+                  else if (_error != null)
+                    SliverToBoxAdapter(child: _buildErrorState())
+                  else if (_currentTrips.isEmpty)
+                    SliverToBoxAdapter(child: _buildEmptyState())
+                  else
+                    ..._buildTripSlivers(grouped),
+
+                  SliverPadding(
+                    padding: EdgeInsets.only(bottom: 176 + mediaPadding.bottom),
+                  ),
+                ],
               ),
             ),
 
@@ -247,25 +243,29 @@ class _BookingsScreenState extends State<BookingsScreen> {
             Positioned(
               bottom: 112 + mediaPadding.bottom,
               right: 32,
-              child: SizedBox(
-                width: 64,
-                height: 64,
-                child: Material(
-                  color: Theme.of(context).colorScheme.primary,
-                  shape: const CircleBorder(),
-                  elevation: 8,
-                  shadowColor: Theme.of(
-                    context,
-                  ).colorScheme.primary.withValues(alpha: 0.4),
-                  child: InkWell(
-                    onTap: widget.onSchedule,
-                    customBorder: const CircleBorder(),
-                    splashColor: Colors.white.withValues(alpha: 0.2),
-                    child: const Center(
-                      child: Icon(
-                        LucideIcons.plus,
-                        size: 28,
-                        color: Colors.white,
+              child: Semantics(
+                button: true,
+                label: 'Schedule new trip',
+                child: SizedBox(
+                  width: 64,
+                  height: 64,
+                  child: Material(
+                    color: Theme.of(context).colorScheme.primary,
+                    shape: const CircleBorder(),
+                    elevation: 8,
+                    shadowColor: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.4),
+                    child: InkWell(
+                      onTap: widget.onSchedule,
+                      customBorder: const CircleBorder(),
+                      splashColor: Colors.white.withValues(alpha: 0.2),
+                      child: const Center(
+                        child: Icon(
+                          LucideIcons.plus,
+                          size: 28,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
@@ -278,27 +278,26 @@ class _BookingsScreenState extends State<BookingsScreen> {
     );
   }
 
-  List<Widget> _buildLoadingState() {
+  List<Widget> _buildLoadingSlivers() {
     return ['TODAY', 'TOMORROW'].map((section) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 0, bottom: 12),
-              child: _buildSectionLabel(section),
-            ),
-            ...List.generate(
-              2,
-              (_) => const Padding(
+      return SliverMainAxisGroup(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 12),
+            sliver: SliverToBoxAdapter(child: _buildSectionLabel(section)),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            sliver: SliverList.builder(
+              itemCount: 2,
+              itemBuilder: (_, __) => const Padding(
                 padding: EdgeInsets.only(bottom: 16),
                 child: LoadingSkeleton(height: 192),
               ),
             ),
-            const SizedBox(height: 24),
-          ],
-        ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        ],
       );
     }).toList();
   }
@@ -333,24 +332,29 @@ class _BookingsScreenState extends State<BookingsScreen> {
     );
   }
 
-  List<Widget> _buildTripSections(Map<String, List<Trip>> grouped) {
+  List<Widget> _buildTripSlivers(Map<String, List<Trip>> grouped) {
     return ['TODAY', 'TOMORROW', 'LATER'].map((section) {
       final sectionTrips = grouped[section] ?? [];
-      if (sectionTrips.isEmpty) return const SizedBox.shrink();
+      if (sectionTrips.isEmpty) {
+        return const SliverToBoxAdapter(child: SizedBox.shrink());
+      }
 
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 0, bottom: 12),
-              child: _buildSectionLabel(section),
+      return SliverMainAxisGroup(
+        slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 12),
+            sliver: SliverToBoxAdapter(child: _buildSectionLabel(section)),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            sliver: SliverList.builder(
+              itemCount: sectionTrips.length,
+              itemBuilder: (context, index) =>
+                  _buildTripCard(sectionTrips[index]),
             ),
-            ...sectionTrips.map(_buildTripCard),
-            const SizedBox(height: 24),
-          ],
-        ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        ],
       );
     }).toList();
   }
@@ -724,18 +728,16 @@ class _BookingsScreenState extends State<BookingsScreen> {
         setState(() => _requestedTripIds.add(trip.id!));
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              isDriver ? 'Ride request sent!' : 'Ride offer sent!',
-            ),
+            content: Text(isDriver ? 'Ride request sent!' : 'Ride offer sent!'),
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
       }
     } on Object catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     }
   }

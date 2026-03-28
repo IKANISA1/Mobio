@@ -47,11 +47,10 @@ class AppNotification {
 class NotificationService {
   final SupabaseClient _supabase;
   RealtimeChannel? _channel;
-  final _notificationController =
-      StreamController<AppNotification>.broadcast();
+  final _notificationController = StreamController<AppNotification>.broadcast();
 
   NotificationService({SupabaseClient? supabase})
-      : _supabase = supabase ?? Supabase.instance.client;
+    : _supabase = supabase ?? Supabase.instance.client;
 
   String? get _currentUserId => _supabase.auth.currentUser?.id;
 
@@ -75,11 +74,7 @@ class NotificationService {
           .order('created_at', ascending: false)
           .limit(limit);
 
-      return rows
-          .map<AppNotification>(
-            AppNotification.fromJson,
-          )
-          .toList();
+      return rows.map<AppNotification>(AppNotification.fromJson).toList();
     } on Object catch (e) {
       AppLogger.error('Error fetching notifications: $e');
       return [];
@@ -99,11 +94,7 @@ class NotificationService {
           .eq('is_read', false)
           .order('created_at', ascending: false);
 
-      return rows
-          .map<AppNotification>(
-            AppNotification.fromJson,
-          )
-          .toList();
+      return rows.map<AppNotification>(AppNotification.fromJson).toList();
     } on Object catch (e) {
       AppLogger.error('Error fetching unread notifications: $e');
       return [];
@@ -184,8 +175,7 @@ class NotificationService {
           ),
           callback: (payload) {
             try {
-              final notification =
-                  AppNotification.fromJson(payload.newRecord);
+              final notification = AppNotification.fromJson(payload.newRecord);
               _notificationController.add(notification);
             } on Object catch (e) {
               AppLogger.error('Error parsing realtime notification: $e');

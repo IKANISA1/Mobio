@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/services/biopay_service.dart';
 import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
+import 'package:mobi_app/core/services/vehicle_type_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
 import 'package:mobi_app/models/country.dart';
-import 'package:mobi_app/models/vehicle_type.dart';
+import 'package:mobi_app/models/vehicle_type_model.dart';
+import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -34,13 +35,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _isSaving = false;
   bool _isDriver = false;
   bool _initialIsDriver = false;
-  VehicleType _vehicleType = VehicleType.cab;
-  VehicleType _initialVehicleType = VehicleType.cab;
+  String _vehicleTypeId = 'cab';
+  String _initialVehicleTypeId = 'cab';
   BiopayHandleType _handleType = BiopayHandleType.number;
+  List<VehicleTypeModel> _vehicleTypes = [];
 
   @override
   void initState() {
     super.initState();
+    _loadVehicleTypes();
     _loadProfile();
   }
 
@@ -116,9 +119,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       final resolvedHandleType = initialHandle?.type ?? BiopayHandleType.number;
       final resolvedHandleValue = initialHandle?.value ?? '';
-      final resolvedVehicleType = VehicleType.fromString(
-        profile?['vehicle_type'] as String? ?? 'cab',
-      );
+      final resolvedVehicleTypeId =
+          (profile?['vehicle_type'] as String?)?.isNotEmpty == true
+          ? (profile!['vehicle_type'] as String)
+          : 'cab';
       final resolvedIsDriver =
           (profile?['is_driver'] as bool?) ??
           ((profile?['role'] as String?) == 'driver');
@@ -137,8 +141,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _handleType = resolvedHandleType;
         _isDriver = resolvedIsDriver;
         _initialIsDriver = resolvedIsDriver;
-        _vehicleType = resolvedVehicleType;
-        _initialVehicleType = resolvedVehicleType;
+        _vehicleTypeId = resolvedVehicleTypeId;
+        _initialVehicleTypeId = resolvedVehicleTypeId;
         _isLoading = false;
       });
     } on Object catch (_) {
@@ -181,9 +185,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         biopayHandleType: _handleType,
         biopayHandleValue: normalizedHandleValue,
         isDriver: _isDriver,
-        vehicleType: _vehicleType,
+        vehicleTypeId: _vehicleTypeId,
         previousIsDriver: _initialIsDriver,
-        previousVehicleType: _initialVehicleType,
+        previousVehicleTypeId: _initialVehicleTypeId,
       );
 
       final localSession = await _bioPayService.getLocalSession();
@@ -226,9 +230,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: _isLoading
-            ? Center(
-                child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
-              )
+            ? const _ProfileFormSkeleton()
             : SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(24, 18, 24, 160),
                 child: Column(
@@ -282,7 +284,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           decoration: BoxDecoration(
             color: ext.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.1)),
+            border: Border.all(
+              color: Theme.of(
+                context,
+              ).colorScheme.outlineVariant.withValues(alpha: 0.1),
+            ),
           ),
           child: Icon(
             LucideIcons.chevronLeft,
@@ -300,7 +306,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       children: [
         Text(
           'WHATSAPP NUMBER',
-          style: AppTypography.labelLg.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: AppTypography.labelLg.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 10),
         Row(
@@ -321,7 +329,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   decoration: InputDecoration(
                     hintText: _selectedCountry.phonePlaceholder,
                     hintStyle: AppTypography.titleMd.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
@@ -349,7 +359,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           decoration: BoxDecoration(
             color: ext.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.1)),
+            border: Border.all(
+              color: Theme.of(
+                context,
+              ).colorScheme.outlineVariant.withValues(alpha: 0.1),
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -379,12 +393,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (selectedCountry.momoBrand.isNotEmpty)
           Text(
             selectedCountry.momoBrand,
-            style: AppTypography.labelLg.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: AppTypography.labelLg.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           )
         else
           Text(
             'MOBILE MONEY',
-            style: AppTypography.labelLg.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: AppTypography.labelLg.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         const SizedBox(height: 12),
         Container(
@@ -393,14 +411,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           decoration: BoxDecoration(
             color: ext.surfaceContainerLow,
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.1)),
+            border: Border.all(
+              color: Theme.of(
+                context,
+              ).colorScheme.outlineVariant.withValues(alpha: 0.1),
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Align(
                 alignment: Alignment.topRight,
-                child: _buildHandleSelector(cs: cs, ext: ext, interactive: true),
+                child: _buildHandleSelector(
+                  cs: cs,
+                  ext: ext,
+                  interactive: true,
+                ),
               ),
               const SizedBox(height: 18),
               _buildHandleInput(cs, ext),
@@ -442,7 +468,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               curve: Curves.easeOutCubic,
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
               decoration: BoxDecoration(
-                color: isActive ? Theme.of(context).colorScheme.primary : Colors.transparent,
+                color: isActive
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.transparent,
                 borderRadius: BorderRadius.circular(24),
               ),
               child: Text(
@@ -474,7 +502,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       decoration: BoxDecoration(
         color: ext.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary,
+          width: 2,
+        ),
       ),
       child: TextField(
         controller: _handleController,
@@ -491,7 +522,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: AppTypography.titleMd.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
           ),
           border: InputBorder.none,
         ),
@@ -510,7 +543,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           decoration: BoxDecoration(
             color: ext.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.1)),
+            border: Border.all(
+              color: Theme.of(
+                context,
+              ).colorScheme.outlineVariant.withValues(alpha: 0.1),
+            ),
           ),
           child: Row(
             children: [
@@ -569,37 +606,43 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  Future<void> _loadVehicleTypes() async {
+    final types = await VehicleTypeService().getAll();
+    if (mounted) setState(() => _vehicleTypes = types);
+  }
+
   Widget _buildVehicleGrid(ColorScheme cs, MobiThemeExtension ext) {
-    final vehicles = [
-      (VehicleType.moto, 'Moto', LucideIcons.zap),
-      (VehicleType.cab, 'Taxi', LucideIcons.car),
-      (VehicleType.trike, 'Trike', LucideIcons.truck),
-      (VehicleType.truck, 'Truck', LucideIcons.truck),
-      (VehicleType.private_, 'Private', LucideIcons.shield),
-    ];
+    if (_vehicleTypes.isEmpty) {
+      return const SizedBox(height: 80);
+    }
 
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: ext.surfaceContainerLow,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.1),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'SELECT VEHICLE TYPE',
-            style: AppTypography.labelLg.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: AppTypography.labelLg.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 14),
           Row(
-            children: vehicles.map((entry) {
-              final (vehicle, label, icon) = entry;
-              final isSelected = _vehicleType == vehicle;
+            children: _vehicleTypes.map((vt) {
+              final isSelected = _vehicleTypeId == vt.id;
               return Expanded(
                 child: _TappableSelector(
-                  onTap: () => setState(() => _vehicleType = vehicle),
+                  onTap: () => setState(() => _vehicleTypeId = vt.id),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: AspectRatio(
@@ -613,28 +656,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           borderRadius: BorderRadius.circular(24),
                           border: Border.all(
                             color: isSelected
-                                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.45)
-                                : Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.1),
+                                ? Theme.of(
+                                    context,
+                                  ).colorScheme.primary.withValues(alpha: 0.45)
+                                : Theme.of(context).colorScheme.outlineVariant
+                                      .withValues(alpha: 0.1),
                           ),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              icon,
-                              size: 20,
-                              color: isSelected
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context).colorScheme.onSurfaceVariant,
+                            Image.asset(
+                              vt.localAssetPath,
+                              width: 28,
+                              height: 28,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => Icon(
+                                vt.icon,
+                                size: 20,
+                                color: isSelected
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                              ),
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              label,
+                              vt.label,
                               style: AppTypography.labelSm.copyWith(
                                 fontWeight: FontWeight.w800,
                                 color: isSelected
                                     ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context).colorScheme.onSurfaceVariant,
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -666,7 +722,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               borderRadius: BorderRadius.circular(999),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.28),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.28),
                   blurRadius: 24,
                   offset: const Offset(0, 10),
                 ),
@@ -705,7 +763,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       decoration: BoxDecoration(
         color: ext.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.1),
+        ),
       ),
       child: child,
     );
@@ -725,8 +787,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(vertical: 12),
             itemCount: _countries.length,
-            separatorBuilder: (_, _) =>
-                Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.1)),
+            separatorBuilder: (_, _) => Divider(
+              height: 1,
+              color: Theme.of(
+                context,
+              ).colorScheme.outlineVariant.withValues(alpha: 0.1),
+            ),
             itemBuilder: (context, index) {
               final country = _countries[index];
               return ListTile(
@@ -736,7 +802,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 title: Text(
                   country.name,
-                  style: AppTypography.titleMd.copyWith(color: Theme.of(context).colorScheme.onSurface),
+                  style: AppTypography.titleMd.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 subtitle: country.momoBrand.isEmpty
                     ? null
@@ -797,6 +865,55 @@ class _TappableSelectorState extends State<_TappableSelector> {
           duration: const Duration(milliseconds: 100),
           child: widget.child,
         ),
+      ),
+    );
+  }
+}
+
+/// Skeleton loading layout matching the EditProfile form structure.
+class _ProfileFormSkeleton extends StatelessWidget {
+  const _ProfileFormSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(24, 18, 24, 160),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header (back button + title)
+          Row(
+            children: [
+              LoadingSkeleton(width: 40, height: 40, borderRadius: 16),
+              SizedBox(width: 16),
+              LoadingSkeleton(width: 160, height: 28, borderRadius: 12),
+            ],
+          ),
+          SizedBox(height: 36),
+          // WhatsApp label
+          LoadingSkeleton(width: 140, height: 14, borderRadius: 8),
+          SizedBox(height: 12),
+          // WhatsApp input row
+          Row(
+            children: [
+              LoadingSkeleton(width: 96, height: 56, borderRadius: 22),
+              SizedBox(width: 12),
+              Expanded(child: LoadingSkeleton(height: 56, borderRadius: 22)),
+            ],
+          ),
+          SizedBox(height: 28),
+          // MoMo label
+          LoadingSkeleton(width: 160, height: 14, borderRadius: 8),
+          SizedBox(height: 12),
+          // MoMo card
+          LoadingSkeleton(height: 160, borderRadius: 32),
+          SizedBox(height: 28),
+          // Driver toggle
+          LoadingSkeleton(height: 96, borderRadius: 32),
+          SizedBox(height: 32),
+          // Save button
+          LoadingSkeleton(height: 56, borderRadius: 999),
+        ],
       ),
     );
   }

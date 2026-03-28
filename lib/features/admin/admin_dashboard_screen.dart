@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/services/admin_service.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
@@ -644,6 +645,57 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           ? '...'
                           : (_stats?.cancelledTrips.toString() ?? '0'),
                     ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Vehicle Types management shortcut
+            ClayCard(
+              onTap: () => context.push('/admin/vehicle-types'),
+              padding: const EdgeInsets.all(20),
+              borderRadius: 24,
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Icon(
+                      LucideIcons.car,
+                      size: 22,
+                      color: colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Vehicle Types',
+                          style: AppTypography.titleMd.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Manage vehicle types and country availability',
+                          style: AppTypography.bodySm.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    LucideIcons.chevronRight,
+                    size: 18,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),

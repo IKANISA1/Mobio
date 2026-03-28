@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/services/ai_content_service.dart';
+
 import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
@@ -170,9 +170,6 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
         context,
       ).extension<MobiThemeExtension>()!.surfaceContainerLow,
       body: SoftGradient(
-        category: PromoCategory.scheduledTrips,
-        visibilityMode: SoftGradientVisibilityMode.reading,
-        allowMotion: true,
         child: Column(
           children: [
             // Header

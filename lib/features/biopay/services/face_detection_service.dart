@@ -22,9 +22,7 @@ class FaceDetectionService {
   ///
   /// Use [FaceDetectorMode.fast] for real-time scanning (lower latency),
   /// [FaceDetectorMode.accurate] for enrollment (higher precision).
-  void initialize({
-    FaceDetectorMode mode = FaceDetectorMode.fast,
-  }) {
+  void initialize({FaceDetectorMode mode = FaceDetectorMode.fast}) {
     if (_detector != null) return;
     _detector = FaceDetector(
       options: FaceDetectorOptions(

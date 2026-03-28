@@ -63,10 +63,7 @@ class EmbeddingService {
 
       Interpreter interpreter;
       try {
-        interpreter = await Interpreter.fromAsset(
-          _modelPath,
-          options: options,
-        );
+        interpreter = await Interpreter.fromAsset(_modelPath, options: options);
       } on Object catch (e) {
         // If GPU delegate caused the failure, retry without it
         if (usingGpu) {
@@ -152,7 +149,9 @@ class EmbeddingService {
   /// Returns a 192-dimensional L2-normalized embedding.
   List<double> getEmbedding(Float32List normalizedPixels) {
     if (_interpreter == null) {
-      throw const EmbeddingServiceException('EmbeddingService not initialized.');
+      throw const EmbeddingServiceException(
+        'EmbeddingService not initialized.',
+      );
     }
 
     if (normalizedPixels.length != 1 * inputSize * inputSize * 3) {

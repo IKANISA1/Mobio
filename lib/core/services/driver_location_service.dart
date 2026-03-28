@@ -41,7 +41,7 @@ class DriverLocationService {
   final SupabaseClient _supabase;
 
   DriverLocationService({SupabaseClient? supabase})
-      : _supabase = supabase ?? Supabase.instance.client;
+    : _supabase = supabase ?? Supabase.instance.client;
 
   String? get _currentUserId => _supabase.auth.currentUser?.id;
 

@@ -10,6 +10,7 @@ class ClayCard extends StatefulWidget {
   final double borderRadius;
   final VoidCallback? onTap;
   final Color? color;
+  final String? semanticLabel;
 
   const ClayCard({
     super.key,
@@ -18,6 +19,7 @@ class ClayCard extends StatefulWidget {
     this.borderRadius = 40,
     this.onTap,
     this.color,
+    this.semanticLabel,
   });
 
   @override
@@ -97,6 +99,7 @@ class _ClayCardState extends State<ClayCard>
 
     return Semantics(
       button: true,
+      label: widget.semanticLabel,
       child: GestureDetector(
         onTap: widget.onTap,
         onTapDown: _handleTapDown,

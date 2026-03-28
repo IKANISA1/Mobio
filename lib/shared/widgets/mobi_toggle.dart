@@ -3,6 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
 /// Segmented toggle matching transito Passenger/Driver and Mine/Nearby toggles.
+///
+/// Set [selectedIndex] to `-1` (or any out-of-range value) to show
+/// no segment selected — useful for "user must choose" flows.
 class MobiToggle extends StatelessWidget {
   final List<String> labels;
   final int selectedIndex;

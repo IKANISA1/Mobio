@@ -4,15 +4,15 @@ import 'dart:ui' as ui;
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/router/app_router.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
 import 'package:mobi_app/core/services/biopay_service.dart';
 import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
+import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/biopay/biopay_strings.dart';
@@ -23,9 +23,9 @@ import 'package:mobi_app/features/biopay/services/enrollment_capture_session.dar
 import 'package:mobi_app/features/biopay/services/face_alignment_service.dart';
 import 'package:mobi_app/features/biopay/services/face_detection_service.dart';
 import 'package:mobi_app/features/biopay/services/stable_frame_gate.dart';
-import 'package:mobi_app/features/biopay/widgets/biopay_consent_dialog.dart';
+
+import 'package:mobi_app/features/biopay/widgets/face_enrollment_capture.dart';
 import 'package:mobi_app/features/biopay/widgets/oval_painter.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
@@ -46,7 +46,8 @@ class FaceEnrollmentScreen extends StatefulWidget {
 
 enum _EnrollPhase { loading, ready, capturing, submitting, success, error }
 
-class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
+class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen>
+    with SingleTickerProviderStateMixin {
   final _momoValueController = TextEditingController();
   BiopayHandleType _handleType = BiopayHandleType.number;
   final _permissionService = AppPermissionService.instance;
@@ -64,14 +65,22 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
   EnrollmentResult? _result;
   _EnrollPhase _phase = _EnrollPhase.loading;
   ScannerState _scannerState = ScannerState.searching;
-  String _statusMessage = 'Preparing BioPay...';
+  String _statusMessage = 'Preparing...';
   String? _errorMessage;
   bool _isProcessingCapture = false;
   bool _hasSubmitted = false;
+  FaceQualityIssue? _activeQualityIssue;
+  bool _showCapturePulse = false;
+  int _capturePulseNonce = 0;
+  late final AnimationController _ringPulseController;
 
   @override
   void initState() {
     super.initState();
+    _ringPulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat(reverse: true);
     _bootstrap();
   }
 
@@ -81,6 +90,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
     final controller = _cameraController;
     _cameraController = null;
     controller?.dispose();
+    _ringPulseController.dispose();
     _embeddingService.dispose();
     _faceDetectionService.dispose();
     super.dispose();
@@ -89,11 +99,10 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
   Future<void> _bootstrap() async {
     setState(() {
       _phase = _EnrollPhase.loading;
-      _statusMessage = widget.isReEnrollment
-          ? 'Loading BioPay profile...'
-          : 'Preparing BioPay...';
+      _statusMessage = 'Preparing...';
       _errorMessage = null;
       _result = null;
+      _activeQualityIssue = null;
     });
 
     if (!widget.isReEnrollment) {
@@ -109,19 +118,18 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       if (profile == null) {
         setState(() {
           _phase = _EnrollPhase.error;
-          _errorMessage =
-              'No linked BioPay profile is available for re-enrollment on this device.';
+          _errorMessage = 'No linked profile found on this device.';
         });
         return;
       }
 
       _managedProfile = profile;
       setState(() => _phase = _EnrollPhase.ready);
-    } on Object catch (error) {
+    } on Object catch (_) {
       if (!mounted) return;
       setState(() {
         _phase = _EnrollPhase.error;
-        _errorMessage = 'Unable to load BioPay profile: $error';
+        _errorMessage = 'Unable to load profile. Please try again.';
       });
     }
   }
@@ -165,8 +173,26 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
     return 'Mobio User';
   }
 
-  Future<void> _openPrivacyCenter() {
-    return context.push(AppRoutes.biopayPrivacy);
+  Future<void> _triggerCapturePulse() async {
+    final ticket = ++_capturePulseNonce;
+    if (!mounted) return;
+    setState(() => _showCapturePulse = true);
+    await Future<void>.delayed(const Duration(milliseconds: 140));
+    if (!mounted || ticket != _capturePulseNonce) return;
+    setState(() => _showCapturePulse = false);
+  }
+
+  Future<void> _copyManagementCode(String code) async {
+    await Clipboard.setData(ClipboardData(text: code));
+    _showSnackBar('Management code copied to clipboard.');
+  }
+
+  Future<void> _retryFromError() async {
+    if (_session.isComplete) {
+      await _submitEnrollment();
+      return;
+    }
+    await _startCaptureFlow();
   }
 
   Future<void> _startCaptureFlow() async {
@@ -187,16 +213,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       }
     }
 
-    final consentAction = await BiopayConsentDialog.show(context);
-    if (!mounted) return;
-    if (consentAction == BiopayConsentDialogAction.viewPrivacyCenter) {
-      await _openPrivacyCenter();
-      return;
-    }
-    if (consentAction != BiopayConsentDialogAction.continueFlow) {
-      return;
-    }
-
+    // Request camera permission
     final action = await PermissionAccessDialog.show(
       context,
       config: PermissionAccessDialogConfig.biopayCamera(),
@@ -206,6 +223,9 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       _showSnackBar('Camera access is required for BioPay face capture.');
       return;
     }
+    
+    // Prevent modal barrier deadlock by waiting for the dialog's dismiss animation
+    await Future.delayed(const Duration(milliseconds: 350));
 
     final hasAccess = await _permissionService.ensureBiopayCameraAccess();
     if (!mounted) return;
@@ -223,9 +243,11 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
   Future<void> _initializeCameraAndServices() async {
     setState(() {
       _phase = _EnrollPhase.loading;
-      _statusMessage = 'Preparing camera...';
+      _statusMessage = 'Starting camera...';
       _errorMessage = null;
       _scannerState = ScannerState.searching;
+      _activeQualityIssue = null;
+      _showCapturePulse = false;
     });
 
     try {
@@ -272,17 +294,19 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       setState(() {
         _phase = _EnrollPhase.capturing;
         _scannerState = ScannerState.searching;
-        _statusMessage = 'Hold still. We need 5 face samples.';
+        _statusMessage = 'Hold still';
+        _activeQualityIssue = null;
       });
 
       // Start live image stream instead of polling
       await controller.startImageStream(_onCameraFrame);
-    } on Object catch (error) {
+    } on Object catch (_) {
       if (!mounted) return;
       setState(() {
         _phase = _EnrollPhase.error;
         _scannerState = ScannerState.error;
-        _errorMessage = 'Camera setup failed: $error';
+        _errorMessage = 'Camera setup failed. Please try again.';
+        _activeQualityIssue = null;
       });
     }
   }
@@ -311,7 +335,8 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
         _gate.reset();
         setState(() {
           _scannerState = ScannerState.searching;
-          _statusMessage = 'No face found. Center your face in the frame.';
+          _statusMessage = 'Center your face in the oval';
+          _activeQualityIssue = null;
         });
         return;
       }
@@ -321,6 +346,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
         setState(() {
           _scannerState = ScannerState.error;
           _statusMessage = BiopayStrings.qualityMultipleFaces;
+          _activeQualityIssue = FaceQualityIssue.multipleFaces;
         });
         return;
       }
@@ -350,6 +376,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
         setState(() {
           _scannerState = ScannerState.error;
           _statusMessage = _messageForQualityIssue(quality.issues.first);
+          _activeQualityIssue = quality.issues.first;
         });
         return;
       }
@@ -362,7 +389,8 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       if (!isStable) {
         setState(() {
           _scannerState = ScannerState.locked;
-          _statusMessage = 'Hold still...';
+          _statusMessage = 'Hold still';
+          _activeQualityIssue = null;
         });
         return;
       }
@@ -393,7 +421,8 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
         _gate.reset();
         setState(() {
           _scannerState = ScannerState.searching;
-          _statusMessage = 'Keep your eyes and nose visible.';
+          _statusMessage = 'Keep your face fully visible';
+          _activeQualityIssue = null;
         });
         // Restart stream for next attempt
         if (_cameraController != null && !_hasSubmitted) {
@@ -422,13 +451,15 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
 
       _session.addSample(embedding, qualityScore: qualityScore);
       await HapticFeedback.lightImpact();
+      _triggerCapturePulse();
       if (!mounted) return;
 
       if (_session.isComplete) {
         _hasSubmitted = true;
         setState(() {
           _scannerState = ScannerState.captured;
-          _statusMessage = 'Face capture complete. Finalizing...';
+          _statusMessage = 'Finalizing...';
+          _activeQualityIssue = null;
         });
         await _submitEnrollment();
         return;
@@ -437,19 +468,21 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       setState(() {
         _scannerState = ScannerState.locked;
         _statusMessage =
-            'Captured ${_session.sampleCount} of ${_session.requiredSamples} samples';
+            '${_session.sampleCount} of ${_session.requiredSamples}';
+        _activeQualityIssue = null;
       });
 
       // Restart stream for next sample
       if (_cameraController != null && !_hasSubmitted) {
         await _cameraController!.startImageStream(_onCameraFrame);
       }
-    } on Object catch (error) {
+    } on Object catch (_) {
       if (!mounted) return;
       setState(() {
         _phase = _EnrollPhase.error;
         _scannerState = ScannerState.error;
-        _errorMessage = 'Face capture failed: $error';
+        _errorMessage = 'Face capture failed. Please try again.';
+        _activeQualityIssue = null;
       });
     }
   }
@@ -491,9 +524,10 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
     setState(() {
       _phase = _EnrollPhase.submitting;
       _statusMessage = widget.isReEnrollment
-          ? 'Updating your BioPay face...'
-          : 'Creating your BioPay profile...';
+          ? 'Updating face data...'
+          : 'Creating profile...';
       _errorMessage = null;
+      _activeQualityIssue = null;
     });
 
     try {
@@ -519,7 +553,9 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
       if (!result.success) {
         setState(() {
           _phase = _EnrollPhase.error;
-          _errorMessage = result.error ?? 'BioPay enrollment failed.';
+          _errorMessage =
+              result.error ?? 'Enrollment failed. Please try again.';
+          _activeQualityIssue = null;
         });
         return;
       }
@@ -528,11 +564,12 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
         _result = result;
         _phase = _EnrollPhase.success;
       });
-    } on Object catch (error) {
+    } on Object catch (_) {
       if (!mounted) return;
       setState(() {
         _phase = _EnrollPhase.error;
-        _errorMessage = 'BioPay enrollment failed: $error';
+        _errorMessage = 'Enrollment failed. Please try again.';
+        _activeQualityIssue = null;
       });
     }
   }
@@ -565,48 +602,85 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            Expanded(
-              child: switch (_phase) {
-                _EnrollPhase.loading => _buildLoadingView(),
-                _EnrollPhase.ready => _buildReadyView(),
-                _EnrollPhase.capturing => _buildCaptureView(),
-                _EnrollPhase.submitting => _buildSubmittingView(),
-                _EnrollPhase.success => _buildSuccessView(),
-                _EnrollPhase.error => _buildErrorView(),
-              },
+      backgroundColor: cs.surface,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    cs.surface,
+                    ext.surfaceContainerLowest,
+                    Colors.black.withValues(alpha: 0.06),
+                  ],
+                ),
+              ),
             ),
-          ],
-        ),
+          ),
+          SafeArea(
+            child: Column(
+              children: [
+                _buildHeader(),
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 420),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    transitionBuilder: (child, animation) {
+                      final slide = Tween<Offset>(
+                        begin: const Offset(0, 0.06),
+                        end: Offset.zero,
+                      ).animate(animation);
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(position: slide, child: child),
+                      );
+                    },
+                    child: KeyedSubtree(
+                      key: ValueKey(_phase),
+                      child: switch (_phase) {
+                        _EnrollPhase.loading => _buildLoadingView(),
+                        _EnrollPhase.ready => _buildReadyView(),
+                        _EnrollPhase.capturing => _buildCaptureView(),
+                        _EnrollPhase.submitting => _buildSubmittingView(),
+                        _EnrollPhase.success => _buildSuccessView(),
+                        _EnrollPhase.error => _buildErrorView(),
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildHeader() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TappableIconButton(
             icon: LucideIcons.chevronLeft,
             onTap: widget.onBack,
             color: Theme.of(context).colorScheme.primary,
           ),
-          Text(
-            widget.isReEnrollment ? 'RE-ENROLL FACE' : 'FACE ENROLLMENT',
-            style: AppTypography.labelLg.copyWith(
-              fontWeight: FontWeight.w700,
-              letterSpacing: 3,
-              color: Theme.of(context).colorScheme.primary,
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              widget.isReEnrollment ? 'Update My Face' : 'Register My Face',
+              style: AppTypography.titleLg.copyWith(letterSpacing: -0.4),
             ),
           ),
-          const SizedBox(width: 24),
         ],
       ),
     );
@@ -614,20 +688,27 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
 
   Widget _buildLoadingView() {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircularProgressIndicator(
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            _statusMessage,
-            style: AppTypography.bodyMd.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: _buildStepSurface(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  _statusMessage,
+                  style: AppTypography.titleMd,
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -636,26 +717,33 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
       children: [
-        Text(
-          widget.isReEnrollment
-              ? BiopayStrings.reenrollTitle
-              : BiopayStrings.registerTitle,
-          style: AppTypography.headlineLg,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          widget.isReEnrollment
-              ? BiopayStrings.reenrollSubtitle
-              : BiopayStrings.registerSubtitle,
-          style: AppTypography.bodyLg.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+        _buildStepSurface(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.isReEnrollment
+                    ? BiopayStrings.reenrollTitle
+                    : BiopayStrings.registerTitle,
+                style: AppTypography.headlineLg,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                widget.isReEnrollment
+                    ? BiopayStrings.reenrollSubtitle
+                    : BiopayStrings.registerSubtitle,
+                style: AppTypography.bodyMd.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 28),
+              if (widget.isReEnrollment)
+                _buildReEnrollmentForm()
+              else
+                _buildRegistrationForm(),
+            ],
           ),
         ),
-        const SizedBox(height: 48),
-        if (widget.isReEnrollment)
-          _buildReEnrollmentForm()
-        else
-          _buildRegistrationForm(),
       ],
     );
   }
@@ -726,33 +814,9 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
           width: double.infinity,
           onPressed: _startCaptureFlow,
           child: Text(
-            'START FACE CAPTURE',
+            'CONTINUE',
             style: AppTypography.labelMd.copyWith(
               color: Theme.of(context).colorScheme.onPrimary,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Center(
-          child: Text(
-            BiopayStrings.registerConsent,
-            textAlign: TextAlign.center,
-            style: AppTypography.bodySm.copyWith(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Center(
-          child: TextButton(
-            onPressed: _openPrivacyCenter,
-            child: Text(
-              'VIEW PRIVACY & DATA',
-              style: AppTypography.labelMd.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-              ),
             ),
           ),
         ),
@@ -781,7 +845,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
           variant: MobiButtonVariant.success,
           onPressed: _startCaptureFlow,
           child: Text(
-            'START RE-ENROLLMENT',
+            'START',
             style: AppTypography.labelMd.copyWith(
               color: Theme.of(context).colorScheme.onPrimary,
             ),
@@ -791,134 +855,64 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
     );
   }
 
-  /// Builds a camera preview that fills the available parent space.
-  Widget _buildCameraFill(CameraController controller) {
-    return RepaintBoundary(child: CameraPreview(controller));
-  }
-
   Widget _buildCaptureView() {
     final controller = _cameraController;
     if (controller == null || !controller.value.isInitialized) {
       return _buildLoadingView();
     }
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
-      child: Column(
-        children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  _buildCameraFill(controller),
-                  AnimatedBuilder(
-                    animation: controller,
-                    builder: (context, child) {
-                      return CustomPaint(
-                        painter: OvalPainter(
-                          state: _scannerState,
-                          progress: _gate.progress == 0 ? 0.4 : _gate.progress,
-                        ),
-                      );
-                    },
-                  ),
-                  Positioned(
-                    top: 16,
-                    right: 16,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.54),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        '${_session.sampleCount}/${_session.requiredSamples}',
-                        style: AppTypography.labelMd.copyWith(
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 24,
-                    left: 16,
-                    right: 16,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 14,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.58),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Text(
-                        _statusMessage,
-                        textAlign: TextAlign.center,
-                        style: AppTypography.bodyMd.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(0, 8, 0, 28),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight - 36),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 0),
+              child: FaceEnrollmentCapture(
+                controller: controller,
+                state: _scannerState,
+                statusMessage: _statusMessage,
+                sampleCount: _session.sampleCount,
+                totalSamples: _session.requiredSamples,
+                stabilityProgress: _gate.progress,
+                showCapturePulse: _showCapturePulse,
+                ringPulse: _ringPulseController,
+                qualityIssue: _activeQualityIssue,
+                qualityMessage: _activeQualityIssue != null
+                    ? _statusMessage
+                    : null,
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          LinearProgressIndicator(
-            value: _session.progress,
-            minHeight: 8,
-            backgroundColor: Theme.of(
-              context,
-            ).extension<MobiThemeExtension>()!.surfaceContainerLow,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Theme.of(context).colorScheme.primary,
-            ),
-            borderRadius: BorderRadius.circular(999),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Hold the phone steady while Mobio captures 5 stable face samples.',
-            textAlign: TextAlign.center,
-            style: AppTypography.bodyMd.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _buildSubmittingView() {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircularProgressIndicator(
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          const SizedBox(height: 20),
-          Text(
-            _statusMessage,
-            style: AppTypography.titleMd,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Mobio is finalizing your BioPay profile.',
-            style: AppTypography.bodyMd.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 460),
+          child: _buildStepSurface(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  _statusMessage,
+                  style: AppTypography.headlineMd,
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-            textAlign: TextAlign.center,
           ),
-        ],
+        ),
       ),
     );
   }
@@ -928,35 +922,28 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
       children: [
-        ClayCard(
-          padding: const EdgeInsets.all(28),
+        _buildStepSurface(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Center(child: _SuccessCelebration()),
+              const SizedBox(height: 12),
               Center(
-                child: Container(
-                  width: 84,
-                  height: 84,
-                  decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(28),
-                  ),
-                  child: Icon(
-                    LucideIcons.checkCircle,
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 44,
-                  ),
+                child: Text(
+                  widget.isReEnrollment ? 'Face updated' : 'You\'re all set',
+                  style: AppTypography.headlineLg,
+                  textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 10),
               Center(
                 child: Text(
                   widget.isReEnrollment
-                      ? 'Face re-enrollment complete'
-                      : 'BioPay profile created',
-                  style: AppTypography.headlineLg,
+                      ? 'Your face data has been refreshed.'
+                      : 'Your BioPay profile is ready.',
+                  style: AppTypography.bodyMd.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -967,51 +954,8 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
                   _infoRow('MoMo', result.ussdString!),
                 if (!widget.isReEnrollment &&
                     (result.managementCode?.isNotEmpty ?? false)) ...[
-                  const SizedBox(height: 12),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.primary.withValues(alpha: 0.18),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          BiopayStrings.managementCodeTitle,
-                          style: AppTypography.titleMd.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          BiopayStrings.managementCodeBody,
-                          style: AppTypography.bodyMd.copyWith(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          result.managementCode!,
-                          style: GoogleFonts.jetBrainsMono(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w700,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  const SizedBox(height: 14),
+                  _buildManagementCodeCard(result.managementCode!),
                 ],
               ],
               const SizedBox(height: 24),
@@ -1019,7 +963,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
                 width: double.infinity,
                 onPressed: widget.onBack,
                 child: Text(
-                  'BACK TO BIOPAY',
+                  'DONE',
                   style: AppTypography.labelMd.copyWith(
                     color: Theme.of(context).colorScheme.onPrimary,
                   ),
@@ -1033,11 +977,10 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
   }
 
   Widget _buildErrorView() {
-    return Padding(
+    return ListView(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
-      child: Center(
-        child: ClayCard(
-          padding: const EdgeInsets.all(28),
+      children: [
+        _buildStepSurface(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1058,13 +1001,13 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
               ),
               const SizedBox(height: 24),
               Text(
-                'BioPay enrollment failed',
+                'Something went wrong',
                 style: AppTypography.headlineMd.copyWith(letterSpacing: -1),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
-                _errorMessage ?? 'Try the BioPay capture flow again.',
+                _errorMessage ?? 'Please try again.',
                 style: AppTypography.bodyMd.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                   height: 1.5,
@@ -1074,11 +1017,9 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
               const SizedBox(height: 24),
               MobiButton(
                 width: double.infinity,
-                onPressed: widget.isReEnrollment
-                    ? _bootstrap
-                    : _startCaptureFlow,
+                onPressed: _retryFromError,
                 child: Text(
-                  widget.isReEnrollment ? 'TRY AGAIN' : 'START AGAIN',
+                  _session.isComplete ? 'RETRY' : 'TRY AGAIN',
                   style: AppTypography.labelMd.copyWith(
                     color: Theme.of(context).colorScheme.onPrimary,
                   ),
@@ -1099,6 +1040,103 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
             ],
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildStepSurface({
+    required Widget child,
+    EdgeInsetsGeometry padding = const EdgeInsets.all(24),
+  }) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+
+    return Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: ext.surfaceContainerLowest.withValues(alpha: 0.95),
+        borderRadius: BorderRadius.circular(34),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
+        boxShadow: ext.clayCardShadow,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white.withValues(alpha: 0.05),
+            ext.surfaceContainerLowest.withValues(alpha: 0.96),
+            cs.surface.withValues(alpha: 0.8),
+          ],
+        ),
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildManagementCodeCard(String code) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF3C2B08), Color(0xFF6C4D12), Color(0xFF2E2206)],
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: const Color(0xFFFFD67A).withValues(alpha: 0.4),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFFC857).withValues(alpha: 0.16),
+            blurRadius: 18,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  BiopayStrings.managementCodeTitle,
+                  style: AppTypography.titleMd.copyWith(
+                    color: const Color(0xFFFFE4A4),
+                  ),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: () => _copyManagementCode(code),
+                style: TextButton.styleFrom(
+                  foregroundColor: const Color(0xFFFFE4A4),
+                ),
+                icon: const Icon(Icons.copy_rounded, size: 16),
+                label: Text(
+                  'COPY',
+                  style: AppTypography.labelMd.copyWith(letterSpacing: 0.6),
+                ),
+              ),
+            ],
+          ),
+          Text(
+            BiopayStrings.managementCodeBody,
+            style: AppTypography.bodySm.copyWith(
+              color: Colors.white.withValues(alpha: 0.86),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            code,
+            style: GoogleFonts.jetBrainsMono(
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1154,6 +1192,101 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen> {
             ),
           ),
           Expanded(child: Text(value, style: AppTypography.bodyMd)),
+        ],
+      ),
+    );
+  }
+}
+
+class _SuccessCelebration extends StatelessWidget {
+  const _SuccessCelebration();
+
+  static const _particles =
+      <({double left, double top, double size, Color color})>[
+        (left: 12, top: 28, size: 12, color: AppColors.warning),
+        (left: 46, top: 12, size: 8, color: AppColors.bioPayGreen),
+        (left: 128, top: 18, size: 10, color: AppColors.secondaryFixed),
+        (left: 168, top: 34, size: 12, color: AppColors.warning),
+        (left: 24, top: 112, size: 10, color: AppColors.bioPayGreen),
+        (left: 148, top: 108, size: 8, color: AppColors.secondaryFixed),
+      ];
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 190,
+      height: 150,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          for (final particle in _particles)
+            Positioned(
+              left: particle.left,
+              top: particle.top,
+              child: Animate(
+                effects: const [
+                  FadeEffect(duration: Duration(milliseconds: 180)),
+                  MoveEffect(
+                    begin: Offset(0, 12),
+                    end: Offset(0, -14),
+                    duration: Duration(milliseconds: 1400),
+                    curve: Curves.easeOutCubic,
+                  ),
+                  ScaleEffect(
+                    begin: Offset(0.2, 0.2),
+                    end: Offset(1, 1),
+                    duration: Duration(milliseconds: 520),
+                    curve: Curves.easeOutBack,
+                  ),
+                ],
+                child: Container(
+                  width: particle.size,
+                  height: particle.size,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: particle.color.withValues(alpha: 0.92),
+                  ),
+                ),
+              ),
+            ),
+          Animate(
+            effects: const [
+              FadeEffect(duration: Duration(milliseconds: 260)),
+              ScaleEffect(
+                begin: Offset(0.82, 0.82),
+                end: Offset(1, 1),
+                duration: Duration(milliseconds: 460),
+                curve: Curves.easeOutBack,
+              ),
+            ],
+            child: Container(
+              width: 104,
+              height: 104,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.bioPayGreen.withValues(alpha: 0.96),
+                    AppColors.primary.withValues(alpha: 0.94),
+                  ],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.bioPayGreen.withValues(alpha: 0.26),
+                    blurRadius: 22,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.check_rounded,
+                color: Colors.white,
+                size: 52,
+              ),
+            ),
+          ),
         ],
       ),
     );

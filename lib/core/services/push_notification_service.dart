@@ -68,13 +68,16 @@ class PushNotificationService {
     await _initLocalNotifications();
 
     // Create the Android notification channel
-    final androidPlugin =
-        _localNotifications.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin = _localNotifications
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     await androidPlugin?.createNotificationChannel(_androidChannel);
 
     // Listen for foreground messages
-    _foregroundSub = FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
+    _foregroundSub = FirebaseMessaging.onMessage.listen(
+      _handleForegroundMessage,
+    );
 
     // Listen for token refresh
     _tokenRefreshSub = _messaging.onTokenRefresh.listen(_onTokenRefresh);
@@ -92,8 +95,9 @@ class PushNotificationService {
   }
 
   Future<void> _initLocalNotifications() async {
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -329,16 +333,13 @@ class PushNotificationService {
   Future<void> _upsertToken(String userId, String token) async {
     final platform = Platform.isIOS ? 'ios' : 'android';
 
-    await Supabase.instance.client.from('fcm_tokens').upsert(
-      {
-        'user_id': userId,
-        'token': token,
-        'platform': platform,
-        'device_label': 'mobio-$platform',
-        'updated_at': DateTime.now().toUtc().toIso8601String(),
-      },
-      onConflict: 'token',
-    );
+    await Supabase.instance.client.from('fcm_tokens').upsert({
+      'user_id': userId,
+      'token': token,
+      'platform': platform,
+      'device_label': 'mobio-$platform',
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    }, onConflict: 'token');
   }
 
   // ─── Lifecycle ────────────────────────────────────────────────────────

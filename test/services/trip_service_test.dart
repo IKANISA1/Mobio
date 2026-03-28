@@ -62,11 +62,7 @@ void main() {
     });
 
     test('applies defaults for missing optional fields', () {
-      final json = {
-        'author_id': 'user-1',
-        'origin': 'A',
-        'destination': 'B',
-      };
+      final json = {'author_id': 'user-1', 'origin': 'A', 'destination': 'B'};
 
       final trip = Trip.fromJson(json);
 

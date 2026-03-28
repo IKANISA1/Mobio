@@ -46,9 +46,9 @@ void main() {
 
     test('fromJson coerces numeric strings gracefully', () {
       final json = <String, dynamic>{
-        'total_users': 5.0,   // double
-        'active_drivers': 3,  // int
-        'active_passengers': null,  // null -> 0
+        'total_users': 5.0, // double
+        'active_drivers': 3, // int
+        'active_passengers': null, // null -> 0
       };
 
       final stats = AdminDashboardStats.fromJson(json);

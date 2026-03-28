@@ -54,9 +54,9 @@ class _DriverCardState extends State<DriverCard> {
     } on Object catch (e) {
       if (mounted) {
         setState(() => _isRequesting = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     }
   }
@@ -165,9 +165,7 @@ class _DriverCardState extends State<DriverCard> {
               // Request button
               Expanded(
                 child: Material(
-                  color: _hasRequested
-                      ? cs.primaryContainer
-                      : cs.primary,
+                  color: _hasRequested ? cs.primaryContainer : cs.primary,
                   borderRadius: BorderRadius.circular(16),
                   elevation: _hasRequested ? 0 : 3,
                   shadowColor: cs.primary.withValues(alpha: 0.3),
@@ -198,18 +196,14 @@ class _DriverCardState extends State<DriverCard> {
                                   ? LucideIcons.checkCircle
                                   : LucideIcons.send,
                               size: 16,
-                              color: _hasRequested
-                                  ? cs.primary
-                                  : cs.onPrimary,
+                              color: _hasRequested ? cs.primary : cs.onPrimary,
                             ),
                           const SizedBox(width: 8),
                           Text(
                             _hasRequested ? 'REQUESTED' : 'REQUEST',
                             style: AppTypography.labelSm.copyWith(
                               letterSpacing: 1,
-                              color: _hasRequested
-                                  ? cs.primary
-                                  : cs.onPrimary,
+                              color: _hasRequested ? cs.primary : cs.onPrimary,
                             ),
                           ),
                         ],
@@ -254,4 +248,3 @@ class _DriverCardState extends State<DriverCard> {
     );
   }
 }
-

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
 import 'package:mobi_app/features/biopay/services/ussd_launcher_service.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:mobi_app/models/country.dart';
 
 /// Scan QR Screen — real camera-based QR scanner for BioPay identity resolution.
 ///
@@ -33,11 +36,14 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
 
   // Parsed QR data
   String? _biopayId;
+  String? _handleType;
   String? _amount;
   String? _currency;
   String? _ussdString;
+  String? _momoBrand;
   String? _errorMessage;
   final _ussdLauncher = UssdLauncherService();
+  final _countryService = CountryService();
 
   @override
   void dispose() {
@@ -58,42 +64,103 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     _parseAndResolve(rawValue);
   }
 
-  void _parseAndResolve(String rawValue) {
+  Future<void> _parseAndResolve(String rawValue) async {
     setState(() => _phase = _ScanPhase.processing);
 
     try {
-      if (!rawValue.startsWith('biopay://')) {
+      // ── Handle tel: URIs (new QR format) ──
+      // Format: tel:*182*8*1*PHONE%23 or tel:*182*8*1*AMOUNT*PHONE%23
+      if (rawValue.toLowerCase().startsWith('tel:')) {
+        var ussd = rawValue.substring(4); // strip "tel:"
+        ussd = ussd.replaceAll('%23', '#');
+
+        // Parse USSD to extract handle details
+        final handle = await _countryService.parseBiopayUssd(ussd);
+
+        if (!mounted) return;
+
+        if (handle == null) {
+          setState(() {
+            _phase = _ScanPhase.invalidQr;
+            _errorMessage = 'Could not parse the USSD from this QR.';
+          });
+          return;
+        }
+
+        final country = await _countryService.findById(handle.countryId);
+
         setState(() {
-          _phase = _ScanPhase.invalidQr;
-          _errorMessage = 'Not a BioPay QR code.';
+          _biopayId = handle.value;
+          _handleType = handle.type.name;
+          _amount = null;
+          _currency = null;
+          _ussdString = ussd;
+          _momoBrand = country?.momoBrand ?? 'USSD';
+          _phase = _ScanPhase.resolved;
         });
         return;
       }
 
-      final uri = Uri.parse(rawValue);
-      final biopayId =
-          uri.queryParameters['biopay_id'] ??
-          (uri.host == 'pay' ? null : uri.host);
-      if (biopayId == null || biopayId.isEmpty) {
+      // ── Handle legacy biopay:// URIs ──
+      if (rawValue.startsWith('biopay://')) {
+        final uri = Uri.parse(rawValue);
+        final handle =
+            uri.queryParameters['handle'] ?? uri.queryParameters['biopay_id'];
+        if (handle == null || handle.isEmpty) {
+          setState(() {
+            _phase = _ScanPhase.invalidQr;
+            _errorMessage = 'Invalid BioPay QR — no identity found.';
+          });
+          return;
+        }
+
+        final amount = uri.queryParameters['amount'];
+        final currency = uri.queryParameters['currency'];
+        final handleType = uri.queryParameters['type'] ?? 'number';
+        var ussdString = uri.queryParameters['ussd'];
+
+        if ((ussdString == null || ussdString.isEmpty) &&
+            handleType == 'number') {
+          ussdString = await _countryService.buildBiopayUssd(
+            dialingCode: '+250',
+            handleType: BiopayHandleType.fromStorage(handleType),
+            handleValue: handle,
+          );
+        }
+
+        String brand = 'USSD';
+        if (ussdString != null && ussdString.isNotEmpty) {
+          final parsedHandle = await _countryService.parseBiopayUssd(
+            ussdString,
+          );
+          if (parsedHandle != null) {
+            final country = await _countryService.findById(
+              parsedHandle.countryId,
+            );
+            brand = country?.momoBrand ?? 'USSD';
+          }
+        }
+
+        if (!mounted) return;
         setState(() {
-          _phase = _ScanPhase.invalidQr;
-          _errorMessage = 'Invalid BioPay QR — no ID found.';
+          _biopayId = handle;
+          _handleType = handleType;
+          _amount = amount;
+          _currency = currency;
+          _ussdString = ussdString;
+          _momoBrand = brand;
+          _phase = _ScanPhase.resolved;
         });
         return;
       }
 
-      final amount = uri.queryParameters['amount'];
-      final currency = uri.queryParameters['currency'];
-      final ussdString = uri.queryParameters['ussd'];
-
+      // ── Unknown format ──
       setState(() {
-        _biopayId = biopayId;
-        _amount = amount;
-        _currency = currency;
-        _ussdString = ussdString;
-        _phase = _ScanPhase.resolved;
+        _phase = _ScanPhase.invalidQr;
+        _errorMessage = 'Not a recognized payment QR code.';
       });
     } on Object catch (e) {
+      if (!mounted) return;
       setState(() {
         _phase = _ScanPhase.error;
         _errorMessage = 'Failed to parse QR: $e';
@@ -110,9 +177,11 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
     setState(() {
       _phase = _ScanPhase.scanning;
       _biopayId = null;
+      _handleType = null;
       _amount = null;
       _currency = null;
       _ussdString = null;
+      _momoBrand = null;
       _errorMessage = null;
     });
     _scannerController.start();
@@ -140,7 +209,8 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isResultPhase = _phase == _ScanPhase.resolved ||
+    final isResultPhase =
+        _phase == _ScanPhase.resolved ||
         _phase == _ScanPhase.invalidQr ||
         _phase == _ScanPhase.error;
 
@@ -170,7 +240,8 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                   if (_phase == _ScanPhase.scanning) _buildViewfinderOverlay(),
 
                   // Processing indicator
-                  if (_phase == _ScanPhase.processing) _buildProcessingOverlay(),
+                  if (_phase == _ScanPhase.processing)
+                    _buildProcessingOverlay(),
 
                   // Result screens as bottom sheets
                   if (isResultPhase)
@@ -179,13 +250,20 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                       left: 0,
                       right: 0,
                       child: ClipRRect(
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(28),
+                        ),
                         child: Material(
                           color: Theme.of(context).colorScheme.surface,
                           child: SafeArea(
                             top: false,
                             child: Padding(
-                              padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+                              padding: const EdgeInsets.fromLTRB(
+                                24,
+                                28,
+                                24,
+                                24,
+                              ),
                               child: _phase == _ScanPhase.resolved
                                   ? _buildResolvedContent()
                                   : _buildErrorContent(),
@@ -218,11 +296,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
               child: const SizedBox(
                 width: 44,
                 height: 44,
-                child: Icon(
-                  LucideIcons.x,
-                  size: 20,
-                  color: Colors.white,
-                ),
+                child: Icon(LucideIcons.x, size: 20, color: Colors.white),
               ),
             ),
           ),
@@ -271,7 +345,9 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
                 height: 56,
                 decoration: BoxDecoration(
                   color: _torchOn
-                      ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
+                      ? Theme.of(
+                          context,
+                        ).colorScheme.primary.withValues(alpha: 0.3)
                       : Colors.white.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                   border: Border.all(
@@ -302,7 +378,9 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+              CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(height: 16),
               Text(
                 'Processing...',
@@ -323,7 +401,9 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+            color: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(24),
           ),
           child: Icon(
@@ -334,13 +414,12 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
         ),
         const SizedBox(height: 24),
         Text(
-           'BioPay QR Scanned',
-          style: AppTypography.headlineMd.copyWith(
-            letterSpacing: -1,
-          ),
+          'BioPay QR Scanned',
+          style: AppTypography.headlineMd.copyWith(letterSpacing: -1),
         ),
         const SizedBox(height: 20),
-        _infoRow('BioPay ID', _biopayId ?? '—'),
+        _infoRow('Handle', _biopayId ?? '—'),
+        _infoRow('Type', (_handleType ?? 'number').toUpperCase()),
         _infoRow(
           'Payment handoff',
           _ussdString?.isNotEmpty == true ? 'Available' : 'Unavailable',
@@ -353,10 +432,14 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.2),
               ),
             ),
             child: Column(
@@ -386,7 +469,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
           width: double.infinity,
           onPressed: _launchUssd,
           child: Text(
-            'PAY WITH USSD',
+            'PAY VIA ${(_momoBrand ?? 'USSD').toUpperCase()}',
             style: AppTypography.labelLg.copyWith(
               fontWeight: FontWeight.w700,
               letterSpacing: 2,
@@ -420,7 +503,9 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
           width: 80,
           height: 80,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.12),
+            color: Theme.of(
+              context,
+            ).colorScheme.secondary.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(24),
           ),
           child: Icon(
@@ -432,9 +517,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
         const SizedBox(height: 24),
         Text(
           _phase == _ScanPhase.invalidQr ? 'Not a BioPay QR' : 'Scan Error',
-          style: AppTypography.headlineMd.copyWith(
-            letterSpacing: -1,
-          ),
+          style: AppTypography.headlineMd.copyWith(letterSpacing: -1),
         ),
         const SizedBox(height: 12),
         Text(

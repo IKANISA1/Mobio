@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/services/ai_content_service.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
 import 'package:mobi_app/core/services/location_service.dart';
 import 'package:mobi_app/core/services/places_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
+import 'package:mobi_app/core/services/vehicle_type_service.dart';
 import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/place.dart';
 import 'package:mobi_app/models/route_info.dart';
-import 'package:mobi_app/models/vehicle_type.dart';
+import 'package:mobi_app/models/vehicle_type_model.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
@@ -41,7 +41,7 @@ class ScheduleTripScreen extends StatefulWidget {
 }
 
 class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
-  VehicleType _vehicle = VehicleType.cab;
+  String _vehicleId = 'cab';
   PlaceDetails? _originDetails;
   PlaceDetails? _destDetails;
   RouteInfo? _routeInfo;
@@ -58,6 +58,10 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
   final _noteController = TextEditingController();
   bool _showErrors = false;
   bool _isLoadingLocation = false;
+  List<VehicleTypeModel> _vehicleTypes = [];
+
+  /// Local role selection — null means "not yet chosen".
+  String? _selectedRole;
 
   /// Cached user lat/lng for proximity-biased autocomplete.
   double? _userLat;
@@ -66,6 +70,7 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
   @override
   void initState() {
     super.initState();
+    _loadVehicleTypes();
     _initLocation();
   }
 
@@ -91,6 +96,9 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
       if (action != PermissionAccessDialogAction.grantAccess) {
         return; // User declined — autocomplete still works, just no proximity
       }
+      
+      // Prevent modal barrier deadlock by waiting for the dialog's dismiss animation
+      await Future.delayed(const Duration(milliseconds: 350));
     }
 
     // Try to get position (will request system permission if needed)
@@ -181,6 +189,15 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
   }
 
   Future<void> _handleSubmit() async {
+    // Validate role selection
+    if (_selectedRole == null) {
+      setState(() => _showErrors = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select Passenger or Driver.')),
+      );
+      return;
+    }
+
     // Validate required fields
     if (_originDetails == null || _destDetails == null) {
       setState(() => _showErrors = true);
@@ -230,8 +247,8 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
         departureDate: DateFormat('yyyy-MM-dd').format(_date),
         departureTime:
             '${_time.hour.toString().padLeft(2, '0')}:${_time.minute.toString().padLeft(2, '0')}',
-        role: widget.mode,
-        vehicleType: _vehicle.name == 'private_' ? 'private' : _vehicle.name,
+        role: _selectedRole!,
+        vehicleType: _vehicleId == 'private_' ? 'private' : _vehicleId,
         isRecurring: _isRecurring,
         recurringDays: _recurringDays,
         note: _noteController.text.trim().isEmpty
@@ -264,9 +281,6 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SoftGradient(
-        category: PromoCategory.scheduledTrips,
-        visibilityMode: SoftGradientVisibilityMode.reading,
-        allowMotion: true,
         child: Column(
           children: [
             // Glass header
@@ -325,12 +339,35 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
                     MobiSurfacePanel(
                       padding: const EdgeInsets.all(12),
                       borderRadius: 32,
-                      child: MobiToggle(
-                        labels: const ['Passenger', 'Driver'],
-                        selectedIndex: widget.mode == 'passenger' ? 0 : 1,
-                        onChanged: (i) => widget.onModeChanged(
-                          i == 0 ? 'passenger' : 'driver',
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          MobiToggle(
+                            labels: const ['Passenger', 'Driver'],
+                            selectedIndex: _selectedRole == null
+                                ? -1
+                                : _selectedRole == 'passenger'
+                                ? 0
+                                : 1,
+                            onChanged: (i) {
+                              setState(() {
+                                _selectedRole = i == 0 ? 'passenger' : 'driver';
+                              });
+                              widget.onModeChanged(_selectedRole!);
+                            },
+                          ),
+                          if (_showErrors && _selectedRole == null)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 12, top: 8),
+                              child: Text(
+                                'Please select one',
+                                style: AppTypography.labelSm.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -732,7 +769,9 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
                     // Continue button
                     MobiButton(
                       width: double.infinity,
-                      onPressed: _isSubmitting ? null : _handleSubmit,
+                      onPressed: (_isSubmitting || _selectedRole == null)
+                          ? null
+                          : _handleSubmit,
                       padding: const EdgeInsets.symmetric(vertical: 24),
                       child: _isSubmitting
                           ? SizedBox(
@@ -817,24 +856,24 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
     );
   }
 
+  Future<void> _loadVehicleTypes() async {
+    final types = await VehicleTypeService().getAll();
+    if (mounted) setState(() => _vehicleTypes = types);
+  }
+
   Widget _buildVehicleGrid() {
-    final types = [
-      (VehicleType.moto, 'Moto', LucideIcons.zap),
-      (VehicleType.cab, 'Cab', LucideIcons.car),
-      (VehicleType.trike, 'Trike', LucideIcons.truck),
-      (VehicleType.truck, 'Truck', LucideIcons.layoutGrid),
-      (VehicleType.private_, 'Private', LucideIcons.shield),
-    ];
+    if (_vehicleTypes.isEmpty) {
+      return const SizedBox(height: 80);
+    }
 
     return Row(
-      children: types.map((entry) {
-        final (type, label, icon) = entry;
-        final isSelected = _vehicle == type;
+      children: _vehicleTypes.map((vt) {
+        final isSelected = _vehicleId == vt.id;
         return Expanded(
           child: Semantics(
-            label: '$label vehicle type${isSelected ? ", selected" : ""}',
+            label: '${vt.label} vehicle type${isSelected ? ", selected" : ""}',
             child: Tooltip(
-              message: label,
+              message: vt.label,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: AspectRatio(
@@ -845,7 +884,7 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
                       borderRadius: BorderRadius.circular(24),
                       onTap: () {
                         HapticFeedback.selectionClick();
-                        setState(() => _vehicle = type);
+                        setState(() => _vehicleId = vt.id);
                       },
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
@@ -870,18 +909,26 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              icon,
-                              size: 24,
-                              color: isSelected
-                                  ? Theme.of(context).colorScheme.onPrimaryFixed
-                                  : Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
+                            Image.asset(
+                              vt.localAssetPath,
+                              width: 32,
+                              height: 32,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => Icon(
+                                vt.icon,
+                                size: 24,
+                                color: isSelected
+                                    ? Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimaryFixed
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              label,
+                              vt.label,
                               style: AppTypography.labelSm.copyWith(
                                 fontWeight: FontWeight.w700,
                                 color: isSelected
