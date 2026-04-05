@@ -1,16 +1,18 @@
-import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/platform/platform_io.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
 import 'package:mobi_app/core/services/biopay_service.dart';
+import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/features/biopay/biopay_strings.dart';
-import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/features/biopay/models/biopay_models.dart';
 import 'package:mobi_app/features/biopay/services/embedding_service.dart';
 import 'package:mobi_app/features/biopay/services/face_alignment_service.dart';
@@ -20,25 +22,26 @@ import 'package:mobi_app/features/biopay/services/ussd_launcher_service.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 
-class FaceScanScreen extends StatefulWidget {
+class FaceScanScreen extends ConsumerStatefulWidget {
   const FaceScanScreen({super.key, required this.onBack});
 
   final VoidCallback onBack;
 
   @override
-  State<FaceScanScreen> createState() => _FaceScanScreenState();
+  ConsumerState<FaceScanScreen> createState() => _FaceScanScreenState();
 }
 
 enum _ScanPhase { loading, scanning, processing, matched, noMatch, error }
 
-class _FaceScanScreenState extends State<FaceScanScreen> {
+class _FaceScanScreenState extends ConsumerState<FaceScanScreen> {
   final _permissionService = AppPermissionService.instance;
-  final _bioPayService = BioPayService();
+  BioPayService get _bioPayService => ref.read(bioPayServiceProvider);
+
   final _faceDetectionService = FaceDetectionService();
   final _embeddingService = EmbeddingService();
   final _gate = StableFrameGate.scan();
   final _ussdLauncher = UssdLauncherService();
-  final _countryService = CountryService();
+  CountryService get _countryService => ref.read(countryServiceProvider);
 
   CameraController? _cameraController;
   CameraDescription? _selectedCamera;
@@ -304,7 +307,9 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
             result.ussdString!,
           );
           if (handle != null) {
-            final tc = await _countryService.findById(handle.countryId);
+            final tc = handle.countryId != null
+                ? await _countryService.findById(handle.countryId!)
+                : null;
             targetBrand = tc?.momoBrand;
           }
         }
@@ -377,13 +382,62 @@ class _FaceScanScreenState extends State<FaceScanScreen> {
   }
 
   Future<void> _launchUssd(String ussdString) async {
-    final launched = await _ussdLauncher.launchUssdPayment(ussdString);
+    var finalUssd = ussdString;
+    final handle = await _countryService.parseBiopayUssd(ussdString);
+    if (handle != null && (handle.amount == null || handle.amount!.isEmpty)) {
+      final amountStr = await _promptAmountDialog();
+      if (amountStr == null || amountStr.isEmpty) return; // cancel
+
+      final rebuilt = await _countryService.buildBiopayUssd(
+        dialingCode: handle.countryCode,
+        handleType: handle.type,
+        handleValue: handle.value,
+        amount: amountStr,
+      );
+      if (rebuilt != null && rebuilt.isNotEmpty) {
+        finalUssd = rebuilt;
+      }
+    }
+
+    final launched = await _ussdLauncher.launchUssdPayment(finalUssd);
     if (!mounted) return;
     if (!launched) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Unable to launch the payment string.')),
       );
     }
+  }
+
+  Future<String?> _promptAmountDialog() async {
+    final controller = TextEditingController();
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: Theme.of(ctx).colorScheme.surface,
+          title: Text('Enter Amount', style: AppTypography.titleLg),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Amount',
+              hintText: 'e.g. 500',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _reportMatch() async {

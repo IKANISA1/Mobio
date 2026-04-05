@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/services.dart';
+import 'package:mobi_app/core/platform/platform_io.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 typedef PermissionStatusReader =

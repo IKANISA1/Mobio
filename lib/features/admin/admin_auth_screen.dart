@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/admin_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 import 'package:mobi_app/shared/widgets/whatsapp_input.dart';
@@ -10,7 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 /// Admin access screen — checks phone against admin allowlist.
 /// No OTP. If approved → instant access. If not → contact admin popup.
-class AdminAuthScreen extends StatefulWidget {
+class AdminAuthScreen extends ConsumerStatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onSuccess;
 
@@ -21,15 +22,16 @@ class AdminAuthScreen extends StatefulWidget {
   });
 
   @override
-  State<AdminAuthScreen> createState() => _AdminAuthScreenState();
+  ConsumerState<AdminAuthScreen> createState() => _AdminAuthScreenState();
 }
 
-class _AdminAuthScreenState extends State<AdminAuthScreen> {
+class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
   String _number = '';
   String _countryCode = '+250';
   bool _loading = false;
   String? _error;
-  final _adminService = AdminService();
+  AdminService get _adminService => ref.read(adminServiceProvider);
+
 
   Future<void> _checkAccess() async {
     if (_number.length < 6) return;
@@ -58,7 +60,6 @@ class _AdminAuthScreenState extends State<AdminAuthScreen> {
       barrierDismissible: true,
       builder: (ctx) {
         final cs = Theme.of(ctx).colorScheme;
-        final ext = Theme.of(ctx).extension<MobiThemeExtension>()!;
 
         return Dialog(
           backgroundColor: cs.surface,

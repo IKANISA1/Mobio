@@ -3,6 +3,7 @@ name: Release
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -11,6 +12,7 @@ jobs:
   build-and-release:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    environment: Mobio
 
     steps:
       - uses: actions/checkout@v4
@@ -35,18 +37,19 @@ jobs:
       - name: Verify backend contract
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
         run: ./scripts/ci/verify_backend.sh
 
-      - name: Validate release secrets
+      - name: Validate release configuration
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          PRIVACY_POLICY_URL: ${{ secrets.PRIVACY_POLICY_URL }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
         run: |
           test -n "$SUPABASE_URL"
           test -n "$SUPABASE_ANON_KEY"
@@ -55,6 +58,7 @@ jobs:
           test -n "$KEY_ALIAS"
           test -n "$KEY_PASSWORD"
           test -n "$STORE_PASSWORD"
+          test -n "$PLAY_STORE_SERVICE_ACCOUNT_JSON"
 
       - name: Write Android signing files
         env:
@@ -66,12 +70,9 @@ jobs:
 
       - name: Build signed AAB
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          PRIVACY_POLICY_URL: ${{ secrets.PRIVACY_POLICY_URL }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
         run: |
           flutter build appbundle --release \
             --dart-define=SUPABASE_URL=$SUPABASE_URL \
@@ -93,6 +94,16 @@ jobs:
             build/app/outputs/mapping/release/mapping.txt
             build/app/outputs/native-debug-symbols/release/native-debug-symbols.zip
           retention-days: 30
+
+      - name: Upload draft to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+          packageName: rw.mobi.app
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          mappingFile: build/app/outputs/mapping/release/mapping.txt
+          track: production
+          status: draft
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

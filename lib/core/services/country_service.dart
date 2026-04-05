@@ -85,28 +85,40 @@ class CountryService {
     return match.isNotEmpty ? match.first.currency : 'RWF';
   }
 
+  /// Synchronous Momo Brand lookup (uses cache, falls back to MoMo).
+  String momoBrandForCodeSync(String dialingCode) {
+    if (_cached == null) return 'MoMo';
+    final match = _cached!.where((c) => c.dialingCode == dialingCode);
+    return match.isNotEmpty ? match.first.momoBrand : 'MoMo';
+  }
+
   /// Build a USSD string for sending money to a phone number.
   /// Returns empty string if the country has no MoMo support.
-  String buildUssdForNumber(String dialingCode, String phone) {
+  String buildUssdForNumber(
+    String dialingCode,
+    String phone, [
+    String? amount,
+  ]) {
     if (_cached == null) return '';
     final match = _cached!.where((c) => c.dialingCode == dialingCode);
     if (match.isEmpty) return '';
-    return match.first.buildUssdForNumber(phone);
+    return match.first.buildUssdForNumber(phone, amount);
   }
 
   /// Build a USSD string for a code-based transaction.
   /// Returns empty string if the country has no MoMo support.
-  String buildUssdForCode(String dialingCode, String code) {
+  String buildUssdForCode(String dialingCode, String code, [String? amount]) {
     if (_cached == null) return '';
     final match = _cached!.where((c) => c.dialingCode == dialingCode);
     if (match.isEmpty) return '';
-    return match.first.buildUssdForCode(code);
+    return match.first.buildUssdForCode(code, amount);
   }
 
   Future<String?> buildBiopayUssd({
     required String dialingCode,
     required BiopayHandleType handleType,
     required String handleValue,
+    String? amount,
   }) async {
     final countries = await getCountries();
     final matches = countries.where((c) => c.dialingCode == dialingCode);
@@ -125,8 +137,8 @@ class CountryService {
     if (normalizedValue.isEmpty) return null;
 
     return handleType == BiopayHandleType.number
-        ? country.buildUssdForNumber(normalizedValue)
-        : country.buildUssdForCode(normalizedValue);
+        ? country.buildUssdForNumber(normalizedValue, amount)
+        : country.buildUssdForCode(normalizedValue, amount);
   }
 
   Future<BiopayHandle?> parseBiopayUssd(String? ussdString) async {
@@ -135,31 +147,32 @@ class CountryService {
 
     final countries = await getAfricanCountries();
     for (final country in countries) {
-      final phoneMatch = _matchFormat(
-        candidate,
-        country.ussdNumberFormat,
-        'PHONE',
-      );
-      if (phoneMatch != null && phoneMatch.trim().isNotEmpty) {
+      final phoneTokens = _matchTokens(candidate, country.ussdNumberFormat);
+      if (phoneTokens != null && phoneTokens.containsKey('PHONE')) {
+        final rawPhone = phoneTokens['PHONE']!;
         return BiopayHandle(
           type: BiopayHandleType.number,
           value: normalizeLocalPhoneDisplay(
             dialingCode: country.dialingCode,
-            rawValue: phoneMatch,
+            rawValue: rawPhone,
             country: country,
           ),
           countryCode: country.dialingCode,
           countryId: country.id,
+          amount: phoneTokens['AMOUNT'],
+          momoBrand: country.momoBrand,
         );
       }
 
-      final codeMatch = _matchFormat(candidate, country.ussdCodeFormat, 'CODE');
-      if (codeMatch != null && codeMatch.trim().isNotEmpty) {
+      final codeTokens = _matchTokens(candidate, country.ussdCodeFormat);
+      if (codeTokens != null && codeTokens.containsKey('CODE')) {
         return BiopayHandle(
           type: BiopayHandleType.code,
-          value: normalizeCodeValue(codeMatch),
+          value: normalizeCodeValue(codeTokens['CODE']!),
           countryCode: country.dialingCode,
           countryId: country.id,
+          amount: codeTokens['AMOUNT'],
+          momoBrand: country.momoBrand,
         );
       }
     }
@@ -209,16 +222,49 @@ class CountryService {
     return value.replaceAll(RegExp(r'%23$', caseSensitive: false), '#');
   }
 
-  String? _matchFormat(String candidate, String format, String placeholder) {
+  Map<String, String>? _matchTokens(String candidate, String format) {
     if (format.isEmpty) return null;
 
-    final token = '{$placeholder}';
-    final escaped = RegExp.escape(format);
-    final pattern = escaped.replaceFirst(RegExp.escape(token), '(.+?)');
-    if (pattern == escaped) return null;
+    // We want to handle optional *{AMOUNT} at the end before #.
+    // Replace `\*\*\{AMOUNT\}` with `(?:\*([0-9]+))?`
+    var patternStr = RegExp.escape(format);
 
-    final match = RegExp('^$pattern\$').firstMatch(candidate);
-    return match?.group(1);
+    // Identify tokens in order
+    final tokenRegex = RegExp(r'\{([A-Z]+)\}');
+    final tokens = <String>[];
+
+    // Extract tokens from the unescaped format
+    for (final m in tokenRegex.allMatches(format)) {
+      tokens.add(m.group(1)!);
+    }
+
+    if (tokens.isEmpty) return null;
+
+    // Build the regex pattern
+    // If the format has `\*\*\{AMOUNT\}` (which is `*{AMOUNT}` escaped)
+    patternStr = patternStr.replaceAll(
+      RegExp.escape(r'*{AMOUNT}'),
+      r'(?:\*([0-9]+))?',
+    );
+
+    // For other tokens like {PHONE} or {CODE}
+    patternStr = patternStr.replaceAll(RegExp.escape(r'{PHONE}'), r'([^#*]+)');
+    patternStr = patternStr.replaceAll(RegExp.escape(r'{CODE}'), r'([^#*]+)');
+
+    final regex = RegExp('^$patternStr\$');
+    final match = regex.firstMatch(candidate);
+
+    if (match == null) return null;
+
+    final result = <String, String>{};
+    for (int i = 0; i < tokens.length; i++) {
+      final val = match.group(i + 1);
+      if (val != null && val.isNotEmpty) {
+        result[tokens[i]] = val;
+      }
+    }
+
+    return result;
   }
 
   /// Clear cache (e.g. after admin updates countries).

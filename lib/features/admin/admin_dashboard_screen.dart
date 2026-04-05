@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/admin_service.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -13,16 +16,18 @@ import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/whatsapp_input.dart';
 
 /// Admin dashboard with live Supabase metrics and admin access controls.
-class AdminDashboardScreen extends StatefulWidget {
+class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
 
   @override
-  State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
+  ConsumerState<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
 }
 
-class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
-  final AdminService _adminService = AdminService();
-  final NotificationService _notificationService = NotificationService();
+class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
+  AdminService get _adminService => ref.read(adminServiceProvider);
+
+  NotificationService get _notificationService => ref.read(notificationServiceProvider);
+
 
   AdminDashboardStats? _stats;
   List<AdminWhatsappNumberItem> _adminNumbers = const [];
@@ -1003,7 +1008,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   ),
                 ),
               ),
-          ],
+          ].animate(interval: 50.ms).fade(duration: 400.ms).slideY(begin: 0.1, duration: 400.ms, curve: Curves.easeOutQuad),
         ),
       ),
     );

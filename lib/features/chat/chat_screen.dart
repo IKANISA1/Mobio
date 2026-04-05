@@ -1,26 +1,29 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/chat_ai_service.dart';
 import 'package:mobi_app/core/services/chat_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
-import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/chat/models/chat_conversation.dart';
 import 'package:mobi_app/features/chat/models/chat_message.dart';
+import 'package:mobi_app/features/chat/widgets/chat_composer.dart';
+import 'package:mobi_app/features/chat/widgets/chat_header.dart';
+import 'package:mobi_app/features/chat/widgets/chat_message_bubble.dart';
+import 'package:mobi_app/features/chat/widgets/conversation_list.dart';
+import 'package:mobi_app/features/chat/widgets/trip_context_card.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
-import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
-import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 
-class TripChatScreen extends StatefulWidget {
+class TripChatScreen extends ConsumerStatefulWidget {
   const TripChatScreen({
     super.key,
     required this.onBack,
@@ -35,14 +38,18 @@ class TripChatScreen extends StatefulWidget {
   final VoidCallback onBack;
 
   @override
-  State<TripChatScreen> createState() => _TripChatScreenState();
+  ConsumerState<TripChatScreen> createState() => _TripChatScreenState();
 }
 
-class _TripChatScreenState extends State<TripChatScreen> {
-  final _chatService = ChatService();
-  final _tripService = TripService();
-  final _profileService = ProfileService();
-  final _chatAiService = ChatAiService();
+class _TripChatScreenState extends ConsumerState<TripChatScreen> {
+  ChatService get _chatService => ref.read(chatServiceProvider);
+
+  TripService get _tripService => ref.read(tripServiceProvider);
+
+  ProfileService get _profileService => ref.read(profileServiceProvider);
+
+  ChatAiService get _chatAiService => ref.read(chatAiServiceProvider);
+
   final _composerController = TextEditingController();
   final _composerFocusNode = FocusNode();
   final _scrollController = ScrollController();
@@ -451,7 +458,11 @@ class _TripChatScreenState extends State<TripChatScreen> {
           bottom: false,
           child: Column(
             children: [
-              _buildHeader(context),
+              ChatHeader(
+                onBack: _handleBack,
+                title: _screenTitle(),
+                subtitle: _screenSubtitle(),
+              ),
               if (_isLoading)
                 const Expanded(child: _ChatLoadingState())
               else if (_error != null)
@@ -459,195 +470,22 @@ class _TripChatScreenState extends State<TripChatScreen> {
                   child: _ChatErrorState(error: _error!, onBack: widget.onBack),
                 )
               else if (_showConversationList)
-                Expanded(child: _buildConversationList(context))
+                Expanded(
+                  child: ConversationList(
+                    conversations: _tripConversations,
+                    trip: _trip,
+                    currentUserId: _currentUserId!,
+                    profileCache: _profileCache,
+                    onOpenConversation: _openConversation,
+                    formatTime: _timeLabel,
+                  ),
+                )
               else
                 Expanded(child: _buildConversationThread(context)),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
-      child: MobiSurfacePanel(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-        borderRadius: 30,
-        child: Row(
-          children: [
-            TappableIconButton(
-              icon: LucideIcons.chevronLeft,
-              onTap: _handleBack,
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _screenTitle(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.headlineMd.copyWith(color: cs.primary),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    _screenSubtitle(),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.bodySm.copyWith(
-                      color: cs.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: cs.primaryContainer,
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(LucideIcons.shieldCheck, size: 14, color: cs.primary),
-                  const SizedBox(width: 6),
-                  Text(
-                    'PRIVATE',
-                    style: AppTypography.labelSm.copyWith(color: cs.primary),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildConversationList(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final trip = _trip;
-
-    if (_tripConversations.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
-        child: ClayCard(
-          padding: const EdgeInsets.all(28),
-          borderRadius: 40,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(LucideIcons.messageCircle, size: 28, color: cs.primary),
-              const SizedBox(height: 16),
-              Text('No chats yet', style: AppTypography.titleLg),
-              const SizedBox(height: 8),
-              Text(
-                trip == null
-                    ? 'Users will appear here once someone starts a chat in Mobio.'
-                    : 'When riders contact you about ${trip.origin} to ${trip.destination}, their threads will appear here.',
-                style: AppTypography.bodyMd.copyWith(
-                  color: cs.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
-      physics: const BouncingScrollPhysics(),
-      itemCount: _tripConversations.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 16),
-      itemBuilder: (context, index) {
-        final conversation = _tripConversations[index];
-        final peerProfile =
-            _profileCache[conversation.peerIdFor(_currentUserId!)] ?? const {};
-        final displayName = (peerProfile['display_name'] as String?)?.trim();
-        final name = (peerProfile['name'] as String?)?.trim();
-        final title = (displayName != null && displayName.isNotEmpty)
-            ? displayName
-            : (name != null && name.isNotEmpty)
-            ? name
-            : 'Trip participant';
-        final memberId = (peerProfile['member_id'] as String?)?.trim();
-
-        return ClayCard(
-          borderRadius: 36,
-          onTap: () => _openConversation(conversation),
-          child: Row(
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Icon(LucideIcons.messageCircle, color: cs.primary),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.titleMd,
-                    ),
-                    if (memberId != null && memberId.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        'Member $memberId',
-                        style: AppTypography.bodySm.copyWith(color: cs.primary),
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    Text(
-                      conversation.lastMessagePreview.isEmpty
-                          ? 'Open chat'
-                          : conversation.lastMessagePreview,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTypography.bodySm.copyWith(
-                        color: cs.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    _timeLabel(conversation.lastMessageAt),
-                    style: AppTypography.labelMd.copyWith(
-                      color: cs.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Icon(
-                    LucideIcons.arrowRight,
-                    size: 16,
-                    color: cs.onSurfaceVariant,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -662,7 +500,7 @@ class _TripChatScreenState extends State<TripChatScreen> {
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 12),
           child: Column(
-            children: [if (_trip != null) _buildTripContextCard(context)],
+            children: [if (_trip != null) TripContextCard(trip: _trip!)],
           ),
         ),
         Expanded(
@@ -683,311 +521,40 @@ class _TripChatScreenState extends State<TripChatScreen> {
                 separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final message = messages[index];
-                  return _buildMessageBubble(context, message);
+                  return ChatMessageBubble(
+                    message: message,
+                    isMine:
+                        _currentUserId != null &&
+                        message.isFrom(_currentUserId!),
+                    formatTime: _timeLabel,
+                  );
                 },
               );
             },
           ),
         ),
-        _buildComposer(context),
-      ],
-    );
-  }
-
-  Widget _buildTripContextCard(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final trip = _trip!;
-    final timeLabel = trip.departureTime.isNotEmpty
-        ? trip.departureTime
-        : trip.time.isNotEmpty
-        ? trip.time
-        : 'Flexible';
-
-    return ClayCard(
-      borderRadius: 32,
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'TRIP CONTEXT',
-            style: AppTypography.labelSm.copyWith(color: cs.onSurfaceVariant),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            '${trip.origin.toUpperCase()} → ${trip.destination.toUpperCase()}',
-            style: AppTypography.titleLg,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${trip.departureDate.isEmpty ? 'Any day' : trip.departureDate} · $timeLabel',
-            style: AppTypography.bodySm.copyWith(color: cs.onSurfaceVariant),
-          ),
-          if (trip.note != null && trip.note!.trim().isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Text(trip.note!.trim(), style: AppTypography.bodySm),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMessageBubble(BuildContext context, ChatMessageModel message) {
-    final cs = Theme.of(context).colorScheme;
-    final isMine = _currentUserId != null && message.isFrom(_currentUserId!);
-
-    if (message.isSystem) {
-      return Center(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 320),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).extension<MobiThemeExtension>()!.surfaceContainer,
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(LucideIcons.shieldCheck, size: 14, color: cs.primary),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  message.body,
-                  textAlign: TextAlign.center,
-                  style: AppTypography.bodySm.copyWith(
-                    color: cs.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    final bubbleColor = isMine
-        ? cs.primary
-        : Theme.of(
-            context,
-          ).extension<MobiThemeExtension>()!.surfaceContainerHigh;
-    final foreground = isMine ? cs.onPrimary : cs.onSurface;
-    final alignment = isMine
-        ? CrossAxisAlignment.end
-        : CrossAxisAlignment.start;
-
-    return Column(
-      crossAxisAlignment: alignment,
-      children: [
-        Container(
-          constraints: const BoxConstraints(maxWidth: 320),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: bubbleColor,
-            borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(22),
-              topRight: const Radius.circular(22),
-              bottomLeft: Radius.circular(isMine ? 22 : 8),
-              bottomRight: Radius.circular(isMine ? 8 : 22),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Text(
-            message.body,
-            style: AppTypography.bodyMd.copyWith(color: foreground),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Text(
-            _timeLabel(message.createdAt),
-            style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
-          ),
+        ChatComposer(
+          controller: _composerController,
+          focusNode: _composerFocusNode,
+          isGeneratingSuggestions: _isGeneratingSuggestions,
+          isAutocompleting: _isAutocompleting,
+          isSending: _isSending,
+          replySuggestions: _replySuggestions,
+          onRequestReplySuggestions: _requestReplySuggestions,
+          onAutocompleteDraft: _autocompleteDraft,
+          onApplySuggestion: _applyComposerText,
+          onSendMessage: _sendMessage,
         ),
       ],
-    );
-  }
-
-  Widget _buildComposer(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: ValueListenableBuilder<TextEditingValue>(
-          valueListenable: _composerController,
-          builder: (context, value, _) {
-            final hasDraftText = value.text.trim().isNotEmpty;
-
-            return DecoratedBox(
-              decoration: BoxDecoration(
-                color: ext.surfaceContainerLowest,
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(18, 14, 10, 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(LucideIcons.sparkles, size: 14, color: cs.primary),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Gemini input assist',
-                          style: AppTypography.labelSm.copyWith(
-                            color: cs.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        ActionChip(
-                          backgroundColor: cs.primaryContainer,
-                          side: BorderSide.none,
-                          label: Text(
-                            _isGeneratingSuggestions
-                                ? 'Suggesting...'
-                                : 'Suggest replies',
-                            style: AppTypography.bodySm.copyWith(
-                              color: cs.onPrimaryContainer,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          onPressed: (_isSending || _isGeneratingSuggestions)
-                              ? null
-                              : _requestReplySuggestions,
-                        ),
-                        ActionChip(
-                          backgroundColor: ext.surfaceContainer,
-                          side: BorderSide.none,
-                          label: Text(
-                            _isAutocompleting
-                                ? 'Completing...'
-                                : 'Complete draft',
-                            style: AppTypography.bodySm.copyWith(
-                              color: cs.onSurface,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          onPressed:
-                              (_isSending || _isAutocompleting || !hasDraftText)
-                              ? null
-                              : _autocompleteDraft,
-                        ),
-                        ..._replySuggestions.map(
-                          (suggestion) => ActionChip(
-                            backgroundColor: cs.secondaryContainer,
-                            side: BorderSide.none,
-                            label: Text(
-                              suggestion,
-                              style: AppTypography.bodySm.copyWith(
-                                color: cs.onSecondaryContainer,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            onPressed: _isSending
-                                ? null
-                                : () => _applyComposerText(suggestion),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _composerController,
-                            focusNode: _composerFocusNode,
-                            minLines: 1,
-                            maxLines: 4,
-                            textCapitalization: TextCapitalization.sentences,
-                            style: AppTypography.bodyMd,
-                            decoration: InputDecoration(
-                              hintText:
-                                  'Message about price, pickup, time, or luggage',
-                              hintStyle: AppTypography.bodyMd.copyWith(
-                                color: cs.onSurfaceVariant,
-                              ),
-                              border: InputBorder.none,
-                              isCollapsed: true,
-                            ),
-                            onSubmitted: _isSending
-                                ? null
-                                : (_) => _sendMessage(),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Material(
-                          color: cs.primary,
-                          shape: const CircleBorder(),
-                          child: InkWell(
-                            onTap: _isSending ? null : _sendMessage,
-                            customBorder: const CircleBorder(),
-                            child: SizedBox(
-                              width: 48,
-                              height: 48,
-                              child: Center(
-                                child: _isSending
-                                    ? SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: cs.onPrimary,
-                                        ),
-                                      )
-                                    : Icon(
-                                        LucideIcons.send,
-                                        size: 18,
-                                        color: cs.onPrimary,
-                                      ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
     );
   }
 }
 
-class _ChatLoadingState extends StatelessWidget {
+class _ChatLoadingState extends ConsumerWidget {
   const _ChatLoadingState();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return const Padding(
       padding: EdgeInsets.fromLTRB(24, 16, 24, 120),
       child: Column(
@@ -1006,14 +573,14 @@ class _ChatLoadingState extends StatelessWidget {
   }
 }
 
-class _ChatErrorState extends StatelessWidget {
+class _ChatErrorState extends ConsumerWidget {
   const _ChatErrorState({required this.error, required this.onBack});
 
   final String error;
   final VoidCallback onBack;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
 
     return Padding(

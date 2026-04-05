@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
+import 'package:mobi_app/core/services/firebase_analytics_service.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
 import 'package:mobi_app/core/services/push_notification_service.dart';
@@ -54,16 +57,17 @@ class MobiShell extends ConsumerStatefulWidget {
 
 class _MobiShellState extends ConsumerState<MobiShell> {
   // ─── Notifications ───
+  // NotificationService is currently locally scoped and disposed here.
   final NotificationService? _notificationService = SupabaseConfig.isConfigured
       ? NotificationService()
       : null;
-  final ProfileService _profileService = ProfileService();
+  ProfileService get _profileService => ref.read(profileServiceProvider);
   StreamSubscription<AuthState>? _authSubscription;
 
   @override
   void initState() {
     super.initState();
-    if (!SupabaseConfig.isConfigured) {
+    if (!SupabaseConfig.isConfigured || kIsWeb) {
       return;
     }
 
@@ -92,6 +96,7 @@ class _MobiShellState extends ConsumerState<MobiShell> {
     final currentUser = Supabase.instance.client.auth.currentUser;
     if (currentUser == null) {
       ref.read(roleProvider.notifier).set('passenger');
+      unawaited(FirebaseAnalyticsService.instance.setUserContext());
       return;
     }
 
@@ -100,13 +105,18 @@ class _MobiShellState extends ConsumerState<MobiShell> {
       return;
     }
 
-    ref
-        .read(roleProvider.notifier)
-        .set(profile?['role'] == 'admin' ? 'admin' : 'passenger');
+    final role = profile?['role'] == 'admin' ? 'admin' : 'passenger';
+    ref.read(roleProvider.notifier).set(role);
+    unawaited(
+      FirebaseAnalyticsService.instance.setUserContext(
+        userId: currentUser.id,
+        role: role,
+      ),
+    );
   }
 
   void _syncNotificationListener() {
-    if (!SupabaseConfig.isConfigured) {
+    if (!SupabaseConfig.isConfigured || kIsWeb) {
       return;
     }
 
@@ -259,6 +269,7 @@ class NearbyScreenWrapper extends ConsumerWidget {
         bottom: false,
         child: NearbyScreen(
           onChat: (t) => context.push(_chatPathForTrip(t)),
+          onTripDetails: (id) => context.push('/trip/$id'),
           onBack: () => safePop(context),
         ),
       ),

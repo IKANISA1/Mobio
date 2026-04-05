@@ -1,30 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/country_service.dart';
+import 'package:mobi_app/core/services/profile_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
 import 'package:mobi_app/features/biopay/services/ussd_launcher_service.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:mobi_app/models/country.dart';
 
 /// Scan QR Screen — real camera-based QR scanner for BioPay identity resolution.
 ///
 /// Scans a `biopay://<id>` URI, extracts the BioPay ID and optional amount/currency,
 /// and displays the resolved profile for payment confirmation.
-class ScanQrScreen extends StatefulWidget {
+class ScanQrScreen extends ConsumerStatefulWidget {
   final VoidCallback onBack;
 
   const ScanQrScreen({super.key, required this.onBack});
 
   @override
-  State<ScanQrScreen> createState() => _ScanQrScreenState();
+  ConsumerState<ScanQrScreen> createState() => _ScanQrScreenState();
 }
 
 enum _ScanPhase { scanning, processing, resolved, invalidQr, error }
 
-class _ScanQrScreenState extends State<ScanQrScreen> {
+class _ScanQrScreenState extends ConsumerState<ScanQrScreen> {
   final MobileScannerController _scannerController = MobileScannerController(
     detectionSpeed: DetectionSpeed.noDuplicates,
     facing: CameraFacing.back,
@@ -35,6 +37,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
   bool _torchOn = false;
 
   // Parsed QR data
+  String? _myCountryCode;
   String? _biopayId;
   String? _handleType;
   String? _amount;
@@ -43,7 +46,29 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
   String? _momoBrand;
   String? _errorMessage;
   final _ussdLauncher = UssdLauncherService();
-  final _countryService = CountryService();
+  CountryService get _countryService => ref.read(countryServiceProvider);
+
+  late final ProfileService _profileService;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileService = ProfileService();
+    _loadMyProfile();
+  }
+
+  Future<void> _loadMyProfile() async {
+    try {
+      final profile = await _profileService.getMyProfile();
+      if (mounted) {
+        setState(() {
+          _myCountryCode = profile?['country_code'] as String?;
+        });
+      }
+    } on Object catch (_) {
+      // Best effort load, if fails we assume Rwandan +250 or user will re-authenticate.
+    }
+  }
 
   @override
   void dispose() {
@@ -87,13 +112,26 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
           return;
         }
 
-        final country = await _countryService.findById(handle.countryId);
+        final country = handle.countryId != null ? await _countryService.findById(handle.countryId!) : null;
+
+        // Cross-border validation
+        if (_myCountryCode != null &&
+            country != null &&
+            _myCountryCode != country.dialingCode) {
+          if (!mounted) return;
+          setState(() {
+            _phase = _ScanPhase.invalidQr;
+            _errorMessage =
+                'Cross-border USSD payments are not supported.\nPlease pay with Cash.';
+          });
+          return;
+        }
 
         setState(() {
           _biopayId = handle.value;
           _handleType = handle.type.name;
-          _amount = null;
-          _currency = null;
+          _amount = handle.amount;
+          _currency = country?.currency;
           _ussdString = ussd;
           _momoBrand = country?.momoBrand ?? 'USSD';
           _phase = _ScanPhase.resolved;
@@ -134,10 +172,21 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
             ussdString,
           );
           if (parsedHandle != null) {
-            final country = await _countryService.findById(
-              parsedHandle.countryId,
-            );
+            final country = parsedHandle.countryId != null ? await _countryService.findById(parsedHandle.countryId!) : null;
             brand = country?.momoBrand ?? 'USSD';
+
+            // Cross-border validation
+            if (_myCountryCode != null &&
+                country != null &&
+                _myCountryCode != country.dialingCode) {
+              if (!mounted) return;
+              setState(() {
+                _phase = _ScanPhase.invalidQr;
+                _errorMessage =
+                    'Cross-border USSD payments are not supported.\nPlease pay with Cash.';
+              });
+              return;
+            }
           }
         }
 
@@ -188,7 +237,7 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
   }
 
   Future<void> _launchUssd() async {
-    final ussdString = _ussdString;
+    var ussdString = _ussdString;
     if (ussdString == null || ussdString.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -198,6 +247,25 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
       return;
     }
 
+    if (_amount == null || _amount!.isEmpty) {
+      final amountStr = await _promptAmountDialog();
+      if (amountStr == null || amountStr.isEmpty) return; // User cancelled
+
+      // Rebuild USSD with amount
+      final handle = await _countryService.parseBiopayUssd(ussdString);
+      if (handle != null) {
+        final rebuilt = await _countryService.buildBiopayUssd(
+          dialingCode: handle.countryCode,
+          handleType: handle.type,
+          handleValue: handle.value,
+          amount: amountStr,
+        );
+        if (rebuilt != null && rebuilt.isNotEmpty) {
+          ussdString = rebuilt;
+        }
+      }
+    }
+
     final launched = await _ussdLauncher.launchUssdPayment(ussdString);
     if (!mounted) return;
     if (!launched) {
@@ -205,6 +273,38 @@ class _ScanQrScreenState extends State<ScanQrScreen> {
         const SnackBar(content: Text('Unable to launch the payment string.')),
       );
     }
+  }
+
+  Future<String?> _promptAmountDialog() async {
+    final controller = TextEditingController();
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: Theme.of(ctx).colorScheme.surface,
+          title: Text('Enter Amount', style: AppTypography.titleLg),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Amount',
+              hintText: 'e.g. 500',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

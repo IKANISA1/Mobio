@@ -1,8 +1,8 @@
-import 'dart:io' show Platform;
 import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:logger/logger.dart';
+import 'package:mobi_app/core/platform/platform_io.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 /// Runs MobileFaceNet inference on a preprocessed face image.

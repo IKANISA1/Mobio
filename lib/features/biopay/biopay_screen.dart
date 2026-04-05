@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
 import 'package:mobi_app/core/theme/app_colors.dart';
@@ -14,7 +16,7 @@ import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 
 /// BioPay hub — 3 daily-use action cards only.
 /// One-off actions (Register Face, Privacy & Data) live in Profile.
-class BioPayScreen extends StatefulWidget {
+class BioPayScreen extends ConsumerStatefulWidget {
   const BioPayScreen({super.key, this.onGetQR, this.onScanQR, this.onFaceScan});
 
   final VoidCallback? onGetQR;
@@ -22,12 +24,14 @@ class BioPayScreen extends StatefulWidget {
   final VoidCallback? onFaceScan;
 
   @override
-  State<BioPayScreen> createState() => _BioPayScreenState();
+  ConsumerState<BioPayScreen> createState() => _BioPayScreenState();
 }
 
-class _BioPayScreenState extends State<BioPayScreen> {
-  final _profileService = ProfileService();
-  final _countryService = CountryService();
+class _BioPayScreenState extends ConsumerState<BioPayScreen> {
+  ProfileService get _profileService => ref.read(profileServiceProvider);
+
+  CountryService get _countryService => ref.read(countryServiceProvider);
+
 
   bool _isLoading = true;
   Country? _activeCountry;
@@ -189,7 +193,7 @@ class _BioPayScreenState extends State<BioPayScreen> {
 
 // ─── Action tile ────────────────────────────────────────────────────────────
 
-class _ActionTile extends StatelessWidget {
+class _ActionTile extends ConsumerWidget {
   const _ActionTile({
     required this.icon,
     required this.label,
@@ -207,7 +211,7 @@ class _ActionTile extends StatelessWidget {
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ClayCard(
       onTap: onTap,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),

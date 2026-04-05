@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
@@ -16,7 +17,7 @@ import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Trip Details screen — loads real data from TripService.
-class TripDetailsScreen extends StatefulWidget {
+class TripDetailsScreen extends ConsumerStatefulWidget {
   final String tripId;
   final VoidCallback onBack;
 
@@ -27,11 +28,12 @@ class TripDetailsScreen extends StatefulWidget {
   });
 
   @override
-  State<TripDetailsScreen> createState() => _TripDetailsScreenState();
+  ConsumerState<TripDetailsScreen> createState() => _TripDetailsScreenState();
 }
 
-class _TripDetailsScreenState extends State<TripDetailsScreen> {
-  final _tripService = TripService();
+class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
+  TripService get _tripService => ref.read(tripServiceProvider);
+
   Trip? _trip;
   bool _isLoading = true;
   bool _isCancelling = false;
@@ -359,138 +361,147 @@ class _TripDetailsScreenState extends State<TripDetailsScreen> {
             const SizedBox(height: 32),
 
             // Main details card
-            ClayCard(
-              padding: const EdgeInsets.all(40),
-              borderRadius: 48,
-              child: Column(
-                children: [
-                  // Departure time
-                  Text('DEPARTURE TIME', style: AppTypography.labelSm),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        timeDisplay,
-                        style: AppTypography.displayLg.copyWith(
-                          fontSize: 80,
-                          letterSpacing: -4,
-                          height: 0.9,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Departure date
-                  if (trip.departureDate.isNotEmpty)
-                    Text(
-                      trip.departureDate,
-                      style: AppTypography.bodyMd.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  const SizedBox(height: 32),
-
-                  // Divider
-                  Container(
-                    width: 200,
-                    height: 1,
-                    color: Theme.of(
-                      context,
-                    ).extension<MobiThemeExtension>()!.surfaceContainer,
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Vehicle + Trip ID
-                  Row(
+            Hero(
+              tag: 'trip_card_${trip.id ?? trip.hashCode}',
+              child: Material(
+                type: MaterialType.transparency,
+                child: ClayCard(
+                  padding: const EdgeInsets.all(40),
+                  borderRadius: 48,
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('VEHICLE', style: AppTypography.labelSm),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primaryContainer,
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                  child: Icon(
-                                    _vehicleIcon(trip.vehicleTypeStr),
-                                    size: 24,
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primary,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  vehicleLabel,
-                                  style: AppTypography.titleMd.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('TRIP ID', style: AppTypography.labelSm),
-                            const SizedBox(height: 12),
-                            Text(
-                              _formatTripId(trip.id),
-                              style: AppTypography.titleLg,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Recurring info
-                  if (trip.isRecurring && trip.recurringDays.isNotEmpty) ...[
-                    const SizedBox(height: 24),
-                    Container(
-                      width: double.infinity,
-                      height: 1,
-                      color: Theme.of(
-                        context,
-                      ).extension<MobiThemeExtension>()!.surfaceContainer,
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      children: [
-                        Icon(
-                          LucideIcons.refreshCw,
-                          size: 20,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
+                      // Departure time
+                      Text('DEPARTURE TIME', style: AppTypography.labelSm),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
                           child: Text(
-                            'Repeats: ${_formatDays(trip.recurringDays)}',
-                            style: AppTypography.bodyMd.copyWith(
-                              fontWeight: FontWeight.w600,
+                            timeDisplay,
+                            style: AppTypography.displayLg.copyWith(
+                              fontSize: 80,
+                              letterSpacing: -4,
+                              height: 0.9,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Departure date
+                      if (trip.departureDate.isNotEmpty)
+                        Text(
+                          trip.departureDate,
+                          style: AppTypography.bodyMd.copyWith(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      const SizedBox(height: 32),
+
+                      // Divider
+                      Container(
+                        width: 200,
+                        height: 1,
+                        color: Theme.of(
+                          context,
+                        ).extension<MobiThemeExtension>()!.surfaceContainer,
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Vehicle + Trip ID
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('VEHICLE', style: AppTypography.labelSm),
+                                const SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primaryContainer,
+                                        borderRadius: BorderRadius.circular(24),
+                                      ),
+                                      child: Icon(
+                                        _vehicleIcon(trip.vehicleTypeStr),
+                                        size: 24,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      vehicleLabel,
+                                      style: AppTypography.titleMd.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('TRIP ID', style: AppTypography.labelSm),
+                                const SizedBox(height: 12),
+                                Text(
+                                  _formatTripId(trip.id),
+                                  style: AppTypography.titleLg,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      // Recurring info
+                      if (trip.isRecurring &&
+                          trip.recurringDays.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        Container(
+                          width: double.infinity,
+                          height: 1,
+                          color: Theme.of(
+                            context,
+                          ).extension<MobiThemeExtension>()!.surfaceContainer,
+                        ),
+                        const SizedBox(height: 24),
+                        Row(
+                          children: [
+                            Icon(
+                              LucideIcons.refreshCw,
+                              size: 20,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'Repeats: ${_formatDays(trip.recurringDays)}',
+                                style: AppTypography.bodyMd.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
-                    ),
-                  ],
-                ],
+                    ],
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 24),

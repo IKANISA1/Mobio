@@ -72,17 +72,29 @@ class Country {
   bool get hasMoMo => ussdNumberFormat.isNotEmpty;
 
   /// Build a USSD string for sending money to a phone number.
-  /// Replaces `{PHONE}` with the actual phone number.
-  String buildUssdForNumber(String phone) {
+  /// Replaces `{PHONE}` with the actual phone number, and `{AMOUNT}` if provided.
+  String buildUssdForNumber(String phone, [String? amount]) {
     if (ussdNumberFormat.isEmpty) return '';
-    return ussdNumberFormat.replaceAll('{PHONE}', phone);
+    var ussd = ussdNumberFormat.replaceAll('{PHONE}', phone);
+    if (amount != null && amount.isNotEmpty) {
+      ussd = ussd.replaceAll('{AMOUNT}', amount);
+    } else {
+      ussd = ussd.replaceAll('*{AMOUNT}', '').replaceAll('{AMOUNT}', '');
+    }
+    return ussd;
   }
 
   /// Build a USSD string for a code-based transaction (merchant/agent).
-  /// Replaces `{CODE}` with the actual merchant/agent code.
-  String buildUssdForCode(String code) {
+  /// Replaces `{CODE}` with the actual merchant/agent code, and `{AMOUNT}` if provided.
+  String buildUssdForCode(String code, [String? amount]) {
     if (ussdCodeFormat.isEmpty) return '';
-    return ussdCodeFormat.replaceAll('{CODE}', code);
+    var ussd = ussdCodeFormat.replaceAll('{CODE}', code);
+    if (amount != null && amount.isNotEmpty) {
+      ussd = ussd.replaceAll('{AMOUNT}', amount);
+    } else {
+      ussd = ussd.replaceAll('*{AMOUNT}', '').replaceAll('{AMOUNT}', '');
+    }
+    return ussd;
   }
 
   /// Offline-only fallback. The definitive list of supported countries is
@@ -100,8 +112,8 @@ class Country {
       phonePlaceholder: '712 345 678',
       telecomProvider: 'Safaricom',
       momoBrand: 'M-Pesa',
-      ussdNumberFormat: '*334*1*{PHONE}#',
-      ussdCodeFormat: '*334*0*{CODE}#',
+      ussdNumberFormat: '*334*1*{PHONE}*{AMOUNT}#',
+      ussdCodeFormat: '*334*0*{CODE}*{AMOUNT}#',
       sortOrder: 1,
     ),
     Country(
@@ -114,8 +126,8 @@ class Country {
       phonePlaceholder: '770 000 000',
       telecomProvider: 'MTN Uganda',
       momoBrand: 'MTN MoMo',
-      ussdNumberFormat: '*165*1*{PHONE}#',
-      ussdCodeFormat: '*165*5*{CODE}#',
+      ussdNumberFormat: '*165*1*{PHONE}*{AMOUNT}#',
+      ussdCodeFormat: '*165*5*{CODE}*{AMOUNT}#',
       sortOrder: 2,
     ),
     Country(
@@ -128,8 +140,8 @@ class Country {
       phonePlaceholder: '700 000 000',
       telecomProvider: 'Vodacom Tanzania',
       momoBrand: 'M-Pesa',
-      ussdNumberFormat: '*150*00*1*{PHONE}#',
-      ussdCodeFormat: '*150*00*5*{CODE}#',
+      ussdNumberFormat: '*150*00*1*{PHONE}*{AMOUNT}#',
+      ussdCodeFormat: '*150*00*5*{CODE}*{AMOUNT}#',
       sortOrder: 3,
     ),
     Country(
@@ -142,8 +154,8 @@ class Country {
       phonePlaceholder: '788 767 816',
       telecomProvider: 'MTN Rwanda',
       momoBrand: 'MTN MoMo',
-      ussdNumberFormat: '*182*1*1*{PHONE}#',
-      ussdCodeFormat: '*182*8*1*{CODE}#',
+      ussdNumberFormat: '*182*1*1*{PHONE}*{AMOUNT}#',
+      ussdCodeFormat: '*182*8*1*{CODE}*{AMOUNT}#',
       sortOrder: 4,
     ),
     Country(
@@ -156,8 +168,8 @@ class Country {
       phonePlaceholder: '240 000 000',
       telecomProvider: 'MTN Ghana',
       momoBrand: 'MTN MoMo',
-      ussdNumberFormat: '*170*1*{PHONE}#',
-      ussdCodeFormat: '*170*2*{CODE}#',
+      ussdNumberFormat: '*170*1*{PHONE}*{AMOUNT}#',
+      ussdCodeFormat: '*170*2*{CODE}*{AMOUNT}#',
       sortOrder: 6,
     ),
     Country(
@@ -170,8 +182,8 @@ class Country {
       phonePlaceholder: '703 000 000',
       telecomProvider: 'MTN Nigeria',
       momoBrand: 'MoMo PSB',
-      ussdNumberFormat: '*671*1*{PHONE}#',
-      ussdCodeFormat: '*671*5*{CODE}#',
+      ussdNumberFormat: '*671*1*{PHONE}*{AMOUNT}#',
+      ussdCodeFormat: '*671*5*{CODE}*{AMOUNT}#',
       sortOrder: 7,
     ),
   ];

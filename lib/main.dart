@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +9,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/router/app_router.dart';
+import 'package:mobi_app/core/services/firebase_analytics_service.dart';
+import 'package:mobi_app/core/services/firebase_bootstrap_service.dart';
 import 'package:mobi_app/core/services/push_notification_service.dart';
 import 'package:mobi_app/core/theme/app_theme.dart';
 import 'package:mobi_app/core/theme/theme_provider.dart';
@@ -18,6 +18,7 @@ import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/splash/splash_screen.dart';
 import 'package:mobi_app/l10n/app_localizations.dart';
 import 'package:mobi_app/providers/app_providers.dart';
+import 'package:mobi_app/shared/widgets/connectivity_overlay.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
@@ -31,6 +32,9 @@ Future<void> main() async {
       // Disable runtime font fetching — fonts are pre-bundled in assets/google_fonts/
       GoogleFonts.config.allowRuntimeFetching = false;
 
+      final firebaseReady = await FirebaseBootstrapService.instance
+          .initialize();
+
       // In release mode, show a blank container instead of red error screen
       if (!kDebugMode) {
         ErrorWidget.builder = (FlutterErrorDetails details) {
@@ -42,23 +46,10 @@ Future<void> main() async {
             ),
           );
         };
-      }
-
-      // Initialize Firebase
-      await Firebase.initializeApp();
-
-      // Set up Crashlytics
-      if (!kDebugMode) {
         FlutterError.onError =
-            FirebaseCrashlytics.instance.recordFlutterFatalError;
-        PlatformDispatcher.instance.onError = (error, stack) {
-          FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-          return true;
-        };
-      } else {
-        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
-          false,
-        );
+            FirebaseBootstrapService.instance.recordFlutterFatalError;
+        PlatformDispatcher.instance.onError =
+            FirebaseBootstrapService.instance.recordPlatformError;
       }
 
       // Validate Supabase config is injected
@@ -87,8 +78,11 @@ Future<void> main() async {
       }
 
       // Initialize push notifications (after Firebase + Supabase)
-      await PushNotificationService.instance.initialize();
-      if (SupabaseConfig.isConfigured) {
+      if (firebaseReady && !kIsWeb) {
+        await PushNotificationService.instance.initialize();
+        unawaited(FirebaseAnalyticsService.instance.logAppOpen());
+      }
+      if (firebaseReady && SupabaseConfig.isConfigured && !kIsWeb) {
         unawaited(PushNotificationService.instance.registerToken());
       }
 
@@ -127,7 +121,13 @@ Future<void> main() async {
     (error, stack) {
       AppLogger.error('UncaughtZoneError: $error\n$stack');
       if (!kDebugMode) {
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        unawaited(
+          FirebaseBootstrapService.instance.recordError(
+            error,
+            stack,
+            fatal: true,
+          ),
+        );
       }
     },
   );
@@ -193,16 +193,18 @@ class _MobiMainAppState extends ConsumerState<MobiMainApp> {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             builder: (context, child) {
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 800),
-                switchInCurve: Curves.easeOut,
-                switchOutCurve: Curves.easeIn,
-                child: _showSplash
-                    ? const MobiSplashScreen(key: ValueKey('splash'))
-                    : KeyedSubtree(
-                        key: const ValueKey('app'),
-                        child: child ?? const SizedBox.shrink(),
-                      ),
+              return ConnectivityOverlay(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 800),
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeIn,
+                  child: _showSplash
+                      ? const MobiSplashScreen(key: ValueKey('splash'))
+                      : KeyedSubtree(
+                          key: const ValueKey('app'),
+                          child: child ?? const SizedBox.shrink(),
+                        ),
+                ),
               );
             },
           ),

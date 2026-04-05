@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -7,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/platform/platform_io.dart';
+import 'package:mobi_app/core/services/firebase_bootstrap_service.dart';
+import 'package:mobi_app/core/services/firebase_remote_config_service.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/models/ride_request.dart';
 import 'package:mobi_app/shared/widgets/ride_request_sheet.dart';
@@ -19,7 +21,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// because it runs in an isolate separate from the main app.
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // Firebase is already initialized by the time this is called.
+  await FirebaseBootstrapService.instance.ensureBackgroundInitialized();
+
   if (kDebugMode) {
     debugPrint('[push] Background message: ${message.messageId}');
   }
@@ -37,13 +40,16 @@ class PushNotificationService {
   PushNotificationService._();
   static final instance = PushNotificationService._();
 
-  final _messaging = FirebaseMessaging.instance;
   final _localNotifications = FlutterLocalNotificationsPlugin();
 
   StreamSubscription<RemoteMessage>? _foregroundSub;
   StreamSubscription<String>? _tokenRefreshSub;
 
   bool _initialized = false;
+
+  FirebaseMessaging get _messaging => FirebaseMessaging.instance;
+
+  bool get _isSupportedPlatform => Platform.isAndroid || Platform.isIOS;
 
   /// The default Android notification channel.
   static const _androidChannel = AndroidNotificationChannel(
@@ -59,6 +65,23 @@ class PushNotificationService {
   /// Call once after Firebase.initializeApp() in main().
   Future<void> initialize() async {
     if (_initialized) return;
+    if (!FirebaseBootstrapService.instance.isReady) {
+      AppLogger.warning('[push] Firebase is not ready; skipping push init.');
+      return;
+    }
+    if (!_isSupportedPlatform) {
+      if (kDebugMode) {
+        debugPrint('[push] Push notifications are mobile-only in this repo.');
+      }
+      return;
+    }
+    if (!FirebaseRemoteConfigService.instance.pushNotificationsEnabled) {
+      if (kDebugMode) {
+        debugPrint('[push] Push notifications disabled by Remote Config.');
+      }
+      return;
+    }
+
     _initialized = true;
 
     // Register the background handler
@@ -242,6 +265,10 @@ class PushNotificationService {
   /// On older Android, returns granted automatically.
   /// On iOS, requests alert/badge/sound permission.
   Future<bool> requestPermission() async {
+    if (!_isSupportedPlatform) {
+      return false;
+    }
+
     if (Platform.isAndroid) {
       final status = await Permission.notification.request();
       return status.isGranted || status.isLimited;
@@ -261,6 +288,10 @@ class PushNotificationService {
 
   /// Check if notification permission is already granted.
   Future<bool> hasPermission() async {
+    if (!_isSupportedPlatform) {
+      return false;
+    }
+
     if (Platform.isAndroid) {
       return (await Permission.notification.status).isGranted;
     }
@@ -276,7 +307,12 @@ class PushNotificationService {
   ///
   /// Call after authentication is established.
   Future<void> registerToken() async {
-    if (!SupabaseConfig.isConfigured) return;
+    if (!SupabaseConfig.isConfigured ||
+        !FirebaseBootstrapService.instance.isReady ||
+        !_isSupportedPlatform ||
+        !FirebaseRemoteConfigService.instance.pushNotificationsEnabled) {
+      return;
+    }
 
     final userId = Supabase.instance.client.auth.currentUser?.id;
     if (userId == null) return;
@@ -300,7 +336,7 @@ class PushNotificationService {
 
   /// Remove the FCM token for the current device (e.g., on logout).
   Future<void> unregisterToken() async {
-    if (!SupabaseConfig.isConfigured) return;
+    if (!SupabaseConfig.isConfigured || !_isSupportedPlatform) return;
 
     try {
       final token = await _messaging.getToken();
@@ -320,7 +356,11 @@ class PushNotificationService {
   }
 
   void _onTokenRefresh(String newToken) {
-    if (!SupabaseConfig.isConfigured) return;
+    if (!SupabaseConfig.isConfigured ||
+        !_isSupportedPlatform ||
+        !FirebaseRemoteConfigService.instance.pushNotificationsEnabled) {
+      return;
+    }
 
     final userId = Supabase.instance.client.auth.currentUser?.id;
     if (userId == null) return;

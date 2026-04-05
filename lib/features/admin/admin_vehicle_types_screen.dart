@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/services/vehicle_type_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -14,19 +15,21 @@ import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 
 /// Admin screen to manage vehicle types and their country allocations.
-class AdminVehicleTypesScreen extends StatefulWidget {
+class AdminVehicleTypesScreen extends ConsumerStatefulWidget {
   final VoidCallback onBack;
 
   const AdminVehicleTypesScreen({super.key, required this.onBack});
 
   @override
-  State<AdminVehicleTypesScreen> createState() =>
+  ConsumerState<AdminVehicleTypesScreen> createState() =>
       _AdminVehicleTypesScreenState();
 }
 
-class _AdminVehicleTypesScreenState extends State<AdminVehicleTypesScreen> {
-  final _vehicleService = VehicleTypeService();
-  final _countryService = CountryService();
+class _AdminVehicleTypesScreenState extends ConsumerState<AdminVehicleTypesScreen> {
+  VehicleTypeService get vehicleService => ref.read(vehicleTypeServiceProvider);
+
+  CountryService get _countryService => ref.read(countryServiceProvider);
+
 
   bool _isLoading = true;
   List<VehicleTypeModel> _vehicleTypes = [];
@@ -42,9 +45,9 @@ class _AdminVehicleTypesScreenState extends State<AdminVehicleTypesScreen> {
   Future<void> _load() async {
     setState(() => _isLoading = true);
     try {
-      _vehicleService.invalidateCache();
+      ref.read(vehicleTypeServiceProvider).invalidateCache();
       final results = await Future.wait([
-        _vehicleService.getAll(includeInactive: true),
+        ref.read(vehicleTypeServiceProvider).getAll(includeInactive: true),
         _countryService.getCountries(),
       ]);
       if (mounted) {
@@ -62,7 +65,7 @@ class _AdminVehicleTypesScreenState extends State<AdminVehicleTypesScreen> {
   Future<void> _toggleActive(VehicleTypeModel vt) async {
     setState(() => _busyId = vt.id);
     try {
-      await _vehicleService.toggleActive(vt.id, !vt.isActive);
+      await ref.read(vehicleTypeServiceProvider).toggleActive(vt.id, !vt.isActive);
       await _load();
     } on Object catch (e) {
       if (mounted) {
@@ -103,7 +106,7 @@ class _AdminVehicleTypesScreenState extends State<AdminVehicleTypesScreen> {
                           vt.localAssetPath,
                           width: 36,
                           height: 36,
-                          errorBuilder: (_, __, ___) =>
+                          errorBuilder: (_, e, s) =>
                               Icon(vt.icon, size: 28, color: cs.primary),
                         ),
                         const SizedBox(width: 14),
@@ -205,7 +208,7 @@ class _AdminVehicleTypesScreenState extends State<AdminVehicleTypesScreen> {
   Future<void> _saveCountries(String vtId, List<String> countryIds) async {
     setState(() => _busyId = vtId);
     try {
-      await _vehicleService.updateCountries(vtId, countryIds);
+      await ref.read(vehicleTypeServiceProvider).updateCountries(vtId, countryIds);
       await _load();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -276,7 +279,7 @@ class _AdminVehicleTypesScreenState extends State<AdminVehicleTypesScreen> {
                   ? ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       itemCount: 5,
-                      itemBuilder: (_, __) => const Padding(
+                      itemBuilder: (_, i) => const Padding(
                         padding: EdgeInsets.only(bottom: 16),
                         child: LoadingSkeleton(height: 140, borderRadius: 28),
                       ),
@@ -314,7 +317,7 @@ class _AdminVehicleTypesScreenState extends State<AdminVehicleTypesScreen> {
 }
 
 /// Card for a single vehicle type with image, status toggle, and country chips.
-class _VehicleTypeCard extends StatelessWidget {
+class _VehicleTypeCard extends ConsumerWidget {
   final VehicleTypeModel vehicleType;
   final List<Country> countries;
   final bool isBusy;
@@ -330,7 +333,7 @@ class _VehicleTypeCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
@@ -362,7 +365,7 @@ class _VehicleTypeCard extends StatelessWidget {
                     width: 40,
                     height: 40,
                     fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => Icon(
+                    errorBuilder: (_, e, s) => Icon(
                       vehicleType.icon,
                       size: 28,
                       color: cs.onSurfaceVariant,

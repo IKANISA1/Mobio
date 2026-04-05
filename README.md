@@ -62,6 +62,63 @@ flutter analyze
 flutter test
 ```
 
+## Firebase Infrastructure
+
+- Firebase is infrastructure only in this repo: Hosting, Analytics, Crashlytics, Cloud Messaging, and Remote Config.
+- Supabase remains the system of record, auth layer, realtime backend, and application data source.
+- The Firebase project wired to the repo is `gen-lang-client-0172279957` (`1074154147498`).
+- Android is already registered and checked in via [`android/app/google-services.json`](./android/app/google-services.json).
+- Firebase Hosting deploys the static marketing/privacy site from [`landing/`](./landing).
+
+### What The Repo Now Expects
+
+- `firebase_core`, `firebase_crashlytics`, `firebase_messaging`, `firebase_analytics`, and `firebase_remote_config` are installed in Flutter.
+- `firebase_auth` is initialized as Firebase-only infrastructure support; it does not replace Supabase auth.
+- Firebase boots before the rest of the app, but the app keeps running if a platform is not configured yet.
+- Crashlytics and Analytics collection are gated by Remote Config so Firebase can stay operationally optional.
+- Push registration is gated by both platform support and Remote Config so it does not interfere with the Supabase product flows.
+- Firebase Auth attempts an anonymous bootstrap session by default. Disable that with `--dart-define=FIREBASE_ENABLE_ANONYMOUS_AUTH=false` if you want SDK init only.
+
+### Current CLI Status
+
+The local Firebase CLI session is stale for project-management commands. Before generating missing iOS/Web app registrations, re-authenticate:
+
+```bash
+firebase login --reauth
+flutterfire configure \
+  --yes \
+  --project=gen-lang-client-0172279957 \
+  --platforms=android,ios,web \
+  --android-package-name=rw.mobi.app \
+  --ios-bundle-id=rw.mobi.app
+```
+
+The codebase is already prepared for that command. Until then:
+
+- Android works from the checked-in app registration.
+- iOS can be bootstrapped with `--dart-define=FIREBASE_IOS_APP_ID=...`.
+- Web can be bootstrapped with `--dart-define=FIREBASE_WEB_APP_ID=...` and optionally `--dart-define=FIREBASE_WEB_MEASUREMENT_ID=...`.
+- If you want the anonymous Firebase Auth bootstrap to succeed, enable the Anonymous provider in the Firebase Console for this project.
+
+### Remote Config Keys Supported By The App
+
+- `analytics_enabled`
+- `crashlytics_enabled`
+- `push_notifications_enabled`
+- `maintenance_mode_enabled`
+- `maintenance_mode_message`
+- `landing_download_android_url`
+- `landing_download_ios_url`
+- `support_whatsapp_number`
+
+### Hosting
+
+The checked-in [`firebase.json`](./firebase.json) now deploys the `landing/` directory through Firebase Hosting.
+
+```bash
+firebase deploy --only hosting --project gen-lang-client-0172279957
+```
+
 ## Build-Time Variables
 
 | Variable | Required | Purpose |
@@ -78,6 +135,58 @@ flutter test
 - Do not commit `android/key.properties` or release keystores to the repo.
 - Local release builds can source `.env` and fail fast on missing inputs via `./scripts/release/build_android_release.sh appbundle`.
 - Google Play submission should use the AAB output, not the APK.
+
+## GitHub Actions
+
+- [`ci.yml`](./.github/workflows/ci.yml) runs Flutter verification on pushes, pull requests, and manual dispatches, then builds a release AAB with the configured runtime defines.
+- [`release.yml`](./.github/workflows/release.yml) runs on version tags and manual dispatches, builds a signed AAB, uploads release artifacts, pushes a draft Play Store release, and creates a GitHub release.
+- The release workflow is bound to the `Mobio` GitHub environment.
+
+### Repository Variables
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `SUPABASE_PROJECT_REF`
+- `PRIVACY_POLICY_URL`
+- `FIREBASE_PROJECT_ID`
+- `FIREBASE_PROJECT_NUMBER`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_PAGES_PROJECT_NAME`
+- `CLOUDFLARE_PAGES_DEFAULT_URL`
+- `CLOUDFLARE_PAGES_PRODUCTION_URL`
+- `CLOUDFLARE_PAGES_CLIENT_PROJECT_NAME`
+- `CLOUDFLARE_PAGES_CLIENT_URL`
+- `CLOUDFLARE_PAGES_ADMIN_PROJECT_NAME`
+- `CLOUDFLARE_PAGES_ADMIN_URL`
+
+### Repository Secrets
+
+- `SUPABASE_ACCESS_TOKEN`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `KEYSTORE_BASE64`
+- `KEY_ALIAS`
+- `KEY_PASSWORD`
+- `STORE_PASSWORD`
+- `PLAY_STORE_SERVICE_ACCOUNT_JSON`
+- `CLOUDFLARE_API_TOKEN`
+
+### Mobio Environment
+
+- The `Mobio` environment mirrors the production release variables and secrets used by `release.yml`.
+- Keep signing credentials and Play publishing credentials in `Mobio` if you later narrow repository-level secret scope.
+- Cloudflare Pages production is already wired to the `mobio` project on branch `main`.
+- [`cloudflare-pages.yml`](./.github/workflows/cloudflare-pages.yml) is a manual GitHub override for redeploying the static `landing/` site without changing Cloudflare's existing automatic Git deployments.
+- [`cloudflare-pwa.yml`](./.github/workflows/cloudflare-pwa.yml) builds the Flutter web app, prepares separate client/admin PWA bundles, and deploys them to Cloudflare Pages on demand.
+
+## Cloudflare PWA Domains
+
+- `mobio.ikanisa.com` remains the marketing and privacy site, backed by the `mobio` Pages project and the repo's `landing/` directory.
+- `mobioapp.ikanisa.com` is reserved for the passenger/driver Flutter PWA bundle.
+- `mobioadmin.ikanisa.com` is reserved for the admin Flutter PWA bundle.
+- The admin bundle injects a root redirect to `/admin-auth` and sets the PWA manifest start URL accordingly.
+- Both PWA bundles ship a Cloudflare Pages SPA fallback via `_redirects` so `/admin`, `/admin-auth`, and other GoRouter paths can be refreshed directly.
+- Use [`scripts/web/prepare_pwa_bundles.sh`](./scripts/web/prepare_pwa_bundles.sh) to build the two web bundles locally.
+- Use [`scripts/web/deploy_cloudflare_pwas.sh`](./scripts/web/deploy_cloudflare_pwas.sh) to deploy both PWAs from a local Wrangler-authenticated machine.
 
 ## Backend Source Of Truth
 

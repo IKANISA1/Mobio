@@ -118,7 +118,7 @@ class _VehicleImage extends StatelessWidget {
       width: size,
       height: size,
       fit: BoxFit.contain,
-      errorBuilder: (_, __, ___) => Icon(
+      errorBuilder: (_, e, s) => Icon(
         vehicleType.icon,
         size: size * 0.7,
         color: Theme.of(context).colorScheme.onSurface,

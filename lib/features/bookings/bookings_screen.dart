@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
-
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/ride_request_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -19,7 +21,7 @@ import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Bookings screen with live data from TripService.
-class BookingsScreen extends StatefulWidget {
+class BookingsScreen extends ConsumerStatefulWidget {
   final String mode;
   final ValueChanged<String> onModeChanged;
   final VoidCallback onSchedule;
@@ -36,17 +38,19 @@ class BookingsScreen extends StatefulWidget {
   });
 
   @override
-  State<BookingsScreen> createState() => _BookingsScreenState();
+  ConsumerState<BookingsScreen> createState() => _BookingsScreenState();
 }
 
-class _BookingsScreenState extends State<BookingsScreen> {
+class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   int _activeToggle = 0; // 0 = mine, 1 = nearby
   bool _isLoading = true;
   String? _error;
   List<Trip> _myTrips = [];
   List<Trip> _nearbyTrips = [];
-  final _tripService = TripService();
-  final _rideRequestService = RideRequestService();
+  TripService get _tripService => ref.read(tripServiceProvider);
+
+  RideRequestService get _rideRequestService => ref.read(rideRequestServiceProvider);
+
   final Set<String> _requestedTripIds = {};
 
   @override
@@ -290,7 +294,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             sliver: SliverList.builder(
               itemCount: 2,
-              itemBuilder: (_, __) => const Padding(
+              itemBuilder: (_, i) => const Padding(
                 padding: EdgeInsets.only(bottom: 16),
                 child: LoadingSkeleton(height: 192),
               ),
@@ -349,8 +353,20 @@ class _BookingsScreenState extends State<BookingsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             sliver: SliverList.builder(
               itemCount: sectionTrips.length,
-              itemBuilder: (context, index) =>
-                  _buildTripCard(sectionTrips[index]),
+              itemBuilder: (context, index) {
+                final content = _buildTripCard(sectionTrips[index]);
+                if (MediaQuery.disableAnimationsOf(context)) {
+                  return content;
+                }
+                return content
+                    .animate(delay: (100 + index * 50).ms)
+                    .fade(duration: 350.ms)
+                    .slideY(
+                      begin: 0.1,
+                      duration: 350.ms,
+                      curve: Curves.easeOutQuad,
+                    );
+              },
             ),
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
@@ -390,189 +406,195 @@ class _BookingsScreenState extends State<BookingsScreen> {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: ClayCard(
-        padding: const EdgeInsets.all(32),
-        onTap: () => widget.onTripDetails(trip.id ?? ''),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Hero(
+        tag: 'trip_card_${trip.id ?? trip.hashCode}',
+        child: Material(
+          type: MaterialType.transparency,
+          child: ClayCard(
+            padding: const EdgeInsets.all(32),
+            onTap: () => widget.onTripDetails(trip.id ?? ''),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (isNearby && trip.authorId.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Text(
-                            nearbyLabel,
-                            style: AppTypography.labelSm.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (isNearby && trip.authorId.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Text(
+                                nearbyLabel,
+                                style: AppTypography.labelSm.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                          Text(
+                            route,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.titleLg.copyWith(
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
                             ),
                           ),
+                          const SizedBox(height: 4),
+                          Text(
+                            timeDisplay,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.displayMd.copyWith(
+                              letterSpacing: -1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isNearby)
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.4),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                      Text(
-                        route,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTypography.titleLg.copyWith(
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.5,
+                        child: const Center(
+                          child: Icon(
+                            LucideIcons.messageCircle,
+                            size: 22,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        timeDisplay,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTypography.displayMd.copyWith(
-                          letterSpacing: -1.5,
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // Badges
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _badge(
+                      vType.displayName,
+                      Theme.of(context).colorScheme.secondaryContainer,
+                      Theme.of(context).colorScheme.onSecondaryContainer,
+                      icon: getVehicleIcon(vType),
+                    ),
+                    _badge(
+                      trip.status == 'active'
+                          ? 'ACTIVE'
+                          : (trip.status?.toUpperCase() ?? 'ACTIVE'),
+                      trip.status == 'active'
+                          ? Theme.of(context).colorScheme.primaryContainer
+                          : Theme.of(context).colorScheme.errorContainer,
+                      trip.status == 'active'
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.onErrorContainer,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // Action row
+                Container(
+                  padding: const EdgeInsets.only(top: 16),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(
+                        color: Theme.of(
+                          context,
+                        ).extension<MobiThemeExtension>()!.surfaceContainer,
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (!isNearby && trip.status != 'cancelled')
+                        Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () => _cancelTrip(trip),
+                            borderRadius: BorderRadius.circular(24),
+                            splashColor: Theme.of(
+                              context,
+                            ).colorScheme.error.withValues(alpha: 0.12),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 8,
+                              ),
+                              child: Text(
+                                'CANCEL TRIP',
+                                style: AppTypography.labelSm.copyWith(
+                                  letterSpacing: 1.5,
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      else if (isNearby && trip.id != null)
+                        _buildRequestOfferButton(trip)
+                      else
+                        const SizedBox.shrink(),
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => widget.onTripDetails(trip.id ?? ''),
+                          borderRadius: BorderRadius.circular(24),
+                          splashColor: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.12),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'DETAILS',
+                                  style: AppTypography.labelSm.copyWith(
+                                    letterSpacing: 1.5,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Icon(
+                                  LucideIcons.arrowRight,
+                                  size: 12,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                if (isNearby)
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.4),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        LucideIcons.messageCircle,
-                        size: 22,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
               ],
             ),
-            const SizedBox(height: 16),
-            // Badges
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _badge(
-                  vType.displayName,
-                  Theme.of(context).colorScheme.secondaryContainer,
-                  Theme.of(context).colorScheme.onSecondaryContainer,
-                  icon: getVehicleIcon(vType),
-                ),
-                _badge(
-                  trip.status == 'active'
-                      ? 'ACTIVE'
-                      : (trip.status?.toUpperCase() ?? 'ACTIVE'),
-                  trip.status == 'active'
-                      ? Theme.of(context).colorScheme.primaryContainer
-                      : Theme.of(context).colorScheme.errorContainer,
-                  trip.status == 'active'
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onErrorContainer,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // Action row
-            Container(
-              padding: const EdgeInsets.only(top: 16),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Theme.of(
-                      context,
-                    ).extension<MobiThemeExtension>()!.surfaceContainer,
-                    width: 1,
-                  ),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (!isNearby && trip.status != 'cancelled')
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () => _cancelTrip(trip),
-                        borderRadius: BorderRadius.circular(24),
-                        splashColor: Theme.of(
-                          context,
-                        ).colorScheme.error.withValues(alpha: 0.12),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 8,
-                          ),
-                          child: Text(
-                            'CANCEL TRIP',
-                            style: AppTypography.labelSm.copyWith(
-                              letterSpacing: 1.5,
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  else if (isNearby && trip.id != null)
-                    _buildRequestOfferButton(trip)
-                  else
-                    const SizedBox.shrink(),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () => widget.onTripDetails(trip.id ?? ''),
-                      borderRadius: BorderRadius.circular(24),
-                      splashColor: Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.12),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 8,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'DETAILS',
-                              style: AppTypography.labelSm.copyWith(
-                                letterSpacing: 1.5,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Icon(
-                              LucideIcons.arrowRight,
-                              size: 12,
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

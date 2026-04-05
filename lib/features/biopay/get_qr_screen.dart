@@ -1,13 +1,15 @@
-import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/platform/platform_io.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
@@ -21,7 +23,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 /// Two-step flow:
 /// 1. **Input** — Number/Code toggle, handle value, optional amount
 /// 2. **QR display** — rendered QR with handle below + Download QR button
-class GetQrScreen extends StatefulWidget {
+class GetQrScreen extends ConsumerStatefulWidget {
   final VoidCallback onBack;
   final String countryCode;
 
@@ -32,13 +34,14 @@ class GetQrScreen extends StatefulWidget {
   });
 
   @override
-  State<GetQrScreen> createState() => _GetQrScreenState();
+  ConsumerState<GetQrScreen> createState() => _GetQrScreenState();
 }
 
-class _GetQrScreenState extends State<GetQrScreen> {
+class _GetQrScreenState extends ConsumerState<GetQrScreen> {
   final _amountController = TextEditingController();
   final _handleController = TextEditingController();
-  final _countryService = CountryService();
+  CountryService get _countryService => ref.read(countryServiceProvider);
+
   final _qrKey = GlobalKey();
 
   bool _showQr = false;
@@ -62,32 +65,16 @@ class _GetQrScreenState extends State<GetQrScreen> {
       dialingCode: widget.countryCode,
       handleType: _selectedType,
       handleValue: _handleValue,
+      amount: amount.isEmpty ? null : amount,
     );
 
-    // If an amount was entered, append it into the USSD pattern.
-    // Rwanda MoMo format: *182*8*1*AMOUNT*PHONE#
-    // Without amount the USSD is already valid for "send to" flow.
-    String ussdWithAmount = ussd ?? '';
-    if (amount.isNotEmpty && ussdWithAmount.isNotEmpty) {
-      // Insert amount before the phone/code in the USSD pattern.
-      // Typical pattern: *182*8*1*PHONE# → *182*8*1*AMOUNT*PHONE#
-      final parts = ussdWithAmount.split('*');
-      if (parts.length >= 2) {
-        // Insert amount before the last segment (PHONE# or CODE#)
-        final lastPart = parts.removeLast();
-        parts.add(amount);
-        parts.add(lastPart);
-        ussdWithAmount = parts.join('*');
-      }
-    }
-
-    if (ussdWithAmount.isEmpty) {
+    if (ussd == null || ussd.isEmpty) {
       // Fallback: just the handle as plain text
       return _handleValue;
     }
 
     // Encode as tel: URI so any QR scanner can dial the USSD.
-    return 'tel:$ussdWithAmount';
+    return 'tel:$ussd';
   }
 
   Future<void> _generateQr() async {
@@ -363,6 +350,7 @@ class _GetQrScreenState extends State<GetQrScreen> {
   // ─── QR display: rendered QR + branding + Download QR ───
   Widget _buildQrView() {
     final currency = _countryService.currencyForCodeSync(widget.countryCode);
+    final brand = _countryService.momoBrandForCodeSync(widget.countryCode);
     final amount = _amountController.text.replaceAll(',', '').trim();
     final handle = _handleValue;
 
@@ -392,7 +380,7 @@ class _GetQrScreenState extends State<GetQrScreen> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'Mobio Pay',
+                        brand,
                         style: AppTypography.titleMd.copyWith(
                           color: const Color(0xFF1A1A2E),
                           letterSpacing: -0.3,

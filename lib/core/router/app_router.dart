@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobi_app/app.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/services/firebase_analytics_service.dart';
 import 'package:mobi_app/core/services/push_notification_service.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/core/utils/navigation_utils.dart';
 
 import 'package:mobi_app/features/admin/admin_vehicle_types_screen.dart';
-import 'package:mobi_app/features/biopay/face_enrollment_screen.dart';
-
-import 'package:mobi_app/features/biopay/face_scan_screen.dart';
-import 'package:mobi_app/features/biopay/get_qr_screen.dart';
-import 'package:mobi_app/features/biopay/scan_qr_screen.dart';
+import 'package:mobi_app/features/biopay/face_enrollment_screen_entry.dart';
+import 'package:mobi_app/features/biopay/face_scan_screen_entry.dart';
+import 'package:mobi_app/features/biopay/get_qr_screen_entry.dart';
+import 'package:mobi_app/features/biopay/scan_qr_screen_entry.dart';
 import 'package:mobi_app/features/bookings/trip_details_screen.dart';
 import 'package:mobi_app/features/chat/chat_screen.dart';
 import 'package:mobi_app/features/profile/edit_profile_screen.dart';
@@ -87,6 +87,7 @@ GoRouter createRouter() {
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
+    observers: FirebaseAnalyticsService.instance.observers,
     initialLocation: SupabaseConfig.isConfigured ? '/' : '/config-error',
     errorBuilder: (context, state) => const NotFoundScreen(),
     redirect: (context, state) => _adminRouteGuard(state),

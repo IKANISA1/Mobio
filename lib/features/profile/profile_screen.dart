@@ -1,7 +1,11 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
 import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -12,7 +16,7 @@ import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Profile screen matching transito ProfileScreen.
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final ValueChanged<bool> onDarkModeChanged;
   final VoidCallback onEditProfile;
@@ -33,12 +37,13 @@ class ProfileScreen extends StatefulWidget {
   });
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _isLoading = true;
-  final _profileService = ProfileService();
+  ProfileService get _profileService => ref.read(profileServiceProvider);
+
   String _userCode = '482013';
   int _memberSince = 2024;
 
@@ -350,7 +355,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-          ],
+          ].animate(interval: 50.ms).fade(duration: 400.ms).slideY(begin: 0.1, duration: 400.ms, curve: Curves.easeOutQuad),
         ),
       ),
     );

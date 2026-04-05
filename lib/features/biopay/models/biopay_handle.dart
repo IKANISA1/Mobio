@@ -37,12 +37,16 @@ class BiopayHandle {
   final String value;
   final String countryCode;
   final String? countryId;
+  final String? amount;
+  final String? momoBrand;
 
   const BiopayHandle({
     required this.type,
     required this.value,
     required this.countryCode,
     this.countryId,
+    this.amount,
+    this.momoBrand,
   });
 
   bool get hasValue => value.trim().isNotEmpty;
@@ -52,12 +56,16 @@ class BiopayHandle {
     String? value,
     String? countryCode,
     String? countryId,
+    String? amount,
+    String? momoBrand,
   }) {
     return BiopayHandle(
       type: type ?? this.type,
       value: value ?? this.value,
       countryCode: countryCode ?? this.countryCode,
       countryId: countryId ?? this.countryId,
+      amount: amount ?? this.amount,
+      momoBrand: momoBrand ?? this.momoBrand,
     );
   }
 }

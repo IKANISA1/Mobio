@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
 import 'package:mobi_app/core/services/ride_request_service.dart';
@@ -25,7 +28,7 @@ import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 
 /// Home (Discover) screen matching transito design.
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   final String mode;
   final ValueChanged<String> onModeChanged;
   final ValueChanged<Trip> onChat;
@@ -44,10 +47,10 @@ class HomeScreen extends StatefulWidget {
   });
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   String _vehicleId = 'cab';
   bool _isLoading = true;
   bool _hasError = false;
@@ -57,10 +60,14 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Trip> _nearbyPreview = [];
   List<Trip> _scheduledPreview = [];
   List<VehicleTypeModel> _vehicleTypes = [];
-  final _driverLocationService = DriverLocationService();
-  final _tripService = TripService();
-  final _notificationService = NotificationService();
-  final _rideRequestService = RideRequestService();
+  DriverLocationService get _driverLocationService => ref.read(driverLocationServiceProvider);
+
+  TripService get _tripService => ref.read(tripServiceProvider);
+
+  NotificationService get _notificationService => ref.read(notificationServiceProvider);
+
+  RideRequestService get _rideRequestService => ref.read(rideRequestServiceProvider);
+
   StreamSubscription<AppNotification>? _notifSub;
 
   @override
@@ -211,15 +218,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                  ),
+                  ).animate().fade(duration: 400.ms).slideY(begin: -0.1),
                 ),
                 const SizedBox(height: 24),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: _TappableContainer(
-                    onTap: widget.onViewNearby,
-                    child: _buildHeroCard(isDriver),
-                  ),
+                  child:
+                      _TappableContainer(
+                            onTap: widget.onViewNearby,
+                            child: _buildHeroCard(isDriver),
+                          )
+                          .animate(delay: 100.ms)
+                          .fade()
+                          .scale(begin: const Offset(0.95, 0.95)),
                 ),
                 const SizedBox(height: 24),
                 Padding(
@@ -248,7 +259,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ],
-                  ),
+                  ).animate(delay: 200.ms).fade().slideY(begin: 0.1),
                 ),
                 const SizedBox(height: 24),
                 Padding(
@@ -264,7 +275,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onSelected: _switchVehicle,
                       vehicleTypes: _vehicleTypes,
                     ),
-                  ),
+                  ).animate(delay: 300.ms).fade().slideX(begin: 0.1),
                 ),
                 const SizedBox(height: 32),
                 Padding(
@@ -308,7 +319,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               )
-                              .toList(),
+                              .toList()
+                              .animate(interval: 100.ms)
+                              .fade()
+                              .slideY(begin: 0.1),
                         )
                       : AiEmptyState(
                           title:
@@ -348,7 +362,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: _buildScheduledCard(context, trip),
                                 ),
                               )
-                              .toList(),
+                              .toList()
+                              .animate(interval: 100.ms)
+                              .fade()
+                              .slideY(begin: 0.1),
                         )
                       : const AiEmptyState(
                           title: 'No scheduled trips.',
@@ -756,17 +773,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _TappableContainer extends StatefulWidget {
+class _TappableContainer extends ConsumerStatefulWidget {
   final VoidCallback onTap;
   final Widget child;
 
   const _TappableContainer({required this.onTap, required this.child});
 
   @override
-  State<_TappableContainer> createState() => _TappableContainerState();
+  ConsumerState<_TappableContainer> createState() => _TappableContainerState();
 }
 
-class _TappableContainerState extends State<_TappableContainer> {
+class _TappableContainerState extends ConsumerState<_TappableContainer> {
   bool _isPressed = false;
 
   @override

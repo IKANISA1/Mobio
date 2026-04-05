@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/places_exception.dart';
 import 'package:mobi_app/core/services/places_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -11,7 +13,7 @@ import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/place.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 
-class PlaceAutocompleteField extends StatefulWidget {
+class PlaceAutocompleteField extends ConsumerStatefulWidget {
   final String label;
   final String placeholder;
   final Color iconBg;
@@ -38,13 +40,14 @@ class PlaceAutocompleteField extends StatefulWidget {
   });
 
   @override
-  State<PlaceAutocompleteField> createState() => _PlaceAutocompleteFieldState();
+  ConsumerState<PlaceAutocompleteField> createState() => _PlaceAutocompleteFieldState();
 }
 
-class _PlaceAutocompleteFieldState extends State<PlaceAutocompleteField> {
+class _PlaceAutocompleteFieldState extends ConsumerState<PlaceAutocompleteField> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
-  final _placesService = PlacesService();
+  PlacesService get _placesService => ref.read(placesServiceProvider);
+
 
   bool _isLoadingDetails = false;
   bool _showClear = false;

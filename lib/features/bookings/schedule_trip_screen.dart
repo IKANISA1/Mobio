@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
 import 'package:mobi_app/core/services/location_service.dart';
 import 'package:mobi_app/core/services/places_service.dart';
@@ -24,7 +26,7 @@ import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 
 /// Schedule Trip screen with route preview map.
-class ScheduleTripScreen extends StatefulWidget {
+class ScheduleTripScreen extends ConsumerStatefulWidget {
   final String mode;
   final ValueChanged<String> onModeChanged;
   final VoidCallback onBack;
@@ -37,10 +39,10 @@ class ScheduleTripScreen extends StatefulWidget {
   });
 
   @override
-  State<ScheduleTripScreen> createState() => _ScheduleTripScreenState();
+  ConsumerState<ScheduleTripScreen> createState() => _ScheduleTripScreenState();
 }
 
-class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
+class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   String _vehicleId = 'cab';
   PlaceDetails? _originDetails;
   PlaceDetails? _destDetails;
@@ -52,9 +54,12 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
   bool _isRecurring = false;
   final List<int> _recurringDays = [];
   static const _dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-  final _placesService = PlacesService();
-  final _tripService = TripService();
-  final _locationService = LocationService();
+  PlacesService get _placesService => ref.read(placesServiceProvider);
+
+  TripService get _tripService => ref.read(tripServiceProvider);
+
+  LocationService get _locationService => ref.read(locationServiceProvider);
+
   final _noteController = TextEditingController();
   bool _showErrors = false;
   bool _isLoadingLocation = false;
@@ -96,7 +101,7 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
       if (action != PermissionAccessDialogAction.grantAccess) {
         return; // User declined — autocomplete still works, just no proximity
       }
-      
+
       // Prevent modal barrier deadlock by waiting for the dialog's dismiss animation
       await Future.delayed(const Duration(milliseconds: 350));
     }
@@ -914,7 +919,7 @@ class _ScheduleTripScreenState extends State<ScheduleTripScreen> {
                               width: 32,
                               height: 32,
                               fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) => Icon(
+                              errorBuilder: (_, e, s) => Icon(
                                 vt.icon,
                                 size: 24,
                                 color: isSelected

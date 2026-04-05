@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/biopay_service.dart';
 import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
@@ -13,19 +15,22 @@ import 'package:mobi_app/models/vehicle_type_model.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class EditProfileScreen extends StatefulWidget {
+class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key, required this.onBack});
 
   final VoidCallback onBack;
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
+  ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
-  final _profileService = ProfileService();
-  final _bioPayService = BioPayService();
-  final _countryService = CountryService();
+class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
+  ProfileService get _profileService => ref.read(profileServiceProvider);
+
+  BioPayService get _bioPayService => ref.read(bioPayServiceProvider);
+
+  CountryService get _countryService => ref.read(countryServiceProvider);
+
   final _whatsAppController = TextEditingController();
   final _handleController = TextEditingController();
 
@@ -671,7 +676,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               width: 28,
                               height: 28,
                               fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) => Icon(
+                              errorBuilder: (_, e, s) => Icon(
                                 vt.icon,
                                 size: 20,
                                 color: isSelected
@@ -836,17 +841,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 }
 
 /// Selector with scale + opacity press feedback matching design.md §9B.
-class _TappableSelector extends StatefulWidget {
+class _TappableSelector extends ConsumerStatefulWidget {
   final VoidCallback? onTap;
   final Widget child;
 
   const _TappableSelector({required this.onTap, required this.child});
 
   @override
-  State<_TappableSelector> createState() => _TappableSelectorState();
+  ConsumerState<_TappableSelector> createState() => _TappableSelectorState();
 }
 
-class _TappableSelectorState extends State<_TappableSelector> {
+class _TappableSelectorState extends ConsumerState<_TappableSelector> {
   bool _pressed = false;
 
   @override
@@ -871,11 +876,11 @@ class _TappableSelectorState extends State<_TappableSelector> {
 }
 
 /// Skeleton loading layout matching the EditProfile form structure.
-class _ProfileFormSkeleton extends StatelessWidget {
+class _ProfileFormSkeleton extends ConsumerWidget {
   const _ProfileFormSkeleton();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return const SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(24, 18, 24, 160),
       child: Column(

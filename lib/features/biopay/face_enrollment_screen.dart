@@ -1,13 +1,15 @@
-import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/platform/platform_io.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
 import 'package:mobi_app/core/services/biopay_service.dart';
 import 'package:mobi_app/core/services/country_service.dart';
@@ -23,14 +25,13 @@ import 'package:mobi_app/features/biopay/services/enrollment_capture_session.dar
 import 'package:mobi_app/features/biopay/services/face_alignment_service.dart';
 import 'package:mobi_app/features/biopay/services/face_detection_service.dart';
 import 'package:mobi_app/features/biopay/services/stable_frame_gate.dart';
-
 import 'package:mobi_app/features/biopay/widgets/face_enrollment_capture.dart';
 import 'package:mobi_app/features/biopay/widgets/oval_painter.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 
-class FaceEnrollmentScreen extends StatefulWidget {
+class FaceEnrollmentScreen extends ConsumerStatefulWidget {
   const FaceEnrollmentScreen({
     super.key,
     required this.onBack,
@@ -41,19 +42,23 @@ class FaceEnrollmentScreen extends StatefulWidget {
   final bool isReEnrollment;
 
   @override
-  State<FaceEnrollmentScreen> createState() => _FaceEnrollmentScreenState();
+  ConsumerState<FaceEnrollmentScreen> createState() =>
+      _FaceEnrollmentScreenState();
 }
 
 enum _EnrollPhase { loading, ready, capturing, submitting, success, error }
 
-class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen>
+class _FaceEnrollmentScreenState extends ConsumerState<FaceEnrollmentScreen>
     with SingleTickerProviderStateMixin {
   final _momoValueController = TextEditingController();
   BiopayHandleType _handleType = BiopayHandleType.number;
   final _permissionService = AppPermissionService.instance;
-  final _bioPayService = BioPayService();
-  final _profileService = ProfileService();
-  final _countryService = CountryService();
+  BioPayService get _bioPayService => ref.read(bioPayServiceProvider);
+
+  ProfileService get _profileService => ref.read(profileServiceProvider);
+
+  CountryService get _countryService => ref.read(countryServiceProvider);
+
   final _faceDetectionService = FaceDetectionService();
   final _embeddingService = EmbeddingService();
   final _session = EnrollmentCaptureSession(requiredSamples: 5);
@@ -223,7 +228,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen>
       _showSnackBar('Camera access is required for BioPay face capture.');
       return;
     }
-    
+
     // Prevent modal barrier deadlock by waiting for the dialog's dismiss animation
     await Future.delayed(const Duration(milliseconds: 350));
 
@@ -1198,7 +1203,7 @@ class _FaceEnrollmentScreenState extends State<FaceEnrollmentScreen>
   }
 }
 
-class _SuccessCelebration extends StatelessWidget {
+class _SuccessCelebration extends ConsumerWidget {
   const _SuccessCelebration();
 
   static const _particles =
@@ -1212,7 +1217,7 @@ class _SuccessCelebration extends StatelessWidget {
       ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
       width: 190,
       height: 150,

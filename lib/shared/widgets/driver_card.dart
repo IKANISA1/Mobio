@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/ride_request_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
@@ -11,18 +13,25 @@ import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 /// Driver card matching transito DriverCard exactly.
 /// Chat action keeps WhatsApp's immediacy, but stays inside MOBI.
 /// Request button allows passengers to send a ride request to the driver.
-class DriverCard extends StatefulWidget {
+class DriverCard extends ConsumerStatefulWidget {
   final Trip trip;
   final VoidCallback onChat;
+  final VoidCallback? onTap;
 
-  const DriverCard({super.key, required this.trip, required this.onChat});
+  const DriverCard({
+    super.key,
+    required this.trip,
+    required this.onChat,
+    this.onTap,
+  });
 
   @override
-  State<DriverCard> createState() => _DriverCardState();
+  ConsumerState<DriverCard> createState() => _DriverCardState();
 }
 
-class _DriverCardState extends State<DriverCard> {
-  final _requestService = RideRequestService();
+class _DriverCardState extends ConsumerState<DriverCard> {
+  RideRequestService get requestService => ref.read(rideRequestServiceProvider);
+
   bool _isRequesting = false;
   bool _hasRequested = false;
 
@@ -31,7 +40,7 @@ class _DriverCardState extends State<DriverCard> {
     setState(() => _isRequesting = true);
 
     try {
-      await _requestService.sendRequest(
+      await ref.read(rideRequestServiceProvider).sendRequest(
         responderId: widget.trip.authorId,
         tripId: widget.trip.id,
         metadata: {
@@ -69,9 +78,14 @@ class _DriverCardState extends State<DriverCard> {
     final vType = widget.trip.effectiveVehicleType;
     final icon = getVehicleIcon(vType);
 
-    return ClayCard(
-      padding: const EdgeInsets.all(24),
-      child: Column(
+    return Hero(
+      tag: 'trip_card_${widget.trip.id ?? widget.trip.hashCode}',
+      child: Material(
+        type: MaterialType.transparency,
+        child: ClayCard(
+          onTap: widget.onTap,
+          padding: const EdgeInsets.all(24),
+          child: Column(
         children: [
           Row(
             children: [
@@ -244,6 +258,8 @@ class _DriverCardState extends State<DriverCard> {
             ],
           ),
         ],
+      ),
+        ),
       ),
     );
   }

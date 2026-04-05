@@ -54,6 +54,9 @@ android/fastlane/play-store-service-account.json
 .env
 .env.*
 !.env.example
+.firebase/
+firebase-debug.log
+ios/Runner/GoogleService-Info.plist
 supabase/.temp/
 
 # Build runner generated files

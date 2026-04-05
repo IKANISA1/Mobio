@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
@@ -7,7 +9,7 @@ import 'package:mobi_app/models/country.dart';
 /// WhatsApp phone input with country code picker.
 ///
 /// Fetches countries from Supabase via [CountryService] (cached after first load).
-class WhatsAppInput extends StatefulWidget {
+class WhatsAppInput extends ConsumerStatefulWidget {
   final String value;
   final ValueChanged<String> onChanged;
   final String countryCode;
@@ -24,11 +26,12 @@ class WhatsAppInput extends StatefulWidget {
   });
 
   @override
-  State<WhatsAppInput> createState() => _WhatsAppInputState();
+  ConsumerState<WhatsAppInput> createState() => _WhatsAppInputState();
 }
 
-class _WhatsAppInputState extends State<WhatsAppInput> {
-  final _countryService = CountryService();
+class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
+  CountryService get _countryService => ref.read(countryServiceProvider);
+
   List<Country> _countries = Country.fallbackCountries;
 
   @override

@@ -1,6 +1,9 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
 import 'package:mobi_app/core/services/location_service.dart';
 import 'package:mobi_app/core/services/vehicle_type_service.dart';
@@ -17,23 +20,31 @@ import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 
 /// Nearby screen with list-first browsing.
-class NearbyScreen extends StatefulWidget {
+class NearbyScreen extends ConsumerStatefulWidget {
   final ValueChanged<Trip> onChat;
+  final ValueChanged<String> onTripDetails;
   final VoidCallback? onBack;
 
-  const NearbyScreen({super.key, required this.onChat, this.onBack});
+  const NearbyScreen({
+    super.key,
+    required this.onChat,
+    required this.onTripDetails,
+    this.onBack,
+  });
 
   @override
-  State<NearbyScreen> createState() => _NearbyScreenState();
+  ConsumerState<NearbyScreen> createState() => _NearbyScreenState();
 }
 
-class _NearbyScreenState extends State<NearbyScreen> {
+class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   String _vehicleId = 'cab';
   bool _isLoading = true;
   bool _hasError = false;
   double? _userLat;
-  final _locationService = LocationService();
-  final _driverLocationService = DriverLocationService();
+  LocationService get _locationService => ref.read(locationServiceProvider);
+
+  DriverLocationService get _driverLocationService => ref.read(driverLocationServiceProvider);
+
   List<NearbyDriver> _nearbyDrivers = [];
   List<VehicleTypeModel> _vehicleTypes = [];
 
@@ -221,7 +232,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
                               ),
                             ],
                           ),
-                        ),
+                        ).animate().fade(duration: 400.ms).slideY(begin: -0.1),
                       ),
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 16)),
@@ -279,7 +290,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
                                 ),
                               ),
                             ),
-                          ),
+                          ).animate(delay: 50.ms).fade().slideX(begin: 1.0),
                         ),
                       ),
 
@@ -307,7 +318,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
                               ),
                             ],
                           ),
-                        ),
+                        ).animate(delay: 100.ms).fade().slideX(begin: 0.1),
                       ),
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
@@ -329,7 +340,7 @@ class _NearbyScreenState extends State<NearbyScreen> {
                           : _isLoading
                           ? SliverList.builder(
                               itemCount: 4,
-                              itemBuilder: (_, __) => const Padding(
+                              itemBuilder: (_, i) => const Padding(
                                 padding: EdgeInsets.only(bottom: 16),
                                 child: LoadingSkeleton.card(height: 128),
                               ),
@@ -337,14 +348,25 @@ class _NearbyScreenState extends State<NearbyScreen> {
                           : driverTrips.isNotEmpty
                           ? SliverList.builder(
                               itemCount: driverTrips.length,
-                              itemBuilder: (context, index) => Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: DriverCard(
+                              itemBuilder: (context, index) {
+                                final card = DriverCard(
                                   trip: driverTrips[index],
-                                  onChat: () =>
-                                      widget.onChat(driverTrips[index]),
-                                ),
-                              ),
+                                  onChat: () => widget.onChat(driverTrips[index]),
+                                  onTap: () => widget.onTripDetails(driverTrips[index].id ?? ''),
+                                );
+
+                                if (MediaQuery.disableAnimationsOf(context)) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: card,
+                                  );
+                                }
+
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: card.animate(delay: (150 + index * 50).ms).fade().slideY(begin: 0.1),
+                                );
+                              },
                             )
                           : SliverToBoxAdapter(
                               child: AiEmptyState(
