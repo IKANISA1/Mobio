@@ -7,11 +7,14 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
-import 'package:mobi_app/core/theme/app_colors.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_feature_tile.dart';
+import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -97,13 +100,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     if (_isLoading) {
       return SoftGradient(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 80, 24, 160),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.screenPadding,
+            80,
+            AppSpacing.screenPadding,
+            160,
+          ),
           child: Column(
             children: [
               const LoadingSkeleton(width: 96, height: 32, borderRadius: 12),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               const LoadingSkeleton(width: 160, height: 16, borderRadius: 12),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.sectionGap),
               ...List.generate(
                 3,
                 (_) => const Padding(
@@ -119,243 +127,186 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return SoftGradient(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 80, 24, 160),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.screenPadding,
+          80,
+          AppSpacing.screenPadding,
+          160,
+        ),
         child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-              decoration: BoxDecoration(
-                color: ext.surfaceContainerLowest.withValues(
-                  alpha: ext.surfacePanelAlpha,
-                ),
-                borderRadius: BorderRadius.circular(28),
-                border: Border.all(
-                  color: cs.outlineVariant.withValues(
-                    alpha: ext.surfacePanelBorderAlpha,
-                  ),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    _userCode,
-                    style: AppTypography.headlineLg.copyWith(
-                      color: cs.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Member • Since $_memberSince',
-                    style: AppTypography.bodySm.copyWith(
-                      color: cs.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            // Face ID CTA
-            ClayCard(
-              onTap: widget.onFaceRegister,
-              padding: const EdgeInsets.all(24),
-              color: null,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [cs.primary, AppColors.primaryDim],
-                  ),
-                  borderRadius: BorderRadius.circular(40),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: cs.onPrimary.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: Icon(
-                          LucideIcons.shield,
-                          size: 24,
-                          color: cs.onPrimary,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Face ID',
-                              style: AppTypography.titleMd.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: cs.onPrimary,
+          children:
+              [
+                    ClayCard(
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      borderRadius: AppRadii.hero,
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 56,
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  color: cs.primaryContainer,
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadii.xl,
+                                  ),
+                                ),
+                                child: Icon(
+                                  LucideIcons.user,
+                                  size: 24,
+                                  color: cs.onPrimaryContainer,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Secure payments with your face',
-                              style: AppTypography.bodySm.copyWith(
-                                color: cs.onPrimary.withValues(alpha: 0.7),
+                              const SizedBox(width: AppSpacing.md),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _userCode,
+                                      style: AppTypography.headlineLg.copyWith(
+                                        color: cs.onSurface,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Member profile',
+                                      style: AppTypography.bodySm.copyWith(
+                                        color: cs.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(
-                        LucideIcons.arrowRight,
-                        size: 20,
-                        color: cs.onPrimary.withValues(alpha: 0.7),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Edit Profile
-            _buildSettingsCard(
-              context: context,
-              icon: LucideIcons.user,
-              label: 'Edit Profile',
-              onTap: widget.onEditProfile,
-            ),
-            const SizedBox(height: 16),
-
-            // Dark Mode
-            Semantics(
-              container: true,
-              button: true,
-              toggled: widget.isDarkMode,
-              label: 'Dark Mode',
-              child: ClayCard(
-                onTap: () => widget.onDarkModeChanged(!widget.isDarkMode),
-                padding: const EdgeInsets.all(24),
-                borderRadius: 32,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: ext.surfaceContainer,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Icon(
-                        widget.isDarkMode ? LucideIcons.sun : LucideIcons.moon,
-                        size: 24,
-                        color: cs.onSurface,
+                            ],
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          Wrap(
+                            spacing: AppSpacing.xs,
+                            runSpacing: AppSpacing.xs,
+                            alignment: WrapAlignment.center,
+                            children: [
+                              MobiStatusBadge(
+                                label: 'Since $_memberSince',
+                                icon: LucideIcons.calendarDays,
+                                tone: MobiStatusBadgeTone.brand,
+                              ),
+                              const MobiStatusBadge(
+                                label: 'Secure',
+                                icon: LucideIcons.shieldCheck,
+                                tone: MobiStatusBadgeTone.positive,
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        'Dark Mode',
-                        style: AppTypography.titleMd.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: cs.onSurface,
-                        ),
-                      ),
+                    const SizedBox(height: AppSpacing.sectionGap),
+
+                    MobiFeatureTile(
+                      onTap: widget.onFaceRegister,
+                      icon: LucideIcons.scanFace,
+                      title: 'Face ID',
+                      subtitle: 'Pay faster with facial match',
+                      accent: cs.primary,
+                      accentBackground: cs.primaryContainer,
                     ),
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      width: 48,
-                      height: 24,
-                      decoration: BoxDecoration(
-                        color: widget.isDarkMode
-                            ? cs.primary
-                            : ext.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: AnimatedAlign(
-                        duration: const Duration(milliseconds: 200),
-                        alignment: widget.isDarkMode
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: Container(
-                          width: 16,
-                          height: 16,
-                          margin: const EdgeInsets.all(4),
+                    const SizedBox(height: AppSpacing.sm),
+
+                    _buildSettingsCard(
+                      context: context,
+                      icon: LucideIcons.user,
+                      label: 'Edit Profile',
+                      onTap: widget.onEditProfile,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+
+                    Semantics(
+                      container: true,
+                      button: true,
+                      toggled: widget.isDarkMode,
+                      label: 'Dark Mode',
+                      child: MobiFeatureTile(
+                        onTap: () =>
+                            widget.onDarkModeChanged(!widget.isDarkMode),
+                        icon: widget.isDarkMode
+                            ? LucideIcons.sun
+                            : LucideIcons.moon,
+                        title: 'Theme',
+                        subtitle: widget.isDarkMode
+                            ? 'Dark mode'
+                            : 'Light mode',
+                        trailing: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: 48,
+                          height: 24,
                           decoration: BoxDecoration(
-                            color: ext.surfaceContainerLowest,
-                            shape: BoxShape.circle,
+                            color: widget.isDarkMode
+                                ? cs.primary
+                                : ext.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: AnimatedAlign(
+                            duration: const Duration(milliseconds: 200),
+                            alignment: widget.isDarkMode
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            child: Container(
+                              width: 16,
+                              height: 16,
+                              margin: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: ext.surfaceContainerLowest,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-            // Exit Admin
-            if (widget.onExitAdmin != null) ...[
-              const SizedBox(height: 16),
-              ClayCard(
-                onTap: widget.onExitAdmin!,
-                padding: const EdgeInsets.all(24),
-                borderRadius: 32,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: cs.error.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(16),
+                    if (widget.onExitAdmin != null) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      MobiFeatureTile(
+                        onTap: widget.onExitAdmin!,
+                        icon: LucideIcons.logOut,
+                        title: 'Exit Admin',
+                        subtitle: 'Return to rider mode',
+                        accent: cs.error,
+                        accentBackground: cs.error.withValues(alpha: 0.12),
                       ),
-                      child: Icon(
-                        LucideIcons.logOut,
-                        size: 24,
-                        color: cs.error,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        'Exit Admin',
-                        style: AppTypography.titleMd.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: cs.error,
-                        ),
-                      ),
-                    ),
-                    const Icon(LucideIcons.arrowRight, size: 20),
-                  ],
-                ),
-              ),
-            ],
-            const SizedBox(height: 64),
+                    ],
+                    const SizedBox(height: 64),
 
-            // Hidden admin lock
-            if (widget.onExitAdmin == null)
-              Align(
-                alignment: Alignment.center,
-                child: GestureDetector(
-                  onTap: widget.onAdminGateway,
-                  child: Opacity(
-                    opacity: 0.16,
-                    child: SizedBox(
-                      width: 28,
-                      height: 28,
-                      child: Center(
-                        child: Icon(
-                          LucideIcons.lock,
-                          size: 12,
-                          color: cs.onSurfaceVariant,
+                    if (widget.onExitAdmin == null)
+                      Align(
+                        alignment: Alignment.center,
+                        child: GestureDetector(
+                          onTap: widget.onAdminGateway,
+                          child: Opacity(
+                            opacity: 0.16,
+                            child: SizedBox(
+                              width: 28,
+                              height: 28,
+                              child: Center(
+                                child: Icon(
+                                  LucideIcons.lock,
+                                  size: 12,
+                                  color: cs.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                  ]
+                  .animate(interval: 50.ms)
+                  .fade(duration: 400.ms)
+                  .slideY(
+                    begin: 0.1,
+                    duration: 400.ms,
+                    curve: Curves.easeOutQuad,
                   ),
-                ),
-              ),
-          ].animate(interval: 50.ms).fade(duration: 400.ms).slideY(begin: 0.1, duration: 400.ms, curve: Curves.easeOutQuad),
         ),
       ),
     );
@@ -367,37 +318,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     required String label,
     required VoidCallback onTap,
   }) {
-    final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-
-    return ClayCard(
+    return MobiFeatureTile(
       onTap: onTap,
-      padding: const EdgeInsets.all(24),
-      borderRadius: 32,
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: ext.surfaceContainer,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(icon, size: 24, color: cs.onSurface),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              label,
-              style: AppTypography.titleMd.copyWith(
-                fontWeight: FontWeight.w700,
-                color: cs.onSurface,
-              ),
-            ),
-          ),
-          Icon(LucideIcons.arrowRight, size: 20, color: cs.onSurfaceVariant),
-        ],
-      ),
+      icon: icon,
+      title: label,
+      subtitle: 'Update details',
     );
   }
 }

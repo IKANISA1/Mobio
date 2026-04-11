@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
@@ -35,7 +37,7 @@ class MobiErrorState extends StatelessWidget {
     return SizedBox(
       height: containerHeight,
       child: ClayCard(
-        borderRadius: 40,
+        borderRadius: AppRadii.hero,
         color: ext.surfaceContainerLowest.withValues(
           alpha: ext.surfacePanelAlpha,
         ),
@@ -47,15 +49,15 @@ class MobiErrorState extends StatelessWidget {
               children: [
                 // Error icon
                 Container(
-                  width: 64,
-                  height: 64,
+                  width: 56,
+                  height: 56,
                   decoration: BoxDecoration(
                     color: cs.errorContainer.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(AppRadii.xl),
                   ),
-                  child: Icon(icon, size: 28, color: cs.error),
+                  child: Icon(icon, size: 24, color: cs.error),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.md),
 
                 // Title
                 Text(
@@ -69,11 +71,11 @@ class MobiErrorState extends StatelessWidget {
 
                 // Subtitle
                 if (subtitle != null) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     subtitle!,
                     textAlign: TextAlign.center,
-                    style: AppTypography.bodyMd.copyWith(
+                    style: AppTypography.bodySm.copyWith(
                       color: cs.onSurfaceVariant,
                     ),
                   ),
@@ -81,7 +83,7 @@ class MobiErrorState extends StatelessWidget {
 
                 // Retry button
                 if (onRetry != null) ...[
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.lg),
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -90,12 +92,12 @@ class MobiErrorState extends StatelessWidget {
                       splashColor: cs.error.withValues(alpha: 0.12),
                       child: Ink(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 12,
+                          horizontal: AppSpacing.lg,
+                          vertical: AppSpacing.sm,
                         ),
                         decoration: BoxDecoration(
                           color: cs.errorContainer,
-                          borderRadius: BorderRadius.circular(999),
+                          borderRadius: BorderRadius.circular(AppRadii.pill),
                           border: Border.all(
                             color: cs.error.withValues(alpha: 0.2),
                           ),

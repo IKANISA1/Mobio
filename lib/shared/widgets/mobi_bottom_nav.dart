@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 
 import 'package:mobi_app/shared/widgets/glass_container.dart';
 
@@ -26,12 +28,12 @@ class MobiBottomNav extends StatelessWidget {
     final safeBottom = MediaQuery.paddingOf(context).bottom;
 
     return Positioned(
-      bottom: 16 + safeBottom,
-      left: 24,
-      right: 24,
+      bottom: 12 + safeBottom,
+      left: 20,
+      right: 20,
       child: GlassCard(
-        customBorderRadius: BorderRadius.circular(40),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        customBorderRadius: BorderRadius.circular(AppRadii.hero),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List.generate(items.length, (index) {
@@ -51,10 +53,10 @@ class MobiBottomNav extends StatelessWidget {
     );
   }
 
-  // 3-tab passenger nav: Discover, BioPay, Profile
+  // 3-tab passenger nav: Home, Pay, Profile
   static const _passengerItems = [
-    _NavItem(LucideIcons.compass, 'Discover'),
-    _NavItem(LucideIcons.shieldCheck, 'BioPay'),
+    _NavItem(LucideIcons.compass, 'Home'),
+    _NavItem(LucideIcons.shieldCheck, 'Pay'),
     _NavItem(LucideIcons.user, 'Profile'),
   ];
 
@@ -105,45 +107,58 @@ class _TappableNavItemState extends State<_TappableNavItem> {
       behavior: HitTestBehavior.opaque,
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 100),
-        opacity: _isPressed ? 0.6 : 1.0,
+        opacity: _isPressed ? 0.7 : 1.0,
         child: AnimatedScale(
           duration: const Duration(milliseconds: 100),
-          scale: _isPressed ? 0.92 : 1.0,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Icon with active circle background
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeOutCubic,
-                width: widget.isActive ? 48 : 40,
-                height: widget.isActive ? 48 : 40,
-                decoration: BoxDecoration(
-                  color: widget.isActive ? cs.primary : Colors.transparent,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
+          scale: _isPressed ? 0.95 : 1.0,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+            padding: EdgeInsets.symmetric(
+              horizontal: widget.isActive ? 12 : 0,
+              vertical: AppSpacing.xs,
+            ),
+            decoration: BoxDecoration(
+              color: widget.isActive
+                  ? cs.primary.withValues(alpha: 0.14)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(AppRadii.pill),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
                   widget.icon,
-                  size: widget.isActive ? 22 : 20,
-                  color: widget.isActive ? cs.onPrimary : cs.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 4),
-              // Label
-              Text(
-                widget.label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                softWrap: false,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.3,
+                  size: 20,
                   color: widget.isActive ? cs.primary : cs.onSurfaceVariant,
                 ),
-              ),
-            ],
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutCubic,
+                  child: widget.isActive
+                      ? Row(
+                          children: [
+                            const SizedBox(width: 8),
+                            Text(
+                              widget.label,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.2,
+                                color: cs.primary,
+                              ),
+                            ),
+                          ],
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ],
+            ),
           ),
         ),
       ),

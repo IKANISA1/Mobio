@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
-/// Clay-morphism card matching transito's `.clay-card`.
-/// Subtle inner glow + gradient overlay, large border radius.
-/// Provides scale + opacity press feedback when tappable.
+/// Base surface card used across the app.
+///
+/// The original `ClayCard` name is preserved for compatibility, but the visual
+/// treatment is calmer: lighter borders, restrained elevation, and tighter
+/// motion that fits a minimalist mobile UI.
 class ClayCard extends StatefulWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -16,7 +20,7 @@ class ClayCard extends StatefulWidget {
     super.key,
     required this.child,
     this.padding,
-    this.borderRadius = 40,
+    this.borderRadius = AppRadii.xxl,
     this.onTap,
     this.color,
     this.semanticLabel,
@@ -41,11 +45,11 @@ class _ClayCardState extends State<ClayCard>
     );
     _scaleAnimation = Tween<double>(
       begin: 1.0,
-      end: 0.97,
+      end: 0.985,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
     _opacityAnimation = Tween<double>(
       begin: 1.0,
-      end: 0.85,
+      end: 0.92,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
@@ -71,27 +75,32 @@ class _ClayCardState extends State<ClayCard>
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final radius = BorderRadius.circular(widget.borderRadius);
+    final surfaceColor = widget.color ?? ext.surfaceContainerLowest;
 
-    final card = DecoratedBox(
-      decoration: BoxDecoration(
-        color: widget.color ?? ext.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(widget.borderRadius),
-        boxShadow: ext.clayCardShadow,
-        border: Border.all(
-          color: cs.outlineVariant.withValues(alpha: ext.cardBorderAlpha),
+    final card = Material(
+      color: Colors.transparent,
+      child: Ink(
+        decoration: BoxDecoration(
+          color: surfaceColor,
+          borderRadius: radius,
+          boxShadow: ext.clayCardShadow,
+          border: Border.all(
+            color: cs.outlineVariant.withValues(alpha: ext.cardBorderAlpha),
+          ),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.white.withValues(alpha: ext.clayCardGradientWhiteAlpha),
+              Colors.transparent,
+            ],
+          ),
         ),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.white.withValues(alpha: ext.clayCardGradientWhiteAlpha),
-            Colors.transparent,
-          ],
+        child: Padding(
+          padding: widget.padding ?? const EdgeInsets.all(AppSpacing.lg),
+          child: widget.child,
         ),
-      ),
-      child: Padding(
-        padding: widget.padding ?? const EdgeInsets.all(24),
-        child: widget.child,
       ),
     );
 
@@ -111,7 +120,19 @@ class _ClayCardState extends State<ClayCard>
           builder: (context, child) {
             return Transform.scale(
               scale: _scaleAnimation.value,
-              child: Opacity(opacity: _opacityAnimation.value, child: child),
+              child: Opacity(
+                opacity: _opacityAnimation.value,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: widget.onTap,
+                    borderRadius: radius,
+                    splashColor: cs.primary.withValues(alpha: 0.08),
+                    highlightColor: Colors.transparent,
+                    child: child,
+                  ),
+                ),
+              ),
             );
           },
           child: card,

@@ -16,32 +16,32 @@ class AppTypography {
 
   // ─── Display ───
   static TextStyle displayLg = _manrope.copyWith(
-    fontSize: 48,
+    fontSize: 36,
     fontWeight: FontWeight.w800,
-    height: 1.1,
-    letterSpacing: -2.0,
+    height: 1.12,
+    letterSpacing: -1.2,
   );
 
   static TextStyle displayMd = _manrope.copyWith(
-    fontSize: 36,
+    fontSize: 30,
     fontWeight: FontWeight.w800,
-    height: 1.1,
-    letterSpacing: -1.5,
+    height: 1.14,
+    letterSpacing: -0.9,
   );
 
   // ─── Headline ───
   static TextStyle headlineLg = _manrope.copyWith(
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: FontWeight.w800,
     height: 1.2,
-    letterSpacing: -1.0,
+    letterSpacing: -0.6,
   );
 
   static TextStyle headlineMd = _manrope.copyWith(
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: FontWeight.w800,
     height: 1.2,
-    letterSpacing: -0.5,
+    letterSpacing: -0.4,
   );
 
   static TextStyle headlineSm = _manrope.copyWith(
@@ -53,72 +53,72 @@ class AppTypography {
 
   // ─── Title ───
   static TextStyle titleLg = _manrope.copyWith(
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: FontWeight.w800,
-    height: 1.3,
-    letterSpacing: -0.3,
+    height: 1.28,
+    letterSpacing: -0.2,
   );
 
   static TextStyle titleMd = _manrope.copyWith(
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: FontWeight.w700,
-    height: 1.3,
+    height: 1.28,
   );
 
   // ─── Body ───
   static TextStyle bodyLg = _inter.copyWith(
-    fontSize: 18,
-    fontWeight: FontWeight.w500,
-    height: 1.6,
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    height: 1.45,
   );
 
   static TextStyle bodyMd = _inter.copyWith(
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: FontWeight.w400,
-    height: 1.6,
+    height: 1.45,
   );
 
   static TextStyle bodySm = _inter.copyWith(
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: FontWeight.w400,
-    height: 1.5,
+    height: 1.42,
   );
 
   // ─── Label ───
   static TextStyle labelSm = _inter.copyWith(
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: FontWeight.w700,
-    letterSpacing: 1.5,
+    letterSpacing: 0.3,
   );
 
   static TextStyle labelMd = _inter.copyWith(
     fontSize: 12,
     fontWeight: FontWeight.w700,
-    letterSpacing: 0.5,
+    letterSpacing: 0.2,
   );
 
   static TextStyle labelLg = _inter.copyWith(
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: FontWeight.w700,
-    letterSpacing: 1.0,
+    letterSpacing: 0.1,
   );
 
   // ─── Special ───
   static TextStyle heroNumber = _manrope.copyWith(
-    fontSize: 56,
+    fontSize: 44,
     fontWeight: FontWeight.w800,
-    height: 0.9,
-    letterSpacing: -3.0,
+    height: 0.94,
+    letterSpacing: -2.0,
   );
 
   static TextStyle chipText = _inter.copyWith(
     fontSize: 12,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w600,
   );
 
   static TextStyle badgeText = _inter.copyWith(
-    fontSize: 8,
+    fontSize: 11,
     fontWeight: FontWeight.w700,
-    letterSpacing: 0.5,
+    letterSpacing: 0.2,
   );
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
@@ -34,7 +36,7 @@ class AiEmptyState extends StatelessWidget {
     return SizedBox(
       height: containerHeight,
       child: ClayCard(
-        borderRadius: 40,
+        borderRadius: AppRadii.hero,
         color: ext.surfaceContainerLowest.withValues(
           alpha: ext.surfacePanelAlpha,
         ),
@@ -46,15 +48,15 @@ class AiEmptyState extends StatelessWidget {
               children: [
                 if (icon != null) ...[
                   Container(
-                    width: 72,
-                    height: 72,
+                    width: 56,
+                    height: 56,
                     decoration: BoxDecoration(
-                      color: cs.primaryContainer.withValues(alpha: 0.48),
-                      borderRadius: BorderRadius.circular(24),
+                      color: cs.primaryContainer.withValues(alpha: 0.72),
+                      borderRadius: BorderRadius.circular(AppRadii.xl),
                     ),
-                    child: Icon(icon, size: 32, color: cs.primary),
+                    child: Icon(icon, size: 24, color: cs.primary),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.md),
                 ],
                 Text(
                   title,
@@ -65,17 +67,17 @@ class AiEmptyState extends StatelessWidget {
                   ),
                 ),
                 if (subtitle != null) ...[
-                  const SizedBox(height: 10),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     subtitle!,
                     textAlign: TextAlign.center,
-                    style: AppTypography.bodyMd.copyWith(
+                    style: AppTypography.bodySm.copyWith(
                       color: cs.onSurfaceVariant,
                     ),
                   ),
                 ],
                 if (onAction != null && actionLabel != null) ...[
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.lg),
                   Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -84,12 +86,12 @@ class AiEmptyState extends StatelessWidget {
                       splashColor: cs.primary.withValues(alpha: 0.14),
                       child: Ink(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.sm,
                         ),
                         decoration: BoxDecoration(
                           color: cs.primaryContainer,
-                          borderRadius: BorderRadius.circular(999),
+                          borderRadius: BorderRadius.circular(AppRadii.pill),
                           border: Border.all(
                             color: cs.primary.withValues(alpha: 0.22),
                           ),
@@ -99,7 +101,6 @@ class AiEmptyState extends StatelessWidget {
                           style: AppTypography.labelLg.copyWith(
                             color: cs.onPrimaryContainer,
                             fontWeight: FontWeight.w700,
-                            letterSpacing: 0,
                           ),
                         ),
                       ),

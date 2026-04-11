@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_shadows.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
@@ -36,22 +38,24 @@ class MobiButton extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             onTap: isLoading ? null : onPressed,
-            borderRadius: BorderRadius.circular(100),
-            splashColor: Colors.transparent,
+            borderRadius: BorderRadius.circular(AppRadii.pill),
+            splashColor: colors.fg.withValues(alpha: 0.08),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               padding:
                   padding ??
-                  const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                  const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.md,
+                  ),
               decoration: BoxDecoration(
                 gradient: colors.gradient,
                 color: colors.gradient == null ? colors.bg : null,
-                borderRadius: BorderRadius.circular(100),
-                boxShadow: AppShadows.premium,
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.1),
-                  width: 1,
-                ),
+                borderRadius: BorderRadius.circular(AppRadii.pill),
+                boxShadow: variant == MobiButtonVariant.ghost
+                    ? null
+                    : AppShadows.premium,
+                border: Border.all(color: colors.border, width: 1),
               ),
               child: Center(
                 child: isLoading
@@ -64,7 +68,7 @@ class MobiButton extends StatelessWidget {
                         ),
                       )
                     : DefaultTextStyle(
-                        style: AppTypography.titleMd.copyWith(color: colors.fg),
+                        style: AppTypography.bodyLg.copyWith(color: colors.fg),
                         child: child,
                       ),
               ),
@@ -84,6 +88,7 @@ class MobiButton extends StatelessWidget {
         return _ButtonColors(
           bg: cs.primary,
           fg: cs.onPrimary,
+          border: cs.primary.withValues(alpha: 0.2),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -94,6 +99,7 @@ class MobiButton extends StatelessWidget {
         return const _ButtonColors(
           bg: AppColors.whatsappGreen,
           fg: Colors.white,
+          border: Color(0x1FFFFFFF),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -101,11 +107,16 @@ class MobiButton extends StatelessWidget {
           ),
         );
       case MobiButtonVariant.ghost:
-        return _ButtonColors(bg: ext.surfaceContainerHigh, fg: cs.onSurface);
+        return _ButtonColors(
+          bg: ext.surfaceContainerHigh,
+          fg: cs.onSurface,
+          border: cs.outlineVariant.withValues(alpha: 0.6),
+        );
       case MobiButtonVariant.danger:
         return _ButtonColors(
           bg: cs.error,
           fg: cs.onError,
+          border: cs.error.withValues(alpha: 0.18),
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -116,6 +127,7 @@ class MobiButton extends StatelessWidget {
         return _ButtonColors(
           bg: AppColors.surfaceTint,
           fg: cs.onPrimary,
+          border: cs.primary.withValues(alpha: 0.18),
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -129,6 +141,12 @@ class MobiButton extends StatelessWidget {
 class _ButtonColors {
   final Color bg;
   final Color fg;
+  final Color border;
   final Gradient? gradient;
-  const _ButtonColors({required this.bg, required this.fg, this.gradient});
+  const _ButtonColors({
+    required this.bg,
+    required this.fg,
+    required this.border,
+    this.gradient,
+  });
 }

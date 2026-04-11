@@ -7,12 +7,15 @@ import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/ride_request_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
@@ -49,7 +52,8 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   List<Trip> _nearbyTrips = [];
   TripService get _tripService => ref.read(tripServiceProvider);
 
-  RideRequestService get _rideRequestService => ref.read(rideRequestServiceProvider);
+  RideRequestService get _rideRequestService =>
+      ref.read(rideRequestServiceProvider);
 
   final Set<String> _requestedTripIds = {};
 
@@ -163,13 +167,22 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                   parent: BouncingScrollPhysics(),
                 ),
                 slivers: [
-                  // Header
                   SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.screenPadding,
+                      AppSpacing.md,
+                      AppSpacing.screenPadding,
+                      0,
+                    ),
                     sliver: SliverToBoxAdapter(
                       child: MobiSurfacePanel(
-                        padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
-                        borderRadius: 36,
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.lg,
+                          AppSpacing.lg,
+                          AppSpacing.lg,
+                          AppSpacing.lg,
+                        ),
+                        borderRadius: AppRadii.hero,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -184,38 +197,42 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                                   const TappableIconButton(
                                     icon: LucideIcons.menu,
                                   ),
-                                const SizedBox(width: 16),
+                                const SizedBox(width: AppSpacing.md),
                                 Expanded(
                                   child: Text(
-                                    'Scheduled',
+                                    'Trips',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: AppTypography.headlineMd.copyWith(
+                                    style: AppTypography.titleLg.copyWith(
                                       color: Theme.of(
                                         context,
                                       ).colorScheme.primary,
                                     ),
                                   ),
                                 ),
+                                MobiStatusBadge(
+                                  label: '${_currentTrips.length}',
+                                  icon: _activeToggle == 0
+                                      ? LucideIcons.calendarCheck
+                                      : LucideIcons.mapPin,
+                                  tone: MobiStatusBadgeTone.brand,
+                                ),
                               ],
                             ),
-                            const SizedBox(height: 18),
-                            SizedBox(
-                              width: double.infinity,
-                              child: FittedBox(
-                                fit: BoxFit.scaleDown,
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  _activeToggle == 0
-                                      ? 'My Trips'
-                                      : 'Nearby Trips',
-                                  style: AppTypography.displayLg,
-                                ),
+                            const SizedBox(height: AppSpacing.sm),
+                            Text(
+                              _activeToggle == 0
+                                  ? 'Your scheduled trips'
+                                  : 'Nearby trip feed',
+                              style: AppTypography.bodySm.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                             ),
-                            const SizedBox(height: 18),
+                            const SizedBox(height: AppSpacing.lg),
                             MobiToggle(
-                              labels: const ['MINE', 'NEARBY'],
+                              labels: const ['Mine', 'Nearby'],
                               selectedIndex: _activeToggle,
                               onChanged: _switchToggle,
                             ),
@@ -224,7 +241,9 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                       ),
                     ),
                   ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 32)),
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: AppSpacing.sectionGap),
+                  ),
 
                   // Content
                   if (_isLoading)
@@ -256,18 +275,18 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                   child: Material(
                     color: Theme.of(context).colorScheme.primary,
                     shape: const CircleBorder(),
-                    elevation: 8,
+                    elevation: 3,
                     shadowColor: Theme.of(
                       context,
-                    ).colorScheme.primary.withValues(alpha: 0.4),
+                    ).colorScheme.primary.withValues(alpha: 0.18),
                     child: InkWell(
                       onTap: widget.onSchedule,
                       customBorder: const CircleBorder(),
-                      splashColor: Colors.white.withValues(alpha: 0.2),
+                      splashColor: Colors.white.withValues(alpha: 0.12),
                       child: const Center(
                         child: Icon(
                           LucideIcons.plus,
-                          size: 28,
+                          size: 24,
                           color: Colors.white,
                         ),
                       ),
@@ -287,11 +306,17 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       return SliverMainAxisGroup(
         slivers: [
           SliverPadding(
-            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 12),
+            padding: const EdgeInsets.only(
+              left: AppSpacing.screenPadding,
+              right: AppSpacing.screenPadding,
+              bottom: AppSpacing.sm,
+            ),
             sliver: SliverToBoxAdapter(child: _buildSectionLabel(section)),
           ),
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.screenPadding,
+            ),
             sliver: SliverList.builder(
               itemCount: 2,
               itemBuilder: (_, i) => const Padding(
@@ -300,7 +325,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
               ),
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xl)),
         ],
       );
     }).toList();
@@ -308,28 +333,24 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
 
   Widget _buildErrorState() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
       child: AiEmptyState(
-        title: 'Something went wrong',
-        subtitle: 'Pull down to retry.',
+        title: 'Load failed',
+        subtitle: 'Pull to retry.',
         icon: LucideIcons.alertTriangle,
         height: 220,
         onAction: _loadTrips,
-        actionLabel: 'RETRY',
+        actionLabel: 'Retry',
       ),
     );
   }
 
   Widget _buildEmptyState() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
       child: AiEmptyState(
-        title: _activeToggle == 0
-            ? 'No trips scheduled yet.'
-            : 'No nearby trips found.',
-        subtitle: _activeToggle == 0
-            ? 'Tap + to create one.'
-            : 'Pull down to refresh.',
+        title: _activeToggle == 0 ? 'No trips yet' : 'No nearby trips',
+        subtitle: _activeToggle == 0 ? 'Tap + to add one.' : 'Pull to refresh.',
         icon: _activeToggle == 0 ? LucideIcons.calendar : LucideIcons.mapPin,
         height: 260,
       ),
@@ -346,11 +367,17 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       return SliverMainAxisGroup(
         slivers: [
           SliverPadding(
-            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 12),
+            padding: const EdgeInsets.only(
+              left: AppSpacing.screenPadding,
+              right: AppSpacing.screenPadding,
+              bottom: AppSpacing.sm,
+            ),
             sliver: SliverToBoxAdapter(child: _buildSectionLabel(section)),
           ),
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.screenPadding,
+            ),
             sliver: SliverList.builder(
               itemCount: sectionTrips.length,
               itemBuilder: (context, index) {
@@ -369,7 +396,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
               },
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xl)),
         ],
       );
     }).toList();
@@ -380,15 +407,19 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
     return MobiSurfacePanel(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      borderRadius: 999,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      borderRadius: AppRadii.pill,
       color: ext.surfaceContainerLowest.withValues(
         alpha: ext.surfacePanelAlpha,
       ),
-      child: Text(
-        label,
-        style: AppTypography.labelSm.copyWith(color: cs.onSurfaceVariant),
-      ),
+      child: Text(switch (label) {
+        'TODAY' => 'Today',
+        'TOMORROW' => 'Tomorrow',
+        _ => 'Later',
+      }, style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant)),
     );
   }
 
@@ -405,19 +436,18 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         : AppConstants.getDriverId(trip.authorId);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Hero(
         tag: 'trip_card_${trip.id ?? trip.hashCode}',
         child: Material(
           type: MaterialType.transparency,
           child: ClayCard(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.all(AppSpacing.xl),
             onTap: () => widget.onTripDetails(trip.id ?? ''),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                       child: Column(
@@ -428,7 +458,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                               padding: const EdgeInsets.only(bottom: 4),
                               child: Text(
                                 nearbyLabel,
-                                style: AppTypography.labelSm.copyWith(
+                                style: AppTypography.labelMd.copyWith(
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
@@ -439,77 +469,53 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                             overflow: TextOverflow.ellipsis,
                             style: AppTypography.titleLg.copyWith(
                               fontWeight: FontWeight.w800,
-                              letterSpacing: -0.5,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: AppSpacing.xs),
                           Text(
                             timeDisplay,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: AppTypography.displayMd.copyWith(
-                              letterSpacing: -1.5,
+                            style: AppTypography.headlineLg.copyWith(
+                              letterSpacing: -0.4,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    if (isNearby)
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.primary.withValues(alpha: 0.4),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            LucideIcons.messageCircle,
-                            size: 22,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                    const SizedBox(width: AppSpacing.md),
+                    Icon(
+                      isNearby
+                          ? LucideIcons.messageCircle
+                          : LucideIcons.chevronRight,
+                      size: 18,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                // Badges
+                const SizedBox(height: AppSpacing.md),
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: AppSpacing.xs,
+                  runSpacing: AppSpacing.xs,
                   children: [
-                    _badge(
-                      vType.displayName,
-                      Theme.of(context).colorScheme.secondaryContainer,
-                      Theme.of(context).colorScheme.onSecondaryContainer,
+                    MobiStatusBadge(
+                      label: vType.displayName,
                       icon: getVehicleIcon(vType),
+                      tone: MobiStatusBadgeTone.info,
                     ),
-                    _badge(
-                      trip.status == 'active'
-                          ? 'ACTIVE'
+                    MobiStatusBadge(
+                      label: trip.status == 'active'
+                          ? 'Active'
                           : (trip.status?.toUpperCase() ?? 'ACTIVE'),
-                      trip.status == 'active'
-                          ? Theme.of(context).colorScheme.primaryContainer
-                          : Theme.of(context).colorScheme.errorContainer,
-                      trip.status == 'active'
-                          ? Theme.of(context).colorScheme.primary
-                          : Theme.of(context).colorScheme.onErrorContainer,
+                      tone: trip.status == 'active'
+                          ? MobiStatusBadgeTone.positive
+                          : MobiStatusBadgeTone.danger,
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                // Action row
+                const SizedBox(height: AppSpacing.md),
                 Container(
-                  padding: const EdgeInsets.only(top: 16),
+                  padding: const EdgeInsets.only(top: AppSpacing.md),
                   decoration: BoxDecoration(
                     border: Border(
                       top: BorderSide(
@@ -538,9 +544,8 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                                 vertical: 8,
                               ),
                               child: Text(
-                                'CANCEL TRIP',
-                                style: AppTypography.labelSm.copyWith(
-                                  letterSpacing: 1.5,
+                                'Cancel',
+                                style: AppTypography.labelLg.copyWith(
                                   color: Theme.of(context).colorScheme.error,
                                 ),
                               ),
@@ -568,9 +573,8 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'DETAILS',
-                                  style: AppTypography.labelSm.copyWith(
-                                    letterSpacing: 1.5,
+                                  'Details',
+                                  style: AppTypography.labelLg.copyWith(
                                     color: Theme.of(
                                       context,
                                     ).colorScheme.onSurfaceVariant,
@@ -652,50 +656,27 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
     }
   }
 
-  Widget _badge(String text, Color bg, Color fg, {IconData? icon}) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(100),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(icon, size: 10, color: fg),
-            const SizedBox(width: 4),
-          ],
-          Text(text, style: AppTypography.labelSm.copyWith(color: fg)),
-        ],
-      ),
-    );
-  }
-
-  /// Builds a "REQUEST" or "OFFER" button for nearby trip cards.
-  ///
-  /// - If the nearby trip is from a driver → current user (passenger) sees "REQUEST"
-  /// - If the nearby trip is from a passenger → current user (driver) sees "OFFER"
   Widget _buildRequestOfferButton(Trip trip) {
     final cs = Theme.of(context).colorScheme;
     final isDriver = trip.role == 'driver';
-    final label = isDriver ? 'REQUEST' : 'OFFER';
-    final doneLabel = isDriver ? 'REQUESTED' : 'OFFERED';
+    final label = isDriver ? 'Request' : 'Offer';
+    final doneLabel = isDriver ? 'Requested' : 'Offered';
     final icon = isDriver ? LucideIcons.send : LucideIcons.gift;
     const doneIcon = LucideIcons.checkCircle;
     final isDone = _requestedTripIds.contains(trip.id);
 
     return Material(
       color: isDone ? cs.primaryContainer : cs.primary,
-      borderRadius: BorderRadius.circular(20),
-      elevation: isDone ? 0 : 2,
-      shadowColor: cs.primary.withValues(alpha: 0.3),
+      borderRadius: BorderRadius.circular(AppRadii.lg),
       child: InkWell(
         onTap: isDone ? null : () => _handleRequestOffer(trip),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadii.lg),
         splashColor: cs.onPrimary.withValues(alpha: 0.2),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: AppSpacing.xs,
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -707,8 +688,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
               const SizedBox(width: 6),
               Text(
                 isDone ? doneLabel : label,
-                style: AppTypography.labelSm.copyWith(
-                  letterSpacing: 1,
+                style: AppTypography.labelLg.copyWith(
                   color: isDone ? cs.primary : cs.onPrimary,
                 ),
               ),

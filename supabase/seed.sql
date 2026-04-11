@@ -9,20 +9,21 @@
 -- 1. Seed Profiles (with new BioPay/driver columns)
 -- ---------------------------------------------------------------------------
 
-INSERT INTO profiles (id, name, display_name, phone, role, location, vehicle, category, is_driver, vehicle_type, whatsapp, member_since, biopay_handle_type, biopay_handle_value, is_online)
+INSERT INTO profiles (id, name, display_name, phone, role, location, vehicle, category, is_driver, vehicle_type, vehicle_number_plate, whatsapp, member_since, biopay_handle_type, biopay_handle_value, is_online)
 VALUES
-  ('00000000-0000-0000-0000-000000000001', 'Alex Rivera',       'Alex Rivera',       '+1 234',         'passenger', 'Downtown',        NULL,                   'Premium',   false, 'cab',     '',            2024, 'number', '', false),
-  ('00000000-0000-0000-0000-000000000002', 'Sarah Chen',        'Sarah Chen',        '+1 567',         'driver',    NULL,               'Mercedes-Benz E-Class','Executive', true,  'cab',     '1234567890',  2024, 'number', '', true),
-  ('00000000-0000-0000-0000-000000000003', 'Marcus Thorne',     'Marcus Thorne',     '+1 890',         'passenger', 'Westside',         NULL,                   'Standard',  false, 'cab',     '1234567891',  2024, 'number', '', false),
-  ('00000000-0000-0000-0000-000000000004', 'Economy Trike',     'Economy Trike',     '+250 700',       'driver',    'Eastside',         'Bajay RE',             'Economy',   true,  'trike',   '1234567892',  2023, 'number', '', false),
-  ('00000000-0000-0000-0000-000000000005', 'Marcus Thompson',   'Marcus Thompson',   '+250 701',       'driver',    'Downtown',         'Toyota Corolla',       'Standard',  true,  'cab',     '1234567893',  2024, 'number', '', true),
-  ('00000000-0000-0000-0000-000000000006', 'Elena Rodriguez',   'Elena Rodriguez',   '+250 702',       'driver',    'Plaza',            'Yamaha NMAX',          'Standard',  true,  'moto',    '1234567894',  2024, 'number', '', true),
-  ('00000000-0000-0000-0000-000000000007', 'Private Executive', 'Private Executive', '+250 703',       'driver',    'Northside',        'Audi A8',              'Executive', true,  'private', '1234567895',  2024, 'number', '', false),
-  ('00000000-0000-0000-0000-000000000008', 'Heavy Truck',       'Heavy Truck',       '+250 704',       'driver',    'Industrial Zone',  'Scania R450',          'Cargo',     true,  'truck',   '1234567896',  2024, 'number', '', false),
-  ('00000000-0000-0000-0000-000000000009', 'Platform Admin',    'Platform Admin',    '+250795588248',  'admin',     NULL,               NULL,                   NULL,        false, 'cab',     '',            2024, 'number', '', false)
+  ('00000000-0000-0000-0000-000000000001', 'Alex Rivera',       'Alex Rivera',       '+1 234',         'passenger', 'Downtown',        NULL,                   'Premium',   false, 'cab',     NULL,       '',            2024, 'number', '', false),
+  ('00000000-0000-0000-0000-000000000002', 'Sarah Chen',        'Sarah Chen',        '+1 567',         'driver',    NULL,               'Mercedes-Benz E-Class','Executive', true,  'cab',     'RAB 201 C','1234567890',  2024, 'number', '', true),
+  ('00000000-0000-0000-0000-000000000003', 'Marcus Thorne',     'Marcus Thorne',     '+1 890',         'passenger', 'Westside',         NULL,                   'Standard',  false, 'cab',     NULL,       '1234567891',  2024, 'number', '', false),
+  ('00000000-0000-0000-0000-000000000004', 'Economy Trike',     'Economy Trike',     '+250 700',       'driver',    'Eastside',         'Bajay RE',             'Economy',   true,  'trike',   'RAD 518 T','1234567892',  2023, 'number', '', false),
+  ('00000000-0000-0000-0000-000000000005', 'Marcus Thompson',   'Marcus Thompson',   '+250 701',       'driver',    'Downtown',         'Toyota Corolla',       'Standard',  true,  'cab',     'RAC 442 M','1234567893',  2024, 'number', '', true),
+  ('00000000-0000-0000-0000-000000000006', 'Elena Rodriguez',   'Elena Rodriguez',   '+250 702',       'driver',    'Plaza',            'Yamaha NMAX',          'Standard',  true,  'moto',    'RMB 220 K','1234567894',  2024, 'number', '', true),
+  ('00000000-0000-0000-0000-000000000007', 'Private Executive', 'Private Executive', '+250 703',       'driver',    'Northside',        'Audi A8',              'Executive', true,  'private', 'RPF 990 X','1234567895',  2024, 'number', '', false),
+  ('00000000-0000-0000-0000-000000000008', 'Heavy Truck',       'Heavy Truck',       '+250 704',       'driver',    'Industrial Zone',  'Scania R450',          'Cargo',     true,  'truck',   'RTK 771 H','1234567896',  2024, 'number', '', false),
+  ('00000000-0000-0000-0000-000000000009', 'Platform Admin',    'Platform Admin',    '+250795588248',  'admin',     NULL,               NULL,                   NULL,        false, 'cab',     NULL,       '',            2024, 'number', '', false)
 ON CONFLICT (id) DO UPDATE SET
   display_name = EXCLUDED.display_name,
   member_since = EXCLUDED.member_since,
+  vehicle_number_plate = EXCLUDED.vehicle_number_plate,
   biopay_handle_type = EXCLUDED.biopay_handle_type,
   biopay_handle_value = EXCLUDED.biopay_handle_value,
   is_online = EXCLUDED.is_online;

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
 /// Readability-first foreground surface that preserves the current MOBI system.
@@ -14,8 +16,8 @@ class MobiSurfacePanel extends StatelessWidget {
   const MobiSurfacePanel({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(20),
-    this.borderRadius = 32,
+    this.padding = const EdgeInsets.all(AppSpacing.lg),
+    this.borderRadius = AppRadii.xxl,
     this.color,
   });
 
@@ -38,7 +40,8 @@ class MobiSurfacePanel extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: ext.surfacePanelShadowAlpha),
-            blurRadius: 20,
+            blurRadius: 18,
+            spreadRadius: -8,
             offset: const Offset(0, 8),
           ),
         ],

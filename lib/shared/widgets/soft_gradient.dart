@@ -18,18 +18,29 @@ class SoftGradient extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // ── Layer 1: Radial gradient background ──
         DecoratedBox(
           decoration: BoxDecoration(
-            gradient: RadialGradient(
-              center: Alignment.topRight,
-              radius: 1.5,
-              colors: [ext.surfaceContainerLow, cs.surface],
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [ext.surfaceBright, cs.surface],
             ),
           ),
         ),
-
-        // ── Layer 2: Content ──
+        Positioned(
+          top: -80,
+          right: -40,
+          child: IgnorePointer(
+            child: Container(
+              width: 220,
+              height: 220,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: cs.primary.withValues(alpha: 0.05),
+              ),
+            ),
+          ),
+        ),
         child,
       ],
     );

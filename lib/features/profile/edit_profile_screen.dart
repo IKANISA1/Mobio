@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
@@ -33,6 +34,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   final _whatsAppController = TextEditingController();
   final _handleController = TextEditingController();
+  final _vehicleNumberPlateController = TextEditingController();
 
   List<Country> _countries = Country.fallbackCountries;
   String _countryCode = '+254';
@@ -41,7 +43,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   bool _isDriver = false;
   bool _initialIsDriver = false;
   String _vehicleTypeId = 'cab';
-  String _initialVehicleTypeId = 'cab';
   BiopayHandleType _handleType = BiopayHandleType.number;
   List<VehicleTypeModel> _vehicleTypes = [];
 
@@ -56,6 +57,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   void dispose() {
     _whatsAppController.dispose();
     _handleController.dispose();
+    _vehicleNumberPlateController.dispose();
     super.dispose();
   }
 
@@ -128,6 +130,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           (profile?['vehicle_type'] as String?)?.isNotEmpty == true
           ? (profile!['vehicle_type'] as String)
           : 'cab';
+      final resolvedVehicleNumberPlate =
+          (profile?['vehicle_number_plate'] as String? ?? '').trim();
       final resolvedIsDriver =
           (profile?['is_driver'] as bool?) ??
           ((profile?['role'] as String?) == 'driver');
@@ -138,6 +142,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
       _whatsAppController.text = whatsAppValue.trim();
       _handleController.text = resolvedHandleValue;
+      _vehicleNumberPlateController.text = resolvedVehicleNumberPlate;
 
       if (!mounted) return;
       setState(() {
@@ -147,7 +152,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         _isDriver = resolvedIsDriver;
         _initialIsDriver = resolvedIsDriver;
         _vehicleTypeId = resolvedVehicleTypeId;
-        _initialVehicleTypeId = resolvedVehicleTypeId;
         _isLoading = false;
       });
     } on Object catch (_) {
@@ -169,6 +173,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   Future<void> _saveProfile() async {
     final rawWhatsApp = _whatsAppController.text.trim();
     final rawHandleValue = _handleController.text.trim();
+    final vehicleNumberPlate = _normalizeVehicleNumberPlate(
+      _vehicleNumberPlateController.text,
+    );
     final normalizedHandleValue = _handleType == BiopayHandleType.number
         ? _countryService.normalizeLocalPhoneDisplay(
             dialingCode: _countryCode,
@@ -178,6 +185,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     if (rawWhatsApp.isEmpty) {
       _showSnackBar('Enter your WhatsApp number.');
+      return;
+    }
+
+    if (_isDriver && vehicleNumberPlate.isEmpty) {
+      _showSnackBar('Enter your vehicle number plate.');
       return;
     }
 
@@ -191,8 +203,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         biopayHandleValue: normalizedHandleValue,
         isDriver: _isDriver,
         vehicleTypeId: _vehicleTypeId,
+        vehicleNumberPlate: vehicleNumberPlate,
         previousIsDriver: _initialIsDriver,
-        previousVehicleTypeId: _initialVehicleTypeId,
       );
 
       final localSession = await _bioPayService.getLocalSession();
@@ -251,6 +263,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     if (_isDriver) ...[
                       const SizedBox(height: 18),
                       _buildVehicleGrid(cs, ext),
+                      const SizedBox(height: 18),
+                      _buildVehicleNumberPlateCard(cs, ext),
                     ],
                     const SizedBox(height: 32),
                     _buildSaveButton(cs),
@@ -712,6 +726,71 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     );
   }
 
+  Widget _buildVehicleNumberPlateCard(ColorScheme cs, MobiThemeExtension ext) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: ext.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'VEHICLE NUMBER PLATE',
+            style: AppTypography.labelLg.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 14),
+          _buildInputSurface(
+            cs: cs,
+            ext: ext,
+            child: TextField(
+              controller: _vehicleNumberPlateController,
+              keyboardType: TextInputType.text,
+              textCapitalization: TextCapitalization.characters,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9 -]')),
+                LengthLimitingTextInputFormatter(16),
+              ],
+              onChanged: (value) {
+                final normalized = _normalizeVehicleNumberPlate(value);
+                if (normalized == value) return;
+                _vehicleNumberPlateController.value = TextEditingValue(
+                  text: normalized,
+                  selection: TextSelection.collapsed(offset: normalized.length),
+                );
+              },
+              style: AppTypography.titleMd.copyWith(
+                letterSpacing: -0.4,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              decoration: InputDecoration(
+                hintText: 'RAA 123 A',
+                hintStyle: AppTypography.titleMd.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                ),
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSaveButton(ColorScheme cs) {
     return SizedBox(
       width: double.infinity,
@@ -776,6 +855,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       ),
       child: child,
     );
+  }
+
+  String _normalizeVehicleNumberPlate(String raw) {
+    return raw.toUpperCase().replaceAll(RegExp(r'\s+'), ' ').trim();
   }
 
   void _showCountryPicker() {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
+import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
 /// Segmented toggle matching transito Passenger/Driver and Mine/Nearby toggles.
@@ -24,15 +26,15 @@ class MobiToggle extends StatelessWidget {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
     return Container(
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.all(AppSpacing.xs),
       decoration: BoxDecoration(
         color: ext.surfaceContainerHighest.withValues(
           alpha: ext.controlTrackAlpha,
         ),
-        borderRadius: BorderRadius.circular(100),
+        borderRadius: BorderRadius.circular(AppRadii.pill),
         border: Border.all(
           color: cs.outlineVariant.withValues(
-            alpha: ext.surfacePanelBorderAlpha * 0.7,
+            alpha: ext.surfacePanelBorderAlpha,
           ),
         ),
       ),
@@ -47,15 +49,11 @@ class MobiToggle extends StatelessWidget {
               child: GestureDetector(
                 onTap: () => onChanged(index),
                 child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  duration: const Duration(milliseconds: 220),
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? ext.surfaceContainerLowest.withValues(
-                            alpha: ext.surfacePanelAlpha,
-                          )
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(100),
+                    color: isSelected ? cs.surface : Colors.transparent,
+                    borderRadius: BorderRadius.circular(AppRadii.pill),
                     border: isSelected
                         ? Border.all(
                             color: cs.outlineVariant.withValues(
@@ -69,8 +67,9 @@ class MobiToggle extends StatelessWidget {
                               color: Colors.black.withValues(
                                 alpha: ext.controlShadowAlpha,
                               ),
-                              blurRadius: 10,
-                              offset: const Offset(0, 3),
+                              blurRadius: 12,
+                              spreadRadius: -8,
+                              offset: const Offset(0, 6),
                             ),
                           ]
                         : null,
@@ -84,10 +83,8 @@ class MobiToggle extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         softWrap: false,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.manrope(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.3,
+                        style: AppTypography.labelLg.copyWith(
+                          fontWeight: FontWeight.w700,
                           color: isSelected
                               ? cs.onSurface
                               : cs.onSurfaceVariant,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/vehicle_type.dart';
@@ -179,7 +181,7 @@ class _TappableChipState extends State<_TappableChip>
         animation: _controller,
         builder: (context, child) {
           final scale = 1.0 - (_controller.value * 0.05);
-          final opacity = 1.0 - (_controller.value * 0.2);
+          final opacity = 1.0 - (_controller.value * 0.15);
           return Transform.scale(
             scale: scale,
             child: Opacity(opacity: opacity, child: child),
@@ -187,17 +189,20 @@ class _TappableChipState extends State<_TappableChip>
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
           decoration: BoxDecoration(
             color: widget.isSelected
                 ? cs.secondaryContainer
                 : ext.surfaceContainerLowest.withValues(
                     alpha: ext.surfacePanelAlpha,
                   ),
-            borderRadius: BorderRadius.circular(100),
+            borderRadius: BorderRadius.circular(AppRadii.pill),
             border: Border.all(
               color: widget.isSelected
-                  ? cs.secondary.withValues(alpha: 0.16)
+                  ? cs.secondary.withValues(alpha: 0.18)
                   : cs.outlineVariant.withValues(alpha: ext.cardBorderAlpha),
             ),
             boxShadow: widget.isSelected
@@ -207,8 +212,9 @@ class _TappableChipState extends State<_TappableChip>
                       color: Colors.black.withValues(
                         alpha: ext.controlShadowAlpha * 0.7,
                       ),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
+                      blurRadius: 8,
+                      spreadRadius: -6,
+                      offset: const Offset(0, 4),
                     ),
                   ],
           ),

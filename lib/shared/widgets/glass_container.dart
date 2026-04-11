@@ -1,9 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
-/// Glass-morphism card matching transito's `.glass-card`.
-/// Semi-transparent + blur, used for headers and bottom nav.
+/// Floating translucent panel for persistent chrome such as bottom navigation.
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -14,7 +15,7 @@ class GlassCard extends StatelessWidget {
     super.key,
     required this.child,
     this.padding,
-    this.borderRadius = 40,
+    this.borderRadius = AppRadii.hero,
     this.customBorderRadius,
   });
 
@@ -26,7 +27,7 @@ class GlassCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: br,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: DecoratedBox(
           decoration: BoxDecoration(
             color: ext.surfaceContainerLowest.withValues(
@@ -48,7 +49,10 @@ class GlassCard extends StatelessWidget {
               ],
             ),
           ),
-          child: Padding(padding: padding ?? EdgeInsets.zero, child: child),
+          child: Padding(
+            padding: padding ?? const EdgeInsets.all(AppSpacing.sm),
+            child: child,
+          ),
         ),
       ),
     );

@@ -7,11 +7,14 @@ import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
 import 'package:mobi_app/core/theme/app_colors.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/country.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_feature_tile.dart';
+import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 
 /// BioPay hub — 3 daily-use action cards only.
@@ -31,7 +34,6 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
   ProfileService get _profileService => ref.read(profileServiceProvider);
 
   CountryService get _countryService => ref.read(countryServiceProvider);
-
 
   bool _isLoading = true;
   Country? _activeCountry;
@@ -64,11 +66,16 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
     if (_isLoading) {
       return SoftGradient(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 80, 24, 160),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.screenPadding,
+            80,
+            AppSpacing.screenPadding,
+            160,
+          ),
           child: Column(
             children: [
               const LoadingSkeleton(width: 140, height: 80, borderRadius: 24),
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.sectionGap),
               ...List.generate(
                 3,
                 (_) => const Padding(
@@ -83,7 +90,6 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
     }
 
     final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
     final brand = _activeCountry?.momoBrand ?? 'MoMo';
     final hasMoMo =
@@ -95,54 +101,82 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
         bottom: false,
         child: ListView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 144),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.screenPadding,
+            AppSpacing.xs,
+            AppSpacing.screenPadding,
+            144,
+          ),
           children: [
-            // ─── Brand header ───
-            Container(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
-              decoration: BoxDecoration(
-                color: ext.surfaceContainerLow,
-                borderRadius: BorderRadius.circular(40),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-              ),
+            ClayCard(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              borderRadius: AppRadii.hero,
               child: Row(
                 children: [
-                  const Icon(
-                    LucideIcons.shieldCheck,
-                    size: 34,
-                    color: AppColors.primary,
+                  Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: cs.primaryContainer,
+                      borderRadius: BorderRadius.circular(AppRadii.xl),
+                    ),
+                    child: Icon(
+                      LucideIcons.shieldCheck,
+                      size: 24,
+                      color: cs.onPrimaryContainer,
+                    ),
                   ),
-                  const SizedBox(width: 14),
-                  Text(
-                    'BioPay',
-                    style: AppTypography.headlineLg.copyWith(
-                      color: AppColors.primary,
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'BioPay',
+                          style: AppTypography.titleLg.copyWith(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Wrap(
+                          spacing: AppSpacing.xs,
+                          runSpacing: AppSpacing.xs,
+                          children: [
+                            MobiStatusBadge(
+                              label: brand,
+                              icon: LucideIcons.smartphone,
+                              tone: MobiStatusBadgeTone.brand,
+                            ),
+                            if (_activeCountry?.name != null)
+                              MobiStatusBadge(
+                                label: _activeCountry!.name,
+                                icon: LucideIcons.globe,
+                              ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.xl),
 
             if (!hasMoMo) ...[
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: cs.errorContainer.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(24),
-                ),
+              ClayCard(
+                padding: const EdgeInsets.all(AppSpacing.xl),
                 child: Column(
                   children: [
                     Icon(
                       LucideIcons.globe,
-                      size: 32,
+                      size: 28,
                       color: cs.onSurfaceVariant,
                     ),
-                    const SizedBox(height: 16),
-                    Text('Not Available', style: AppTypography.titleMd),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.md),
+                    Text('Not available', style: AppTypography.titleMd),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
-                      'BioPay USSD integration is currently not available in your region (${_activeCountry?.name ?? ''}).',
+                      'USSD is not available in ${_activeCountry?.name ?? 'this region'}.',
                       style: AppTypography.bodySm.copyWith(
                         color: cs.onSurfaceVariant,
                       ),
@@ -152,113 +186,37 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
                 ),
               ),
             ] else ...[
-              // ─── Get QR ───
-              _ActionTile(
+              MobiFeatureTile(
                 icon: LucideIcons.qrCode,
-                label: 'Get QR',
-                subtitle: 'Generate $brand QR code',
+                title: 'Get QR',
+                subtitle: '$brand code',
                 accent: AppColors.primary,
-                accentBg: cs.primaryContainer,
+                accentBackground: cs.primaryContainer,
                 onTap: widget.onGetQR,
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: AppSpacing.sm),
 
-              // ─── Scan QR ───
-              _ActionTile(
+              MobiFeatureTile(
                 icon: LucideIcons.scanLine,
-                label: 'Scan QR',
-                subtitle: 'Scan QR to pay via $brand USSD',
+                title: 'Scan QR',
+                subtitle: 'Pay with $brand',
                 accent: AppColors.secondaryFixed,
-                accentBg: cs.secondaryContainer,
+                accentBackground: cs.secondaryContainer,
                 onTap: widget.onScanQR,
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: AppSpacing.sm),
 
-              // ─── Scan Face ───
-              _ActionTile(
+              MobiFeatureTile(
                 icon: LucideIcons.scanFace,
-                label: 'Scan Face',
-                subtitle: 'Scan face to pay via $brand USSD',
+                title: 'Scan Face',
+                subtitle: 'Face pay with $brand',
                 accent: AppColors.tertiaryFixed,
-                accentBg: cs.tertiaryContainer,
+                accentBackground: cs.tertiaryContainer,
                 onTap: widget.onFaceScan,
               ),
             ],
           ],
         ),
-      ),
-    );
-  }
-}
-
-// ─── Action tile ────────────────────────────────────────────────────────────
-
-class _ActionTile extends ConsumerWidget {
-  const _ActionTile({
-    required this.icon,
-    required this.label,
-    required this.accent,
-    required this.accentBg,
-    this.subtitle,
-    this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color accent;
-  final Color accentBg;
-  final String? subtitle;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ClayCard(
-      onTap: onTap,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
-      semanticLabel: '$label. ${subtitle ?? ''}',
-      child: Row(
-        children: [
-          Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              color: accentBg,
-              borderRadius: BorderRadius.circular(22),
-            ),
-            child: Icon(icon, color: accent, size: 32),
-          ),
-          const SizedBox(width: 18),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: AppTypography.titleLg.copyWith(
-                    fontWeight: FontWeight.w800,
-                    height: 1.18,
-                  ),
-                ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle!,
-                    style: AppTypography.bodySm.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          Icon(
-            LucideIcons.arrowRight,
-            size: 22,
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurfaceVariant.withValues(alpha: 0.58),
-          ),
-        ],
       ),
     );
   }

@@ -67,6 +67,7 @@ class ProfileService {
     String? whatsapp,
     String? countryCode,
     String? vehicleType,
+    String? vehicleNumberPlate,
     String? avatarUrl,
     String? bioPayHandleType,
     String? bioPayHandleValue,
@@ -77,6 +78,9 @@ class ProfileService {
       if (whatsapp != null) payload['whatsapp'] = whatsapp;
       if (countryCode != null) payload['country_code'] = countryCode;
       if (vehicleType != null) payload['vehicle_type'] = vehicleType;
+      if (vehicleNumberPlate != null) {
+        payload['vehicle_number_plate'] = vehicleNumberPlate;
+      }
       if (avatarUrl != null) payload['avatar_url'] = avatarUrl;
       if (bioPayHandleType != null) {
         payload['biopay_handle_type'] = bioPayHandleType;
@@ -101,28 +105,27 @@ class ProfileService {
     required String biopayHandleValue,
     required bool isDriver,
     required String vehicleTypeId,
+    required String vehicleNumberPlate,
     required bool previousIsDriver,
-    required String previousVehicleTypeId,
   }) async {
     await updateProfileViaRpc(
       whatsapp: whatsapp,
       countryCode: countryCode,
       vehicleType: isDriver ? vehicleTypeId : null,
+      vehicleNumberPlate: isDriver ? vehicleNumberPlate : null,
       bioPayHandleType: biopayHandleType.storageValue,
       bioPayHandleValue: biopayHandleValue.trim(),
     );
 
     if (previousIsDriver != isDriver) {
       if (isDriver) {
-        await enableDriverMode(vehicleType: vehicleTypeId);
+        await enableDriverMode(
+          vehicleType: vehicleTypeId,
+          vehicleNumberPlate: vehicleNumberPlate,
+        );
       } else {
         await disableDriverMode();
       }
-      return;
-    }
-
-    if (isDriver && previousVehicleTypeId != vehicleTypeId) {
-      await updateProfileViaRpc(vehicleType: vehicleTypeId);
     }
   }
 
@@ -170,11 +173,17 @@ class ProfileService {
   // ---------------------------------------------------------------------------
 
   /// Enables driver mode via `rpc_enable_driver_mode` RPC.
-  Future<void> enableDriverMode({String vehicleType = 'cab'}) async {
+  Future<void> enableDriverMode({
+    String vehicleType = 'cab',
+    String? vehicleNumberPlate,
+  }) async {
     try {
       await _supabase.rpc(
         'rpc_enable_driver_mode',
-        params: {'p_vehicle_type': vehicleType},
+        params: {
+          'p_vehicle_type': vehicleType,
+          'p_vehicle_number_plate': vehicleNumberPlate,
+        },
       );
     } on Object catch (e) {
       AppLogger.error('Error enabling driver mode: $e');
