@@ -62,9 +62,9 @@ class MobiBottomNav extends StatelessWidget {
 
   // Admin nav: Dashboard, Users, Profile
   static const _adminItems = [
-    _NavItem(LucideIcons.layoutDashboard, 'Dashboard'),
+    _NavItem(LucideIcons.layoutDashboard, 'Overview'),
     _NavItem(LucideIcons.users, 'Users'),
-    _NavItem(LucideIcons.user, 'Profile'),
+    _NavItem(LucideIcons.user, 'Account'),
   ];
 }
 

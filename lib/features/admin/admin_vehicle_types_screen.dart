@@ -5,16 +5,17 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/services/vehicle_type_service.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
 import 'package:mobi_app/models/country.dart';
 import 'package:mobi_app/models/vehicle_type_model.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
-import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
+import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 
-/// Admin screen to manage vehicle types and their country allocations.
+/// Admin screen to manage vehicle types and country allocations.
 class AdminVehicleTypesScreen extends ConsumerStatefulWidget {
   final VoidCallback onBack;
 
@@ -25,16 +26,17 @@ class AdminVehicleTypesScreen extends ConsumerStatefulWidget {
       _AdminVehicleTypesScreenState();
 }
 
-class _AdminVehicleTypesScreenState extends ConsumerState<AdminVehicleTypesScreen> {
-  VehicleTypeService get vehicleService => ref.read(vehicleTypeServiceProvider);
-
+class _AdminVehicleTypesScreenState
+    extends ConsumerState<AdminVehicleTypesScreen> {
+  VehicleTypeService get _vehicleService =>
+      ref.read(vehicleTypeServiceProvider);
   CountryService get _countryService => ref.read(countryServiceProvider);
-
 
   bool _isLoading = true;
   List<VehicleTypeModel> _vehicleTypes = [];
   List<Country> _countries = [];
   String? _busyId;
+  String _statusFilter = 'all';
 
   @override
   void initState() {
@@ -45,9 +47,9 @@ class _AdminVehicleTypesScreenState extends ConsumerState<AdminVehicleTypesScree
   Future<void> _load() async {
     setState(() => _isLoading = true);
     try {
-      ref.read(vehicleTypeServiceProvider).invalidateCache();
+      _vehicleService.invalidateCache();
       final results = await Future.wait([
-        ref.read(vehicleTypeServiceProvider).getAll(includeInactive: true),
+        _vehicleService.getAll(includeInactive: true),
         _countryService.getCountries(),
       ]);
       if (mounted) {
@@ -57,35 +59,53 @@ class _AdminVehicleTypesScreenState extends ConsumerState<AdminVehicleTypesScree
           _isLoading = false;
         });
       }
-    } on Object catch (_) {
-      if (mounted) setState(() => _isLoading = false);
+    } on Object catch (error) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $error')));
+      }
     }
   }
 
-  Future<void> _toggleActive(VehicleTypeModel vt) async {
-    setState(() => _busyId = vt.id);
+  Future<void> _toggleActive(VehicleTypeModel vehicleType) async {
+    setState(() => _busyId = vehicleType.id);
     try {
-      await ref.read(vehicleTypeServiceProvider).toggleActive(vt.id, !vt.isActive);
+      await _vehicleService.toggleActive(vehicleType.id, !vehicleType.isActive);
       await _load();
-    } on Object catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              vehicleType.isActive
+                  ? 'Vehicle type paused.'
+                  : 'Vehicle type active.',
+            ),
+          ),
+        );
+      }
+    } on Object catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text('Error: $error')));
       }
     } finally {
-      if (mounted) setState(() => _busyId = null);
+      if (mounted) {
+        setState(() => _busyId = null);
+      }
     }
   }
 
-  Future<void> _showCountryEditor(VehicleTypeModel vt) async {
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+  Future<void> _showCountryEditor(VehicleTypeModel vehicleType) async {
     final cs = Theme.of(context).colorScheme;
-    final selected = Set<String>.from(vt.countryIds);
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final selected = Set<String>.from(vehicleType.countryIds);
 
     await showModalBottomSheet<void>(
       context: context,
-      backgroundColor: ext.surfaceContainerLow,
+      backgroundColor: ext.surfaceContainerLowest,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
@@ -95,100 +115,72 @@ class _AdminVehicleTypesScreenState extends ConsumerState<AdminVehicleTypesScree
             return SafeArea(
               top: false,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Image.asset(
-                          vt.localAssetPath,
-                          width: 36,
-                          height: 36,
-                          errorBuilder: (_, e, s) =>
-                              Icon(vt.icon, size: 28, color: cs.primary),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Text(
-                            '${vt.label} — Countries',
-                            style: AppTypography.titleLg.copyWith(
-                              color: cs.onSurface,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                      ],
+                    AdminSectionHeader(
+                      title: vehicleType.label,
+                      subtitle: 'Country availability',
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Select which countries this vehicle type is available in.',
-                      style: AppTypography.bodySm.copyWith(
-                        color: cs.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.lg),
                     Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: _countries.map((c) {
-                        final isActive = selected.contains(c.id);
+                      spacing: AppSpacing.sm,
+                      runSpacing: AppSpacing.sm,
+                      children: _countries.map((country) {
+                        final isSelected = selected.contains(country.id);
                         return FilterChip(
-                          selected: isActive,
+                          selected: isSelected,
                           showCheckmark: false,
                           avatar: Text(
-                            c.flag,
+                            country.flag,
                             style: const TextStyle(fontSize: 16),
                           ),
-                          label: Text(c.name),
+                          label: Text(country.name),
                           selectedColor: cs.primaryContainer,
-                          backgroundColor: ext.surfaceContainerLowest,
+                          backgroundColor: ext.surfaceContainerLow,
                           side: BorderSide(
-                            color: isActive
-                                ? cs.primary.withValues(alpha: 0.3)
-                                : cs.outlineVariant.withValues(alpha: 0.2),
+                            color: isSelected
+                                ? cs.primary.withValues(alpha: 0.28)
+                                : cs.outlineVariant.withValues(alpha: 0.55),
                           ),
-                          labelStyle: AppTypography.labelSm.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: isActive ? cs.primary : cs.onSurfaceVariant,
+                          labelStyle: AppTypography.labelLg.copyWith(
+                            color: isSelected
+                                ? cs.primary
+                                : cs.onSurfaceVariant,
                           ),
-                          onSelected: (val) {
+                          onSelected: (value) {
                             setSheetState(() {
-                              if (val) {
-                                selected.add(c.id);
+                              if (value) {
+                                selected.add(country.id);
                               } else {
-                                selected.remove(c.id);
+                                selected.remove(country.id);
                               }
                             });
                           },
                         );
                       }).toList(),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: AppSpacing.lg),
                     Row(
                       children: [
                         Expanded(
                           child: MobiButton(
                             variant: MobiButtonVariant.ghost,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 16,
-                            ),
                             onPressed: () => Navigator.of(context).pop(),
                             child: const Text('Cancel'),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: MobiButton(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 16,
-                            ),
                             onPressed: () async {
                               Navigator.of(context).pop();
-                              await _saveCountries(vt.id, selected.toList());
+                              await _saveCountries(
+                                vehicleType.id,
+                                selected.toList(),
+                              );
                             },
                             child: const Text('Save'),
                           ),
@@ -205,306 +197,444 @@ class _AdminVehicleTypesScreenState extends ConsumerState<AdminVehicleTypesScree
     );
   }
 
-  Future<void> _saveCountries(String vtId, List<String> countryIds) async {
-    setState(() => _busyId = vtId);
+  Future<void> _saveCountries(
+    String vehicleTypeId,
+    List<String> countryIds,
+  ) async {
+    setState(() => _busyId = vehicleTypeId);
     try {
-      await ref.read(vehicleTypeServiceProvider).updateCountries(vtId, countryIds);
+      await _vehicleService.updateCountries(vehicleTypeId, countryIds);
       await _load();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Country allocation updated.'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
+          const SnackBar(content: Text('Country allocation updated.')),
         );
       }
-    } on Object catch (e) {
+    } on Object catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text('Error: $error')));
       }
     } finally {
-      if (mounted) setState(() => _busyId = null);
+      if (mounted) {
+        setState(() => _busyId = null);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+    final filteredTypes = _vehicleTypes.where((type) {
+      return switch (_statusFilter) {
+        'active' => type.isActive,
+        'inactive' => !type.isActive,
+        'unassigned' => type.countryIds.isEmpty,
+        _ => true,
+      };
+    }).toList();
+    final activeCount = _vehicleTypes.where((type) => type.isActive).length;
+    final inactiveCount = _vehicleTypes.length - activeCount;
+    final unassignedCount = _vehicleTypes
+        .where((type) => type.countryIds.isEmpty)
+        .length;
 
     return Scaffold(
-      backgroundColor: cs.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-              child: Row(
-                children: [
-                  TappableIconButton(
-                    icon: LucideIcons.chevronLeft,
-                    onTap: widget.onBack,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      'Vehicle Types',
-                      style: AppTypography.headlineMd.copyWith(
-                        letterSpacing: -1,
-                        color: cs.onSurface,
-                      ),
-                    ),
-                  ),
-                  TappableIconButton(icon: LucideIcons.refreshCw, onTap: _load),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                'Manage vehicle types and country availability.',
-                style: AppTypography.bodySm.copyWith(
-                  color: cs.onSurfaceVariant,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // List
-            Expanded(
-              child: _isLoading
-                  ? ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      itemCount: 5,
-                      itemBuilder: (_, i) => const Padding(
-                        padding: EdgeInsets.only(bottom: 16),
-                        child: LoadingSkeleton(height: 140, borderRadius: 28),
-                      ),
-                    )
-                  : RefreshIndicator.adaptive(
-                      onRefresh: _load,
-                      child: ListView.builder(
-                        physics: const BouncingScrollPhysics(
-                          parent: AlwaysScrollableScrollPhysics(),
-                        ),
-                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 160),
-                        itemCount: _vehicleTypes.length,
-                        itemBuilder: (context, index) {
-                          final vt = _vehicleTypes[index];
-                          final isBusy = _busyId == vt.id;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: _VehicleTypeCard(
-                              vehicleType: vt,
-                              countries: _countries,
-                              isBusy: isBusy,
-                              onToggleActive: () => _toggleActive(vt),
-                              onEditCountries: () => _showCountryEditor(vt),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+        child: AdminWorkspaceFrame(
+          onBack: widget.onBack,
+          currentTab: AdminWorkspaceTab.fleet,
+          title: 'Fleet',
+          subtitle: 'Vehicle types and country rollout.',
+          actions: [
+            AdminActionChip(
+              label: 'Refresh',
+              icon: LucideIcons.refreshCw,
+              onTap: _load,
             ),
           ],
+          child: RefreshIndicator.adaptive(
+            onRefresh: _load,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
+              children: [
+                AdminPanel(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const AdminSectionHeader(
+                        title: 'Filters',
+                        subtitle: 'Keep the fleet surface focused.',
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      Wrap(
+                        spacing: AppSpacing.sm,
+                        runSpacing: AppSpacing.sm,
+                        children: [
+                          for (final filter in const [
+                            ('all', 'All', LucideIcons.list),
+                            ('active', 'Active', LucideIcons.badgeCheck),
+                            ('inactive', 'Paused', LucideIcons.pause),
+                            ('unassigned', 'Unassigned', LucideIcons.mapPin),
+                          ])
+                            AdminFilterChip(
+                              label: filter.$2,
+                              icon: filter.$3,
+                              isSelected: _statusFilter == filter.$1,
+                              onTap: () =>
+                                  setState(() => _statusFilter = filter.$1),
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                _FleetMetricGrid(
+                  children: [
+                    AdminMetricCard(
+                      label: 'Vehicle types',
+                      value: '${_vehicleTypes.length}',
+                      hint: 'Full catalog',
+                      icon: LucideIcons.car,
+                      tone: MobiStatusBadgeTone.brand,
+                    ),
+                    AdminMetricCard(
+                      label: 'Active',
+                      value: '$activeCount',
+                      hint: 'Live in production',
+                      icon: LucideIcons.badgeCheck,
+                      tone: MobiStatusBadgeTone.positive,
+                    ),
+                    AdminMetricCard(
+                      label: 'Paused',
+                      value: '$inactiveCount',
+                      hint: 'Not selectable',
+                      icon: LucideIcons.pause,
+                      tone: MobiStatusBadgeTone.warning,
+                    ),
+                    AdminMetricCard(
+                      label: 'Unassigned',
+                      value: '$unassignedCount',
+                      hint: 'No country coverage',
+                      icon: LucideIcons.mapPin,
+                      tone: MobiStatusBadgeTone.danger,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                if (_isLoading)
+                  const Column(
+                    children: [
+                      LoadingSkeleton(height: 108, borderRadius: 28),
+                      SizedBox(height: AppSpacing.md),
+                      LoadingSkeleton(height: 360, borderRadius: 28),
+                    ],
+                  )
+                else if (filteredTypes.isEmpty)
+                  const AdminEmptyState(
+                    title: 'No vehicle types',
+                    message: 'Adjust the current filter.',
+                    icon: LucideIcons.car,
+                  )
+                else
+                  AdminPanel(
+                    padding: EdgeInsets.zero,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 18, 20, 14),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final isWide = constraints.maxWidth >= 920;
+                              if (!isWide) {
+                                return const Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: AdminTableLabel(
+                                    label: 'Vehicle types',
+                                  ),
+                                );
+                              }
+
+                              return const Row(
+                                children: [
+                                  Expanded(
+                                    flex: 3,
+                                    child: AdminTableLabel(label: 'Type'),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: AdminTableLabel(label: 'Status'),
+                                  ),
+                                  Expanded(
+                                    flex: 4,
+                                    child: AdminTableLabel(label: 'Countries'),
+                                  ),
+                                  SizedBox(
+                                    width: 190,
+                                    child: AdminTableLabel(label: 'Actions'),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                        Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.outlineVariant.withValues(alpha: 0.55),
+                        ),
+                        for (
+                          var index = 0;
+                          index < filteredTypes.length;
+                          index++
+                        ) ...[
+                          _VehicleTypeRow(
+                            vehicleType: filteredTypes[index],
+                            countries: _countries,
+                            isBusy: _busyId == filteredTypes[index].id,
+                            onEditCountries: () {
+                              _showCountryEditor(filteredTypes[index]);
+                            },
+                            onToggle: () {
+                              HapticFeedback.lightImpact();
+                              _toggleActive(filteredTypes[index]);
+                            },
+                          ),
+                          if (index < filteredTypes.length - 1)
+                            Divider(
+                              height: 1,
+                              thickness: 1,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .outlineVariant
+                                  .withValues(alpha: 0.35),
+                            ),
+                        ],
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-/// Card for a single vehicle type with image, status toggle, and country chips.
-class _VehicleTypeCard extends ConsumerWidget {
+class _FleetMetricGrid extends StatelessWidget {
+  final List<Widget> children;
+
+  const _FleetMetricGrid({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        final cardWidth = width >= 1200
+            ? (width - AppSpacing.md * 3) / 4
+            : width >= 760
+            ? (width - AppSpacing.md) / 2
+            : width;
+
+        return Wrap(
+          spacing: AppSpacing.md,
+          runSpacing: AppSpacing.md,
+          children: children
+              .map((child) => SizedBox(width: cardWidth, child: child))
+              .toList(),
+        );
+      },
+    );
+  }
+}
+
+class _VehicleTypeRow extends StatelessWidget {
   final VehicleTypeModel vehicleType;
   final List<Country> countries;
   final bool isBusy;
-  final VoidCallback onToggleActive;
+  final VoidCallback onToggle;
   final VoidCallback onEditCountries;
 
-  const _VehicleTypeCard({
+  const _VehicleTypeRow({
     required this.vehicleType,
     required this.countries,
     required this.isBusy,
-    required this.onToggleActive,
+    required this.onToggle,
     required this.onEditCountries,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-
-    // Map country IDs to country objects for display
     final assignedCountries = countries
-        .where((c) => vehicleType.countryIds.contains(c.id))
+        .where((country) => vehicleType.countryIds.contains(country.id))
         .toList();
 
-    return ClayCard(
-      onTap: onEditCountries,
-      padding: const EdgeInsets.all(20),
-      borderRadius: 28,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              // Vehicle image
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: ext.surfaceContainer,
-                  borderRadius: BorderRadius.circular(18),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 920;
+        final identity = Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Theme.of(
+                  context,
+                ).extension<MobiThemeExtension>()!.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Center(
+                child: Image.asset(
+                  vehicleType.localAssetPath,
+                  width: 34,
+                  height: 34,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, error, stackTrace) => Icon(
+                    vehicleType.icon,
+                    size: 22,
+                    color: cs.onSurfaceVariant,
+                  ),
                 ),
-                child: Center(
-                  child: Image.asset(
-                    vehicleType.localAssetPath,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.contain,
-                    errorBuilder: (_, e, s) => Icon(
-                      vehicleType.icon,
-                      size: 28,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    vehicleType.label,
+                    style: AppTypography.titleMd.copyWith(color: cs.onSurface),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    '${assignedCountries.length} countries',
+                    style: AppTypography.bodySm.copyWith(
                       color: cs.onSurfaceVariant,
                     ),
                   ),
-                ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      vehicleType.label,
-                      style: AppTypography.titleLg.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: cs.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      vehicleType.isActive ? 'Active' : 'Inactive',
-                      style: AppTypography.labelSm.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: vehicleType.isActive
-                            ? cs.primary
-                            : cs.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Active toggle
-              if (isBusy)
-                SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: cs.primary,
-                  ),
-                )
-              else
-                GestureDetector(
-                  onTap: () {
-                    HapticFeedback.lightImpact();
-                    onToggleActive();
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: 50,
-                    height: 28,
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: vehicleType.isActive
-                          ? cs.primary
-                          : ext.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: AnimatedAlign(
-                      duration: const Duration(milliseconds: 200),
-                      alignment: vehicleType.isActive
-                          ? Alignment.centerRight
-                          : Alignment.centerLeft,
-                      child: Container(
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: ext.surfaceContainerLowest,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
+            ),
+          ],
+        );
+
+        final status = Align(
+          alignment: Alignment.centerLeft,
+          child: MobiStatusBadge(
+            label: vehicleType.isActive ? 'ACTIVE' : 'PAUSED',
+            tone: vehicleType.isActive
+                ? MobiStatusBadgeTone.positive
+                : MobiStatusBadgeTone.warning,
           ),
-          const SizedBox(height: 16),
-          // Country allocation chips
-          Row(
-            children: [
-              Icon(LucideIcons.globe, size: 14, color: cs.onSurfaceVariant),
-              const SizedBox(width: 8),
-              Text(
-                'COUNTRIES',
-                style: AppTypography.labelSm.copyWith(
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1,
-                  color: cs.onSurfaceVariant,
-                ),
-              ),
-              const Spacer(),
-              Icon(LucideIcons.edit2, size: 14, color: cs.primary),
-            ],
-          ),
-          const SizedBox(height: 10),
-          if (assignedCountries.isEmpty)
-            Text(
-              'No countries assigned',
-              style: AppTypography.bodySm.copyWith(
-                color: cs.onSurfaceVariant.withValues(alpha: 0.5),
-              ),
-            )
-          else
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: assignedCountries.map((c) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: cs.primaryContainer.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: cs.primary.withValues(alpha: 0.15),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(c.flag, style: const TextStyle(fontSize: 14)),
-                      const SizedBox(width: 6),
-                      Text(
-                        c.id.toUpperCase(),
+        );
+
+        final countriesWidget = assignedCountries.isEmpty
+            ? const MobiStatusBadge(
+                label: 'UNASSIGNED',
+                tone: MobiStatusBadgeTone.danger,
+              )
+            : Wrap(
+                spacing: AppSpacing.xs,
+                runSpacing: AppSpacing.xs,
+                children: [
+                  ...assignedCountries.take(4).map((country) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm,
+                        vertical: AppSpacing.xs,
+                      ),
+                      decoration: BoxDecoration(
+                        color: cs.primary.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        '${country.flag} ${country.id.toUpperCase()}',
                         style: AppTypography.labelSm.copyWith(
-                          fontWeight: FontWeight.w700,
                           color: cs.primary,
                         ),
                       ),
+                    );
+                  }),
+                  if (assignedCountries.length > 4)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm,
+                        vertical: AppSpacing.xs,
+                      ),
+                      decoration: BoxDecoration(
+                        color: cs.outlineVariant.withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        '+${assignedCountries.length - 4}',
+                        style: AppTypography.labelSm.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+
+        final actions = Wrap(
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.sm,
+          children: [
+            AdminActionChip(
+              label: 'Countries',
+              icon: LucideIcons.map,
+              tone: MobiStatusBadgeTone.info,
+              onTap: onEditCountries,
+            ),
+            AdminActionChip(
+              label: vehicleType.isActive ? 'Pause' : 'Enable',
+              icon: vehicleType.isActive ? LucideIcons.pause : LucideIcons.play,
+              tone: vehicleType.isActive
+                  ? MobiStatusBadgeTone.warning
+                  : MobiStatusBadgeTone.positive,
+              isBusy: isBusy,
+              onTap: onToggle,
+            ),
+          ],
+        );
+
+        return InkWell(
+          onTap: onEditCountries,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+            child: isWide
+                ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(flex: 3, child: identity),
+                      Expanded(flex: 2, child: status),
+                      Expanded(flex: 4, child: countriesWidget),
+                      SizedBox(width: 190, child: actions),
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      identity,
+                      const SizedBox(height: AppSpacing.sm),
+                      status,
+                      const SizedBox(height: AppSpacing.sm),
+                      countriesWidget,
+                      const SizedBox(height: AppSpacing.md),
+                      actions,
                     ],
                   ),
-                );
-              }).toList(),
-            ),
-        ],
-      ),
+          ),
+        );
+      },
     );
   }
 }
