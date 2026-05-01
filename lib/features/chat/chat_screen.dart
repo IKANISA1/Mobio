@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/chat_ai_service.dart';
 import 'package:mobi_app/core/services/chat_service.dart';
@@ -14,13 +16,13 @@ import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/chat/models/chat_conversation.dart';
 import 'package:mobi_app/features/chat/models/chat_message.dart';
 import 'package:mobi_app/features/chat/widgets/chat_composer.dart';
-import 'package:mobi_app/features/chat/widgets/chat_header.dart';
 import 'package:mobi_app/features/chat/widgets/chat_message_bubble.dart';
 import 'package:mobi_app/features/chat/widgets/conversation_list.dart';
 import 'package:mobi_app/features/chat/widgets/trip_context_card.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 
 class TripChatScreen extends ConsumerStatefulWidget {
@@ -99,7 +101,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     try {
       final currentUserId = _chatService.currentUserId;
       if (currentUserId == null) {
-        throw Exception('Chat requires an authenticated user.');
+        throw const AuthException(message: 'Please sign in to use chat.');
       }
 
       _currentUserId = currentUserId;
@@ -114,7 +116,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
           _selectedConversationId!,
         );
         if (conversation == null) {
-          throw Exception('Conversation not found.');
+          throw const NotFoundException(message: 'Conversation not found.');
         }
         await _openConversation(conversation, showLoader: false);
       } else if (widget.peerId != null) {
@@ -132,7 +134,9 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
         );
         await _openConversation(conversation, showLoader: false);
       } else {
-        throw Exception('A chat peer or trip is required.');
+        throw const ValidationException(
+          message: 'A chat peer or trip is required.',
+        );
       }
 
       if (mounted) {
@@ -145,7 +149,10 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
       setState(() {
         _isLoading = false;
-        _error = error.toString();
+        _error = userMessageForError(
+          error,
+          fallback: 'Unable to open chat right now.',
+        );
       });
     }
   }
@@ -160,26 +167,41 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       return;
     }
 
-    final conversations = await _chatService.listTripConversations(tripId);
-    for (final conversation in conversations) {
-      await _loadPeerProfile(conversation.peerIdFor(_currentUserId!));
+    try {
+      final conversations = await _chatService.listTripConversations(tripId);
+      for (final conversation in conversations) {
+        await _loadPeerProfile(conversation.peerIdFor(_currentUserId!));
+      }
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _tripConversations = conversations;
+        _selectedConversationId = null;
+        _conversation = null;
+        _replySuggestions = const [];
+        _isGeneratingSuggestions = false;
+        _isAutocompleting = false;
+        _isLoading = false;
+        _error = null;
+      });
+
+      _composerController.clear();
+    } on Object catch (error) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _isLoading = false;
+        _error = userMessageForError(
+          error,
+          fallback: 'Unable to load trip chats right now.',
+        );
+      });
     }
-
-    if (!mounted) {
-      return;
-    }
-
-    setState(() {
-      _tripConversations = conversations;
-      _selectedConversationId = null;
-      _conversation = null;
-      _replySuggestions = const [];
-      _isGeneratingSuggestions = false;
-      _isAutocompleting = false;
-      _isLoading = false;
-    });
-
-    _composerController.clear();
   }
 
   Future<void> _openConversation(
@@ -230,8 +252,9 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     }
 
     final profile = await _profileService.getProfileById(peerId);
-    _profileCache[peerId] = profile;
-    return profile;
+    final profileMap = profile?.toJson();
+    _profileCache[peerId] = profileMap;
+    return profileMap;
   }
 
   void _applyComposerText(String text) {
@@ -278,9 +301,16 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       }
 
       setState(() => _isSending = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to send message: $error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            userMessageForError(
+              error,
+              fallback: 'Failed to send message. Please try again.',
+            ),
+          ),
+        ),
+      );
     }
   }
 
@@ -322,7 +352,14 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
       setState(() => _isGeneratingSuggestions = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unable to load suggestions: $error')),
+        SnackBar(
+          content: Text(
+            userMessageForError(
+              error,
+              fallback: 'Unable to load suggestions right now.',
+            ),
+          ),
+        ),
       );
     }
   }
@@ -369,7 +406,14 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
       setState(() => _isAutocompleting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unable to complete draft: $error')),
+        SnackBar(
+          content: Text(
+            userMessageForError(
+              error,
+              fallback: 'Unable to complete the draft right now.',
+            ),
+          ),
+        ),
       );
     }
   }
@@ -429,16 +473,12 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     return 'Mobio Chat';
   }
 
-  String _screenSubtitle() {
+  String? _screenSubtitle() {
     if (_trip != null) {
-      final route = '${_trip!.origin} to ${_trip!.destination}';
-      if (_showConversationList) {
-        return 'Users can agree price and logistics here for $route.';
-      }
-      return route;
+      return '${_trip!.origin} → ${_trip!.destination}';
     }
 
-    return 'Private by default';
+    return _showConversationList ? 'Trip inbox' : null;
   }
 
   String _timeLabel(DateTime? dateTime) {
@@ -451,6 +491,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   @override
   Widget build(BuildContext context) {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final subtitle = _screenSubtitle();
     return Scaffold(
       backgroundColor: ext.surfaceContainerLow,
       body: SoftGradient(
@@ -458,10 +499,46 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
           bottom: false,
           child: Column(
             children: [
-              ChatHeader(
+              MobiPageHeader(
                 onBack: _handleBack,
                 title: _screenTitle(),
-                subtitle: _screenSubtitle(),
+                subtitle: subtitle == null
+                    ? null
+                    : Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.bodySm.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                trailing: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        LucideIcons.shieldCheck,
+                        size: 14,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Private',
+                        style: AppTypography.labelSm.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
               if (_isLoading)
                 const Expanded(child: _ChatLoadingState())
@@ -606,7 +683,7 @@ class _ChatErrorState extends ConsumerWidget {
             TextButton(
               onPressed: onBack,
               child: Text(
-                'GO BACK',
+                'Go back',
                 style: AppTypography.labelLg.copyWith(color: cs.primary),
               ),
             ),

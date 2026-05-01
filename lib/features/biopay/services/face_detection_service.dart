@@ -1,12 +1,9 @@
 import 'dart:ui' as ui;
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+import 'package:mobi_app/features/biopay/models/biopay_models.dart';
 
 /// On-device face detection using Google ML Kit.
-///
-/// Provides face detection with landmark extraction for alignment,
-/// quality checks (yaw, face size, multi-face rejection, lighting),
-/// and optional eye-open classification.
 class FaceDetectionService {
   FaceDetector? _detector;
 
@@ -18,16 +15,12 @@ class FaceDetectionService {
   static const double minBrightness = 0.23;
   static const double maxBrightness = 0.88;
 
-  /// Initialize the ML Kit face detector with classification enabled.
-  ///
-  /// Use [FaceDetectorMode.fast] for real-time scanning (lower latency),
-  /// [FaceDetectorMode.accurate] for enrollment (higher precision).
-  void initialize({FaceDetectorMode mode = FaceDetectorMode.fast}) {
+  void initialize({FaceDetectorMode mode = FaceDetectorMode.accurate}) {
     if (_detector != null) return;
     _detector = FaceDetector(
       options: FaceDetectorOptions(
-        enableClassification: true, // eye-open guidance
-        enableLandmarks: true, // for affine alignment
+        enableClassification: true,
+        enableLandmarks: true,
         enableContours: false,
         enableTracking: true,
         performanceMode: mode,
@@ -36,10 +29,6 @@ class FaceDetectionService {
     );
   }
 
-  /// Detect faces in a camera image.
-  ///
-  /// Returns the list of detected faces. The caller should check
-  /// quality constraints before proceeding.
   Future<List<Face>> detectFaces(
     CameraImage image,
     CameraDescription camera,
@@ -54,7 +43,6 @@ class FaceDetectionService {
     return _detector!.processImage(inputImage);
   }
 
-  /// Detect faces in an encoded image file written by the camera package.
   Future<List<Face>> detectFacesFromFilePath(String imagePath) async {
     if (_detector == null) {
       throw StateError('FaceDetectionService not initialized');
@@ -64,7 +52,88 @@ class FaceDetectionService {
     return _detector!.processImage(inputImage);
   }
 
-  /// Check quality of a detected face against BioPay requirements.
+  double estimateBrightness(
+    Object image, {
+    int? imageWidth,
+    int? imageHeight,
+    ui.Rect? region,
+    int sampleStride = 8,
+  }) {
+    if (image is CameraImage) {
+      return _estimateCameraBrightness(image, sampleStride: sampleStride);
+    }
+
+    if (image is List && image.isEmpty) {
+      return 0;
+    }
+
+    if (image is List<int>) {
+      return _estimateRgbaBrightness(
+        image,
+        imageWidth: imageWidth ?? 0,
+        imageHeight: imageHeight ?? 0,
+        region: region,
+        sampleStride: sampleStride,
+      );
+    }
+
+    throw ArgumentError.value(
+      image,
+      'image',
+      'Expected CameraImage or RGBA bytes.',
+    );
+  }
+
+  double _estimateCameraBrightness(CameraImage image, {int sampleStride = 8}) {
+    final yPlane = image.planes.first.bytes;
+    double brightnessSum = 0;
+    int count = 0;
+    for (int i = 0; i < yPlane.length; i += sampleStride) {
+      brightnessSum += yPlane[i];
+      count++;
+    }
+    return count > 0 ? (brightnessSum / count) / 255.0 : 0.5;
+  }
+
+  double _estimateRgbaBrightness(
+    List<int> rgba, {
+    required int imageWidth,
+    required int imageHeight,
+    ui.Rect? region,
+    int sampleStride = 8,
+  }) {
+    if (rgba.isEmpty || imageWidth <= 0 || imageHeight <= 0) {
+      return 0;
+    }
+
+    final bounds =
+        region ??
+        ui.Rect.fromLTWH(0, 0, imageWidth.toDouble(), imageHeight.toDouble());
+    final left = bounds.left.clamp(0, imageWidth).floor();
+    final top = bounds.top.clamp(0, imageHeight).floor();
+    final right = bounds.right.clamp(0, imageWidth).ceil();
+    final bottom = bounds.bottom.clamp(0, imageHeight).ceil();
+    final stride = sampleStride <= 0 ? 1 : sampleStride;
+
+    double brightnessSum = 0;
+    int count = 0;
+    for (var y = top; y < bottom; y += stride) {
+      for (var x = left; x < right; x += stride) {
+        final offset = (y * imageWidth + x) * 4;
+        if (offset + 2 >= rgba.length) {
+          continue;
+        }
+        final r = rgba[offset];
+        final g = rgba[offset + 1];
+        final b = rgba[offset + 2];
+        brightnessSum += (0.299 * r) + (0.587 * g) + (0.114 * b);
+        count++;
+      }
+    }
+
+    return count == 0 ? 0 : (brightnessSum / count) / 255.0;
+  }
+
   FaceQualityResult checkQuality(
     Face face,
     ui.Size frameSize, {
@@ -78,13 +147,13 @@ class FaceDetectionService {
       issues.add(FaceQualityIssue.faceTooSmall);
     }
 
-    // Yaw check (looking straight ahead)
+    // Yaw check
     final yaw = face.headEulerAngleY ?? 0;
     if (yaw.abs() > maxYawAngle) {
       issues.add(FaceQualityIssue.yawTooHigh);
     }
 
-    // Eye-open check (if classification available)
+    // Eye-open check
     final leftEyeOpen = face.leftEyeOpenProbability;
     final rightEyeOpen = face.rightEyeOpenProbability;
     if (leftEyeOpen != null && rightEyeOpen != null) {
@@ -111,60 +180,6 @@ class FaceDetectionService {
     );
   }
 
-  /// Estimate brightness from RGBA pixels, optionally constrained to a face region.
-  double estimateBrightness(
-    List<int> rgbaPixels, {
-    required int imageWidth,
-    required int imageHeight,
-    ui.Rect? region,
-    int sampleStride = 4,
-  }) {
-    if (rgbaPixels.isEmpty || imageWidth <= 0 || imageHeight <= 0) {
-      return 0;
-    }
-
-    final boundedRegion =
-        (region ??
-                ui.Rect.fromLTWH(
-                  0,
-                  0,
-                  imageWidth.toDouble(),
-                  imageHeight.toDouble(),
-                ))
-            .intersect(
-              ui.Rect.fromLTWH(
-                0,
-                0,
-                imageWidth.toDouble(),
-                imageHeight.toDouble(),
-              ),
-            );
-    if (boundedRegion.isEmpty) return 0;
-
-    final left = boundedRegion.left.floor().clamp(0, imageWidth - 1);
-    final top = boundedRegion.top.floor().clamp(0, imageHeight - 1);
-    final right = boundedRegion.right.ceil().clamp(left + 1, imageWidth);
-    final bottom = boundedRegion.bottom.ceil().clamp(top + 1, imageHeight);
-
-    double total = 0;
-    int count = 0;
-    for (int y = top; y < bottom; y += sampleStride) {
-      for (int x = left; x < right; x += sampleStride) {
-        final pixelOffset = (y * imageWidth + x) * 4;
-        if (pixelOffset + 2 >= rgbaPixels.length) continue;
-        final red = rgbaPixels[pixelOffset];
-        final green = rgbaPixels[pixelOffset + 1];
-        final blue = rgbaPixels[pixelOffset + 2];
-        total += (0.299 * red + 0.587 * green + 0.114 * blue) / 255.0;
-        count++;
-      }
-    }
-
-    if (count == 0) return 0;
-    return total / count;
-  }
-
-  /// Convert CameraImage to ML Kit InputImage.
   InputImage? _convertCameraImage(CameraImage image, CameraDescription camera) {
     final rotation = _rotationFromCamera(camera);
     if (rotation == null) return null;
@@ -196,14 +211,12 @@ class FaceDetectionService {
     };
   }
 
-  /// Release ML Kit resources.
   Future<void> dispose() async {
     await _detector?.close();
     _detector = null;
   }
 }
 
-/// Quality check result for a detected face.
 class FaceQualityResult {
   final bool isAcceptable;
   final List<FaceQualityIssue> issues;
@@ -218,14 +231,4 @@ class FaceQualityResult {
     required this.yawAngle,
     this.meanBrightness,
   });
-}
-
-/// Possible quality issues with a detected face.
-enum FaceQualityIssue {
-  faceTooSmall,
-  yawTooHigh,
-  eyesClosed,
-  multipleFaces,
-  lowLighting,
-  tooBright,
 }

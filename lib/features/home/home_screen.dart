@@ -4,29 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
 import 'package:mobi_app/core/services/ride_request_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
-import 'package:mobi_app/core/services/vehicle_type_service.dart';
-import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/features/home/widgets/home_header.dart';
+import 'package:mobi_app/features/home/widgets/home_hero_card.dart';
+import 'package:mobi_app/features/home/widgets/scheduled_trip_card.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/models/vehicle_type_model.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
 import 'package:mobi_app/shared/widgets/driver_card.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_action_row.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
-import 'package:mobi_app/shared/widgets/mobi_feature_tile.dart';
-import 'package:mobi_app/shared/widgets/mobi_metric_tile.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
-import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
 import 'package:mobi_app/shared/widgets/ride_request_sheet.dart';
@@ -91,13 +86,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void dispose() {
     _notifSub?.cancel();
-    _notificationService.dispose();
+    // Do NOT dispose _notificationService — it is a shared singleton
+    // managed by MobiShell via Riverpod.
     super.dispose();
   }
 
   /// Listens for realtime notifications — if one is a ride request, show the sheet.
   void _listenForIncomingRequests() {
-    _notificationService.startListening();
     _notifSub = _notificationService.onNotification.listen((notif) {
       // Update badge
       setState(() => _unreadCount++);
@@ -172,7 +167,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _loadVehicleTypes() async {
-    final types = await VehicleTypeService().getAll();
+    final types = await ref.read(vehicleTypeServiceProvider).getAll();
     if (mounted) setState(() => _vehicleTypes = types);
   }
 
@@ -189,7 +184,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final mediaPadding = MediaQuery.paddingOf(context);
     final isDriver = widget.mode == 'driver';
 
@@ -224,7 +218,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     borderRadius: AppRadii.hero,
                     child: Column(
                       children: [
-                        _buildHeader(isDriver, cs, ext),
+                        HomeHeader(
+                          isDriver: isDriver,
+                          unreadCount: _unreadCount,
+                          isDriverOnline: _isDriverOnline,
+                          onDriverOnlineToggle: _toggleDriverOnline,
+                        ),
                         const SizedBox(height: AppSpacing.lg),
                         MobiToggle(
                           labels: isDriver
@@ -244,36 +243,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.screenPadding,
                   ),
-                  child: _buildHeroCard(isDriver)
-                      .animate(delay: 100.ms)
-                      .fade()
-                      .scale(begin: const Offset(0.95, 0.95)),
+                  child:
+                      HomeHeroCard(
+                            isDriver: isDriver,
+                            nearbyCount: _nearbyCount,
+                            unreadCount: _unreadCount,
+                            scheduledCount: _scheduledPreview.length,
+                            onTap: widget.onViewNearby,
+                          )
+                          .animate(delay: 100.ms)
+                          .fade()
+                          .scale(begin: const Offset(0.95, 0.95)),
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.screenPadding,
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: MobiFeatureTile(
-                          icon: LucideIcons.mapPin,
-                          title: 'Nearby',
-                          subtitle: isDriver ? 'Passengers' : 'Drivers',
-                          accent: Theme.of(context).colorScheme.primary,
-                          onTap: widget.onViewNearby,
-                        ),
+                  child: MobiActionRow(
+                    items: [
+                      MobiActionItem(
+                        icon: LucideIcons.mapPin,
+                        label: 'Nearby',
+                        accent: Theme.of(context).colorScheme.primary,
+                        onTap: widget.onViewNearby,
                       ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: MobiFeatureTile(
-                          icon: LucideIcons.calendarCheck,
-                          title: 'Schedule',
-                          subtitle: 'New trip',
-                          accent: Theme.of(context).colorScheme.secondary,
-                          onTap: () => widget.onSchedule?.call(),
-                        ),
+                      MobiActionItem(
+                        icon: LucideIcons.calendarCheck,
+                        label: 'Schedule',
+                        accent: Theme.of(context).colorScheme.secondary,
+                        onTap: () => widget.onSchedule?.call(),
                       ),
                     ],
                   ).animate(delay: 200.ms).fade().slideY(begin: 0.1),
@@ -303,7 +302,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   child: MobiSectionHeader(
                     title: 'Nearby',
-                    caption: isDriver ? 'Passengers' : 'Drivers',
+                    caption: _nearbyCount > 0 ? '$_nearbyCount live' : 'Live',
                     icon: LucideIcons.mapPin,
                     actionLabel: 'All',
                     onAction: widget.onViewNearby,
@@ -317,7 +316,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: _hasError
                       ? MobiErrorState(
                           title: 'Load failed',
-                          subtitle: 'Pull to retry.',
                           icon: LucideIcons.wifiOff,
                           onRetry: _loadData,
                           height: 240,
@@ -364,7 +362,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   child: MobiSectionHeader(
                     title: 'Scheduled',
-                    caption: '${_scheduledPreview.length} upcoming',
+                    caption: _scheduledPreview.isNotEmpty
+                        ? '${_scheduledPreview.length} upcoming'
+                        : 'Upcoming',
                     icon: LucideIcons.calendarCheck,
                     actionLabel: 'All',
                     onAction: () => widget.onViewBookings?.call(),
@@ -391,7 +391,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               .map(
                                 (trip) => Padding(
                                   padding: const EdgeInsets.only(bottom: 16),
-                                  child: _buildScheduledCard(context, trip),
+                                  child: ScheduledTripCard(trip: trip),
                                 ),
                               )
                               .toList()
@@ -399,254 +399,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               .fade()
                               .slideY(begin: 0.1),
                         )
-                      : const AiEmptyState(
+                      : AiEmptyState(
                           title: 'No trips yet',
-                          subtitle: 'Use Schedule.',
                           icon: LucideIcons.calendar,
                           height: 200,
+                          onAction: widget.onSchedule,
+                          actionLabel: widget.onSchedule == null
+                              ? null
+                              : 'Schedule',
                         ),
                 ),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(bool isDriver, ColorScheme cs, MobiThemeExtension ext) {
-    return Row(
-      children: [
-        Expanded(
-          child: Row(
-            children: [
-              SizedBox.square(
-                dimension: 24,
-                child: ClipRect(
-                  child: Transform.scale(
-                    scale: 1.38,
-                    child: Image.asset(
-                      'icon/mobi_logo_transparent.png',
-                      fit: BoxFit.contain,
-                      filterQuality: FilterQuality.high,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Flexible(
-                child: Text(
-                  'Mobio',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.titleLg.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        SizedBox(
-          width: 40,
-          height: 40,
-          child: Stack(
-            children: [
-              Center(
-                child: Icon(
-                  LucideIcons.bell,
-                  size: 22,
-                  color: cs.onSurfaceVariant,
-                ),
-              ),
-              if (_unreadCount > 0)
-                Positioned(
-                  right: 4,
-                  top: 4,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 1,
-                    ),
-                    constraints: const BoxConstraints(minWidth: 18),
-                    decoration: BoxDecoration(
-                      color: cs.error,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      _unreadCount > 99 ? '99+' : '$_unreadCount',
-                      textAlign: TextAlign.center,
-                      style: AppTypography.labelSm.copyWith(
-                        color: cs.onError,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        if (isDriver) const SizedBox(width: 8),
-        if (isDriver)
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              MobiStatusBadge(
-                label: _isDriverOnline ? 'Online' : 'Offline',
-                icon: _isDriverOnline ? LucideIcons.radio : LucideIcons.pause,
-                tone: _isDriverOnline
-                    ? MobiStatusBadgeTone.positive
-                    : MobiStatusBadgeTone.neutral,
-              ),
-              const SizedBox(width: AppSpacing.xs),
-              SizedBox(
-                height: 28,
-                child: Switch(
-                  value: _isDriverOnline,
-                  onChanged: _toggleDriverOnline,
-                  activeThumbColor: Theme.of(context).colorScheme.primary,
-                  activeTrackColor: Theme.of(
-                    context,
-                  ).colorScheme.primary.withValues(alpha: 0.3),
-                  inactiveThumbColor: Theme.of(
-                    context,
-                  ).colorScheme.onSurfaceVariant,
-                  inactiveTrackColor: ext.surfaceContainer,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-              ),
-            ],
-          ),
-      ],
-    );
-  }
-
-  Widget _buildHeroCard(bool isDriver) {
-    final cs = Theme.of(context).colorScheme;
-
-    return ClayCard(
-      onTap: widget.onViewNearby,
-      color: cs.primaryContainer.withValues(alpha: 0.92),
-      borderRadius: AppRadii.hero,
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  isDriver ? 'Nearby passengers' : 'Nearby drivers',
-                  style: AppTypography.titleLg.copyWith(
-                    color: cs.onPrimaryContainer,
-                  ),
-                ),
-              ),
-              MobiStatusBadge(
-                label: _nearbyCount > 0 ? 'Live' : 'Quiet',
-                icon: LucideIcons.sparkles,
-                tone: _nearbyCount > 0
-                    ? MobiStatusBadgeTone.positive
-                    : MobiStatusBadgeTone.neutral,
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            _nearbyCount.toString(),
-            style: AppTypography.heroNumber.copyWith(
-              color: cs.onPrimaryContainer,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            isDriver ? 'Ready to pick up' : 'Ready to book',
-            style: AppTypography.bodySm.copyWith(
-              color: cs.onPrimaryContainer.withValues(alpha: 0.8),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Row(
-            children: [
-              Expanded(
-                child: MobiMetricTile(
-                  label: 'Unread',
-                  value: '$_unreadCount',
-                  icon: LucideIcons.bell,
-                  accent: cs.primary,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: MobiMetricTile(
-                  label: 'Scheduled',
-                  value: '${_scheduledPreview.length}',
-                  icon: LucideIcons.calendarCheck,
-                  accent: AppColors.tertiary,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildScheduledCard(BuildContext context, Trip trip) {
-    return ClayCard(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${trip.origin.toUpperCase()} → ${trip.destination.toUpperCase()}',
-                      style: AppTypography.titleMd.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      trip.departureTime,
-                      style: AppTypography.headlineLg.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(LucideIcons.chevronRight, size: 18),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Wrap(
-            spacing: AppSpacing.xs,
-            runSpacing: AppSpacing.xs,
-            children: [
-              if (trip.authorId.isNotEmpty)
-                MobiStatusBadge(
-                  label: AppConstants.getDriverId(trip.authorId),
-                  tone: MobiStatusBadgeTone.brand,
-                ),
-              MobiStatusBadge(
-                label: trip.vehicleTypeStr.toUpperCase(),
-                icon: getVehicleIconFromId(trip.vehicleTypeStr),
-                tone: MobiStatusBadgeTone.info,
-              ),
-              const MobiStatusBadge(
-                label: 'Upcoming',
-                tone: MobiStatusBadgeTone.positive,
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

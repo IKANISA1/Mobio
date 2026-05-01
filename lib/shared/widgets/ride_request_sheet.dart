@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/ride_request_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -65,7 +66,9 @@ class _RideRequestSheetState extends ConsumerState<_RideRequestSheet> {
     setState(() => _isProcessing = true);
 
     try {
-      await ref.read(rideRequestServiceProvider).acceptRequest(widget.request.id!);
+      await ref
+          .read(rideRequestServiceProvider)
+          .acceptRequest(widget.request.id!);
       if (!mounted) return;
       setState(() => _actionResult = 'accepted');
 
@@ -81,9 +84,16 @@ class _RideRequestSheetState extends ConsumerState<_RideRequestSheet> {
     } on Object catch (e) {
       if (!mounted) return;
       setState(() => _isProcessing = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to accept: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            userMessageForError(
+              e,
+              fallback: 'Failed to accept the request. Please try again.',
+            ),
+          ),
+        ),
+      );
     }
   }
 
@@ -92,7 +102,9 @@ class _RideRequestSheetState extends ConsumerState<_RideRequestSheet> {
     setState(() => _isProcessing = true);
 
     try {
-      await ref.read(rideRequestServiceProvider).declineRequest(widget.request.id!);
+      await ref
+          .read(rideRequestServiceProvider)
+          .declineRequest(widget.request.id!);
       if (!mounted) return;
       setState(() => _actionResult = 'declined');
 
@@ -101,9 +113,16 @@ class _RideRequestSheetState extends ConsumerState<_RideRequestSheet> {
     } on Object catch (e) {
       if (!mounted) return;
       setState(() => _isProcessing = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to decline: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            userMessageForError(
+              e,
+              fallback: 'Failed to decline the request. Please try again.',
+            ),
+          ),
+        ),
+      );
     }
   }
 

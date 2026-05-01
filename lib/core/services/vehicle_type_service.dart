@@ -6,10 +6,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Caches the result in memory after first fetch. Falls back to
 /// hardcoded list if Supabase is unreachable.
 class VehicleTypeService {
-  // Singleton
-  static final VehicleTypeService _instance = VehicleTypeService._();
-  factory VehicleTypeService() => _instance;
-  VehicleTypeService._();
+  final SupabaseClient _supabase;
+
+  VehicleTypeService({SupabaseClient? supabase})
+    : _supabase = supabase ?? Supabase.instance.client;
 
   List<VehicleTypeModel>? _cached;
   List<VehicleTypeModel>? _cachedAll;
@@ -24,7 +24,7 @@ class VehicleTypeService {
 
     try {
       // Fetch vehicle types
-      var query = Supabase.instance.client.from('vehicle_types').select();
+      var query = _supabase.from('vehicle_types').select();
 
       if (!includeInactive) {
         query = query.eq('is_active', true);
@@ -34,7 +34,7 @@ class VehicleTypeService {
       final vtRows = vtResponse as List<dynamic>;
 
       // Fetch country allocations
-      final vtcResponse = await Supabase.instance.client
+      final vtcResponse = await _supabase
           .from('vehicle_type_countries')
           .select();
 
@@ -99,7 +99,7 @@ class VehicleTypeService {
 
   /// Update a vehicle type (admin only).
   Future<void> update(VehicleTypeModel model) async {
-    await Supabase.instance.client
+    await _supabase
         .from('vehicle_types')
         .update(model.toJson())
         .eq('id', model.id);
@@ -111,7 +111,7 @@ class VehicleTypeService {
     String vehicleTypeId,
     List<String> countryIds,
   ) async {
-    final client = Supabase.instance.client;
+    final client = _supabase;
 
     // Delete existing allocations
     await client
@@ -137,7 +137,7 @@ class VehicleTypeService {
 
   /// Toggle active status for a vehicle type (admin only).
   Future<void> toggleActive(String vehicleTypeId, bool isActive) async {
-    await Supabase.instance.client
+    await _supabase
         .from('vehicle_types')
         .update({'is_active': isActive})
         .eq('id', vehicleTypeId);

@@ -74,6 +74,9 @@ class MatchResult {
     score: score,
     isCached: true,
   );
+
+  bool get success => isMatch;
+  MatchResult? get match => isMatch ? this : null;
 }
 
 class EnrollmentResult {
@@ -201,3 +204,16 @@ class ManagedBiopayProfile {
 
   bool get isActive => status == 'active';
 }
+
+/// Possible quality issues with a detected face.
+enum FaceQualityIssue {
+  faceTooSmall,
+  yawTooHigh,
+  eyesClosed,
+  multipleFaces,
+  lowLighting,
+  tooBright,
+}
+
+/// Scanning lifecycle states.
+enum ScannerState { searching, locked, captured, error, noMatch }

@@ -12,10 +12,10 @@ import 'package:mobi_app/core/router/app_router.dart';
 import 'package:mobi_app/core/services/firebase_analytics_service.dart';
 import 'package:mobi_app/core/services/firebase_bootstrap_service.dart';
 import 'package:mobi_app/core/services/push_notification_service.dart';
+import 'package:mobi_app/core/services/supabase_session_service.dart';
 import 'package:mobi_app/core/theme/app_theme.dart';
 import 'package:mobi_app/core/theme/theme_provider.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
-import 'package:mobi_app/features/splash/splash_screen.dart';
 import 'package:mobi_app/l10n/app_localizations.dart';
 import 'package:mobi_app/providers/app_providers.dart';
 import 'package:mobi_app/shared/widgets/connectivity_overlay.dart';
@@ -74,7 +74,7 @@ Future<void> main() async {
           url: SupabaseConfig.url,
           anonKey: SupabaseConfig.anonKey,
         );
-        await _ensureAnonymousAuth();
+        await SupabaseSessionService.ensureAnonymousSession();
       }
 
       // Initialize push notifications (after Firebase + Supabase)
@@ -91,10 +91,7 @@ Future<void> main() async {
       await themeProvider.init();
 
       // Lock to portrait
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ]);
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
       // Catch Flutter framework errors in debug mode
       if (kDebugMode) {
@@ -133,27 +130,11 @@ Future<void> main() async {
   );
 }
 
-class MobiMainApp extends ConsumerStatefulWidget {
+class MobiMainApp extends ConsumerWidget {
   const MobiMainApp({super.key});
 
   @override
-  ConsumerState<MobiMainApp> createState() => _MobiMainAppState();
-}
-
-class _MobiMainAppState extends ConsumerState<MobiMainApp> {
-  bool _showSplash = true;
-
-  @override
-  void initState() {
-    super.initState();
-    // Show the Flutter claymorphism splash for 1.2s, then fade to main app
-    Future.delayed(const Duration(milliseconds: 1200), () {
-      if (mounted) setState(() => _showSplash = false);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final themeProvider = ref.read(themeProviderProvider);
     final router = ref.watch(_routerProvider);
     return ListenableBuilder(
@@ -165,20 +146,14 @@ class _MobiMainAppState extends ConsumerState<MobiMainApp> {
 
         // Set system UI style reactively based on theme
         final isDark = themeProvider.isDark;
-        // During splash, use light icons (green bg); after, use theme-based
-        final statusIconBrightness = _showSplash
-            ? Brightness.light
-            : (isDark ? Brightness.light : Brightness.dark);
         final overlayStyle = SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: statusIconBrightness,
-          statusBarBrightness: _showSplash
-              ? Brightness.dark
-              : (isDark ? Brightness.dark : Brightness.light),
-          systemNavigationBarColor: _showSplash
-              ? const Color(0xFF004A1E)
-              : activeTheme.colorScheme.surface,
-          systemNavigationBarIconBrightness: Brightness.light,
+          statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+          statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+          systemNavigationBarColor: activeTheme.colorScheme.surface,
+          systemNavigationBarIconBrightness: isDark
+              ? Brightness.light
+              : Brightness.dark,
         );
 
         return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -194,17 +169,7 @@ class _MobiMainAppState extends ConsumerState<MobiMainApp> {
             supportedLocales: AppLocalizations.supportedLocales,
             builder: (context, child) {
               return ConnectivityOverlay(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 800),
-                  switchInCurve: Curves.easeOut,
-                  switchOutCurve: Curves.easeIn,
-                  child: _showSplash
-                      ? const MobiSplashScreen(key: ValueKey('splash'))
-                      : KeyedSubtree(
-                          key: const ValueKey('app'),
-                          child: child ?? const SizedBox.shrink(),
-                        ),
-                ),
+                child: child ?? const SizedBox.shrink(),
               );
             },
           ),
@@ -216,52 +181,3 @@ class _MobiMainAppState extends ConsumerState<MobiMainApp> {
 
 /// Cached GoRouter instance — created once per app lifecycle.
 final _routerProvider = Provider<GoRouter>((ref) => createRouter());
-
-Future<bool> _ensureAnonymousAuth() async {
-  const maxRetries = 3;
-  const baseDelay = Duration(milliseconds: 800);
-
-  for (var attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      final client = Supabase.instance.client;
-      final existing = client.auth.currentSession;
-      if (existing != null) {
-        if (kDebugMode) {
-          debugPrint('✅ [auth] Existing session found');
-        }
-        return true;
-      }
-
-      if (kDebugMode) {
-        debugPrint(
-          '🔑 [auth] Attempt ${attempt + 1}/$maxRetries — signInAnonymously()...',
-        );
-      }
-      final response = await client.auth.signInAnonymously();
-      if (response.session != null) {
-        if (kDebugMode) {
-          debugPrint('✅ [auth] Anonymous session created');
-        }
-        return true;
-      }
-
-      if (kDebugMode) {
-        debugPrint('❌ [auth] signInAnonymously returned null session');
-      }
-    } on Object catch (e, stack) {
-      if (kDebugMode) {
-        debugPrint(
-          '❌ [auth] Attempt ${attempt + 1}/$maxRetries FAILED: $e\n$stack',
-        );
-      }
-    }
-
-    if (attempt < maxRetries - 1) {
-      final delay = baseDelay * (1 << attempt);
-      await Future<void>.delayed(delay);
-    }
-  }
-
-  if (kDebugMode) debugPrint('❌ [auth] All $maxRetries attempts exhausted');
-  return false;
-}

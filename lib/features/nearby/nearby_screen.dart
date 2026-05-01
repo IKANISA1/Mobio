@@ -6,17 +6,19 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
 import 'package:mobi_app/core/services/location_service.dart';
-import 'package:mobi_app/core/services/vehicle_type_service.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/models/vehicle_type_model.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
 import 'package:mobi_app/shared/widgets/driver_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
+import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
+import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
+import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
-import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 
 /// Nearby screen with list-first browsing.
@@ -43,7 +45,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   double? _userLat;
   LocationService get _locationService => ref.read(locationServiceProvider);
 
-  DriverLocationService get _driverLocationService => ref.read(driverLocationServiceProvider);
+  DriverLocationService get _driverLocationService =>
+      ref.read(driverLocationServiceProvider);
 
   List<NearbyDriver> _nearbyDrivers = [];
   List<VehicleTypeModel> _vehicleTypes = [];
@@ -96,7 +99,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   }
 
   Future<void> _loadVehicleTypes() async {
-    final types = await VehicleTypeService().getAll();
+    final types = await ref.read(vehicleTypeServiceProvider).getAll();
     if (mounted) setState(() => _vehicleTypes = types);
   }
 
@@ -117,7 +120,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
       driverTrips = _nearbyDrivers
           .map(
             (d) => Trip(
-              id: d.driverId,
+              id: null,
               authorId: d.driverId,
               authorName: '',
               origin: 'Nearby',
@@ -129,6 +132,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
               originLat: d.latitude,
               originLng: d.longitude,
               price: '${d.distanceKm.toStringAsFixed(1)} km',
+              description: d.driverId,
             ),
           )
           .toList();
@@ -151,197 +155,90 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                 padding: EdgeInsets.only(bottom: 136 + mediaPadding.bottom),
                 sliver: SliverMainAxisGroup(
                   slivers: [
-                    // Header
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-                      sliver: SliverToBoxAdapter(
-                        child: MobiSurfacePanel(
-                          padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
-                          borderRadius: 36,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        TappableIconButton(
-                                          icon: widget.onBack != null
-                                              ? LucideIcons.chevronLeft
-                                              : LucideIcons.menu,
-                                          onTap: widget.onBack,
-                                        ),
-                                        const SizedBox(width: 16),
-                                        Flexible(
-                                          child: Text(
-                                            'Nearby',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: AppTypography.headlineMd
-                                                .copyWith(color: cs.primary),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: cs.primaryContainer,
-                                      borderRadius: BorderRadius.circular(100),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          LucideIcons.list,
-                                          size: 14,
-                                          color: cs.primary,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          'LIST',
-                                          style: AppTypography.labelSm.copyWith(
-                                            letterSpacing: 1,
-                                            color: cs.primary,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 18),
-                              SizedBox(
-                                width: double.infinity,
-                                child: FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    'NEARBY',
-                                    style: AppTypography.displayLg.copyWith(
-                                      color: cs.onSurface,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ).animate().fade(duration: 400.ms).slideY(begin: -0.1),
-                      ),
+                    // Header — compact, using MobiPageHeader
+                    SliverToBoxAdapter(
+                      child: MobiPageHeader(
+                        title: 'Nearby',
+                        onBack: widget.onBack,
+                        showBackButton: widget.onBack != null,
+                        trailing: MobiStatusBadge(
+                          label: '${driverTrips.length}',
+                          icon: LucideIcons.mapPin,
+                          tone: driverTrips.isNotEmpty
+                              ? MobiStatusBadgeTone.positive
+                              : MobiStatusBadgeTone.neutral,
+                        ),
+                      ).animate().fade(duration: 400.ms).slideY(begin: -0.1),
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: AppSpacing.md),
+                    ),
 
-                    // Location prompt
+                    // Location prompt — compact banner
                     if (_userLat == null && !_isLoading)
                       SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.screenPadding,
+                          0,
+                          AppSpacing.screenPadding,
+                          AppSpacing.md,
+                        ),
                         sliver: SliverToBoxAdapter(
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () => AppSettings.openAppSettings(
-                                type: AppSettingsType.location,
-                              ),
-                              borderRadius: BorderRadius.circular(24),
-                              splashColor: cs.primary.withValues(alpha: 0.12),
-                              child: Ink(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: cs.primaryContainer.withValues(
-                                    alpha: 0.94,
-                                  ),
-                                  borderRadius: BorderRadius.circular(24),
-                                  border: Border.all(
-                                    color: cs.primary.withValues(alpha: 0.2),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      LucideIcons.mapPin,
-                                      size: 18,
-                                      color: cs.primary,
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        'Enable location to find drivers near you',
-                                        style: AppTypography.bodySm.copyWith(
-                                          color: cs.primary,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      LucideIcons.chevronRight,
-                                      size: 16,
-                                      color: cs.primary,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                          child: MobiStateBanner(
+                            icon: LucideIcons.mapPin,
+                            title: 'Enable location',
+                            subtitle: 'Find drivers nearby',
+                            tone: MobiStateBannerTone.brand,
+                            onTap: () => AppSettings.openAppSettings(
+                              type: AppSettingsType.location,
                             ),
                           ).animate(delay: 50.ms).fade().slideX(begin: 1.0),
                         ),
                       ),
 
-                    // Vehicle filter
+                    // Vehicle filter — compact, no label
                     SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.screenPadding,
+                      ),
                       sliver: SliverToBoxAdapter(
                         child: MobiSurfacePanel(
-                          padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-                          borderRadius: 32,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'VEHICLE TYPE',
-                                style: AppTypography.labelSm.copyWith(
-                                  color: cs.onSurfaceVariant,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              VehicleFilterChips(
-                                selectedId: _vehicleId,
-                                onSelected: _switchVehicle,
-                                vehicleTypes: _vehicleTypes,
-                              ),
-                            ],
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.sm,
+                            vertical: AppSpacing.sm,
+                          ),
+                          borderRadius: AppRadii.xxl,
+                          child: VehicleFilterChips(
+                            selectedId: _vehicleId,
+                            onSelected: _switchVehicle,
+                            vehicleTypes: _vehicleTypes,
                           ),
                         ).animate(delay: 100.ms).fade().slideX(begin: 0.1),
                       ),
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: AppSpacing.sectionGap),
+                    ),
 
                     // Driver list
                     SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.screenPadding,
+                      ),
                       sliver: _hasError
                           ? SliverToBoxAdapter(
                               child: MobiErrorState(
-                                title: 'Unable to find drivers',
-                                subtitle:
-                                    'Pull down to refresh or tap to retry.',
+                                title: 'Load failed',
                                 icon: LucideIcons.wifiOff,
                                 onRetry: _loadLocationAndDrivers,
-                                height: 280,
+                                height: 240,
                               ),
                             )
                           : _isLoading
                           ? SliverList.builder(
                               itemCount: 4,
                               itemBuilder: (_, i) => const Padding(
-                                padding: EdgeInsets.only(bottom: 16),
+                                padding: EdgeInsets.only(bottom: AppSpacing.md),
                                 child: LoadingSkeleton.card(height: 128),
                               ),
                             )
@@ -349,32 +246,41 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                           ? SliverList.builder(
                               itemCount: driverTrips.length,
                               itemBuilder: (context, index) {
+                                final driverTrip = driverTrips[index];
                                 final card = DriverCard(
-                                  trip: driverTrips[index],
-                                  onChat: () => widget.onChat(driverTrips[index]),
-                                  onTap: () => widget.onTripDetails(driverTrips[index].id ?? ''),
+                                  trip: driverTrip,
+                                  onChat: () => widget.onChat(driverTrip),
+                                  onTap: driverTrip.id != null
+                                      ? () =>
+                                            widget.onTripDetails(driverTrip.id!)
+                                      : null,
                                 );
 
                                 if (MediaQuery.disableAnimationsOf(context)) {
                                   return Padding(
-                                    padding: const EdgeInsets.only(bottom: 16),
+                                    padding: const EdgeInsets.only(
+                                      bottom: AppSpacing.md,
+                                    ),
                                     child: card,
                                   );
                                 }
 
                                 return Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: card.animate(delay: (150 + index * 50).ms).fade().slideY(begin: 0.1),
+                                  padding: const EdgeInsets.only(
+                                    bottom: AppSpacing.md,
+                                  ),
+                                  child: card
+                                      .animate(delay: (150 + index * 50).ms)
+                                      .fade()
+                                      .slideY(begin: 0.1),
                                 );
                               },
                             )
-                          : SliverToBoxAdapter(
+                          : const SliverToBoxAdapter(
                               child: AiEmptyState(
-                                title: 'No $_vehicleId drivers nearby.',
-                                subtitle:
-                                    'Try a different vehicle type or check back later.',
+                                title: 'No drivers nearby',
                                 icon: LucideIcons.mapPin,
-                                height: 280,
+                                height: 240,
                               ),
                             ),
                     ),

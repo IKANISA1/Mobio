@@ -14,6 +14,14 @@ class MobiFeatureTile extends StatelessWidget {
   final VoidCallback? onTap;
   final Widget? trailing;
 
+  /// Optional badge widget shown between title text and trailing chevron.
+  /// Use for notification counts, status indicators, etc.
+  final Widget? badge;
+
+  /// When `true`, uses smaller padding and icon container for
+  /// settings-density lists.
+  final bool compact;
+
   const MobiFeatureTile({
     super.key,
     required this.icon,
@@ -23,31 +31,55 @@ class MobiFeatureTile extends StatelessWidget {
     this.accentBackground,
     this.onTap,
     this.trailing,
+    this.badge,
+    this.compact = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final resolvedAccent = accent ?? cs.primary;
+    final hasSubtitle = subtitle?.trim().isNotEmpty == true;
+    final isDense = compact || !hasSubtitle;
+    final resolvedTrailing =
+        trailing ??
+        (onTap != null
+            ? Icon(
+                LucideIcons.chevronRight,
+                size: isDense ? 16.0 : 18.0,
+                color: cs.onSurfaceVariant,
+              )
+            : null);
+
+    final iconSize = isDense ? 18.0 : 22.0;
+    final containerSize = isDense ? 40.0 : 48.0;
+    final tilePadding = isDense
+        ? const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.md,
+          )
+        : const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.lg,
+          );
 
     return ClayCard(
       onTap: onTap,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        vertical: AppSpacing.lg,
-      ),
+      padding: tilePadding,
       child: Row(
         children: [
           Container(
-            width: 48,
-            height: 48,
+            width: containerSize,
+            height: containerSize,
             decoration: BoxDecoration(
               color: accentBackground ?? resolvedAccent.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(AppRadii.lg),
+              borderRadius: BorderRadius.circular(
+                isDense ? AppRadii.md : AppRadii.lg,
+              ),
             ),
-            child: Icon(icon, size: 22, color: resolvedAccent),
+            child: Icon(icon, size: iconSize, color: resolvedAccent),
           ),
-          const SizedBox(width: AppSpacing.md),
+          SizedBox(width: isDense ? AppSpacing.sm : AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,9 +88,16 @@ class MobiFeatureTile extends StatelessWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.titleMd.copyWith(color: cs.onSurface),
+                  style:
+                      (compact ? AppTypography.bodySm : AppTypography.titleMd)
+                          .copyWith(
+                            color: cs.onSurface,
+                            fontWeight: compact
+                                ? FontWeight.w600
+                                : FontWeight.w700,
+                          ),
                 ),
-                if (subtitle != null) ...[
+                if (hasSubtitle) ...[
                   const SizedBox(height: 2),
                   Text(
                     subtitle!,
@@ -72,12 +111,11 @@ class MobiFeatureTile extends StatelessWidget {
               ],
             ),
           ),
-          trailing ??
-              Icon(
-                LucideIcons.chevronRight,
-                size: 18,
-                color: cs.onSurfaceVariant,
-              ),
+          if (badge != null) ...[const SizedBox(width: AppSpacing.xs), badge!],
+          if (resolvedTrailing != null) ...[
+            const SizedBox(width: AppSpacing.xs),
+            resolvedTrailing,
+          ],
         ],
       ),
     );

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobi_app/app.dart';
+import 'package:mobi_app/core/auth/admin_session_guard.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/services/firebase_analytics_service.dart';
 import 'package:mobi_app/core/services/push_notification_service.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/core/utils/navigation_utils.dart';
 
+import 'package:mobi_app/features/admin/admin_broadcasts_screen.dart';
+import 'package:mobi_app/features/admin/admin_subscriptions_screen.dart';
+import 'package:mobi_app/features/admin/admin_trips_screen.dart';
 import 'package:mobi_app/features/admin/admin_vehicle_types_screen.dart';
 import 'package:mobi_app/features/biopay/face_enrollment_screen_entry.dart';
 import 'package:mobi_app/features/biopay/face_scan_screen_entry.dart';
@@ -21,6 +25,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 abstract class AppRoutes {
   static const String discover = '/';
   static const String biopay = '/biopay';
+  static const String ledger = '/ledger';
   static const String profile = '/profile';
   static const String nearby = '/nearby';
   static const String bookings = '/bookings';
@@ -33,6 +38,9 @@ abstract class AppRoutes {
   static const String adminUsers = '/admin/users';
   static const String adminProfile = '/admin/profile';
   static const String adminVehicleTypes = '/admin/vehicle-types';
+  static const String adminSubscriptions = '/admin/subscriptions';
+  static const String adminTrips = '/admin/trips';
+  static const String adminBroadcasts = '/admin/broadcasts';
   static const String getQr = '/biopay/qr';
   static const String scanQr = '/biopay/scan';
   static const String faceScan = '/biopay/face-scan';
@@ -41,40 +49,51 @@ abstract class AppRoutes {
   static const String configError = '/config-error';
 }
 
-/// Admin route guard — validates server-side role before allowing admin UI.
+/// Admin route guard — validates role before allowing admin UI.
 ///
-/// Even though admin RPCs enforce `role = 'admin'` at the database level,
-/// this guard prevents UI-only visibility bypass via devtools or memory editing.
+/// Accepts the user as admin if:
+///   1. `app_metadata.role == 'admin'` (set by the OTP-backed admin flow), OR
+///   2. `AdminSessionGuard.isAdmin` (in-memory session continuity fallback).
+///
+/// Server-side RPCs still enforce `role = 'admin'` independently.
 String? _adminRouteGuard(GoRouterState state) {
   final path = state.matchedLocation;
+  final isAdminAuthRoute = path == '/admin-auth';
+  final isProtectedAdminRoute = path == '/admin' || path.startsWith('/admin/');
+  if (!isAdminAuthRoute && !isProtectedAdminRoute) {
+    return null;
+  }
 
-  // Only guard admin-specific routes (except admin-auth which is the login screen)
-  final isAdminRoute =
-      path == '/admin' || path.startsWith('/admin/') || path == '/admin-auth';
-  if (!isAdminRoute || path == '/admin-auth') return null;
-
-  // Check if user has an active session with admin profile
+  // Check if user has an active session
   try {
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) {
-      AppLogger.warning('Admin guard: no authenticated user, redirecting to /');
-      return '/';
+      return isProtectedAdminRoute ? '/admin-auth' : null;
     }
 
-    // Check app_metadata.role (set by the verify-otp edge function)
-    final appMetadata = user.appMetadata;
-    if (appMetadata['role'] != 'admin') {
-      AppLogger.warning(
-        'Admin guard: user ${user.id} lacks admin role in app_metadata',
-      );
-      return '/';
+    final hasAdminRole = user.appMetadata['role'] == 'admin';
+    final hasActiveAdminSession = AdminSessionGuard.isAdmin;
+    if (hasActiveAdminSession) {
+      AdminSessionGuard.touch();
     }
+
+    final hasAdminAccess = hasAdminRole || hasActiveAdminSession;
+    if (isAdminAuthRoute) {
+      return hasAdminAccess ? '/admin' : null;
+    }
+
+    if (hasAdminAccess) {
+      return null;
+    }
+
+    AppLogger.warning(
+      'Admin guard: user ${user.id} lacks admin access, redirecting to /admin-auth',
+    );
+    return '/admin-auth';
   } on Object catch (e) {
     AppLogger.error('Admin guard check failed: $e');
-    return '/';
+    return isProtectedAdminRoute ? '/admin-auth' : null;
   }
-
-  return null; // allow navigation
 }
 
 /// Creates the app-level [GoRouter] instance.
@@ -154,6 +173,11 @@ GoRouter createRouter() {
         builder: (context, state) => const NearbyScreenWrapper(),
       ),
       GoRoute(
+        path: '/ledger',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const LedgerScreenWrapper(),
+      ),
+      GoRoute(
         path: '/bookings',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const BookingsScreenWrapper(),
@@ -200,6 +224,24 @@ GoRouter createRouter() {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
             AdminVehicleTypesScreen(onBack: () => safePop(context)),
+      ),
+      GoRoute(
+        path: '/admin/subscriptions',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            AdminSubscriptionsScreen(onBack: () => safePop(context)),
+      ),
+      GoRoute(
+        path: '/admin/trips',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            AdminTripsScreen(onBack: () => safePop(context)),
+      ),
+      GoRoute(
+        path: '/admin/broadcasts',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            AdminBroadcastsScreen(onBack: () => safePop(context)),
       ),
 
       // ── BioPay sub-screens ──

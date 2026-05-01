@@ -33,6 +33,7 @@ class _AdminVehicleTypesScreenState
   CountryService get _countryService => ref.read(countryServiceProvider);
 
   bool _isLoading = true;
+  String? _error;
   List<VehicleTypeModel> _vehicleTypes = [];
   List<Country> _countries = [];
   String? _busyId;
@@ -45,7 +46,10 @@ class _AdminVehicleTypesScreenState
   }
 
   Future<void> _load() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
       _vehicleService.invalidateCache();
       final results = await Future.wait([
@@ -61,10 +65,10 @@ class _AdminVehicleTypesScreenState
       }
     } on Object catch (error) {
       if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $error')));
+        setState(() {
+          _isLoading = false;
+          _error = error.toString();
+        });
       }
     }
   }
@@ -122,7 +126,7 @@ class _AdminVehicleTypesScreenState
                   children: [
                     AdminSectionHeader(
                       title: vehicleType.label,
-                      subtitle: 'Country availability',
+                      subtitle: 'Countries',
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     Wrap(
@@ -246,7 +250,7 @@ class _AdminVehicleTypesScreenState
           onBack: widget.onBack,
           currentTab: AdminWorkspaceTab.fleet,
           title: 'Fleet',
-          subtitle: 'Vehicle types and country rollout.',
+          subtitle: 'Catalog and rollout.',
           actions: [
             AdminActionChip(
               label: 'Refresh',
@@ -258,15 +262,15 @@ class _AdminVehicleTypesScreenState
             onRefresh: _load,
             child: ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 40),
+              padding: AdminLayoutTokens.overlayPagePadding,
               children: [
                 AdminPanel(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const AdminSectionHeader(
-                        title: 'Filters',
-                        subtitle: 'Keep the fleet surface focused.',
+                        title: 'Scope',
+                        subtitle: 'Status',
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       Wrap(
@@ -295,7 +299,7 @@ class _AdminVehicleTypesScreenState
                 _FleetMetricGrid(
                   children: [
                     AdminMetricCard(
-                      label: 'Vehicle types',
+                      label: 'Types',
                       value: '${_vehicleTypes.length}',
                       hint: 'Full catalog',
                       icon: LucideIcons.car,
@@ -311,14 +315,14 @@ class _AdminVehicleTypesScreenState
                     AdminMetricCard(
                       label: 'Paused',
                       value: '$inactiveCount',
-                      hint: 'Not selectable',
+                      hint: 'Not live',
                       icon: LucideIcons.pause,
                       tone: MobiStatusBadgeTone.warning,
                     ),
                     AdminMetricCard(
                       label: 'Unassigned',
                       value: '$unassignedCount',
-                      hint: 'No country coverage',
+                      hint: 'No rollout',
                       icon: LucideIcons.mapPin,
                       tone: MobiStatusBadgeTone.danger,
                     ),
@@ -333,10 +337,21 @@ class _AdminVehicleTypesScreenState
                       LoadingSkeleton(height: 360, borderRadius: 28),
                     ],
                   )
+                else if (_error != null)
+                  AdminEmptyState(
+                    title: 'Fleet unavailable',
+                    message: _error!,
+                    icon: LucideIcons.alertTriangle,
+                    action: AdminActionChip(
+                      label: 'Retry',
+                      icon: LucideIcons.refreshCw,
+                      onTap: _load,
+                    ),
+                  )
                 else if (filteredTypes.isEmpty)
                   const AdminEmptyState(
                     title: 'No vehicle types',
-                    message: 'Adjust the current filter.',
+                    message: 'Try another filter.',
                     icon: LucideIcons.car,
                   )
                 else
@@ -352,9 +367,7 @@ class _AdminVehicleTypesScreenState
                               if (!isWide) {
                                 return const Align(
                                   alignment: Alignment.centerLeft,
-                                  child: AdminTableLabel(
-                                    label: 'Vehicle types',
-                                  ),
+                                  child: AdminTableLabel(label: 'Fleet'),
                                 );
                               }
 
@@ -530,7 +543,7 @@ class _VehicleTypeRow extends StatelessWidget {
         final status = Align(
           alignment: Alignment.centerLeft,
           child: MobiStatusBadge(
-            label: vehicleType.isActive ? 'ACTIVE' : 'PAUSED',
+            label: vehicleType.isActive ? 'Active' : 'Paused',
             tone: vehicleType.isActive
                 ? MobiStatusBadgeTone.positive
                 : MobiStatusBadgeTone.warning,
@@ -539,7 +552,7 @@ class _VehicleTypeRow extends StatelessWidget {
 
         final countriesWidget = assignedCountries.isEmpty
             ? const MobiStatusBadge(
-                label: 'UNASSIGNED',
+                label: 'Unassigned',
                 tone: MobiStatusBadgeTone.danger,
               )
             : Wrap(

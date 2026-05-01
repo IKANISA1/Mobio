@@ -22,6 +22,12 @@ abstract final class BiopayStrings {
   static const qualityYawTooHigh = 'Face the camera directly';
   static const qualityEyesClosed = 'Please open your eyes';
 
+  // Aliases for controller compatibility
+  static String get qualityTooFar => qualityFaceTooSmall;
+  static String get qualityBadAngle => qualityYawTooHigh;
+  static String get qualityTooDark => qualityLowLight;
+  static String get qualityTooBlurry => 'Hold still, image is blurry';
+
   static const managementCodeTitle = 'Management Code';
   static const managementCodeBody =
       'Save this securely. You\'ll need it to manage your profile on another device.';

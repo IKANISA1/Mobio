@@ -21,8 +21,7 @@ dependencies:
 
   # Local Storage
   shared_preferences: ^2.5.4
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
+
 
   # UI & Design
   google_fonts: ^8.0.2
@@ -46,13 +45,20 @@ dependencies:
   flutter_native_splash: ^2.4.4
 
   # BioPay ML Pipeline
-  camera: ^0.11.1
-  google_mlkit_face_detection: ^0.12.0
+  camera: ^0.12.0+1
+  google_mlkit_face_detection: ^0.13.2
   tflite_flutter: ^0.12.1
 
   # BioPay QR
   qr_flutter: ^4.1.0
-  mobile_scanner: ^6.0.0
+  mobile_scanner: ^7.2.0
+
+  # BioPay Extra
+  flutter_nfc_kit: ^3.6.2
+  ndef: ^0.4.0
+  image: ^4.8.0
+  local_auth: ^3.0.1
+
   firebase_core: ^4.6.0
   firebase_crashlytics: ^5.1.0
   image_gallery_saver_plus: ^4.0.1
@@ -63,7 +69,7 @@ dependencies:
   firebase_messaging: ^16.1.3
   flutter_local_notifications: ^21.0.0
   device_info_plus: ^12.3.0
-  flutter_staggered_animations: ^1.1.1
+
   firebase_analytics: ^12.2.0
   firebase_remote_config: ^6.3.0
   firebase_auth: ^6.3.0
@@ -76,12 +82,13 @@ dev_dependencies:
   freezed: ^3.2.3
   json_serializable: ^6.11.0
   flutter_launcher_icons: ^0.14.4
+  pigeon: ^26.3.2
 flutter:
   generate: true
   uses-material-design: true
 
   assets:
-    - assets/ml/
+    - assets/ml/mobilefacenet.tflite
     - assets/vehicles/
     - assets/google_fonts/
     - icon/

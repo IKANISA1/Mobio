@@ -15,6 +15,7 @@ class WhatsAppInput extends ConsumerStatefulWidget {
   final String countryCode;
   final ValueChanged<String> onCountryCodeChanged;
   final String label;
+  final bool enabled;
 
   const WhatsAppInput({
     super.key,
@@ -23,6 +24,7 @@ class WhatsAppInput extends ConsumerStatefulWidget {
     required this.countryCode,
     required this.onCountryCodeChanged,
     this.label = 'WhatsApp Number',
+    this.enabled = true,
   });
 
   @override
@@ -33,11 +35,30 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
   CountryService get _countryService => ref.read(countryServiceProvider);
 
   List<Country> _countries = Country.fallbackCountries;
+  late final TextEditingController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = TextEditingController(text: widget.value);
     _loadCountries();
+  }
+
+  @override
+  void didUpdateWidget(covariant WhatsAppInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.value != _controller.text) {
+      _controller.value = TextEditingValue(
+        text: widget.value,
+        selection: TextSelection.collapsed(offset: widget.value.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   Future<void> _loadCountries() async {
@@ -80,7 +101,9 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
             children: [
               // Country code button
               GestureDetector(
-                onTap: () => _showCountryPicker(context),
+                onTap: widget.enabled
+                    ? () => _showCountryPicker(context)
+                    : null,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
@@ -110,7 +133,9 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
               // Phone input
               Expanded(
                 child: TextField(
+                  controller: _controller,
                   onChanged: widget.onChanged,
+                  enabled: widget.enabled,
                   keyboardType: TextInputType.phone,
                   style: AppTypography.titleMd.copyWith(
                     fontSize: 20,

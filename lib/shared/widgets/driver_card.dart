@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/ride_request_service.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
@@ -68,9 +69,16 @@ class _DriverCardState extends ConsumerState<DriverCard> {
     } on Object catch (e) {
       if (mounted) {
         setState(() => _isRequesting = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              userMessageForError(
+                e,
+                fallback: 'Failed to send ride request. Please try again.',
+              ),
+            ),
+          ),
+        );
       }
     }
   }

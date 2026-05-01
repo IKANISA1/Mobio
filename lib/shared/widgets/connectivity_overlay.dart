@@ -14,6 +14,7 @@ class ConnectivityOverlay extends StatefulWidget {
 
 class _ConnectivityOverlayState extends State<ConnectivityOverlay>
     with SingleTickerProviderStateMixin {
+  final Connectivity _connectivity = Connectivity();
   late final AnimationController _animController;
   late final Animation<Offset> _slideAnimation;
 
@@ -33,13 +34,16 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay>
         );
 
     _checkInitialConnectivity();
-    _subscription = Connectivity().onConnectivityChanged.listen(
+    _subscription = _connectivity.onConnectivityChanged.listen(
       _handleConnectivityChanged,
     );
   }
 
   Future<void> _checkInitialConnectivity() async {
-    final results = await Connectivity().checkConnectivity();
+    final results = await _connectivity.checkConnectivity();
+    if (!mounted) {
+      return;
+    }
     _handleConnectivityChanged(results);
   }
 

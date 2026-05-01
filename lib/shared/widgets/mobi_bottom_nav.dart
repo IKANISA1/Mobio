@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
+import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
 import 'package:mobi_app/shared/widgets/glass_container.dart';
 
@@ -26,30 +27,34 @@ class MobiBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = isAdmin ? _adminItems : _passengerItems;
     final safeBottom = MediaQuery.paddingOf(context).bottom;
+    final navRow = Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: List.generate(items.length, (index) {
+        final item = items[index];
+        final isActive = currentIndex == index;
+        return Expanded(
+          child: _TappableNavItem(
+            onTap: () => onTap(index),
+            isActive: isActive,
+            icon: item.icon,
+            label: item.label,
+            isAdmin: isAdmin,
+          ),
+        );
+      }),
+    );
 
     return Positioned(
       bottom: 12 + safeBottom,
       left: 20,
       right: 20,
-      child: GlassCard(
-        customBorderRadius: BorderRadius.circular(AppRadii.hero),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: List.generate(items.length, (index) {
-            final item = items[index];
-            final isActive = currentIndex == index;
-            return Expanded(
-              child: _TappableNavItem(
-                onTap: () => onTap(index),
-                isActive: isActive,
-                icon: item.icon,
-                label: item.label,
-              ),
-            );
-          }),
-        ),
-      ),
+      child: isAdmin
+          ? _AdminNavContainer(child: navRow)
+          : GlassCard(
+              customBorderRadius: BorderRadius.circular(AppRadii.hero),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              child: navRow,
+            ),
     );
   }
 
@@ -62,10 +67,42 @@ class MobiBottomNav extends StatelessWidget {
 
   // Admin nav: Dashboard, Users, Profile
   static const _adminItems = [
-    _NavItem(LucideIcons.layoutDashboard, 'Overview'),
+    _NavItem(LucideIcons.layoutDashboard, 'Ops'),
     _NavItem(LucideIcons.users, 'Users'),
     _NavItem(LucideIcons.user, 'Account'),
   ];
+}
+
+class _AdminNavContainer extends StatelessWidget {
+  final Widget child;
+
+  const _AdminNavContainer({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: ext.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(AppRadii.hero),
+        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.75)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.035),
+            blurRadius: 28,
+            spreadRadius: -22,
+            offset: const Offset(0, 18),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        child: child,
+      ),
+    );
+  }
 }
 
 class _NavItem {
@@ -80,12 +117,14 @@ class _TappableNavItem extends StatefulWidget {
   final bool isActive;
   final IconData icon;
   final String label;
+  final bool isAdmin;
 
   const _TappableNavItem({
     required this.onTap,
     required this.isActive,
     required this.icon,
     required this.label,
+    this.isAdmin = false,
   });
 
   @override
@@ -120,7 +159,7 @@ class _TappableNavItemState extends State<_TappableNavItem> {
             ),
             decoration: BoxDecoration(
               color: widget.isActive
-                  ? cs.primary.withValues(alpha: 0.14)
+                  ? cs.primary.withValues(alpha: widget.isAdmin ? 0.1 : 0.14)
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(AppRadii.pill),
             ),
@@ -146,8 +185,7 @@ class _TappableNavItemState extends State<_TappableNavItem> {
                               overflow: TextOverflow.ellipsis,
                               softWrap: false,
                               textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
+                              style: AppTypography.labelSm.copyWith(
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: -0.2,
                                 color: cs.primary,

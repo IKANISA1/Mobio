@@ -8,9 +8,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 /// - Smooth light gradient overlay
 /// - Subtle breathing animation
 class MobiSplashScreen extends StatefulWidget {
-  final VoidCallback? onComplete;
-
-  const MobiSplashScreen({super.key, this.onComplete});
+  const MobiSplashScreen({super.key});
 
   @override
   State<MobiSplashScreen> createState() => _MobiSplashScreenState();

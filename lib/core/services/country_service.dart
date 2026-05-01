@@ -7,10 +7,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Caches the result in memory after first fetch. Falls back to
 /// hardcoded list if Supabase is unreachable.
 class CountryService {
-  // Singleton
-  static final CountryService _instance = CountryService._();
-  factory CountryService() => _instance;
-  CountryService._();
+  final SupabaseClient _supabase;
+
+  CountryService({SupabaseClient? supabase})
+    : _supabase = supabase ?? Supabase.instance.client;
 
   List<Country>? _cached;
 
@@ -19,7 +19,7 @@ class CountryService {
     if (_cached != null) return _cached!;
 
     try {
-      final response = await Supabase.instance.client
+      final response = await _supabase
           .from('countries')
           .select()
           .eq('is_active', true)

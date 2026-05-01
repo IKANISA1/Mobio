@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/ride_request_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
@@ -15,6 +16,9 @@ import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_confirm_dialog.dart';
+import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
+import 'package:mobi_app/shared/widgets/mobi_info_chip.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
@@ -101,7 +105,10 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       if (mounted) {
         setState(() {
           _isLoading = false;
-          _error = e.toString();
+          _error = userMessageForError(
+            e,
+            fallback: 'Unable to load trips right now.',
+          );
         });
       }
     }
@@ -219,17 +226,6 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: AppSpacing.sm),
-                            Text(
-                              _activeToggle == 0
-                                  ? 'Your scheduled trips'
-                                  : 'Nearby trip feed',
-                              style: AppTypography.bodySm.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                            ),
                             const SizedBox(height: AppSpacing.lg),
                             MobiToggle(
                               labels: const ['Mine', 'Nearby'],
@@ -334,13 +330,12 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   Widget _buildErrorState() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
-      child: AiEmptyState(
-        title: 'Load failed',
-        subtitle: 'Pull to retry.',
+      child: MobiErrorState(
+        title: 'Unable to load trips',
+        subtitle: _error,
         icon: LucideIcons.alertTriangle,
+        onRetry: _loadTrips,
         height: 220,
-        onAction: _loadTrips,
-        actionLabel: 'Retry',
       ),
     );
   }
@@ -350,9 +345,10 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
       child: AiEmptyState(
         title: _activeToggle == 0 ? 'No trips yet' : 'No nearby trips',
-        subtitle: _activeToggle == 0 ? 'Tap + to add one.' : 'Pull to refresh.',
         icon: _activeToggle == 0 ? LucideIcons.calendar : LucideIcons.mapPin,
         height: 260,
+        onAction: _activeToggle == 0 ? widget.onSchedule : _loadTrips,
+        actionLabel: _activeToggle == 0 ? 'Schedule' : 'Refresh',
       ),
     );
   }
@@ -425,8 +421,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
 
   Widget _buildTripCard(Trip trip) {
     final isNearby = _activeToggle == 1;
-    final route =
-        '${trip.origin.toUpperCase()} → ${trip.destination.toUpperCase()}';
+    final route = '${trip.origin} → ${trip.destination}';
     final timeDisplay = trip.departureTime.isNotEmpty
         ? trip.departureTime
         : trip.time;
@@ -434,6 +429,10 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
     final nearbyLabel = trip.authorId.length >= 6
         ? trip.authorId.substring(0, 6).toUpperCase()
         : AppConstants.getDriverId(trip.authorId);
+
+    String capitalize(String? s) => (s == null || s.isEmpty)
+        ? 'Active'
+        : '${s[0].toUpperCase()}${s.substring(1).toLowerCase()}';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -471,15 +470,6 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                               fontWeight: FontWeight.w800,
                             ),
                           ),
-                          const SizedBox(height: AppSpacing.xs),
-                          Text(
-                            timeDisplay,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTypography.headlineLg.copyWith(
-                              letterSpacing: -0.4,
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -498,15 +488,14 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                   spacing: AppSpacing.xs,
                   runSpacing: AppSpacing.xs,
                   children: [
+                    MobiInfoChip(label: timeDisplay, icon: LucideIcons.clock),
                     MobiStatusBadge(
                       label: vType.displayName,
                       icon: getVehicleIcon(vType),
                       tone: MobiStatusBadgeTone.info,
                     ),
                     MobiStatusBadge(
-                      label: trip.status == 'active'
-                          ? 'Active'
-                          : (trip.status?.toUpperCase() ?? 'ACTIVE'),
+                      label: capitalize(trip.status),
                       tone: trip.status == 'active'
                           ? MobiStatusBadgeTone.positive
                           : MobiStatusBadgeTone.danger,
@@ -605,33 +594,12 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   }
 
   Future<void> _cancelTrip(Trip trip) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await MobiConfirmDialog.show(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(
-          context,
-        ).extension<MobiThemeExtension>()!.surfaceContainerHigh,
-        title: Text('Cancel Trip', style: AppTypography.titleLg),
-        content: Text(
-          'Are you sure you want to cancel this trip?',
-          style: AppTypography.bodyMd,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('NO'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              'YES',
-              style: AppTypography.titleMd.copyWith(
-                color: Theme.of(context).colorScheme.error,
-              ),
-            ),
-          ),
-        ],
-      ),
+      title: 'Cancel trip?',
+      body: 'This cannot be undone.',
+      confirmLabel: 'Cancel trip',
+      isDestructive: true,
     );
 
     if (confirmed == true && trip.id != null) {
@@ -648,9 +616,16 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         }
       } on Object catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Failed to cancel trip: $e')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                userMessageForError(
+                  e,
+                  fallback: 'Failed to cancel trip. Please try again.',
+                ),
+              ),
+            ),
+          );
         }
       }
     }
@@ -701,13 +676,14 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
 
   Future<void> _handleRequestOffer(Trip trip) async {
     final isDriver = trip.role == 'driver';
+    final tripId = trip.id;
 
     try {
       if (isDriver) {
         // Current user is passenger, requesting a ride from this driver
         await _rideRequestService.sendRequest(
           responderId: trip.authorId,
-          tripId: trip.id,
+          tripId: tripId,
           metadata: {
             'vehicle_type': trip.vehicleTypeStr,
             'route': '${trip.origin} → ${trip.destination}',
@@ -716,9 +692,12 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         );
       } else {
         // Current user is driver, offering a ride to this passenger
+        if (tripId == null) {
+          throw Exception('Cannot offer a ride to a trip without an ID.');
+        }
         await _rideRequestService.sendOffer(
           responderId: trip.authorId,
-          tripId: trip.id!,
+          tripId: tripId,
           metadata: {
             'route': '${trip.origin} → ${trip.destination}',
             'source': 'nearby_trips',
@@ -726,8 +705,8 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         );
       }
 
-      if (mounted) {
-        setState(() => _requestedTripIds.add(trip.id!));
+      if (mounted && tripId != null) {
+        setState(() => _requestedTripIds.add(tripId));
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(isDriver ? 'Ride request sent!' : 'Ride offer sent!'),
@@ -737,9 +716,16 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       }
     } on Object catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              userMessageForError(
+                e,
+                fallback: 'Unable to send the ride request right now.',
+              ),
+            ),
+          ),
+        );
       }
     }
   }

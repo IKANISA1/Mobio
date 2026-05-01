@@ -63,6 +63,19 @@ class FirebaseRemoteConfigService {
 
   String get supportWhatsappNumber => _getString('support_whatsapp_number');
 
+  bool get ledgerEnabled => _getBool('feature_ledger_enabled', fallback: false);
+
+  bool get biopayEnabled => _getBool('feature_biopay_enabled', fallback: false);
+
+  bool get qrEnabled => _getBool('feature_qr_enabled', fallback: false);
+
+  bool get nfcEnabled => _getBool('feature_nfc_enabled', fallback: false);
+
+  bool get ussdEnabled => _getBool('feature_ussd_enabled', fallback: false);
+
+  bool get facePayEnabled =>
+      _getBool('feature_face_pay_enabled', fallback: false);
+
   bool _getBool(String key, {required bool fallback}) {
     final remoteConfig = _remoteConfig;
     if (remoteConfig == null) {
@@ -92,5 +105,11 @@ class FirebaseRemoteConfigService {
     'landing_download_android_url': '',
     'landing_download_ios_url': '',
     'support_whatsapp_number': '+250000000000',
+    'feature_ledger_enabled': false,
+    'feature_biopay_enabled': false,
+    'feature_qr_enabled': false,
+    'feature_nfc_enabled': false,
+    'feature_ussd_enabled': false,
+    'feature_face_pay_enabled': false,
   };
 }

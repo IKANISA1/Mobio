@@ -7,6 +7,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
+import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -17,12 +18,14 @@ import 'package:mobi_app/shared/widgets/mobi_feature_tile.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Profile screen matching transito ProfileScreen.
 class ProfileScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final ValueChanged<bool> onDarkModeChanged;
   final VoidCallback onEditProfile;
+  final VoidCallback onViewLedger;
 
   final VoidCallback onAdminGateway;
   final VoidCallback? onFaceRegister;
@@ -33,6 +36,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
     required this.isDarkMode,
     required this.onDarkModeChanged,
     required this.onEditProfile,
+    required this.onViewLedger,
 
     required this.onAdminGateway,
     this.onFaceRegister,
@@ -45,6 +49,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _isLoading = true;
+  String? _error;
   ProfileService get _profileService => ref.read(profileServiceProvider);
 
   String _userCode = '482013';
@@ -70,7 +75,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (profile != null && mounted) {
         final year = await _profileService.getMemberSinceYear();
         setState(() {
-          final memberId = profile['member_id'] as String?;
+          final memberId = profile.memberId;
           if (memberId != null && memberId.isNotEmpty) {
             _userCode = memberId
                 .replaceAll(RegExp(r'[^0-9]'), '')
@@ -78,7 +83,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 .substring(0, 6);
           } else {
             // Derive a stable 6-digit numeric code from the UUID
-            final rawId = profile['id'] as String;
+            final rawId = profile.id;
             final hash = rawId.hashCode.abs();
             _userCode = (hash % 1000000).toString().padLeft(6, '0');
           }
@@ -87,6 +92,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       }
     } on Object catch (e, st) {
       log('Error loading profile: $e', stackTrace: st);
+      if (mounted) setState(() => _error = 'Unable to load profile.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -120,6 +126,47 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
               ),
             ],
+          ),
+        ),
+      );
+    }
+
+    if (_error != null) {
+      return SoftGradient(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.screenPadding),
+            child: ClayCard(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(LucideIcons.alertTriangle, size: 36, color: cs.error),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    _error!,
+                    textAlign: TextAlign.center,
+                    style: AppTypography.bodyMd.copyWith(
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _error = null;
+                        _isLoading = true;
+                      });
+                      _loadProfile();
+                    },
+                    child: Text(
+                      'Retry',
+                      style: AppTypography.labelLg.copyWith(color: cs.primary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       );
@@ -208,9 +255,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       onTap: widget.onFaceRegister,
                       icon: LucideIcons.scanFace,
                       title: 'Face ID',
-                      subtitle: 'Pay faster with facial match',
                       accent: cs.primary,
                       accentBackground: cs.primaryContainer,
+                      badge: const MobiStatusBadge(
+                        label: 'BioPay',
+                        tone: MobiStatusBadgeTone.brand,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+
+                    MobiFeatureTile(
+                      onTap: widget.onViewLedger,
+                      icon: LucideIcons.receipt,
+                      title: 'Ledger',
+                      accent: AppColors.bioPayGreen,
+                      accentBackground: AppColors.bioPayGreen.withValues(alpha: 0.12),
+                      badge: const MobiStatusBadge(
+                        label: 'Transactions',
+                        tone: MobiStatusBadgeTone.positive,
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
 
@@ -234,9 +297,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ? LucideIcons.sun
                             : LucideIcons.moon,
                         title: 'Theme',
-                        subtitle: widget.isDarkMode
-                            ? 'Dark mode'
-                            : 'Light mode',
                         trailing: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           width: 48,
@@ -265,15 +325,47 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                       ),
                     ),
+                    if (SupabaseConfig.hasPrivacyPolicyUrl) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      MobiFeatureTile(
+                        onTap: () async {
+                          final uri = Uri.tryParse(
+                            SupabaseConfig.privacyPolicyUrl,
+                          );
+                          if (uri != null) {
+                            final messenger = ScaffoldMessenger.of(context);
+                            try {
+                              await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            } on Object catch (_) {
+                              if (mounted) {
+                                messenger.showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Could not open privacy policy.',
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                          }
+                        },
+                        icon: LucideIcons.shield,
+                        title: 'Privacy Policy',
+                        compact: true,
+                      ),
+                    ],
                     if (widget.onExitAdmin != null) ...[
                       const SizedBox(height: AppSpacing.sm),
                       MobiFeatureTile(
                         onTap: widget.onExitAdmin!,
                         icon: LucideIcons.logOut,
                         title: 'Exit Admin',
-                        subtitle: 'Return to rider mode',
                         accent: cs.error,
                         accentBackground: cs.error.withValues(alpha: 0.12),
+                        compact: true,
                       ),
                     ],
                     const SizedBox(height: 64),
@@ -322,7 +414,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       onTap: onTap,
       icon: icon,
       title: label,
-      subtitle: 'Update details',
+      compact: true,
     );
   }
 }

@@ -1,159 +1,94 @@
 # Mobio UI System
 
-> Version: 2.0
-> Last updated: 2026-04-11
+> Version: 2.2
+> Last updated: 2026-04-17
 > Source of truth: `lib/core/theme/`, `lib/shared/widgets/`
 
 ## 1. Product framing
 
-Mobio is an existing production mobility app. The UI system must work additively on top of the current flows, service contracts, routing, and business logic.
+Mobio is an existing production mobility app. The system must refine the current product, not replace it.
 
 Non-negotiable constraints:
 
-- Keep the 3-tab shell and current route structure.
-- Preserve the core feature groupings: Home, BioPay, Profile, Nearby, Bookings, Schedule, Trip Details, Chat, Admin.
-- Simplify the interface without inventing new product concepts.
-- Prefer reusable widgets, chips, cards, segmented controls, badges, and bottom-sheet patterns over explanatory copy.
+- keep the 3-tab shell and current route structure
+- preserve the current core flows: Home, BioPay, Profile, Nearby, Bookings, Schedule, Trip Details, Chat, Admin
+- work additively on top of current business logic and data contracts
+- make screens lighter and faster without inventing new product concepts
 
-## 2. Design objective
+## 2. Core design principles
 
-The Mobio UI should feel:
+- fewer words
+- fewer competing actions
+- more meaning through widgets
+- stronger hierarchy through spacing and grouping
+- one reusable pattern for each repeated job
+- sentence case by default
+- calm surfaces over decorative depth
 
-- clean
-- calm
-- premium
-- fast
-- mobile-native
-- component-driven
-- visually light
+Practical rule:
 
-The system should remove noise, shorten labels, and make every screen immediately scannable.
+- if a badge, chip, icon, or tile can communicate the state, remove the sentence
 
 ## 3. Audit summary
 
-### 3.1 Current friction
+The main UI problems were:
 
-The previous system leaned too heavily on:
+- explanatory subtitles on obvious actions
+- mixed surface styles within the same screen
+- headers that described scope instead of simply showing it
+- empty/error states that relied on helper copy instead of direct actions
+- route and status information expressed as raw text instead of chips and badges
 
-- large hero text blocks
-- repeated headings and subtitles
-- glass/clay depth on too many surfaces
-- uppercase metadata competing with primary content
-- duplicate containers doing the same job
-- long empty/error helper copy
+## 4. Design tokens
 
-### 3.2 Screen-level correction
+### 4.1 Token files
 
-| Screen | Main clutter | Replace with |
-| --- | --- | --- |
-| `HomeScreen` | Multiline hero text, repeated section chrome, verbose quick actions | summary card, metric tiles, icon-led action tiles, compact section headers |
-| `BioPayScreen` | Repeated descriptive subtitles and heavy header block | one compact product header + 3 action tiles |
-| `BookingsScreen` | Oversized page title, all-caps action labels, dense trip cards | compact header, date pills, structured trip card, status badges |
-| `ProfileScreen` | Generic settings list, duplicated profile text | member card, badges, feature tiles |
-| Shared empty/error states | Too much vertical space and copy | concise title + optional one-line support text + single action |
+- colors: `lib/core/theme/app_colors.dart`
+- typography: `lib/core/theme/app_typography.dart`
+- spacing: `lib/core/theme/app_spacing.dart`
+- radii: `lib/core/theme/app_radii.dart`
+- shadows: `lib/core/theme/app_shadows.dart`
+- theme wiring: `lib/core/theme/app_theme.dart`
 
-### 3.3 Systemic rules from the audit
-
-- One primary surface style per screen section.
-- One primary action per card.
-- One compact caption line is enough in most places.
-- Use icons to support recognition, not decoration.
-- Use uppercase sparingly. Default to sentence case.
-
-## 4. Design principles
-
-### 4.1 Fewer words
-
-- Titles should usually be 1-2 words.
-- Helper text should be optional, not mandatory.
-- Empty states should say what happened and what to do next in one short line.
-
-### 4.2 Widget-first structure
-
-Prefer:
-
-- summary cards
-- metric tiles
-- feature/action tiles
-- status badges
-- segmented controls
-- floating nav
-- compact list cards
-
-Avoid:
-
-- free-floating explanatory paragraphs
-- stacked headings saying the same thing
-- decorative containers with no semantic role
-
-### 4.3 Strong hierarchy
-
-Every screen should clearly separate:
-
-- primary content
-- primary action
-- secondary metadata
-- tertiary support detail
-
-### 4.4 Surface restraint
-
-- Use soft elevation only when it helps orientation.
-- Border and spacing should do more work than shadow.
-- Keep gradients subtle and localized.
-
-### 4.5 Reuse over novelty
-
-If a pattern appears more than once, it should be a shared widget.
-
-## 5. Design tokens
-
-### 5.1 Token files
-
-- Colors: `lib/core/theme/app_colors.dart`
-- Typography: `lib/core/theme/app_typography.dart`
-- Shadows: `lib/core/theme/app_shadows.dart`
-- Radii: `lib/core/theme/app_radii.dart`
-- Spacing: `lib/core/theme/app_spacing.dart`
-- Theme wiring: `lib/core/theme/app_theme.dart`
-
-### 5.2 Color direction
+### 4.2 Color direction
 
 Brand:
 
-- Primary stays Mobio green.
-- Secondary and tertiary stay muted and semantic.
+- primary remains Mobio green
+- secondary and tertiary stay muted and functional
 
 Neutrals:
 
-- Dark mode uses graphite/charcoal surfaces.
-- Light mode uses warm light-gray neutrals rather than flat white everywhere.
+- dark mode uses graphite and charcoal surfaces
+- light mode uses soft warm neutrals instead of flat white everywhere
 
 Semantic usage:
 
-- `primary`: primary CTA, selection, live state
-- `primaryContainer`: brand-tinted surfaces and secure actions
-- `secondaryContainer`: filters, transport badges, supporting chips
-- `tertiaryContainer`: secondary info accents
-- `errorContainer`: destructive status and warnings
-- `surfaceContainer*`: all layout and widget surfaces
+- `primary`: selection, CTA, live state
+- `primaryContainer`: secure and brand-tinted surfaces
+- `secondaryContainer`: supporting info and neutral transport metadata
+- `tertiaryContainer`: secondary highlight surfaces
+- `errorContainer`: destructive or warning states
+- `surfaceContainer*`: general layout surfaces and cards
 
-### 5.3 Typography
+### 4.3 Typography rules
 
-Font families:
+Families:
 
-- Headline/display: Manrope
-- Body/labels: Inter
+- Manrope for headlines
+- Inter for body and labels
 
 Rules:
 
-- Small controlled scale only.
-- Use `displayLg` and `heroNumber` sparingly.
-- Most cards should rely on `titleLg`, `titleMd`, `bodySm`, and `labelMd`.
-- Sentence case by default.
+- keep the scale tight
+- reserve `display*` and `heroNumber` for rare moments
+- default to `titleLg`, `titleMd`, `bodySm`, `labelMd`
+- keep titles short
+- avoid paragraph-style support text unless it directly prevents user failure
 
-### 5.4 Spacing
+### 4.4 Spacing rules
 
-Base grid: 4px
+Grid: 4px
 
 Core tokens:
 
@@ -162,7 +97,13 @@ Core tokens:
 - `cardGap = 20`
 - `compactGap = 12`
 
-### 5.5 Radii
+Spacing usage:
+
+- use padding and grouping to create hierarchy before adding labels
+- keep repeated list items visually rhythmic
+- separate sections with space, not decorative dividers
+
+### 4.5 Radii rules
 
 Core tokens:
 
@@ -174,212 +115,221 @@ Core tokens:
 - `hero = 32`
 - `pill = 999`
 
-### 5.6 Elevation
+Usage:
 
-Use:
+- `hero` for major cards and headers
+- `xl` and `xxl` for standard cards
+- `pill` for badges, chips, toggles, and compact actions
 
-- subtle surface shadow for cards
-- subtle floating shadow for nav and primary buttons
+### 4.6 Elevation rules
 
-Do not use:
+- use subtle elevation only when it helps orientation
+- prefer borders and surface contrast over strong shadows
+- keep floating chrome distinct from content chrome
 
-- strong layered shadows on every card
-- hard glow effects
+## 5. Component library
 
-### 5.7 Motion
-
-Interaction motion should stay short and quiet:
-
-- press scale: very small
-- opacity feedback: subtle
-- section entrance: fade/slide only where already present
-
-## 6. Component library
-
-### 6.1 Base surfaces
+### 5.1 Base surfaces
 
 `ClayCard`
 
-- now functions as the default minimal surface card
+- default content surface
 - restrained elevation
-- medium/large radius
 - subtle press feedback
 
 `MobiSurfacePanel`
 
-- used for screen headers and grouped foreground chrome
-- one clean readable surface on top of the background
+- readable header and grouping surface
+- use when content must sit clearly above the background layer
 
 `GlassCard`
 
-- only for persistent floating chrome like bottom navigation
-- not for general content cards
+- floating chrome only
+- bottom navigation and persistent overlay treatment
 
-### 6.2 Reusable shared widgets
+### 5.2 Reusable components
+
+`MobiPageHeader`
+
+- pushed-screen header
+- compact title, optional subtitle, optional trailing action
+
+`MobiActionRow`
+
+- 2-4 icon-led quick actions
+- use when actions should feel lighter than full tiles
 
 `MobiFeatureTile`
 
-- icon-led horizontal list/action tile
-- used for settings, BioPay actions, quick navigation rows
+- icon-led navigation or settings row
+- use optional subtitle only when it changes user success
 
 `MobiMetricTile`
 
-- compact stat block
-- used inside summary areas
+- compact stat tile for counts and summary metrics
 
 `MobiStatusBadge`
 
-- short metadata chip
-- supports `neutral`, `brand`, `positive`, `info`, `warning`, `danger`
+- strong semantic badge
+- use for state, identity, and mode
+
+`MobiInfoChip`
+
+- lighter inline metadata chip
+- use for time, date, compact route metadata, and filters
+
+`MobiStateBanner`
+
+- inline status, permission, or availability banner
+- replaces bespoke notice cards
 
 `MobiToggle`
 
-- segmented control for binary or short multi-state switching
-- sentence-case labels
+- segmented control for short state switching
 
 `MobiButton`
 
-- primary, ghost, danger, success, WhatsApp variants
-- stadium shape
-- light border, minimal elevation
-
-`MobiBottomNav`
-
-- short labels
-- active item shows icon + label
-- inactive items show icon only
+- primary, ghost, danger, success, WhatsApp
+- minimal fill, subtle shadow, restrained typography
 
 `AiEmptyState` and `MobiErrorState`
 
 - concise title
-- optional one-line explanation
-- optional single action
+- optional one-line support text
+- direct action when one exists
 
-### 6.3 Standard mobile patterns
+### 5.3 Reusable widget patterns
 
-Use these patterns consistently:
+Prefer these patterns:
 
-- action tile list for navigational tasks
-- badge row for metadata
-- summary card for totals and state
-- sticky floating action for creation
-- bottom sheet for secondary actions and confirmations
+- summary card + metric tiles
+- compact quick-action strip
+- badge row under primary content
+- terse settings list
+- sticky primary action
+- bottom sheet for secondary actions
+- inline state banner for permission/availability issues
 
-## 7. Icon rules
+Avoid:
+
+- free-floating helper paragraphs
+- stacked titles plus subtitles that repeat each other
+- one-off banners and dialogs when a shared pattern already exists
+
+## 6. Icon usage rules
 
 Mobio uses Lucide icons.
 
 Rules:
 
-- Every icon must have a semantic job.
-- Default icon sizes:
-  - 16 for small metadata
-  - 18-20 for compact actions
-  - 24 for primary tile icons
-- Keep icon containers simple and aligned to the spacing grid.
-- Prefer one icon over repeated explanatory labels when the meaning is obvious.
-- Avoid mixing icon families.
+- every icon must communicate action, category, or state
+- no decorative icons without a semantic job
+- standard sizes:
+  - `12-14` for micro metadata
+  - `16-20` for compact controls and chips
+  - `22-24` for primary action tiles
+- keep icon containers aligned to the spacing grid
+- never mix icon families inside the same system
 
-## 8. Screen guidance
+## 7. Screen-level redesign guidance
 
-### 8.1 Home
+### 7.1 Home
 
-- Keep one compact header panel.
-- Use one summary card instead of a multiline hero statement.
-- Surface counts through metric tiles, not giant stacked text.
-- Use short quick actions.
-- Use compact section headers with optional trailing action only.
+- one compact header panel
+- one summary card for live state
+- one quick-action strip
+- compact sections with count-led captions
+- empty states should expose direct actions when possible
 
-### 8.2 BioPay
+### 7.2 BioPay
 
-- Keep one clear identity header.
-- Show only the 3 primary actions.
-- Use product-region metadata as badges.
-- Move any long explanation to a secondary layer or support flow.
+- one identity header with brand and region badges
+- only the 3 primary actions visible
+- no repeated brand subtitles inside every action tile
+- use state banners for availability constraints
 
-### 8.3 Bookings
+### 7.3 Bookings
 
-- Header should state scope, not shout.
-- Use date pills for grouping.
-- Trip cards should show route, time, badges, and one clear action row.
-- Avoid all-caps buttons where sentence case works.
+- header should show scope, not explain it
+- use date pills and metadata chips
+- route should be primary, time/status should be structured metadata
+- use shared confirm patterns for destructive actions
 
-### 8.4 Profile
+### 7.4 Profile
 
-- Member identity first.
-- Use badges for status and tenure.
-- Settings should be a clean list of feature tiles.
-- Theme switch should stay inline and obvious.
+- member identity first
+- use badges for trust and tenure
+- settings should read as a terse list, not a paragraph list
+- inline controls should replace explanatory subtitles
 
-### 8.5 Forms and detail screens
+### 7.5 Nearby
 
-- One primary title, one supporting line at most.
-- Inputs should rely on shape and spacing, not extra wrapper cards unless necessary.
-- Secondary guidance belongs in bottom sheets or inline validation only when needed.
+- location and permission issues belong in a reusable banner
+- filters stay compact and horizontal
+- browsing content should stay list-first
 
-## 9. Navigation guidance
+### 7.6 Chat
+
+- header context should be a route or short mode label only
+- conversation chrome stays minimal so the thread remains primary
+
+### 7.7 Admin
+
+- keep the same information architecture
+- reduce headline intensity to match the core app
+- use the same chip and spacing language as passenger screens
+
+## 8. Navigation simplification guidance
 
 Keep the current navigation architecture.
 
-Guidelines:
+Rules:
 
-- 3 top-level tabs only.
-- Use short tab labels.
-- Secondary routes push over the root shell.
-- Avoid adding new top-level navigation destinations unless product logic changes.
-- Prefer contextual entry points from cards and tiles over extra menu layers.
+- 3 top-level tabs only
+- use short labels and icon-led scanning
+- push secondary flows over the shell
+- prefer contextual entry points from cards, tiles, and FABs
+- do not add new top-level destinations unless the product model changes
 
-## 10. Incremental rollout plan
+## 9. Incremental implementation guidance
 
-### Phase 1
+Roll out in this order:
 
-- tokens
-- shared surfaces
-- buttons
-- segmented controls
-- nav
-- empty/error states
+1. tokens and shared surfaces
+2. shared action, tile, badge, empty, and banner components
+3. top-traffic passenger screens
+4. forms and detail screens
+5. admin workspace alignment
+6. snackbars, dialogs, and remaining edge states
 
-### Phase 2
+When touching an existing screen:
 
-- Home
-- BioPay
-- Profile
-- Bookings
+1. remove repeated headings and subtitles first
+2. collapse repeated metadata into chips or badges
+3. replace one-off notice UI with shared banners or empty states
+4. normalize padding, radii, and icon sizing
+5. only then consider deeper layout changes
 
-### Phase 3
-
-- Nearby
-- Schedule Trip
-- Trip Details
-- Edit Profile
-- Chat
-
-### Phase 4
-
-- admin screens
-- edge-case dialogs
-- system overlays
-
-## 11. Implementation checklist
+## 10. Implementation checklist
 
 Every new or refactored screen should pass this checklist:
 
-- Is the title shorter?
-- Did raw text get replaced by tiles, chips, badges, or stat blocks where appropriate?
-- Is there only one primary action visible at a time?
-- Are card radii and padding using tokens?
-- Are icons Lucide and semantically meaningful?
-- Is helper text reduced to the minimum necessary?
-- Is the same component reused instead of restyled locally?
+- is the title shorter and clearer?
+- did raw text become tiles, chips, badges, or stat blocks where appropriate?
+- is there a single primary action?
+- are surfaces consistent inside the section?
+- are icons Lucide and semantically meaningful?
+- is helper text only present when it materially improves success?
+- is the pattern shared instead of restyled locally?
 
-## 12. Current reference components
+## 11. Reference screens
 
-The current minimalist system is implemented first in:
+The current benchmark screens for the minimalist system are:
 
 - `lib/features/home/home_screen.dart`
 - `lib/features/biopay/biopay_screen.dart`
-- `lib/features/profile/profile_screen.dart`
 - `lib/features/bookings/bookings_screen.dart`
-
-These screens are the benchmark for future rollouts.
+- `lib/features/profile/profile_screen.dart`
+- `lib/features/nearby/nearby_screen.dart`
+- `lib/features/chat/chat_screen.dart`
+- `lib/features/admin/widgets/admin_ui.dart`

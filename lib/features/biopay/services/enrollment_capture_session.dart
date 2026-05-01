@@ -28,6 +28,10 @@ class EnrollmentCaptureSession {
     _qualityScores.add(qualityScore.clamp(0.0, 1.0));
   }
 
+  List<double> getAveragedEmbeddings() {
+    return buildAggregate().embedding;
+  }
+
   EnrollmentCaptureAggregate buildAggregate() {
     if (!isComplete) {
       throw StateError(

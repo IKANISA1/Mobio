@@ -67,6 +67,8 @@ class VehicleTypeModel {
         return LucideIcons.layoutGrid;
       case 'shield':
         return LucideIcons.shield;
+      case 'package':
+        return LucideIcons.package;
       default:
         return LucideIcons.car;
     }
@@ -74,7 +76,7 @@ class VehicleTypeModel {
 
   /// Hardcoded fallback list for offline use.
   static const List<VehicleTypeModel> fallbackTypes = [
-    VehicleTypeModel(id: 'moto', label: 'Moto', iconName: 'zap', sortOrder: 1),
+    VehicleTypeModel(id: 'moto', label: 'Moto Taxi', iconName: 'zap', sortOrder: 1),
     VehicleTypeModel(id: 'cab', label: 'Cab', iconName: 'car', sortOrder: 2),
     VehicleTypeModel(
       id: 'trike',
@@ -90,8 +92,8 @@ class VehicleTypeModel {
     ),
     VehicleTypeModel(
       id: 'private',
-      label: 'Private',
-      iconName: 'shield',
+      label: 'Others',
+      iconName: 'package',
       sortOrder: 5,
     ),
   ];

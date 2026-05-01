@@ -62,7 +62,7 @@ class _ScanQrScreenState extends ConsumerState<ScanQrScreen> {
       final profile = await _profileService.getMyProfile();
       if (mounted) {
         setState(() {
-          _myCountryCode = profile?['country_code'] as String?;
+          _myCountryCode = profile?.countryCode;
         });
       }
     } on Object catch (_) {

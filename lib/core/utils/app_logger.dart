@@ -5,6 +5,12 @@ import 'package:logger/logger.dart';
 ///
 /// Uses [Logger] in debug mode for pretty-printed logs,
 /// and minimal output in release mode.
+///
+/// Usage:
+/// ```dart
+/// AppLogger.info('Profile loaded', context: 'ProfileService');
+/// AppLogger.error('RPC failed', error, stackTrace);
+/// ```
 class AppLogger {
   AppLogger._();
 
@@ -19,13 +25,24 @@ class AppLogger {
     level: kDebugMode ? Level.debug : Level.warning,
   );
 
-  static void debug(String message) => _logger.d(message);
-  static void info(String message) => _logger.i(message);
+  /// Formats the message with an optional context prefix.
+  static String _fmt(String message, String? context) =>
+      context != null ? '[$context] $message' : message;
+
+  static void debug(String message, {String? context}) =>
+      _logger.d(_fmt(message, context));
+
+  static void info(String message, {String? context}) =>
+      _logger.i(_fmt(message, context));
+
   static void warning(
     String message, {
+    String? context,
     Object? error,
     StackTrace? stackTrace,
-  }) => _logger.w(message, error: error, stackTrace: stackTrace);
+  }) =>
+      _logger.w(_fmt(message, context), error: error, stackTrace: stackTrace);
+
   static void error(String message, [Object? error, StackTrace? stackTrace]) =>
       _logger.e(message, error: error, stackTrace: stackTrace);
 }

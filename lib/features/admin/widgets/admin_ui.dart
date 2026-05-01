@@ -6,8 +6,37 @@ import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
+import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 
-enum AdminWorkspaceTab { overview, users, fleet, account }
+enum AdminWorkspaceTab {
+  overview,
+  users,
+  fleet,
+  subscriptions,
+  trips,
+  broadcasts,
+  account,
+}
+
+class AdminLayoutTokens {
+  const AdminLayoutTokens._();
+
+  static const double maxContentWidth = 1360;
+  static const double headerRadius = 30;
+  static const double panelRadius = 24;
+  static const EdgeInsets pagePadding = EdgeInsets.fromLTRB(
+    AppSpacing.xl,
+    8,
+    AppSpacing.xl,
+    160,
+  );
+  static const EdgeInsets overlayPagePadding = EdgeInsets.fromLTRB(
+    AppSpacing.xl,
+    8,
+    AppSpacing.xl,
+    40,
+  );
+}
 
 class AdminWorkspaceFrame extends StatelessWidget {
   final String title;
@@ -31,78 +60,119 @@ class AdminWorkspaceFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final horizontalPadding = constraints.maxWidth >= 900 ? 32.0 : 24.0;
+    return SoftGradient(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final horizontalPadding = constraints.maxWidth >= 1100 ? 32.0 : 20.0;
+          final stackActions = constraints.maxWidth < 820;
 
-        return Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                horizontalPadding,
-                24,
-                horizontalPadding,
-                12,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (onBack != null) ...[
-                        _AdminIconButton(
-                          icon: LucideIcons.chevronLeft,
-                          onPressed: onBack,
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                      ],
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const MobiStatusBadge(
-                              label: 'ADMIN',
-                              icon: LucideIcons.shieldCheck,
-                              tone: MobiStatusBadgeTone.brand,
-                            ),
-                            const SizedBox(height: AppSpacing.md),
-                            Text(
-                              title,
-                              style: AppTypography.displayMd.copyWith(
-                                color: cs.onSurface,
+          return Column(
+            children: [
+              Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: AdminLayoutTokens.maxContentWidth,
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      horizontalPadding,
+                      20,
+                      horizontalPadding,
+                      12,
+                    ),
+                    child: AdminPanel(
+                      radius: AdminLayoutTokens.headerRadius,
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (onBack != null) ...[
+                                AdminIconButton(
+                                  icon: LucideIcons.chevronLeft,
+                                  onPressed: onBack,
+                                ),
+                                const SizedBox(width: AppSpacing.md),
+                              ],
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const MobiStatusBadge(
+                                      label: 'Admin',
+                                      icon: LucideIcons.shieldCheck,
+                                      tone: MobiStatusBadgeTone.brand,
+                                    ),
+                                    const SizedBox(height: AppSpacing.md),
+                                    Text(
+                                      title,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTypography.headlineLg.copyWith(
+                                        color: cs.onSurface,
+                                      ),
+                                    ),
+                                    if (subtitle.trim().isNotEmpty) ...[
+                                      const SizedBox(height: AppSpacing.xs),
+                                      Text(
+                                        subtitle,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: AppTypography.bodySm.copyWith(
+                                          color: cs.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: AppSpacing.xs),
-                            Text(
-                              subtitle,
-                              style: AppTypography.bodyMd.copyWith(
-                                color: cs.onSurfaceVariant,
-                              ),
+                              if (!stackActions && actions.isNotEmpty) ...[
+                                const SizedBox(width: AppSpacing.md),
+                                Flexible(
+                                  child: Wrap(
+                                    spacing: AppSpacing.sm,
+                                    runSpacing: AppSpacing.sm,
+                                    alignment: WrapAlignment.end,
+                                    children: actions,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          if (stackActions && actions.isNotEmpty) ...[
+                            const SizedBox(height: AppSpacing.lg),
+                            Wrap(
+                              spacing: AppSpacing.sm,
+                              runSpacing: AppSpacing.sm,
+                              children: actions,
                             ),
                           ],
-                        ),
+                          const SizedBox(height: AppSpacing.lg),
+                          _AdminWorkspaceTabs(currentTab: currentTab),
+                        ],
                       ),
-                      if (actions.isNotEmpty) ...[
-                        const SizedBox(width: AppSpacing.md),
-                        Wrap(
-                          spacing: AppSpacing.sm,
-                          runSpacing: AppSpacing.sm,
-                          alignment: WrapAlignment.end,
-                          children: actions,
-                        ),
-                      ],
-                    ],
+                    ),
                   ),
-                  const SizedBox(height: AppSpacing.lg),
-                  _AdminWorkspaceTabs(currentTab: currentTab),
-                ],
+                ),
               ),
-            ),
-            Expanded(child: child),
-          ],
-        );
-      },
+              Expanded(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxWidth: AdminLayoutTokens.maxContentWidth,
+                    ),
+                    child: child,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
@@ -131,10 +201,10 @@ class AdminPanel extends StatelessWidget {
         border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.72)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 24,
-            spreadRadius: -18,
-            offset: const Offset(0, 16),
+            color: Colors.black.withValues(alpha: 0.035),
+            blurRadius: 28,
+            spreadRadius: -22,
+            offset: const Offset(0, 18),
           ),
         ],
       ),
@@ -168,12 +238,14 @@ class AdminSectionHeader extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: AppTypography.headlineSm.copyWith(color: cs.onSurface),
+                style: AppTypography.titleLg.copyWith(color: cs.onSurface),
               ),
               if (subtitle != null) ...[
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   subtitle!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.bodySm.copyWith(
                     color: cs.onSurfaceVariant,
                   ),
@@ -210,7 +282,6 @@ class AdminMetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final accent = _toneColor(context, tone);
 
     return AdminPanel(
@@ -225,30 +296,30 @@ class AdminMetricCard extends StatelessWidget {
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.labelLg.copyWith(
+                  style: AppTypography.labelMd.copyWith(
                     color: cs.onSurfaceVariant,
                   ),
                 ),
               ),
               Container(
-                width: 36,
-                height: 36,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: accent.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(icon, size: 18, color: accent),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: AppSpacing.md),
           Text(
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: AppTypography.heroNumber.copyWith(
+            style: AppTypography.headlineLg.copyWith(
               color: cs.onSurface,
-              fontSize: 34,
+              fontSize: 28,
             ),
           ),
           if (hint != null) ...[
@@ -257,9 +328,7 @@ class AdminMetricCard extends StatelessWidget {
               hint!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: AppTypography.bodySm.copyWith(
-                color: ext.surfaceContainerHighest,
-              ),
+              style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
             ),
           ],
         ],
@@ -354,7 +423,7 @@ class AdminFilterChip extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
-          vertical: AppSpacing.sm,
+          vertical: 10,
         ),
         decoration: BoxDecoration(
           color: isSelected
@@ -380,7 +449,7 @@ class AdminFilterChip extends StatelessWidget {
             ],
             Text(
               label,
-              style: AppTypography.labelLg.copyWith(
+              style: AppTypography.labelMd.copyWith(
                 color: isSelected ? cs.primary : cs.onSurfaceVariant,
               ),
             ),
@@ -421,7 +490,7 @@ class AdminActionChip extends StatelessWidget {
         child: Ink(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
+            vertical: 10,
           ),
           decoration: BoxDecoration(
             color: tone == MobiStatusBadgeTone.neutral
@@ -449,7 +518,7 @@ class AdminActionChip extends StatelessWidget {
               else if (icon != null)
                 Icon(icon, size: 14, color: accent),
               if (isBusy || icon != null) const SizedBox(width: AppSpacing.xs),
-              Text(label, style: AppTypography.labelLg.copyWith(color: accent)),
+              Text(label, style: AppTypography.labelMd.copyWith(color: accent)),
             ],
           ),
         ),
@@ -480,11 +549,11 @@ class AdminEmptyState extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            width: 48,
-            height: 48,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               color: cs.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(icon, color: cs.primary),
           ),
@@ -492,7 +561,7 @@ class AdminEmptyState extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.center,
-            style: AppTypography.titleLg.copyWith(color: cs.onSurface),
+            style: AppTypography.titleMd.copyWith(color: cs.onSurface),
           ),
           const SizedBox(height: AppSpacing.xs),
           Text(
@@ -524,11 +593,11 @@ class AdminFieldPair extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          label.toUpperCase(),
-          style: AppTypography.labelSm.copyWith(color: cs.onSurfaceVariant),
+          label,
+          style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
         ),
         const SizedBox(height: AppSpacing.xs),
-        Text(value, style: AppTypography.bodyMd.copyWith(color: cs.onSurface)),
+        Text(value, style: AppTypography.bodySm.copyWith(color: cs.onSurface)),
       ],
     );
   }
@@ -542,9 +611,10 @@ class AdminTableLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      label.toUpperCase(),
-      style: AppTypography.labelSm.copyWith(
+      label,
+      style: AppTypography.labelMd.copyWith(
         color: Theme.of(context).colorScheme.onSurfaceVariant,
+        fontWeight: FontWeight.w600,
       ),
     );
   }
@@ -558,7 +628,7 @@ class _AdminWorkspaceTabs extends StatelessWidget {
   static const _tabs =
       <AdminWorkspaceTab, ({String label, IconData icon, String route})>{
         AdminWorkspaceTab.overview: (
-          label: 'Overview',
+          label: 'Ops',
           icon: LucideIcons.layoutDashboard,
           route: '/admin',
         ),
@@ -571,6 +641,21 @@ class _AdminWorkspaceTabs extends StatelessWidget {
           label: 'Fleet',
           icon: LucideIcons.car,
           route: '/admin/vehicle-types',
+        ),
+        AdminWorkspaceTab.subscriptions: (
+          label: 'Plans',
+          icon: LucideIcons.creditCard,
+          route: '/admin/subscriptions',
+        ),
+        AdminWorkspaceTab.trips: (
+          label: 'Trips',
+          icon: LucideIcons.mapPin,
+          route: '/admin/trips',
+        ),
+        AdminWorkspaceTab.broadcasts: (
+          label: 'Broadcasts',
+          icon: LucideIcons.radio,
+          route: '/admin/broadcasts',
         ),
         AdminWorkspaceTab.account: (
           label: 'Account',
@@ -601,11 +686,11 @@ class _AdminWorkspaceTabs extends StatelessWidget {
   }
 }
 
-class _AdminIconButton extends StatelessWidget {
+class AdminIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onPressed;
 
-  const _AdminIconButton({required this.icon, this.onPressed});
+  const AdminIconButton({super.key, required this.icon, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -622,7 +707,7 @@ class _AdminIconButton extends StatelessWidget {
           height: 44,
           decoration: BoxDecoration(
             color: ext.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(14),
             border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.6)),
           ),
           child: Icon(icon, size: 18, color: cs.onSurface),

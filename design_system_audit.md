@@ -1,157 +1,149 @@
 # Mobio Minimalist UI Audit
 
-> Audit date: 2026-04-11
+> Audit date: 2026-04-17
 > Reference system: `design.md`
 
 ## Executive summary
 
-The production app already had a reusable UI layer, but the previous visual language was too heavy for a minimalist product direction. The biggest issues were not missing components. They were over-expressive surfaces, oversized text blocks, repeated labels, and too many places where copy was doing the work that structure should do.
+Mobio already had a reusable UI foundation, but the production app still carried too much instructional copy, too many mixed card treatments, and several screens where hierarchy was being explained with words instead of built with structure.
 
-This audit shifts the app toward:
+The current redesign pass focuses on one rule:
 
-- shorter labels
+- less text
+- more widgets
+- shorter decisions
+- cleaner hierarchy
 - calmer surfaces
-- stronger hierarchy
-- more status chips and icon-led tiles
-- fewer decorative containers
 
-## High-priority text reduction opportunities
+## Current high-value findings
 
 ### Home
 
-Problems:
+Findings:
 
-- giant multiline hero text
-- repeated section titles and helper copy
-- quick actions explained with too many words
+- quick actions were still using full tiles with explanatory subtitles
+- section captions repeated what the layout already implied
+- empty states were still spending text on guidance that could be an action
 
-Replace with:
+Applied:
 
-- summary card with count + metric tiles
-- compact section headers
-- short quick action tiles
+- quick actions converted to icon-led compact action tiles
+- section captions shortened to state/count language
+- scheduled empty state now exposes a direct `Schedule` action instead of helper copy
 
 ### BioPay
 
-Problems:
+Findings:
 
-- verbose action subtitles
-- oversized branded header doing too little
-- region availability explained too heavily
+- action tiles were repeating the same brand context in every subtitle
+- unavailable-state messaging was a one-off card instead of a reusable pattern
 
-Replace with:
+Applied:
 
-- one compact identity header
-- short action tiles
-- badges for brand and region
+- action titles shortened to `Show QR`, `Scan QR`, `Face pay`
+- brand and country remain in badges in the header
+- unavailable state moved to reusable `MobiStateBanner`
 
 ### Bookings
 
-Problems:
+Findings:
 
-- oversized page headline
-- all-caps labels in too many places
-- dense trip cards with duplicated hierarchy
+- the header still used a descriptive subtitle below the title
+- empty/error states relied on “pull to retry” style helper copy
+- trip cards used text-heavy route/time hierarchy instead of chip-led metadata
+- cancellation was still using a local ad-hoc dialog
 
-Replace with:
+Applied:
 
-- compact header panel
-- date pills
-- structured trip cards
-- concise sentence-case actions
+- removed redundant header subtitle
+- empty states now use direct actions: `Schedule` or `Refresh`
+- time moved into an inline chip alongside status badges
+- trip route casing normalized for a calmer premium look
+- cancel flow now uses shared `MobiConfirmDialog`
 
 ### Profile
 
-Problems:
+Findings:
 
-- profile info as plain text instead of a recognizable member block
-- settings rows without enough semantic distinction
+- settings rows still needed subtitles to explain obvious actions
+- Face ID was still described with helper copy instead of state
 
-Replace with:
+Applied:
 
-- member summary card
-- status badges
-- reusable feature tiles
+- settings tiles switched to terse single-line rows
+- Face ID now uses a `BioPay` badge instead of a descriptive subtitle
 
-## Cross-screen issues
+### Nearby
 
-### 1. Too many surface styles
+Findings:
 
-The app mixed glass, clay, gradient blocks, and raw containers too freely. The redesign standardizes around:
+- location permission prompt was implemented as bespoke UI
+- retry copy remained verbose for a repeated pattern
 
-- `ClayCard` for content
-- `MobiSurfacePanel` for header/group chrome
-- `GlassCard` only for floating chrome
+Applied:
 
-### 2. Too much uppercase
+- location prompt moved to reusable `MobiStateBanner`
+- error state now relies on the retry control instead of helper text
 
-Uppercase is now reserved for exceptional metadata only. Primary actions and labels should use sentence case unless a regulated or system constraint requires otherwise.
+### Chat
 
-### 3. Icons were present but under-leveraged
+Findings:
 
-Icons existed, but many screens still relied on explanatory text. The redesign uses icon-led:
+- the header subtitle was still sentence-driven
 
-- action tiles
-- status badges
-- metric tiles
-- bottom navigation
+Applied:
 
-### 4. Repeated helper copy
+- subtitle reduced to route or short inbox context only
 
-Common phrases such as “pull down to refresh,” “tap nearby,” and repeated route descriptions were contributing noise. Most support text now compresses to one line or disappears entirely when the widget itself provides enough context.
+### Admin workspace
 
-## Implemented remediation
+Findings:
 
-### Updated token layer
+- admin chrome was still too loud compared with the passenger app
 
-- `app_colors.dart`
-- `app_typography.dart`
-- `app_shadows.dart`
-- `app_radii.dart`
-- `app_spacing.dart`
-- `app_theme.dart`
+Applied:
 
-### Updated shared widget layer
+- title scale reduced
+- subtitle tone softened
+- `ADMIN` badge normalized to `Admin`
 
-- `ClayCard`
-- `GlassCard`
-- `MobiSurfacePanel`
-- `MobiButton`
-- `MobiToggle`
-- `MobiBottomNav`
-- `AiEmptyState`
-- `MobiErrorState`
-- `VehicleFilterChips`
-- `DriverCard`
-- new `MobiFeatureTile`
-- new `MobiMetricTile`
-- new `MobiStatusBadge`
-- new `MobiSectionHeader`
+## Reusable system decisions
 
-### Updated feature screens
+### Shared surfaces
 
-- `HomeScreen`
-- `BioPayScreen`
-- `ProfileScreen`
-- `BookingsScreen`
+- `ClayCard` is the default content surface
+- `MobiSurfacePanel` is the readable header/group surface
+- `GlassCard` is reserved for floating chrome only
+
+### Shared widget patterns
+
+- `MobiActionRow` for quick, low-friction task entry
+- `MobiFeatureTile` for navigational or settings rows
+- `MobiMetricTile` for summary counts
+- `MobiStatusBadge` and `MobiInfoChip` for metadata
+- `MobiStateBanner` for inline state and permission messaging
+- `AiEmptyState` and `MobiErrorState` for terminal states
+
+### Text reduction rules
+
+- if the icon, chip, or badge already communicates the state, remove the subtitle
+- if the empty state can expose a direct action, remove helper copy
+- if a card already has route + status, avoid a second descriptive sentence
 
 ## Remaining rollout targets
 
-The next screens to normalize against the system are:
+The main passenger flows now follow the updated system more consistently. Remaining cleanup should happen incrementally in:
 
-- `NearbyScreen`
-- `ScheduleTripScreen`
-- `TripDetailsScreen`
-- `EditProfileScreen`
-- `ChatScreen`
-- admin screens that still carry legacy density
+- form helper/error copy in `ScheduleTripScreen` and `EditProfileScreen`
+- verbose admin secondary descriptions where the section title already implies context
+- snackbars and ephemeral feedback strings that still read like developer messages
 
 ## Acceptance criteria for future UI work
 
 Before shipping a UI change, confirm:
 
-- The screen uses tokenized spacing and radii.
-- Repeated metadata is in badges or compact tiles.
-- There is no large text block that could be broken into widgets.
-- There is one visually dominant action.
-- The screen does not introduce a new card style unless it becomes shared.
+- the screen uses tokenized spacing, radii, and typography
+- repeated metadata is expressed as chips, badges, or tiles
+- helper copy has been removed unless it changes user success
+- only one surface language is dominant within a section
+- any new pattern is shared, named, and reusable

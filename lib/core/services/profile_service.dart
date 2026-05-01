@@ -1,6 +1,6 @@
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
-
+import 'package:mobi_app/models/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Service for profile CRUD operations via Supabase.
@@ -24,7 +24,7 @@ class ProfileService {
   // ---------------------------------------------------------------------------
 
   /// Fetches the current user's profile row.
-  Future<Map<String, dynamic>?> getMyProfile() async {
+  Future<Profile?> getMyProfile() async {
     final userId = _currentUserId;
     if (userId == null) return null;
 
@@ -34,7 +34,7 @@ class ProfileService {
           .select()
           .eq('id', userId)
           .maybeSingle();
-      return row;
+      return row == null ? null : Profile.fromJson(row);
     } on Object catch (e) {
       AppLogger.error('Error fetching profile: $e');
       return null;
@@ -42,14 +42,14 @@ class ProfileService {
   }
 
   /// Fetches a specific user's profile by ID.
-  Future<Map<String, dynamic>?> getProfileById(String userId) async {
+  Future<Profile?> getProfileById(String userId) async {
     try {
       final row = await _supabase
           .from('profiles')
           .select()
           .eq('id', userId)
           .maybeSingle();
-      return row;
+      return row == null ? null : Profile.fromJson(row);
     } on Object catch (e) {
       AppLogger.error('Error fetching profile $userId: $e');
       return null;
@@ -246,7 +246,7 @@ class ProfileService {
     final profile = await getMyProfile();
     if (profile == null) return null;
 
-    final createdAt = profile['created_at'] as String?;
+    final createdAt = profile.createdAt;
     if (createdAt == null) return null;
 
     final date = DateTime.tryParse(createdAt);
@@ -256,7 +256,7 @@ class ProfileService {
   /// Returns the user's server-generated numeric member_id.
   Future<String?> getMemberId() async {
     final profile = await getMyProfile();
-    return profile?['member_id'] as String?;
+    return profile?.memberId;
   }
 
   // ---------------------------------------------------------------------------

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/features/biopay/services/face_detection_service.dart';
+import 'package:mobi_app/features/biopay/models/biopay_models.dart';
 import 'package:mobi_app/features/biopay/widgets/oval_painter.dart';
 
 class FaceEnrollmentCapture extends StatelessWidget {

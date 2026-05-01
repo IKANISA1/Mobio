@@ -1,6 +1,7 @@
-import 'package:mobi_app/core/utils/app_logger.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
+import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_app/models/ride_request.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
 /// Service for ride request / offer operations.
 ///
@@ -15,11 +16,20 @@ class RideRequestService {
   /// Debounce: prevents rapid double-tap submissions.
   static const _createCooldown = Duration(seconds: 3);
   static DateTime? _lastCreateTime;
+  static const _requestTimeout = Duration(seconds: 15);
 
   RideRequestService({SupabaseClient? supabase})
     : _supabase = supabase ?? Supabase.instance.client;
 
   String? get _currentUserId => _supabase.auth.currentUser?.id;
+
+  String _requireUserId(String message) {
+    final userId = _currentUserId;
+    if (userId == null || userId.isEmpty) {
+      throw AuthException(message: message);
+    }
+    return userId;
+  }
 
   // ---------------------------------------------------------------------------
   // Create
@@ -70,21 +80,23 @@ class RideRequestService {
     String? message,
     Map<String, dynamic>? metadata,
   }) async {
-    final userId = _currentUserId;
-    if (userId == null) {
-      throw Exception('Must be authenticated to send a ride request.');
-    }
+    final userId = _requireUserId('Please sign in to manage ride requests.');
 
     if (userId == responderId) {
-      throw Exception('Cannot send a request to yourself.');
+      throw const ValidationException(
+        message: 'Cannot send a ride request to yourself.',
+      );
     }
 
     // Debounce
     final now = DateTime.now();
     if (_lastCreateTime != null &&
         now.difference(_lastCreateTime!) < _createCooldown) {
-      throw Exception('Please wait a moment before sending another request.');
+      throw const ValidationException(
+        message: 'Please wait a moment before sending another request.',
+      );
     }
+    final previousCreateTime = _lastCreateTime;
     _lastCreateTime = now;
 
     try {
@@ -99,21 +111,37 @@ class RideRequestService {
             'metadata': metadata ?? {},
           })
           .select()
-          .single();
+          .single()
+          .timeout(_requestTimeout);
 
       return RideRequest.fromJson(row);
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (error, stackTrace) {
+      _lastCreateTime = previousCreateTime;
       // Unique constraint violation = already has a pending request
-      if (e.code == '23505') {
-        throw Exception(
-          'You already have a pending ${type == 'offer' ? 'offer' : 'request'} for this person.',
+      if (error.code == '23505') {
+        throw ValidationException(
+          message:
+              'You already have a pending ${type == 'offer' ? 'offer' : 'request'} for this person.',
+          debugMessage: '${error.code}: ${error.message}',
+          originalError: error,
+          stackTrace: stackTrace,
         );
       }
-      AppLogger.error('Error creating ride request: $e');
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error creating ride request',
+      );
+    } on AppException {
+      _lastCreateTime = previousCreateTime;
       rethrow;
-    } on Object catch (e) {
-      AppLogger.error('Error creating ride request: $e');
-      rethrow;
+    } on Object catch (error, stackTrace) {
+      _lastCreateTime = previousCreateTime;
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error creating ride request',
+      );
     }
   }
 
@@ -137,24 +165,29 @@ class RideRequestService {
   }
 
   Future<void> _updateStatus(String requestId, String status) async {
-    final userId = _currentUserId;
-    if (userId == null) {
-      throw Exception('Must be authenticated.');
-    }
+    _requireUserId('Please sign in to manage ride requests.');
 
     try {
       final rows = await _supabase
           .from('ride_requests')
           .update({'status': status})
           .eq('id', requestId)
-          .select('id');
+          .select('id')
+          .timeout(_requestTimeout);
 
       if ((rows as List).isEmpty) {
-        throw Exception('Request not found or you cannot perform this action.');
+        throw const ForbiddenException(
+          message: 'Request not found or you cannot perform this action.',
+        );
       }
-    } on Object catch (e) {
-      AppLogger.error('Error updating ride request status to $status: $e');
+    } on AppException {
       rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error updating ride request status to $status',
+      );
     }
   }
 
@@ -176,8 +209,12 @@ class RideRequestService {
           .order('created_at', ascending: false);
 
       return rows.map<RideRequest>(RideRequest.fromJson).toList();
-    } on Object catch (e) {
-      AppLogger.error('Error fetching incoming ride requests: $e');
+    } on Object catch (error, stackTrace) {
+      AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error fetching incoming ride requests',
+      );
       return [];
     }
   }
@@ -196,8 +233,12 @@ class RideRequestService {
           .order('created_at', ascending: false);
 
       return rows.map<RideRequest>(RideRequest.fromJson).toList();
-    } on Object catch (e) {
-      AppLogger.error('Error fetching outgoing ride requests: $e');
+    } on Object catch (error, stackTrace) {
+      AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error fetching outgoing ride requests',
+      );
       return [];
     }
   }
@@ -225,8 +266,12 @@ class RideRequestService {
 
       final rows = await query.limit(1);
       return (rows as List).isNotEmpty;
-    } on Object catch (e) {
-      AppLogger.error('Error checking pending request: $e');
+    } on Object catch (error, stackTrace) {
+      AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error checking pending ride request',
+      );
       return false;
     }
   }
@@ -242,8 +287,12 @@ class RideRequestService {
 
       if (row == null) return null;
       return RideRequest.fromJson(row);
-    } on Object catch (e) {
-      AppLogger.error('Error fetching ride request $requestId: $e');
+    } on Object catch (error, stackTrace) {
+      AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error fetching ride request $requestId',
+      );
       return null;
     }
   }
@@ -260,7 +309,7 @@ class RideRequestService {
         .eq('id', requestId)
         .map((rows) {
           if (rows.isEmpty) {
-            throw Exception('Ride request not found');
+            throw const NotFoundException(message: 'Ride request not found.');
           }
           return RideRequest.fromJson(rows.first);
         });

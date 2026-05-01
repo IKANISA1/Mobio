@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobi_app/core/constants/app_enums.dart';
 import 'package:mobi_app/core/theme/theme_provider.dart';
 import 'package:mobi_app/models/trip.dart';
 
@@ -18,25 +19,25 @@ final themeProviderProvider = Provider<ThemeProvider>(
 // App State
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// Notifier for transport mode: 'passenger' or 'driver'.
-class ModeNotifier extends Notifier<String> {
+/// Notifier for transport mode: passenger or driver.
+class ModeNotifier extends Notifier<AppMode> {
   @override
-  String build() => 'passenger';
+  AppMode build() => AppMode.passenger;
 
-  void set(String mode) => state = mode;
+  void set(AppMode mode) => state = mode;
 }
 
-final modeProvider = NotifierProvider<ModeNotifier, String>(ModeNotifier.new);
+final modeProvider = NotifierProvider<ModeNotifier, AppMode>(ModeNotifier.new);
 
-/// Notifier for user role: 'passenger' or 'admin'.
-class RoleNotifier extends Notifier<String> {
+/// Notifier for user role: passenger or admin.
+class RoleNotifier extends Notifier<AppRole> {
   @override
-  String build() => 'passenger';
+  AppRole build() => AppRole.passenger;
 
-  void set(String role) => state = role;
+  void set(AppRole role) => state = role;
 }
 
-final roleProvider = NotifierProvider<RoleNotifier, String>(RoleNotifier.new);
+final roleProvider = NotifierProvider<RoleNotifier, AppRole>(RoleNotifier.new);
 
 /// Notifier for active trip (WhatsApp modal).
 class ActiveTripNotifier extends Notifier<Trip?> {

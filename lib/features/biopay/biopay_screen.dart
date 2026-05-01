@@ -14,6 +14,7 @@ import 'package:mobi_app/models/country.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_feature_tile.dart';
+import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 
@@ -36,6 +37,7 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
   CountryService get _countryService => ref.read(countryServiceProvider);
 
   bool _isLoading = true;
+  String? _error;
   Country? _activeCountry;
 
   @override
@@ -47,7 +49,7 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
   Future<void> _loadContext() async {
     try {
       final profile = await _profileService.getMyProfile();
-      final code = profile?['country_code'] as String?;
+      final code = profile?.countryCode;
       if (code != null) {
         _activeCountry = await _countryService.findByDialingCode(code);
       } else {
@@ -56,6 +58,7 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
       }
     } on Object catch (e, st) {
       log('Error loading biopay context: $e', stackTrace: st);
+      if (mounted) setState(() => _error = 'Unable to load BioPay context.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -84,6 +87,48 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
                 ),
               ),
             ],
+          ),
+        ),
+      );
+    }
+
+    if (_error != null) {
+      final cs = Theme.of(context).colorScheme;
+      return SoftGradient(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.screenPadding),
+            child: ClayCard(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(LucideIcons.alertTriangle, size: 36, color: cs.error),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    _error!,
+                    textAlign: TextAlign.center,
+                    style: AppTypography.bodyMd.copyWith(
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _error = null;
+                        _isLoading = true;
+                      });
+                      _loadContext();
+                    },
+                    child: Text(
+                      'Retry',
+                      style: AppTypography.labelLg.copyWith(color: cs.primary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       );
@@ -134,7 +179,7 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
                         Text(
                           'BioPay',
                           style: AppTypography.titleLg.copyWith(
-                            color: AppColors.primary,
+                            color: cs.primary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -163,34 +208,18 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
             const SizedBox(height: AppSpacing.xl),
 
             if (!hasMoMo) ...[
-              ClayCard(
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                child: Column(
-                  children: [
-                    Icon(
-                      LucideIcons.globe,
-                      size: 28,
-                      color: cs.onSurfaceVariant,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    Text('Not available', style: AppTypography.titleMd),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      'USSD is not available in ${_activeCountry?.name ?? 'this region'}.',
-                      style: AppTypography.bodySm.copyWith(
-                        color: cs.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+              MobiStateBanner(
+                icon: LucideIcons.globe,
+                title: 'Not available',
+                subtitle:
+                    'USSD is not supported in ${_activeCountry?.name ?? 'this region'}.',
+                tone: MobiStateBannerTone.warning,
               ),
             ] else ...[
               MobiFeatureTile(
                 icon: LucideIcons.qrCode,
-                title: 'Get QR',
-                subtitle: '$brand code',
-                accent: AppColors.primary,
+                title: 'Show QR',
+                accent: cs.primary,
                 accentBackground: cs.primaryContainer,
                 onTap: widget.onGetQR,
               ),
@@ -199,7 +228,6 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
               MobiFeatureTile(
                 icon: LucideIcons.scanLine,
                 title: 'Scan QR',
-                subtitle: 'Pay with $brand',
                 accent: AppColors.secondaryFixed,
                 accentBackground: cs.secondaryContainer,
                 onTap: widget.onScanQR,
@@ -208,8 +236,7 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
 
               MobiFeatureTile(
                 icon: LucideIcons.scanFace,
-                title: 'Scan Face',
-                subtitle: 'Face pay with $brand',
+                title: 'Face pay',
                 accent: AppColors.tertiaryFixed,
                 accentBackground: cs.tertiaryContainer,
                 onTap: widget.onFaceScan,

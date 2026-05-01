@@ -1,20 +1,22 @@
-import 'package:mobi_app/core/utils/app_logger.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
+import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_app/features/chat/models/chat_conversation.dart';
 import 'package:mobi_app/features/chat/models/chat_message.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
 class ChatService {
   ChatService({SupabaseClient? supabase})
     : _supabase = supabase ?? Supabase.instance.client;
 
   final SupabaseClient _supabase;
+  static const _queryTimeout = Duration(seconds: 15);
 
   String? get currentUserId => _supabase.auth.currentUser?.id;
 
   String _requireUserId() {
     final userId = currentUserId;
     if (userId == null || userId.isEmpty) {
-      throw Exception('User must be authenticated to access chat.');
+      throw const AuthException(message: 'Please sign in to use chat.');
     }
     return userId;
   }
@@ -26,19 +28,28 @@ class ChatService {
     _requireUserId();
 
     try {
-      final response = await _supabase.rpc(
-        'rpc_get_or_create_chat_conversation',
-        params: {'p_peer_id': peerId, 'p_trip_id': tripId},
-      );
+      final response = await _supabase
+          .rpc(
+            'rpc_get_or_create_chat_conversation',
+            params: {'p_peer_id': peerId, 'p_trip_id': tripId},
+          )
+          .timeout(_queryTimeout);
 
       if (response is! Map<String, dynamic>) {
-        throw Exception('Unexpected conversation response.');
+        throw const ServerException(
+          message: 'Unable to open chat right now. Please try again.',
+        );
       }
 
       return ChatConversation.fromJson(response);
-    } on Object catch (error) {
-      AppLogger.error('Error getting chat conversation: $error');
+    } on AppException {
       rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error getting chat conversation',
+      );
     }
   }
 
@@ -48,16 +59,22 @@ class ChatService {
           .from('chat_conversations')
           .select()
           .eq('id', conversationId)
-          .maybeSingle();
+          .maybeSingle()
+          .timeout(_queryTimeout);
 
       if (row == null) {
         return null;
       }
 
       return ChatConversation.fromJson(row);
-    } on Object catch (error) {
-      AppLogger.error('Error loading conversation $conversationId: $error');
-      return null;
+    } on AppException {
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error loading conversation $conversationId',
+      );
     }
   }
 
@@ -69,15 +86,21 @@ class ChatService {
           .from('chat_conversations')
           .select()
           .eq('trip_id', tripId)
-          .order('last_message_at', ascending: false);
+          .order('last_message_at', ascending: false)
+          .timeout(_queryTimeout);
 
       return (rows as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           .map(ChatConversation.fromJson)
           .toList();
-    } on Object catch (error) {
-      AppLogger.error('Error listing trip conversations: $error');
-      return [];
+    } on AppException {
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error listing trip conversations',
+      );
     }
   }
 
@@ -91,7 +114,8 @@ class ChatService {
           .select()
           .eq('conversation_id', conversationId)
           .order('created_at', ascending: false)
-          .limit(limit);
+          .limit(limit)
+          .timeout(_queryTimeout);
 
       return (rows as List<dynamic>)
           .whereType<Map<String, dynamic>>()
@@ -99,9 +123,14 @@ class ChatService {
           .toList()
           .reversed
           .toList();
-    } on Object catch (error) {
-      AppLogger.error('Error loading recent chat messages: $error');
-      return [];
+    } on AppException {
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error loading recent chat messages',
+      );
     }
   }
 
@@ -136,18 +165,29 @@ class ChatService {
         now.difference(_lastSendTime!) < _sendCooldown) {
       return; // silently skip — UI handles "sending" state
     }
+    final previousSendTime = _lastSendTime;
     _lastSendTime = now;
 
     try {
-      await _supabase.from('chat_messages').insert({
-        'conversation_id': conversationId,
-        'sender_id': userId,
-        'message_type': 'text',
-        'body': trimmed,
-      });
-    } on Object catch (error) {
-      AppLogger.error('Error sending chat message: $error');
+      await _supabase
+          .from('chat_messages')
+          .insert({
+            'conversation_id': conversationId,
+            'sender_id': userId,
+            'message_type': 'text',
+            'body': trimmed,
+          })
+          .timeout(_queryTimeout);
+    } on AppException {
+      _lastSendTime = previousSendTime;
       rethrow;
+    } on Object catch (error, stackTrace) {
+      _lastSendTime = previousSendTime;
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error sending chat message',
+      );
     }
   }
 
@@ -163,9 +203,14 @@ class ChatService {
           .update({'read_at': DateTime.now().toIso8601String()})
           .eq('conversation_id', conversationId)
           .filter('sender_id', 'neq', userId)
-          .isFilter('read_at', null);
-    } on Object catch (error) {
-      AppLogger.error('Error marking conversation read: $error');
+          .isFilter('read_at', null)
+          .timeout(_queryTimeout);
+    } on Object catch (error, stackTrace) {
+      AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error marking conversation read',
+      );
     }
   }
 }

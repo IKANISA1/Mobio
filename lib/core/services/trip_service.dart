@@ -1,6 +1,8 @@
-import 'package:mobi_app/core/utils/app_logger.dart';
+import 'package:intl/intl.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
+import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_app/models/trip.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
 /// Service for trip operations via Supabase direct table queries.
 ///
@@ -16,10 +18,21 @@ class TripService {
   static const _createCooldown = Duration(seconds: 3);
   static DateTime? _lastCreateTime;
 
+  /// Network timeout for data-fetching operations.
+  static const _networkTimeout = Duration(seconds: 15);
+
   TripService({SupabaseClient? supabase})
     : _supabase = supabase ?? Supabase.instance.client;
 
   String? get _currentUserId => _supabase.auth.currentUser?.id;
+
+  String _requireUserId(String message) {
+    final userId = _currentUserId;
+    if (userId == null || userId.isEmpty) {
+      throw AuthException(message: message);
+    }
+    return userId;
+  }
 
   // ---------------------------------------------------------------------------
   // Create
@@ -41,17 +54,17 @@ class TripService {
     List<int> recurringDays = const [],
     String? note,
   }) async {
-    final userId = _currentUserId;
-    if (userId == null) {
-      throw Exception('User must be authenticated to create a trip.');
-    }
+    final userId = _requireUserId('Please sign in to schedule a trip.');
 
     // Debounce: reject rapid duplicate submissions
     final now = DateTime.now();
     if (_lastCreateTime != null &&
         now.difference(_lastCreateTime!) < _createCooldown) {
-      throw Exception('Please wait a moment before creating another trip.');
+      throw const ValidationException(
+        message: 'Please wait a moment before scheduling another trip.',
+      );
     }
+    final previousCreateTime = _lastCreateTime;
     _lastCreateTime = now;
 
     try {
@@ -74,12 +87,20 @@ class TripService {
             'note': note,
           })
           .select()
-          .single();
+          .single()
+          .timeout(_networkTimeout);
 
       return Trip.fromJson(row);
-    } on Object catch (e) {
-      AppLogger.error('Error creating trip: $e');
+    } on AppException {
+      _lastCreateTime = previousCreateTime;
       rethrow;
+    } on Object catch (error, stackTrace) {
+      _lastCreateTime = previousCreateTime;
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error creating trip',
+      );
     }
   }
 
@@ -98,42 +119,60 @@ class TripService {
 
       if (row == null) return null;
       return Trip.fromJson(row);
-    } on Object catch (e) {
-      AppLogger.error('Error fetching trip $tripId: $e');
-      return null;
+    } on AppException {
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error fetching trip $tripId',
+      );
     }
   }
 
   /// Fetches trips created by the current user, ordered by departure.
+  /// Excludes trips with departure dates in the past.
   Future<List<Trip>> getMyTrips() async {
     final userId = _currentUserId;
     if (userId == null) return [];
+
+    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     try {
       final rows = await _supabase
           .from('trips')
           .select()
           .eq('author_id', userId)
+          .gte('departure_date', today)
           .order('departure_date', ascending: true)
-          .order('departure_time', ascending: true);
+          .order('departure_time', ascending: true)
+          .timeout(_networkTimeout);
 
       return rows.map<Trip>(Trip.fromJson).toList();
-    } on Object catch (e) {
-      AppLogger.error('Error fetching my trips: $e');
-      return [];
+    } on AppException {
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error fetching my trips',
+      );
     }
   }
 
   /// Fetches active trips from *other* users (nearby/discover feed).
+  /// Excludes trips with departure dates in the past.
   Future<List<Trip>> getNearbyTrips() async {
     final userId = _currentUserId;
+    final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     try {
       var query = _supabase
           .from('trips')
           .select()
           .or('status.eq.active,status.eq.approved')
-          .eq('is_active', true);
+          .eq('is_active', true)
+          .gte('departure_date', today);
 
       if (userId != null) {
         query = query.neq('author_id', userId);
@@ -142,12 +181,18 @@ class TripService {
       final rows = await query
           .order('departure_date', ascending: true)
           .order('departure_time', ascending: true)
-          .limit(50);
+          .limit(50)
+          .timeout(_networkTimeout);
 
       return rows.map<Trip>(Trip.fromJson).toList();
-    } on Object catch (e) {
-      AppLogger.error('Error fetching nearby trips: $e');
-      return [];
+    } on AppException {
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error fetching nearby trips',
+      );
     }
   }
 
@@ -160,10 +205,7 @@ class TripService {
   /// Only the trip author can cancel their own trip. RLS enforces this at the
   /// database layer, but this explicit check provides proper error feedback.
   Future<void> cancelTrip(String tripId) async {
-    final userId = _currentUserId;
-    if (userId == null) {
-      throw Exception('User must be authenticated to cancel a trip.');
-    }
+    final userId = _requireUserId('Please sign in to cancel a trip.');
 
     try {
       final rows = await _supabase
@@ -171,16 +213,22 @@ class TripService {
           .update({'status': 'cancelled', 'is_active': false})
           .eq('id', tripId)
           .eq('author_id', userId)
-          .select('id');
+          .select('id')
+          .timeout(_networkTimeout);
 
       if ((rows as List).isEmpty) {
-        throw Exception(
-          'Trip not found or you do not have permission to cancel it.',
+        throw const ForbiddenException(
+          message: 'Trip not found or you do not have permission to cancel it.',
         );
       }
-    } on Object catch (e) {
-      AppLogger.error('Error cancelling trip $tripId: $e');
+    } on AppException {
       rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error cancelling trip $tripId',
+      );
     }
   }
 }

@@ -9,7 +9,30 @@ permissions:
   contents: write
 
 jobs:
+  ios-validation:
+    runs-on: macos-latest
+    timeout-minutes: 35
+    environment: Mobio
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.9'
+          channel: stable
+          cache: true
+
+      - name: Build iOS (release, no codesign)
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          FIREBASE_IOS_APP_ID: ${{ vars.FIREBASE_IOS_APP_ID }}
+        run: ./scripts/ci/verify_ios_release.sh
+
   build-and-release:
+    needs: ios-validation
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment: Mobio
@@ -45,20 +68,14 @@ jobs:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
           PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          FIREBASE_IOS_APP_ID: ${{ vars.FIREBASE_IOS_APP_ID }}
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
-        run: |
-          test -n "$SUPABASE_URL"
-          test -n "$SUPABASE_ANON_KEY"
-          test -n "$PRIVACY_POLICY_URL"
-          test -n "$KEYSTORE_BASE64"
-          test -n "$KEY_ALIAS"
-          test -n "$KEY_PASSWORD"
-          test -n "$STORE_PASSWORD"
-          test -n "$PLAY_STORE_SERVICE_ACCOUNT_JSON"
+          REQUIRE_ANDROID_SIGNING: 'true'
+        run: ./scripts/ci/verify_release_config.sh
 
       - name: Write Android signing files
         env:

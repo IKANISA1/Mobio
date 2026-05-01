@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:mobi_app/core/theme/app_colors.dart';
+import 'package:mobi_app/features/biopay/models/biopay_models.dart';
 
 class OvalPainter extends CustomPainter {
   OvalPainter({
@@ -203,5 +204,3 @@ class OvalPainter extends CustomPainter {
         oldDelegate.pulse != pulse;
   }
 }
-
-enum ScannerState { searching, locked, captured, error, noMatch }

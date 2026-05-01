@@ -47,6 +47,7 @@ class AppNotification {
 class NotificationService {
   final SupabaseClient _supabase;
   RealtimeChannel? _channel;
+  String? _listeningUserId;
   final _notificationController = StreamController<AppNotification>.broadcast();
 
   NotificationService({SupabaseClient? supabase})
@@ -160,7 +161,16 @@ class NotificationService {
   /// Call [stopListening] when done.
   void startListening() {
     final userId = _currentUserId;
-    if (userId == null) return;
+    if (userId == null) {
+      stopListening();
+      return;
+    }
+
+    if (_channel != null && _listeningUserId == userId) {
+      return;
+    }
+
+    stopListening();
 
     _channel = _supabase
         .channel('notifications_$userId')
@@ -183,12 +193,14 @@ class NotificationService {
           },
         )
         .subscribe();
+    _listeningUserId = userId;
   }
 
   /// Stops the realtime subscription.
   void stopListening() {
     _channel?.unsubscribe();
     _channel = null;
+    _listeningUserId = null;
   }
 
   /// Disposes of resources.
