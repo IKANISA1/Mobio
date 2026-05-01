@@ -73,9 +73,7 @@ class MobiInputField extends StatelessWidget {
             ),
             child: Text(
               label!,
-              style: AppTypography.labelMd.copyWith(
-                color: cs.onSurfaceVariant,
-              ),
+              style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
             ),
           ),
         ],
@@ -94,18 +92,14 @@ class MobiInputField extends StatelessWidget {
           onFieldSubmitted: onFieldSubmitted,
           onTap: onTap,
           inputFormatters: inputFormatters,
-          style: AppTypography.bodyMd.copyWith(
-            color: cs.onSurface,
-          ),
+          style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: AppTypography.bodySm.copyWith(
               color: cs.onSurfaceVariant.withValues(alpha: 0.6),
             ),
             errorText: errorText,
-            errorStyle: AppTypography.labelSm.copyWith(
-              color: cs.error,
-            ),
+            errorStyle: AppTypography.labelSm.copyWith(color: cs.error),
             filled: true,
             fillColor: ext.surfaceContainerLow,
             isDense: true,

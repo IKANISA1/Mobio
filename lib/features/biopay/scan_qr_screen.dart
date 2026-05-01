@@ -112,7 +112,9 @@ class _ScanQrScreenState extends ConsumerState<ScanQrScreen> {
           return;
         }
 
-        final country = handle.countryId != null ? await _countryService.findById(handle.countryId!) : null;
+        final country = handle.countryId != null
+            ? await _countryService.findById(handle.countryId!)
+            : null;
 
         // Cross-border validation
         if (_myCountryCode != null &&
@@ -172,7 +174,9 @@ class _ScanQrScreenState extends ConsumerState<ScanQrScreen> {
             ussdString,
           );
           if (parsedHandle != null) {
-            final country = parsedHandle.countryId != null ? await _countryService.findById(parsedHandle.countryId!) : null;
+            final country = parsedHandle.countryId != null
+                ? await _countryService.findById(parsedHandle.countryId!)
+                : null;
             brand = country?.momoBrand ?? 'USSD';
 
             // Cross-border validation

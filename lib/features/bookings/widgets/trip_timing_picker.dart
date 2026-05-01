@@ -26,7 +26,10 @@ class TripTimingPicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const MobiSectionHeader(title: 'Timing', icon: LucideIcons.calendarDays),
+        const MobiSectionHeader(
+          title: 'Timing',
+          icon: LucideIcons.calendarDays,
+        ),
         const SizedBox(height: AppSpacing.md),
         Row(
           children: [

@@ -1,0 +1,74 @@
+version: 1
+status: compatibility-packages
+updated: 2026-05-01
+runtime_moves_allowed_without_plan: false
+apps:
+  mobile:
+    current_source:
+      - lib
+      - android
+      - ios
+      - assets
+      - icon
+      - pigeons
+  pwa:
+    current_source:
+      - lib
+      - web
+      - scripts/web/prepare_pwa_bundles.sh
+      - build/pwa/client
+  admin:
+    current_source:
+      - lib/features/admin
+      - lib/core/router
+      - lib/core/services/admin
+      - build/pwa/admin
+  website:
+    current_source:
+      - landing
+      - firebase.json
+packages:
+  design-system:
+    current_source:
+      - design.md
+      - packages/design-system/lib/src/theme
+      - lib/shared/widgets
+    compatibility_exports:
+      - lib/core/theme
+  shared-types:
+    current_source:
+      - packages/shared-types/lib/src/models
+      - lib/core/constants/app_enums.dart
+    compatibility_exports:
+      - lib/models
+    app_owned_exceptions:
+      - lib/models/vehicle_type_model.dart
+  api-clients:
+    current_source:
+      - lib/core/services
+      - lib/features/*/services
+  auth:
+    current_source:
+      - lib/core/auth
+      - lib/core/services/otp_service.dart
+      - lib/core/services/whatsapp_login_service.dart
+      - lib/core/services/supabase_session_service.dart
+  payments:
+    current_source:
+      - packages/payments/lib/src/models
+      - lib/features/payments/services
+      - lib/features/ledger
+      - supabase/functions/create-payment-intent
+      - supabase/functions/verify-payment-status
+      - supabase/functions/reconcile-momo-sms
+      - supabase/functions/admin-review-transaction
+    compatibility_exports:
+      - lib/features/payments/models
+backend:
+  canonical_source:
+    - supabase/migrations
+    - supabase/functions
+    - supabase/seed.sql
+docs:
+  canonical_source:
+    - docs

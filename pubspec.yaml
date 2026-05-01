@@ -24,6 +24,12 @@ dependencies:
 
 
   # UI & Design
+  mobi_design_system:
+    path: packages/design-system
+  mobi_shared_types:
+    path: packages/shared-types
+  mobi_payments:
+    path: packages/payments
   google_fonts: ^8.0.2
   flutter_animate: ^4.5.2
   shimmer: ^3.0.0

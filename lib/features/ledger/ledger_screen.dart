@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/features/ledger/providers/ledger_provider.dart';
 import 'package:mobi_app/features/ledger/widgets/transaction_tile.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
+import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_metric_tile.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
@@ -36,7 +39,9 @@ class LedgerScreen extends ConsumerWidget {
                   title: 'Ledger',
                   subtitle: Text(
                     'Transaction tracker',
-                    style: AppTypography.bodySm.copyWith(color: cs.onSurfaceVariant),
+                    style: AppTypography.bodySm.copyWith(
+                      color: cs.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ),
@@ -53,7 +58,9 @@ class LedgerScreen extends ConsumerWidget {
                             Expanded(
                               child: MobiMetricTile(
                                 label: 'Income',
-                                value: NumberFormat.compact().format(summary['totalIn'] ?? 0.0),
+                                value: NumberFormat.compact().format(
+                                  summary['totalIn'] ?? 0.0,
+                                ),
                                 icon: LucideIcons.trendingUp,
                                 accent: AppColors.bioPayGreen,
                               ),
@@ -62,7 +69,9 @@ class LedgerScreen extends ConsumerWidget {
                             Expanded(
                               child: MobiMetricTile(
                                 label: 'Expenses',
-                                value: NumberFormat.compact().format(summary['totalOut'] ?? 0.0),
+                                value: NumberFormat.compact().format(
+                                  summary['totalOut'] ?? 0.0,
+                                ),
                                 icon: LucideIcons.trendingDown,
                                 accent: AppColors.error,
                               ),
@@ -72,8 +81,36 @@ class LedgerScreen extends ConsumerWidget {
                         const SizedBox(height: 24),
                       ],
                     ),
-                    loading: () => const SizedBox(height: 100),
-                    error: (error, stackTrace) => const SizedBox.shrink(),
+                    loading: () => const Padding(
+                      padding: EdgeInsets.only(bottom: 24),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: LoadingSkeleton(
+                              height: 92,
+                              borderRadius: 24,
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: LoadingSkeleton(
+                              height: 92,
+                              borderRadius: 24,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    error: (error, stackTrace) => Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: MobiStateBanner(
+                        title: 'Ledger summary unavailable',
+                        subtitle: userMessageForError(error),
+                        icon: LucideIcons.alertTriangle,
+                        tone: MobiStateBannerTone.warning,
+                        onTap: () => ref.invalidate(transactionSummaryProvider),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -90,8 +127,14 @@ class LedgerScreen extends ConsumerWidget {
                               title: '$count pending SMS',
                               subtitle: 'Processing your latest receipts...',
                               icon: LucideIcons.refreshCw,
-                              onTap: () => ref.read(ledgerNativeServiceProvider).triggerSync(),
-                              trailing: Icon(LucideIcons.arrowRight, size: 20, color: cs.onSurfaceVariant),
+                              onTap: () => ref
+                                  .read(ledgerNativeServiceProvider)
+                                  .triggerSync(),
+                              trailing: Icon(
+                                LucideIcons.arrowRight,
+                                size: 20,
+                                color: cs.onSurfaceVariant,
+                              ),
                             ),
                           )
                         : const SizedBox.shrink(),
@@ -109,7 +152,9 @@ class LedgerScreen extends ConsumerWidget {
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Text(
                       'Recent Transactions',
-                      style: AppTypography.titleLg.copyWith(color: cs.onSurface),
+                      style: AppTypography.titleLg.copyWith(
+                        color: cs.onSurface,
+                      ),
                     ),
                   ),
                 ),
@@ -122,7 +167,8 @@ class LedgerScreen extends ConsumerWidget {
                       hasScrollBody: false,
                       child: AiEmptyState(
                         title: 'No transactions found',
-                        subtitle: 'SMS receipts will appear here automatically.',
+                        subtitle:
+                            'SMS receipts will appear here automatically.',
                         icon: LucideIcons.receipt,
                       ),
                     );
@@ -132,19 +178,38 @@ class LedgerScreen extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     sliver: SliverList(
                       delegate: SliverChildBuilderDelegate(
-                        (context, index) => TransactionTile(
-                          transaction: transactions[index],
-                        ),
+                        (context, index) =>
+                            TransactionTile(transaction: transactions[index]),
                         childCount: transactions.length,
                       ),
                     ),
                   );
                 },
-                loading: () => const SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator()),
+                loading: () => const SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate.fixed([
+                      LoadingSkeleton.listTile(),
+                      LoadingSkeleton.listTile(),
+                      LoadingSkeleton.listTile(),
+                      LoadingSkeleton.listTile(),
+                    ]),
+                  ),
                 ),
                 error: (e, _) => SliverFillRemaining(
-                  child: Center(child: Text('Error: $e')),
+                  hasScrollBody: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: MobiErrorState(
+                      title: 'Unable to load ledger',
+                      subtitle: userMessageForError(
+                        e,
+                        fallback:
+                            'Transactions are unavailable. Pull to refresh or try again.',
+                      ),
+                      onRetry: () => ref.invalidate(transactionsStreamProvider),
+                    ),
+                  ),
                 ),
               ),
 

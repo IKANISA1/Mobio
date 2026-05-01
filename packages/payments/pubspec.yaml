@@ -1,0 +1,10 @@
+name: mobi_payments
+description: Shared MOBI payment data contracts and payment-domain helpers.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.8
+
+dev_dependencies:
+  lints: ^6.0.0

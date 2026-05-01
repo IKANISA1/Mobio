@@ -34,6 +34,9 @@ abstract final class AppExceptionMapper {
 
     // Supabase Postgrest errors (RPC / table operations)
     if (error is supa.PostgrestException) {
+      final domainError = _mapPostgrestDomainError(error, stackTrace);
+      if (domainError != null) return domainError;
+
       final code = error.code;
 
       // Forbidden / RLS violation
@@ -111,5 +114,55 @@ abstract final class AppExceptionMapper {
       stackTrace,
     );
     return mapped;
+  }
+
+  static AppException? _mapPostgrestDomainError(
+    supa.PostgrestException error,
+    StackTrace? stackTrace,
+  ) {
+    final raw = [
+      error.message,
+      error.details?.toString(),
+      error.hint,
+    ].whereType<String>().join(' ');
+
+    if (raw.contains('WHATSAPP_LOGIN_REQUIRED')) {
+      return AuthException(
+        message: 'Sign in with WhatsApp to continue.',
+        debugMessage: raw,
+        originalError: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    if (raw.contains('MOTO_PRO_SUBSCRIPTION_REQUIRED')) {
+      return ForbiddenException(
+        message:
+            'You have used your 30 free moto taxi trips this month. Upgrade to Pro to schedule more driver trips.',
+        debugMessage: raw,
+        originalError: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    if (raw.contains('PROFILE_REQUIRED')) {
+      return AuthException(
+        message: 'Complete your profile before scheduling trips.',
+        debugMessage: raw,
+        originalError: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    if (raw.contains('INVALID_TRIP_PAYLOAD')) {
+      return ValidationException(
+        message: 'Complete the trip details before scheduling.',
+        debugMessage: raw,
+        originalError: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return null;
   }
 }

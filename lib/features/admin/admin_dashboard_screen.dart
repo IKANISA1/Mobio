@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -19,7 +17,11 @@ import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 class AdminDashboardScreen extends ConsumerWidget {
   const AdminDashboardScreen({super.key});
 
-  void _showSnackBar(BuildContext context, String message, {bool isError = false}) {
+  void _showSnackBar(
+    BuildContext context,
+    String message, {
+    bool isError = false,
+  }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -30,29 +32,36 @@ class AdminDashboardScreen extends ConsumerWidget {
     );
   }
 
-  void _showWhatsappSheet(BuildContext context, WidgetRef ref, {AdminWhatsappNumberItem? existing}) {
+  void _showWhatsappSheet(
+    BuildContext context,
+    WidgetRef ref, {
+    AdminWhatsappNumberItem? existing,
+  }) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => AdminWhatsappSheet(
         existing: existing,
-        onSave: ({
-          required String phoneE164,
-          required String countryCode,
-          String? displayName,
-          required bool isActive,
-        }) async {
-          await ref.read(adminDashboardProvider.notifier).saveWhatsappNumber(
-            phoneE164: phoneE164,
-            countryCode: countryCode,
-            displayName: displayName,
-            isActive: isActive,
-          );
-          if (context.mounted) {
-            _showSnackBar(context, 'Allowlist updated.');
-          }
-        },
+        onSave:
+            ({
+              required String phoneE164,
+              required String countryCode,
+              String? displayName,
+              required bool isActive,
+            }) async {
+              await ref
+                  .read(adminDashboardProvider.notifier)
+                  .saveWhatsappNumber(
+                    phoneE164: phoneE164,
+                    countryCode: countryCode,
+                    displayName: displayName,
+                    isActive: isActive,
+                  );
+              if (context.mounted) {
+                _showSnackBar(context, 'Allowlist updated.');
+              }
+            },
       ),
     );
   }
@@ -76,7 +85,8 @@ class AdminDashboardScreen extends ConsumerWidget {
         AdminActionChip(
           label: 'Refresh',
           icon: LucideIcons.refreshCw,
-          isBusy: asyncState.isLoading || (asyncState.value?.isRefreshing ?? false),
+          isBusy:
+              asyncState.isLoading || (asyncState.value?.isRefreshing ?? false),
           onTap: asyncState.isLoading ? null : controller.refresh,
         ),
       ],
@@ -87,14 +97,13 @@ class AdminDashboardScreen extends ConsumerWidget {
             state: state,
             controller: controller,
             onAddNumber: () => _showWhatsappSheet(context, ref),
-            onEditNumber: (item) => _showWhatsappSheet(context, ref, existing: item),
+            onEditNumber: (item) =>
+                _showWhatsappSheet(context, ref, existing: item),
           ),
         ),
         loading: () => const _DashboardLoadingState(),
-        error: (err, stack) => _ErrorBanner(
-          message: err.toString(),
-          onRetry: controller.refresh,
-        ),
+        error: (err, stack) =>
+            _ErrorBanner(message: err.toString(), onRetry: controller.refresh),
       ),
     );
   }
@@ -138,10 +147,7 @@ class _DashboardContent extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.lg),
             ],
-            AdminStatsGrid(
-              stats: state.stats,
-              isLoading: state.isLoading,
-            ),
+            AdminStatsGrid(stats: state.stats, isLoading: state.isLoading),
             const SizedBox(height: AppSpacing.lg),
             if (isWide)
               Row(
@@ -243,7 +249,10 @@ class _ErrorBanner extends StatelessWidget {
     return AdminPanel(
       child: Row(
         children: [
-          Icon(LucideIcons.alertTriangle, color: Theme.of(context).colorScheme.error),
+          Icon(
+            LucideIcons.alertTriangle,
+            color: Theme.of(context).colorScheme.error,
+          ),
           const SizedBox(width: AppSpacing.md),
           Expanded(child: Text(message)),
           AdminActionChip(

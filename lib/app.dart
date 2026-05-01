@@ -38,8 +38,9 @@ class MobiShell extends ConsumerStatefulWidget {
 class _MobiShellState extends ConsumerState<MobiShell> {
   // ─── Notifications ───
   // Shared via Riverpod — never disposed by individual screens.
-  NotificationService? get _notificationService =>
-      SupabaseConfig.isConfigured ? ref.read(notificationServiceProvider) : null;
+  NotificationService? get _notificationService => SupabaseConfig.isConfigured
+      ? ref.read(notificationServiceProvider)
+      : null;
   ProfileService get _profileService => ref.read(profileServiceProvider);
   StreamSubscription<AuthState>? _authSubscription;
 
@@ -72,7 +73,7 @@ class _MobiShellState extends ConsumerState<MobiShell> {
     }
 
     final currentUser = Supabase.instance.client.auth.currentUser;
-    if (currentUser == null) {
+    if (currentUser == null || currentUser.isAnonymous) {
       ref.read(roleProvider.notifier).set(AppRole.passenger);
       unawaited(FirebaseAnalyticsService.instance.setUserContext());
       return;
@@ -104,7 +105,7 @@ class _MobiShellState extends ConsumerState<MobiShell> {
 
     final currentUser = Supabase.instance.client.auth.currentUser;
     _notificationService?.stopListening();
-    if (currentUser != null) {
+    if (currentUser != null && !currentUser.isAnonymous) {
       _notificationService?.startListening();
       // Re-register FCM token for push notifications on auth change
       unawaited(PushNotificationService.instance.registerToken());

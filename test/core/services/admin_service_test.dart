@@ -140,4 +140,120 @@ void main() {
       expect(user.createdAt, isNull);
     });
   });
+
+  group('AdminAuditLogItem', () {
+    test('fromJson parses canonical audit log rows', () {
+      final item = AdminAuditLogItem.fromJson({
+        'id': 'audit-1',
+        'admin_id': 'admin-1',
+        'admin_name': 'Ops Lead',
+        'action': 'risk_flag_approve',
+        'target_type': 'risk_flag',
+        'target_id': 'flag-1',
+        'details': {'notes': 'Matched SMS receipt'},
+        'created_at': '2026-05-01T10:00:00Z',
+      });
+
+      expect(item.id, 'audit-1');
+      expect(item.adminName, 'Ops Lead');
+      expect(item.action, 'risk_flag_approve');
+      expect(item.targetType, 'risk_flag');
+      expect(item.details['notes'], 'Matched SMS receipt');
+    });
+  });
+
+  group('AdminRiskFlagItem', () {
+    test('fromJson parses external USSD review queue rows', () {
+      final item = AdminRiskFlagItem.fromJson({
+        'id': 'flag-1',
+        'profile_id': 'driver-1',
+        'profile_name': 'Driver One',
+        'profile_phone': '+250700000000',
+        'transaction_id': 'txn-1',
+        'intent_id': 'intent-1',
+        'flag_type': 'suspicious_amount',
+        'severity': 'high',
+        'description': 'Amount mismatch',
+        'resolved': false,
+        'amount': '5000.00',
+        'currency': 'RWF',
+        'payment_method': 'ussd_momo',
+        'intent_status': 'processing',
+        'transaction_ref': 'ABC123',
+        'transaction_amount': 5000,
+        'transaction_currency': 'RWF',
+        'created_at': '2026-05-01T10:00:00Z',
+      });
+
+      expect(item.id, 'flag-1');
+      expect(item.profileName, 'Driver One');
+      expect(item.isOpen, isTrue);
+      expect(item.amount, 5000);
+      expect(item.transactionAmount, 5000);
+      expect(item.paymentMethod, 'ussd_momo');
+    });
+  });
+
+  group('AdminCampaignApprovalItem', () {
+    test('fromJson parses promo approval queue rows', () {
+      final item = AdminCampaignApprovalItem.fromJson({
+        'id': 'campaign-1',
+        'organization_id': 'org-1',
+        'organization_name': 'MOBI Platform',
+        'organization_slug': 'mobi-platform',
+        'campaign_type': 'promo',
+        'title': 'Weekend rider bonus',
+        'body': 'Save on scheduled trips this weekend.',
+        'metadata': {'audience': 'riders'},
+        'status': 'approved',
+        'requested_by': 'admin-1',
+        'requested_by_name': 'Ops Lead',
+        'approved_by': 'admin-2',
+        'approved_by_name': 'Compliance Lead',
+        'requested_at': '2026-05-01T12:00:00Z',
+        'approved_at': '2026-05-01T12:15:00Z',
+        'recipient_count': 25,
+        'eligible_recipient_count': 80,
+        'promotional_consent_count': 40,
+        'audit_event_count': 3,
+        'latest_audit_at': '2026-05-01T12:16:00Z',
+        'total_count': 12,
+      });
+
+      expect(item.id, 'campaign-1');
+      expect(item.isPromo, isTrue);
+      expect(item.isApproved, isTrue);
+      expect(item.organizationName, 'MOBI Platform');
+      expect(item.requestedByName, 'Ops Lead');
+      expect(item.approvedByName, 'Compliance Lead');
+      expect(item.recipientCount, 25);
+      expect(item.eligibleRecipientCount, 80);
+      expect(item.promotionalConsentCount, 40);
+      expect(item.consentCoveragePercent, 50);
+      expect(item.auditEventCount, 3);
+      expect(item.latestAuditAt, '2026-05-01T12:16:00Z');
+      expect(item.totalCount, 12);
+      expect(item.metadata['audience'], 'riders');
+    });
+  });
+
+  group('AdminNotificationConsentSummary', () {
+    test('fromJson parses campaign consent analytics rows', () {
+      final summary = AdminNotificationConsentSummary.fromJson({
+        'organization_id': 'org-1',
+        'organization_name': 'MOBI Platform',
+        'eligible_profile_count': 100,
+        'promotional_in_app_count': 42,
+        'promotional_push_count': '30',
+        'promotional_any_count': 50,
+        'revoked_or_denied_count': 8,
+      });
+
+      expect(summary.organizationName, 'MOBI Platform');
+      expect(summary.eligibleProfileCount, 100);
+      expect(summary.promotionalPushCount, 30);
+      expect(summary.promotionalCoveragePercent, 50);
+      expect(summary.revokedOrDeniedCount, 8);
+    });
+  });
 }

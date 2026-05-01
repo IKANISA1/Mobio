@@ -19,6 +19,7 @@ import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/l10n/app_localizations.dart';
 import 'package:mobi_app/providers/app_providers.dart';
 import 'package:mobi_app/shared/widgets/connectivity_overlay.dart';
+import 'package:mobi_app/shared/widgets/mobi_fatal_error_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
@@ -38,13 +39,7 @@ Future<void> main() async {
       // In release mode, show a blank container instead of red error screen
       if (!kDebugMode) {
         ErrorWidget.builder = (FlutterErrorDetails details) {
-          return Container(
-            alignment: Alignment.center,
-            child: const Text(
-              'Something went wrong',
-              style: TextStyle(color: Colors.grey),
-            ),
-          );
+          return const MobiFatalErrorView();
         };
         FlutterError.onError =
             FirebaseBootstrapService.instance.recordFlutterFatalError;
@@ -83,7 +78,10 @@ Future<void> main() async {
         unawaited(FirebaseAnalyticsService.instance.logAppOpen());
       }
       if (firebaseReady && SupabaseConfig.isConfigured && !kIsWeb) {
-        unawaited(PushNotificationService.instance.registerToken());
+        final currentUser = Supabase.instance.client.auth.currentUser;
+        if (currentUser != null && !currentUser.isAnonymous) {
+          unawaited(PushNotificationService.instance.registerToken());
+        }
       }
 
       // Initialize theme provider (reads persisted preference)

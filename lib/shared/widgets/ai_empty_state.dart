@@ -33,81 +33,85 @@ class AiEmptyState extends StatelessWidget {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final containerHeight = height ?? 260;
 
-    return SizedBox(
-      height: containerHeight,
-      child: ClayCard(
-        borderRadius: AppRadii.hero,
-        color: ext.surfaceContainerLowest.withValues(
-          alpha: ext.surfacePanelAlpha,
-        ),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 320),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (icon != null) ...[
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      color: cs.primaryContainer.withValues(alpha: 0.72),
-                      borderRadius: BorderRadius.circular(AppRadii.xl),
+    return Semantics(
+      container: true,
+      label: subtitle == null ? title : '$title. $subtitle',
+      child: SizedBox(
+        height: containerHeight,
+        child: ClayCard(
+          borderRadius: AppRadii.hero,
+          color: ext.surfaceContainerLowest.withValues(
+            alpha: ext.surfacePanelAlpha,
+          ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 320),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (icon != null) ...[
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: cs.primaryContainer.withValues(alpha: 0.72),
+                        borderRadius: BorderRadius.circular(AppRadii.xl),
+                      ),
+                      child: Icon(icon, size: 24, color: cs.primary),
                     ),
-                    child: Icon(icon, size: 24, color: cs.primary),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                ],
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: AppTypography.titleLg.copyWith(
-                    color: cs.onSurface,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: AppSpacing.xs),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
                   Text(
-                    subtitle!,
+                    title,
                     textAlign: TextAlign.center,
-                    style: AppTypography.bodySm.copyWith(
-                      color: cs.onSurfaceVariant,
+                    style: AppTypography.titleLg.copyWith(
+                      color: cs.onSurface,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                ],
-                if (onAction != null && actionLabel != null) ...[
-                  const SizedBox(height: AppSpacing.lg),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: onAction,
-                      borderRadius: BorderRadius.circular(999),
-                      splashColor: cs.primary.withValues(alpha: 0.14),
-                      child: Ink(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md,
-                          vertical: AppSpacing.sm,
-                        ),
-                        decoration: BoxDecoration(
-                          color: cs.primaryContainer,
-                          borderRadius: BorderRadius.circular(AppRadii.pill),
-                          border: Border.all(
-                            color: cs.primary.withValues(alpha: 0.22),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      subtitle!,
+                      textAlign: TextAlign.center,
+                      style: AppTypography.bodySm.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                  if (onAction != null && actionLabel != null) ...[
+                    const SizedBox(height: AppSpacing.lg),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: onAction,
+                        borderRadius: BorderRadius.circular(999),
+                        splashColor: cs.primary.withValues(alpha: 0.14),
+                        child: Ink(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.sm,
                           ),
-                        ),
-                        child: Text(
-                          actionLabel!,
-                          style: AppTypography.labelLg.copyWith(
-                            color: cs.onPrimaryContainer,
-                            fontWeight: FontWeight.w700,
+                          decoration: BoxDecoration(
+                            color: cs.primaryContainer,
+                            borderRadius: BorderRadius.circular(AppRadii.pill),
+                            border: Border.all(
+                              color: cs.primary.withValues(alpha: 0.22),
+                            ),
+                          ),
+                          child: Text(
+                            actionLabel!,
+                            style: AppTypography.labelLg.copyWith(
+                              color: cs.onPrimaryContainer,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

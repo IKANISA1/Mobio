@@ -24,10 +24,7 @@ class FaceEnrollmentForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Registration details',
-          style: AppTypography.titleMd,
-        ),
+        Text('Registration details', style: AppTypography.titleMd),
         const SizedBox(height: 8),
         Text(
           'Enter the MoMo number or agent code you want to use for face identification.',

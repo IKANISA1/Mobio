@@ -58,7 +58,9 @@ class ProfileDriverSection extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Driver mode',
-                      style: AppTypography.titleLg.copyWith(color: cs.onSurface),
+                      style: AppTypography.titleLg.copyWith(
+                        color: cs.onSurface,
+                      ),
                     ),
                   ),
                   _buildToggleSwitch(cs, ext),

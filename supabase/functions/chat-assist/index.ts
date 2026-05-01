@@ -1,7 +1,13 @@
-import { errorResponse, handleCors, jsonResponse, methodNotAllowed } from "../_shared/http.ts";
+import {
+  errorResponse,
+  handleCors,
+  jsonResponse,
+  methodNotAllowed,
+} from "../_shared/http.ts";
 import { createUserClient } from "../_shared/supabase.ts";
 
-const defaultModel = Deno.env.get("GEMINI_CHAT_MODEL")?.trim() || "gemini-2.5-flash";
+const defaultModel = Deno.env.get("GEMINI_CHAT_MODEL")?.trim() ||
+  "gemini-2.5-flash";
 const geminiApiKey = Deno.env.get("GEMINI_API_KEY")?.trim() ||
   Deno.env.get("GOOGLE_API_KEY")?.trim();
 
@@ -37,22 +43,73 @@ type AssistInput = {
   locale?: string | null;
 };
 
-function stringValue(value: unknown): string | null {
-  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
+type UserClient = ReturnType<typeof createUserClient>;
+
+type ConversationRow = {
+  id: string;
+  trip_id: string | null;
+  participant_low_id: string;
+  participant_high_id: string;
+  context_type: string | null;
+  status: string | null;
+};
+
+type MessageRow = {
+  sender_id: string | null;
+  message_type: string | null;
+  body: string | null;
+  created_at: string | null;
+};
+
+class HttpError extends Error {
+  constructor(message: string, public readonly status = 400) {
+    super(message);
+    this.name = "HttpError";
+  }
 }
 
-function normalizeMessages(raw: unknown): Array<Record<string, unknown>> {
-  if (!Array.isArray(raw)) {
-    return [];
-  }
+function stringValue(value: unknown): string | null {
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : null;
+}
 
-  return raw
-    .map((item) => item && typeof item === "object" ? item as Record<string, unknown> : null)
-    .filter((item): item is Record<string, unknown> => item !== null)
+function boundedString(value: unknown, maxLength: number): string | null {
+  const normalized = stringValue(value);
+  return normalized == null ? null : normalized.slice(0, maxLength);
+}
+
+function objectValue(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {};
+}
+
+function requireUuid(value: unknown, fieldName: string): string {
+  const candidate = stringValue(value);
+  if (
+    !candidate ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+      .test(candidate)
+  ) {
+    throw new HttpError(`${fieldName} is required`, 400);
+  }
+  return candidate;
+}
+
+function normalizeMessages(
+  rows: MessageRow[],
+  currentUserId: string,
+): Array<Record<string, unknown>> {
+  return rows
     .map((item) => ({
-      role: stringValue(item.role) || "participant",
-      text: stringValue(item.text) || "",
-      created_at: stringValue(item.created_at) || null,
+      role: item.message_type === "system"
+        ? "system"
+        : item.sender_id === currentUserId
+        ? "me"
+        : "peer",
+      text: boundedString(item.body, 500) || "",
+      created_at: boundedString(item.created_at, 40),
     }))
     .filter((item) => (item.text as string).length > 0)
     .slice(-12);
@@ -125,7 +182,8 @@ function buildFallbackCompletion(
     return "";
   }
 
-  const capitalized = normalizedDraft.charAt(0).toUpperCase() + normalizedDraft.slice(1);
+  const capitalized = normalizedDraft.charAt(0).toUpperCase() +
+    normalizedDraft.slice(1);
   if (/[.!?]$/.test(capitalized)) {
     return capitalized;
   }
@@ -181,7 +239,9 @@ function stripMarkdownFence(value: string) {
 }
 
 function extractResponseText(payload: Record<string, unknown>): string {
-  const candidates = Array.isArray(payload.candidates) ? payload.candidates : [];
+  const candidates = Array.isArray(payload.candidates)
+    ? payload.candidates
+    : [];
   const firstCandidate = candidates[0];
   if (!firstCandidate || typeof firstCandidate !== "object") {
     return "";
@@ -205,6 +265,105 @@ function extractResponseText(payload: Record<string, unknown>): string {
     })
     .join("")
     .trim();
+}
+
+async function loadVerifiedAssistContext(
+  userClient: UserClient,
+  body: Record<string, unknown>,
+  userId: string,
+): Promise<Pick<AssistInput, "conversation" | "trip" | "peer" | "messages">> {
+  const conversationBody = objectValue(body.conversation);
+  const conversationId = requireUuid(conversationBody.id, "conversation.id");
+
+  const { data: conversation, error: conversationError } = await userClient
+    .from("chat_conversations")
+    .select(
+      "id,trip_id,participant_low_id,participant_high_id,context_type,status",
+    )
+    .eq("id", conversationId)
+    .maybeSingle<ConversationRow>();
+
+  if (conversationError) {
+    throw conversationError;
+  }
+  if (
+    !conversation ||
+    (conversation.participant_low_id !== userId &&
+      conversation.participant_high_id !== userId)
+  ) {
+    throw new HttpError("Conversation not found", 404);
+  }
+
+  const peerId = conversation.participant_low_id === userId
+    ? conversation.participant_high_id
+    : conversation.participant_low_id;
+
+  const { data: messageRows, error: messagesError } = await userClient
+    .from("chat_messages")
+    .select("sender_id,message_type,body,created_at")
+    .eq("conversation_id", conversation.id)
+    .order("created_at", { ascending: false })
+    .limit(12)
+    .returns<MessageRow[]>();
+
+  if (messagesError) {
+    throw messagesError;
+  }
+
+  const messages = normalizeMessages(
+    [...((messageRows as MessageRow[] | null) ?? [])].reverse(),
+    userId,
+  );
+
+  let trip: Record<string, unknown> | null = null;
+  if (conversation.trip_id) {
+    const { data: tripRow, error: tripError } = await userClient
+      .from("trips")
+      .select("id,origin,destination,departure_date,departure_time,time,role")
+      .eq("id", conversation.trip_id)
+      .maybeSingle<Record<string, unknown>>();
+
+    if (!tripError && tripRow) {
+      trip = {
+        id: boundedString(tripRow.id, 80),
+        origin: boundedString(tripRow.origin, 160),
+        destination: boundedString(tripRow.destination, 160),
+        departure_date: boundedString(tripRow.departure_date, 40),
+        departure_time: boundedString(tripRow.departure_time, 40),
+        time: boundedString(tripRow.time, 40),
+        role: boundedString(tripRow.role, 40),
+      };
+    }
+  }
+
+  let peer: Record<string, unknown> | null = null;
+  const { data: peerRows, error: peerError } = await userClient.rpc(
+    "rpc_get_public_profile",
+    { p_profile_id: peerId },
+  );
+  if (!peerError && Array.isArray(peerRows) && peerRows.length > 0) {
+    const row = objectValue(peerRows[0]);
+    peer = {
+      id: boundedString(row.id, 80),
+      name: boundedString(row.name, 80),
+      display_name: boundedString(row.display_name, 80),
+      member_id: boundedString(row.member_id, 40),
+    };
+  }
+
+  return {
+    conversation: {
+      id: conversation.id,
+      trip_id: conversation.trip_id,
+      participant_low_id: conversation.participant_low_id,
+      participant_high_id: conversation.participant_high_id,
+      context_type: conversation.context_type,
+      status: conversation.status,
+    },
+    trip,
+    peer,
+    messages,
+  };
 }
 
 async function callGeminiAssist(input: AssistInput) {
@@ -239,8 +398,8 @@ async function callGeminiAssist(input: AssistInput) {
   );
 
   if (!response.ok) {
-    const details = await response.text();
-    console.error("[chat-assist] Gemini error", response.status, details);
+    await response.body?.cancel();
+    console.error("[chat-assist] Gemini error", response.status);
     return buildFallbackAssist(input);
   }
 
@@ -260,7 +419,7 @@ async function callGeminiAssist(input: AssistInput) {
       completion: stringValue(parsed.completion) || "",
     };
   } catch (error) {
-    console.error("[chat-assist] Failed to parse Gemini JSON", error, text);
+    console.error("[chat-assist] Failed to parse Gemini JSON", error);
     return buildFallbackAssist(input);
   }
 }
@@ -277,13 +436,18 @@ Deno.serve(async (request: Request) => {
 
   const authorization = request.headers.get("Authorization");
   if (!authorization) {
-    return errorResponse("Missing Authorization header", 401, undefined, request);
+    return errorResponse(
+      "Missing Authorization header",
+      401,
+      undefined,
+      request,
+    );
   }
 
   const userClient = createUserClient(authorization);
   const { data: authData, error: authError } = await userClient.auth.getUser();
   if (authError || !authData.user) {
-    return errorResponse("Unauthorized", 401, authError?.message, request);
+    return errorResponse("Unauthorized", 401, undefined, request);
   }
 
   let body: Record<string, unknown>;
@@ -293,26 +457,43 @@ Deno.serve(async (request: Request) => {
     return errorResponse("Invalid JSON body", 400, undefined, request);
   }
 
-  const input: AssistInput = {
-    task: stringValue(body.task) || "reply_suggestions",
-    conversation: body.conversation && typeof body.conversation === "object"
-      ? body.conversation as Record<string, unknown>
-      : {},
-    trip: body.trip && typeof body.trip === "object"
-      ? body.trip as Record<string, unknown>
-      : null,
-    peer: body.peer && typeof body.peer === "object"
-      ? body.peer as Record<string, unknown>
-      : null,
-    messages: normalizeMessages(body.messages),
-    draft_text: stringValue(body.draft_text),
-    locale: stringValue(body.locale),
-  };
+  try {
+    const verifiedContext = await loadVerifiedAssistContext(
+      userClient,
+      body,
+      authData.user.id,
+    );
 
-  const assist = await callGeminiAssist(input);
+    const input: AssistInput = {
+      task: stringValue(body.task) === "autocomplete"
+        ? "autocomplete"
+        : "reply_suggestions",
+      ...verifiedContext,
+      draft_text: boundedString(body.draft_text, 280),
+      locale: boundedString(body.locale, 20),
+    };
 
-  return jsonResponse({
-    success: true,
-    assist,
-  }, 200, request);
+    const assist = await callGeminiAssist(input);
+
+    return jsonResponse(
+      {
+        success: true,
+        assist,
+      },
+      200,
+      request,
+    );
+  } catch (error) {
+    if (error instanceof HttpError) {
+      return errorResponse(error.message, error.status, undefined, request);
+    }
+
+    console.error("[chat-assist] context validation failed", error);
+    return errorResponse(
+      "Unable to prepare chat assist",
+      500,
+      undefined,
+      request,
+    );
+  }
 });

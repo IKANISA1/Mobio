@@ -42,23 +42,23 @@
 
 | Category | Source Files |
 |---|---|
-| Colors | `lib/core/theme/app_colors.dart` |
-| Typography | `lib/core/theme/app_typography.dart` |
-| Shadows | `lib/core/theme/app_shadows.dart` |
-| Theme | `lib/core/theme/app_theme.dart` |
-| Theme Extension | `lib/core/theme/mobi_theme_extension.dart` |
+| Colors | `packages/design-system/lib/src/theme/app_colors.dart` |
+| Typography | `packages/design-system/lib/src/theme/app_typography.dart` |
+| Shadows | `packages/design-system/lib/src/theme/app_shadows.dart` |
+| Theme | `packages/design-system/lib/src/theme/app_theme.dart` |
+| Theme Extension | `packages/design-system/lib/src/theme/mobi_theme_extension.dart` |
 | Components | `lib/shared/widgets/*` |
 
 ---
 
-## Rule 4: Users Are Authenticated Anonymously via Supabase
+## Rule 4: Passenger and Driver Auth Requires WhatsApp OTP
 
-- All users are authenticated **anonymously** using **Supabase Anonymous Auth** (`signInAnonymously()`).
-- There is **no login wall**, no sign-up form, no email/password authentication for regular users.
-- Anonymous sign-in happens **automatically at app launch** (splash screen) — the user never sees an auth prompt.
-- The anonymous session provides a Supabase UUID used internally for data operations (trips, profiles, BioPay, notifications).
-- **Admin access** is the only flow that requires additional verification (WhatsApp OTP) — this is separate from the anonymous session.
-- Never introduce a login screen, registration form, or mandatory auth step for the standard user experience.
+- Passenger and driver production app routes require **WhatsApp Cloud OTP login**.
+- Anonymous Supabase sessions may exist as a technical bootstrap state, but they are treated as unauthenticated for protected passenger/driver flows.
+- Admin access uses a **separate** WhatsApp OTP purpose and an allowlisted admin phone number.
+- App-login OTPs and admin-login OTPs must never be replayable across flows.
+- Server-side RLS, RPCs, and Edge Functions remain the source of truth for authorization. Flutter route guards are not security boundaries.
+- Never introduce email/password, unaudited bypasses, or role escalation from the client.
 
 ---
 
@@ -94,5 +94,5 @@
 | **1. User ID** | 6 numeric digits only — no letters, no UUIDs in UI |
 | **2. Default Country** | Rwanda (RW) — always pre-selected, never prompted |
 | **3. UI Integrity** | Follow `design.md` exactly — no ad-hoc styles |
-| **4. Auth Method** | Supabase anonymous auth — no login wall |
+| **4. Auth Method** | WhatsApp OTP required for passenger/driver app access; admin OTP is separate and allowlisted |
 | **5. Build Env Vars** | `SUPABASE_URL` + `SUPABASE_ANON_KEY` mandatory on every APK/AAB build — use `./scripts/release/build_android_release.sh` |

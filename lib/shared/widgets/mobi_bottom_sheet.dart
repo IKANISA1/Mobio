@@ -34,13 +34,11 @@ class MobiBottomSheet {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height *
-            (maxHeightFraction ?? 0.85),
+        maxHeight:
+            MediaQuery.sizeOf(context).height * (maxHeightFraction ?? 0.85),
       ),
-      builder: (ctx) => _MobiBottomSheetContent(
-        title: title,
-        child: builder(ctx),
-      ),
+      builder: (ctx) =>
+          _MobiBottomSheetContent(title: title, child: builder(ctx)),
     );
   }
 }
@@ -49,10 +47,7 @@ class _MobiBottomSheetContent extends StatelessWidget {
   final String? title;
   final Widget child;
 
-  const _MobiBottomSheetContent({
-    this.title,
-    required this.child,
-  });
+  const _MobiBottomSheetContent({this.title, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -104,9 +99,7 @@ class _MobiBottomSheetContent extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   title!,
-                  style: AppTypography.titleLg.copyWith(
-                    color: cs.onSurface,
-                  ),
+                  style: AppTypography.titleLg.copyWith(color: cs.onSurface),
                 ),
               ),
             ),

@@ -1173,6 +1173,27 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  mobi_design_system:
+    dependency: "direct main"
+    description:
+      path: "packages/design-system"
+      relative: true
+    source: path
+    version: "0.1.0"
+  mobi_payments:
+    dependency: "direct main"
+    description:
+      path: "packages/payments"
+      relative: true
+    source: path
+    version: "0.1.0"
+  mobi_shared_types:
+    dependency: "direct main"
+    description:
+      path: "packages/shared-types"
+      relative: true
+    source: path
+    version: "0.1.0"
   mobile_scanner:
     dependency: "direct main"
     description:

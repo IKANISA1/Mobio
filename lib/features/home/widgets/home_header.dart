@@ -48,9 +48,7 @@ class HomeHeader extends StatelessWidget {
                   'Mobio',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.titleLg.copyWith(
-                    color: cs.primary,
-                  ),
+                  style: AppTypography.titleLg.copyWith(color: cs.primary),
                 ),
               ),
             ],

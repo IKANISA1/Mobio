@@ -40,14 +40,15 @@ class PlaceAutocompleteField extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<PlaceAutocompleteField> createState() => _PlaceAutocompleteFieldState();
+  ConsumerState<PlaceAutocompleteField> createState() =>
+      _PlaceAutocompleteFieldState();
 }
 
-class _PlaceAutocompleteFieldState extends ConsumerState<PlaceAutocompleteField> {
+class _PlaceAutocompleteFieldState
+    extends ConsumerState<PlaceAutocompleteField> {
   final _controller = TextEditingController();
   final _focusNode = FocusNode();
   PlacesService get _placesService => ref.read(placesServiceProvider);
-
 
   bool _isLoadingDetails = false;
   bool _showClear = false;

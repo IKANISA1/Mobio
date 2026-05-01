@@ -2,19 +2,21 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
 import 'package:mobi_app/features/profile/models/edit_profile_state.dart';
 import 'package:mobi_app/features/profile/providers/edit_profile_provider.dart';
 import 'package:mobi_app/features/profile/widgets/profile_biopay_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_contact_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_driver_section.dart';
+import 'package:mobi_app/features/profile/widgets/profile_notification_consent_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_subscription_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_vehicle_section.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_async_state_view.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
@@ -49,9 +51,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     super.dispose();
   }
 
-  void _showSnackBar(String message) {
+  void _showSnackBar(String message, {bool isError = false}) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Theme.of(context).colorScheme.error : null,
+      ),
+    );
   }
 
   Future<void> _handleSave(EditProfileController controller) async {
@@ -65,33 +72,49 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         _showSnackBar('Profile saved.');
         widget.onBack();
       }
-    } catch (e) {
-      _showSnackBar('Unable to save profile: $e');
+    } on Object catch (e) {
+      _showSnackBar(
+        userMessageForError(
+          e,
+          fallback: 'Unable to save profile. Please try again.',
+        ),
+        isError: true,
+      );
     }
   }
 
-  void _showCountryPicker(EditProfileState state, EditProfileController controller) {
+  void _showCountryPicker(
+    EditProfileState state,
+    EditProfileController controller,
+  ) {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: ext.surfaceContainerLow,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadii.hero)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadii.hero),
+        ),
       ),
       builder: (context) {
         return SafeArea(
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(vertical: 12),
             itemCount: state.countries.length,
-            separatorBuilder: (_, __) => Divider(
+            separatorBuilder: (context, index) => Divider(
               height: 1,
-              color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.1),
+              color: Theme.of(
+                context,
+              ).colorScheme.outlineVariant.withValues(alpha: 0.1),
             ),
             itemBuilder: (context, index) {
               final country = state.countries[index];
               return ListTile(
-                leading: Text(country.flag, style: const TextStyle(fontSize: 22)),
+                leading: Text(
+                  country.flag,
+                  style: const TextStyle(fontSize: 22),
+                ),
                 title: Text(
                   country.name,
                   style: AppTypography.titleMd.copyWith(
@@ -125,7 +148,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     ref.listen(editProfileProvider, (prev, next) {
       if (next is AsyncData<EditProfileState>) {
         final stateValue = next.value;
-        if (prev == null || (prev is AsyncData<EditProfileState> && prev.value.isLoading)) {
+        if (prev == null ||
+            (prev is AsyncData<EditProfileState> && prev.value.isLoading)) {
           _whatsAppController.text = stateValue.initialWhatsApp;
           _handleController.text = stateValue.initialHandleValue;
           _vehiclePlateController.text = stateValue.initialVehicleNumberPlate;
@@ -141,10 +165,17 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             children: [
               MobiPageHeader(title: 'Profile', onBack: widget.onBack),
               Expanded(
-                child: asyncState.when(
+                child: MobiAsyncStateView<EditProfileState>(
+                  value: asyncState,
                   data: (state) => _buildContent(state, controller),
-                  loading: () => const _ProfileFormSkeleton(),
-                  error: (err, stack) => Center(child: Text(err.toString())),
+                  loading: (_) => const _ProfileFormSkeleton(),
+                  errorTitle: 'Unable to load profile',
+                  errorMessageBuilder: (error) => userMessageForError(
+                    error,
+                    fallback:
+                        'Profile settings are unavailable. Please try again.',
+                  ),
+                  onRetry: () => ref.invalidate(editProfileProvider),
                 ),
               ),
             ],
@@ -154,7 +185,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     );
   }
 
-  Widget _buildContent(EditProfileState state, EditProfileController controller) {
+  Widget _buildContent(
+    EditProfileState state,
+    EditProfileController controller,
+  ) {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.screenPadding,
@@ -162,56 +196,66 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         AppSpacing.screenPadding,
         160,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ProfileContactSection(
-            whatsAppController: _whatsAppController,
-            selectedCountry: state.selectedCountry,
-            onCountryTap: () => _showCountryPicker(state, controller),
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          ProfileBiopaySection(
-            handleController: _handleController,
-            handleType: state.handleType,
-            selectedCountry: state.selectedCountry,
-            onHandleTypeChanged: (type) => controller.setHandleType(type, _handleController.text),
-            hintText: state.selectedCountry.phonePlaceholder,
-          ),
-          const SizedBox(height: AppSpacing.xl),
-          ProfileDriverSection(
-            isDriver: state.isDriver,
-            onToggle: controller.toggleDriverMode,
-          ),
-          if (state.isDriver) ...[
-            const SizedBox(height: AppSpacing.lg),
-            ProfileVehicleSection(
-              vehicleTypes: state.vehicleTypes,
-              selectedVehicleId: state.vehicleTypeId,
-              onVehicleTypeChanged: controller.setVehicleTypeId,
-              plateController: _vehiclePlateController,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            ProfileSubscriptionSection(
-              allPlans: state.allPlans,
-              vehicleTypeId: state.vehicleTypeId,
-              countryId: state.selectedCountry.id,
-            ),
-          ],
-          const SizedBox(height: AppSpacing.sectionGap),
-          MobiButton(
-            width: double.infinity,
-            isLoading: state.isSaving,
-            onPressed: state.isSaving ? null : () => _handleSave(controller),
-            child: Text(
-              'Save changes',
-              style: AppTypography.labelLg.copyWith(
-                fontWeight: FontWeight.w700,
-                color: Theme.of(context).colorScheme.onPrimary,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 720),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ProfileContactSection(
+                whatsAppController: _whatsAppController,
+                selectedCountry: state.selectedCountry,
+                onCountryTap: () => _showCountryPicker(state, controller),
               ),
-            ),
+              const SizedBox(height: AppSpacing.xl),
+              const ProfileNotificationConsentSection(),
+              const SizedBox(height: AppSpacing.xl),
+              ProfileBiopaySection(
+                handleController: _handleController,
+                handleType: state.handleType,
+                selectedCountry: state.selectedCountry,
+                onHandleTypeChanged: (type) =>
+                    controller.setHandleType(type, _handleController.text),
+                hintText: state.selectedCountry.phonePlaceholder,
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              ProfileDriverSection(
+                isDriver: state.isDriver,
+                onToggle: controller.toggleDriverMode,
+              ),
+              if (state.isDriver) ...[
+                const SizedBox(height: AppSpacing.lg),
+                ProfileVehicleSection(
+                  vehicleTypes: state.vehicleTypes,
+                  selectedVehicleId: state.vehicleTypeId,
+                  onVehicleTypeChanged: controller.setVehicleTypeId,
+                  plateController: _vehiclePlateController,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                ProfileSubscriptionSection(
+                  allPlans: state.allPlans,
+                  vehicleTypeId: state.vehicleTypeId,
+                  countryId: state.selectedCountry.id,
+                ),
+              ],
+              const SizedBox(height: AppSpacing.sectionGap),
+              MobiButton(
+                width: double.infinity,
+                isLoading: state.isSaving,
+                onPressed: state.isSaving
+                    ? null
+                    : () => _handleSave(controller),
+                child: Text(
+                  'Save changes',
+                  style: AppTypography.labelLg.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

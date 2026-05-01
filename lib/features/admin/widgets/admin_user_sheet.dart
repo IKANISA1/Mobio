@@ -90,7 +90,9 @@ class AdminUserSheet extends StatelessWidget {
             else ...[
               Text(
                 'Change Role',
-                style: AppTypography.labelSm.copyWith(color: cs.onSurfaceVariant),
+                style: AppTypography.labelSm.copyWith(
+                  color: cs.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: AppSpacing.sm),
               Wrap(

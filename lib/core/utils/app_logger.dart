@@ -40,8 +40,7 @@ class AppLogger {
     String? context,
     Object? error,
     StackTrace? stackTrace,
-  }) =>
-      _logger.w(_fmt(message, context), error: error, stackTrace: stackTrace);
+  }) => _logger.w(_fmt(message, context), error: error, stackTrace: stackTrace);
 
   static void error(String message, [Object? error, StackTrace? stackTrace]) =>
       _logger.e(message, error: error, stackTrace: stackTrace);

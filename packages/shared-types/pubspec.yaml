@@ -1,0 +1,17 @@
+name: mobi_shared_types
+description: Shared MOBI data contracts and app-agnostic domain models.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.9.0
+
+dev_dependencies:
+  build_runner: ^2.4.0
+  freezed: ^3.2.3
+  json_serializable: ^6.11.0
+  lints: ^6.0.0

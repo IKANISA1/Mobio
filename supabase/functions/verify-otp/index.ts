@@ -4,10 +4,10 @@ import { tryRecordAdminAccessAttempt } from "../_shared/admin-access.ts";
 import {
   adminDisplayName,
   adminEmailForPhone,
+  type AdminWhatsappNumberRow,
   localWhatsappNumber,
   normalizePhone,
   resolveAdminWhatsappNumberByPhone,
-  type AdminWhatsappNumberRow,
 } from "../_shared/admin-whatsapp.ts";
 import {
   errorResponse,
@@ -98,10 +98,11 @@ async function ensureAdminUserSession(
     perPage: 1000,
   });
 
-  authUser = (usersData?.users ?? []).find((user) =>
-    user.phone == normalizedPhone ||
-    user.email?.toLowerCase() == email.toLowerCase()
-  ) ?? null;
+  authUser =
+    (usersData?.users ?? []).find((user) =>
+      user.phone == normalizedPhone ||
+      user.email?.toLowerCase() == email.toLowerCase()
+    ) ?? null;
 
   if (!authUser) {
     const { data, error } = await supabase.auth.admin.createUser({
@@ -207,11 +208,17 @@ Deno.serve(async (req: Request) => {
 
   try {
     const body = await req.json();
-    const phone = normalizePhone(body?.phone, "Phone and 6-digit code required");
+    const phone = normalizePhone(
+      body?.phone,
+      "Phone and 6-digit code required",
+    );
     const code = normalizeCode(body?.code);
     const supabase = createAdminClient();
     const anonClient = createAnonClient();
-    const adminNumber = await resolveAdminWhatsappNumberByPhone(supabase, phone);
+    const adminNumber = await resolveAdminWhatsappNumberByPhone(
+      supabase,
+      phone,
+    );
 
     if (!adminNumber) {
       await tryRecordAdminAccessAttempt({
@@ -237,6 +244,7 @@ Deno.serve(async (req: Request) => {
       .from("otp_codes")
       .select("id, code, code_hash, attempts, expires_at")
       .eq("phone", phone)
+      .eq("purpose", "admin_login")
       .eq("verified", false)
       .gte("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false })
@@ -294,9 +302,7 @@ Deno.serve(async (req: Request) => {
       .update({ attempts: otpRecord.attempts + 1 })
       .eq("id", otpRecord.id);
 
-    const codeHash = otpRecord.code_hash
-      ? await hashOtpCode(code)
-      : null;
+    const codeHash = otpRecord.code_hash ? await hashOtpCode(code) : null;
     const isValidCode = otpRecord.code_hash
       ? codeHash == otpRecord.code_hash
       : otpRecord.code == code;
@@ -373,8 +379,10 @@ Deno.serve(async (req: Request) => {
       req,
     );
   } catch (error) {
-    if (error instanceof Error &&
-      error.message == "Phone and 6-digit code required") {
+    if (
+      error instanceof Error &&
+      error.message == "Phone and 6-digit code required"
+    ) {
       return errorResponse(error.message, 400, undefined, req);
     }
 

@@ -41,17 +41,18 @@ class ProfileService {
     }
   }
 
-  /// Fetches a specific user's profile by ID.
+  /// Fetches the limited public profile shape allowed for peer UI surfaces.
   Future<Profile?> getProfileById(String userId) async {
     try {
-      final row = await _supabase
-          .from('profiles')
-          .select()
-          .eq('id', userId)
-          .maybeSingle();
-      return row == null ? null : Profile.fromJson(row);
+      final rows = await _supabase.rpc(
+        'rpc_get_public_profile',
+        params: {'p_profile_id': userId},
+      );
+
+      if (rows is! List || rows.isEmpty) return null;
+      return Profile.fromJson(Map<String, dynamic>.from(rows.first as Map));
     } on Object catch (e) {
-      AppLogger.error('Error fetching profile $userId: $e');
+      AppLogger.error('Error fetching public profile $userId: $e');
       return null;
     }
   }

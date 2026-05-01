@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.mobi.ledger.util.LedgerDatabaseKeyManager
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
 @Database(
@@ -22,17 +23,17 @@ abstract class LedgerDatabase : RoomDatabase() {
 
         fun getInstance(context: Context): LedgerDatabase {
             return INSTANCE ?: synchronized(this) {
+                val passphrase = LedgerDatabaseKeyManager.getOrCreatePassphrase(
+                    context.applicationContext
+                )
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     LedgerDatabase::class.java,
                     "mobi_ledger.db"
                 )
-                // H3: Secure local DB with SQLCipher
-                // Passphrase is fixed for now, but in Phase 4 we should derive it
-                // from a device-specific key or user's member_id hash.
-                .openHelperFactory(SupportOpenHelperFactory("mobi_secure_passphrase".toByteArray()))
-                .fallbackToDestructiveMigration()
-                .build()
+                    .openHelperFactory(SupportOpenHelperFactory(passphrase))
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }

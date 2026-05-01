@@ -14,6 +14,8 @@ enum AdminWorkspaceTab {
   fleet,
   subscriptions,
   trips,
+  finance,
+  audit,
   broadcasts,
   account,
 }
@@ -357,6 +359,9 @@ class AdminSearchField extends StatelessWidget {
     return TextField(
       controller: controller,
       onChanged: onChanged,
+      textInputAction: TextInputAction.search,
+      autocorrect: false,
+      enableSuggestions: false,
       style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
       decoration: InputDecoration(
         hintText: hintText,
@@ -416,44 +421,49 @@ class AdminFilterChip extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadii.pill),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: 10,
-        ),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? cs.primary.withValues(alpha: 0.12)
-              : ext.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(AppRadii.pill),
-          border: Border.all(
-            color: isSelected
-                ? cs.primary.withValues(alpha: 0.28)
-                : cs.outlineVariant.withValues(alpha: 0.6),
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: label,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadii.pill),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: 10,
           ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(
-                icon,
-                size: 14,
-                color: isSelected ? cs.primary : cs.onSurfaceVariant,
-              ),
-              const SizedBox(width: AppSpacing.xs),
-            ],
-            Text(
-              label,
-              style: AppTypography.labelMd.copyWith(
-                color: isSelected ? cs.primary : cs.onSurfaceVariant,
-              ),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? cs.primary.withValues(alpha: 0.12)
+                : ext.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(AppRadii.pill),
+            border: Border.all(
+              color: isSelected
+                  ? cs.primary.withValues(alpha: 0.28)
+                  : cs.outlineVariant.withValues(alpha: 0.6),
             ),
-          ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(
+                  icon,
+                  size: 14,
+                  color: isSelected ? cs.primary : cs.onSurfaceVariant,
+                ),
+                const SizedBox(width: AppSpacing.xs),
+              ],
+              Text(
+                label,
+                style: AppTypography.labelMd.copyWith(
+                  color: isSelected ? cs.primary : cs.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -482,44 +492,53 @@ class AdminActionChip extends StatelessWidget {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final accent = _toneColor(context, tone);
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: isBusy ? null : onTap,
-        borderRadius: BorderRadius.circular(AppRadii.pill),
-        child: Ink(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: 10,
-          ),
-          decoration: BoxDecoration(
-            color: tone == MobiStatusBadgeTone.neutral
-                ? ext.surfaceContainerLow
-                : accent.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(AppRadii.pill),
-            border: Border.all(
-              color: tone == MobiStatusBadgeTone.neutral
-                  ? cs.outlineVariant.withValues(alpha: 0.6)
-                  : accent.withValues(alpha: 0.24),
+    return Semantics(
+      button: true,
+      enabled: onTap != null && !isBusy,
+      label: label,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: isBusy ? null : onTap,
+          borderRadius: BorderRadius.circular(AppRadii.pill),
+          child: Ink(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: 10,
             ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (isBusy)
-                SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 1.8,
-                    color: accent,
-                  ),
-                )
-              else if (icon != null)
-                Icon(icon, size: 14, color: accent),
-              if (isBusy || icon != null) const SizedBox(width: AppSpacing.xs),
-              Text(label, style: AppTypography.labelMd.copyWith(color: accent)),
-            ],
+            decoration: BoxDecoration(
+              color: tone == MobiStatusBadgeTone.neutral
+                  ? ext.surfaceContainerLow
+                  : accent.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(AppRadii.pill),
+              border: Border.all(
+                color: tone == MobiStatusBadgeTone.neutral
+                    ? cs.outlineVariant.withValues(alpha: 0.6)
+                    : accent.withValues(alpha: 0.24),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isBusy)
+                  SizedBox(
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1.8,
+                      color: accent,
+                    ),
+                  )
+                else if (icon != null)
+                  Icon(icon, size: 14, color: accent),
+                if (isBusy || icon != null)
+                  const SizedBox(width: AppSpacing.xs),
+                Text(
+                  label,
+                  style: AppTypography.labelMd.copyWith(color: accent),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -545,34 +564,224 @@ class AdminEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    return AdminPanel(
-      child: Column(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: cs.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(14),
+    return Semantics(
+      container: true,
+      liveRegion: true,
+      label: '$title. $message',
+      child: AdminPanel(
+        child: Column(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: cs.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(icon, color: cs.primary),
             ),
-            child: Icon(icon, color: cs.primary),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: AppTypography.titleMd.copyWith(color: cs.onSurface),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            message,
-            textAlign: TextAlign.center,
-            style: AppTypography.bodySm.copyWith(color: cs.onSurfaceVariant),
-          ),
-          if (action != null) ...[
-            const SizedBox(height: AppSpacing.lg),
-            action!,
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: AppTypography.titleMd.copyWith(color: cs.onSurface),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: AppTypography.bodySm.copyWith(color: cs.onSurfaceVariant),
+            ),
+            if (action != null) ...[
+              const SizedBox(height: AppSpacing.lg),
+              action!,
+            ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class AdminSortOption {
+  final String value;
+  final String label;
+  final IconData icon;
+
+  const AdminSortOption({
+    required this.value,
+    required this.label,
+    required this.icon,
+  });
+}
+
+class AdminSortMenu extends StatelessWidget {
+  final String value;
+  final List<AdminSortOption> options;
+  final ValueChanged<String> onChanged;
+
+  const AdminSortMenu({
+    super.key,
+    required this.value,
+    required this.options,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final selected = options.firstWhere(
+      (option) => option.value == value,
+      orElse: () => options.first,
+    );
+
+    return PopupMenuButton<String>(
+      tooltip: 'Sort rows',
+      onSelected: onChanged,
+      itemBuilder: (context) => [
+        for (final option in options)
+          PopupMenuItem<String>(
+            value: option.value,
+            child: Row(
+              children: [
+                Icon(option.icon, size: 16),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(child: Text(option.label)),
+                if (option.value == value) ...[
+                  const SizedBox(width: AppSpacing.sm),
+                  const Icon(LucideIcons.check, size: 16),
+                ],
+              ],
+            ),
+          ),
+      ],
+      child: Semantics(
+        button: true,
+        label: 'Sort by ${selected.label}',
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: ext.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(AppRadii.pill),
+            border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.6)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: 10,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(selected.icon, size: 14, color: cs.onSurfaceVariant),
+                const SizedBox(width: AppSpacing.xs),
+                Text(
+                  selected.label,
+                  style: AppTypography.labelMd.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Icon(
+                  LucideIcons.chevronDown,
+                  size: 14,
+                  color: cs.onSurfaceVariant,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AdminPaginationBar extends StatelessWidget {
+  final int totalItems;
+  final int page;
+  final int rowsPerPage;
+  final ValueChanged<int> onPageChanged;
+  final ValueChanged<int>? onRowsPerPageChanged;
+  final List<int> rowsPerPageOptions;
+
+  const AdminPaginationBar({
+    super.key,
+    required this.totalItems,
+    required this.page,
+    required this.rowsPerPage,
+    required this.onPageChanged,
+    this.onRowsPerPageChanged,
+    this.rowsPerPageOptions = const [10, 25, 50],
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final safeRowsPerPage = rowsPerPage <= 0 ? 25 : rowsPerPage;
+    final maxPage = totalItems == 0
+        ? 0
+        : ((totalItems - 1) / safeRowsPerPage).floor();
+    final currentPage = page.clamp(0, maxPage);
+    final start = totalItems == 0 ? 0 : currentPage * safeRowsPerPage + 1;
+    final end = totalItems == 0
+        ? 0
+        : (start + safeRowsPerPage - 1).clamp(0, totalItems);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      child: Wrap(
+        spacing: AppSpacing.md,
+        runSpacing: AppSpacing.sm,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        alignment: WrapAlignment.spaceBetween,
+        children: [
+          Text(
+            '$start-$end of $totalItems',
+            style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (onRowsPerPageChanged != null) ...[
+                Text(
+                  'Rows',
+                  style: AppTypography.labelMd.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                DropdownButton<int>(
+                  value: safeRowsPerPage,
+                  underline: const SizedBox.shrink(),
+                  borderRadius: BorderRadius.circular(AppRadii.lg),
+                  items: [
+                    for (final option in rowsPerPageOptions)
+                      DropdownMenuItem<int>(
+                        value: option,
+                        child: Text('$option'),
+                      ),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) onRowsPerPageChanged?.call(value);
+                  },
+                ),
+                const SizedBox(width: AppSpacing.md),
+              ],
+              AdminIconButton(
+                icon: LucideIcons.chevronLeft,
+                onPressed: currentPage > 0
+                    ? () => onPageChanged(currentPage - 1)
+                    : null,
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              AdminIconButton(
+                icon: LucideIcons.chevronRight,
+                onPressed: currentPage < maxPage
+                    ? () => onPageChanged(currentPage + 1)
+                    : null,
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -651,6 +860,16 @@ class _AdminWorkspaceTabs extends StatelessWidget {
           label: 'Trips',
           icon: LucideIcons.mapPin,
           route: '/admin/trips',
+        ),
+        AdminWorkspaceTab.finance: (
+          label: 'Finance',
+          icon: LucideIcons.wallet,
+          route: '/admin/finance',
+        ),
+        AdminWorkspaceTab.audit: (
+          label: 'Audit',
+          icon: LucideIcons.clipboardList,
+          route: '/admin/audit',
         ),
         AdminWorkspaceTab.broadcasts: (
           label: 'Broadcasts',

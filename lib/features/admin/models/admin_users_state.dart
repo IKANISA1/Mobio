@@ -9,6 +9,9 @@ class AdminUsersState {
   final String? bulkUpdatingRole;
   final String roleFilter;
   final String searchQuery;
+  final String sortKey;
+  final int page;
+  final int rowsPerPage;
 
   const AdminUsersState({
     this.users = const [],
@@ -19,6 +22,9 @@ class AdminUsersState {
     this.bulkUpdatingRole,
     this.roleFilter = 'all',
     this.searchQuery = '',
+    this.sortKey = 'online',
+    this.page = 0,
+    this.rowsPerPage = 25,
   });
 
   AdminUsersState copyWith({
@@ -30,6 +36,9 @@ class AdminUsersState {
     String? bulkUpdatingRole,
     String? roleFilter,
     String? searchQuery,
+    String? sortKey,
+    int? page,
+    int? rowsPerPage,
   }) {
     return AdminUsersState(
       users: users ?? this.users,
@@ -40,6 +49,9 @@ class AdminUsersState {
       bulkUpdatingRole: bulkUpdatingRole ?? this.bulkUpdatingRole,
       roleFilter: roleFilter ?? this.roleFilter,
       searchQuery: searchQuery ?? this.searchQuery,
+      sortKey: sortKey ?? this.sortKey,
+      page: page ?? this.page,
+      rowsPerPage: rowsPerPage ?? this.rowsPerPage,
     );
   }
 }

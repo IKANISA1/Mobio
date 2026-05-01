@@ -4,7 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LedgerService {
   LedgerService({SupabaseClient? supabase})
-      : _supabase = supabase ?? Supabase.instance.client;
+    : _supabase = supabase ?? Supabase.instance.client;
 
   final SupabaseClient _supabase;
 
@@ -20,7 +20,10 @@ class LedgerService {
         .map((data) => data.map(Transaction.fromJson).toList());
   }
 
-  Future<List<Transaction>> getTransactions({int limit = 20, int offset = 0}) async {
+  Future<List<Transaction>> getTransactions({
+    int limit = 20,
+    int offset = 0,
+  }) async {
     final userId = _supabase.auth.currentUser?.id;
     if (userId == null) return [];
 
@@ -32,7 +35,9 @@ class LedgerService {
           .order('txn_timestamp', ascending: false)
           .range(offset, offset + limit - 1);
 
-      return (response as List).map((json) => Transaction.fromJson(json as Map<String, dynamic>)).toList();
+      return (response as List)
+          .map((json) => Transaction.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on Object catch (error, stackTrace) {
       AppLogger.error(
         'Failed to fetch transactions: $error',

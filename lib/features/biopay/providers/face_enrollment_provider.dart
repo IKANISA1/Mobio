@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
@@ -78,7 +77,9 @@ class FaceEnrollmentController extends AsyncNotifier<FaceEnrollmentState> {
         if (profile != null) {
           handleType = BiopayHandleType.fromStorage(profile.biopayHandleType);
         }
-      } catch (_) {}
+      } on Object catch (error) {
+        debugPrint('BioPay enrollment profile bootstrap fallback: $error');
+      }
 
       return FaceEnrollmentState(
         phase: FaceEnrollPhase.ready,
@@ -103,7 +104,7 @@ class FaceEnrollmentController extends AsyncNotifier<FaceEnrollmentState> {
         managedProfile: profile,
         statusMessage: '',
       );
-    } catch (_) {
+    } on Object {
       return const FaceEnrollmentState(
         phase: FaceEnrollPhase.error,
         errorMessage: 'Unable to load profile. Please try again.',
@@ -176,7 +177,7 @@ class FaceEnrollmentController extends AsyncNotifier<FaceEnrollmentState> {
       }
 
       await controller.startImageStream(_onCameraFrame);
-    } catch (e) {
+    } on Object {
       final updatedState = state.value;
       if (updatedState != null) {
         state = AsyncValue.data(
@@ -307,7 +308,9 @@ class FaceEnrollmentController extends AsyncNotifier<FaceEnrollmentState> {
       // Clean up the temporary capture file
       try {
         await File(capture.path).delete();
-      } catch (_) {}
+      } on Object catch (error) {
+        debugPrint('Unable to delete temporary enrollment capture: $error');
+      }
 
       final landmarks = FaceAlignmentService.extractLandmarks(landmarkFace);
       if (landmarks == null) {
@@ -383,7 +386,7 @@ class FaceEnrollmentController extends AsyncNotifier<FaceEnrollmentState> {
       if (_cameraController != null && !_hasSubmitted) {
         await _cameraController!.startImageStream(_onCameraFrame);
       }
-    } catch (e) {
+    } on Object {
       final s = state.value;
       if (s != null) {
         state = AsyncValue.data(
@@ -444,7 +447,7 @@ class FaceEnrollmentController extends AsyncNotifier<FaceEnrollmentState> {
           finalState.copyWith(phase: FaceEnrollPhase.success, result: result),
         );
       }
-    } catch (e) {
+    } on Object catch (e) {
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(

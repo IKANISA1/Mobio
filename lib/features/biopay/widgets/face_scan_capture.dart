@@ -24,7 +24,9 @@ class FaceScanCapture extends StatelessWidget {
 
     final scannerState = qualityIssue != null
         ? ScannerState.error
-        : (stabilityProgress >= 1.0 ? ScannerState.locked : ScannerState.searching);
+        : (stabilityProgress >= 1.0
+              ? ScannerState.locked
+              : ScannerState.searching);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(32),
@@ -49,7 +51,10 @@ class FaceScanCapture extends StatelessWidget {
               left: 24,
               right: 24,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.7),
                   borderRadius: BorderRadius.circular(16),
@@ -73,11 +78,7 @@ class FaceScanCapture extends StatelessWidget {
 }
 
 class AspectRect extends StatelessWidget {
-  const AspectRect({
-    super.key,
-    required this.aspectRatio,
-    required this.child,
-  });
+  const AspectRect({super.key, required this.aspectRatio, required this.child});
 
   final double aspectRatio;
   final Widget child;
@@ -88,11 +89,7 @@ class AspectRect extends StatelessWidget {
       builder: (context, constraints) {
         final width = constraints.maxWidth;
         final height = width / aspectRatio;
-        return SizedBox(
-          width: width,
-          height: height,
-          child: child,
-        );
+        return SizedBox(width: width, height: height, child: child);
       },
     );
   }

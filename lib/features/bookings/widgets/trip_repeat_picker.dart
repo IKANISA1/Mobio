@@ -47,7 +47,9 @@ class TripRepeatPicker extends StatelessWidget {
                     width: 56,
                     height: 56,
                     decoration: BoxDecoration(
-                      color: isRecurring ? cs.primaryContainer : ext.surfaceContainer,
+                      color: isRecurring
+                          ? cs.primaryContainer
+                          : ext.surfaceContainer,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -84,7 +86,10 @@ class TripRepeatPicker extends StatelessWidget {
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(7, (idx) => _buildDayBubble(context, idx, cs, ext)),
+                  children: List.generate(
+                    7,
+                    (idx) => _buildDayBubble(context, idx, cs, ext),
+                  ),
                 ),
               ],
             ],
@@ -114,7 +119,9 @@ class TripRepeatPicker extends StatelessWidget {
           ),
           child: AnimatedAlign(
             duration: const Duration(milliseconds: 200),
-            alignment: isRecurring ? Alignment.centerRight : Alignment.centerLeft,
+            alignment: isRecurring
+                ? Alignment.centerRight
+                : Alignment.centerLeft,
             child: Container(
               width: 16,
               height: 16,
@@ -130,10 +137,21 @@ class TripRepeatPicker extends StatelessWidget {
     );
   }
 
-  Widget _buildDayBubble(BuildContext context, int idx, ColorScheme cs, MobiThemeExtension ext) {
+  Widget _buildDayBubble(
+    BuildContext context,
+    int idx,
+    ColorScheme cs,
+    MobiThemeExtension ext,
+  ) {
     final isSelected = recurringDays.contains(idx);
     final dayNames = [
-      'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
     ];
 
     return Semantics(

@@ -77,6 +77,16 @@ class ValidationException extends AppException {
   });
 }
 
+/// Product flow is intentionally not supported by this app.
+class UnsupportedFlowException extends AppException {
+  const UnsupportedFlowException({
+    required super.message,
+    super.debugMessage,
+    super.originalError,
+    super.stackTrace,
+  });
+}
+
 /// Server / backend error (Supabase RPC failure, Edge Function 500, etc.).
 class ServerException extends AppException {
   const ServerException({

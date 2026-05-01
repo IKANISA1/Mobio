@@ -32,4 +32,16 @@ class AdminTripService extends AdminBaseService {
       rethrow;
     }
   }
+
+  Future<void> cancelTrip({required String tripId, String? reason}) async {
+    try {
+      await supabaseClient.rpc(
+        'rpc_admin_cancel_trip',
+        params: {'p_trip_id': tripId, 'p_reason': reason},
+      );
+    } on Object catch (error) {
+      AppLogger.error('Error cancelling admin trip: $error');
+      rethrow;
+    }
+  }
 }

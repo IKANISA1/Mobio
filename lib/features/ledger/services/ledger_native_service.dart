@@ -51,7 +51,11 @@ class LedgerNativeService {
     }
   }
 
-  Future<void> startService(String agentId, String supabaseUrl, String supabaseAnonKey) async {
+  Future<void> startService(
+    String agentId,
+    String supabaseUrl,
+    String supabaseAnonKey,
+  ) async {
     try {
       await _api.startLedgerService(agentId, supabaseUrl, supabaseAnonKey);
     } on Exception catch (e) {

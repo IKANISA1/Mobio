@@ -19,8 +19,6 @@ function getSupabaseAnonKey() {
   return requireEnv(
     "SUPABASE_ANON_KEY",
     "COOL_PROJECT_SUPABASE_ANON_KEY",
-    "SUPABASE_SERVICE_ROLE_KEY",
-    "COOL_PROJECT_SUPABASE_SERVICE_ROLE_KEY",
   );
 }
 

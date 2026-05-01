@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/features/biopay/models/face_scan_state.dart';
 import 'package:mobi_app/features/biopay/providers/face_scan_provider.dart';
 import 'package:mobi_app/features/biopay/widgets/face_scan_capture.dart';
 import 'package:mobi_app/features/biopay/widgets/face_scan_results_view.dart';
+import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 
 class FaceScanScreen extends ConsumerStatefulWidget {
-  const FaceScanScreen({
-    super.key,
-    required this.onBack,
-    this.targetMomoBrand,
-  });
+  const FaceScanScreen({super.key, required this.onBack, this.targetMomoBrand});
 
   final VoidCallback onBack;
   final String? targetMomoBrand;
@@ -44,7 +41,8 @@ class _FaceScanScreenState extends ConsumerState<FaceScanScreen> {
       return;
     }
 
-    final hasAccess = await AppPermissionService.instance.ensureBiopayCameraAccess();
+    final hasAccess = await AppPermissionService.instance
+        .ensureBiopayCameraAccess();
     if (!mounted) return;
 
     if (hasAccess) {
@@ -63,10 +61,32 @@ class _FaceScanScreenState extends ConsumerState<FaceScanScreen> {
       backgroundColor: Colors.black,
       body: asyncState.when(
         data: (state) => _buildContent(state, controller),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(
-          child: Text(err.toString(), style: const TextStyle(color: Colors.white)),
+        loading: _buildLoading,
+        error: (err, stack) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Center(
+              child: MobiErrorState(
+                title: 'Unable to start BioPay scan',
+                subtitle: userMessageForError(
+                  err,
+                  fallback: 'Camera scanning is unavailable. Please try again.',
+                ),
+                onRetry: () => ref.invalidate(faceScanProvider),
+              ),
+            ),
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLoading() {
+    return Center(
+      child: Semantics(
+        label: 'Preparing BioPay scan',
+        liveRegion: true,
+        child: const CircularProgressIndicator(color: Colors.white),
       ),
     );
   }

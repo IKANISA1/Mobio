@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/auth/admin_session_guard.dart';
@@ -14,6 +13,7 @@ import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_confirm_dialog.dart';
 import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
+import 'package:mobi_app/shared/widgets/otp_code_field.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/whatsapp_input.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -35,6 +35,9 @@ class AdminAuthScreen extends ConsumerStatefulWidget {
 
 class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
   static const _defaultResendCooldown = 60;
+  static const _supportWhatsapp = String.fromEnvironment(
+    'ADMIN_SUPPORT_WHATSAPP',
+  );
 
   final _otpController = TextEditingController();
 
@@ -56,6 +59,8 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
   bool get _canVerifyCode => !_isBusy && _otpController.text.trim().length == 6;
 
   String get _fullPhone => '$_countryCode${_number.trim()}';
+
+  bool get _hasSupportWhatsapp => _supportWhatsapp.trim().isNotEmpty;
 
   String get _maskedPhone {
     final trimmed = _fullPhone.trim();
@@ -201,6 +206,14 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
   }
 
   void _showContactAdminDialog() {
+    if (!_hasSupportWhatsapp) {
+      setState(() {
+        _statusMessage =
+            'Ask an existing platform admin to add this WhatsApp number to the allowlist.';
+      });
+      return;
+    }
+
     MobiConfirmDialog.show(
       context: context,
       title: 'Access denied',
@@ -215,23 +228,30 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
   }
 
   Future<void> _openWhatsApp() async {
-    const adminNumber = '+250795588248';
+    if (!_hasSupportWhatsapp) {
+      _showSnackBar('Admin support contact is not configured.');
+      return;
+    }
+
     final message = Uri.encodeComponent(
       'Hello, I would like to request admin access to Mobio.',
     );
     final uri = Uri.parse(
-      'https://wa.me/${adminNumber.replaceAll('+', '')}?text=$message',
+      'https://wa.me/${_supportWhatsapp.replaceAll('+', '')}?text=$message',
     );
 
     try {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } on Object catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open WhatsApp.')),
-        );
-      }
+      if (mounted) _showSnackBar('Could not open WhatsApp.');
     }
+  }
+
+  void _showSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -318,7 +338,7 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
                           ),
                           if (_otpRequested) ...[
                             const SizedBox(height: AppSpacing.md),
-                            _OtpCodeField(
+                            MobiOtpCodeField(
                               controller: _otpController,
                               enabled: !_isBusy,
                               onChanged: (_) => setState(() {}),
@@ -381,16 +401,27 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
                                 'Request allowlist approval or resend a code.',
                           ),
                           const SizedBox(height: AppSpacing.md),
+                          if (!_hasSupportWhatsapp) ...[
+                            const MobiStateBanner(
+                              icon: LucideIcons.alertTriangle,
+                              title: 'Allowlist required',
+                              subtitle:
+                                  'Ask an existing platform admin to add your WhatsApp number.',
+                              tone: MobiStateBannerTone.neutral,
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                          ],
                           Wrap(
                             spacing: AppSpacing.sm,
                             runSpacing: AppSpacing.sm,
                             children: [
-                              AdminActionChip(
-                                label: 'WhatsApp admin',
-                                icon: LucideIcons.messageCircle,
-                                tone: MobiStatusBadgeTone.info,
-                                onTap: _openWhatsApp,
-                              ),
+                              if (_hasSupportWhatsapp)
+                                AdminActionChip(
+                                  label: 'WhatsApp admin',
+                                  icon: LucideIcons.messageCircle,
+                                  tone: MobiStatusBadgeTone.info,
+                                  onTap: _openWhatsApp,
+                                ),
                               if (_otpRequested)
                                 AdminActionChip(
                                   label: _resendCooldown > 0
@@ -446,72 +477,6 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _OtpCodeField extends StatelessWidget {
-  final TextEditingController controller;
-  final ValueChanged<String> onChanged;
-  final bool enabled;
-
-  const _OtpCodeField({
-    required this.controller,
-    required this.onChanged,
-    required this.enabled,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'VERIFICATION CODE',
-          style: AppTypography.labelSm.copyWith(color: cs.onSurfaceVariant),
-        ),
-        const SizedBox(height: 8),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: ext.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: ext.clayCardShadow,
-          ),
-          child: TextField(
-            controller: controller,
-            onChanged: onChanged,
-            enabled: enabled,
-            keyboardType: TextInputType.number,
-            textInputAction: TextInputAction.done,
-            textAlign: TextAlign.center,
-            style: AppTypography.titleMd.copyWith(
-              fontSize: 24,
-              letterSpacing: 8,
-              color: cs.onSurface,
-            ),
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(6),
-            ],
-            decoration: InputDecoration(
-              hintText: '123456',
-              hintStyle: AppTypography.titleMd.copyWith(
-                fontSize: 24,
-                letterSpacing: 8,
-                color: cs.onSurfaceVariant.withValues(alpha: 0.3),
-              ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 18,
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

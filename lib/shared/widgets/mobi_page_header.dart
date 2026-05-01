@@ -59,9 +59,7 @@ class MobiPageHeader extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTypography.titleLg.copyWith(
-                      color: cs.primary,
-                    ),
+                    style: AppTypography.titleLg.copyWith(color: cs.primary),
                   ),
                   if (subtitle != null) ...[
                     const SizedBox(height: 2),

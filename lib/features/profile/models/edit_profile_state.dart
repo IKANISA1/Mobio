@@ -62,11 +62,16 @@ class EditProfileState {
       allPlans: allPlans ?? this.allPlans,
       initialWhatsApp: initialWhatsApp ?? this.initialWhatsApp,
       initialHandleValue: initialHandleValue ?? this.initialHandleValue,
-      initialVehicleNumberPlate: initialVehicleNumberPlate ?? this.initialVehicleNumberPlate,
+      initialVehicleNumberPlate:
+          initialVehicleNumberPlate ?? this.initialVehicleNumberPlate,
     );
   }
 
   Country get selectedCountry {
+    if (countries.isEmpty) {
+      return Country.fallbackCountries.first;
+    }
+
     final matches = countries.where((c) => c.dialingCode == countryCode);
     return matches.isNotEmpty ? matches.first : countries.first;
   }

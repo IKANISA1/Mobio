@@ -38,19 +38,25 @@ class AdminUserBulkActions extends StatelessWidget {
                 label: 'Admin',
                 tone: MobiStatusBadgeTone.brand,
                 isBusy: bulkUpdatingRole == 'admin',
-                onTap: bulkUpdatingRole == null ? () => onApplyRole('admin') : null,
+                onTap: bulkUpdatingRole == null
+                    ? () => onApplyRole('admin')
+                    : null,
               ),
               AdminActionChip(
                 label: 'Driver',
                 tone: MobiStatusBadgeTone.info,
                 isBusy: bulkUpdatingRole == 'driver',
-                onTap: bulkUpdatingRole == null ? () => onApplyRole('driver') : null,
+                onTap: bulkUpdatingRole == null
+                    ? () => onApplyRole('driver')
+                    : null,
               ),
               AdminActionChip(
                 label: 'Passenger',
                 tone: MobiStatusBadgeTone.neutral,
                 isBusy: bulkUpdatingRole == 'passenger',
-                onTap: bulkUpdatingRole == null ? () => onApplyRole('passenger') : null,
+                onTap: bulkUpdatingRole == null
+                    ? () => onApplyRole('passenger')
+                    : null,
               ),
               AdminActionChip(
                 label: 'Clear',

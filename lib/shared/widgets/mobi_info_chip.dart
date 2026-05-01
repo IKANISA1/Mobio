@@ -28,12 +28,8 @@ class MobiInfoChip extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
-    final bgColor = isSelected
-        ? cs.primaryContainer
-        : ext.surfaceContainerHigh;
-    final fgColor = isSelected
-        ? cs.onPrimaryContainer
-        : cs.onSurfaceVariant;
+    final bgColor = isSelected ? cs.primaryContainer : ext.surfaceContainerHigh;
+    final fgColor = isSelected ? cs.onPrimaryContainer : cs.onSurfaceVariant;
 
     final chip = Container(
       padding: const EdgeInsets.symmetric(
@@ -67,9 +63,6 @@ class MobiInfoChip extends StatelessWidget {
 
     if (onTap == null) return chip;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: chip,
-    );
+    return GestureDetector(onTap: onTap, child: chip);
   }
 }

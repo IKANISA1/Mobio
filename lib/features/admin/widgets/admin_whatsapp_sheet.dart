@@ -192,7 +192,7 @@ class _AdminWhatsappSheetState extends State<AdminWhatsappSheet> {
         isActive: _isActive,
       );
       if (mounted) Navigator.of(context).pop();
-    } catch (e) {
+    } on Object catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,

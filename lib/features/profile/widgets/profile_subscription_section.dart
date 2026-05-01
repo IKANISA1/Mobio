@@ -21,7 +21,9 @@ class ProfileSubscriptionSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (vehicleTypeId.isEmpty || allPlans.isEmpty) return const SizedBox.shrink();
+    if (vehicleTypeId.isEmpty || allPlans.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     final activePlans = allPlans
         .where(
@@ -32,7 +34,9 @@ class ProfileSubscriptionSection extends StatelessWidget {
         )
         .toList();
 
-    if (activePlans.isEmpty) return const SizedBox.shrink();
+    if (activePlans.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
@@ -52,9 +56,7 @@ class ProfileSubscriptionSection extends StatelessWidget {
           decoration: BoxDecoration(
             color: ext.surfaceContainerLow,
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(
-              color: cs.primary.withValues(alpha: 0.1),
-            ),
+            border: Border.all(color: cs.primary.withValues(alpha: 0.1)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,7 +71,9 @@ class ProfileSubscriptionSection extends StatelessWidget {
               Wrap(
                 spacing: AppSpacing.sm,
                 runSpacing: AppSpacing.sm,
-                children: activePlans.map((plan) => _buildPlanCard(cs, ext, plan)).toList(),
+                children: activePlans
+                    .map((plan) => _buildPlanCard(cs, ext, plan))
+                    .toList(),
               ),
             ],
           ),
@@ -78,15 +82,17 @@ class ProfileSubscriptionSection extends StatelessWidget {
     );
   }
 
-  Widget _buildPlanCard(ColorScheme cs, MobiThemeExtension ext, SubscriptionPlanModel plan) {
+  Widget _buildPlanCard(
+    ColorScheme cs,
+    MobiThemeExtension ext,
+    SubscriptionPlanModel plan,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: ext.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: cs.outlineVariant.withValues(alpha: 0.1),
-        ),
+        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.1)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

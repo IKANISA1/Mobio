@@ -78,9 +78,7 @@ class _MobiConfirmDialogContent extends StatelessWidget {
           children: [
             Text(
               title,
-              style: AppTypography.titleLg.copyWith(
-                color: cs.onSurface,
-              ),
+              style: AppTypography.titleLg.copyWith(color: cs.onSurface),
             ),
             if (body != null) ...[
               const SizedBox(height: AppSpacing.sm),
@@ -134,9 +132,7 @@ class _MobiConfirmDialogContent extends StatelessWidget {
                           child: Text(
                             confirmLabel,
                             style: AppTypography.labelLg.copyWith(
-                              color: isDestructive
-                                  ? cs.onError
-                                  : cs.onPrimary,
+                              color: isDestructive ? cs.onError : cs.onPrimary,
                               fontWeight: FontWeight.w700,
                             ),
                           ),

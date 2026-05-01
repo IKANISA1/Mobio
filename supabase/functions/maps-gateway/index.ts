@@ -182,10 +182,17 @@ Deno.serve(async (request: Request) => {
     let cacheKey: string | null = null;
 
     if (cacheable) {
-      cacheKey = ResponseCache.key(body.action!, body as Record<string, unknown>);
+      cacheKey = ResponseCache.key(
+        body.action!,
+        body as Record<string, unknown>,
+      );
       const cached = responseCache.get(cacheKey);
       if (cached) {
-        return jsonResponse({ success: true, cached: true, ...cached }, 200, request);
+        return jsonResponse(
+          { success: true, cached: true, ...cached },
+          200,
+          request,
+        );
       }
     }
 
@@ -224,12 +231,7 @@ Deno.serve(async (request: Request) => {
       error,
       userId: userIdForTelemetry,
     });
-    return errorResponse(
-      error instanceof Error ? error.message : "Maps gateway failed",
-      500,
-      undefined,
-      request,
-    );
+    return errorResponse("Maps gateway failed", 500, undefined, request);
   }
 });
 
@@ -350,7 +352,8 @@ async function autocompletePlaces(body: MapsGatewayRequest) {
         placePrediction.structuredFormat?.mainText?.text?.toString().trim() ??
           placePrediction.text?.text?.toString().trim() ??
           "";
-      const secondaryText = placePrediction.structuredFormat?.secondaryText?.text
+      const secondaryText = placePrediction.structuredFormat?.secondaryText
+        ?.text
         ?.toString()
         .trim();
       const placeId = placePrediction.placeId?.toString().trim() ||

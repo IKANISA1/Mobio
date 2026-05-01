@@ -57,7 +57,9 @@ class Transaction {
       smsHash: json['sms_hash'] as String,
       parseConfidence: (json['parse_confidence'] as num?)?.toDouble(),
       country: json['country'] as String,
-      parsedAt: json['parsed_at'] != null ? DateTime.parse(json['parsed_at'] as String) : null,
+      parsedAt: json['parsed_at'] != null
+          ? DateTime.parse(json['parsed_at'] as String)
+          : null,
       createdAt: DateTime.parse(json['created_at'] as String),
     );
   }

@@ -13,10 +13,14 @@ import 'package:mobi_app/features/bookings/widgets/trip_repeat_picker.dart';
 import 'package:mobi_app/features/bookings/widgets/trip_route_form.dart';
 import 'package:mobi_app/features/bookings/widgets/trip_timing_picker.dart';
 import 'package:mobi_app/features/bookings/widgets/trip_vehicle_grid.dart';
+import 'package:mobi_app/models/trip.dart';
+import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_async_state_view.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_input_field.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
+import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 
 /// Schedule Trip screen with route preview map.
@@ -69,14 +73,22 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   Future<void> _handleSubmit(WidgetRef ref) async {
     final controller = ref.read(scheduleTripProvider.notifier);
     try {
-      final success = await controller.submitTrip(note: _noteController.text);
-      if (success) {
+      final trip = await controller.submitTrip(note: _noteController.text);
+      if (trip != null) {
+        final suggestions =
+            ref.read(scheduleTripProvider).value?.poolSuggestions ?? const [];
+        if (suggestions.isNotEmpty) {
+          await _showPoolSuggestionsSheet(suggestions);
+        }
         _showSnackBar('Trip scheduled.');
         widget.onBack();
       } else {
-        _showSnackBar('Please complete all required fields.');
+        final message =
+            ref.read(scheduleTripProvider).value?.validationMessage ??
+            'Please complete all required fields.';
+        _showSnackBar(message);
       }
-    } catch (e) {
+    } on Object catch (e) {
       _showSnackBar(
         userMessageForError(
           e,
@@ -87,6 +99,67 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
     }
   }
 
+  Future<void> _showPoolSuggestionsSheet(List<Trip> suggestions) async {
+    if (!mounted) return;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        final cs = Theme.of(context).colorScheme;
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.xl,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Pool suggestions',
+                  style: AppTypography.headlineSm.copyWith(color: cs.onSurface),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  'Trips with similar route or timing.',
+                  style: AppTypography.bodySm.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 360),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: suggestions.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: AppSpacing.sm),
+                    itemBuilder: (context, index) {
+                      final trip = suggestions[index];
+                      return _PoolSuggestionTile(trip: trip);
+                    },
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Done'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final asyncState = ref.watch(scheduleTripProvider);
@@ -95,10 +168,16 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: asyncState.when(
+      body: MobiAsyncStateView<ScheduleTripState>(
+        value: asyncState,
         data: (state) => _buildContent(state, controller, mediaPadding),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text(err.toString())),
+        loading: (_) => _ScheduleTripSkeleton(onBack: widget.onBack),
+        errorTitle: 'Unable to load scheduler',
+        errorMessageBuilder: (error) => userMessageForError(
+          error,
+          fallback: 'Trip scheduling is unavailable. Please try again.',
+        ),
+        onRetry: () => ref.invalidate(scheduleTripProvider),
       ),
     );
   }
@@ -124,85 +203,223 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                 AppSpacing.screenPadding,
                 136 + mediaPadding.bottom,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TripModeSelector(
-                    selectedRole: state.selectedRole,
-                    showErrors: state.showErrors,
-                    onChanged: (role) {
-                      controller.setRole(role);
-                      widget.onModeChanged(role);
-                    },
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-                  TripRouteForm(
-                    originDetails: state.originDetails,
-                    destDetails: state.destDetails,
-                    routeInfo: state.routeInfo,
-                    isComputingRoute: state.isComputingRoute,
-                    isLoadingLocation: state.isLoadingLocation,
-                    showErrors: state.showErrors,
-                    userLat: state.userLat,
-                    userLng: state.userLng,
-                    onOriginSelected: controller.setOrigin,
-                    onDestSelected: controller.setDestination,
-                    onHandleCurrentLocation: controller.handleCurrentLocation,
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-                  TripTimingPicker(
-                    date: state.date,
-                    time: state.time,
-                    onDateChanged: controller.setDate,
-                    onTimeChanged: controller.setTime,
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-                  TripRepeatPicker(
-                    isRecurring: state.isRecurring,
-                    recurringDays: state.recurringDays,
-                    onToggleRecurring: controller.toggleRecurring,
-                    onToggleDay: controller.toggleRecurringDay,
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-                  TripVehicleGrid(
-                    vehicleTypes: state.vehicleTypes,
-                    selectedVehicleId: state.vehicleId,
-                    onSelected: controller.setVehicleId,
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-                  const MobiSectionHeader(
-                    title: 'Note',
-                    caption: 'Optional',
-                    icon: LucideIcons.stickyNote,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  MobiInputField(
-                    label: 'Note',
-                    hint: 'Requirements or details',
-                    controller: _noteController,
-                    maxLines: 3,
-                    keyboardType: TextInputType.text,
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-                  MobiButton(
-                    width: double.infinity,
-                    onPressed: state.isSubmitting
-                        ? null
-                        : () => _handleSubmit(ref),
-                    isLoading: state.isSubmitting,
-                    child: Text(
-                      'Schedule',
-                      style: AppTypography.labelLg.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.onPrimary,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (state.validationMessage != null) ...[
+                        MobiStateBanner(
+                          icon: LucideIcons.alertTriangle,
+                          title: 'Check trip details',
+                          subtitle: state.validationMessage,
+                          tone: MobiStateBannerTone.warning,
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                      ],
+                      TripModeSelector(
+                        selectedRole: state.selectedRole,
+                        showErrors: state.showErrors,
+                        onChanged: (role) {
+                          controller.setRole(role);
+                          widget.onModeChanged(role);
+                        },
                       ),
-                    ),
+                      const SizedBox(height: AppSpacing.xl),
+                      TripRouteForm(
+                        originDetails: state.originDetails,
+                        destDetails: state.destDetails,
+                        routeInfo: state.routeInfo,
+                        isComputingRoute: state.isComputingRoute,
+                        isLoadingLocation: state.isLoadingLocation,
+                        showErrors: state.showErrors,
+                        userLat: state.userLat,
+                        userLng: state.userLng,
+                        favoriteAddresses: state.favoriteAddresses,
+                        isSavingFavoriteAddress: state.isSavingFavoriteAddress,
+                        onOriginSelected: controller.setOrigin,
+                        onDestSelected: controller.setDestination,
+                        onHandleCurrentLocation:
+                            controller.handleCurrentLocation,
+                        onFavoriteOriginSelected:
+                            controller.useFavoriteAsOrigin,
+                        onFavoriteDestSelected:
+                            controller.useFavoriteAsDestination,
+                        onSaveFavoriteAddress: controller.saveFavoriteAddress,
+                        onDeleteFavoriteAddress:
+                            controller.deleteFavoriteAddress,
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
+                      TripTimingPicker(
+                        date: state.date,
+                        time: state.time,
+                        onDateChanged: controller.setDate,
+                        onTimeChanged: controller.setTime,
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
+                      TripRepeatPicker(
+                        isRecurring: state.isRecurring,
+                        recurringDays: state.recurringDays,
+                        onToggleRecurring: controller.toggleRecurring,
+                        onToggleDay: controller.toggleRecurringDay,
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
+                      TripVehicleGrid(
+                        vehicleTypes: state.vehicleTypes,
+                        selectedVehicleId: state.vehicleId,
+                        onSelected: controller.setVehicleId,
+                      ),
+                      const SizedBox(height: AppSpacing.xl),
+                      const MobiSectionHeader(
+                        title: 'Note',
+                        caption: 'Optional',
+                        icon: LucideIcons.stickyNote,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      MobiInputField(
+                        label: 'Note',
+                        hint: 'Requirements or details',
+                        controller: _noteController,
+                        maxLines: 3,
+                        keyboardType: TextInputType.text,
+                      ),
+                      const SizedBox(height: AppSpacing.xxl),
+                      MobiButton(
+                        width: double.infinity,
+                        onPressed: state.isSubmitting
+                            ? null
+                            : () => _handleSubmit(ref),
+                        isLoading: state.isSubmitting,
+                        child: Text(
+                          'Schedule',
+                          style: AppTypography.labelLg.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ScheduleTripSkeleton extends StatelessWidget {
+  const _ScheduleTripSkeleton({required this.onBack});
+
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return SoftGradient(
+      child: Column(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: MobiPageHeader(title: 'Schedule', onBack: onBack),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 136),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      LoadingSkeleton(height: 84, borderRadius: 28),
+                      SizedBox(height: AppSpacing.xl),
+                      LoadingSkeleton(height: 220, borderRadius: 32),
+                      SizedBox(height: AppSpacing.xl),
+                      LoadingSkeleton(height: 132, borderRadius: 32),
+                      SizedBox(height: AppSpacing.xl),
+                      LoadingSkeleton(height: 180, borderRadius: 32),
+                      SizedBox(height: AppSpacing.xl),
+                      LoadingSkeleton(height: 92, borderRadius: 32),
+                      SizedBox(height: AppSpacing.xxl),
+                      LoadingSkeleton.button(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PoolSuggestionTile extends StatelessWidget {
+  const _PoolSuggestionTile({required this.trip});
+
+  final Trip trip;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerHighest.withValues(alpha: 0.45),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.55)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  trip.role == 'driver' ? LucideIcons.car : LucideIcons.users,
+                  size: 18,
+                  color: cs.primary,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    trip.authorName.isEmpty ? 'Nearby trip' : trip.authorName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.titleMd.copyWith(color: cs.onSurface),
+                  ),
+                ),
+                Text(
+                  trip.departureTime,
+                  style: AppTypography.labelMd.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              '${trip.origin} -> ${trip.destination}',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.bodySm.copyWith(color: cs.onSurfaceVariant),
+            ),
+            if (trip.note?.trim().isNotEmpty == true) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                trip.note!.trim(),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.bodySm.copyWith(color: cs.onSurface),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

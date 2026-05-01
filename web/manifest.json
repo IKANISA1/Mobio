@@ -3,9 +3,10 @@
     "short_name": "Mobio",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#006D2F",
+    "theme_color": "#006D2F",
+    "description": "Secure mobility, USSD payment guidance, driver operations, and platform administration.",
+    "categories": ["business", "navigation", "productivity"],
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

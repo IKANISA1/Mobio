@@ -5,13 +5,13 @@ import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/admin_service.dart';
 import 'package:mobi_app/features/admin/models/admin_dashboard_state.dart';
 
-final adminDashboardProvider = AsyncNotifierProvider.autoDispose<
-  AdminDashboardController,
-  AdminDashboardState
->(AdminDashboardController.new);
+final adminDashboardProvider =
+    AsyncNotifierProvider.autoDispose<
+      AdminDashboardController,
+      AdminDashboardState
+    >(AdminDashboardController.new);
 
-class AdminDashboardController
-    extends AsyncNotifier<AdminDashboardState> {
+class AdminDashboardController extends AsyncNotifier<AdminDashboardState> {
   AdminService get _adminService => ref.read(adminServiceProvider);
 
   @override
@@ -21,9 +21,7 @@ class AdminDashboardController
       unawaited(loadAlerts(silent: true));
     });
 
-    ref.onDispose(() {
-      subscription.cancel();
-    });
+    ref.onDispose(subscription.cancel);
 
     return _fetchDashboardData();
   }
@@ -44,17 +42,14 @@ class AdminDashboardController
         alerts: results[3] as List<AdminNotificationItem>,
         isLoading: false,
       );
-    } catch (error) {
-      return AdminDashboardState(
-        isLoading: false,
-        loadError: error.toString(),
-      );
+    } on Object catch (error) {
+      return AdminDashboardState(isLoading: false, loadError: error.toString());
     }
   }
 
   Future<void> refresh() async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _fetchDashboardData());
+    state = await AsyncValue.guard(_fetchDashboardData);
   }
 
   Future<void> loadAlerts({bool silent = false}) async {
@@ -70,20 +65,14 @@ class AdminDashboardController
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(
-          finalState.copyWith(
-            alerts: alerts,
-            isRefreshing: false,
-          ),
+          finalState.copyWith(alerts: alerts, isRefreshing: false),
         );
       }
-    } catch (error) {
+    } on Object catch (error) {
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(
-          finalState.copyWith(
-            loadError: error.toString(),
-            isRefreshing: false,
-          ),
+          finalState.copyWith(loadError: error.toString(), isRefreshing: false),
         );
       }
     }
@@ -95,7 +84,7 @@ class AdminDashboardController
     try {
       await _adminService.markAdminNotificationRead(notification.id);
       await loadAlerts(silent: true);
-    } catch (error) {
+    } on Object {
       // Handled silently or via state
     }
   }
@@ -109,7 +98,7 @@ class AdminDashboardController
     try {
       await _adminService.markAllAdminNotificationsRead();
       await loadAlerts(silent: true);
-    } catch (error) {
+    } on Object {
       // Handled silently
     } finally {
       final finalState = state.value;
@@ -132,7 +121,7 @@ class AdminDashboardController
       );
       final updatedData = await _fetchDashboardData();
       state = AsyncValue.data(updatedData.copyWith(busyNumberId: null));
-    } catch (error) {
+    } on Object {
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(finalState.copyWith(busyNumberId: null));
@@ -160,7 +149,7 @@ class AdminDashboardController
       );
       final updatedData = await _fetchDashboardData();
       state = AsyncValue.data(updatedData.copyWith(isSavingNumber: false));
-    } catch (error) {
+    } on Object {
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(finalState.copyWith(isSavingNumber: false));

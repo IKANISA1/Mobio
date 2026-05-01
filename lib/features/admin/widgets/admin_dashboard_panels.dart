@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/services/admin_service.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
@@ -169,10 +168,7 @@ class AdminAlertsPanel extends StatelessWidget {
 }
 
 class AdminAccessPanel extends StatelessWidget {
-  const AdminAccessPanel({
-    super.key,
-    required this.accessAttempts,
-  });
+  const AdminAccessPanel({super.key, required this.accessAttempts});
 
   final List<AdminAccessAttemptItem> accessAttempts;
 
@@ -340,9 +336,10 @@ class _AlertRow extends StatelessWidget {
           color: AdminDashboardUtils.toneFill(context, tone),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: AdminDashboardUtils.toneColor(context, tone).withValues(
-              alpha: 0.16,
-            ),
+            color: AdminDashboardUtils.toneColor(
+              context,
+              tone,
+            ).withValues(alpha: 0.16),
           ),
         ),
         child: Row(

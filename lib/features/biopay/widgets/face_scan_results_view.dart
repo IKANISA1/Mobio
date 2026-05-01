@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/features/biopay/biopay_strings.dart';
 import 'package:mobi_app/features/biopay/models/face_scan_state.dart';
 import 'package:mobi_app/features/biopay/providers/face_scan_provider.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
@@ -65,7 +64,9 @@ class FaceScanResultsView extends StatelessWidget {
             width: 84,
             height: 84,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.14),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(28),
             ),
             child: Icon(
@@ -98,10 +99,14 @@ class FaceScanResultsView extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.18),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.18),
               ),
             ),
             child: Column(
@@ -129,7 +134,9 @@ class FaceScanResultsView extends StatelessWidget {
         const SizedBox(height: 24),
         MobiButton(
           width: double.infinity,
-          onPressed: result.ussdString == null ? null : controller.launchPayment,
+          onPressed: result.ussdString == null
+              ? null
+              : controller.launchPayment,
           child: Text(
             'PAY VIA ${(targetMomoBrand ?? 'USSD').toUpperCase()}',
             style: AppTypography.labelMd.copyWith(
@@ -175,7 +182,9 @@ class FaceScanResultsView extends StatelessWidget {
           width: 84,
           height: 84,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.14),
+            color: Theme.of(
+              context,
+            ).colorScheme.secondary.withValues(alpha: 0.14),
             borderRadius: BorderRadius.circular(28),
           ),
           child: Icon(

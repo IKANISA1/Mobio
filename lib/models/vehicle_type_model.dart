@@ -76,7 +76,12 @@ class VehicleTypeModel {
 
   /// Hardcoded fallback list for offline use.
   static const List<VehicleTypeModel> fallbackTypes = [
-    VehicleTypeModel(id: 'moto', label: 'Moto Taxi', iconName: 'zap', sortOrder: 1),
+    VehicleTypeModel(
+      id: 'moto',
+      label: 'Moto Taxi',
+      iconName: 'zap',
+      sortOrder: 1,
+    ),
     VehicleTypeModel(id: 'cab', label: 'Cab', iconName: 'car', sortOrder: 2),
     VehicleTypeModel(
       id: 'trike',

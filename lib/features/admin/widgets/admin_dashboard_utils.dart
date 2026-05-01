@@ -17,9 +17,11 @@ class AdminDashboardUtils {
     if (normalized.isEmpty) return raw;
     return normalized
         .split(' ')
-        .map((part) => part.isEmpty
-            ? part
-            : '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}')
+        .map(
+          (part) => part.isEmpty
+              ? part
+              : '${part[0].toUpperCase()}${part.substring(1).toLowerCase()}',
+        )
         .join(' ');
   }
 

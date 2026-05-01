@@ -10,6 +10,7 @@ import 'package:mobi_app/core/utils/navigation_utils.dart';
 import 'package:mobi_app/features/admin/admin_auth_screen.dart';
 import 'package:mobi_app/features/admin/admin_dashboard_screen.dart';
 import 'package:mobi_app/features/admin/admin_users_screen.dart';
+import 'package:mobi_app/features/auth/whatsapp_login_screen.dart';
 import 'package:mobi_app/features/biopay/biopay_screen.dart';
 import 'package:mobi_app/features/bookings/bookings_screen.dart';
 import 'package:mobi_app/features/bookings/schedule_trip_screen.dart';
@@ -133,6 +134,51 @@ class AdminAuthScreenWrapper extends ConsumerWidget {
       },
     );
   }
+}
+
+/// Passenger/driver WhatsApp login wrapper.
+class WhatsAppLoginScreenWrapper extends ConsumerWidget {
+  final String? redirectTo;
+
+  const WhatsAppLoginScreenWrapper({super.key, this.redirectTo});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return WhatsAppLoginScreen(
+      onBack: () => safePop(context),
+      onSuccess: (role) {
+        ref.read(roleProvider.notifier).set(role);
+        ref
+            .read(modeProvider.notifier)
+            .set(role.isDriver ? AppMode.driver : AppMode.passenger);
+        context.go(_safeAppRedirectTarget(redirectTo));
+      },
+      initialRole: ref.watch(modeProvider).isDriver
+          ? AppRole.driver
+          : AppRole.passenger,
+    );
+  }
+}
+
+String _safeAppRedirectTarget(String? raw) {
+  if (raw == null || raw.isEmpty) {
+    return '/';
+  }
+
+  final uri = Uri.tryParse(raw);
+  if (uri == null || uri.hasScheme || uri.hasAuthority) {
+    return '/';
+  }
+
+  final target = uri.toString();
+  if (!target.startsWith('/') ||
+      target.startsWith('//') ||
+      target == '/login' ||
+      target.startsWith('/login?')) {
+    return '/';
+  }
+
+  return target;
 }
 
 /// Nearby screen wrapper.

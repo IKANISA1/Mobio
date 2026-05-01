@@ -269,7 +269,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       icon: LucideIcons.receipt,
                       title: 'Ledger',
                       accent: AppColors.bioPayGreen,
-                      accentBackground: AppColors.bioPayGreen.withValues(alpha: 0.12),
+                      accentBackground: AppColors.bioPayGreen.withValues(
+                        alpha: 0.12,
+                      ),
                       badge: const MobiStatusBadge(
                         label: 'Transactions',
                         tone: MobiStatusBadgeTone.positive,

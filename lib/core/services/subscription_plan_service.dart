@@ -13,7 +13,9 @@ class SubscriptionPlanService {
   static const _networkTimeout = Duration(seconds: 15);
 
   /// Fetch all plans.
-  Future<List<SubscriptionPlanModel>> getAll({bool forceRefresh = false}) async {
+  Future<List<SubscriptionPlanModel>> getAll({
+    bool forceRefresh = false,
+  }) async {
     if (!forceRefresh && _cached != null) return _cached!;
 
     try {
@@ -43,7 +45,12 @@ class SubscriptionPlanService {
   ) async {
     final all = await getAll();
     return all
-        .where((p) => p.vehicleTypeId == vehicleTypeId && p.countryId == countryId && p.isActive)
+        .where(
+          (p) =>
+              p.vehicleTypeId == vehicleTypeId &&
+              p.countryId == countryId &&
+              p.isActive,
+        )
         .toList();
   }
 
@@ -57,18 +64,15 @@ class SubscriptionPlanService {
     bool isActive = true,
   }) async {
     try {
-      await supabase.from('subscription_plans').upsert(
-        {
-          'vehicle_type_id': vehicleTypeId,
-          'country_id': countryId,
-          'interval_days': intervalDays,
-          'price': price,
-          'currency': currency,
-          'is_active': isActive,
-          'updated_at': DateTime.now().toIso8601String(),
-        },
-        onConflict: 'vehicle_type_id,country_id,interval_days',
-      );
+      await supabase.from('subscription_plans').upsert({
+        'vehicle_type_id': vehicleTypeId,
+        'country_id': countryId,
+        'interval_days': intervalDays,
+        'price': price,
+        'currency': currency,
+        'is_active': isActive,
+        'updated_at': DateTime.now().toIso8601String(),
+      }, onConflict: 'vehicle_type_id,country_id,interval_days');
       invalidateCache();
     } on Object catch (e) {
       AppLogger.error('Error upserting subscription plan: $e');

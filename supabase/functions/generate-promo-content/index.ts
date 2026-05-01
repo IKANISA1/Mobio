@@ -6,6 +6,7 @@ import {
   jsonResponse,
   methodNotAllowed,
 } from "../_shared/http.ts";
+import { recordEdgeFunctionFailure } from "../_shared/observability.ts";
 import { createAdminClient } from "../_shared/supabase.ts";
 
 interface PromoCategory {
@@ -199,6 +200,34 @@ function isAuthorizedGenerationRequest(req: Request): boolean {
   );
 }
 
+function errorSummary(error: unknown): Record<string, string> {
+  return {
+    name: error instanceof Error ? error.name : typeof error,
+    message: error instanceof Error ? error.message.slice(0, 160) : "unknown",
+  };
+}
+
+async function recordPromoAudit(
+  supabaseClient: ReturnType<typeof createAdminClient>,
+  action: string,
+  details: Record<string, unknown>,
+) {
+  try {
+    await supabaseClient.from("admin_audit_log").insert({
+      admin_id: null,
+      action,
+      target_type: "promo_media",
+      target_id: null,
+      details,
+    });
+  } catch (error) {
+    console.error(
+      "[promo-generation] audit insert failed",
+      errorSummary(error),
+    );
+  }
+}
+
 // Standard approach for Gemini/Vertex REST calls natively in Deno
 async function generateMediaWithGoogle(
   prompt: string,
@@ -212,11 +241,7 @@ async function generateMediaWithGoogle(
     );
   }
 
-  console.log(
-    `[Google API] Requesting ${type} for prompt: "${
-      prompt.substring(0, 40)
-    }..."`,
-  );
+  console.log(`[Google API] Requesting ${type} asset`);
 
   if (type === "image") {
     // Call Gemini API for Imagen 3
@@ -237,8 +262,8 @@ async function generateMediaWithGoogle(
     });
 
     if (!response.ok) {
-      const errText = await response.text();
-      console.error(`[Imagen 3 Error] HTTP ${response.status}:`, errText);
+      await response.body?.cancel();
+      console.error(`[Imagen 3 Error] HTTP ${response.status}`);
       throw new Error(`Imagen 3 API Error: ${response.status}`);
     }
 
@@ -282,6 +307,12 @@ serve(async (req: Request) => {
     const supabaseClient = createAdminClient();
 
     const targetRegion = getDailyTargetRegion();
+    let generatedCount = 0;
+    let failedCount = 0;
+    await recordPromoAudit(supabaseClient, "promo_generation_started", {
+      target_region: targetRegion,
+      source: "generate-promo-content",
+    });
     console.log(
       `Starting promotional asset generation pipeline. Target Region for today: ${targetRegion.city}, ${targetRegion.country}`,
     );
@@ -311,11 +342,13 @@ serve(async (req: Request) => {
               metadata,
             });
 
+          generatedCount++;
           console.log(`[SUCCESS] Uploaded ${fileName}`);
         } catch (error) {
+          failedCount++;
           console.error(
             `[ERROR] Failed to generate/upload image ${fileName}:`,
-            error,
+            errorSummary(error),
           );
         }
       }
@@ -345,26 +378,53 @@ serve(async (req: Request) => {
               metadata,
             });
 
+          generatedCount++;
           console.log(`[SUCCESS] Uploaded ${fileName}`);
         } catch (error) {
+          failedCount++;
           console.error(
             `[ERROR] Failed to generate/upload video ${fileName}:`,
-            error,
+            errorSummary(error),
           );
         }
       }
     }
 
+    await recordPromoAudit(supabaseClient, "promo_generation_completed", {
+      target_region: targetRegion,
+      generated_count: generatedCount,
+      failed_count: failedCount,
+      source: "generate-promo-content",
+    });
+
     return jsonResponse(
-      { success: true, message: "Generation pipeline completed." },
+      {
+        success: true,
+        message: "Generation pipeline completed.",
+        generatedCount,
+        failedCount,
+      },
       200,
       req,
     );
   } catch (error: unknown) {
-    console.error(error);
-    const errorMessage = error instanceof Error
-      ? error.message
-      : "Unknown error occurred";
-    return errorResponse(errorMessage, 500, undefined, req);
+    console.error("[promo-generation] failed", errorSummary(error));
+    try {
+      await recordEdgeFunctionFailure(createAdminClient(), {
+        functionName: "generate-promo-content",
+        error,
+      });
+    } catch (logError) {
+      console.error(
+        "[promo-generation] failure logging failed",
+        errorSummary(logError),
+      );
+    }
+    return errorResponse(
+      "Unable to generate promotional assets",
+      500,
+      undefined,
+      req,
+    );
   }
 });

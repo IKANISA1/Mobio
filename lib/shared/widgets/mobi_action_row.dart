@@ -107,9 +107,7 @@ class _MobiActionTile extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
-                  style: AppTypography.labelMd.copyWith(
-                    color: cs.onSurface,
-                  ),
+                  style: AppTypography.labelMd.copyWith(color: cs.onSurface),
                 ),
               ],
             ),

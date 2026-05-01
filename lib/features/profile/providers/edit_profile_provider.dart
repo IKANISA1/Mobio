@@ -1,17 +1,17 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
 import 'package:mobi_app/features/profile/models/edit_profile_state.dart';
-import 'package:mobi_app/models/country.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-final editProfileProvider = AsyncNotifierProvider.autoDispose<
-  EditProfileController,
-  EditProfileState
->(EditProfileController.new);
+final editProfileProvider =
+    AsyncNotifierProvider.autoDispose<EditProfileController, EditProfileState>(
+      EditProfileController.new,
+    );
 
 class EditProfileController extends AsyncNotifier<EditProfileState> {
   @override
@@ -30,7 +30,8 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
     final vehicleTypes = await vehicleTypeService.getAll();
     final plans = await planService.getAll();
 
-    if (!SupabaseConfig.isConfigured || Supabase.instance.client.auth.currentSession == null) {
+    if (!SupabaseConfig.isConfigured ||
+        Supabase.instance.client.auth.currentSession == null) {
       return EditProfileState(
         countries: countries,
         vehicleTypes: vehicleTypes,
@@ -44,19 +45,26 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
       BiopayHandle? remoteHandle;
       try {
         final hubState = await bioPayService.loadHubState();
-        remoteHandle = await countryService.parseBiopayUssd(hubState.ussdString);
-      } catch (_) {}
+        remoteHandle = await countryService.parseBiopayUssd(
+          hubState.ussdString,
+        );
+      } on Object catch (error) {
+        debugPrint('Unable to load remote BioPay handle: $error');
+      }
 
       final profileCountryCode = profile?.countryCode?.trim().isNotEmpty == true
           ? profile!.countryCode!
           : null;
 
-      final resolvedCountryCode = profileCountryCode ??
+      final resolvedCountryCode =
+          profileCountryCode ??
           remoteHandle?.countryCode ??
           countries.first.dialingCode;
 
       final storedHandleValue = (profile?.biopayHandleValue ?? '').trim();
-      final storedHandleType = BiopayHandleType.fromStorage(profile?.biopayHandleType);
+      final storedHandleType = BiopayHandleType.fromStorage(
+        profile?.biopayHandleType,
+      );
 
       final initialHandle = storedHandleValue.isNotEmpty
           ? BiopayHandle(
@@ -76,7 +84,8 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
       final resolvedVehicleTypeId = (profile?.vehicleType?.isNotEmpty == true)
           ? profile!.vehicleType!
           : 'cab';
-      final resolvedVehicleNumberPlate = (profile?.vehicleNumberPlate ?? '').trim();
+      final resolvedVehicleNumberPlate = (profile?.vehicleNumberPlate ?? '')
+          .trim();
       final resolvedIsDriver = profile?.isDriver ?? (profile?.role == 'driver');
       final whatsAppValue = profile?.whatsapp ?? profile?.phone ?? '';
 
@@ -94,7 +103,7 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         initialHandleValue: resolvedHandleValue,
         initialVehicleNumberPlate: resolvedVehicleNumberPlate,
       );
-    } catch (_) {
+    } on Object {
       return EditProfileState(
         countries: countries,
         vehicleTypes: vehicleTypes,
@@ -120,7 +129,9 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
   void toggleDriverMode() {
     final currentState = state.value;
     if (currentState == null) return;
-    state = AsyncValue.data(currentState.copyWith(isDriver: !currentState.isDriver));
+    state = AsyncValue.data(
+      currentState.copyWith(isDriver: !currentState.isDriver),
+    );
   }
 
   void setVehicleTypeId(String id) {
@@ -148,7 +159,10 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
           )
         : countryService.normalizeCodeValue(handleValue);
 
-    final normalizedPlate = vehicleNumberPlate.toUpperCase().replaceAll(RegExp(r'\s+'), ' ').trim();
+    final normalizedPlate = vehicleNumberPlate
+        .toUpperCase()
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
 
     state = AsyncValue.data(s.copyWith(isSaving: true));
 
@@ -176,7 +190,7 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         }
       }
       return true;
-    } catch (_) {
+    } on Object {
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(finalState.copyWith(isSaving: false));

@@ -38,7 +38,7 @@ Rwanda-first mobility app with BioPay biometric payments, trip scheduling, and r
 | 1 | **User IDs = 6 numeric digits** | No letters, no UUIDs in UI. Always `\d{6}`. See `AppConstants.getDriverId()`. |
 | 2 | **Default country = Rwanda (RW)** | Pre-selected everywhere: dialing code `+250`, currency `RWF`, MoMo `MTN MoMo`. Never prompt user to choose. |
 | 3 | **UI = `design.md` only** | No ad-hoc styles. Every color, font, spacing, shadow, and component MUST follow [`design.md`](./design.md). Update the spec first, then code. |
-| 4 | **Auth = Supabase anonymous** | `signInAnonymously()` at splash. No login wall, no sign-up form. Admin OTP is the only exception. |
+| 4 | **Auth = WhatsApp OTP** | Passenger/driver app access requires WhatsApp Cloud OTP. Admin OTP is separate and allowlisted. |
 | 5 | **Build env vars = mandatory** | Every `flutter build apk/appbundle` **MUST** pass `--dart-define=SUPABASE_URL=...` and `--dart-define=SUPABASE_ANON_KEY=...`. Use `./scripts/release/build_android_release.sh`. |
 
 ---
@@ -197,7 +197,16 @@ firebase deploy --only hosting --project gen-lang-client-0172279957
 
 ## Project Structure
 
+The repo is being migrated toward documented monorepo boundaries while keeping active Flutter/Supabase paths stable. See [`docs/architecture/monorepo_structure.md`](./docs/architecture/monorepo_structure.md) for the target structure and migration phases.
+
 ```
+apps/              # Boundary docs for mobile, PWA, admin, website, future app surfaces
+packages/          # Boundary docs for future shared Dart/domain packages
+agents/            # Agent policy/workspace/channel boundary docs
+integrations/      # External channel/payment integration boundary docs
+docs/              # Architecture, product, security, release, testing, operations docs
+infra/             # CI/config/monitoring boundary docs
+
 lib/
 ├── core/           # Config, services, theme, utils
 ├── features/       # Feature screens (home, nearby, bookings, biopay, profile, admin)
@@ -216,9 +225,9 @@ supabase/
 
 ## Authentication
 
-- **Anonymous-first**: Supabase anonymous sign-in (`signInAnonymously()`) happens automatically at splash. No login wall, no sign-up form, no email/password — ever.
-- **Admin gateway**: Admin access requires WhatsApp OTP verification against a pre-authorized admin phone (separate flow in Profile → Admin). This is the only auth escalation in the entire app.
-- All features are accessible without explicit login. Profile is optional.
+- **Passenger/driver app login**: protected app routes require WhatsApp Cloud OTP login. Anonymous Supabase sessions are treated as unauthenticated for production passenger/driver flows.
+- **Admin gateway**: admin access requires a separate WhatsApp OTP verification against a pre-authorized admin phone. Admin OTP purpose is isolated from passenger/driver login OTP purpose.
+- Server-side RPCs and RLS remain authoritative for permissions; Flutter route guards only improve user experience.
 - User-facing IDs are always **6 numeric digits** (derived from internal UUIDs via `AppConstants.getDriverId()`). Internal Supabase UUIDs are never exposed in the UI.
 
 ### Bootstrap A Persistent Admin
@@ -226,11 +235,11 @@ supabase/
 Use the repo-local admin bootstrap script when you need to provision the first real admin on a project:
 
 ```bash
-SUPABASE_URL=https://your-project.supabase.co \
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key \
-ADMIN_PHONE=+250788000000 \
-ADMIN_NAME="Admin MOBI" \
-deno run --allow-env --allow-net scripts/admin/bootstrap_admin.ts
+export SUPABASE_URL="https://your-project.supabase.co"
+read -rsp "SUPABASE service-role key: " SUPABASE_SERVICE_ROLE_KEY
+export SUPABASE_SERVICE_ROLE_KEY
+ADMIN_PHONE=+250788000000 ADMIN_NAME="Admin MOBI" \
+  deno run --allow-env --allow-net scripts/admin/bootstrap_admin.ts
 ```
 
 - The script creates or reuses the auth user, marks it as admin, and upserts the matching `profiles` row.

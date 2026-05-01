@@ -27,18 +27,31 @@ class AdminTripsScreen extends ConsumerStatefulWidget {
 class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
   AdminService get _adminService => ref.read(adminServiceProvider);
 
+  late final TextEditingController _searchController;
+
   bool _isLoading = true;
   String? _error;
   List<AdminTripListItem> _trips = [];
 
   String? _statusFilter;
   String? _roleFilter;
+  String _searchQuery = '';
+  String _sortKey = 'newest';
+  int _page = 0;
+  int _rowsPerPage = 25;
   String? _busyId;
 
   @override
   void initState() {
     super.initState();
+    _searchController = TextEditingController();
     _loadTrips();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadTrips({bool silent = false}) async {
@@ -77,20 +90,10 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
 
     setState(() => _busyId = trip.id);
     try {
-      // In a real scenario, this would use a dedicated admin override RPC.
-      // Assuming rpc_cancel_trip or equivalent override exists.
-      // We will fallback to a direct DB update using Supabase raw client
-      // since the standard rpc_cancel_trip checks for ownership.
-      final supabase = ref.read(supabaseClientProvider);
-      await supabase
-          .from('trips')
-          .update({
-            'status': 'cancelled',
-            'is_active': false,
-            'cancelled_at': DateTime.now().toIso8601String(),
-            'note': 'Cancelled by Admin: Violation of terms.',
-          })
-          .eq('id', trip.id);
+      await _adminService.cancelTrip(
+        tripId: trip.id,
+        reason: 'Manual moderation from admin trips workspace',
+      );
 
       await _loadTrips(silent: true);
       if (mounted) _showSnackBar('Trip cancelled.');
@@ -125,7 +128,11 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scheduledCount = _trips.where((t) => t.status == 'active').length;
+    final filteredTrips = _filteredTrips();
+    final pageTrips = _pageTrips(filteredTrips);
+    final scheduledCount = filteredTrips
+        .where((t) => t.status == 'active')
+        .length;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -206,11 +213,11 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                       onTap: _loadTrips,
                     ),
                   )
-                else if (_trips.isEmpty)
+                else if (filteredTrips.isEmpty)
                   AdminEmptyState(
                     title: 'No trips',
                     message: 'No rows match the current filters.',
-                    icon: LucideIcons.ghost,
+                    icon: LucideIcons.search,
                     action: AdminActionChip(
                       label: 'Clear',
                       icon: LucideIcons.x,
@@ -218,13 +225,16 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                         setState(() {
                           _statusFilter = null;
                           _roleFilter = null;
+                          _searchQuery = '';
+                          _page = 0;
+                          _searchController.clear();
                         });
                         _loadTrips();
                       },
                     ),
                   )
                 else
-                  _buildFeedList(),
+                  _buildFeedList(pageTrips, filteredTrips.length),
               ],
             ),
           ),
@@ -240,6 +250,71 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
         children: [
           const AdminSectionHeader(title: 'Feed', subtitle: 'Role and state'),
           const SizedBox(height: AppSpacing.md),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth >= 760;
+              final search = SizedBox(
+                width: isWide ? 420 : double.infinity,
+                child: AdminSearchField(
+                  controller: _searchController,
+                  hintText: 'Search trips, members, routes',
+                  onChanged: (value) => setState(() {
+                    _searchQuery = value;
+                    _page = 0;
+                  }),
+                ),
+              );
+              final sort = AdminSortMenu(
+                value: _sortKey,
+                options: const [
+                  AdminSortOption(
+                    value: 'newest',
+                    label: 'Newest',
+                    icon: LucideIcons.clock,
+                  ),
+                  AdminSortOption(
+                    value: 'author',
+                    label: 'Author',
+                    icon: LucideIcons.user,
+                  ),
+                  AdminSortOption(
+                    value: 'route',
+                    label: 'Route',
+                    icon: LucideIcons.map,
+                  ),
+                  AdminSortOption(
+                    value: 'status',
+                    label: 'Status',
+                    icon: LucideIcons.activity,
+                  ),
+                ],
+                onChanged: (value) => setState(() {
+                  _sortKey = value;
+                  _page = 0;
+                }),
+              );
+
+              if (isWide) {
+                return Row(
+                  children: [
+                    Expanded(child: search),
+                    const SizedBox(width: AppSpacing.md),
+                    sort,
+                  ],
+                );
+              }
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  search,
+                  const SizedBox(height: AppSpacing.sm),
+                  sort,
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: AppSpacing.md),
           Wrap(
             spacing: AppSpacing.sm,
             runSpacing: AppSpacing.sm,
@@ -249,7 +324,10 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                 icon: LucideIcons.globe,
                 isSelected: _roleFilter == null,
                 onTap: () {
-                  setState(() => _roleFilter = null);
+                  setState(() {
+                    _roleFilter = null;
+                    _page = 0;
+                  });
                   _loadTrips(silent: true);
                 },
               ),
@@ -258,7 +336,10 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                 icon: LucideIcons.car,
                 isSelected: _roleFilter == 'driver',
                 onTap: () {
-                  setState(() => _roleFilter = 'driver');
+                  setState(() {
+                    _roleFilter = 'driver';
+                    _page = 0;
+                  });
                   _loadTrips(silent: true);
                 },
               ),
@@ -267,7 +348,10 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                 icon: LucideIcons.user,
                 isSelected: _roleFilter == 'passenger',
                 onTap: () {
-                  setState(() => _roleFilter = 'passenger');
+                  setState(() {
+                    _roleFilter = 'passenger';
+                    _page = 0;
+                  });
                   _loadTrips(silent: true);
                 },
               ),
@@ -283,7 +367,10 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                 icon: LucideIcons.layers,
                 isSelected: _statusFilter == null,
                 onTap: () {
-                  setState(() => _statusFilter = null);
+                  setState(() {
+                    _statusFilter = null;
+                    _page = 0;
+                  });
                   _loadTrips(silent: true);
                 },
               ),
@@ -292,7 +379,10 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                 icon: LucideIcons.activity,
                 isSelected: _statusFilter == 'active',
                 onTap: () {
-                  setState(() => _statusFilter = 'active');
+                  setState(() {
+                    _statusFilter = 'active';
+                    _page = 0;
+                  });
                   _loadTrips(silent: true);
                 },
               ),
@@ -301,7 +391,10 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                 icon: LucideIcons.ban,
                 isSelected: _statusFilter == 'cancelled',
                 onTap: () {
-                  setState(() => _statusFilter = 'cancelled');
+                  setState(() {
+                    _statusFilter = 'cancelled';
+                    _page = 0;
+                  });
                   _loadTrips(silent: true);
                 },
               ),
@@ -310,7 +403,10 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                 icon: LucideIcons.badgeCheck,
                 isSelected: _statusFilter == 'completed',
                 onTap: () {
-                  setState(() => _statusFilter = 'completed');
+                  setState(() {
+                    _statusFilter = 'completed';
+                    _page = 0;
+                  });
                   _loadTrips(silent: true);
                 },
               ),
@@ -321,7 +417,7 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
     );
   }
 
-  Widget _buildFeedList() {
+  Widget _buildFeedList(List<AdminTripListItem> trips, int totalCount) {
     return AdminPanel(
       padding: EdgeInsets.zero,
       child: Column(
@@ -360,16 +456,16 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
               context,
             ).colorScheme.outlineVariant.withValues(alpha: 0.55),
           ),
-          for (var index = 0; index < _trips.length; index++) ...[
+          for (var index = 0; index < trips.length; index++) ...[
             _TripRow(
-              trip: _trips[index],
-              isBusy: _busyId == _trips[index].id,
+              trip: trips[index],
+              isBusy: _busyId == trips[index].id,
               onCancel: () {
                 HapticFeedback.heavyImpact();
-                _cancelTrip(_trips[index]);
+                _cancelTrip(trips[index]);
               },
             ),
-            if (index < _trips.length - 1)
+            if (index < trips.length - 1)
               Divider(
                 height: 1,
                 thickness: 1,
@@ -378,9 +474,80 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                 ).colorScheme.outlineVariant.withValues(alpha: 0.35),
               ),
           ],
+          AdminPaginationBar(
+            totalItems: totalCount,
+            page: _page,
+            rowsPerPage: _rowsPerPage,
+            onPageChanged: (page) => setState(() => _page = page),
+            onRowsPerPageChanged: (rowsPerPage) => setState(() {
+              _rowsPerPage = rowsPerPage;
+              _page = 0;
+            }),
+          ),
         ],
       ),
     );
+  }
+
+  List<AdminTripListItem> _filteredTrips() {
+    final query = _searchQuery.trim().toLowerCase();
+    final rows =
+        (query.isEmpty
+              ? [..._trips]
+              : _trips.where((trip) {
+                  final haystack = [
+                    trip.authorName,
+                    trip.memberId,
+                    trip.origin,
+                    trip.destination,
+                    trip.status,
+                    trip.role,
+                    trip.vehicleType,
+                  ].whereType<String>().join(' ').toLowerCase();
+                  return haystack.contains(query);
+                }).toList())
+          ..sort(_compareTrips);
+    final maxPage = rows.isEmpty
+        ? 0
+        : ((rows.length - 1) / _rowsPerPage).floor();
+    if (_page > maxPage) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _page > maxPage) {
+          setState(() => _page = maxPage);
+        }
+      });
+    }
+    return rows;
+  }
+
+  List<AdminTripListItem> _pageTrips(List<AdminTripListItem> trips) {
+    final safeRowsPerPage = _rowsPerPage <= 0 ? 25 : _rowsPerPage;
+    final start = (_page * safeRowsPerPage).clamp(0, trips.length).toInt();
+    final end = (start + safeRowsPerPage).clamp(0, trips.length).toInt();
+    return trips.sublist(start, end);
+  }
+
+  int _compareTrips(AdminTripListItem a, AdminTripListItem b) {
+    switch (_sortKey) {
+      case 'author':
+        return a.authorName.toLowerCase().compareTo(b.authorName.toLowerCase());
+      case 'route':
+        final routeA = '${a.origin} ${a.destination}'.toLowerCase();
+        final routeB = '${b.origin} ${b.destination}'.toLowerCase();
+        return routeA.compareTo(routeB);
+      case 'status':
+        final statusCompare = a.status.compareTo(b.status);
+        if (statusCompare != 0) return statusCompare;
+        return b.authorName.compareTo(a.authorName);
+      case 'newest':
+      default:
+        final aDate = DateTime.tryParse(a.createdAt ?? '');
+        final bDate = DateTime.tryParse(b.createdAt ?? '');
+        if (aDate != null && bDate != null) return bDate.compareTo(aDate);
+        if (aDate != null) return -1;
+        if (bDate != null) return 1;
+        return a.authorName.toLowerCase().compareTo(b.authorName.toLowerCase());
+    }
   }
 }
 

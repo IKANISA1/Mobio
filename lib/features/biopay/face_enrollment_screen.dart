@@ -6,7 +6,6 @@ import 'package:mobi_app/core/services/app_permission_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
-import 'package:mobi_app/features/biopay/models/biopay_models.dart';
 import 'package:mobi_app/features/biopay/models/face_enrollment_state.dart';
 import 'package:mobi_app/features/biopay/providers/face_enrollment_provider.dart';
 import 'package:mobi_app/features/biopay/widgets/biopay_step_surface.dart';

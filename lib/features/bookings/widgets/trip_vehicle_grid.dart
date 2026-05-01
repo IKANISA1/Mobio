@@ -30,7 +30,9 @@ class TripVehicleGrid extends StatelessWidget {
         const MobiSectionHeader(title: 'Vehicle', icon: LucideIcons.car),
         const SizedBox(height: AppSpacing.sm),
         Row(
-          children: vehicleTypes.map((vt) => _buildVehicleItem(context, vt)).toList(),
+          children: vehicleTypes
+              .map((vt) => _buildVehicleItem(context, vt))
+              .toList(),
         ),
       ],
     );
@@ -61,7 +63,9 @@ class TripVehicleGrid extends StatelessWidget {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     decoration: BoxDecoration(
-                      color: isSelected ? AppColors.primaryFixed : ext.surfaceContainer,
+                      color: isSelected
+                          ? AppColors.primaryFixed
+                          : ext.surfaceContainer,
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: isSelected
                           ? [
@@ -81,10 +85,12 @@ class TripVehicleGrid extends StatelessWidget {
                           width: 32,
                           height: 32,
                           fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => Icon(
+                          errorBuilder: (context, error, stackTrace) => Icon(
                             vt.icon,
                             size: 24,
-                            color: isSelected ? cs.onPrimaryFixed : cs.onSurfaceVariant,
+                            color: isSelected
+                                ? cs.onPrimaryFixed
+                                : cs.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -92,7 +98,9 @@ class TripVehicleGrid extends StatelessWidget {
                           vt.label,
                           style: AppTypography.labelSm.copyWith(
                             fontWeight: FontWeight.w700,
-                            color: isSelected ? cs.onPrimaryFixed : cs.onSurfaceVariant,
+                            color: isSelected
+                                ? cs.onPrimaryFixed
+                                : cs.onSurfaceVariant,
                           ),
                         ),
                       ],

@@ -32,17 +32,29 @@ class _AdminVehicleTypesScreenState
       ref.read(vehicleTypeServiceProvider);
   CountryService get _countryService => ref.read(countryServiceProvider);
 
+  final _searchController = TextEditingController();
+
   bool _isLoading = true;
   String? _error;
   List<VehicleTypeModel> _vehicleTypes = [];
   List<Country> _countries = [];
   String? _busyId;
   String _statusFilter = 'all';
+  String _searchQuery = '';
+  String _sortKey = 'sort_order';
+  int _page = 0;
+  int _rowsPerPage = 25;
 
   @override
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -229,14 +241,8 @@ class _AdminVehicleTypesScreenState
 
   @override
   Widget build(BuildContext context) {
-    final filteredTypes = _vehicleTypes.where((type) {
-      return switch (_statusFilter) {
-        'active' => type.isActive,
-        'inactive' => !type.isActive,
-        'unassigned' => type.countryIds.isEmpty,
-        _ => true,
-      };
-    }).toList();
+    final visibleTypes = _visibleTypes();
+    final pagedTypes = _pagedTypes(visibleTypes);
     final activeCount = _vehicleTypes.where((type) => type.isActive).length;
     final inactiveCount = _vehicleTypes.length - activeCount;
     final unassignedCount = _vehicleTypes
@@ -270,27 +276,96 @@ class _AdminVehicleTypesScreenState
                     children: [
                       const AdminSectionHeader(
                         title: 'Scope',
-                        subtitle: 'Status',
+                        subtitle: 'Search, status, sort',
                       ),
                       const SizedBox(height: AppSpacing.lg),
-                      Wrap(
-                        spacing: AppSpacing.sm,
-                        runSpacing: AppSpacing.sm,
-                        children: [
-                          for (final filter in const [
-                            ('all', 'All', LucideIcons.list),
-                            ('active', 'Active', LucideIcons.badgeCheck),
-                            ('inactive', 'Paused', LucideIcons.pause),
-                            ('unassigned', 'Unassigned', LucideIcons.mapPin),
-                          ])
-                            AdminFilterChip(
-                              label: filter.$2,
-                              icon: filter.$3,
-                              isSelected: _statusFilter == filter.$1,
-                              onTap: () =>
-                                  setState(() => _statusFilter = filter.$1),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final isWide = constraints.maxWidth >= 900;
+                          final search = SizedBox(
+                            width: isWide ? 340 : double.infinity,
+                            child: AdminSearchField(
+                              controller: _searchController,
+                              hintText: 'Search vehicle or country',
+                              onChanged: (value) => setState(() {
+                                _searchQuery = value;
+                                _page = 0;
+                              }),
                             ),
-                        ],
+                          );
+                          final controls = Wrap(
+                            spacing: AppSpacing.sm,
+                            runSpacing: AppSpacing.sm,
+                            children: [
+                              for (final filter in const [
+                                ('all', 'All', LucideIcons.list),
+                                ('active', 'Active', LucideIcons.badgeCheck),
+                                ('inactive', 'Paused', LucideIcons.pause),
+                                (
+                                  'unassigned',
+                                  'Unassigned',
+                                  LucideIcons.mapPin,
+                                ),
+                              ])
+                                AdminFilterChip(
+                                  label: filter.$2,
+                                  icon: filter.$3,
+                                  isSelected: _statusFilter == filter.$1,
+                                  onTap: () => setState(() {
+                                    _statusFilter = filter.$1;
+                                    _page = 0;
+                                  }),
+                                ),
+                              AdminSortMenu(
+                                value: _sortKey,
+                                options: const [
+                                  AdminSortOption(
+                                    value: 'sort_order',
+                                    label: 'Rollout',
+                                    icon: LucideIcons.listOrdered,
+                                  ),
+                                  AdminSortOption(
+                                    value: 'name',
+                                    label: 'Name',
+                                    icon: LucideIcons.arrowUpAZ,
+                                  ),
+                                  AdminSortOption(
+                                    value: 'status',
+                                    label: 'Status',
+                                    icon: LucideIcons.activity,
+                                  ),
+                                  AdminSortOption(
+                                    value: 'countries',
+                                    label: 'Countries',
+                                    icon: LucideIcons.map,
+                                  ),
+                                ],
+                                onChanged: (value) => setState(() {
+                                  _sortKey = value;
+                                  _page = 0;
+                                }),
+                              ),
+                            ],
+                          );
+
+                          return isWide
+                              ? Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    search,
+                                    const SizedBox(width: AppSpacing.md),
+                                    Expanded(child: controls),
+                                  ],
+                                )
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    search,
+                                    const SizedBox(height: AppSpacing.md),
+                                    controls,
+                                  ],
+                                );
+                        },
                       ),
                     ],
                   ),
@@ -348,7 +423,7 @@ class _AdminVehicleTypesScreenState
                       onTap: _load,
                     ),
                   )
-                else if (filteredTypes.isEmpty)
+                else if (visibleTypes.isEmpty)
                   const AdminEmptyState(
                     title: 'No vehicle types',
                     message: 'Try another filter.',
@@ -403,22 +478,22 @@ class _AdminVehicleTypesScreenState
                         ),
                         for (
                           var index = 0;
-                          index < filteredTypes.length;
+                          index < pagedTypes.length;
                           index++
                         ) ...[
                           _VehicleTypeRow(
-                            vehicleType: filteredTypes[index],
+                            vehicleType: pagedTypes[index],
                             countries: _countries,
-                            isBusy: _busyId == filteredTypes[index].id,
+                            isBusy: _busyId == pagedTypes[index].id,
                             onEditCountries: () {
-                              _showCountryEditor(filteredTypes[index]);
+                              _showCountryEditor(pagedTypes[index]);
                             },
                             onToggle: () {
                               HapticFeedback.lightImpact();
-                              _toggleActive(filteredTypes[index]);
+                              _toggleActive(pagedTypes[index]);
                             },
                           ),
-                          if (index < filteredTypes.length - 1)
+                          if (index < pagedTypes.length - 1)
                             Divider(
                               height: 1,
                               thickness: 1,
@@ -428,6 +503,16 @@ class _AdminVehicleTypesScreenState
                                   .withValues(alpha: 0.35),
                             ),
                         ],
+                        AdminPaginationBar(
+                          totalItems: visibleTypes.length,
+                          page: _page,
+                          rowsPerPage: _rowsPerPage,
+                          onPageChanged: (page) => setState(() => _page = page),
+                          onRowsPerPageChanged: (rows) => setState(() {
+                            _rowsPerPage = rows;
+                            _page = 0;
+                          }),
+                        ),
                       ],
                     ),
                   ),
@@ -438,6 +523,52 @@ class _AdminVehicleTypesScreenState
       ),
     );
   }
+
+  List<VehicleTypeModel> _visibleTypes() {
+    final query = _searchQuery.trim().toLowerCase();
+    final rows = _vehicleTypes.where((type) {
+      final matchesStatus = switch (_statusFilter) {
+        'active' => type.isActive,
+        'inactive' => !type.isActive,
+        'unassigned' => type.countryIds.isEmpty,
+        _ => true,
+      };
+      if (!matchesStatus) return false;
+      if (query.isEmpty) return true;
+
+      final assignedCountries = _countries.where(
+        (country) => type.countryIds.contains(country.id),
+      );
+      return type.id.toLowerCase().contains(query) ||
+          type.label.toLowerCase().contains(query) ||
+          assignedCountries.any(
+            (country) =>
+                country.id.toLowerCase().contains(query) ||
+                country.name.toLowerCase().contains(query),
+          );
+    }).toList();
+
+    return rows..sort(_compareTypes);
+  }
+
+  List<VehicleTypeModel> _pagedTypes(List<VehicleTypeModel> rows) {
+    if (rows.isEmpty) return const [];
+    final safeRowsPerPage = _rowsPerPage <= 0 ? 25 : _rowsPerPage;
+    final start = (_page * safeRowsPerPage).clamp(0, rows.length).toInt();
+    final end = (start + safeRowsPerPage).clamp(0, rows.length).toInt();
+    return rows.sublist(start, end);
+  }
+
+  int _compareTypes(VehicleTypeModel a, VehicleTypeModel b) {
+    return switch (_sortKey) {
+      'name' => a.label.toLowerCase().compareTo(b.label.toLowerCase()),
+      'status' => _boolRank(b.isActive).compareTo(_boolRank(a.isActive)),
+      'countries' => b.countryIds.length.compareTo(a.countryIds.length),
+      _ => a.sortOrder.compareTo(b.sortOrder),
+    };
+  }
+
+  int _boolRank(bool value) => value ? 1 : 0;
 }
 
 class _FleetMetricGrid extends StatelessWidget {

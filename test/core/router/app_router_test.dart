@@ -11,6 +11,10 @@ void main() {
       expect(AppRoutes.biopay, '/biopay');
     });
 
+    test('login route', () {
+      expect(AppRoutes.login, '/login');
+    });
+
     test('profile route', () {
       expect(AppRoutes.profile, '/profile');
     });

@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
 import 'package:mobi_app/features/bookings/models/schedule_trip_state.dart';
+import 'package:mobi_app/models/favorite_address.dart';
 import 'package:mobi_app/models/place.dart';
+import 'package:mobi_app/models/trip.dart';
 
 /// Provider for schedule arguments (mode).
 class ScheduleTripArgsNotifier extends Notifier<String?> {
@@ -34,13 +35,13 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   FutureOr<ScheduleTripState> build() async {
     final mode = ref.watch(scheduleTripArgsProvider);
 
-    // Load vehicle types immediately
     final vt = await ref.read(vehicleTypeServiceProvider).getAll();
+    final favorites = await _loadFavoriteAddresses();
 
-    // Initial state with role from argument if provided
     final initialState = ScheduleTripState(
       vehicleTypes: vt,
       selectedRole: mode,
+      favoriteAddresses: favorites,
     );
 
     // Bootstrap location in background
@@ -49,25 +50,38 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     return initialState;
   }
 
+  Future<List<FavoriteAddress>> _loadFavoriteAddresses() async {
+    try {
+      return await ref.read(favoriteAddressServiceProvider).list();
+    } on Object catch (error) {
+      debugPrint('Unable to load favorite addresses: $error');
+      return const [];
+    }
+  }
+
   Future<void> _initLocation() async {
-    final hasAccess = await AppPermissionService.instance.hasLocationAccess();
-    if (!hasAccess) return;
+    try {
+      final hasAccess = await AppPermissionService.instance.hasLocationAccess();
+      if (!hasAccess) return;
 
-    final locationService = ref.read(locationServiceProvider);
-    final position =
-        await locationService.getLastKnownOrCached() ??
-        await locationService.getCurrentPosition();
+      final locationService = ref.read(locationServiceProvider);
+      final position =
+          await locationService.getLastKnownOrCached() ??
+          await locationService.getCurrentPosition();
 
-    if (position != null) {
-      final currentState = state.value;
-      if (currentState != null) {
-        state = AsyncValue.data(
-          currentState.copyWith(
-            userLat: position.latitude,
-            userLng: position.longitude,
-          ),
-        );
+      if (position != null) {
+        final currentState = state.value;
+        if (currentState != null) {
+          state = AsyncValue.data(
+            currentState.copyWith(
+              userLat: position.latitude,
+              userLng: position.longitude,
+            ),
+          );
+        }
       }
+    } on Object catch (error) {
+      debugPrint('Unable to bootstrap location: $error');
     }
   }
 
@@ -86,7 +100,12 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
       if (position == null) {
         final current = state.value;
         if (current != null) {
-          state = AsyncValue.data(current.copyWith(isLoadingLocation: false));
+          state = AsyncValue.data(
+            current.copyWith(
+              isLoadingLocation: false,
+              validationMessage: 'Current location is unavailable.',
+            ),
+          );
         }
         return;
       }
@@ -99,7 +118,16 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
       if (details != null) {
         setOrigin(details);
       }
-    } catch (_) {
+    } on Object catch (error) {
+      debugPrint('Unable to use current location: $error');
+      final current = state.value;
+      if (current != null) {
+        state = AsyncValue.data(
+          current.copyWith(
+            validationMessage: 'Unable to use current location. Try again.',
+          ),
+        );
+      }
     } finally {
       final finalState = state.value;
       if (finalState != null) {
@@ -111,15 +139,108 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   void setOrigin(PlaceDetails? details) {
     final currentState = state.value;
     if (currentState == null) return;
-    state = AsyncValue.data(currentState.copyWith(originDetails: details));
+    state = AsyncValue.data(
+      currentState.copyWith(originDetails: details, validationMessage: null),
+    );
     unawaited(_tryComputeRoute());
   }
 
   void setDestination(PlaceDetails? details) {
     final currentState = state.value;
     if (currentState == null) return;
-    state = AsyncValue.data(currentState.copyWith(destDetails: details));
+    state = AsyncValue.data(
+      currentState.copyWith(destDetails: details, validationMessage: null),
+    );
     unawaited(_tryComputeRoute());
+  }
+
+  void useFavoriteAsOrigin(FavoriteAddress address) {
+    setOrigin(address.toPlaceDetails());
+  }
+
+  void useFavoriteAsDestination(FavoriteAddress address) {
+    setDestination(address.toPlaceDetails());
+  }
+
+  Future<bool> saveFavoriteAddress({
+    required bool fromOrigin,
+    required String label,
+    required String addressType,
+  }) async {
+    final currentState = state.value;
+    if (currentState == null) return false;
+
+    final place = fromOrigin
+        ? currentState.originDetails
+        : currentState.destDetails;
+    if (place == null || place.formattedAddress.trim().isEmpty) {
+      return false;
+    }
+
+    state = AsyncValue.data(
+      currentState.copyWith(isSavingFavoriteAddress: true),
+    );
+
+    try {
+      await ref
+          .read(favoriteAddressServiceProvider)
+          .save(
+            label: label,
+            addressType: addressType,
+            place: place,
+            sortOrder: currentState.favoriteAddresses.length,
+          );
+      final favorites = await _loadFavoriteAddresses();
+      final finalState = state.value;
+      if (finalState != null) {
+        state = AsyncValue.data(
+          finalState.copyWith(
+            favoriteAddresses: favorites,
+            isSavingFavoriteAddress: false,
+          ),
+        );
+      }
+      return true;
+    } on Object {
+      final finalState = state.value;
+      if (finalState != null) {
+        state = AsyncValue.data(
+          finalState.copyWith(isSavingFavoriteAddress: false),
+        );
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> deleteFavoriteAddress(FavoriteAddress address) async {
+    final currentState = state.value;
+    if (currentState == null) return;
+
+    state = AsyncValue.data(
+      currentState.copyWith(isSavingFavoriteAddress: true),
+    );
+
+    try {
+      await ref.read(favoriteAddressServiceProvider).delete(address.id);
+      final favorites = await _loadFavoriteAddresses();
+      final finalState = state.value;
+      if (finalState != null) {
+        state = AsyncValue.data(
+          finalState.copyWith(
+            favoriteAddresses: favorites,
+            isSavingFavoriteAddress: false,
+          ),
+        );
+      }
+    } on Object {
+      final finalState = state.value;
+      if (finalState != null) {
+        state = AsyncValue.data(
+          finalState.copyWith(isSavingFavoriteAddress: false),
+        );
+      }
+      rethrow;
+    }
   }
 
   void setVehicleId(String id) {
@@ -131,26 +252,35 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   void setRole(String role) {
     final currentState = state.value;
     if (currentState == null) return;
-    state = AsyncValue.data(currentState.copyWith(selectedRole: role));
+    state = AsyncValue.data(
+      currentState.copyWith(selectedRole: role, validationMessage: null),
+    );
   }
 
   void setDate(DateTime date) {
     final currentState = state.value;
     if (currentState == null) return;
-    state = AsyncValue.data(currentState.copyWith(date: date));
+    state = AsyncValue.data(
+      currentState.copyWith(date: date, validationMessage: null),
+    );
   }
 
   void setTime(TimeOfDay time) {
     final currentState = state.value;
     if (currentState == null) return;
-    state = AsyncValue.data(currentState.copyWith(time: time));
+    state = AsyncValue.data(
+      currentState.copyWith(time: time, validationMessage: null),
+    );
   }
 
   void toggleRecurring() {
     final currentState = state.value;
     if (currentState == null) return;
     state = AsyncValue.data(
-      currentState.copyWith(isRecurring: !currentState.isRecurring),
+      currentState.copyWith(
+        isRecurring: !currentState.isRecurring,
+        validationMessage: null,
+      ),
     );
   }
 
@@ -164,7 +294,9 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     } else {
       current.add(dayIndex);
     }
-    state = AsyncValue.data(currentState.copyWith(recurringDays: current));
+    state = AsyncValue.data(
+      currentState.copyWith(recurringDays: current, validationMessage: null),
+    );
   }
 
   Future<void> _tryComputeRoute() async {
@@ -195,7 +327,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
           finalState.copyWith(routeInfo: route, isComputingRoute: false),
         );
       }
-    } catch (e) {
+    } on Object {
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(
@@ -205,33 +337,29 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     }
   }
 
-  Future<bool> submitTrip({required String note}) async {
+  Future<Trip?> submitTrip({required String note}) async {
     final s = state.value;
-    if (s == null) return false;
+    if (s == null) return null;
 
-    if (s.selectedRole == null ||
-        s.originDetails == null ||
-        s.destDetails == null) {
-      state = AsyncValue.data(s.copyWith(showErrors: true));
-      return false;
+    final validationMessage = s.validateForSubmit(DateTime.now());
+    if (validationMessage != null) {
+      state = AsyncValue.data(
+        s.copyWith(showErrors: true, validationMessage: validationMessage),
+      );
+      return null;
     }
 
-    final selectedDateTime = DateTime(
-      s.date.year,
-      s.date.month,
-      s.date.day,
-      s.time.hour,
-      s.time.minute,
+    state = AsyncValue.data(
+      s.copyWith(
+        isSubmitting: true,
+        showErrors: false,
+        poolSuggestions: const [],
+        validationMessage: null,
+      ),
     );
 
-    if (selectedDateTime.isBefore(DateTime.now())) {
-      return false;
-    }
-
-    state = AsyncValue.data(s.copyWith(isSubmitting: true, showErrors: false));
-
     try {
-      await ref
+      final trip = await ref
           .read(tripServiceProvider)
           .createTrip(
             origin: s.originDetails!.formattedAddress,
@@ -257,13 +385,65 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
             recurringDays: s.recurringDays,
             note: note.trim().isEmpty ? null : note.trim(),
           );
-      return true;
-    } catch (e) {
+      await _loadPoolSuggestions(trip);
+      return trip;
+    } on Object {
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(finalState.copyWith(isSubmitting: false));
       }
       rethrow;
+    }
+  }
+
+  Future<void> _loadPoolSuggestions(Trip trip) async {
+    final tripId = trip.id;
+    final currentState = state.value;
+    if (currentState == null) {
+      return;
+    }
+
+    if (tripId == null || tripId.isEmpty) {
+      state = AsyncValue.data(
+        currentState.copyWith(createdTrip: trip, isSubmitting: false),
+      );
+      return;
+    }
+
+    state = AsyncValue.data(
+      currentState.copyWith(
+        createdTrip: trip,
+        isSubmitting: false,
+        isLoadingPoolSuggestions: true,
+      ),
+    );
+
+    try {
+      final suggestions = await ref
+          .read(tripServiceProvider)
+          .getPoolSuggestions(tripId, limit: 8);
+      final finalState = state.value;
+      if (finalState != null) {
+        state = AsyncValue.data(
+          finalState.copyWith(
+            createdTrip: trip,
+            poolSuggestions: suggestions,
+            isLoadingPoolSuggestions: false,
+          ),
+        );
+      }
+    } on Object catch (error) {
+      debugPrint('Unable to load pool suggestions: $error');
+      final finalState = state.value;
+      if (finalState != null) {
+        state = AsyncValue.data(
+          finalState.copyWith(
+            createdTrip: trip,
+            poolSuggestions: const [],
+            isLoadingPoolSuggestions: false,
+          ),
+        );
+      }
     }
   }
 }

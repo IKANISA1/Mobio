@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobi_app/app.dart';
@@ -8,7 +10,9 @@ import 'package:mobi_app/core/services/push_notification_service.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/core/utils/navigation_utils.dart';
 
+import 'package:mobi_app/features/admin/admin_audit_log_screen.dart';
 import 'package:mobi_app/features/admin/admin_broadcasts_screen.dart';
+import 'package:mobi_app/features/admin/admin_finance_review_screen.dart';
 import 'package:mobi_app/features/admin/admin_subscriptions_screen.dart';
 import 'package:mobi_app/features/admin/admin_trips_screen.dart';
 import 'package:mobi_app/features/admin/admin_vehicle_types_screen.dart';
@@ -24,6 +28,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// Route name constants for type-safe navigation.
 abstract class AppRoutes {
   static const String discover = '/';
+  static const String login = '/login';
   static const String biopay = '/biopay';
   static const String ledger = '/ledger';
   static const String profile = '/profile';
@@ -40,6 +45,8 @@ abstract class AppRoutes {
   static const String adminVehicleTypes = '/admin/vehicle-types';
   static const String adminSubscriptions = '/admin/subscriptions';
   static const String adminTrips = '/admin/trips';
+  static const String adminFinance = '/admin/finance';
+  static const String adminAudit = '/admin/audit';
   static const String adminBroadcasts = '/admin/broadcasts';
   static const String getQr = '/biopay/qr';
   static const String scanQr = '/biopay/scan';
@@ -96,6 +103,103 @@ String? _adminRouteGuard(GoRouterState state) {
   }
 }
 
+bool _hasVerifiedWhatsAppSession() {
+  if (!SupabaseConfig.isConfigured) {
+    return false;
+  }
+
+  try {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null || user.isAnonymous) {
+      return false;
+    }
+
+    final provider = user.appMetadata['provider'];
+    final role = user.appMetadata['role'];
+    return provider == 'whatsapp_cloud_otp' ||
+        provider == 'admin_whatsapp_otp' ||
+        role == 'admin';
+  } on Object catch (e) {
+    AppLogger.error('App auth guard check failed: $e');
+    return false;
+  }
+}
+
+String _loginLocationFor(GoRouterState state) {
+  return Uri(
+    path: AppRoutes.login,
+    queryParameters: {'redirect': state.uri.toString()},
+  ).toString();
+}
+
+String _safeRedirectTarget(String? raw) {
+  if (raw == null || raw.isEmpty) {
+    return AppRoutes.discover;
+  }
+
+  final uri = Uri.tryParse(raw);
+  if (uri == null || uri.hasScheme || uri.hasAuthority) {
+    return AppRoutes.discover;
+  }
+
+  final target = uri.toString();
+  if (!target.startsWith('/') ||
+      target.startsWith('//') ||
+      target == AppRoutes.login ||
+      target.startsWith('${AppRoutes.login}?')) {
+    return AppRoutes.discover;
+  }
+
+  return target;
+}
+
+String? _appRouteGuard(GoRouterState state) {
+  if (!SupabaseConfig.isConfigured) {
+    return null;
+  }
+
+  final path = state.matchedLocation;
+  if (path == AppRoutes.configError || path == AppRoutes.adminAuth) {
+    return null;
+  }
+
+  final isProtectedAdminRoute =
+      path == AppRoutes.adminDashboard || path.startsWith('/admin/');
+  if (isProtectedAdminRoute) {
+    return null;
+  }
+
+  final isLoginRoute = path == AppRoutes.login;
+  final hasVerifiedSession = _hasVerifiedWhatsAppSession();
+  if (isLoginRoute) {
+    return hasVerifiedSession
+        ? _safeRedirectTarget(state.uri.queryParameters['redirect'])
+        : null;
+  }
+
+  return hasVerifiedSession ? null : _loginLocationFor(state);
+}
+
+class _SupabaseAuthRefreshListenable extends ChangeNotifier {
+  StreamSubscription<AuthState>? _subscription;
+
+  _SupabaseAuthRefreshListenable() {
+    if (!SupabaseConfig.isConfigured) {
+      return;
+    }
+
+    _subscription = Supabase.instance.client.auth.onAuthStateChange.listen((_) {
+      notifyListeners();
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+}
+
 /// Creates the app-level [GoRouter] instance.
 GoRouter createRouter() {
   final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -109,13 +213,22 @@ GoRouter createRouter() {
     observers: FirebaseAnalyticsService.instance.observers,
     initialLocation: SupabaseConfig.isConfigured ? '/' : '/config-error',
     errorBuilder: (context, state) => const NotFoundScreen(),
-    redirect: (context, state) => _adminRouteGuard(state),
+    refreshListenable: _SupabaseAuthRefreshListenable(),
+    redirect: (context, state) =>
+        _adminRouteGuard(state) ?? _appRouteGuard(state),
     routes: [
       // ── Config error (no nav bar) ──
       GoRoute(
         path: '/config-error',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const ConfigErrorScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => WhatsAppLoginScreenWrapper(
+          redirectTo: state.uri.queryParameters['redirect'],
+        ),
       ),
 
       // ── Main shell with 3-tab bottom nav ──
@@ -236,6 +349,20 @@ GoRouter createRouter() {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
             AdminTripsScreen(onBack: () => safePop(context)),
+      ),
+      GoRoute(
+        path: '/admin/finance',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            AdminFinanceReviewScreen(onBack: () => safePop(context)),
+      ),
+      GoRoute(
+        path: '/admin/audit',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => AdminAuditLogScreen(
+          onBack: () => safePop(context),
+          initialSearch: state.uri.queryParameters['search'],
+        ),
       ),
       GoRoute(
         path: '/admin/broadcasts',

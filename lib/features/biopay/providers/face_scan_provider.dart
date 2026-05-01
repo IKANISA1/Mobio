@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
@@ -102,7 +101,7 @@ class FaceScanController extends AsyncNotifier<FaceScanState> {
       );
 
       await controller.startImageStream(_onCameraFrame);
-    } catch (e) {
+    } on Object catch (e) {
       final updatedState = state.value ?? const FaceScanState();
       state = AsyncValue.data(
         updatedState.copyWith(
@@ -128,8 +127,9 @@ class FaceScanController extends AsyncNotifier<FaceScanState> {
     final currentState = state.value;
     if (currentState == null ||
         _isProcessingFrame ||
-        currentState.phase != FaceScanPhase.scanning)
+        currentState.phase != FaceScanPhase.scanning) {
       return;
+    }
     _isProcessingFrame = true;
     _processLiveFrame(image).whenComplete(() {
       _isProcessingFrame = false;
@@ -246,7 +246,9 @@ class FaceScanController extends AsyncNotifier<FaceScanState> {
 
       try {
         await File(capture.path).delete();
-      } catch (_) {}
+      } on Object catch (error) {
+        debugPrint('Unable to delete temporary scan capture: $error');
+      }
 
       final landmarks = FaceAlignmentService.extractLandmarks(landmarkFace);
       if (landmarks == null) {
@@ -299,7 +301,7 @@ class FaceScanController extends AsyncNotifier<FaceScanState> {
           );
         }
       }
-    } catch (e) {
+    } on Object catch (e) {
       final current = state.value;
       if (current != null) {
         state = AsyncValue.data(
@@ -320,7 +322,7 @@ class FaceScanController extends AsyncNotifier<FaceScanState> {
 
     try {
       await _ussdLauncher.launchUssdPayment(ussdString);
-    } catch (e) {
+    } on Object catch (e) {
       if (current != null) {
         state = AsyncValue.data(
           current.copyWith(errorMessage: 'Unable to launch payment: $e'),

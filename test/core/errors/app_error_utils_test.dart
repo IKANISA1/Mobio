@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
+import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_app/core/services/places_exception.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
 void main() {
   group('userMessageForError', () {
@@ -44,6 +46,35 @@ void main() {
         ),
         'Something went wrong. Please try again.',
       );
+    });
+  });
+
+  group('AppExceptionMapper domain RPC errors', () {
+    test('maps moto quota exhaustion to upgrade copy', () {
+      final mapped = AppExceptionMapper.map(
+        const PostgrestException(
+          message: 'MOTO_PRO_SUBSCRIPTION_REQUIRED',
+          code: 'P0001',
+        ),
+      );
+
+      expect(mapped, isA<ForbiddenException>());
+      expect(
+        mapped.message,
+        'You have used your 30 free moto taxi trips this month. Upgrade to Pro to schedule more driver trips.',
+      );
+    });
+
+    test('maps WhatsApp login enforcement to auth copy', () {
+      final mapped = AppExceptionMapper.map(
+        const PostgrestException(
+          message: 'WHATSAPP_LOGIN_REQUIRED',
+          code: 'P0001',
+        ),
+      );
+
+      expect(mapped, isA<AuthException>());
+      expect(mapped.message, 'Sign in with WhatsApp to continue.');
     });
   });
 }

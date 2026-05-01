@@ -14,7 +14,7 @@ import {
   jsonResponse,
   methodNotAllowed,
 } from "../_shared/http.ts";
-import { hashOtpCode } from "../_shared/otp-security.ts";
+import { generateOtpCode, hashOtpCode } from "../_shared/otp-security.ts";
 import { createAdminClient } from "../_shared/supabase.ts";
 import { sendWhatsappCloudOtp } from "../_shared/whatsapp-cloud.ts";
 
@@ -33,7 +33,10 @@ Deno.serve(async (req: Request) => {
     const phone = normalizePhone(body?.phone, "Valid WhatsApp number required");
     const supabase = createAdminClient();
 
-    const adminNumber = await resolveAdminWhatsappNumberByPhone(supabase, phone);
+    const adminNumber = await resolveAdminWhatsappNumberByPhone(
+      supabase,
+      phone,
+    );
     if (!adminNumber) {
       await tryRecordAdminAccessAttempt({
         supabase,
@@ -64,6 +67,7 @@ Deno.serve(async (req: Request) => {
       .from("otp_codes")
       .select("created_at")
       .eq("phone", phone)
+      .eq("purpose", "admin_login")
       .gte("created_at", new Date(Date.now() - 60_000).toISOString())
       .order("created_at", { ascending: false })
       .limit(1);
@@ -100,7 +104,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const code = String(Math.floor(100000 + Math.random() * 900000));
+    const code = generateOtpCode();
     const codeHash = await hashOtpCode(code);
     const expiresAt = new Date(Date.now() + 5 * 60_000).toISOString();
 
@@ -108,6 +112,7 @@ Deno.serve(async (req: Request) => {
       .from("otp_codes")
       .insert({
         phone,
+        purpose: "admin_login",
         code: "000000",
         code_hash: codeHash,
         expires_at: expiresAt,
@@ -169,8 +174,10 @@ Deno.serve(async (req: Request) => {
       req,
     );
   } catch (error) {
-    if (error instanceof Error &&
-      error.message == "Valid WhatsApp number required") {
+    if (
+      error instanceof Error &&
+      error.message == "Valid WhatsApp number required"
+    ) {
       return errorResponse(error.message, 400, undefined, req);
     }
 

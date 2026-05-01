@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -17,7 +15,6 @@ import 'package:mobi_app/features/admin/widgets/admin_user_metrics.dart';
 import 'package:mobi_app/features/admin/widgets/admin_user_sheet.dart';
 import 'package:mobi_app/features/admin/widgets/admin_user_widgets.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
-import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 
 /// Admin user directory with search, filters, bulk actions, and detail review.
 class AdminUsersScreen extends ConsumerStatefulWidget {
@@ -60,9 +57,9 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context)
-          .extension<MobiThemeExtension>()!
-          .surfaceContainerLowest,
+      backgroundColor: Theme.of(
+        context,
+      ).extension<MobiThemeExtension>()!.surfaceContainerLowest,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
@@ -71,9 +68,11 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
         currentUserId: currentUserId,
         onUpdateRole: (nextRole) async {
           try {
-            await ref.read(adminUsersProvider.notifier).updateSingleUserRole(user, nextRole);
+            await ref
+                .read(adminUsersProvider.notifier)
+                .updateSingleUserRole(user, nextRole);
             _showSnackBar('${user.name} is now ${nextRole.toUpperCase()}.');
-          } catch (e) {
+          } on Object catch (e) {
             _showSnackBar(e.toString(), isError: true);
           }
         },
@@ -101,12 +100,28 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
       child: asyncState.when(
         data: (state) => _buildContent(state, controller),
         loading: () => const _UsersLoadingState(),
-        error: (err, stack) => Center(child: Text(err.toString())),
+        error: (err, stack) => ListView(
+          padding: AdminLayoutTokens.pagePadding,
+          children: [
+            AdminEmptyState(
+              title: 'Users unavailable',
+              message: err.toString(),
+              icon: LucideIcons.alertTriangle,
+              action: AdminActionChip(
+                label: 'Retry',
+                icon: LucideIcons.refreshCw,
+                onTap: controller.refresh,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildContent(AdminUsersState state, AdminUsersController controller) {
+    final pageUsers = _pageUsers(state);
+
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: AdminLayoutTokens.pagePadding,
@@ -126,7 +141,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
               try {
                 await controller.applyRoleToSelected(role);
                 _showSnackBar('Updated ${state.selectedIds.length} users.');
-              } catch (e) {
+              } on Object catch (e) {
                 _showSnackBar(e.toString(), isError: true);
               }
             },
@@ -134,11 +149,14 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
           ),
           const SizedBox(height: AppSpacing.lg),
         ],
-        AdminUserMetrics(
-          users: state.users,
-          roleFilter: state.roleFilter,
-        ),
+        AdminUserMetrics(users: state.users, roleFilter: state.roleFilter),
         const SizedBox(height: AppSpacing.lg),
+        _AdminUsersTableControls(
+          totalRows: state.users.length,
+          sortKey: state.sortKey,
+          onSortChanged: controller.setSortKey,
+        ),
+        const SizedBox(height: AppSpacing.md),
         if (state.loadError != null) ...[
           AdminPanel(
             child: Row(
@@ -168,15 +186,109 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
             icon: LucideIcons.search,
           )
         else
-          AdminUserTable(
-            users: state.users,
-            selectedIds: state.selectedIds,
-            updatingUserId: state.updatingUserId,
-            onToggleSelection: controller.toggleSelection,
-            onToggleSelectAll: controller.toggleSelectAll,
-            onUserTap: _showUserSheet,
+          AdminPanel(
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                AdminUserTable(
+                  users: pageUsers,
+                  selectedIds: state.selectedIds,
+                  updatingUserId: state.updatingUserId,
+                  onToggleSelection: controller.toggleSelection,
+                  onToggleSelectAll: (selected) =>
+                      controller.toggleSelectionFor(
+                        pageUsers.map((user) => user.id),
+                        selected,
+                      ),
+                  onUserTap: _showUserSheet,
+                ),
+                AdminPaginationBar(
+                  totalItems: state.users.length,
+                  page: state.page,
+                  rowsPerPage: state.rowsPerPage,
+                  onPageChanged: controller.setPage,
+                  onRowsPerPageChanged: controller.setRowsPerPage,
+                ),
+              ],
+            ),
           ),
       ],
+    );
+  }
+
+  List<AdminUserListItem> _pageUsers(AdminUsersState state) {
+    final rowsPerPage = state.rowsPerPage <= 0 ? 25 : state.rowsPerPage;
+    final start = (state.page * rowsPerPage)
+        .clamp(0, state.users.length)
+        .toInt();
+    final end = (start + rowsPerPage).clamp(0, state.users.length).toInt();
+    return state.users.sublist(start, end);
+  }
+}
+
+class _AdminUsersTableControls extends StatelessWidget {
+  const _AdminUsersTableControls({
+    required this.totalRows,
+    required this.sortKey,
+    required this.onSortChanged,
+  });
+
+  final int totalRows;
+  final String sortKey;
+  final ValueChanged<String> onSortChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return AdminPanel(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      child: Wrap(
+        spacing: AppSpacing.md,
+        runSpacing: AppSpacing.sm,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        alignment: WrapAlignment.spaceBetween,
+        children: [
+          Text(
+            '$totalRows matching members',
+            style: AppTypography.labelMd.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          AdminSortMenu(
+            value: sortKey,
+            options: const [
+              AdminSortOption(
+                value: 'online',
+                label: 'Online first',
+                icon: LucideIcons.activity,
+              ),
+              AdminSortOption(
+                value: 'name_asc',
+                label: 'Name A-Z',
+                icon: LucideIcons.arrowUpAZ,
+              ),
+              AdminSortOption(
+                value: 'name_desc',
+                label: 'Name Z-A',
+                icon: LucideIcons.arrowDownZA,
+              ),
+              AdminSortOption(
+                value: 'role',
+                label: 'Role',
+                icon: LucideIcons.shield,
+              ),
+              AdminSortOption(
+                value: 'newest',
+                label: 'Newest',
+                icon: LucideIcons.clock,
+              ),
+            ],
+            onChanged: onSortChanged,
+          ),
+        ],
+      ),
     );
   }
 }

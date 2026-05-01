@@ -1,0 +1,102 @@
+import 'package:mobi_app/core/services/admin/admin_base_service.dart';
+import 'package:mobi_app/core/utils/app_logger.dart';
+import 'package:mobi_app/models/admin/admin_models.dart';
+
+class AdminComplianceService extends AdminBaseService {
+  AdminComplianceService({super.supabase});
+
+  Future<List<AdminAuditLogItem>> listAuditLogs({
+    String? action,
+    String? targetType,
+    String? search,
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    try {
+      final rows = await supabaseClient.rpc(
+        'rpc_admin_list_audit_logs',
+        params: {
+          'p_limit': limit,
+          'p_offset': offset,
+          'p_action': _nullableText(action),
+          'p_target_type': _nullableText(targetType),
+          'p_search': _nullableText(search),
+        },
+      );
+
+      final list = rows as List<dynamic>? ?? const [];
+      return list
+          .whereType<Map<String, dynamic>>()
+          .map(AdminAuditLogItem.fromJson)
+          .toList();
+    } on Object catch (error) {
+      AppLogger.error('Error fetching admin audit logs: $error');
+      rethrow;
+    }
+  }
+
+  Future<List<AdminRiskFlagItem>> listRiskFlags({
+    String status = 'open',
+    String? severity,
+    String? search,
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    try {
+      final rows = await supabaseClient.rpc(
+        'rpc_admin_list_risk_flags',
+        params: {
+          'p_status': status,
+          'p_severity': _nullableText(severity),
+          'p_search': _nullableText(search),
+          'p_limit': limit,
+          'p_offset': offset,
+        },
+      );
+
+      final list = rows as List<dynamic>? ?? const [];
+      return list
+          .whereType<Map<String, dynamic>>()
+          .map(AdminRiskFlagItem.fromJson)
+          .toList();
+    } on Object catch (error) {
+      AppLogger.error('Error fetching admin finance risk flags: $error');
+      rethrow;
+    }
+  }
+
+  Future<void> reviewRiskFlag({
+    required String riskFlagId,
+    required String action,
+    String? notes,
+  }) async {
+    try {
+      final response = await supabaseClient.functions.invoke(
+        'admin-review-transaction',
+        body: {
+          'risk_flag_id': riskFlagId,
+          'action': action,
+          'notes': _nullableText(notes),
+        },
+      );
+
+      if (response.status < 200 || response.status >= 300) {
+        final data = response.data;
+        final message = data is Map
+            ? data['error']?.toString() ?? data['message']?.toString()
+            : null;
+        throw StateError(
+          message ?? 'Review failed with status ${response.status}.',
+        );
+      }
+    } on Object catch (error) {
+      AppLogger.error('Error reviewing finance risk flag: $error');
+      rethrow;
+    }
+  }
+
+  String? _nullableText(String? value) {
+    final normalized = value?.trim();
+    return normalized == null || normalized.isEmpty ? null : normalized;
+  }
+}

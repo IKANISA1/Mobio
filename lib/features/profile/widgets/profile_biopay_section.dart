@@ -45,9 +45,7 @@ class ProfileBiopaySection extends StatelessWidget {
           decoration: BoxDecoration(
             color: ext.surfaceContainerLow,
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(
-              color: cs.outlineVariant.withValues(alpha: 0.1),
-            ),
+            border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.1)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,7 +63,11 @@ class ProfileBiopaySection extends StatelessWidget {
     );
   }
 
-  Widget _buildHandleSelector(BuildContext context, ColorScheme cs, MobiThemeExtension ext) {
+  Widget _buildHandleSelector(
+    BuildContext context,
+    ColorScheme cs,
+    MobiThemeExtension ext,
+  ) {
     return Container(
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(

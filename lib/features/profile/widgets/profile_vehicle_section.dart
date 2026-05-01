@@ -42,7 +42,11 @@ class ProfileVehicleSection extends StatelessWidget {
     );
   }
 
-  Widget _buildVehicleGrid(BuildContext context, ColorScheme cs, MobiThemeExtension ext) {
+  Widget _buildVehicleGrid(
+    BuildContext context,
+    ColorScheme cs,
+    MobiThemeExtension ext,
+  ) {
     if (vehicleTypes.isEmpty) return const SizedBox(height: 80);
 
     return Container(
@@ -50,9 +54,7 @@ class ProfileVehicleSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: ext.surfaceContainerLow,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: cs.outlineVariant.withValues(alpha: 0.1),
-        ),
+        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.1)),
       ),
       child: Row(
         children: vehicleTypes.map((vt) {
@@ -67,7 +69,9 @@ class ProfileVehicleSection extends StatelessWidget {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     decoration: BoxDecoration(
-                      color: isSelected ? cs.primaryContainer : ext.surfaceContainerLowest,
+                      color: isSelected
+                          ? cs.primaryContainer
+                          : ext.surfaceContainerLowest,
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
                         color: isSelected
@@ -83,10 +87,12 @@ class ProfileVehicleSection extends StatelessWidget {
                           width: 28,
                           height: 28,
                           fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => Icon(
+                          errorBuilder: (context, error, stackTrace) => Icon(
                             vt.icon,
                             size: 20,
-                            color: isSelected ? cs.primary : cs.onSurfaceVariant,
+                            color: isSelected
+                                ? cs.primary
+                                : cs.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -94,7 +100,9 @@ class ProfileVehicleSection extends StatelessWidget {
                           vt.label,
                           style: AppTypography.labelSm.copyWith(
                             fontWeight: FontWeight.w800,
-                            color: isSelected ? cs.primary : cs.onSurfaceVariant,
+                            color: isSelected
+                                ? cs.primary
+                                : cs.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -109,15 +117,17 @@ class ProfileVehicleSection extends StatelessWidget {
     );
   }
 
-  Widget _buildPlateCard(BuildContext context, ColorScheme cs, MobiThemeExtension ext) {
+  Widget _buildPlateCard(
+    BuildContext context,
+    ColorScheme cs,
+    MobiThemeExtension ext,
+  ) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: ext.surfaceContainerLow,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: cs.outlineVariant.withValues(alpha: 0.1),
-        ),
+        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,7 +157,10 @@ class ProfileVehicleSection extends StatelessWidget {
                   color: cs.onSurfaceVariant.withValues(alpha: 0.3),
                 ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
               ),
             ),
           ),
@@ -156,14 +169,15 @@ class ProfileVehicleSection extends StatelessWidget {
     );
   }
 
-  Widget _buildInputSurface({required MobiThemeExtension ext, required Widget child}) {
+  Widget _buildInputSurface({
+    required MobiThemeExtension ext,
+    required Widget child,
+  }) {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: ext.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: ext.surfaceContainer.withValues(alpha: 0.1),
-        ),
+        border: Border.all(color: ext.surfaceContainer.withValues(alpha: 0.1)),
       ),
       child: child,
     );

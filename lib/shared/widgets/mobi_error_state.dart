@@ -34,86 +34,91 @@ class MobiErrorState extends StatelessWidget {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final containerHeight = height ?? 240;
 
-    return SizedBox(
-      height: containerHeight,
-      child: ClayCard(
-        borderRadius: AppRadii.hero,
-        color: ext.surfaceContainerLowest.withValues(
-          alpha: ext.surfacePanelAlpha,
-        ),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 320),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Error icon
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: cs.errorContainer.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(AppRadii.xl),
+    return Semantics(
+      container: true,
+      liveRegion: true,
+      label: subtitle == null ? title : '$title. $subtitle',
+      child: SizedBox(
+        height: containerHeight,
+        child: ClayCard(
+          borderRadius: AppRadii.hero,
+          color: ext.surfaceContainerLowest.withValues(
+            alpha: ext.surfacePanelAlpha,
+          ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 320),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Error icon
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: cs.errorContainer.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(AppRadii.xl),
+                    ),
+                    child: Icon(icon, size: 24, color: cs.error),
                   ),
-                  child: Icon(icon, size: 24, color: cs.error),
-                ),
-                const SizedBox(height: AppSpacing.md),
+                  const SizedBox(height: AppSpacing.md),
 
-                // Title
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: AppTypography.titleLg.copyWith(
-                    color: cs.onSurface,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-
-                // Subtitle
-                if (subtitle != null) ...[
-                  const SizedBox(height: AppSpacing.xs),
+                  // Title
                   Text(
-                    subtitle!,
+                    title,
                     textAlign: TextAlign.center,
-                    style: AppTypography.bodySm.copyWith(
-                      color: cs.onSurfaceVariant,
+                    style: AppTypography.titleLg.copyWith(
+                      color: cs.onSurface,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                ],
 
-                // Retry button
-                if (onRetry != null) ...[
-                  const SizedBox(height: AppSpacing.lg),
-                  Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: onRetry,
-                      borderRadius: BorderRadius.circular(999),
-                      splashColor: cs.error.withValues(alpha: 0.12),
-                      child: Ink(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.lg,
-                          vertical: AppSpacing.sm,
-                        ),
-                        decoration: BoxDecoration(
-                          color: cs.errorContainer,
-                          borderRadius: BorderRadius.circular(AppRadii.pill),
-                          border: Border.all(
-                            color: cs.error.withValues(alpha: 0.2),
+                  // Subtitle
+                  if (subtitle != null) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      subtitle!,
+                      textAlign: TextAlign.center,
+                      style: AppTypography.bodySm.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+
+                  // Retry button
+                  if (onRetry != null) ...[
+                    const SizedBox(height: AppSpacing.lg),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: onRetry,
+                        borderRadius: BorderRadius.circular(999),
+                        splashColor: cs.error.withValues(alpha: 0.12),
+                        child: Ink(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.lg,
+                            vertical: AppSpacing.sm,
                           ),
-                        ),
-                        child: Text(
-                          retryLabel,
-                          style: AppTypography.labelLg.copyWith(
-                            color: cs.onErrorContainer,
-                            fontWeight: FontWeight.w700,
+                          decoration: BoxDecoration(
+                            color: cs.errorContainer,
+                            borderRadius: BorderRadius.circular(AppRadii.pill),
+                            border: Border.all(
+                              color: cs.error.withValues(alpha: 0.2),
+                            ),
+                          ),
+                          child: Text(
+                            retryLabel,
+                            style: AppTypography.labelLg.copyWith(
+                              color: cs.onErrorContainer,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),

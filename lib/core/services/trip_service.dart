@@ -4,10 +4,10 @@ import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
-/// Service for trip operations via Supabase direct table queries.
+/// Service for trip operations via Supabase RPCs and direct read queries.
 ///
 /// Handles:
-/// - Creating trips via direct INSERT
+/// - Creating trips through `rpc_create_trip`
 /// - Listing trips (own + nearby)
 /// - Getting trip details by ID
 /// - Cancelling trips (status + is_active)
@@ -38,7 +38,7 @@ class TripService {
   // Create
   // ---------------------------------------------------------------------------
 
-  /// Inserts a new trip directly and returns the created row.
+  /// Creates a new trip through the server-side RPC and returns the created row.
   Future<Trip> createTrip({
     required String origin,
     double? originLat,
@@ -54,7 +54,7 @@ class TripService {
     List<int> recurringDays = const [],
     String? note,
   }) async {
-    final userId = _requireUserId('Please sign in to schedule a trip.');
+    _requireUserId('Please sign in to schedule a trip.');
 
     // Debounce: reject rapid duplicate submissions
     final now = DateTime.now();
@@ -68,29 +68,35 @@ class TripService {
     _lastCreateTime = now;
 
     try {
-      final row = await _supabase
-          .from('trips')
-          .insert({
-            'author_id': userId,
-            'origin': origin,
-            'origin_lat': originLat,
-            'origin_lng': originLng,
-            'destination': destination,
-            'dest_lat': destLat,
-            'dest_lng': destLng,
-            'departure_date': departureDate,
-            'departure_time': departureTime,
-            'role': role,
-            'vehicle_type': vehicleType,
-            'is_recurring': isRecurring,
-            'recurring_days': recurringDays,
-            'note': note,
-          })
-          .select()
-          .single()
+      final tripId = await _supabase
+          .rpc(
+            'rpc_create_trip',
+            params: {
+              'p_payload': {
+                'origin': origin,
+                'origin_lat': originLat,
+                'origin_lng': originLng,
+                'destination': destination,
+                'dest_lat': destLat,
+                'dest_lng': destLng,
+                'departure_date': departureDate,
+                'departure_time': departureTime,
+                'role': role,
+                'vehicle_type': vehicleType,
+                'is_recurring': isRecurring,
+                'recurring_days': recurringDays,
+                'note': note,
+              },
+            },
+          )
           .timeout(_networkTimeout);
 
-      return Trip.fromJson(row);
+      final trip = await getTripById(tripId as String);
+      if (trip == null) {
+        throw const NotFoundException(message: 'Scheduled trip was not found.');
+      }
+
+      return trip;
     } on AppException {
       _lastCreateTime = previousCreateTime;
       rethrow;
@@ -192,6 +198,34 @@ class TripService {
         error,
         stackTrace,
         'Error fetching nearby trips',
+      );
+    }
+  }
+
+  /// Returns server-ranked pool or driver/passenger suggestions for a trip.
+  Future<List<Trip>> getPoolSuggestions(String tripId, {int limit = 10}) async {
+    try {
+      final rows = await _supabase
+          .rpc(
+            'rpc_suggest_trip_pools',
+            params: {'p_trip_id': tripId, 'p_limit': limit},
+          )
+          .timeout(_networkTimeout);
+
+      return (rows as List<dynamic>).map((row) {
+        final json = Map<String, dynamic>.from(row as Map);
+        json['id'] = json.remove('trip_id');
+        json['status'] ??= 'active';
+        json['is_active'] ??= true;
+        return Trip.fromJson(json);
+      }).toList();
+    } on AppException {
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error fetching pool suggestions for trip $tripId',
       );
     }
   }

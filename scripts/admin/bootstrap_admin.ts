@@ -27,11 +27,6 @@ function adminEmailForPhone(phone: string): string {
   return `admin+${phone.replace(/\D/g, "")}@mobi.internal`;
 }
 
-function displayPassword(password: string | null): string {
-  if (!password) return "<unchanged>";
-  return password;
-}
-
 const supabaseUrl = requireEnv("SUPABASE_URL");
 const serviceRoleKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
 const phone = normalizePhone(requireEnv("ADMIN_PHONE"));
@@ -49,17 +44,19 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
   },
 });
 
-const { data: usersPage, error: listError } = await supabase.auth.admin.listUsers({
-  page: 1,
-  perPage: 1000,
-});
+const { data: usersPage, error: listError } = await supabase.auth.admin
+  .listUsers({
+    page: 1,
+    perPage: 1000,
+  });
 if (listError) {
   throw listError;
 }
 
-let authUser: User | null = (usersPage.users ?? []).find((user) =>
-  user.phone == phone || user.email?.toLowerCase() == email.toLowerCase()
-) ?? null;
+let authUser: User | null =
+  (usersPage.users ?? []).find((user) =>
+    user.phone == phone || user.email?.toLowerCase() == email.toLowerCase()
+  ) ?? null;
 
 let created = false;
 let rotatedPassword = false;
@@ -138,13 +135,22 @@ if (profileError) {
   throw profileError;
 }
 
-console.log(JSON.stringify({
-  success: true,
-  created,
-  rotatedPassword,
-  userId: authUser.id,
-  email,
-  phone,
-  name,
-  password: displayPassword(rotatedPassword ? generatedPassword : null),
-}, null, 2));
+console.log(JSON.stringify(
+  {
+    success: true,
+    created,
+    rotatedPassword,
+    userId: authUser.id,
+    email,
+    phone,
+    name,
+    password: rotatedPassword ? "<redacted>" : "<unchanged>",
+    passwordSource: rotatedPassword
+      ? explicitPassword ? "ADMIN_PASSWORD" : "generated"
+      : "unchanged",
+    passwordNotice:
+      "Password values are never printed. Use WhatsApp OTP admin login or set ADMIN_PASSWORD from a secret manager when password auth is required.",
+  },
+  null,
+  2,
+));

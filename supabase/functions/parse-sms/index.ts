@@ -1,12 +1,17 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import {
+  errorResponse,
+  handleCors,
+  jsonResponse,
+  methodNotAllowed,
+} from "../_shared/http.ts";
+import { createUserClient } from "../_shared/supabase.ts";
+import {
+  asRecord,
+  HttpError,
+  readJsonObject,
+  requireAuthorization,
+} from "../_shared/validation.ts";
 
 type RawSmsInput = {
   raw_sms?: unknown;
@@ -34,12 +39,36 @@ type ParsedTransaction = {
   country: string;
 };
 
-function messageForError(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
-
 function stringValue(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function requiredString(
+  body: Record<string, unknown>,
+  field: string,
+  options: { maxLength?: number; pattern?: RegExp } = {},
+): string {
+  const value = stringValue(body[field]);
+  if (!value) {
+    throw new HttpError(`${field} is required`, 400);
+  }
+  if (options.maxLength != null && value.length > options.maxLength) {
+    throw new HttpError(`${field} is too long`, 400);
+  }
+  if (options.pattern != null && !options.pattern.test(value)) {
+    throw new HttpError(`${field} is invalid`, 400);
+  }
+  return value;
+}
+
+function parseBatch(value: unknown): RawSmsInput[] {
+  if (!Array.isArray(value)) {
+    throw new HttpError("batch must be an array", 400);
+  }
+  if (value.length > 100) {
+    throw new HttpError("batch is too large", 400);
+  }
+  return value.map((item) => asRecord(item) as RawSmsInput);
 }
 
 function compactNumber(value: string): number | null {
@@ -118,49 +147,39 @@ function parseMomoSms(
   };
 }
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+Deno.serve(async (req) => {
+  const corsResponse = handleCors(req);
+  if (corsResponse) {
+    return corsResponse;
   }
 
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 405,
-    });
+    return methodNotAllowed("POST", req);
   }
 
   try {
-    const authorization = req.headers.get("Authorization");
-    if (!authorization) {
-      throw new Error("Unauthorized");
-    }
-
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: authorization } } },
-    );
+    const authorization = requireAuthorization(req);
+    const supabaseClient = createUserClient(authorization);
 
     const { data: userData, error: authError } = await supabaseClient.auth
       .getUser();
     if (authError || !userData.user) {
-      throw new Error("Unauthorized");
+      throw new HttpError("Unauthorized", 401);
     }
 
-    const body = await req.json() as ParseSmsRequest;
-    const agentId = stringValue(body.agent_id);
-    const batch = Array.isArray(body.batch) ? body.batch as RawSmsInput[] : [];
-    if (!/^\d{6}$/.test(agentId)) {
-      throw new Error("agent_id must be a 6-digit member ID");
-    }
+    const body = await readJsonObject(req) as ParseSmsRequest;
+    const agentId = requiredString(
+      body,
+      "agent_id",
+      { pattern: /^\d{6}$/ },
+    );
+    const batch = parseBatch(body.batch);
+
     if (batch.length === 0) {
-      return new Response(
-        JSON.stringify({ success: true, received: 0, parsed: 0, failed: 0 }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 200,
-        },
+      return jsonResponse(
+        { success: true, received: 0, parsed: 0, failed: 0 },
+        200,
+        req,
       );
     }
 
@@ -170,7 +189,10 @@ serve(async (req) => {
       .eq("id", userData.user.id)
       .single();
     if (profileError || profile?.member_id !== agentId) {
-      throw new Error("Agent ID does not match the authenticated profile");
+      throw new HttpError(
+        "Agent ID does not match the authenticated profile",
+        403,
+      );
     }
 
     const now = new Date().toISOString();
@@ -179,9 +201,9 @@ serve(async (req) => {
     let failed = 0;
 
     for (const item of batch) {
-      const rawSms = stringValue(item.raw_sms);
-      const smsHash = stringValue(item.sms_hash);
-      const sender = stringValue(item.sender);
+      const rawSms = stringValue(item.raw_sms).slice(0, 2000);
+      const smsHash = stringValue(item.sms_hash).slice(0, 128);
+      const sender = stringValue(item.sender).slice(0, 64);
       const receivedAt = stringValue(item.received_at) || now;
       if (!rawSms || !smsHash || !sender) {
         failed++;
@@ -246,22 +268,22 @@ serve(async (req) => {
       }
     }
 
-    return new Response(
-      JSON.stringify({
+    return jsonResponse(
+      {
         success: true,
         received: batch.length,
         parsed: transactionRows.length,
         failed,
-      }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
       },
+      200,
+      req,
     );
   } catch (error) {
-    return new Response(JSON.stringify({ error: messageForError(error) }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 400,
-    });
+    if (error instanceof HttpError) {
+      return errorResponse(error.message, error.status, error.details, req);
+    }
+
+    console.error("parse-sms failed", error);
+    return errorResponse("Unable to parse SMS batch", 500, undefined, req);
   }
 });

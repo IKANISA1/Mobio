@@ -26,9 +26,10 @@ class CountryService {
           .order('sort_order');
 
       final rows = response as List<dynamic>;
-      _cached = rows
+      final countries = rows
           .map((r) => Country.fromJson(r as Map<String, dynamic>))
           .toList();
+      _cached = countries.isEmpty ? Country.fallbackCountries : countries;
       return _cached!;
     } on Object catch (_) {
       // Offline fallback
@@ -57,6 +58,10 @@ class CountryService {
   /// Find country by dialing code (e.g. '+254').
   Future<Country> findByDialingCode(String code) async {
     final countries = await getCountries();
+    if (countries.isEmpty) {
+      return Country.fallbackCountries.first;
+    }
+
     return countries.firstWhere(
       (c) => c.dialingCode == code,
       orElse: () => countries.firstWhere(
@@ -67,8 +72,9 @@ class CountryService {
   }
 
   Country? findByDialingCodeSync(String code) {
-    if (_cached == null) return null;
-    final matches = _cached!.where((c) => c.dialingCode == code);
+    final cached = _cached;
+    if (cached == null || cached.isEmpty) return null;
+    final matches = cached.where((c) => c.dialingCode == code);
     return matches.isNotEmpty ? matches.first : null;
   }
 

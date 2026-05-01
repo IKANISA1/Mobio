@@ -84,32 +84,188 @@ type BiopayHandleNormalization = {
 };
 
 const biopayCountryFormats: BiopayCountryFormat[] = [
-  { id: "KE", dialingCode: "+254", phoneDigits: 9, ussdNumberFormat: "*334*1*{PHONE}#", ussdCodeFormat: "*334*0*{CODE}#" },
-  { id: "UG", dialingCode: "+256", phoneDigits: 9, ussdNumberFormat: "*165*1*{PHONE}#", ussdCodeFormat: "*165*5*{CODE}#" },
-  { id: "TZ", dialingCode: "+255", phoneDigits: 9, ussdNumberFormat: "*150*00*1*{PHONE}#", ussdCodeFormat: "*150*00*5*{CODE}#" },
-  { id: "RW", dialingCode: "+250", phoneDigits: 9, ussdNumberFormat: "*182*1*1*{PHONE}#", ussdCodeFormat: "*182*8*1*{CODE}#" },
-  { id: "ET", dialingCode: "+251", phoneDigits: 9, ussdNumberFormat: "*127*1*{PHONE}#", ussdCodeFormat: "*127*3*{CODE}#" },
-  { id: "GH", dialingCode: "+233", phoneDigits: 9, ussdNumberFormat: "*170*1*{PHONE}#", ussdCodeFormat: "*170*2*{CODE}#" },
-  { id: "NG", dialingCode: "+234", phoneDigits: 10, ussdNumberFormat: "*671*1*{PHONE}#", ussdCodeFormat: "*671*5*{CODE}#" },
-  { id: "SN", dialingCode: "+221", phoneDigits: 9, ussdNumberFormat: "*144*1*{PHONE}#", ussdCodeFormat: "*144*5*{CODE}#" },
-  { id: "CI", dialingCode: "+225", phoneDigits: 9, ussdNumberFormat: "*133*1*{PHONE}#", ussdCodeFormat: "*133*5*{CODE}#" },
-  { id: "BJ", dialingCode: "+229", phoneDigits: 9, ussdNumberFormat: "*400*1*{PHONE}#", ussdCodeFormat: "*400*8*{CODE}#" },
-  { id: "GN", dialingCode: "+224", phoneDigits: 9, ussdNumberFormat: "*501*1*{PHONE}#", ussdCodeFormat: "*501*4*{CODE}#" },
-  { id: "GW", dialingCode: "+245", phoneDigits: 9, ussdNumberFormat: "*124*1*{PHONE}#", ussdCodeFormat: "*124*8*{CODE}#" },
-  { id: "LR", dialingCode: "+231", phoneDigits: 9, ussdNumberFormat: "*144*1*{PHONE}#", ussdCodeFormat: "*144*4*{CODE}#" },
-  { id: "SL", dialingCode: "+232", phoneDigits: 8, ussdNumberFormat: "*144*1*{PHONE}#", ussdCodeFormat: "*144*5*{CODE}#" },
-  { id: "CD", dialingCode: "+243", phoneDigits: 9, ussdNumberFormat: "*135*1*{PHONE}#", ussdCodeFormat: "*135*5*{CODE}#" },
-  { id: "CM", dialingCode: "+237", phoneDigits: 8, ussdNumberFormat: "*126*1*{PHONE}#", ussdCodeFormat: "*126*7*2*{CODE}#" },
-  { id: "CG", dialingCode: "+242", phoneDigits: 8, ussdNumberFormat: "*150*1*{PHONE}#", ussdCodeFormat: "*150*8*{CODE}#" },
-  { id: "GA", dialingCode: "+241", phoneDigits: 8, ussdNumberFormat: "*150*1*{PHONE}#", ussdCodeFormat: "*150*6*{CODE}#" },
-  { id: "ZA", dialingCode: "+27", phoneDigits: 9, ussdNumberFormat: "*120*668*1*{PHONE}#", ussdCodeFormat: "*120*668*4*{CODE}#" },
-  { id: "ZM", dialingCode: "+260", phoneDigits: 9, ussdNumberFormat: "*303*1*{PHONE}#", ussdCodeFormat: "*303*4*{CODE}#" },
-  { id: "ZW", dialingCode: "+263", phoneDigits: 9, ussdNumberFormat: "*151*1*{PHONE}#", ussdCodeFormat: "*151*3*{CODE}#" },
-  { id: "MW", dialingCode: "+265", phoneDigits: 9, ussdNumberFormat: "*311*1*{PHONE}#", ussdCodeFormat: "*311*6*{CODE}#" },
-  { id: "MZ", dialingCode: "+258", phoneDigits: 9, ussdNumberFormat: "*150*1*{PHONE}#", ussdCodeFormat: "*150*5*{CODE}#" },
-  { id: "SZ", dialingCode: "+268", phoneDigits: 9, ussdNumberFormat: "*166*1*{PHONE}#", ussdCodeFormat: "*166*4*{CODE}#" },
-  { id: "BW", dialingCode: "+267", phoneDigits: 8, ussdNumberFormat: "*167*1*{PHONE}#", ussdCodeFormat: "*167*4*{CODE}#" },
-  { id: "MG", dialingCode: "+261", phoneDigits: 9, ussdNumberFormat: "*150*1*{PHONE}#", ussdCodeFormat: "*150*6*{CODE}#" },
+  {
+    id: "KE",
+    dialingCode: "+254",
+    phoneDigits: 9,
+    ussdNumberFormat: "*334*1*{PHONE}#",
+    ussdCodeFormat: "*334*0*{CODE}#",
+  },
+  {
+    id: "UG",
+    dialingCode: "+256",
+    phoneDigits: 9,
+    ussdNumberFormat: "*165*1*{PHONE}#",
+    ussdCodeFormat: "*165*5*{CODE}#",
+  },
+  {
+    id: "TZ",
+    dialingCode: "+255",
+    phoneDigits: 9,
+    ussdNumberFormat: "*150*00*1*{PHONE}#",
+    ussdCodeFormat: "*150*00*5*{CODE}#",
+  },
+  {
+    id: "RW",
+    dialingCode: "+250",
+    phoneDigits: 9,
+    ussdNumberFormat: "*182*1*1*{PHONE}#",
+    ussdCodeFormat: "*182*8*1*{CODE}#",
+  },
+  {
+    id: "ET",
+    dialingCode: "+251",
+    phoneDigits: 9,
+    ussdNumberFormat: "*127*1*{PHONE}#",
+    ussdCodeFormat: "*127*3*{CODE}#",
+  },
+  {
+    id: "GH",
+    dialingCode: "+233",
+    phoneDigits: 9,
+    ussdNumberFormat: "*170*1*{PHONE}#",
+    ussdCodeFormat: "*170*2*{CODE}#",
+  },
+  {
+    id: "NG",
+    dialingCode: "+234",
+    phoneDigits: 10,
+    ussdNumberFormat: "*671*1*{PHONE}#",
+    ussdCodeFormat: "*671*5*{CODE}#",
+  },
+  {
+    id: "SN",
+    dialingCode: "+221",
+    phoneDigits: 9,
+    ussdNumberFormat: "*144*1*{PHONE}#",
+    ussdCodeFormat: "*144*5*{CODE}#",
+  },
+  {
+    id: "CI",
+    dialingCode: "+225",
+    phoneDigits: 9,
+    ussdNumberFormat: "*133*1*{PHONE}#",
+    ussdCodeFormat: "*133*5*{CODE}#",
+  },
+  {
+    id: "BJ",
+    dialingCode: "+229",
+    phoneDigits: 9,
+    ussdNumberFormat: "*400*1*{PHONE}#",
+    ussdCodeFormat: "*400*8*{CODE}#",
+  },
+  {
+    id: "GN",
+    dialingCode: "+224",
+    phoneDigits: 9,
+    ussdNumberFormat: "*501*1*{PHONE}#",
+    ussdCodeFormat: "*501*4*{CODE}#",
+  },
+  {
+    id: "GW",
+    dialingCode: "+245",
+    phoneDigits: 9,
+    ussdNumberFormat: "*124*1*{PHONE}#",
+    ussdCodeFormat: "*124*8*{CODE}#",
+  },
+  {
+    id: "LR",
+    dialingCode: "+231",
+    phoneDigits: 9,
+    ussdNumberFormat: "*144*1*{PHONE}#",
+    ussdCodeFormat: "*144*4*{CODE}#",
+  },
+  {
+    id: "SL",
+    dialingCode: "+232",
+    phoneDigits: 8,
+    ussdNumberFormat: "*144*1*{PHONE}#",
+    ussdCodeFormat: "*144*5*{CODE}#",
+  },
+  {
+    id: "CD",
+    dialingCode: "+243",
+    phoneDigits: 9,
+    ussdNumberFormat: "*135*1*{PHONE}#",
+    ussdCodeFormat: "*135*5*{CODE}#",
+  },
+  {
+    id: "CM",
+    dialingCode: "+237",
+    phoneDigits: 8,
+    ussdNumberFormat: "*126*1*{PHONE}#",
+    ussdCodeFormat: "*126*7*2*{CODE}#",
+  },
+  {
+    id: "CG",
+    dialingCode: "+242",
+    phoneDigits: 8,
+    ussdNumberFormat: "*150*1*{PHONE}#",
+    ussdCodeFormat: "*150*8*{CODE}#",
+  },
+  {
+    id: "GA",
+    dialingCode: "+241",
+    phoneDigits: 8,
+    ussdNumberFormat: "*150*1*{PHONE}#",
+    ussdCodeFormat: "*150*6*{CODE}#",
+  },
+  {
+    id: "ZA",
+    dialingCode: "+27",
+    phoneDigits: 9,
+    ussdNumberFormat: "*120*668*1*{PHONE}#",
+    ussdCodeFormat: "*120*668*4*{CODE}#",
+  },
+  {
+    id: "ZM",
+    dialingCode: "+260",
+    phoneDigits: 9,
+    ussdNumberFormat: "*303*1*{PHONE}#",
+    ussdCodeFormat: "*303*4*{CODE}#",
+  },
+  {
+    id: "ZW",
+    dialingCode: "+263",
+    phoneDigits: 9,
+    ussdNumberFormat: "*151*1*{PHONE}#",
+    ussdCodeFormat: "*151*3*{CODE}#",
+  },
+  {
+    id: "MW",
+    dialingCode: "+265",
+    phoneDigits: 9,
+    ussdNumberFormat: "*311*1*{PHONE}#",
+    ussdCodeFormat: "*311*6*{CODE}#",
+  },
+  {
+    id: "MZ",
+    dialingCode: "+258",
+    phoneDigits: 9,
+    ussdNumberFormat: "*150*1*{PHONE}#",
+    ussdCodeFormat: "*150*5*{CODE}#",
+  },
+  {
+    id: "SZ",
+    dialingCode: "+268",
+    phoneDigits: 9,
+    ussdNumberFormat: "*166*1*{PHONE}#",
+    ussdCodeFormat: "*166*4*{CODE}#",
+  },
+  {
+    id: "BW",
+    dialingCode: "+267",
+    phoneDigits: 8,
+    ussdNumberFormat: "*167*1*{PHONE}#",
+    ussdCodeFormat: "*167*4*{CODE}#",
+  },
+  {
+    id: "MG",
+    dialingCode: "+261",
+    phoneDigits: 9,
+    ussdNumberFormat: "*150*1*{PHONE}#",
+    ussdCodeFormat: "*150*6*{CODE}#",
+  },
 ];
 
 class HttpError extends Error {
@@ -534,17 +690,23 @@ function normalizePhoneForCountry(
 
   const dialingDigits = digitsOnly(country.dialingCode);
   let localDigits = digits;
-  if (localDigits.startsWith(dialingDigits) &&
-      localDigits.length > dialingDigits.length) {
+  if (
+    localDigits.startsWith(dialingDigits) &&
+    localDigits.length > dialingDigits.length
+  ) {
     localDigits = localDigits.slice(dialingDigits.length);
   }
 
-  if (!localDigits.startsWith("0") && localDigits.length == country.phoneDigits) {
+  if (
+    !localDigits.startsWith("0") && localDigits.length == country.phoneDigits
+  ) {
     localDigits = `0${localDigits}`;
   }
 
-  if (localDigits.startsWith("0") &&
-      localDigits.length == country.phoneDigits + 1) {
+  if (
+    localDigits.startsWith("0") &&
+    localDigits.length == country.phoneDigits + 1
+  ) {
     return {
       localPhone: localDigits,
       recipientPhoneE164: `${country.dialingCode}${localDigits.slice(1)}`,
@@ -623,11 +785,16 @@ function normalizeBiopayUssd(
   }
 
   const fallbackCountry = preferredDialingCode
-    ? biopayCountryFormats.find((entry) => entry.dialingCode == preferredDialingCode)
+    ? biopayCountryFormats.find((entry) =>
+      entry.dialingCode == preferredDialingCode
+    )
     : null;
   const numberCountry = fallbackCountry ??
     biopayCountryFormats.find((entry) => entry.id == "RW");
-  if (numberCountry != null && !candidate.includes("*") && !candidate.includes("#")) {
+  if (
+    numberCountry != null && !candidate.includes("*") &&
+    !candidate.includes("#")
+  ) {
     const normalizedPhone = normalizePhoneForCountry(candidate, numberCountry);
     const ussdNormalized = numberCountry.ussdNumberFormat.replace(
       "{PHONE}",
@@ -980,19 +1147,23 @@ async function handleEnrollFace(
 
   const ownerToken = await createOwnerToken(profile as BiopayProfileRow);
 
-  return ok({
-    biopay_id: profile.biopay_id,
-    display_name: profile.display_name,
-    enrolled_at: profile.created_at,
-    owner_token: ownerToken,
-    management_code: managementCode,
-    management_code_hint: managementCode.slice(-2),
-    ussd_string: ussdString,
-    country_id: handle.countryId,
-    country_dialing_code: handle.countryDialingCode,
-    handle_type: handle.handleType,
-    handle_value: handle.handleValue,
-  }, 201, req);
+  return ok(
+    {
+      biopay_id: profile.biopay_id,
+      display_name: profile.display_name,
+      enrolled_at: profile.created_at,
+      owner_token: ownerToken,
+      management_code: managementCode,
+      management_code_hint: managementCode.slice(-2),
+      ussd_string: ussdString,
+      country_id: handle.countryId,
+      country_dialing_code: handle.countryDialingCode,
+      handle_type: handle.handleType,
+      handle_value: handle.handleValue,
+    },
+    201,
+    req,
+  );
 }
 
 async function handleMatchFace(
@@ -1075,19 +1246,27 @@ async function handleMatchFace(
   });
 
   if (!matched || !topMatch) {
-    return ok({
-      match: false,
-      score,
-    }, 200, req);
+    return ok(
+      {
+        match: false,
+        score,
+      },
+      200,
+      req,
+    );
   }
 
-  return ok({
-    match: true,
-    biopay_id: topMatch.biopay_id,
-    display_name: topMatch.display_name,
-    ussd_string: topMatch.ussd_string,
-    score,
-  }, 200, req);
+  return ok(
+    {
+      match: true,
+      biopay_id: topMatch.biopay_id,
+      display_name: topMatch.display_name,
+      ussd_string: topMatch.ussd_string,
+      score,
+    },
+    200,
+    req,
+  );
 }
 
 async function handleGetManagedProfile(
@@ -1201,18 +1380,22 @@ async function handleUpdateProfile(
   });
 
   const updatedProfile = data as BiopayProfileRow;
-  return ok({
-    biopay_id: updatedProfile.biopay_id,
-    display_name: updatedProfile.display_name,
-    ussd_string: updatedProfile.ussd_string,
-    status: updatedProfile.status,
-    management_code_hint: updatedProfile.management_code_hint,
-    created_at: updatedProfile.created_at,
-    country_id: normalizedHandle.countryId,
-    country_dialing_code: normalizedHandle.countryDialingCode,
-    handle_type: normalizedHandle.handleType,
-    handle_value: normalizedHandle.handleValue,
-  }, 200, req);
+  return ok(
+    {
+      biopay_id: updatedProfile.biopay_id,
+      display_name: updatedProfile.display_name,
+      ussd_string: updatedProfile.ussd_string,
+      status: updatedProfile.status,
+      management_code_hint: updatedProfile.management_code_hint,
+      created_at: updatedProfile.created_at,
+      country_id: normalizedHandle.countryId,
+      country_dialing_code: normalizedHandle.countryDialingCode,
+      handle_type: normalizedHandle.handleType,
+      handle_value: normalizedHandle.handleValue,
+    },
+    200,
+    req,
+  );
 }
 
 async function handleReEnrollFace(
@@ -1287,14 +1470,18 @@ async function handleReEnrollFace(
   });
 
   const ownerToken = await createOwnerToken(updatedProfile);
-  return ok({
-    success: true,
-    biopay_id: updatedProfile.biopay_id,
-    display_name: updatedProfile.display_name,
-    management_code_hint: updatedProfile.management_code_hint,
-    owner_token: ownerToken,
-    enrolled_at: new Date().toISOString(),
-  }, 200, req);
+  return ok(
+    {
+      success: true,
+      biopay_id: updatedProfile.biopay_id,
+      display_name: updatedProfile.display_name,
+      management_code_hint: updatedProfile.management_code_hint,
+      owner_token: ownerToken,
+      enrolled_at: new Date().toISOString(),
+    },
+    200,
+    req,
+  );
 }
 
 async function handleDeleteProfile(
@@ -1338,10 +1525,14 @@ async function handleDeleteProfile(
     details: {},
   });
 
-  return ok({
-    deleted: deletedProfile.status == "deleted",
-    biopay_id: deletedProfile.biopay_id,
-  }, 200, req);
+  return ok(
+    {
+      deleted: deletedProfile.status == "deleted",
+      biopay_id: deletedProfile.biopay_id,
+    },
+    200,
+    req,
+  );
 }
 
 async function handleReportProfile(
@@ -1382,10 +1573,14 @@ async function handleReportProfile(
     throw error;
   }
 
-  return ok({
-    reported: true,
-    biopay_id: biopayId,
-  }, 201, req);
+  return ok(
+    {
+      reported: true,
+      biopay_id: biopayId,
+    },
+    201,
+    req,
+  );
 }
 
 export async function handleBiopayRequest(req: Request): Promise<Response> {
@@ -1395,11 +1590,15 @@ export async function handleBiopayRequest(req: Request): Promise<Response> {
   }
 
   if (req.method == "GET") {
-    return ok({
-      ok: true,
-      service: "biopay-api",
-      version: 1,
-    }, 200, req);
+    return ok(
+      {
+        ok: true,
+        service: "biopay-api",
+        version: 1,
+      },
+      200,
+      req,
+    );
   }
 
   if (req.method != "POST") {
@@ -1412,11 +1611,15 @@ export async function handleBiopayRequest(req: Request): Promise<Response> {
 
     switch (action) {
       case "health_check":
-        return ok({
-          ok: true,
-          service: "biopay-api",
-          version: 1,
-        }, 200, req);
+        return ok(
+          {
+            ok: true,
+            service: "biopay-api",
+            version: 1,
+          },
+          200,
+          req,
+        );
       case "enroll_face":
         return await handleEnrollFace(body, req);
       case "match_face":
@@ -1442,12 +1645,7 @@ export async function handleBiopayRequest(req: Request): Promise<Response> {
       functionName: "biopay-api",
       error,
     });
-    return fail(
-      error instanceof Error ? error.message : "Unexpected server error.",
-      500,
-      undefined,
-      req,
-    );
+    return fail("Unexpected server error.", 500, undefined, req);
   }
 }
 

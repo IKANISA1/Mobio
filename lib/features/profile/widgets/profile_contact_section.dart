@@ -66,7 +66,11 @@ class ProfileContactSection extends StatelessWidget {
     );
   }
 
-  Widget _buildCountryButton(BuildContext context, ColorScheme cs, MobiThemeExtension ext) {
+  Widget _buildCountryButton(
+    BuildContext context,
+    ColorScheme cs,
+    MobiThemeExtension ext,
+  ) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -77,9 +81,7 @@ class ProfileContactSection extends StatelessWidget {
           decoration: BoxDecoration(
             color: ext.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: cs.outlineVariant.withValues(alpha: 0.1),
-            ),
+            border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.1)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -108,9 +110,7 @@ class ProfileContactSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: ext.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: ext.surfaceContainer.withValues(alpha: 0.1),
-        ),
+        border: Border.all(color: ext.surfaceContainer.withValues(alpha: 0.1)),
       ),
       child: child,
     );

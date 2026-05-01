@@ -4,6 +4,7 @@ import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/models/country.dart';
 
 /// WhatsApp phone input with country code picker.
@@ -62,18 +63,29 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
   }
 
   Future<void> _loadCountries() async {
-    final countries = await _countryService.getCountries();
-    if (mounted) {
-      setState(() {
-        _countries = countries;
-      });
+    try {
+      final countries = await _countryService.getCountries();
+      if (mounted && countries.isNotEmpty) {
+        setState(() {
+          _countries = countries;
+        });
+      }
+    } on Object catch (error, stackTrace) {
+      AppLogger.warning(
+        'Unable to load countries for WhatsApp input',
+        error: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
   Country get _selectedCountry {
-    return _countries.firstWhere(
+    final countries = _countries.isNotEmpty
+        ? _countries
+        : Country.fallbackCountries;
+    return countries.firstWhere(
       (c) => c.dialingCode == widget.countryCode,
-      orElse: () => _countries.first,
+      orElse: () => countries.first,
     );
   }
 
@@ -137,6 +149,8 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
                   onChanged: widget.onChanged,
                   enabled: widget.enabled,
                   keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.next,
+                  autofillHints: const [AutofillHints.telephoneNumber],
                   style: AppTypography.titleMd.copyWith(
                     fontSize: 20,
                     color: cs.onSurface,

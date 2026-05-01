@@ -36,18 +36,31 @@ class _AdminSubscriptionsScreenState
       ref.read(vehicleTypeServiceProvider);
   CountryService get _countryService => ref.read(countryServiceProvider);
 
+  final _searchController = TextEditingController();
+
   bool _isLoading = true;
   String? _error;
   List<SubscriptionPlanModel> _plans = [];
   List<VehicleTypeModel> _vehicleTypes = [];
   List<Country> _countries = [];
   String _countryFilter = 'all';
+  String _statusFilter = 'all';
+  String _searchQuery = '';
+  String _sortKey = 'package';
+  int _page = 0;
+  int _rowsPerPage = 25;
   String? _busyId;
 
   @override
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -233,9 +246,8 @@ class _AdminSubscriptionsScreenState
 
   @override
   Widget build(BuildContext context) {
-    final filteredRows = _countryFilter == 'all'
-        ? _plans
-        : _plans.where((p) => p.countryId == _countryFilter).toList();
+    final visibleRows = _visibleRows();
+    final pagedRows = _pagedRows(visibleRows);
 
     final activeCount = _plans.where((p) => p.isActive).length;
     final dailyCount = _plans.where((p) => p.intervalDays == 1).length;
@@ -268,9 +280,93 @@ class _AdminSubscriptionsScreenState
                     children: [
                       const AdminSectionHeader(
                         title: 'Markets',
-                        subtitle: 'Country',
+                        subtitle: 'Search, filter, sort',
                       ),
                       const SizedBox(height: AppSpacing.lg),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final isWide = constraints.maxWidth >= 900;
+                          final search = SizedBox(
+                            width: isWide ? 340 : double.infinity,
+                            child: AdminSearchField(
+                              controller: _searchController,
+                              hintText: 'Search plan, country, price',
+                              onChanged: (value) => setState(() {
+                                _searchQuery = value;
+                                _page = 0;
+                              }),
+                            ),
+                          );
+                          final controls = Wrap(
+                            spacing: AppSpacing.sm,
+                            runSpacing: AppSpacing.sm,
+                            children: [
+                              for (final filter in const [
+                                ('all', 'All status', LucideIcons.list),
+                                ('active', 'Active', LucideIcons.badgeCheck),
+                                ('inactive', 'Paused', LucideIcons.pause),
+                              ])
+                                AdminFilterChip(
+                                  label: filter.$2,
+                                  icon: filter.$3,
+                                  isSelected: _statusFilter == filter.$1,
+                                  onTap: () => setState(() {
+                                    _statusFilter = filter.$1;
+                                    _page = 0;
+                                  }),
+                                ),
+                              AdminSortMenu(
+                                value: _sortKey,
+                                options: const [
+                                  AdminSortOption(
+                                    value: 'package',
+                                    label: 'Package',
+                                    icon: LucideIcons.car,
+                                  ),
+                                  AdminSortOption(
+                                    value: 'country',
+                                    label: 'Country',
+                                    icon: LucideIcons.globe,
+                                  ),
+                                  AdminSortOption(
+                                    value: 'price',
+                                    label: 'Price',
+                                    icon: LucideIcons.wallet,
+                                  ),
+                                  AdminSortOption(
+                                    value: 'status',
+                                    label: 'Status',
+                                    icon: LucideIcons.activity,
+                                  ),
+                                ],
+                                onChanged: (value) => setState(() {
+                                  _sortKey = value;
+                                  _page = 0;
+                                }),
+                              ),
+                            ],
+                          );
+
+                          return isWide
+                              ? Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    search,
+                                    const SizedBox(width: AppSpacing.md),
+                                    Expanded(child: controls),
+                                  ],
+                                )
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    search,
+                                    const SizedBox(height: AppSpacing.md),
+                                    controls,
+                                  ],
+                                );
+                        },
+                      ),
+                      const SizedBox(height: AppSpacing.md),
                       Wrap(
                         spacing: AppSpacing.sm,
                         runSpacing: AppSpacing.sm,
@@ -279,14 +375,19 @@ class _AdminSubscriptionsScreenState
                             label: 'All',
                             icon: LucideIcons.globe,
                             isSelected: _countryFilter == 'all',
-                            onTap: () => setState(() => _countryFilter = 'all'),
+                            onTap: () => setState(() {
+                              _countryFilter = 'all';
+                              _page = 0;
+                            }),
                           ),
                           for (final country in _countries)
                             AdminFilterChip(
                               label: '${country.flag} ${country.name}',
                               isSelected: _countryFilter == country.id,
-                              onTap: () =>
-                                  setState(() => _countryFilter = country.id),
+                              onTap: () => setState(() {
+                                _countryFilter = country.id;
+                                _page = 0;
+                              }),
                             ),
                         ],
                       ),
@@ -363,7 +464,7 @@ class _AdminSubscriptionsScreenState
                       onTap: _load,
                     ),
                   )
-                else if (filteredRows.isEmpty)
+                else if (visibleRows.isEmpty)
                   const AdminEmptyState(
                     title: 'No plans',
                     message: 'Adjust the filter or seed pricing.',
@@ -422,21 +523,21 @@ class _AdminSubscriptionsScreenState
                         ),
                         for (
                           var index = 0;
-                          index < filteredRows.length;
+                          index < pagedRows.length;
                           index++
                         ) ...[
                           _PlanRow(
-                            plan: filteredRows[index],
+                            plan: pagedRows[index],
                             vehicleTypes: _vehicleTypes,
                             countries: _countries,
-                            isBusy: _busyId == filteredRows[index].id,
-                            onEdit: () => _showEditSheet(filteredRows[index]),
+                            isBusy: _busyId == pagedRows[index].id,
+                            onEdit: () => _showEditSheet(pagedRows[index]),
                             onToggle: () {
                               HapticFeedback.lightImpact();
-                              _toggleActive(filteredRows[index]);
+                              _toggleActive(pagedRows[index]);
                             },
                           ),
-                          if (index < filteredRows.length - 1)
+                          if (index < pagedRows.length - 1)
                             Divider(
                               height: 1,
                               thickness: 1,
@@ -446,6 +547,16 @@ class _AdminSubscriptionsScreenState
                                   .withValues(alpha: 0.35),
                             ),
                         ],
+                        AdminPaginationBar(
+                          totalItems: visibleRows.length,
+                          page: _page,
+                          rowsPerPage: _rowsPerPage,
+                          onPageChanged: (page) => setState(() => _page = page),
+                          onRowsPerPageChanged: (rows) => setState(() {
+                            _rowsPerPage = rows;
+                            _page = 0;
+                          }),
+                        ),
                       ],
                     ),
                   ),
@@ -456,6 +567,77 @@ class _AdminSubscriptionsScreenState
       ),
     );
   }
+
+  List<SubscriptionPlanModel> _visibleRows() {
+    final query = _searchQuery.trim().toLowerCase();
+    final rows = _plans.where((plan) {
+      if (_countryFilter != 'all' && plan.countryId != _countryFilter) {
+        return false;
+      }
+      final matchesStatus = switch (_statusFilter) {
+        'active' => plan.isActive,
+        'inactive' => !plan.isActive,
+        _ => true,
+      };
+      if (!matchesStatus) return false;
+      if (query.isEmpty) return true;
+
+      final vehicleType = _vehicleTypes
+          .where((vt) => vt.id == plan.vehicleTypeId)
+          .firstOrNull;
+      final country = _countries
+          .where((c) => c.id == plan.countryId)
+          .firstOrNull;
+      final haystack = [
+        plan.vehicleTypeId,
+        plan.countryId,
+        plan.currency,
+        plan.intervalLabel,
+        plan.price.toStringAsFixed(0),
+        vehicleType?.label,
+        country?.name,
+      ].whereType<String>().join(' ').toLowerCase();
+
+      return haystack.contains(query);
+    }).toList();
+
+    return rows..sort(_comparePlans);
+  }
+
+  List<SubscriptionPlanModel> _pagedRows(List<SubscriptionPlanModel> rows) {
+    if (rows.isEmpty) return const [];
+    final safeRowsPerPage = _rowsPerPage <= 0 ? 25 : _rowsPerPage;
+    final start = (_page * safeRowsPerPage).clamp(0, rows.length).toInt();
+    final end = (start + safeRowsPerPage).clamp(0, rows.length).toInt();
+    return rows.sublist(start, end);
+  }
+
+  int _comparePlans(SubscriptionPlanModel a, SubscriptionPlanModel b) {
+    return switch (_sortKey) {
+      'country' => _countryName(
+        a.countryId,
+      ).compareTo(_countryName(b.countryId)),
+      'price' => b.price.compareTo(a.price),
+      'status' => _boolRank(b.isActive).compareTo(_boolRank(a.isActive)),
+      _ => _packageLabel(a).compareTo(_packageLabel(b)),
+    };
+  }
+
+  String _packageLabel(SubscriptionPlanModel plan) {
+    final vehicleType = _vehicleTypes
+        .where((vt) => vt.id == plan.vehicleTypeId)
+        .firstOrNull;
+    return '${vehicleType?.label ?? plan.vehicleTypeId} ${plan.intervalDays}'
+        .toLowerCase();
+  }
+
+  String _countryName(String countryId) {
+    return (_countries.where((c) => c.id == countryId).firstOrNull?.name ??
+            countryId)
+        .toLowerCase();
+  }
+
+  int _boolRank(bool value) => value ? 1 : 0;
 }
 
 class _PlanRow extends StatelessWidget {
