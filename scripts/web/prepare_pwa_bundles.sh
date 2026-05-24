@@ -4,9 +4,43 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo_root"
 
+default_flutter="/Volumes/PRO-G40/flutter_3_44/bin/flutter"
+if [[ -z "${FLUTTER_BIN:-}" && -x "$default_flutter" ]]; then
+  FLUTTER_BIN="$default_flutter"
+else
+  FLUTTER_BIN="${FLUTTER_BIN:-flutter}"
+fi
+
+if [[ -f .env ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
+fi
+
 : "${SUPABASE_URL:?Missing SUPABASE_URL}"
 : "${SUPABASE_ANON_KEY:?Missing SUPABASE_ANON_KEY}"
 : "${PRIVACY_POLICY_URL:?Missing PRIVACY_POLICY_URL}"
+: "${ACCOUNT_DELETION_URL:?Missing ACCOUNT_DELETION_URL}"
+
+dart_define_file="$(mktemp "${TMPDIR:-/tmp}/mobi-dart-defines.XXXXXX.json")"
+trap 'rm -f "${dart_define_file:-}"' EXIT
+
+python3 - <<'PY' "$dart_define_file"
+import json
+import os
+import sys
+
+path = sys.argv[1]
+defines = {
+    "SUPABASE_URL": os.environ["SUPABASE_URL"],
+    "SUPABASE_ANON_KEY": os.environ["SUPABASE_ANON_KEY"],
+    "PRIVACY_POLICY_URL": os.environ["PRIVACY_POLICY_URL"],
+    "ACCOUNT_DELETION_URL": os.environ["ACCOUNT_DELETION_URL"],
+}
+with open(path, "w", encoding="utf-8") as fh:
+    json.dump(defines, fh)
+PY
 
 output_root="${1:-build/pwa}"
 client_dir="$output_root/client"
@@ -15,11 +49,16 @@ admin_dir="$output_root/admin"
 rm -rf "$output_root"
 
 if [[ "${SKIP_FLUTTER_BUILD:-false}" != "true" ]]; then
-  flutter build web --release \
-    --dart-define=SUPABASE_URL="$SUPABASE_URL" \
-    --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY" \
-    --dart-define=PRIVACY_POLICY_URL="$PRIVACY_POLICY_URL"
+  if [[ "${WEB_WASM:-false}" == "true" ]]; then
+    "$FLUTTER_BIN" build web --release --wasm \
+      --dart-define-from-file="$dart_define_file"
+  else
+    "$FLUTTER_BIN" build web --release --no-wasm-dry-run \
+      --dart-define-from-file="$dart_define_file"
+  fi
 fi
+
+test -f build/web/manifest.json
 
 mkdir -p "$client_dir" "$admin_dir"
 cp -R build/web/. "$client_dir/"
@@ -31,6 +70,48 @@ EOF
 
 cat > "$admin_dir/_redirects" <<'EOF'
 /* /index.html 200
+EOF
+
+cat > "$client_dir/_headers" <<'EOF'
+/*
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: blob: https:; font-src 'self' data:; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' https: wss:; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' blob: data:; upgrade-insecure-requests
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(self), geolocation=(self), microphone=(), payment=()
+
+/index.html
+  Cache-Control: no-store
+
+/flutter_bootstrap.js
+  Cache-Control: no-store
+
+/flutter_service_worker.js
+  Cache-Control: no-store
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+EOF
+
+cat > "$admin_dir/_headers" <<'EOF'
+/*
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: blob: https:; font-src 'self' data:; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' https: wss:; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' blob: data:; upgrade-insecure-requests
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), geolocation=(), microphone=(), payment=()
+
+/index.html
+  Cache-Control: no-store
+
+/flutter_bootstrap.js
+  Cache-Control: no-store
+
+/flutter_service_worker.js
+  Cache-Control: no-store
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
 EOF
 
 python3 - <<'PY' "$client_dir" "$admin_dir"
