@@ -45,6 +45,9 @@ go-live.
 - Ran Flutter 3.44's iOS migration path; it added SwiftPM plugin integration
   and UIScene lifecycle wiring, but device deployment remains blocked by local
   signing.
+- Renamed the bundled regular Google Font assets to the exact file names
+  resolved by `google_fonts` when runtime fetching is disabled:
+  `Inter-Regular.ttf` and `Manrope-Regular.ttf`.
 
 ## Evidence
 
@@ -54,7 +57,9 @@ go-live.
   - `4b1b92c chore: harden Flutter release scripts`
   - `a995473 fix: support Flutter 3.44 package compatibility`
   - `17034a3 docs: record Flutter Dart validation`
-  - `chore: capture Flutter 3.44 release evidence` (this commit)
+  - `6dd9287 chore: capture Flutter 3.44 release evidence`
+  - `0dae933 chore: add web startup profiling evidence`
+  - `fca8901 chore: add Android app size snapshot workflow`
 - Staged-index dependency check:
   `flutter pub get --enforce-lockfile` passed in a temporary checkout of the
   committed compatibility changes.
@@ -65,6 +70,13 @@ go-live.
 - Full tests:
   `/Volumes/PRO-G40/flutter_3_44/bin/flutter test --reporter expanded`: `154` tests passed.
 - Dart MCP `/Volumes/PRO-G40/MOBI/mobi_app` analysis: passed with no errors.
+- Dart MCP targeted test runner attempted
+  `test/features/profile/widgets/profile_notification_consent_section_test.dart`
+  but failed before execution because the MCP process is resolving with Dart
+  `3.10.8` instead of the repo's required Dart `^3.12.0`.
+- Pinned Flutter 3.44 focused test:
+  `/Volumes/PRO-G40/flutter_3_44/bin/flutter test --reporter expanded test/features/profile/widgets/profile_notification_consent_section_test.dart`
+  passed.
 - Dart MCP `flutter pub outdated`: `flutter_typeahead` no longer appears as
   constrained behind `6.0.0`; the current dirty worktree still has direct and
   transitive packages newer than the locked versions, but no safe full
@@ -133,10 +145,32 @@ go-live.
 - iOS profile startup attempt reached Flutter's SwiftPM/UIScene migration and
   then failed because no valid development signing certificate/provisioning
   profile was available for the connected wireless iPhone.
+- Android profile startup trace attempt installed
+  `build/app/outputs/flutter-apk/app-profile.apk`, but Flutter did not write
+  the requested trace file and the first emulator process failed to attach
+  before Android killed it for start timeout.
+- Android emulator direct-start evidence:
+  `build/perf/android/emulator-direct-start-20260524.txt` shows Impeller using
+  the OpenGLES backend and the app eventually entering the foreground, but
+  `adb shell am start -W` timed out before the first successful render.
+- Android profile font-smoke evidence:
+  after forcing the profile Flutter asset bundle to regenerate,
+  `build/app/intermediates/flutter/profile/flutter_assets/assets/google_fonts`
+  contained `Inter-Regular.ttf` and `Manrope-Regular.ttf`; reinstalling the
+  rebuilt `98,229,979` byte profile APK produced
+  `build/perf/android/emulator-font-smoke-20260524113106.txt` with no
+  `GoogleFonts` missing-asset/runtime-fetching errors.
+- Android profile launch timing from that smoke remains slow:
+  `ActivityTaskManager` reported `Displayed rw.mobi.app/.MainActivity` at
+  `+10s456ms` on the headless `Pixel_5_API_34_Lite` emulator.
 
 ## Current Blockers
 
 - `flutter doctor -v` still warns that shell `flutter`/`dart` point to an older SDK on `PATH`. Scripts now prefer the 3.44 SDK, but developer shells should put `/Volumes/PRO-G40/flutter_3_44/bin` first.
+- Dart MCP test execution currently inherits the older Dart `3.10.8` toolchain
+  from the host environment. MCP analysis works, but MCP test execution needs
+  the server environment relaunched with `/Volumes/PRO-G40/flutter_3_44/bin`
+  first on `PATH`.
 - iOS device profiling/archive validation is blocked locally by missing Apple
   development signing. Flutter 3.44 also warns `permission_handler_apple` does
   not support Swift Package Manager, so iOS plugins still need a CocoaPods
@@ -146,6 +180,12 @@ go-live.
   a Chrome debug-port connection failure after the profile web build completes.
   The fallback CDP profiler now captures local web startup metrics and traces
   successfully.
+- Android profile trace capture is still incomplete: direct emulator launch
+  now verifies the app starts without bundled-font errors, but no Flutter
+  startup `.binpb` trace was produced in this pass.
+- `flutter build apk --profile --flavor production` currently fails because
+  Gradle has no `assembleProductionProfile` task. The non-flavored
+  `assembleProfile` target builds successfully.
 - Android release builds still warn that the app and several plugins apply the
   Kotlin Gradle Plugin. Flutter 3.44 allows this with migrator flags, but future
   Flutter versions will require Built-in Kotlin-compatible plugin/project
@@ -154,8 +194,9 @@ go-live.
   subprocesses because Flutter forwards them as build parameters. These values
   must remain public client configuration only; no service-role keys or private
   secrets belong in Dart defines.
-- Native mobile startup/profile traces remain missing because no iOS/Android
-  simulator or device profile run completed successfully in this pass.
+- Native mobile startup/profile traces remain incomplete: Android emulator
+  direct-start smoke completed, but a Flutter startup trace file is still
+  missing; iOS remains blocked by signing.
 - Package major updates still need separate validation: `device_info_plus`,
   `geolocator`, `permission_handler`, and any Firebase platform-interface
   changes.
