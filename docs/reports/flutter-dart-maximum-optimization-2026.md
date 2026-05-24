@@ -39,6 +39,9 @@ go-live.
 - Added `scripts/perf/capture_web_startup_metrics.py` to serve an existing
   Flutter web build, drive headless Chrome through DevTools Protocol, and write
   startup metrics plus a Perfetto-compatible trace JSON.
+- Added `scripts/perf/build_android_size_snapshot.sh` to run a reproducible
+  single-ABI Android `--analyze-size` build and copy Flutter's code-size JSON
+  into `build/size`.
 - Ran Flutter 3.44's iOS migration path; it added SwiftPM plugin integration
   and UIScene lifecycle wiring, but device deployment remains blocked by local
   signing.
@@ -70,14 +73,28 @@ go-live.
   `FLUTTER_BIN=/Volumes/PRO-G40/flutter_3_44/bin/flutter ./scripts/release/build_android_release.sh apk`
   passed in `867.5s`.
 - Fresh APK artifact:
-  `build/app/outputs/flutter-apk/app-release.apk`, `69,871,205` bytes,
-  timestamp `2026-05-24 10:05`.
+  the multi-ABI APK build produced a `69,871,205` byte artifact at
+  `2026-05-24 10:05`; the shared `build/app/outputs/flutter-apk/app-release.apk`
+  path was later overwritten by the single-ABI size-analysis build.
 - Android AAB release:
   `GRADLE_OPTS='-Dorg.gradle.daemon=false' FLUTTER_BIN=/Volumes/PRO-G40/flutter_3_44/bin/flutter ./scripts/release/build_android_release.sh appbundle`
   passed in `571.6s`.
 - Fresh AAB artifact:
   `build/app/outputs/bundle/release/app-release.aab`, `68,900,221` bytes,
   timestamp `2026-05-24 10:28`.
+- Android arm64 size analysis:
+  `flutter build apk --release --target-platform android-arm64 --analyze-size`
+  passed in `376.3s` and produced a `28,774,355` byte arm64 APK at
+  `build/app/outputs/flutter-apk/app-release.apk`.
+- Android arm64 app-size breakdown:
+  compressed APK total `27 MB`; `lib/arm64-v8a` `20 MB`; `flutter_assets`
+  `3 MB`; `classes.dex` `2 MB`; Dart AOT symbols accounted decompressed size
+  `9 MB`, led by `package:flutter` `3 MB`, `package:mobi_app` `809 KB`,
+  `dart:mixin_deduplication` `409 KB`, `package:flutter_localizations`
+  `328 KB`, and `dart:core` `310 KB`.
+- App-size JSON copied to:
+  `build/size/android-arm64/apk-code-size-analysis-20260524.json`
+  (`11,842,845` bytes).
 - JS PWA:
   `FLUTTER_BIN=/Volumes/PRO-G40/flutter_3_44/bin/flutter ./scripts/web/prepare_pwa_bundles.sh build/pwa-js`
   passed in `109.1s`; `build/pwa-js` is `95M`, with `47M` each for `client`
@@ -171,6 +188,7 @@ $FLUTTER_BIN test --reporter expanded
 WEB_WASM=true ./scripts/web/prepare_pwa_bundles.sh build/pwa-wasm
 DEVICE=chrome ./scripts/perf/profile_startup_trace.sh
 ./scripts/perf/capture_web_startup_metrics.py --web-dir build/pwa-js/client
+TARGET_PLATFORM=android-arm64 ./scripts/perf/build_android_size_snapshot.sh
 ```
 
 Before any production readiness claim, run a profile-mode device session and

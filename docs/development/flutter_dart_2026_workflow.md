@@ -81,5 +81,11 @@ capture DevTools Protocol metrics and a trace from an existing build:
 ./scripts/perf/capture_web_startup_metrics.py --web-dir build/pwa-js/client
 ```
 
+Capture Android app-size analysis for one ABI:
+
+```bash
+TARGET_PLATFORM=android-arm64 ./scripts/perf/build_android_size_snapshot.sh
+```
+
 Capture CPU, memory, network, frame rendering, and app-size diffs before
 claiming startup, scrolling, animation, or bundle-size improvements.
