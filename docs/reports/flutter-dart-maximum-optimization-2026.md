@@ -37,6 +37,13 @@ go-live.
 ## Evidence
 
 - Target SDK: Flutter `3.44.0`, Dart `3.12.0`, DevTools `2.57.0`.
+- Commits created:
+  - `c0561ab chore: add Flutter Dart agent workflow`
+  - `4b1b92c chore: harden Flutter release scripts`
+  - `a995473 fix: support Flutter 3.44 package compatibility`
+- Staged-index dependency check:
+  `flutter pub get --enforce-lockfile` passed in a temporary checkout of the
+  committed compatibility changes.
 - `bash -n scripts/release/build_android_release.sh scripts/web/prepare_pwa_bundles.sh scripts/ci/verify_flutter.sh`: passed.
 - `/Volumes/PRO-G40/flutter_3_44/bin/dart analyze`: passed with no issues.
 - Targeted tests:
