@@ -1,0 +1,20 @@
+{
+  "dart.flutterSdkPath": "/Volumes/PRO-G40/flutter_3_44",
+  "dart.mcpServer": true,
+  "dart.lineLength": 80,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "[dart]": {
+    "editor.defaultFormatter": "Dart-Code.dart-code",
+    "editor.rulers": [
+      80
+    ]
+  },
+  "files.exclude": {
+    "**/.dart_tool": true,
+    "**/build": true
+  }
+}

@@ -54,3 +54,17 @@ See [CRITICAL_RULES.md](./CRITICAL_RULES.md) for the full list:
 3. UI = follow `design.md` exactly
 4. Auth = Supabase anonymous (no login wall)
 5. **Build env vars = SUPABASE_URL + SUPABASE_ANON_KEY mandatory on every build**
+
+## Flutter/Dart Agent Workflow
+
+- Prefer `/Volumes/PRO-G40/flutter_3_44/bin/flutter` and its bundled Dart
+  3.12 SDK for local validation. If a script supports it, set `FLUTTER_BIN`
+  explicitly rather than relying on shell `PATH`.
+- Keep the Dart MCP server configured for Codex with:
+  `codex mcp add dart -- dart mcp-server --force-roots-fallback`.
+- Official Dart and Flutter agent skills live under `.agents/skills`. Review
+  any skill before using it for external network calls or dependency changes.
+- Do not use experimental Dart primary constructors in production code. Stable
+  Dart 3.12 features are allowed when they reduce risk or complexity.
+- Run `dart analyze`, `flutter test`, and the relevant release script after any
+  change that touches routing, auth, Supabase config, payments-adjacent
