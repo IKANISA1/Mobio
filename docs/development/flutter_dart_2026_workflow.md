@@ -51,7 +51,12 @@ values are compiled into the app:
 ./scripts/release/build_android_release.sh apk
 ```
 
-PWA bundles also source `.env` and can test the Flutter 3.44 WASM/SKWASM path
+The Android release script parses `.env` without exporting it and disables the
+Gradle daemon by default for release builds. Flutter still forwards
+`--dart-define` values to its compiler/Gradle subprocesses, so only public
+client values belong in Dart defines.
+
+PWA bundles also parse `.env` and can test the Flutter 3.44 WASM/SKWASM path
 without making it the default production renderer:
 
 ```bash
@@ -64,11 +69,9 @@ WEB_WASM=true ./scripts/web/prepare_pwa_bundles.sh build/pwa-wasm
 Use DevTools after starting the app in profile mode:
 
 ```bash
-$FLUTTER_BIN run --profile \
-  --dart-define=SUPABASE_URL="$SUPABASE_URL" \
-  --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY" \
-  --dart-define=PRIVACY_POLICY_URL="$PRIVACY_POLICY_URL" \
-  --dart-define=ACCOUNT_DELETION_URL="$ACCOUNT_DELETION_URL"
+DEVICE=chrome ./scripts/perf/profile_startup_trace.sh
+DEVICE=00008101-001A01A61A22001E TRACE_OUTPUT=build/perf/ios-startup.binpb \
+  ./scripts/perf/profile_startup_trace.sh
 ```
 
 Capture CPU, memory, network, frame rendering, and app-size diffs before

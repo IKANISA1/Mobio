@@ -29,10 +29,16 @@ go-live.
   `SwitchListTile` wrapper with a `Material` surface, resolving the Flutter
   3.44 ListTile ink/background assertion.
 - Hardened Flutter scripts so they prefer `/Volumes/PRO-G40/flutter_3_44`,
-  honor `FLUTTER_BIN`, use temporary `--dart-define-from-file` JSON instead of
-  exposing build defines in command lines, and validate release outputs.
+  honor `FLUTTER_BIN`, parse `.env` without exporting it into Gradle, use
+  temporary `--dart-define-from-file` JSON, validate release outputs, and
+  disable the Gradle daemon by default for Android release builds.
 - Added `--no-wasm-dry-run` for default JS PWA builds while preserving an
   explicit `WEB_WASM=true` path for real WASM/SKWASM validation.
+- Added `scripts/perf/profile_startup_trace.sh` to run repeatable profile-mode
+  startup traces with a temporary dart-define file.
+- Ran Flutter 3.44's iOS migration path; it added SwiftPM plugin integration
+  and UIScene lifecycle wiring, but device deployment remains blocked by local
+  signing.
 
 ## Evidence
 
@@ -41,6 +47,8 @@ go-live.
   - `c0561ab chore: add Flutter Dart agent workflow`
   - `4b1b92c chore: harden Flutter release scripts`
   - `a995473 fix: support Flutter 3.44 package compatibility`
+  - `17034a3 docs: record Flutter Dart validation`
+  - `chore: capture Flutter 3.44 release evidence` (this commit)
 - Staged-index dependency check:
   `flutter pub get --enforce-lockfile` passed in a temporary checkout of the
   committed compatibility changes.
@@ -50,16 +58,64 @@ go-live.
   `/Volumes/PRO-G40/flutter_3_44/bin/flutter test --reporter expanded test/features/profile/widgets/profile_notification_consent_section_test.dart test/core/router/app_router_test.dart`: passed.
 - Full tests:
   `/Volumes/PRO-G40/flutter_3_44/bin/flutter test --reporter expanded`: `154` tests passed.
-- `flutter pub outdated`: after this pass, `flutter_typeahead` no longer appears as constrained behind `6.0.0`; remaining constraint-level updates are still unvalidated.
+- Dart MCP `/Volumes/PRO-G40/MOBI/mobi_app` analysis: passed with no errors.
+- Dart MCP `flutter pub outdated`: `flutter_typeahead` no longer appears as
+  constrained behind `6.0.0`; the current dirty worktree still has direct and
+  transitive packages newer than the locked versions, but no safe full
+  resolution was available from `pub outdated`.
+- Android APK release:
+  `FLUTTER_BIN=/Volumes/PRO-G40/flutter_3_44/bin/flutter ./scripts/release/build_android_release.sh apk`
+  passed in `867.5s`.
+- Fresh APK artifact:
+  `build/app/outputs/flutter-apk/app-release.apk`, `69,871,205` bytes,
+  timestamp `2026-05-24 10:05`.
+- Android AAB release:
+  `GRADLE_OPTS='-Dorg.gradle.daemon=false' FLUTTER_BIN=/Volumes/PRO-G40/flutter_3_44/bin/flutter ./scripts/release/build_android_release.sh appbundle`
+  passed in `571.6s`.
+- Fresh AAB artifact:
+  `build/app/outputs/bundle/release/app-release.aab`, `68,900,221` bytes,
+  timestamp `2026-05-24 10:28`.
+- JS PWA:
+  `FLUTTER_BIN=/Volumes/PRO-G40/flutter_3_44/bin/flutter ./scripts/web/prepare_pwa_bundles.sh build/pwa-js`
+  passed in `109.1s`; `build/pwa-js` is `95M`, with `47M` each for `client`
+  and `admin`.
+- WASM/SKWASM PWA:
+  `WEB_WASM=true FLUTTER_BIN=/Volumes/PRO-G40/flutter_3_44/bin/flutter ./scripts/web/prepare_pwa_bundles.sh build/pwa-wasm`
+  passed in `271.2s`; `build/pwa-wasm` is `102M`, with `51M` each for
+  `client` and `admin`.
+- Web size snapshot after WASM build:
+  `build/web/main.dart.js` is `4,430,867` bytes, `main.dart.wasm` is
+  `3,993,720` bytes, and `build/web` is `51M`.
+- Chrome profile startup attempt:
+  `flutter run -d chrome --profile --trace-startup --trace-to-file=build/perf/chrome-startup-20260524.binpb`
+  built `build/web` in `72.1s` but failed to connect to Chrome's debug port, so
+  no valid trace file was produced.
+- macOS profile startup attempt failed because this repo has no macOS desktop
+  project configured.
+- iOS profile startup attempt reached Flutter's SwiftPM/UIScene migration and
+  then failed because no valid development signing certificate/provisioning
+  profile was available for the connected wireless iPhone.
 
 ## Current Blockers
 
 - `flutter doctor -v` still warns that shell `flutter`/`dart` point to an older SDK on `PATH`. Scripts now prefer the 3.44 SDK, but developer shells should put `/Volumes/PRO-G40/flutter_3_44/bin` first.
-- iOS/macOS archive validation is blocked locally because CocoaPods is not installed. Flutter 3.44 also warns `permission_handler_apple` does not support Swift Package Manager, so iOS plugins still need CocoaPods fallback.
-- Android release appbundle validation did not produce a fresh artifact in this run. The attempted `bundleRelease` process stalled behind local Gradle state and was stopped; existing APK/AAB files under `build/` are stale from 2026-05-23 and are not evidence for this pass.
-- Web/PWA release validation did not produce a fresh artifact in this run. The first Flutter 3.44 web build exposed and fixed the Lucide/typeahead blockers; later JS minification remained CPU-bound on this workstation and was stopped. Existing `build/web` content is not treated as fresh evidence.
-- Full WASM/SKWASM validation remains pending until the default JS PWA build can complete or is run on a less contended build host.
-- App-size and startup/profile traces remain missing for this pass because fresh release artifacts were not produced.
+- iOS device profiling/archive validation is blocked locally by missing Apple
+  development signing. Flutter 3.44 also warns `permission_handler_apple` does
+  not support Swift Package Manager, so iOS plugins still need a CocoaPods
+  fallback path until that plugin migrates.
+- macOS profiling is unavailable because the repo has no macOS desktop target.
+- Chrome profile tracing is blocked on this workstation by a Chrome debug-port
+  connection failure after the profile web build completes.
+- Android release builds still warn that the app and several plugins apply the
+  Kotlin Gradle Plugin. Flutter 3.44 allows this with migrator flags, but future
+  Flutter versions will require Built-in Kotlin-compatible plugin/project
+  updates.
+- Flutter `--dart-define` values are still visible to local compiler/Gradle
+  subprocesses because Flutter forwards them as build parameters. These values
+  must remain public client configuration only; no service-role keys or private
+  secrets belong in Dart defines.
+- Startup/profile traces remain missing because no simulator/device profile run
+  completed successfully in this pass.
 - Package major updates still need separate validation: `device_info_plus`,
   `geolocator`, `permission_handler`, and any Firebase platform-interface
   changes.
@@ -90,8 +146,8 @@ $FLUTTER_BIN test --reporter expanded
 ./scripts/release/build_android_release.sh apk
 ./scripts/web/prepare_pwa_bundles.sh build/pwa-js
 WEB_WASM=true ./scripts/web/prepare_pwa_bundles.sh build/pwa-wasm
+DEVICE=chrome ./scripts/perf/profile_startup_trace.sh
 ```
 
-After fresh artifacts exist, capture app size with `du -h` and Flutter
-DevTools/app-size analysis, then run profile-mode startup, navigation,
-scrolling, memory, and network traces before any production readiness claim.
+Before any production readiness claim, run a profile-mode device session and
+capture startup, navigation, scrolling, memory, and network traces in DevTools.

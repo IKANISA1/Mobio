@@ -11,17 +11,9 @@ else
   FLUTTER_BIN="${FLUTTER_BIN:-flutter}"
 fi
 
-if [[ -f .env ]]; then
-  set -a
-  # shellcheck disable=SC1091
-  source .env
-  set +a
+if [[ "${MOBI_DISABLE_GRADLE_DAEMON:-true}" == "true" ]]; then
+  export GRADLE_OPTS="-Dorg.gradle.daemon=false ${GRADLE_OPTS:-}"
 fi
-
-: "${SUPABASE_URL:?Missing SUPABASE_URL. Add it to .env or export it before building.}"
-: "${SUPABASE_ANON_KEY:?Missing SUPABASE_ANON_KEY. Add it to .env or export it before building.}"
-: "${PRIVACY_POLICY_URL:?Missing PRIVACY_POLICY_URL. Add it to .env or export it before building.}"
-: "${ACCOUNT_DELETION_URL:?Missing ACCOUNT_DELETION_URL. Add it to .env or export it before building.}"
 
 dart_define_file="$(mktemp "${TMPDIR:-/tmp}/mobi-dart-defines.XXXXXX.json")"
 trap 'rm -f "${dart_define_file:-}"' EXIT
@@ -30,14 +22,52 @@ python3 - <<'PY' "$dart_define_file"
 import json
 import os
 import sys
+from pathlib import Path
 
 path = sys.argv[1]
-defines = {
-    "SUPABASE_URL": os.environ["SUPABASE_URL"],
-    "SUPABASE_ANON_KEY": os.environ["SUPABASE_ANON_KEY"],
-    "PRIVACY_POLICY_URL": os.environ["PRIVACY_POLICY_URL"],
-    "ACCOUNT_DELETION_URL": os.environ["ACCOUNT_DELETION_URL"],
-}
+required = (
+    "SUPABASE_URL",
+    "SUPABASE_ANON_KEY",
+    "PRIVACY_POLICY_URL",
+    "ACCOUNT_DELETION_URL",
+)
+
+
+def parse_dotenv(dotenv_path: Path) -> dict[str, str]:
+    if not dotenv_path.exists():
+        return {}
+    values: dict[str, str] = {}
+    for raw_line in dotenv_path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        if line.startswith("export "):
+            line = line[len("export "):].strip()
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip("'\"")
+        if key:
+            values[key] = value
+    return values
+
+
+dotenv = parse_dotenv(Path(".env"))
+defines = {}
+missing = []
+for key in required:
+    value = os.environ.get(key) or dotenv.get(key)
+    if not value:
+        missing.append(key)
+    else:
+        defines[key] = value
+
+if missing:
+    print(
+        "Missing " + ", ".join(missing) + ". Add them to .env or export them before building.",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+
 with open(path, "w", encoding="utf-8") as fh:
     json.dump(defines, fh)
 PY
