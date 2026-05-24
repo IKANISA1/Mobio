@@ -12,7 +12,7 @@ go-live.
 ## Changes Made
 
 - Configured the Dart MCP server command for Codex:
-  `codex mcp add dart -- dart mcp-server --force-roots-fallback`.
+  `codex mcp add dart -- /Volumes/PRO-G40/flutter_3_44/bin/dart mcp-server --force-roots-fallback`.
 - Installed official Dart and Flutter agent skills into `.agents/skills` and
   recorded the lock file.
 - Added VS Code recommendations/settings for the Flutter 3.44 SDK, Dart MCP,
@@ -48,6 +48,11 @@ go-live.
 - Renamed the bundled regular Google Font assets to the exact file names
   resolved by `google_fonts` when runtime fetching is disabled:
   `Inter-Regular.ttf` and `Manrope-Regular.ttf`.
+- Corrected the global Codex Dart MCP command to use the absolute Flutter 3.44
+  Dart 3.12 binary instead of a bare `dart` lookup.
+- Added analyzer excludes for generated build outputs (`build/**`,
+  `.dart_tool/**`, `android/build/**`, and `ios/.symlinks/**`) so full repo
+  analysis does not scan SwiftPM/Flutter-generated third-party package mirrors.
 
 ## Evidence
 
@@ -74,9 +79,24 @@ go-live.
   `test/features/profile/widgets/profile_notification_consent_section_test.dart`
   but failed before execution because the MCP process is resolving with Dart
   `3.10.8` instead of the repo's required Dart `^3.12.0`.
+- Global MCP config now contains:
+  `command = "/Volumes/PRO-G40/flutter_3_44/bin/dart"` for
+  `[mcp_servers.dart]`.
+- Restarting the stale Dart MCP process inside this already-running Codex turn
+  closed the current MCP transport. The corrected command should be used by the
+  next Codex MCP server startup/reconnect.
 - Pinned Flutter 3.44 focused test:
   `/Volumes/PRO-G40/flutter_3_44/bin/flutter test --reporter expanded test/features/profile/widgets/profile_notification_consent_section_test.dart`
   passed.
+- Pinned Dart 3.12 full analyzer rerun:
+  `/Volumes/PRO-G40/flutter_3_44/bin/dart analyze` passed with no issues after
+  excluding generated build outputs. Before that exclude, `dart analyze`
+  incorrectly scanned `build/ios/SourcePackages/checkouts/flutterfire` and
+  returned `9,874` third-party issues.
+- Pinned Flutter 3.44 focused test rerun:
+  `/Volumes/PRO-G40/flutter_3_44/bin/flutter test --reporter expanded test/features/profile/widgets/profile_notification_consent_section_test.dart`
+  passed; Flutter repeated the known `permission_handler_apple` SwiftPM
+  warning.
 - Dart MCP `flutter pub outdated`: `flutter_typeahead` no longer appears as
   constrained behind `6.0.0`; the current dirty worktree still has direct and
   transitive packages newer than the locked versions, but no safe full
@@ -167,10 +187,10 @@ go-live.
 ## Current Blockers
 
 - `flutter doctor -v` still warns that shell `flutter`/`dart` point to an older SDK on `PATH`. Scripts now prefer the 3.44 SDK, but developer shells should put `/Volumes/PRO-G40/flutter_3_44/bin` first.
-- Dart MCP test execution currently inherits the older Dart `3.10.8` toolchain
-  from the host environment. MCP analysis works, but MCP test execution needs
-  the server environment relaunched with `/Volumes/PRO-G40/flutter_3_44/bin`
-  first on `PATH`.
+- Dart MCP test execution in this already-running turn is not reusable after
+  stopping the stale Dart 3.10 MCP process; the transport remains closed. The
+  global MCP command now points at Dart 3.12, so this should clear after Codex
+  reconnects/restarts the Dart MCP server.
 - iOS device profiling/archive validation is blocked locally by missing Apple
   development signing. Flutter 3.44 also warns `permission_handler_apple` does
   not support Swift Package Manager, so iOS plugins still need a CocoaPods
@@ -218,6 +238,8 @@ go-live.
 ```bash
 export FLUTTER_BIN=/Volumes/PRO-G40/flutter_3_44/bin/flutter
 export PATH=/Volumes/PRO-G40/flutter_3_44/bin:$PATH
+
+codex mcp add dart -- /Volumes/PRO-G40/flutter_3_44/bin/dart mcp-server --force-roots-fallback
 
 $FLUTTER_BIN doctor -v
 /Volumes/PRO-G40/flutter_3_44/bin/dart analyze

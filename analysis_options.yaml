@@ -4,6 +4,11 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
+  exclude:
+    - build/**
+    - .dart_tool/**
+    - android/build/**
+    - ios/.symlinks/**
   errors:
     missing_return: error
     missing_required_param: error

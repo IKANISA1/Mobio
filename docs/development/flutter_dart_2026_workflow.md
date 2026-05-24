@@ -18,13 +18,18 @@ scripts prefer the 3.44 SDK when it exists and also honor `FLUTTER_BIN`.
 ## Agent Tooling
 
 ```bash
-codex mcp add dart -- dart mcp-server --force-roots-fallback
+codex mcp add dart -- /Volumes/PRO-G40/flutter_3_44/bin/dart mcp-server --force-roots-fallback
 npx skills add flutter/skills --skill '*' --agent universal
 npx skills add dart-lang/skills --skill '*' --agent universal
 ```
 
 Installed skills are under `.agents/skills`. Review a skill before using it to
 change dependencies, run external network calls, or make platform changes.
+
+The MCP command must use the absolute Dart 3.12 binary. A bare `dart` command
+can resolve to an older SDK on this workstation and fail before running tests
+against this repo's `^3.12.0` SDK constraint. After changing MCP config, restart
+Codex or reconnect the MCP server before relying on MCP test execution.
 
 ## Daily Checks
 

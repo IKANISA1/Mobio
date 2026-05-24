@@ -61,7 +61,10 @@ See [CRITICAL_RULES.md](./CRITICAL_RULES.md) for the full list:
   3.12 SDK for local validation. If a script supports it, set `FLUTTER_BIN`
   explicitly rather than relying on shell `PATH`.
 - Keep the Dart MCP server configured for Codex with:
-  `codex mcp add dart -- dart mcp-server --force-roots-fallback`.
+  `codex mcp add dart -- /Volumes/PRO-G40/flutter_3_44/bin/dart mcp-server --force-roots-fallback`.
+  Do not use a bare `dart` command here; this workstation also has older Dart
+  SDKs on `PATH`, and MCP test execution must match the repo's Dart `^3.12.0`
+  constraint.
 - Official Dart and Flutter agent skills live under `.agents/skills`. Review
   any skill before using it for external network calls or dependency changes.
 - Do not use experimental Dart primary constructors in production code. Stable
