@@ -74,5 +74,12 @@ DEVICE=00008101-001A01A61A22001E TRACE_OUTPUT=build/perf/ios-startup.binpb \
   ./scripts/perf/profile_startup_trace.sh
 ```
 
+For a local web bundle that does not depend on Flutter's Chrome launcher,
+capture DevTools Protocol metrics and a trace from an existing build:
+
+```bash
+./scripts/perf/capture_web_startup_metrics.py --web-dir build/pwa-js/client
+```
+
 Capture CPU, memory, network, frame rendering, and app-size diffs before
 claiming startup, scrolling, animation, or bundle-size improvements.

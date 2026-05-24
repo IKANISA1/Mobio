@@ -36,6 +36,9 @@ go-live.
   explicit `WEB_WASM=true` path for real WASM/SKWASM validation.
 - Added `scripts/perf/profile_startup_trace.sh` to run repeatable profile-mode
   startup traces with a temporary dart-define file.
+- Added `scripts/perf/capture_web_startup_metrics.py` to serve an existing
+  Flutter web build, drive headless Chrome through DevTools Protocol, and write
+  startup metrics plus a Perfetto-compatible trace JSON.
 - Ran Flutter 3.44's iOS migration path; it added SwiftPM plugin integration
   and UIScene lifecycle wiring, but device deployment remains blocked by local
   signing.
@@ -83,13 +86,31 @@ go-live.
   `WEB_WASM=true FLUTTER_BIN=/Volumes/PRO-G40/flutter_3_44/bin/flutter ./scripts/web/prepare_pwa_bundles.sh build/pwa-wasm`
   passed in `271.2s`; `build/pwa-wasm` is `102M`, with `51M` each for
   `client` and `admin`.
-- Web size snapshot after WASM build:
-  `build/web/main.dart.js` is `4,430,867` bytes, `main.dart.wasm` is
-  `3,993,720` bytes, and `build/web` is `51M`.
-- Chrome profile startup attempt:
+- Release JS PWA size snapshot:
+  `build/pwa-js/client/main.dart.js` is `4,430,867` bytes and
+  `build/pwa-js/client` is `47M`.
+- Release WASM/SKWASM PWA size snapshot:
+  `build/pwa-wasm/client/main.dart.js` is `4,430,867` bytes,
+  `build/pwa-wasm/client/main.dart.wasm` is `3,993,720` bytes, and
+  `build/pwa-wasm/client` is `51M`.
+- Flutter Chrome profile startup attempt:
   `flutter run -d chrome --profile --trace-startup --trace-to-file=build/perf/chrome-startup-20260524.binpb`
   built `build/web` in `72.1s` but failed to connect to Chrome's debug port, so
   no valid trace file was produced.
+- CDP profile startup capture against the profile `build/web` output succeeded:
+  `build/perf/web-startup-metrics-20260524104110.json` and
+  `build/perf/web-startup-trace-20260524104110.json`.
+  The page reached `readyState=complete`, Flutter host detection was `true`,
+  first paint and first contentful paint were both `92ms`, `loadEventEnd` was
+  `837.4ms`, JS heap used was `23,770,072` bytes, and the trace contains
+  `12,846` events.
+- CDP profile startup capture against the release JS PWA client succeeded:
+  `build/perf/web-startup-metrics-20260524104147.json` and
+  `build/perf/web-startup-trace-20260524104147.json`.
+  The page reached `readyState=complete`, Flutter host detection was `true`,
+  first paint and first contentful paint were both `104ms`, `loadEventEnd` was
+  `41.9ms`, JS heap used was `26,412,768` bytes, and the trace contains `7,912`
+  events.
 - macOS profile startup attempt failed because this repo has no macOS desktop
   project configured.
 - iOS profile startup attempt reached Flutter's SwiftPM/UIScene migration and
@@ -104,8 +125,10 @@ go-live.
   not support Swift Package Manager, so iOS plugins still need a CocoaPods
   fallback path until that plugin migrates.
 - macOS profiling is unavailable because the repo has no macOS desktop target.
-- Chrome profile tracing is blocked on this workstation by a Chrome debug-port
-  connection failure after the profile web build completes.
+- Flutter's built-in Chrome profile launcher is blocked on this workstation by
+  a Chrome debug-port connection failure after the profile web build completes.
+  The fallback CDP profiler now captures local web startup metrics and traces
+  successfully.
 - Android release builds still warn that the app and several plugins apply the
   Kotlin Gradle Plugin. Flutter 3.44 allows this with migrator flags, but future
   Flutter versions will require Built-in Kotlin-compatible plugin/project
@@ -114,8 +137,8 @@ go-live.
   subprocesses because Flutter forwards them as build parameters. These values
   must remain public client configuration only; no service-role keys or private
   secrets belong in Dart defines.
-- Startup/profile traces remain missing because no simulator/device profile run
-  completed successfully in this pass.
+- Native mobile startup/profile traces remain missing because no iOS/Android
+  simulator or device profile run completed successfully in this pass.
 - Package major updates still need separate validation: `device_info_plus`,
   `geolocator`, `permission_handler`, and any Firebase platform-interface
   changes.
@@ -147,6 +170,7 @@ $FLUTTER_BIN test --reporter expanded
 ./scripts/web/prepare_pwa_bundles.sh build/pwa-js
 WEB_WASM=true ./scripts/web/prepare_pwa_bundles.sh build/pwa-wasm
 DEVICE=chrome ./scripts/perf/profile_startup_trace.sh
+./scripts/perf/capture_web_startup_metrics.py --web-dir build/pwa-js/client
 ```
 
 Before any production readiness claim, run a profile-mode device session and
