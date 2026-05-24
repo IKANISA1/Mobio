@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.0+12
 
 environment:
-  sdk: ^3.10.8
+  sdk: ^3.12.0
 
 dependencies:
   flutter:
@@ -44,7 +44,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   url_launcher: ^6.3.2
   lucide_icons: ^0.257.0
-  flutter_typeahead: ^5.2.0
+  flutter_typeahead: ^6.0.0
   geolocator: ^13.0.2
   permission_handler: ^11.4.0
   connectivity_plus: ^7.0.0
@@ -89,6 +89,11 @@ dev_dependencies:
   json_serializable: ^6.11.0
   flutter_launcher_icons: ^0.14.4
   pigeon: ^26.3.2
+
+dependency_overrides:
+  lucide_icons:
+    path: packages/lucide_icons_compat
+
 flutter:
   generate: true
   uses-material-design: true

@@ -29,11 +29,12 @@ class ProfileNotificationConsentSection extends ConsumerWidget {
           icon: LucideIcons.bell,
         ),
         const SizedBox(height: AppSpacing.md),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            color: ext.surfaceContainerLowest,
+        Material(
+          color: ext.surfaceContainerLowest,
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(
+            side: BorderSide(
               color: cs.outlineVariant.withValues(alpha: 0.16),
             ),
           ),
