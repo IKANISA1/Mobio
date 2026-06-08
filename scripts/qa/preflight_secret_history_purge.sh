@@ -37,7 +37,7 @@ if [[ -e "$forbidden_path" ]]; then
   exit 1
 fi
 
-if ! git log --all --format='%H' -- "$forbidden_path" | grep -q .; then
+if [[ -z "$(git log --all --full-history --format='%H' -- "$forbidden_path")" ]]; then
   echo "No historical entries found for $forbidden_path."
   echo "Run scripts/qa/check_secret_history.sh for production evidence."
   exit 0

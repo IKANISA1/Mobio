@@ -27,9 +27,10 @@ fi
 matches=0
 
 for path in "${forbidden_paths[@]}"; do
-  if git log --all --format='%H %ad %s' --date=short -- "$path" | grep -q .; then
+  history_matches="$(git log --all --full-history --format='%H %ad %s' --date=short -- "$path")"
+  if [[ -n "$history_matches" ]]; then
     echo "Forbidden secret-bearing path is still present in git history: $path" >&2
-    git log --all --format='  %h %ad %s' --date=short -- "$path" >&2
+    git log --all --full-history --format='  %h %ad %s' --date=short -- "$path" >&2
     matches=1
   fi
 done
