@@ -91,7 +91,6 @@ class _ConsentControls extends ConsumerWidget {
       children: [
         _ConsentSwitch(
           title: 'Promotional in-app notifications',
-          subtitle: 'Offers and campaign messages inside Mobi.',
           value: settings.promotionalInApp,
           onChanged: (value) => unawaited(
             _save(
@@ -105,7 +104,6 @@ class _ConsentControls extends ConsumerWidget {
         Divider(height: 1, color: cs.outlineVariant.withValues(alpha: 0.18)),
         _ConsentSwitch(
           title: 'Promotional push notifications',
-          subtitle: 'Offers and campaign messages as device notifications.',
           value: settings.promotionalPush,
           onChanged: (value) =>
               unawaited(_savePromotionalPush(ref, context, value)),
@@ -187,13 +185,11 @@ class _ConsentControls extends ConsumerWidget {
 class _ConsentSwitch extends StatelessWidget {
   const _ConsentSwitch({
     required this.title,
-    required this.subtitle,
     required this.value,
     required this.onChanged,
   });
 
   final String title;
-  final String subtitle;
   final bool value;
   final ValueChanged<bool> onChanged;
 
@@ -211,10 +207,6 @@ class _ConsentSwitch extends StatelessWidget {
       title: Text(
         title,
         style: AppTypography.titleMd.copyWith(color: cs.onSurface),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: AppTypography.bodySm.copyWith(color: cs.onSurfaceVariant),
       ),
     );
   }

@@ -311,13 +311,6 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
                                     color: cs.onSurface,
                                   ),
                                 ),
-                                const SizedBox(height: AppSpacing.xs),
-                                Text(
-                                  'Approved WhatsApp number plus OTP verification only.',
-                                  style: AppTypography.bodySm.copyWith(
-                                    color: cs.onSurfaceVariant,
-                                  ),
-                                ),
                               ],
                             ),
                           ),

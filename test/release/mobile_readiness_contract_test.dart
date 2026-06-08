@@ -95,7 +95,8 @@ void main() {
       expect(router, contains("path: '/profile/setup'"));
       expect(router, contains('isFirstRun: true'));
       expect(editProfileScreen, contains('Set up profile'));
-      expect(editProfileScreen, contains('Complete your profile'));
+      expect(editProfileScreen, contains('Passenger profile'));
+      expect(editProfileScreen, contains('Driver profile'));
       expect(editProfileScreen, contains('Profile setup complete.'));
     });
 

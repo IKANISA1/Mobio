@@ -63,6 +63,7 @@ class AdminWorkspaceFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final showSubtitle = subtitle.trim().isNotEmpty;
 
     return SoftGradient(
       child: LayoutBuilder(
@@ -119,7 +120,7 @@ class AdminWorkspaceFrame extends StatelessWidget {
                                         color: cs.onSurface,
                                       ),
                                     ),
-                                    if (subtitle.trim().isNotEmpty) ...[
+                                    if (showSubtitle) ...[
                                       const SizedBox(height: AppSpacing.xs),
                                       Text(
                                         subtitle,
@@ -232,6 +233,7 @@ class AdminSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final showSubtitle = subtitle?.trim().isNotEmpty == true;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,7 +246,7 @@ class AdminSectionHeader extends StatelessWidget {
                 title,
                 style: AppTypography.titleLg.copyWith(color: cs.onSurface),
               ),
-              if (subtitle != null) ...[
+              if (showSubtitle) ...[
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   subtitle!,
@@ -287,6 +289,7 @@ class AdminMetricCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final accent = _toneColor(context, tone);
+    final showHint = hint?.trim().isNotEmpty == true;
 
     return AdminPanel(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -326,7 +329,7 @@ class AdminMetricCard extends StatelessWidget {
               fontSize: 28,
             ),
           ),
-          if (hint != null) ...[
+          if (showHint) ...[
             const SizedBox(height: AppSpacing.xs),
             Text(
               hint!,
@@ -565,6 +568,7 @@ class AdminEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final showMessage = message.trim().isNotEmpty;
 
     return Semantics(
       container: true,
@@ -588,12 +592,16 @@ class AdminEmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: AppTypography.titleMd.copyWith(color: cs.onSurface),
             ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: AppTypography.bodySm.copyWith(color: cs.onSurfaceVariant),
-            ),
+            if (showMessage) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: AppTypography.bodySm.copyWith(
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
+            ],
             if (action != null) ...[
               const SizedBox(height: AppSpacing.lg),
               action!,

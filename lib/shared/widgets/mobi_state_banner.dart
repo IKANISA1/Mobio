@@ -65,10 +65,15 @@ class MobiStateBanner extends StatelessWidget {
         (onTap != null
             ? Icon(Icons.chevron_right_rounded, size: 20, color: colors.accent)
             : null);
+    final showSubtitle =
+        tone == MobiStateBannerTone.danger &&
+        subtitle?.trim().isNotEmpty == true;
 
     return ClayCard(
       onTap: onTap,
-      semanticLabel: title,
+      semanticLabel: subtitle?.trim().isNotEmpty == true
+          ? '$title. $subtitle'
+          : title,
       borderRadius: AppRadii.xxl,
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
@@ -96,7 +101,7 @@ class MobiStateBanner extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTypography.titleMd.copyWith(color: cs.onSurface),
                 ),
-                if (subtitle != null) ...[
+                if (showSubtitle) ...[
                   const SizedBox(height: 2),
                   Text(
                     subtitle!,

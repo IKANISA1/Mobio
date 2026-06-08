@@ -25,6 +25,7 @@ class MobiSectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final showCaption = caption?.trim().isNotEmpty == true;
 
     return Row(
       children: [
@@ -50,7 +51,7 @@ class MobiSectionHeader extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppTypography.titleLg.copyWith(color: cs.onSurface),
               ),
-              if (caption != null) ...[
+              if (showCaption) ...[
                 const SizedBox(height: 2),
                 Text(
                   caption!,

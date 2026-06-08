@@ -57,15 +57,6 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
 
   String get _fullPhone => '$_countryCode${_number.trim()}';
 
-  String get _maskedPhone {
-    final trimmed = _fullPhone.trim();
-    if (trimmed.length <= 4) {
-      return trimmed;
-    }
-
-    return '${trimmed.substring(0, trimmed.length - 4)}${'•' * 4}';
-  }
-
   @override
   void initState() {
     super.initState();
@@ -251,13 +242,6 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
                                   letterSpacing: 0,
                                 ),
                               ),
-                              const SizedBox(height: AppSpacing.xs),
-                              Text(
-                                'Required for passenger and driver accounts.',
-                                style: AppTypography.bodySm.copyWith(
-                                  color: cs.onSurfaceVariant,
-                                ),
-                              ),
                             ],
                           ),
                         ),
@@ -275,15 +259,6 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
                           style: AppTypography.headlineSm.copyWith(
                             color: cs.onSurface,
                             letterSpacing: 0,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          _otpRequested
-                              ? 'Use the 6-digit code sent to $_maskedPhone.'
-                              : 'Choose how this WhatsApp number should operate.',
-                          style: AppTypography.bodySm.copyWith(
-                            color: cs.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.lg),

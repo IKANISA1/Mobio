@@ -39,8 +39,8 @@ class MobiFeatureTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final resolvedAccent = accent ?? cs.primary;
-    final hasSubtitle = subtitle?.trim().isNotEmpty == true;
-    final isDense = compact || !hasSubtitle;
+    final showSubtitle = subtitle?.trim().isNotEmpty == true;
+    final isDense = compact || !showSubtitle;
     final resolvedTrailing =
         trailing ??
         (onTap != null
@@ -97,7 +97,7 @@ class MobiFeatureTile extends StatelessWidget {
                                 : FontWeight.w700,
                           ),
                 ),
-                if (hasSubtitle) ...[
+                if (showSubtitle) ...[
                   const SizedBox(height: 2),
                   Text(
                     subtitle!,

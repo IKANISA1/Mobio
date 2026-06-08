@@ -281,15 +281,8 @@ class _FirstRunProfileIntro extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Complete your profile',
+              isDriver ? 'Driver profile' : 'Passenger profile',
               style: AppTypography.titleLg.copyWith(color: cs.onSurface),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              isDriver
-                  ? 'Add your WhatsApp identity and vehicle details before posting or joining scheduled trips.'
-                  : 'Confirm your WhatsApp identity before posting trips, chatting, or saving preferences.',
-              style: AppTypography.bodyMd.copyWith(color: cs.onSurfaceVariant),
             ),
           ],
         ),

@@ -97,6 +97,7 @@ class PermissionAccessDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final showMessage = config.message.trim().isNotEmpty;
 
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 380),
@@ -104,65 +105,74 @@ class PermissionAccessDialog extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Material(
           color: Colors.transparent,
-          child: ClayCard(
-            padding: const EdgeInsets.all(28),
-            borderRadius: 32,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 76,
-                  height: 76,
-                  decoration: BoxDecoration(
-                    color: cs.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(24),
+          child: Semantics(
+            label: '${config.title}. ${config.message}',
+            child: ClayCard(
+              padding: const EdgeInsets.all(28),
+              borderRadius: 32,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 76,
+                    height: 76,
+                    decoration: BoxDecoration(
+                      color: cs.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Icon(config.icon, size: 36, color: cs.primary),
                   ),
-                  child: Icon(config.icon, size: 36, color: cs.primary),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  config.title,
-                  textAlign: TextAlign.center,
-                  style: AppTypography.headlineMd.copyWith(
-                    letterSpacing: -0.8,
-                    color: cs.onSurface,
+                  const SizedBox(height: 20),
+                  Text(
+                    config.title,
+                    textAlign: TextAlign.center,
+                    style: AppTypography.headlineMd.copyWith(
+                      letterSpacing: -0.8,
+                      color: cs.onSurface,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  config.message,
-                  textAlign: TextAlign.center,
-                  style: AppTypography.bodyMd.copyWith(
-                    color: cs.onSurfaceVariant,
-                    height: 1.5,
+                  if (showMessage) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      config.message,
+                      textAlign: TextAlign.center,
+                      style: AppTypography.bodyMd.copyWith(
+                        color: cs.onSurfaceVariant,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+                  MobiButton(
+                    width: double.infinity,
+                    onPressed: () => _handleAction(
+                      context,
+                      PermissionAccessDialogAction.grantAccess,
+                    ),
+                    child: Text(
+                      config.primaryButtonLabel,
+                      style: AppTypography.labelMd.copyWith(
+                        color: cs.onPrimary,
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                MobiButton(
-                  width: double.infinity,
-                  onPressed: () => _handleAction(
-                    context,
-                    PermissionAccessDialogAction.grantAccess,
+                  const SizedBox(height: 12),
+                  MobiButton(
+                    width: double.infinity,
+                    variant: MobiButtonVariant.ghost,
+                    onPressed: () => _handleAction(
+                      context,
+                      PermissionAccessDialogAction.maybeLater,
+                    ),
+                    child: Text(
+                      config.secondaryButtonLabel,
+                      style: AppTypography.labelMd.copyWith(
+                        color: cs.onSurface,
+                      ),
+                    ),
                   ),
-                  child: Text(
-                    config.primaryButtonLabel,
-                    style: AppTypography.labelMd.copyWith(color: cs.onPrimary),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                MobiButton(
-                  width: double.infinity,
-                  variant: MobiButtonVariant.ghost,
-                  onPressed: () => _handleAction(
-                    context,
-                    PermissionAccessDialogAction.maybeLater,
-                  ),
-                  child: Text(
-                    config.secondaryButtonLabel,
-                    style: AppTypography.labelMd.copyWith(color: cs.onSurface),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

@@ -30,6 +30,7 @@ class MobiPageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final showSubtitle = subtitle != null;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -61,10 +62,7 @@ class MobiPageHeader extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.titleLg.copyWith(color: cs.primary),
                   ),
-                  if (subtitle != null) ...[
-                    const SizedBox(height: 2),
-                    subtitle!,
-                  ],
+                  if (showSubtitle) ...[const SizedBox(height: 2), subtitle!],
                 ],
               ),
             ),

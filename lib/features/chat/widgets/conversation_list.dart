@@ -42,15 +42,6 @@ class ConversationList extends StatelessWidget {
               Icon(LucideIcons.messageCircle, size: 28, color: cs.primary),
               const SizedBox(height: 16),
               Text('No chats yet', style: AppTypography.titleLg),
-              const SizedBox(height: 8),
-              Text(
-                trip == null
-                    ? 'Users will appear here once someone starts a chat in Mobio.'
-                    : 'When riders contact you about ${trip!.origin} to ${trip!.destination}, their threads will appear here.',
-                style: AppTypography.bodyMd.copyWith(
-                  color: cs.onSurfaceVariant,
-                ),
-              ),
             ],
           ),
         ),
