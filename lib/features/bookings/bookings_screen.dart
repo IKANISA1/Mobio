@@ -6,7 +6,6 @@ import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
-import 'package:mobi_app/core/services/ride_request_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
@@ -55,11 +54,6 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   List<Trip> _myTrips = [];
   List<Trip> _nearbyTrips = [];
   TripService get _tripService => ref.read(tripServiceProvider);
-
-  RideRequestService get _rideRequestService =>
-      ref.read(rideRequestServiceProvider);
-
-  final Set<String> _requestedTripIds = {};
 
   @override
   void initState() {
@@ -541,8 +535,6 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                             ),
                           ),
                         )
-                      else if (isNearby && trip.id != null)
-                        _buildRequestOfferButton(trip)
                       else
                         const SizedBox.shrink(),
                       Material(
@@ -627,105 +619,6 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
             ),
           );
         }
-      }
-    }
-  }
-
-  Widget _buildRequestOfferButton(Trip trip) {
-    final cs = Theme.of(context).colorScheme;
-    final isDriver = trip.role == 'driver';
-    final label = isDriver ? 'Request' : 'Offer';
-    final doneLabel = isDriver ? 'Requested' : 'Offered';
-    final icon = isDriver ? LucideIcons.send : LucideIcons.gift;
-    const doneIcon = LucideIcons.checkCircle;
-    final isDone = _requestedTripIds.contains(trip.id);
-
-    return Material(
-      color: isDone ? cs.primaryContainer : cs.primary,
-      borderRadius: BorderRadius.circular(AppRadii.lg),
-      child: InkWell(
-        onTap: isDone ? null : () => _handleRequestOffer(trip),
-        borderRadius: BorderRadius.circular(AppRadii.lg),
-        splashColor: cs.onPrimary.withValues(alpha: 0.2),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.sm,
-            vertical: AppSpacing.xs,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                isDone ? doneIcon : icon,
-                size: 14,
-                color: isDone ? cs.primary : cs.onPrimary,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                isDone ? doneLabel : label,
-                style: AppTypography.labelLg.copyWith(
-                  color: isDone ? cs.primary : cs.onPrimary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _handleRequestOffer(Trip trip) async {
-    final isDriver = trip.role == 'driver';
-    final tripId = trip.id;
-
-    try {
-      if (isDriver) {
-        // Current user is passenger, requesting a ride from this driver
-        await _rideRequestService.sendRequest(
-          responderId: trip.authorId,
-          tripId: tripId,
-          metadata: {
-            'vehicle_type': trip.vehicleTypeStr,
-            'route': '${trip.origin} → ${trip.destination}',
-            'source': 'nearby_trips',
-          },
-        );
-      } else {
-        // Current user is driver, offering a ride to this passenger
-        if (tripId == null) {
-          throw Exception('Cannot offer a ride to a trip without an ID.');
-        }
-        await _rideRequestService.sendOffer(
-          responderId: trip.authorId,
-          tripId: tripId,
-          metadata: {
-            'route': '${trip.origin} → ${trip.destination}',
-            'source': 'nearby_trips',
-          },
-        );
-      }
-
-      if (mounted && tripId != null) {
-        setState(() => _requestedTripIds.add(tripId));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(isDriver ? 'Ride request sent!' : 'Ride offer sent!'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
-      }
-    } on Object catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              userMessageForError(
-                e,
-                fallback: 'Unable to send the ride request right now.',
-              ),
-            ),
-          ),
-        );
       }
     }
   }

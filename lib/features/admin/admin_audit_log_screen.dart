@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -56,6 +58,168 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _showAuditDetailSheet(AdminAuditLogItem item) {
+    final cs = Theme.of(context).colorScheme;
+    final payload = item.details.isEmpty
+        ? 'No detail payload'
+        : const JsonEncoder.withIndent('  ').convert(item.details);
+
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) {
+        final tone = _actionTone(item.action);
+        return SafeArea(
+          top: false,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.lg,
+              AppSpacing.lg,
+              MediaQuery.viewInsetsOf(context).bottom + AppSpacing.lg,
+            ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.sizeOf(context).height * 0.86,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Audit event',
+                                style: AppTypography.titleLg.copyWith(
+                                  color: cs.onSurface,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.xs),
+                              Text(
+                                AdminDashboardUtils.formatTimestamp(
+                                  item.createdAt,
+                                ),
+                                style: AppTypography.bodySm.copyWith(
+                                  color: cs.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        AdminActionChip(
+                          label: 'Close',
+                          icon: LucideIcons.x,
+                          onTap: () => Navigator.of(context).pop(),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Wrap(
+                      spacing: AppSpacing.sm,
+                      runSpacing: AppSpacing.sm,
+                      children: [
+                        MobiStatusBadge(
+                          label: _humanize(item.action),
+                          tone: tone,
+                        ),
+                        MobiStatusBadge(
+                          label: _humanize(item.targetType),
+                          tone: MobiStatusBadgeTone.neutral,
+                        ),
+                        if (_isSensitiveAction(item))
+                          const MobiStatusBadge(
+                            label: 'Sensitive',
+                            icon: LucideIcons.shieldAlert,
+                            tone: MobiStatusBadgeTone.warning,
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isWide = constraints.maxWidth >= 640;
+                        final fields = [
+                          AdminFieldPair(label: 'Actor', value: item.adminName),
+                          AdminFieldPair(label: 'Action', value: item.action),
+                          AdminFieldPair(
+                            label: 'Target type',
+                            value: item.targetType,
+                          ),
+                          AdminFieldPair(
+                            label: 'Target ID',
+                            value: item.targetId ?? 'None',
+                          ),
+                          AdminFieldPair(
+                            label: 'Created',
+                            value: item.createdAt ?? 'Unknown',
+                          ),
+                        ];
+                        if (!isWide) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              for (final field in fields) ...[
+                                field,
+                                const SizedBox(height: AppSpacing.md),
+                              ],
+                            ],
+                          );
+                        }
+                        return Wrap(
+                          spacing: AppSpacing.xl,
+                          runSpacing: AppSpacing.md,
+                          children: [
+                            for (final field in fields)
+                              SizedBox(width: 220, child: field),
+                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Text(
+                      'Detail payload',
+                      style: AppTypography.labelLg.copyWith(
+                        color: cs.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).extension<MobiThemeExtension>()!.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: cs.outlineVariant.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: SelectableText(
+                          payload,
+                          style: AppTypography.bodySm.copyWith(
+                            color: cs.onSurface,
+                            fontFamily: 'monospace',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _load() async {
@@ -286,7 +450,11 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
                         for (var index = 0; index < pagedLogs.length; index++)
                           Column(
                             children: [
-                              _AuditLogRow(item: pagedLogs[index]),
+                              _AuditLogRow(
+                                item: pagedLogs[index],
+                                onViewDetails: () =>
+                                    _showAuditDetailSheet(pagedLogs[index]),
+                              ),
                               if (index < pagedLogs.length - 1)
                                 Divider(
                                   height: 1,
@@ -444,9 +612,10 @@ class _AuditMetricGrid extends StatelessWidget {
 }
 
 class _AuditLogRow extends StatelessWidget {
-  const _AuditLogRow({required this.item});
+  const _AuditLogRow({required this.item, this.onViewDetails});
 
   final AdminAuditLogItem item;
+  final VoidCallback? onViewDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -545,6 +714,12 @@ class _AuditLogRow extends StatelessWidget {
                   Expanded(flex: 2, child: target),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(flex: 4, child: details),
+                  const SizedBox(width: AppSpacing.md),
+                  AdminActionChip(
+                    label: 'Details',
+                    icon: LucideIcons.panelTopOpen,
+                    onTap: onViewDetails,
+                  ),
                 ],
               );
             }
@@ -557,6 +732,12 @@ class _AuditLogRow extends StatelessWidget {
                 target,
                 const SizedBox(height: AppSpacing.md),
                 details,
+                const SizedBox(height: AppSpacing.md),
+                AdminActionChip(
+                  label: 'Details',
+                  icon: LucideIcons.panelTopOpen,
+                  onTap: onViewDetails,
+                ),
               ],
             );
           },

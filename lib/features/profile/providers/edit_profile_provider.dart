@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
-import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
 import 'package:mobi_app/features/profile/models/edit_profile_state.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -22,7 +20,6 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
   Future<EditProfileState> _loadInitialData() async {
     final countryService = ref.read(countryServiceProvider);
     final profileService = ref.read(profileServiceProvider);
-    final bioPayService = ref.read(bioPayServiceProvider);
     final vehicleTypeService = ref.read(vehicleTypeServiceProvider);
     final planService = ref.read(subscriptionPlanServiceProvider);
 
@@ -42,45 +39,12 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
 
     try {
       final profile = await profileService.getMyProfile();
-      BiopayHandle? remoteHandle;
-      try {
-        final hubState = await bioPayService.loadHubState();
-        remoteHandle = await countryService.parseBiopayUssd(
-          hubState.ussdString,
-        );
-      } on Object catch (error) {
-        debugPrint('Unable to load remote BioPay handle: $error');
-      }
-
       final profileCountryCode = profile?.countryCode?.trim().isNotEmpty == true
           ? profile!.countryCode!
           : null;
 
       final resolvedCountryCode =
-          profileCountryCode ??
-          remoteHandle?.countryCode ??
-          countries.first.dialingCode;
-
-      final storedHandleValue = (profile?.biopayHandleValue ?? '').trim();
-      final storedHandleType = BiopayHandleType.fromStorage(
-        profile?.biopayHandleType,
-      );
-
-      final initialHandle = storedHandleValue.isNotEmpty
-          ? BiopayHandle(
-              type: storedHandleType,
-              value: storedHandleType == BiopayHandleType.number
-                  ? countryService.normalizeLocalPhoneDisplay(
-                      dialingCode: resolvedCountryCode,
-                      rawValue: storedHandleValue,
-                    )
-                  : countryService.normalizeCodeValue(storedHandleValue),
-              countryCode: resolvedCountryCode,
-            )
-          : remoteHandle;
-
-      final resolvedHandleType = initialHandle?.type ?? BiopayHandleType.number;
-      final resolvedHandleValue = initialHandle?.value ?? '';
+          profileCountryCode ?? countries.first.dialingCode;
       final resolvedVehicleTypeId = (profile?.vehicleType?.isNotEmpty == true)
           ? profile!.vehicleType!
           : 'cab';
@@ -96,11 +60,9 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         isDriver: resolvedIsDriver,
         initialIsDriver: resolvedIsDriver,
         vehicleTypeId: resolvedVehicleTypeId,
-        handleType: resolvedHandleType,
         vehicleTypes: vehicleTypes,
         allPlans: plans,
         initialWhatsApp: whatsAppValue.trim(),
-        initialHandleValue: resolvedHandleValue,
         initialVehicleNumberPlate: resolvedVehicleNumberPlate,
       );
     } on Object {
@@ -119,13 +81,6 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
     state = AsyncValue.data(currentState.copyWith(countryCode: code));
   }
 
-  void setHandleType(BiopayHandleType type, String currentValue) {
-    final currentState = state.value;
-    if (currentState == null) return;
-
-    state = AsyncValue.data(currentState.copyWith(handleType: type));
-  }
-
   void toggleDriverMode() {
     final currentState = state.value;
     if (currentState == null) return;
@@ -142,22 +97,12 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
 
   Future<bool> saveProfile({
     required String whatsApp,
-    required String handleValue,
     required String vehicleNumberPlate,
   }) async {
     final s = state.value;
     if (s == null) return false;
 
     final profileService = ref.read(profileServiceProvider);
-    final countryService = ref.read(countryServiceProvider);
-    final bioPayService = ref.read(bioPayServiceProvider);
-
-    final normalizedHandleValue = s.handleType == BiopayHandleType.number
-        ? countryService.normalizeLocalPhoneDisplay(
-            dialingCode: s.countryCode,
-            rawValue: handleValue,
-          )
-        : countryService.normalizeCodeValue(handleValue);
 
     final normalizedPlate = vehicleNumberPlate
         .toUpperCase()
@@ -170,25 +115,11 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
       await profileService.saveProfileSettings(
         whatsapp: whatsApp.trim(),
         countryCode: s.countryCode,
-        biopayHandleType: s.handleType,
-        biopayHandleValue: normalizedHandleValue,
         isDriver: s.isDriver,
         vehicleTypeId: s.vehicleTypeId,
         vehicleNumberPlate: normalizedPlate,
         previousIsDriver: s.initialIsDriver,
       );
-
-      final localSession = await bioPayService.getLocalSession();
-      if (localSession != null) {
-        final ussdString = await countryService.buildBiopayUssd(
-          dialingCode: s.countryCode,
-          handleType: s.handleType,
-          handleValue: normalizedHandleValue,
-        );
-        if (ussdString != null && ussdString.isNotEmpty) {
-          await bioPayService.updateManagedProfile(ussdString: ussdString);
-        }
-      }
       return true;
     } on Object {
       final finalState = state.value;

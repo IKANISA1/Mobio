@@ -262,7 +262,10 @@ async function handleAction(
     case "reverse_geocode":
       return { place: await reverseGeocode(body) };
     case "compute_route":
-      return { route: await computeRoute(body) };
+      throw new HttpError(410, "Route calculation is outside Mobio scope", {
+        scope:
+          "Mobio stores route labels and optional coordinates only. It does not compute routes, ETA, fares, or dispatch decisions.",
+      });
     default:
       throw new HttpError(400, "Unsupported maps action", {
         action: body.action ?? null,
@@ -529,73 +532,6 @@ async function reverseGeocode(body: MapsGatewayRequest) {
   };
 }
 
-async function computeRoute(body: MapsGatewayRequest) {
-  const origin = parseLatLng(body.origin, "origin");
-  const destination = parseLatLng(body.destination, "destination");
-  if (!origin || !destination) {
-    throw new HttpError(
-      400,
-      "origin and destination are required for compute_route",
-    );
-  }
-  assertRwandaPoint(origin, "origin");
-  assertRwandaPoint(destination, "destination");
-
-  const travelMode = normalizeTravelMode(body.travelMode);
-  const payload: Record<string, unknown> = {
-    origin: {
-      location: {
-        latLng: origin,
-      },
-    },
-    destination: {
-      location: {
-        latLng: destination,
-      },
-    },
-    travelMode,
-    routingPreference: "TRAFFIC_AWARE",
-    computeAlternativeRoutes: false,
-    polylineQuality: "OVERVIEW",
-    units: "METRIC",
-  };
-
-  const languageCode = normalizeLanguageCode(body.languageCode);
-  if (languageCode) {
-    payload.languageCode = languageCode;
-  }
-
-  const response = await googleFetchJson(
-    "https://routes.googleapis.com/directions/v2:computeRoutes",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Goog-FieldMask":
-          "routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline",
-      },
-      body: JSON.stringify(payload),
-    },
-  );
-
-  const firstRoute = asArray(response.routes)[0];
-  if (!firstRoute) {
-    return null;
-  }
-
-  return {
-    distanceMeters: clampInt(
-      firstRoute.distanceMeters,
-      0,
-      Number.MAX_SAFE_INTEGER,
-      0,
-    ),
-    duration: firstRoute.duration?.toString() ?? "0s",
-    encodedPolyline: firstRoute.polyline?.encodedPolyline?.toString() ?? "",
-    travelMode,
-  };
-}
-
 async function googleFetchJson(
   url: string,
   init: RequestInit & { headers?: HeadersInit },
@@ -737,14 +673,6 @@ function clampInt(
 
 function normalizeLanguageCode(_value?: string): string {
   return RWANDA_LANGUAGE_CODE;
-}
-
-function normalizeTravelMode(value?: string): string {
-  const normalized = value?.trim().toUpperCase();
-  if (normalized == "TWO_WHEELER") {
-    return normalized;
-  }
-  return "DRIVE";
 }
 
 function toPlaceResult(place: Record<string, any>) {

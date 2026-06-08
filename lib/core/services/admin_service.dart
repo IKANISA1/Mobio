@@ -151,6 +151,18 @@ class AdminService {
   getNotificationConsentSummary() =>
       _broadcastService.getNotificationConsentSummary();
 
+  Future<AdminCampaignAudiencePreview> getCampaignAudiencePreview({
+    required String campaignId,
+  }) => _broadcastService.getCampaignAudiencePreview(campaignId: campaignId);
+
+  Future<List<AdminAuditLogItem>> listCampaignAuditTimeline({
+    required String campaignId,
+  }) => _broadcastService.listCampaignAuditTimeline(campaignId: campaignId);
+
+  Future<List<AdminNotificationConsentTrendPoint>> getNotificationConsentTrend({
+    int days = 30,
+  }) => _broadcastService.getNotificationConsentTrend(days: days);
+
   Future<void> approveCampaign({
     required String campaignId,
     required bool approved,
@@ -205,27 +217,41 @@ class AdminService {
     offset: offset,
   );
 
-  Future<List<AdminRiskFlagItem>> listRiskFlags({
-    String status = 'open',
+  Future<List<AdminOperationalHealthEventItem>> listOperationalHealthEvents({
+    String? status,
     String? severity,
+    String? service,
     String? search,
-    int limit = 50,
+    int limit = 100,
     int offset = 0,
-  }) => _complianceService.listRiskFlags(
+  }) => _complianceService.listOperationalHealthEvents(
     status: status,
     severity: severity,
+    service: service,
     search: search,
     limit: limit,
     offset: offset,
   );
 
-  Future<void> reviewRiskFlag({
-    required String riskFlagId,
-    required String action,
+  Future<List<AdminUserReportItem>> listUserReports({
+    String status = 'open',
+    String? search,
+    int limit = 50,
+    int offset = 0,
+  }) => _complianceService.listUserReports(
+    status: status,
+    search: search,
+    limit: limit,
+    offset: offset,
+  );
+
+  Future<void> reviewUserReport({
+    required String reportId,
+    required String status,
     String? notes,
-  }) => _complianceService.reviewRiskFlag(
-    riskFlagId: riskFlagId,
-    action: action,
+  }) => _complianceService.reviewUserReport(
+    reportId: reportId,
+    status: status,
     notes: notes,
   );
 }

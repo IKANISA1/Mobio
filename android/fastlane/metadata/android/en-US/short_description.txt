@@ -1,1 +1,1 @@
-Rwanda's peer-to-peer ride-sharing app with BioPay biometric payments.
+Find nearby drivers and passengers, schedule posts, and chat.

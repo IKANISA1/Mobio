@@ -35,19 +35,17 @@ class AdminComplianceService extends AdminBaseService {
     }
   }
 
-  Future<List<AdminRiskFlagItem>> listRiskFlags({
+  Future<List<AdminUserReportItem>> listUserReports({
     String status = 'open',
-    String? severity,
     String? search,
     int limit = 50,
     int offset = 0,
   }) async {
     try {
       final rows = await supabaseClient.rpc(
-        'rpc_admin_list_risk_flags',
+        'rpc_admin_list_user_reports',
         params: {
           'p_status': status,
-          'p_severity': _nullableText(severity),
           'p_search': _nullableText(search),
           'p_limit': limit,
           'p_offset': offset,
@@ -57,40 +55,62 @@ class AdminComplianceService extends AdminBaseService {
       final list = rows as List<dynamic>? ?? const [];
       return list
           .whereType<Map<String, dynamic>>()
-          .map(AdminRiskFlagItem.fromJson)
+          .map(AdminUserReportItem.fromJson)
           .toList();
     } on Object catch (error) {
-      AppLogger.error('Error fetching admin finance risk flags: $error');
+      AppLogger.error('Error fetching user reports: $error');
       rethrow;
     }
   }
 
-  Future<void> reviewRiskFlag({
-    required String riskFlagId,
-    required String action,
+  Future<void> reviewUserReport({
+    required String reportId,
+    required String status,
     String? notes,
   }) async {
     try {
-      final response = await supabaseClient.functions.invoke(
-        'admin-review-transaction',
-        body: {
-          'risk_flag_id': riskFlagId,
-          'action': action,
-          'notes': _nullableText(notes),
+      await supabaseClient.rpc(
+        'rpc_admin_review_user_report',
+        params: {
+          'p_report_id': reportId,
+          'p_status': status,
+          'p_resolution_notes': _nullableText(notes),
+        },
+      );
+    } on Object catch (error) {
+      AppLogger.error('Error reviewing user report: $error');
+      rethrow;
+    }
+  }
+
+  Future<List<AdminOperationalHealthEventItem>> listOperationalHealthEvents({
+    String? status,
+    String? severity,
+    String? service,
+    String? search,
+    int limit = 100,
+    int offset = 0,
+  }) async {
+    try {
+      final rows = await supabaseClient.rpc(
+        'rpc_admin_list_operational_health_events',
+        params: {
+          'p_status': _nullableText(status),
+          'p_severity': _nullableText(severity),
+          'p_service': _nullableText(service),
+          'p_search': _nullableText(search),
+          'p_limit': limit,
+          'p_offset': offset,
         },
       );
 
-      if (response.status < 200 || response.status >= 300) {
-        final data = response.data;
-        final message = data is Map
-            ? data['error']?.toString() ?? data['message']?.toString()
-            : null;
-        throw StateError(
-          message ?? 'Review failed with status ${response.status}.',
-        );
-      }
+      final list = rows as List<dynamic>? ?? const [];
+      return list
+          .whereType<Map<String, dynamic>>()
+          .map(AdminOperationalHealthEventItem.fromJson)
+          .toList();
     } on Object catch (error) {
-      AppLogger.error('Error reviewing finance risk flag: $error');
+      AppLogger.error('Error fetching operational health events: $error');
       rethrow;
     }
   }

@@ -145,6 +145,8 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
     switch (vehicleTypeStr) {
       case 'moto':
         return LucideIcons.zap;
+      case 'bus':
+        return LucideIcons.bus;
       case 'trike':
         return LucideIcons.truck;
       case 'truck':
@@ -407,7 +409,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
                 ),
               ),
 
-            // Expiry notice — compact
+            // Marketplace notice — compact
             ClayCard(
               padding: const EdgeInsets.all(AppSpacing.lg),
               borderRadius: AppRadii.xxl,
@@ -420,10 +422,14 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
                     color: cs.onSurfaceVariant,
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    'Expires in 60m',
-                    style: AppTypography.bodySm.copyWith(
-                      color: cs.onSurfaceVariant,
+                  Expanded(
+                    child: Text(
+                      'Coordinate pickup, timing, luggage, and fare manually.',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.bodySm.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ],
@@ -456,8 +462,37 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
 
+            if (isTripOwner && !isCancelled) ...[
+              MobiButton(
+                width: double.infinity,
+                variant: MobiButtonVariant.ghost,
+                onPressed: () {
+                  final tripId = trip.id;
+                  if (tripId == null || tripId.isEmpty) {
+                    return;
+                  }
+                  context.push('/trip/$tripId/edit');
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(LucideIcons.pencil, size: 18, color: cs.onSurface),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text(
+                      'Edit trip',
+                      style: AppTypography.labelLg.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: cs.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+            ],
+
             // Cancel trip
-            if (!isCancelled)
+            if (isTripOwner && !isCancelled)
               Center(
                 child: TextButton(
                   onPressed: _isCancelling ? null : _handleCancel,

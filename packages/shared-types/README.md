@@ -17,5 +17,6 @@ Keep this package free of Flutter widgets, Supabase clients, provider state, and
 screen logic. UI-backed models such as `VehicleTypeModel` remain in the app until
 the vehicle-domain package is split with widget coverage.
 
-Payment DTOs and role/mode constants are still owned by the app while the payment
-and auth packages are extracted separately.
+Payment and ride-request DTOs are outside the current Mobio production scope and
+are not exported from this shared package. Role/mode constants remain app-owned
+until the auth package is split with dedicated coverage.

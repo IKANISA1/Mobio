@@ -15,7 +15,9 @@ if [[ "${MOBI_DISABLE_GRADLE_DAEMON:-true}" == "true" ]]; then
   export GRADLE_OPTS="-Dorg.gradle.daemon=false ${GRADLE_OPTS:-}"
 fi
 
-dart_define_file="$(mktemp "${TMPDIR:-/tmp}/mobi-dart-defines.XXXXXX.json")"
+tmpdir="${TMPDIR:-/tmp}"
+tmpdir="${tmpdir%/}"
+dart_define_file="$(mktemp "$tmpdir/mobi-dart-defines.XXXXXX")"
 trap 'rm -f "${dart_define_file:-}"' EXIT
 
 python3 - <<'PY' "$dart_define_file"

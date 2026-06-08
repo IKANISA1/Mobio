@@ -1,5 +1,9 @@
 # Mobio Minimalist UI Audit
 
+> Historical snapshot: this 2026-04-17 audit predates the 2026-05-23 Mobio
+> limited-scope cleanup. Treat BioPay references below as historical UI audit
+> context only. BioPay is not approved active Mobio scope.
+
 > Audit date: 2026-04-17
 > Reference system: `design.md`
 

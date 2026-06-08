@@ -1,5 +1,14 @@
 # Structure Refactor Changelog
 
+## 2026-05-23 Scope Correction
+
+- Current Mobio production scope is nearby discovery, scheduled trip posts,
+  profiles, and communication only.
+- BioPay, payments, SMS ledger, PayLedger, and ride-request lifecycle references
+  in older architecture notes are historical context, not active product scope.
+- Active local packages are design-system and shared-types; the prior
+  `packages/payments` extraction is removed from the app package.
+
 ## 2026-05-01
 
 - Added monorepo boundary documentation under `apps/`, `packages/`, `agents/`, `integrations/`, and `infra/`.

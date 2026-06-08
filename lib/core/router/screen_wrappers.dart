@@ -9,17 +9,15 @@ import 'package:mobi_app/core/services/supabase_session_service.dart';
 import 'package:mobi_app/core/utils/navigation_utils.dart';
 import 'package:mobi_app/features/admin/admin_auth_screen.dart';
 import 'package:mobi_app/features/admin/admin_dashboard_screen.dart';
-import 'package:mobi_app/features/admin/admin_users_screen.dart';
 import 'package:mobi_app/features/auth/whatsapp_login_screen.dart';
-import 'package:mobi_app/features/biopay/biopay_screen.dart';
 import 'package:mobi_app/features/bookings/bookings_screen.dart';
 import 'package:mobi_app/features/bookings/schedule_trip_screen.dart';
 import 'package:mobi_app/features/home/home_screen.dart';
-import 'package:mobi_app/features/ledger/ledger_screen.dart';
 import 'package:mobi_app/features/nearby/nearby_screen.dart';
 import 'package:mobi_app/features/profile/profile_screen.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/providers/app_providers.dart';
+import 'package:mobi_app/shared/widgets/platform_feature_notice_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Route helpers
@@ -63,25 +61,6 @@ class HomeScreenWrapper extends ConsumerWidget {
   }
 }
 
-/// BioPay tab wrapper.
-class BioPayScreenWrapper extends ConsumerWidget {
-  const BioPayScreenWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final role = ref.watch(roleProvider);
-    if (role.isAdmin) {
-      return const AdminUsersScreen();
-    }
-
-    return BioPayScreen(
-      onGetQR: () => context.push('/biopay/qr'),
-      onScanQR: () => context.push('/biopay/scan'),
-      onFaceScan: () => context.push('/biopay/face-scan'),
-    );
-  }
-}
-
 /// Profile tab wrapper.
 class ProfileScreenWrapper extends ConsumerWidget {
   const ProfileScreenWrapper({super.key});
@@ -100,9 +79,7 @@ class ProfileScreenWrapper extends ConsumerWidget {
         isDarkMode: themeProvider.isDark,
         onDarkModeChanged: themeProvider.setDarkMode,
         onEditProfile: () => context.push('/edit-profile'),
-        onViewLedger: () => context.push('/ledger'),
         onAdminGateway: () => context.push('/admin-auth'),
-        onFaceRegister: () => context.push('/biopay/enroll'),
         onExitAdmin: role.isAdmin ? handleExitAdmin : null,
       ),
     );
@@ -243,12 +220,47 @@ class ScheduleTripScreenWrapper extends ConsumerWidget {
   }
 }
 
-/// Ledger screen wrapper.
-class LedgerScreenWrapper extends ConsumerWidget {
-  const LedgerScreenWrapper({super.key});
+/// Edit scheduled trip screen wrapper.
+class EditTripScreenWrapper extends ConsumerWidget {
+  final String tripId;
+  final VoidCallback onBack;
+
+  const EditTripScreenWrapper({
+    super.key,
+    required this.tripId,
+    required this.onBack,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const LedgerScreen();
+    final mode = ref.watch(modeProvider);
+    return ScheduleTripScreen(
+      mode: mode.value,
+      onModeChanged: (m) =>
+          ref.read(modeProvider.notifier).set(AppMode.fromString(m)),
+      onBack: onBack,
+      editingTripId: tripId,
+    );
+  }
+}
+
+/// Payment, ledger, and BioPay routes are intentionally unavailable in the
+/// active Mobio product scope.
+class ScopeUnavailableScreen extends StatelessWidget {
+  const ScopeUnavailableScreen({super.key, required this.onBack});
+
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return PlatformFeatureNoticeScreen(
+      title: 'Feature unavailable',
+      message:
+          'Mobio only supports nearby discovery, scheduled trip posts, and communication. Fare negotiation and payment settlement happen manually outside the app.',
+      note:
+          'Payment, ledger, BioPay, dispatch lifecycle, and trip settlement flows are legacy surfaces and are not active in this release.',
+      showPlatformNote: false,
+      onBack: onBack,
+    );
   }
 }

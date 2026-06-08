@@ -7,7 +7,6 @@ import 'package:mobi_app/core/services/admin/admin_trip_service.dart';
 import 'package:mobi_app/core/services/admin/admin_user_service.dart';
 import 'package:mobi_app/core/services/admin_service.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
-import 'package:mobi_app/core/services/biopay_service.dart';
 import 'package:mobi_app/core/services/chat_ai_service.dart';
 import 'package:mobi_app/core/services/chat_service.dart';
 import 'package:mobi_app/core/services/country_service.dart';
@@ -21,13 +20,12 @@ import 'package:mobi_app/core/services/notification_consent_service.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
 import 'package:mobi_app/core/services/places_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
+import 'package:mobi_app/core/services/public_transport_service.dart';
 import 'package:mobi_app/core/services/push_notification_service.dart';
-import 'package:mobi_app/core/services/ride_request_service.dart';
 import 'package:mobi_app/core/services/subscription_plan_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/core/services/vehicle_type_service.dart';
 import 'package:mobi_app/core/services/whatsapp_login_service.dart';
-import 'package:mobi_app/features/payments/services/payment_service.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -68,7 +66,6 @@ final adminComplianceServiceProvider = Provider(
   (ref) => AdminComplianceService(supabase: ref.read(supabaseClientProvider)),
 );
 final appPermissionServiceProvider = Provider((ref) => AppPermissionService());
-final bioPayServiceProvider = Provider((ref) => BioPayService());
 final chatAiServiceProvider = Provider(
   (ref) => ChatAiService(supabase: ref.read(supabaseClientProvider)),
 );
@@ -104,15 +101,14 @@ final notificationConsentServiceProvider = Provider(
 final placesServiceProvider = Provider(
   (ref) => PlacesService(supabase: ref.read(supabaseClientProvider)),
 );
-final paymentServiceProvider = Provider((ref) => const PaymentService());
 final profileServiceProvider = Provider(
   (ref) => ProfileService(supabase: ref.read(supabaseClientProvider)),
 );
+final publicTransportServiceProvider = Provider(
+  (ref) => PublicTransportService(supabase: ref.read(supabaseClientProvider)),
+);
 final pushNotificationServiceProvider = Provider(
   (ref) => PushNotificationService.instance,
-);
-final rideRequestServiceProvider = Provider(
-  (ref) => RideRequestService(supabase: ref.read(supabaseClientProvider)),
 );
 final subscriptionPlanServiceProvider = Provider(
   (ref) => SubscriptionPlanService(supabase: ref.read(supabaseClientProvider)),

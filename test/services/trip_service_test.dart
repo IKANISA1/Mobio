@@ -136,6 +136,16 @@ void main() {
       expect(trip.effectiveVehicleType.name, 'moto');
     });
 
+    test('returns bus for bus vehicle_type string', () {
+      final trip = Trip.fromJson({
+        'author_id': 'u1',
+        'origin': 'Kigali',
+        'destination': 'Musanze',
+        'vehicle_type': 'bus',
+      });
+      expect(trip.effectiveVehicleType.name, 'bus');
+    });
+
     test('returns cab for unknown vehicle_type string', () {
       final trip = Trip.fromJson({
         'author_id': 'u1',

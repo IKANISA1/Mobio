@@ -22,15 +22,6 @@ class PermissionAccessDialogConfig {
   final String primaryButtonLabel;
   final String secondaryButtonLabel;
 
-  factory PermissionAccessDialogConfig.biopayCamera() {
-    return const PermissionAccessDialogConfig(
-      title: 'BIOPAY CAMERA ACCESS',
-      message:
-          'Allow camera access so Mobio can create a BioPay face embedding on-device and securely send it to Mobio for enrollment or matching.',
-      icon: LucideIcons.scanFace,
-    );
-  }
-
   factory PermissionAccessDialogConfig.location() {
     return const PermissionAccessDialogConfig(
       title: 'LOCATION ACCESS',
@@ -38,6 +29,16 @@ class PermissionAccessDialogConfig {
           'Allow location access so Mobio can show nearby places first and auto-fill your pickup point.',
       icon: LucideIcons.mapPin,
       primaryButtonLabel: 'ENABLE LOCATION',
+    );
+  }
+
+  factory PermissionAccessDialogConfig.notifications() {
+    return const PermissionAccessDialogConfig(
+      title: 'NOTIFICATION ACCESS',
+      message:
+          'Allow notifications so Mobio can alert you about chats, scheduled trip posts, and account updates.',
+      icon: LucideIcons.bell,
+      primaryButtonLabel: 'ENABLE NOTIFICATIONS',
     );
   }
 }

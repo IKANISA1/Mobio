@@ -1,5 +1,13 @@
 # Supabase Backend Security Audit - 2026-05-01
 
+> Historical snapshot: this audit predates the 2026-05-24 Mobio
+> limited-scope cleanup. Treat BioPay, payment, SMS ledger, finance-review, and
+> ride-request lifecycle references below as historical findings only. Current
+> scope and release status are tracked in `docs/product/scope.md`,
+> `docs/architecture/schema_inventory.md`,
+> `docs/reports/production-readiness-audit.md`, and
+> `docs/release/go-no-go.md`.
+
 ## Scope Inspected
 
 - Migrations under `supabase/migrations`.

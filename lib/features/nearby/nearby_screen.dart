@@ -1,4 +1,3 @@
-import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +17,7 @@ import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
+import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 
@@ -65,6 +65,16 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
     });
 
     try {
+      final hasAccess = await ref
+          .read(appPermissionServiceProvider)
+          .hasLocationAccess();
+      if (!hasAccess) {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+        return;
+      }
+
       final position = await _locationService.getCurrentPosition();
       if (mounted && position != null) {
         setState(() {
@@ -96,6 +106,27 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
         });
       }
     }
+  }
+
+  Future<void> _requestLocationAndReload() async {
+    final permissionService = ref.read(appPermissionServiceProvider);
+    final action = await PermissionAccessDialog.show(
+      context,
+      config: PermissionAccessDialogConfig.location(),
+    );
+    if (action != PermissionAccessDialogAction.grantAccess) {
+      return;
+    }
+
+    final granted = await permissionService.ensureLocationAccess();
+    if (!granted) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+      return;
+    }
+
+    await _loadLocationAndDrivers();
   }
 
   Future<void> _loadVehicleTypes() async {
@@ -131,8 +162,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
               vehicleTypeStr: d.vehicleTypeId,
               originLat: d.latitude,
               originLng: d.longitude,
-              price: '${d.distanceKm.toStringAsFixed(1)} km',
-              description: d.driverId,
+              description: '${d.distanceKm.toStringAsFixed(1)} km away',
             ),
           )
           .toList();
@@ -189,9 +219,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                             title: 'Enable location',
                             subtitle: 'Find drivers nearby',
                             tone: MobiStateBannerTone.brand,
-                            onTap: () => AppSettings.openAppSettings(
-                              type: AppSettingsType.location,
-                            ),
+                            onTap: _requestLocationAndReload,
                           ).animate(delay: 50.ms).fade().slideX(begin: 1.0),
                         ),
                       ),

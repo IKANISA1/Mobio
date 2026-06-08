@@ -4,7 +4,6 @@ import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/models/favorite_address.dart';
 import 'package:mobi_app/models/place.dart';
-import 'package:mobi_app/models/route_info.dart';
 import 'package:mobi_app/shared/widgets/mobi_info_chip.dart';
 import 'package:mobi_app/shared/widgets/mobi_input_field.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
@@ -16,8 +15,6 @@ class TripRouteForm extends StatelessWidget {
     super.key,
     required this.originDetails,
     required this.destDetails,
-    required this.routeInfo,
-    required this.isComputingRoute,
     required this.isLoadingLocation,
     required this.showErrors,
     required this.userLat,
@@ -35,8 +32,6 @@ class TripRouteForm extends StatelessWidget {
 
   final PlaceDetails? originDetails;
   final PlaceDetails? destDetails;
-  final RouteInfo? routeInfo;
-  final bool isComputingRoute;
   final bool isLoadingLocation;
   final bool showErrors;
   final double? userLat;
@@ -89,20 +84,9 @@ class TripRouteForm extends StatelessWidget {
         // Preview Map
         _buildMapPreview(context),
 
-        // Route Stats
-        if (routeInfo != null) ...[
-          Wrap(
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm,
-            children: [
-              MobiInfoChip(
-                label: _formatDistance(routeInfo!.distanceMeters),
-                icon: LucideIcons.map,
-              ),
-              MobiInfoChip(label: routeInfo!.duration, icon: LucideIcons.clock),
-            ],
-          ),
-        ],
+        const Text(
+          'Mobio stores route labels and optional coordinates only. Fares and timing are agreed manually in chat or WhatsApp.',
+        ),
       ],
     );
   }
@@ -160,13 +144,6 @@ class TripRouteForm extends StatelessWidget {
   }
 
   Widget _buildMapPreview(BuildContext context) {
-    if (isComputingRoute) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 8),
-        child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-      );
-    }
-
     if (originDetails != null &&
         destDetails != null &&
         originDetails!.latitude != 0 &&
@@ -180,19 +157,11 @@ class TripRouteForm extends StatelessWidget {
           destLng: destDetails!.longitude,
           originLabel: originDetails!.formattedAddress,
           destLabel: destDetails!.formattedAddress,
-          routeInfo: routeInfo,
           height: 180,
         ),
       );
     }
     return const SizedBox.shrink();
-  }
-
-  String _formatDistance(int meters) {
-    final km = meters / 1000;
-    return km >= 10
-        ? '${km.toStringAsFixed(0)} km'
-        : '${km.toStringAsFixed(1)} km';
   }
 
   Future<void> _showSaveFavoriteSheet(

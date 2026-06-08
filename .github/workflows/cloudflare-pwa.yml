@@ -18,9 +18,9 @@ jobs:
     environment: Mobio
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
           flutter-version: '3.38.9'
           channel: stable
@@ -31,6 +31,7 @@ jobs:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
           PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_PAGES_CLIENT_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_CLIENT_PROJECT_NAME }}
           CLOUDFLARE_PAGES_ADMIN_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_ADMIN_PROJECT_NAME }}
@@ -39,6 +40,7 @@ jobs:
           test -n "$SUPABASE_URL"
           test -n "$SUPABASE_ANON_KEY"
           test -n "$PRIVACY_POLICY_URL"
+          test -n "$ACCOUNT_DELETION_URL"
           test -n "$CLOUDFLARE_ACCOUNT_ID"
           test -n "$CLOUDFLARE_PAGES_CLIENT_PROJECT_NAME"
           test -n "$CLOUDFLARE_PAGES_ADMIN_PROJECT_NAME"
@@ -54,10 +56,11 @@ jobs:
           SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
           PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
         run: ./scripts/web/prepare_pwa_bundles.sh
 
       - name: Deploy client PWA
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
@@ -67,7 +70,7 @@ jobs:
             --branch=${{ inputs.branch }}
 
       - name: Deploy admin PWA
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}

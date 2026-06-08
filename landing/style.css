@@ -49,7 +49,7 @@
 
   /* Brand Accents */
   --whatsapp-green: #25D366;
-  --biopay-green: #00C853;
+  --scope-green: #00C853;
 
   /* Spacing (4px grid) */
   --sp-1: 4px;
@@ -499,7 +499,7 @@ img {
   color: var(--on-surface);
 }
 .hero-title .highlight {
-  background: linear-gradient(135deg, var(--primary-fixed), var(--biopay-green));
+  background: linear-gradient(135deg, var(--primary-fixed), var(--scope-green));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -620,12 +620,12 @@ img {
 }
 
 /* ============================================================
-   BIOPAY SECTION
+   PRODUCT SCOPE SECTION
    ============================================================ */
-.biopay {
+.scope-panel {
   padding: var(--sp-20) 0;
 }
-.biopay-container {
+.scope-panel-container {
   background: linear-gradient(135deg, var(--surface-container-lowest), var(--surface-container));
   border-radius: var(--radius-card);
   border: 1px solid rgba(255,255,255,0.05);
@@ -634,19 +634,19 @@ img {
   grid-template-columns: 1fr 1fr;
   min-height: 500px;
 }
-.biopay-content {
+.scope-panel-content {
   padding: var(--sp-16);
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: var(--sp-6);
 }
-.biopay-badge {
+.scope-panel-badge {
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
   background: rgba(0,200,83,0.1);
-  color: var(--biopay-green);
+  color: var(--scope-green);
   padding: var(--sp-2) var(--sp-4);
   border-radius: var(--radius-pill);
   font-size: 12px;
@@ -655,42 +655,42 @@ img {
   width: fit-content;
   border: 1px solid rgba(0,200,83,0.15);
 }
-.biopay-title {
+.scope-panel-title {
   font-family: var(--font-heading);
   font-size: clamp(28px, 4vw, 44px);
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -1.5px;
 }
-.biopay-title .green {
-  color: var(--biopay-green);
+.scope-panel-title .green {
+  color: var(--scope-green);
 }
-.biopay-desc {
+.scope-panel-desc {
   font-size: 17px;
   line-height: 1.7;
   color: var(--on-surface-variant);
   max-width: 440px;
 }
-.biopay-features {
+.scope-panel-features {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
 }
-.biopay-features li {
+.scope-panel-features li {
   display: flex;
   align-items: center;
   gap: var(--sp-3);
   font-size: 15px;
   color: var(--on-surface-variant);
 }
-.biopay-features li svg {
+.scope-panel-features li svg {
   width: 18px;
   height: 18px;
-  color: var(--biopay-green);
+  color: var(--scope-green);
   flex-shrink: 0;
 }
-.biopay-visual {
+.scope-panel-visual {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -698,7 +698,7 @@ img {
   padding: var(--sp-10);
   position: relative;
 }
-.biopay-graphic {
+.scope-panel-graphic {
   width: 200px;
   height: 200px;
   border-radius: 50%;
@@ -710,12 +710,12 @@ img {
   position: relative;
   animation: float 6s ease-in-out 1s infinite;
 }
-.biopay-graphic svg {
+.scope-panel-graphic svg {
   width: 80px;
   height: 80px;
-  color: var(--biopay-green);
+  color: var(--scope-green);
 }
-.biopay-graphic::before {
+.scope-panel-graphic::before {
   content: '';
   position: absolute;
   inset: -20px;
@@ -723,7 +723,7 @@ img {
   border: 1px solid rgba(0,200,83,0.1);
   animation: ring-pulse 3s ease-in-out infinite;
 }
-.biopay-graphic::after {
+.scope-panel-graphic::after {
   content: '';
   position: absolute;
   inset: -40px;
@@ -737,9 +737,9 @@ img {
 }
 
 @media (max-width: 768px) {
-  .biopay-container { grid-template-columns: 1fr; }
-  .biopay-content { padding: var(--sp-8); }
-  .biopay-visual { padding: var(--sp-8); min-height: 300px; }
+  .scope-panel-container { grid-template-columns: 1fr; }
+  .scope-panel-content { padding: var(--sp-8); }
+  .scope-panel-visual { padding: var(--sp-8); min-height: 300px; }
 }
 
 /* ============================================================
@@ -768,7 +768,7 @@ img {
   left: calc(16.67% + 32px);
   right: calc(16.67% + 32px);
   height: 2px;
-  background: linear-gradient(90deg, var(--primary) 0%, var(--biopay-green) 100%);
+  background: linear-gradient(90deg, var(--primary) 0%, var(--scope-green) 100%);
   opacity: 0.3;
 }
 .step-card {

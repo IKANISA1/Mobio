@@ -58,6 +58,7 @@ android/fastlane/play-store-service-account.json
 firebase-debug.log
 ios/Runner/GoogleService-Info.plist
 supabase/.temp/
+supabase/.branches/
 .wrangler/
 
 # Build runner generated files

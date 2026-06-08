@@ -14,6 +14,8 @@ IconData getVehicleIcon(VehicleType type) {
       return LucideIcons.zap;
     case VehicleType.cab:
       return LucideIcons.car;
+    case VehicleType.bus:
+      return LucideIcons.bus;
     case VehicleType.trike:
       return LucideIcons.truck;
     case VehicleType.truck:
@@ -32,6 +34,8 @@ IconData getVehicleIconFromId(String id) {
       return LucideIcons.zap;
     case 'cab':
       return LucideIcons.car;
+    case 'bus':
+      return LucideIcons.bus;
     case 'trike':
       return LucideIcons.truck;
     case 'truck':

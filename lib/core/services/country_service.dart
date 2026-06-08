@@ -1,4 +1,3 @@
-import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
 import 'package:mobi_app/models/country.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -120,72 +119,6 @@ class CountryService {
     return match.first.buildUssdForCode(code, amount);
   }
 
-  Future<String?> buildBiopayUssd({
-    required String dialingCode,
-    required BiopayHandleType handleType,
-    required String handleValue,
-    String? amount,
-  }) async {
-    final countries = await getCountries();
-    final matches = countries.where((c) => c.dialingCode == dialingCode);
-    if (matches.isEmpty) return null;
-
-    final country = matches.first;
-    if (!country.hasMoMo) return null;
-
-    final normalizedValue = handleType == BiopayHandleType.number
-        ? normalizeLocalPhoneDisplay(
-            dialingCode: dialingCode,
-            rawValue: handleValue,
-            country: country,
-          )
-        : normalizeCodeValue(handleValue);
-    if (normalizedValue.isEmpty) return null;
-
-    return handleType == BiopayHandleType.number
-        ? country.buildUssdForNumber(normalizedValue, amount)
-        : country.buildUssdForCode(normalizedValue, amount);
-  }
-
-  Future<BiopayHandle?> parseBiopayUssd(String? ussdString) async {
-    final candidate = _compactUssd(ussdString);
-    if (candidate.isEmpty) return null;
-
-    final countries = await getAfricanCountries();
-    for (final country in countries) {
-      final phoneTokens = _matchTokens(candidate, country.ussdNumberFormat);
-      if (phoneTokens != null && phoneTokens.containsKey('PHONE')) {
-        final rawPhone = phoneTokens['PHONE']!;
-        return BiopayHandle(
-          type: BiopayHandleType.number,
-          value: normalizeLocalPhoneDisplay(
-            dialingCode: country.dialingCode,
-            rawValue: rawPhone,
-            country: country,
-          ),
-          countryCode: country.dialingCode,
-          countryId: country.id,
-          amount: phoneTokens['AMOUNT'],
-          momoBrand: country.momoBrand,
-        );
-      }
-
-      final codeTokens = _matchTokens(candidate, country.ussdCodeFormat);
-      if (codeTokens != null && codeTokens.containsKey('CODE')) {
-        return BiopayHandle(
-          type: BiopayHandleType.code,
-          value: normalizeCodeValue(codeTokens['CODE']!),
-          countryCode: country.dialingCode,
-          countryId: country.id,
-          amount: codeTokens['AMOUNT'],
-          momoBrand: country.momoBrand,
-        );
-      }
-    }
-
-    return null;
-  }
-
   String normalizeLocalPhoneDisplay({
     required String dialingCode,
     required String rawValue,
@@ -213,64 +146,6 @@ class CountryService {
     }
 
     return localDigits;
-  }
-
-  String normalizeCodeValue(String rawValue) {
-    return rawValue.trim().replaceAll(RegExp(r'\s+'), '').toUpperCase();
-  }
-
-  String _compactUssd(String? ussdString) {
-    if (ussdString == null) return '';
-    var value = ussdString.trim().replaceAll(RegExp(r'\s+'), '');
-    if (value.toLowerCase().startsWith('tel:')) {
-      value = value.substring(4);
-    }
-    return value.replaceAll(RegExp(r'%23$', caseSensitive: false), '#');
-  }
-
-  Map<String, String>? _matchTokens(String candidate, String format) {
-    if (format.isEmpty) return null;
-
-    // We want to handle optional *{AMOUNT} at the end before #.
-    // Replace `\*\*\{AMOUNT\}` with `(?:\*([0-9]+))?`
-    var patternStr = RegExp.escape(format);
-
-    // Identify tokens in order
-    final tokenRegex = RegExp(r'\{([A-Z]+)\}');
-    final tokens = <String>[];
-
-    // Extract tokens from the unescaped format
-    for (final m in tokenRegex.allMatches(format)) {
-      tokens.add(m.group(1)!);
-    }
-
-    if (tokens.isEmpty) return null;
-
-    // Build the regex pattern
-    // If the format has `\*\*\{AMOUNT\}` (which is `*{AMOUNT}` escaped)
-    patternStr = patternStr.replaceAll(
-      RegExp.escape(r'*{AMOUNT}'),
-      r'(?:\*([0-9]+))?',
-    );
-
-    // For other tokens like {PHONE} or {CODE}
-    patternStr = patternStr.replaceAll(RegExp.escape(r'{PHONE}'), r'([^#*]+)');
-    patternStr = patternStr.replaceAll(RegExp.escape(r'{CODE}'), r'([^#*]+)');
-
-    final regex = RegExp('^$patternStr\$');
-    final match = regex.firstMatch(candidate);
-
-    if (match == null) return null;
-
-    final result = <String, String>{};
-    for (int i = 0; i < tokens.length; i++) {
-      final val = match.group(i + 1);
-      if (val != null && val.isNotEmpty) {
-        result[tokens[i]] = val;
-      }
-    }
-
-    return result;
   }
 
   /// Clear cache (e.g. after admin updates countries).

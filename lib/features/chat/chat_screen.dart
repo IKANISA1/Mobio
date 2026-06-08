@@ -17,11 +17,13 @@ import 'package:mobi_app/features/chat/models/chat_conversation.dart';
 import 'package:mobi_app/features/chat/models/chat_message.dart';
 import 'package:mobi_app/features/chat/widgets/chat_composer.dart';
 import 'package:mobi_app/features/chat/widgets/chat_message_bubble.dart';
+import 'package:mobi_app/features/chat/widgets/chat_moderation_sheet.dart';
 import 'package:mobi_app/features/chat/widgets/conversation_list.dart';
 import 'package:mobi_app/features/chat/widgets/trip_context_card.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_confirm_dialog.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 
@@ -66,6 +68,8 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   bool _isSending = false;
   bool _isGeneratingSuggestions = false;
   bool _isAutocompleting = false;
+  bool _isPeerBlocked = false;
+  bool _isModerating = false;
   int _lastRenderedMessageCount = 0;
   List<String> _replySuggestions = const [];
   List<ChatConversation> _tripConversations = const [];
@@ -91,6 +95,15 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
   bool get _showConversationList =>
       _isTripAuthor && _selectedConversationId == null && widget.peerId == null;
+
+  String? get _activePeerId {
+    final conversation = _conversation;
+    final currentUserId = _currentUserId;
+    if (conversation == null || currentUserId == null) {
+      return null;
+    }
+    return conversation.peerIdFor(currentUserId);
+  }
 
   Future<void> _bootstrap() async {
     setState(() {
@@ -224,6 +237,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
         (conversation.tripId == null
             ? null
             : await _tripService.getTripById(conversation.tripId!));
+    final isPeerBlocked = await _chatService.isPeerBlocked(peerId);
 
     await _chatService.markConversationRead(conversation.id);
 
@@ -236,6 +250,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       _selectedConversationId = conversation.id;
       _trip = trip;
       _profileCache[peerId] = peerProfile;
+      _isPeerBlocked = isPeerBlocked;
       _replySuggestions = const [];
       _isGeneratingSuggestions = false;
       _isAutocompleting = false;
@@ -243,7 +258,9 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     });
 
     _composerController.clear();
-    unawaited(_requestReplySuggestions());
+    if (!isPeerBlocked) {
+      unawaited(_requestReplySuggestions());
+    }
   }
 
   Future<Map<String, dynamic>?> _loadPeerProfile(String peerId) async {
@@ -269,6 +286,11 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   Future<void> _sendMessage() async {
     final conversation = _conversation;
     if (conversation == null) {
+      return;
+    }
+
+    if (_isPeerBlocked) {
+      _showSnackBar('Messaging is unavailable for this conversation.');
       return;
     }
 
@@ -319,6 +341,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     final currentUserId = _currentUserId;
     if (conversation == null ||
         currentUserId == null ||
+        _isPeerBlocked ||
         _isGeneratingSuggestions) {
       return;
     }
@@ -371,6 +394,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     if (conversation == null ||
         currentUserId == null ||
         draftText.isEmpty ||
+        _isPeerBlocked ||
         _isAutocompleting) {
       return;
     }
@@ -488,6 +512,165 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     return DateFormat('HH:mm').format(dateTime.toLocal());
   }
 
+  void _showSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _showReportDialog() async {
+    final peerId = _activePeerId;
+    final conversation = _conversation;
+    if (peerId == null || conversation == null || _isModerating) {
+      return;
+    }
+
+    final draft = await showChatReportSheet(context);
+    if (draft == null) {
+      return;
+    }
+
+    setState(() => _isModerating = true);
+    try {
+      await _chatService.reportUser(
+        peerId: peerId,
+        conversationId: conversation.id,
+        tripId: _trip?.id ?? conversation.tripId,
+        category: draft.category,
+        details: draft.details,
+      );
+      _showSnackBar('Report submitted for admin review.');
+    } on Object catch (error) {
+      _showSnackBar(
+        userMessageForError(
+          error,
+          fallback: 'Unable to submit report. Please try again.',
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isModerating = false);
+      }
+    }
+  }
+
+  Future<void> _toggleBlockPeer() async {
+    final peerId = _activePeerId;
+    if (peerId == null || _isModerating) {
+      return;
+    }
+
+    if (_isPeerBlocked) {
+      setState(() => _isModerating = true);
+      try {
+        await _chatService.unblockUser(peerId);
+        setState(() => _isPeerBlocked = false);
+        _showSnackBar('User unblocked.');
+      } on Object catch (error) {
+        _showSnackBar(
+          userMessageForError(
+            error,
+            fallback: 'Unable to unblock user. Please try again.',
+          ),
+        );
+      } finally {
+        if (mounted) {
+          setState(() => _isModerating = false);
+        }
+      }
+      return;
+    }
+
+    final confirmed = await MobiConfirmDialog.show(
+      context: context,
+      title: 'Block user?',
+      body:
+          'This closes messaging between you and this user. You can unblock them from this chat later.',
+      confirmLabel: 'Block',
+      isDestructive: true,
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    setState(() => _isModerating = true);
+    try {
+      await _chatService.blockUser(peerId: peerId, reason: 'Blocked from chat');
+      setState(() {
+        _isPeerBlocked = true;
+        _replySuggestions = const [];
+      });
+      _showSnackBar('User blocked.');
+    } on Object catch (error) {
+      _showSnackBar(
+        userMessageForError(
+          error,
+          fallback: 'Unable to block user. Please try again.',
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isModerating = false);
+      }
+    }
+  }
+
+  Widget _buildHeaderActions(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final canModerate = _activePeerId != null && !_showConversationList;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: cs.primaryContainer,
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(LucideIcons.shieldCheck, size: 14, color: cs.primary),
+              const SizedBox(width: 6),
+              Text(
+                'Private',
+                style: AppTypography.labelSm.copyWith(color: cs.primary),
+              ),
+            ],
+          ),
+        ),
+        if (canModerate) ...[
+          const SizedBox(width: 8),
+          PopupMenuButton<String>(
+            tooltip: 'Conversation options',
+            enabled: !_isModerating,
+            icon: Icon(LucideIcons.moreVertical, color: cs.onSurfaceVariant),
+            onSelected: (value) {
+              if (value == 'report') {
+                unawaited(_showReportDialog());
+              } else if (value == 'block') {
+                unawaited(_toggleBlockPeer());
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem<String>(
+                value: 'report',
+                child: Text('Report user'),
+              ),
+              PopupMenuItem<String>(
+                value: 'block',
+                child: Text(_isPeerBlocked ? 'Unblock user' : 'Block user'),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
@@ -512,33 +695,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        LucideIcons.shieldCheck,
-                        size: 14,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Private',
-                        style: AppTypography.labelSm.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                trailing: _buildHeaderActions(context),
               ),
               if (_isLoading)
                 const Expanded(child: _ChatLoadingState())
@@ -610,19 +767,52 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
             },
           ),
         ),
-        ChatComposer(
-          controller: _composerController,
-          focusNode: _composerFocusNode,
-          isGeneratingSuggestions: _isGeneratingSuggestions,
-          isAutocompleting: _isAutocompleting,
-          isSending: _isSending,
-          replySuggestions: _replySuggestions,
-          onRequestReplySuggestions: _requestReplySuggestions,
-          onAutocompleteDraft: _autocompleteDraft,
-          onApplySuggestion: _applyComposerText,
-          onSendMessage: _sendMessage,
-        ),
+        if (_isPeerBlocked)
+          const _ChatBlockedNotice()
+        else
+          ChatComposer(
+            controller: _composerController,
+            focusNode: _composerFocusNode,
+            isGeneratingSuggestions: _isGeneratingSuggestions,
+            isAutocompleting: _isAutocompleting,
+            isSending: _isSending,
+            replySuggestions: _replySuggestions,
+            onRequestReplySuggestions: _requestReplySuggestions,
+            onAutocompleteDraft: _autocompleteDraft,
+            onApplySuggestion: _applyComposerText,
+            onSendMessage: _sendMessage,
+          ),
       ],
+    );
+  }
+}
+
+class _ChatBlockedNotice extends StatelessWidget {
+  const _ChatBlockedNotice();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        child: ClayCard(
+          padding: const EdgeInsets.all(18),
+          child: Row(
+            children: [
+              Icon(LucideIcons.ban, color: cs.error),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Messaging is unavailable because one of you has blocked the other.',
+                  style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -83,6 +83,12 @@ class AdminDashboardScreen extends ConsumerWidget {
           onTap: () => context.go('/admin/users'),
         ),
         AdminActionChip(
+          label: 'Health',
+          icon: LucideIcons.activity,
+          tone: MobiStatusBadgeTone.warning,
+          onTap: () => context.go('/admin/health'),
+        ),
+        AdminActionChip(
           label: 'Refresh',
           icon: LucideIcons.refreshCw,
           isBusy:

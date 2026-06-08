@@ -170,8 +170,8 @@ class ChatAiService {
           ? 'Can we confirm the pickup time at ${trip!.departureTime}?'
           : 'Can we confirm the pickup time in Mobio?',
       trip?.destination.isNotEmpty == true
-          ? 'What price works for this trip to ${trip!.destination}?'
-          : 'What price works for this trip?',
+          ? 'What fare should we agree manually for ${trip!.destination}?'
+          : 'What fare should we agree manually?',
     ];
 
     return ChatAiAssist(
@@ -213,7 +213,7 @@ class ChatAiService {
     String completion = normalizedDraft;
     if (RegExp(r'[.!?]$').hasMatch(normalizedDraft)) {
       completion = normalizedDraft;
-    } else if (lowerDraft.contains('price') &&
+    } else if ((lowerDraft.contains('fare') || lowerDraft.contains('price')) &&
         tripDestination?.isNotEmpty == true) {
       completion = '$normalizedDraft for the trip to $tripDestination?';
     } else if (lowerDraft.contains('pickup') &&
@@ -271,7 +271,8 @@ class ChatAiService {
       return true;
     }
 
-    return value.contains(' price') ||
+    return value.contains(' fare') ||
+        value.contains(' price') ||
         value.contains('pickup') ||
         value.contains('dropoff') ||
         value.contains('time');

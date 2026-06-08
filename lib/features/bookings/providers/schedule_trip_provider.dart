@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
 import 'package:mobi_app/features/bookings/models/schedule_trip_state.dart';
@@ -11,16 +12,33 @@ import 'package:mobi_app/models/favorite_address.dart';
 import 'package:mobi_app/models/place.dart';
 import 'package:mobi_app/models/trip.dart';
 
-/// Provider for schedule arguments (mode).
-class ScheduleTripArgsNotifier extends Notifier<String?> {
-  @override
-  String? build() => null;
+class ScheduleTripArgs {
+  const ScheduleTripArgs({this.mode, this.editingTripId});
 
-  void set(String? mode) => state = mode;
+  final String? mode;
+  final String? editingTripId;
+
+  bool get isEditMode => editingTripId?.isNotEmpty == true;
+}
+
+/// Provider for schedule arguments.
+class ScheduleTripArgsNotifier extends Notifier<ScheduleTripArgs> {
+  @override
+  ScheduleTripArgs build() => const ScheduleTripArgs();
+
+  void set(String? mode) => setCreateMode(mode);
+
+  void setCreateMode(String? mode) {
+    state = ScheduleTripArgs(mode: mode);
+  }
+
+  void setEditTrip({required String tripId, String? mode}) {
+    state = ScheduleTripArgs(mode: mode, editingTripId: tripId);
+  }
 }
 
 final scheduleTripArgsProvider =
-    NotifierProvider<ScheduleTripArgsNotifier, String?>(
+    NotifierProvider<ScheduleTripArgsNotifier, ScheduleTripArgs>(
       ScheduleTripArgsNotifier.new,
     );
 
@@ -33,14 +51,29 @@ final scheduleTripProvider =
 class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   @override
   FutureOr<ScheduleTripState> build() async {
-    final mode = ref.watch(scheduleTripArgsProvider);
+    final args = ref.watch(scheduleTripArgsProvider);
 
     final vt = await ref.read(vehicleTypeServiceProvider).getAll();
     final favorites = await _loadFavoriteAddresses();
 
+    if (args.isEditMode) {
+      final trip = await ref
+          .read(tripServiceProvider)
+          .getTripById(args.editingTripId!);
+      if (trip == null) {
+        throw const NotFoundException(message: 'Scheduled trip was not found.');
+      }
+
+      return ScheduleTripState.fromTrip(
+        trip,
+        vehicleTypes: vt,
+        favoriteAddresses: favorites,
+      );
+    }
+
     final initialState = ScheduleTripState(
       vehicleTypes: vt,
-      selectedRole: mode,
+      selectedRole: args.mode,
       favoriteAddresses: favorites,
     );
 
@@ -142,7 +175,6 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     state = AsyncValue.data(
       currentState.copyWith(originDetails: details, validationMessage: null),
     );
-    unawaited(_tryComputeRoute());
   }
 
   void setDestination(PlaceDetails? details) {
@@ -151,7 +183,6 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     state = AsyncValue.data(
       currentState.copyWith(destDetails: details, validationMessage: null),
     );
-    unawaited(_tryComputeRoute());
   }
 
   void useFavoriteAsOrigin(FavoriteAddress address) {
@@ -299,44 +330,6 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     );
   }
 
-  Future<void> _tryComputeRoute() async {
-    final s = state.value;
-    if (s == null || s.originDetails == null || s.destDetails == null) {
-      if (s != null) {
-        state = AsyncValue.data(s.copyWith(routeInfo: null));
-      }
-      return;
-    }
-
-    if (s.originDetails!.latitude == 0 || s.destDetails!.latitude == 0) return;
-
-    state = AsyncValue.data(s.copyWith(isComputingRoute: true));
-
-    try {
-      final route = await ref
-          .read(placesServiceProvider)
-          .computeRoute(
-            originLat: s.originDetails!.latitude,
-            originLng: s.originDetails!.longitude,
-            destLat: s.destDetails!.latitude,
-            destLng: s.destDetails!.longitude,
-          );
-      final finalState = state.value;
-      if (finalState != null) {
-        state = AsyncValue.data(
-          finalState.copyWith(routeInfo: route, isComputingRoute: false),
-        );
-      }
-    } on Object {
-      final finalState = state.value;
-      if (finalState != null) {
-        state = AsyncValue.data(
-          finalState.copyWith(routeInfo: null, isComputingRoute: false),
-        );
-      }
-    }
-  }
-
   Future<Trip?> submitTrip({required String note}) async {
     final s = state.value;
     if (s == null) return null;
@@ -357,6 +350,54 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
         validationMessage: null,
       ),
     );
+
+    if (s.isEditMode) {
+      try {
+        final trip = await ref
+            .read(tripServiceProvider)
+            .updateTrip(
+              tripId: s.editingTrip!.id!,
+              origin: s.originDetails!.formattedAddress,
+              originLat: s.originDetails!.latitude != 0
+                  ? s.originDetails!.latitude
+                  : null,
+              originLng: s.originDetails!.longitude != 0
+                  ? s.originDetails!.longitude
+                  : null,
+              destination: s.destDetails!.formattedAddress,
+              destLat: s.destDetails!.latitude != 0
+                  ? s.destDetails!.latitude
+                  : null,
+              destLng: s.destDetails!.longitude != 0
+                  ? s.destDetails!.longitude
+                  : null,
+              departureDate: DateFormat('yyyy-MM-dd').format(s.date),
+              departureTime:
+                  '${s.time.hour.toString().padLeft(2, '0')}:${s.time.minute.toString().padLeft(2, '0')}',
+              role: s.selectedRole!,
+              vehicleType: s.vehicleId == 'private_' ? 'private' : s.vehicleId,
+              isRecurring: s.isRecurring,
+              recurringDays: s.recurringDays,
+              note: note.trim().isEmpty ? null : note.trim(),
+            );
+        state = AsyncValue.data(
+          s.copyWith(
+            createdTrip: trip,
+            editingTrip: trip,
+            isSubmitting: false,
+            poolSuggestions: const [],
+            validationMessage: null,
+          ),
+        );
+        return trip;
+      } on Object {
+        final finalState = state.value;
+        if (finalState != null) {
+          state = AsyncValue.data(finalState.copyWith(isSubmitting: false));
+        }
+        rethrow;
+      }
+    }
 
     try {
       final trip = await ref

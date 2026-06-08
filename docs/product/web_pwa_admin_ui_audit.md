@@ -1,5 +1,11 @@
 # Web, PWA, and Admin UI Audit
 
+> Historical snapshot: this 2026-05-01 audit predates the 2026-05-23 Mobio
+> limited-scope cleanup. Treat finance/payment review references below as
+> historical findings only. Active admin scope is user/profile management,
+> scheduled-trip moderation, report/block moderation, role management, audit
+> logs, and basic analytics.
+
 Date: 2026-05-01
 
 ## Surfaces Inspected

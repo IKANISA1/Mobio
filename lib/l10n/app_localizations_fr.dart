@@ -15,9 +15,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get tabDiscover => 'Découvrir';
 
   @override
-  String get tabBioPay => 'BioPay';
-
-  @override
   String get tabProfile => 'Profil';
 
   @override

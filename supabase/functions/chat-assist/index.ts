@@ -12,11 +12,12 @@ const geminiApiKey = Deno.env.get("GEMINI_API_KEY")?.trim() ||
   Deno.env.get("GOOGLE_API_KEY")?.trim();
 
 const systemInstruction = `
-You are MOBI Chat Input Assist for ride-sharing conversations inside MOBI.
+You are MOBI Chat Input Assist for limited marketplace conversations inside MOBI.
 
 Priorities:
 - Only help with the chat composer.
-- Help users coordinate pickup, dropoff, timing, luggage, seats, and price.
+- Help users coordinate pickup, dropoff, timing, luggage, seats, and manually agreed fares.
+- Do not suggest automatic fare quotes, dispatch, route tracking, trip lifecycle steps, payments, refunds, earnings, or settlement.
 - Protect privacy. Never suggest moving to WhatsApp, phone calls, or sharing personal contact details.
 - If task is "reply_suggestions", return up to 3 short, natural, ready-to-send messages.
 - If task is "autocomplete", return one completed draft in the same language and tone as draft_text.
@@ -132,8 +133,8 @@ function buildFallbackAssist(input: AssistInput) {
       ? `Can we confirm the pickup time around ${departureTime}?`
       : "Can we confirm the pickup time in MOBI?",
     tripDestination != null
-      ? `What price works for this trip to ${tripDestination}?`
-      : "What price works for this trip?",
+      ? `What fare should we agree manually for this trip to ${tripDestination}?`
+      : "What fare should we agree manually?",
   ];
 
   if (input.task === "autocomplete") {
@@ -189,7 +190,10 @@ function buildFallbackCompletion(
   }
 
   const lowerDraft = capitalized.toLowerCase();
-  if (lowerDraft.includes("price") && tripDestination) {
+  if (
+    (lowerDraft.includes("fare") || lowerDraft.includes("price")) &&
+    tripDestination
+  ) {
     return `${capitalized} for the trip to ${tripDestination}?`;
   }
   if (lowerDraft.includes("pickup") && tripOrigin) {
@@ -224,6 +228,7 @@ function looksLikeQuestion(value: string): boolean {
   ];
 
   return questionStarters.some((starter) => value.startsWith(starter)) ||
+    value.includes(" fare") ||
     value.includes(" price") ||
     value.includes("pickup") ||
     value.includes("dropoff") ||

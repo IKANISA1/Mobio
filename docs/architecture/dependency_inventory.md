@@ -1,5 +1,11 @@
 # Dependency Inventory
 
+> Historical snapshot: this dependency inventory predates the 2026-05-23 Mobio
+> limited-scope cleanup. Treat PayLedger, BioPay, payment, SMS ledger, camera,
+> NFC, QR, and biometric dependency references below as historical context
+> only. Current active dependency scope is reflected in `pubspec.yaml`,
+> `android/app/build.gradle.kts`, and `docs/product/scope.md`.
+
 ## 1. MOBI (Flutter Master Shell)
 **SDK:** Flutter (`sdk: flutter`), Dart `^3.10.8`
 

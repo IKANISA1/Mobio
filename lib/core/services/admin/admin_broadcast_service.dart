@@ -96,6 +96,59 @@ class AdminBroadcastService extends AdminBaseService {
     }
   }
 
+  Future<AdminCampaignAudiencePreview> getCampaignAudiencePreview({
+    required String campaignId,
+  }) async {
+    try {
+      final rows = await supabaseClient.rpc(
+        'rpc_admin_get_campaign_audience_preview',
+        params: {'p_campaign_id': campaignId},
+      );
+      return AdminCampaignAudiencePreview.fromJson(_firstRow(rows));
+    } on Object catch (e) {
+      AppLogger.error('Error loading campaign audience preview: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<AdminAuditLogItem>> listCampaignAuditTimeline({
+    required String campaignId,
+  }) async {
+    try {
+      final rows = await supabaseClient.rpc(
+        'rpc_admin_get_campaign_audit_timeline',
+        params: {'p_campaign_id': campaignId},
+      );
+      final list = rows as List<dynamic>? ?? const [];
+      return list
+          .whereType<Map<String, dynamic>>()
+          .map(AdminAuditLogItem.fromJson)
+          .toList();
+    } on Object catch (e) {
+      AppLogger.error('Error loading campaign audit timeline: $e');
+      rethrow;
+    }
+  }
+
+  Future<List<AdminNotificationConsentTrendPoint>> getNotificationConsentTrend({
+    int days = 30,
+  }) async {
+    try {
+      final rows = await supabaseClient.rpc(
+        'rpc_admin_get_notification_consent_trend',
+        params: {'p_days': days},
+      );
+      final list = rows as List<dynamic>? ?? const [];
+      return list
+          .whereType<Map<String, dynamic>>()
+          .map(AdminNotificationConsentTrendPoint.fromJson)
+          .toList();
+    } on Object catch (e) {
+      AppLogger.error('Error loading notification consent trend: $e');
+      return const [];
+    }
+  }
+
   Future<void> approveCampaign({
     required String campaignId,
     required bool approved,
@@ -182,5 +235,14 @@ class AdminBroadcastService extends AdminBaseService {
         .whereType<Map<String, dynamic>>()
         .map(AdminCampaignApprovalItem.fromJson)
         .toList();
+  }
+
+  Map<String, dynamic> _firstRow(Object? rows) {
+    if (rows is Map<String, dynamic>) return rows;
+    if (rows is List<dynamic> && rows.isNotEmpty) {
+      final first = rows.first;
+      if (first is Map<String, dynamic>) return first;
+    }
+    return const {};
   }
 }

@@ -335,7 +335,7 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
                               : 'Verified WhatsApp required',
                           subtitle: _otpRequested
                               ? 'Codes expire after 5 minutes.'
-                              : 'Trip scheduling, chat, payments, and profile data use this verified identity.',
+                              : 'Trip scheduling, chat, and profile data use this verified identity.',
                           tone: _otpRequested
                               ? MobiStateBannerTone.positive
                               : MobiStateBannerTone.info,

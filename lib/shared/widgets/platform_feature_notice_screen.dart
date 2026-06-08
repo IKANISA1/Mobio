@@ -9,11 +9,13 @@ class PlatformFeatureNoticeScreen extends StatelessWidget {
     required this.message,
     required this.onBack,
     this.note,
+    this.showPlatformNote = true,
   });
 
   final String title;
   final String message;
   final String? note;
+  final bool showPlatformNote;
   final VoidCallback onBack;
 
   @override
@@ -52,14 +54,17 @@ class PlatformFeatureNoticeScreen extends StatelessWidget {
                           height: 1.45,
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Mobio is keeping the Flutter app available on mobile, but this flow is intentionally disabled on $platformLabel to avoid broken camera, gallery, or on-device ML behavior.',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          height: 1.4,
+                      if (showPlatformNote) ...[
+                        const SizedBox(height: 12),
+                        Text(
+                          'Mobio is keeping the Flutter app available on mobile, but this flow is intentionally disabled on $platformLabel to avoid broken camera, gallery, or on-device ML behavior.',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                                height: 1.4,
+                              ),
                         ),
-                      ),
+                      ],
                       if (note != null) ...[
                         const SizedBox(height: 12),
                         Text(

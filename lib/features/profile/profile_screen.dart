@@ -7,7 +7,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
-import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -25,10 +24,8 @@ class ProfileScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final ValueChanged<bool> onDarkModeChanged;
   final VoidCallback onEditProfile;
-  final VoidCallback onViewLedger;
 
   final VoidCallback onAdminGateway;
-  final VoidCallback? onFaceRegister;
   final VoidCallback? onExitAdmin;
 
   const ProfileScreen({
@@ -36,10 +33,8 @@ class ProfileScreen extends ConsumerStatefulWidget {
     required this.isDarkMode,
     required this.onDarkModeChanged,
     required this.onEditProfile,
-    required this.onViewLedger,
 
     required this.onAdminGateway,
-    this.onFaceRegister,
     this.onExitAdmin,
   });
 
@@ -251,34 +246,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     const SizedBox(height: AppSpacing.sectionGap),
 
-                    MobiFeatureTile(
-                      onTap: widget.onFaceRegister,
-                      icon: LucideIcons.scanFace,
-                      title: 'Face ID',
-                      accent: cs.primary,
-                      accentBackground: cs.primaryContainer,
-                      badge: const MobiStatusBadge(
-                        label: 'BioPay',
-                        tone: MobiStatusBadgeTone.brand,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-
-                    MobiFeatureTile(
-                      onTap: widget.onViewLedger,
-                      icon: LucideIcons.receipt,
-                      title: 'Ledger',
-                      accent: AppColors.bioPayGreen,
-                      accentBackground: AppColors.bioPayGreen.withValues(
-                        alpha: 0.12,
-                      ),
-                      badge: const MobiStatusBadge(
-                        label: 'Transactions',
-                        tone: MobiStatusBadgeTone.positive,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-
                     _buildSettingsCard(
                       context: context,
                       icon: LucideIcons.user,
@@ -356,6 +323,38 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         },
                         icon: LucideIcons.shield,
                         title: 'Privacy Policy',
+                        compact: true,
+                      ),
+                    ],
+                    if (SupabaseConfig.hasAccountDeletionUrl) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      MobiFeatureTile(
+                        onTap: () async {
+                          final uri = Uri.tryParse(
+                            SupabaseConfig.accountDeletionUrl,
+                          );
+                          if (uri != null) {
+                            final messenger = ScaffoldMessenger.of(context);
+                            try {
+                              await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            } on Object catch (_) {
+                              if (mounted) {
+                                messenger.showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Could not open account deletion.',
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                          }
+                        },
+                        icon: LucideIcons.userX,
+                        title: 'Delete Account',
                         compact: true,
                       ),
                     ],

@@ -9,25 +9,32 @@ void main() {
       expect(AdminSessionGuard.isAdmin, isFalse);
     });
 
-    test('grant() sets isAdmin to true', () {
-      AdminSessionGuard.grant();
+    test('grant() sets isAdmin to true for the granted user', () {
+      AdminSessionGuard.grant('admin-user');
       expect(AdminSessionGuard.isAdmin, isTrue);
+      expect(AdminSessionGuard.isAdminFor('admin-user'), isTrue);
     });
 
     test('revoke() sets isAdmin to false', () {
-      AdminSessionGuard.grant();
+      AdminSessionGuard.grant('admin-user');
       AdminSessionGuard.revoke();
       expect(AdminSessionGuard.isAdmin, isFalse);
     });
 
     test('touch() extends the session', () {
-      AdminSessionGuard.grant();
-      AdminSessionGuard.touch(); // Should not throw or change state
+      AdminSessionGuard.grant('admin-user');
+      AdminSessionGuard.touch('admin-user'); // Should not throw or change state
       expect(AdminSessionGuard.isAdmin, isTrue);
     });
 
     test('touch() is a no-op when not admin', () {
-      AdminSessionGuard.touch();
+      AdminSessionGuard.touch('admin-user');
+      expect(AdminSessionGuard.isAdmin, isFalse);
+    });
+
+    test('different user revokes stale admin fallback', () {
+      AdminSessionGuard.grant('admin-user');
+      expect(AdminSessionGuard.isAdminFor('other-user'), isFalse);
       expect(AdminSessionGuard.isAdmin, isFalse);
     });
 

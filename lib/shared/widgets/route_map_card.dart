@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
+import 'package:mobi_app/core/services/google_maps_deep_link_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/models/route_info.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 
-/// Displays a compact route summary card.
+/// Displays a compact trip-location summary card.
 /// The mobile app does not support embedded maps, so this widget intentionally
-/// renders a non-map preview of the route and travel metrics.
+/// renders a non-map preview and opens Google Maps through a deep link.
 class RouteMapCard extends StatelessWidget {
   final double originLat;
   final double originLng;
@@ -15,7 +15,6 @@ class RouteMapCard extends StatelessWidget {
   final double destLng;
   final String? originLabel;
   final String? destLabel;
-  final RouteInfo? routeInfo;
   final double height;
 
   const RouteMapCard({
@@ -26,33 +25,13 @@ class RouteMapCard extends StatelessWidget {
     required this.destLng,
     this.originLabel,
     this.destLabel,
-    this.routeInfo,
     this.height = 200,
   });
-
-  String _formatDistance(int meters) {
-    if (meters >= 1000) {
-      return '${(meters / 1000).toStringAsFixed(1)} km';
-    }
-    return '$meters m';
-  }
-
-  String _formatDuration(String duration) {
-    // Duration comes as "1234s" (seconds)
-    final seconds = int.tryParse(duration.replaceAll('s', '')) ?? 0;
-    if (seconds < 60) return '${seconds}s';
-    final minutes = seconds ~/ 60;
-    if (minutes < 60) return '$minutes min';
-    final hours = minutes ~/ 60;
-    final remainMinutes = minutes % 60;
-    return '${hours}h ${remainMinutes}m';
-  }
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-    final routeInfo = this.routeInfo;
 
     return ClayCard(
       padding: const EdgeInsets.all(24),
@@ -77,7 +56,7 @@ class RouteMapCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'ROUTE SUMMARY',
+                  'TRIP POST LOCATIONS',
                   style: AppTypography.labelSm.copyWith(color: cs.primary),
                 ),
                 const SizedBox(height: 18),
@@ -105,43 +84,23 @@ class RouteMapCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'Embedded maps are disabled in this build.',
+                  'Open the route in Google Maps. Live bus tracking depends on a driver app or approved GPS device feed.',
                   style: AppTypography.labelSm.copyWith(
                     fontWeight: FontWeight.w600,
                     color: cs.onSurfaceVariant,
                   ),
                 ),
+                const SizedBox(height: 18),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () => _openGoogleMaps(context),
+                    icon: const Icon(Icons.map_outlined, size: 18),
+                    label: const Text('Open in Google Maps'),
+                  ),
+                ),
               ],
             ),
-          ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              _infoBadge(
-                context,
-                routeInfo != null
-                    ? _formatDistance(routeInfo.distanceMeters)
-                    : 'Distance unavailable',
-                cs.primaryContainer,
-                cs.primary,
-              ),
-              _infoBadge(
-                context,
-                routeInfo != null
-                    ? _formatDuration(routeInfo.duration)
-                    : 'Time unavailable',
-                cs.secondaryContainer,
-                cs.onSecondaryContainer,
-              ),
-              _infoBadge(
-                context,
-                routeInfo?.travelMode ?? 'Preview only',
-                ext.surfaceContainer,
-                cs.onSurfaceVariant,
-              ),
-            ],
           ),
         ],
       ),
@@ -189,20 +148,19 @@ class RouteMapCard extends StatelessWidget {
     );
   }
 
-  Widget _infoBadge(BuildContext context, String text, Color bg, Color fg) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(100),
-      ),
-      child: Text(
-        text,
-        style: AppTypography.labelSm.copyWith(
-          fontWeight: FontWeight.w700,
-          color: fg,
-        ),
-      ),
+  Future<void> _openGoogleMaps(BuildContext context) async {
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    final opened = await GoogleMapsDeepLinkService.openRoute(
+      originLat: originLat,
+      originLng: originLng,
+      destLat: destLat,
+      destLng: destLng,
     );
+
+    if (!opened) {
+      messenger?.showSnackBar(
+        const SnackBar(content: Text('Unable to open Google Maps.')),
+      );
+    }
   }
 }

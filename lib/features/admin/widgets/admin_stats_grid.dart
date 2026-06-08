@@ -66,9 +66,9 @@ class AdminStatsGrid extends StatelessWidget {
           color: const Color(0xFFFF9100),
         ),
         _StatCard(
-          label: 'Completed',
-          value: stats!.completedTrips.toString(),
-          icon: LucideIcons.checkCircle,
+          label: 'Trip Posts',
+          value: stats!.totalTrips.toString(),
+          icon: LucideIcons.calendarDays,
           color: const Color(0xFF651FFF),
         ),
       ],

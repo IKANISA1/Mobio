@@ -4,22 +4,6 @@
 -keep class io.flutter.** { *; }
 -keep class io.flutter.plugins.** { *; }
 
-# ── TFLite Flutter (BioPay ML) ──
--keep class org.tensorflow.lite.** { *; }
--dontwarn org.tensorflow.lite.**
-
-# ── Google ML Kit (Face Detection) ──
--keep class com.google.mlkit.** { *; }
--dontwarn com.google.mlkit.**
--keep class com.google.android.gms.internal.mlkit_vision_face.** { *; }
-
-# ── Camera Plugin ──
--keep class io.flutter.plugins.camera.** { *; }
-
-# ── Mobile Scanner (QR) ──
--keep class com.google.zxing.** { *; }
--dontwarn com.google.zxing.**
-
 # ── Supabase / OkHttp / Retrofit ──
 -dontwarn okhttp3.**
 -dontwarn okio.**

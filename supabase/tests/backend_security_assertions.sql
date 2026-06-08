@@ -25,71 +25,83 @@ begin
 
     union all
 
-    select 'public/anon QR session table read still granted'
-    from information_schema.role_table_grants
-    where table_schema = 'public'
-      and table_name in ('qr_payment_sessions', 'nfc_payment_sessions')
-      and grantee in ('anon', 'PUBLIC')
-      and privilege_type = 'SELECT'
-
-    union all
-
-    select 'client payment intent write grant still exists'
-    from information_schema.role_table_grants
-    where table_schema = 'public'
-      and table_name = 'payment_intents'
-      and grantee in ('anon', 'authenticated', 'PUBLIC')
-      and privilege_type in ('INSERT', 'UPDATE', 'DELETE')
-
-    union all
-
-    select 'client payment event write grant still exists'
-    from information_schema.role_table_grants
-    where table_schema = 'public'
-      and table_name = 'payment_events'
-      and grantee in ('anon', 'authenticated', 'PUBLIC')
-      and privilege_type in ('INSERT', 'UPDATE', 'DELETE')
-
-    union all
-
-    select 'client payment insert policy still exists'
-    from pg_policies
-    where schemaname = 'public'
-      and tablename in ('payment_intents', 'payment_events')
-      and policyname in ('Users insert own intents', 'Users insert own events')
-
-    union all
-
-    select 'payment_events provenance column missing'
+    select 'out-of-scope legacy table still exists'
     from (values
-      ('amount'),
-      ('currency'),
-      ('payment_method'),
-      ('source'),
-      ('metadata')
-    ) as required(column_name)
-    where not exists (
+      ('biopay_abuse_reports'),
+      ('biopay_enrollment_audit'),
+      ('biopay_face_embeddings'),
+      ('biopay_match_audit'),
+      ('biopay_match_rate_limits'),
+      ('biopay_profiles'),
+      ('biopay_rate_limits'),
+      ('biopay_transactions'),
+      ('biopay_wallets'),
+      ('face_templates'),
+      ('nfc_payment_sessions'),
+      ('payment_events'),
+      ('payment_intents'),
+      ('qr_payment_sessions'),
+      ('ride_requests'),
+      ('risk_flags'),
+      ('sms_raw_queue'),
+      ('transactions'),
+      ('trip_requests')
+    ) as legacy(table_name)
+    where exists (
       select 1
-      from information_schema.columns c
-      where c.table_schema = 'public'
-        and c.table_name = 'payment_events'
-        and c.column_name = required.column_name
+      from information_schema.tables t
+      where t.table_schema = 'public'
+        and t.table_name = legacy.table_name
     )
 
     union all
 
-    select 'legacy BioPay transfer RPC still executable by clients'
-    from information_schema.routine_privileges
-    where routine_schema = 'public'
-      and routine_name in (
+    select 'out-of-scope legacy routine still exists'
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname in (
+        'biopay_delete_profile',
+        'biopay_check_rate_limit',
+        'biopay_cleanup_rate_limits',
+        'biopay_reenroll_profile',
+        'consume_biopay_match_rate_limit',
+        'enforce_biopay_transaction_organization',
+        'enforce_biopay_wallet_organization',
+        'enforce_ride_request_organization',
+        'enforce_trip_request_organization',
+        'find_duplicate_biopay_profile',
         'fn_biopay_generate_qr',
         'fn_biopay_resolve_qr_payload',
         'fn_biopay_scan_and_charge',
+        'generate_biopay_id',
+        'match_biopay_embedding',
+        'rpc_admin_list_risk_flags',
+        'rpc_resolve_nfc_payment_session',
+        'rpc_resolve_qr_payment_session',
         'rpc_get_biopay_wallet',
         'rpc_update_biopay_handle'
       )
-      and grantee in ('anon', 'authenticated', 'PUBLIC')
-      and privilege_type = 'EXECUTE'
+
+    union all
+
+    select 'out-of-scope profile BioPay column still exists'
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'profiles'
+      and column_name in (
+        'biopay_handle_type',
+        'biopay_handle_value',
+        'has_face_id'
+      )
+
+    union all
+
+    select 'out-of-scope country SMS sender column still exists'
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'countries'
+      and column_name = 'sender_id'
 
     union all
 
@@ -98,7 +110,9 @@ begin
       ('organizations'),
       ('organization_members'),
       ('platform_permissions'),
-      ('profile_platform_permissions')
+      ('profile_platform_permissions'),
+      ('otp_rate_limits'),
+      ('operational_health_events')
     ) as required(table_name)
     where not exists (
       select 1
@@ -106,6 +120,56 @@ begin
       where t.table_schema = 'public'
         and t.table_name = required.table_name
     )
+
+    union all
+
+    select 'public transport foundation table missing'
+    from (values
+      ('transport_agencies'),
+      ('agency_buses'),
+      ('transport_routes'),
+      ('route_stops'),
+      ('bus_schedules'),
+      ('bus_seat_inventory'),
+      ('bus_bookings'),
+      ('bus_booking_payments'),
+      ('bus_tracking_sources'),
+      ('bus_location_events')
+    ) as required(table_name)
+    where not exists (
+      select 1
+      from information_schema.tables t
+      where t.table_schema = 'public'
+        and t.table_name = required.table_name
+    )
+
+    union all
+
+    select 'public transport RPC missing'
+    from (values
+      ('rpc_search_bus_schedules'),
+      ('rpc_hold_bus_seats'),
+      ('rpc_confirm_bus_booking'),
+      ('rpc_cancel_bus_booking'),
+      ('rpc_get_bus_payment_status'),
+      ('rpc_ingest_bus_location')
+    ) as required(routine_name)
+    where not exists (
+      select 1
+      from pg_proc p
+      join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public'
+        and p.proname = required.routine_name
+    )
+
+    union all
+
+    select 'public transport payment confirmation allows passenger self-confirmation'
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname = 'rpc_confirm_bus_booking'
+      and pg_get_functiondef(p.oid) like '%passenger_id = v_user_id%'
 
     union all
 
@@ -138,11 +202,13 @@ begin
 
     union all
 
-    select 'sensitive payment table still in realtime publication'
+    select 'out-of-scope legacy table still in realtime publication'
     from pg_publication_tables
     where pubname = 'supabase_realtime'
       and schemaname = 'public'
       and tablename in (
+        'transactions',
+        'sms_raw_queue',
         'payment_intents',
         'payment_events',
         'qr_payment_sessions',
@@ -225,24 +291,46 @@ begin
 
     union all
 
+    select 'required storage bucket missing'
+    from (values
+      ('avatars'),
+      ('media'),
+      ('promo-media'),
+      ('tickets')
+    ) as required(bucket_id)
+    where not exists (
+      select 1
+      from storage.buckets b
+      where b.id = required.bucket_id
+    )
+
+    union all
+
+    select 'OTP rate limit RPC executable by clients'
+    from information_schema.routine_privileges
+    where routine_schema = 'public'
+      and routine_name = 'consume_otp_rate_limit'
+      and grantee in ('anon', 'authenticated', 'PUBLIC')
+      and privilege_type = 'EXECUTE'
+
+    union all
+
+    select 'operational health RPC executable by anon/public'
+    from information_schema.routine_privileges
+    where routine_schema = 'public'
+      and routine_name = 'rpc_admin_list_operational_health_events'
+      and grantee in ('anon', 'PUBLIC')
+      and privilege_type = 'EXECUTE'
+
+    union all
+
     select 'legacy tenant table missing organization_id'
     from (values
       ('admin_whatsapp_numbers'),
       ('app_auth_attempts'),
-      ('biopay_abuse_reports'),
-      ('biopay_enrollment_audit'),
-      ('biopay_face_embeddings'),
-      ('biopay_match_audit'),
-      ('biopay_match_rate_limits'),
-      ('biopay_profiles'),
-      ('biopay_rate_limits'),
-      ('biopay_transactions'),
-      ('biopay_wallets'),
       ('otp_codes'),
       ('promo_video_jobs'),
-      ('ride_requests'),
-      ('saved_places'),
-      ('trip_requests')
+      ('saved_places')
     ) as required(table_name)
     where not exists (
       select 1
@@ -264,6 +352,79 @@ begin
       from information_schema.tables t
       where t.table_schema = 'public'
         and t.table_name = required.table_name
+    )
+
+    union all
+
+    select 'report/block foundation table missing'
+    from (values
+      ('user_blocks'),
+      ('user_reports')
+    ) as required(table_name)
+    where not exists (
+      select 1
+      from information_schema.tables t
+      where t.table_schema = 'public'
+        and t.table_name = required.table_name
+    )
+
+    union all
+
+    select 'report/block client direct write grant still exists'
+    from information_schema.role_table_grants
+    where table_schema = 'public'
+      and table_name in ('user_blocks', 'user_reports')
+      and grantee in ('anon', 'authenticated', 'PUBLIC')
+      and privilege_type in ('INSERT', 'UPDATE', 'DELETE')
+
+    union all
+
+    select 'report/block RPC missing'
+    from (values
+      ('rpc_is_user_blocked'),
+      ('rpc_block_user'),
+      ('rpc_unblock_user'),
+      ('rpc_report_user'),
+      ('rpc_admin_list_user_reports'),
+      ('rpc_admin_review_user_report')
+    ) as required(routine_name)
+    where not exists (
+      select 1
+      from pg_proc p
+      join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public'
+        and p.proname = required.routine_name
+    )
+
+    union all
+
+    select 'chat conversation RPC does not enforce user blocks'
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname = 'rpc_get_or_create_chat_conversation'
+      and pg_get_functiondef(p.oid) not like '%user_blocks%'
+
+    union all
+
+    select 'chat insert policy does not enforce user blocks'
+    from pg_policies
+    where schemaname = 'public'
+      and tablename = 'chat_messages'
+      and policyname = 'chat_messages_insert_sender'
+      and coalesce(with_check, '') not like '%user_blocks%'
+
+    union all
+
+    select 'admin report permission missing'
+    from (values
+      ('admin.reports.read'),
+      ('admin.reports.manage')
+    ) as required(permission_key)
+    where not exists (
+      select 1
+      from public.platform_permissions permission
+      where permission.permission_key = required.permission_key
     )
 
     union all
@@ -309,15 +470,57 @@ begin
 
     union all
 
-    select 'notification consent summary RPC missing'
-    where not exists (
-      select 1
-      from pg_proc p
-      join pg_namespace n on n.oid = p.pronamespace
-      where n.nspname = 'public'
-        and p.proname = 'rpc_admin_get_notification_consent_summary'
-    )
-  )
+	    select 'notification consent summary RPC missing'
+	    where not exists (
+	      select 1
+	      from pg_proc p
+	      join pg_namespace n on n.oid = p.pronamespace
+	      where n.nspname = 'public'
+	        and p.proname = 'rpc_admin_get_notification_consent_summary'
+	    )
+
+	    union all
+
+	    select 'campaign audience preview RPC missing'
+	    where not exists (
+	      select 1
+	      from pg_proc p
+	      join pg_namespace n on n.oid = p.pronamespace
+	      where n.nspname = 'public'
+	        and p.proname = 'rpc_admin_get_campaign_audience_preview'
+	    )
+
+	    union all
+
+	    select 'campaign audit timeline RPC missing'
+	    where not exists (
+	      select 1
+	      from pg_proc p
+	      join pg_namespace n on n.oid = p.pronamespace
+	      where n.nspname = 'public'
+	        and p.proname = 'rpc_admin_get_campaign_audit_timeline'
+	    )
+
+	    union all
+
+	    select 'notification consent trend RPC missing'
+	    where not exists (
+	      select 1
+	      from pg_proc p
+	      join pg_namespace n on n.oid = p.pronamespace
+	      where n.nspname = 'public'
+	        and p.proname = 'rpc_admin_get_notification_consent_trend'
+	    )
+
+	    union all
+
+	    select 'promo campaign send lacks zero-consent guard'
+	    from pg_proc p
+	    join pg_namespace n on n.oid = p.pronamespace
+	    where n.nspname = 'public'
+	      and p.proname = 'rpc_admin_send_approved_campaign'
+	      and pg_get_functiondef(p.oid) not like '%No consenting recipients%'
+	  )
   select string_agg(failure, E'\n')
   into v_failures
   from failures;

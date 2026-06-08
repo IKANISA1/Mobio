@@ -12,14 +12,13 @@ import 'package:mobi_app/core/utils/navigation_utils.dart';
 
 import 'package:mobi_app/features/admin/admin_audit_log_screen.dart';
 import 'package:mobi_app/features/admin/admin_broadcasts_screen.dart';
-import 'package:mobi_app/features/admin/admin_finance_review_screen.dart';
+import 'package:mobi_app/features/admin/admin_dashboard_screen.dart';
+import 'package:mobi_app/features/admin/admin_operational_health_screen.dart';
+import 'package:mobi_app/features/admin/admin_reports_screen.dart';
 import 'package:mobi_app/features/admin/admin_subscriptions_screen.dart';
 import 'package:mobi_app/features/admin/admin_trips_screen.dart';
+import 'package:mobi_app/features/admin/admin_users_screen.dart';
 import 'package:mobi_app/features/admin/admin_vehicle_types_screen.dart';
-import 'package:mobi_app/features/biopay/face_enrollment_screen_entry.dart';
-import 'package:mobi_app/features/biopay/face_scan_screen_entry.dart';
-import 'package:mobi_app/features/biopay/get_qr_screen_entry.dart';
-import 'package:mobi_app/features/biopay/scan_qr_screen_entry.dart';
 import 'package:mobi_app/features/bookings/trip_details_screen.dart';
 import 'package:mobi_app/features/chat/chat_screen.dart';
 import 'package:mobi_app/features/profile/edit_profile_screen.dart';
@@ -36,8 +35,10 @@ abstract class AppRoutes {
   static const String bookings = '/bookings';
   static const String schedule = '/schedule';
   static const String tripDetails = '/trip/:id';
+  static const String tripEdit = '/trip/:id/edit';
   static const String chat = '/chat';
   static const String editProfile = '/edit-profile';
+  static const String profileSetup = '/profile/setup';
   static const String adminAuth = '/admin-auth';
   static const String adminDashboard = '/admin';
   static const String adminUsers = '/admin/users';
@@ -45,7 +46,9 @@ abstract class AppRoutes {
   static const String adminVehicleTypes = '/admin/vehicle-types';
   static const String adminSubscriptions = '/admin/subscriptions';
   static const String adminTrips = '/admin/trips';
+  static const String adminReports = '/admin/reports';
   static const String adminFinance = '/admin/finance';
+  static const String adminHealth = '/admin/health';
   static const String adminAudit = '/admin/audit';
   static const String adminBroadcasts = '/admin/broadcasts';
   static const String getQr = '/biopay/qr';
@@ -79,9 +82,9 @@ String? _adminRouteGuard(GoRouterState state) {
     }
 
     final hasAdminRole = user.appMetadata['role'] == 'admin';
-    final hasActiveAdminSession = AdminSessionGuard.isAdmin;
+    final hasActiveAdminSession = AdminSessionGuard.isAdminFor(user.id);
     if (hasActiveAdminSession) {
-      AdminSessionGuard.touch();
+      AdminSessionGuard.touch(user.id);
     }
 
     final hasAdminAccess = hasAdminRole || hasActiveAdminSession;
@@ -246,20 +249,20 @@ GoRouter createRouter() {
               ),
               GoRoute(
                 path: '/admin',
-                builder: (context, state) => const HomeScreenWrapper(),
+                builder: (context, state) => const AdminDashboardScreen(),
               ),
             ],
           ),
-          // Tab 1: BioPay
+          // Tab 1: scheduled trip posts
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/biopay',
-                builder: (context, state) => const BioPayScreenWrapper(),
+                path: '/bookings',
+                builder: (context, state) => const BookingsScreenWrapper(),
               ),
               GoRoute(
                 path: '/admin/users',
-                builder: (context, state) => const BioPayScreenWrapper(),
+                builder: (context, state) => const AdminUsersScreen(),
               ),
             ],
           ),
@@ -288,17 +291,24 @@ GoRouter createRouter() {
       GoRoute(
         path: '/ledger',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const LedgerScreenWrapper(),
-      ),
-      GoRoute(
-        path: '/bookings',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const BookingsScreenWrapper(),
+        builder: (context, state) =>
+            ScopeUnavailableScreen(onBack: () => safePop(context)),
       ),
       GoRoute(
         path: '/schedule',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const ScheduleTripScreenWrapper(),
+      ),
+      GoRoute(
+        path: '/trip/:id/edit',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) {
+          final tripId = state.pathParameters['id']!;
+          return EditTripScreenWrapper(
+            tripId: tripId,
+            onBack: () => safePop(context),
+          );
+        },
       ),
       GoRoute(
         path: '/trip/:id',
@@ -328,6 +338,12 @@ GoRouter createRouter() {
             EditProfileScreen(onBack: () => safePop(context)),
       ),
       GoRoute(
+        path: '/profile/setup',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            EditProfileScreen(isFirstRun: true, onBack: () => safePop(context)),
+      ),
+      GoRoute(
         path: '/admin-auth',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const AdminAuthScreenWrapper(),
@@ -351,10 +367,22 @@ GoRouter createRouter() {
             AdminTripsScreen(onBack: () => safePop(context)),
       ),
       GoRoute(
+        path: '/admin/reports',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            AdminReportsScreen(onBack: () => safePop(context)),
+      ),
+      GoRoute(
         path: '/admin/finance',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
-            AdminFinanceReviewScreen(onBack: () => safePop(context)),
+            ScopeUnavailableScreen(onBack: () => safePop(context)),
+      ),
+      GoRoute(
+        path: '/admin/health',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            AdminOperationalHealthScreen(onBack: () => safePop(context)),
       ),
       GoRoute(
         path: '/admin/audit',
@@ -371,31 +399,37 @@ GoRouter createRouter() {
             AdminBroadcastsScreen(onBack: () => safePop(context)),
       ),
 
-      // ── BioPay sub-screens ──
+      // ── Legacy payment/BioPay routes kept explicit but inactive ──
+      GoRoute(
+        path: '/biopay',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            ScopeUnavailableScreen(onBack: () => safePop(context)),
+      ),
       GoRoute(
         path: '/biopay/qr',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
-            GetQrScreen(onBack: () => safePop(context)),
+            ScopeUnavailableScreen(onBack: () => safePop(context)),
       ),
       GoRoute(
         path: '/biopay/scan',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
-            ScanQrScreen(onBack: () => safePop(context)),
+            ScopeUnavailableScreen(onBack: () => safePop(context)),
       ),
       GoRoute(
         path: '/biopay/face-scan',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
-            FaceScanScreen(onBack: () => safePop(context)),
+            ScopeUnavailableScreen(onBack: () => safePop(context)),
       ),
 
       GoRoute(
         path: '/biopay/enroll',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
-            FaceEnrollmentScreen(onBack: () => safePop(context)),
+            ScopeUnavailableScreen(onBack: () => safePop(context)),
       ),
     ],
   );

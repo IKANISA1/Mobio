@@ -1,54 +1,87 @@
 default_platform(:android)
 
+def play_json_key_data
+  ENV.fetch("PLAY_STORE_SERVICE_ACCOUNT_JSON") do
+    UI.user_error!("Missing PLAY_STORE_SERVICE_ACCOUNT_JSON")
+  end
+end
+
+def play_track
+  track = ENV.fetch("PLAY_RELEASE_TRACK", "internal")
+  allowed = %w[internal alpha beta production]
+  UI.user_error!("PLAY_RELEASE_TRACK must be one of: #{allowed.join(', ')}") unless allowed.include?(track)
+
+  require_production_approval! if track == "production"
+
+  track
+end
+
+def require_production_approval!
+  return if ENV.fetch("PLAY_PRODUCTION_APPROVED", "false") == "true"
+
+  UI.user_error!("PLAY_PRODUCTION_APPROVED=true is required for production-track uploads")
+end
+
+def play_release_status
+  status = ENV.fetch("PLAY_RELEASE_STATUS", "draft")
+  allowed = %w[draft completed inProgress halted]
+  UI.user_error!("PLAY_RELEASE_STATUS must be one of: #{allowed.join(', ')}") unless allowed.include?(status)
+  status
+end
+
 platform :android do
-  desc "Build AAB with Supabase env vars from .env, then upload to Google Play (production draft)"
+  desc "Build AAB with Supabase env vars from .env, then upload to Google Play (internal draft by default)"
   lane :build_and_deploy do
     # Build via the release script — it sources .env and hard-fails if
     # SUPABASE_URL, SUPABASE_ANON_KEY, or PRIVACY_POLICY_URL are missing.
     sh("cd ../.. && ./scripts/release/build_android_release.sh appbundle")
 
     upload_to_play_store(
-      track: "production",
+      json_key_data: play_json_key_data,
+      track: play_track,
       aab: "../build/app/outputs/bundle/release/app-release.aab",
       mapping: "../build/app/outputs/mapping/release/mapping.txt",
       skip_upload_apk: true,
       skip_upload_metadata: false,
       skip_upload_images: false,
       skip_upload_screenshots: false,
-      release_status: "draft",
+      release_status: play_release_status,
     )
   end
 
-  desc "Upload AAB, screenshots, metadata, and mapping to Google Play (production draft)"
+  desc "Upload AAB, screenshots, metadata, and mapping to Google Play (internal draft by default)"
   lane :deploy do
     upload_to_play_store(
-      track: "production",
+      json_key_data: play_json_key_data,
+      track: play_track,
       aab: "../build/app/outputs/bundle/release/app-release.aab",
       mapping: "../build/app/outputs/mapping/release/mapping.txt",
       skip_upload_apk: true,
       skip_upload_metadata: false,
       skip_upload_images: false,
       skip_upload_screenshots: false,
-      release_status: "draft",
+      release_status: play_release_status,
     )
   end
 
   desc "Upload metadata and screenshots only (no binary)"
   lane :metadata do
     upload_to_play_store(
-      track: "production",
+      json_key_data: play_json_key_data,
+      track: play_track,
       skip_upload_aab: true,
       skip_upload_apk: true,
       skip_upload_metadata: false,
       skip_upload_images: false,
       skip_upload_screenshots: false,
-      release_status: "draft",
+      release_status: play_release_status,
     )
   end
 
   desc "Upload AAB only to internal track"
   lane :upload_aab do
     upload_to_play_store(
+      json_key_data: play_json_key_data,
       track: "internal",
       aab: "../build/app/outputs/bundle/release/app-release.aab",
       mapping: "../build/app/outputs/mapping/release/mapping.txt",
@@ -62,7 +95,10 @@ platform :android do
 
   desc "Promote internal to production"
   lane :promote_to_production do
+    require_production_approval!
+
     upload_to_play_store(
+      json_key_data: play_json_key_data,
       track: "internal",
       track_promote_to: "production",
       skip_upload_aab: true,

@@ -19,7 +19,7 @@ class AdminUserMetrics extends StatelessWidget {
   Widget build(BuildContext context) {
     final totalAdmins = users.where((user) => user.role == 'admin').length;
     final onlineUsers = users.where((user) => user.isOnline).length;
-    final faceReady = users.where((user) => user.hasFaceId).length;
+    final drivers = users.where((user) => user.isDriver).length;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -69,11 +69,11 @@ class AdminUserMetrics extends StatelessWidget {
             _MetricSizedCard(
               width: cardWidth,
               child: AdminMetricCard(
-                label: 'Face ID',
-                value: '$faceReady',
-                hint: 'Enrollment ready',
-                icon: LucideIcons.camera,
-                tone: MobiStatusBadgeTone.warning,
+                label: 'Drivers',
+                value: '$drivers',
+                hint: 'Discovery supply',
+                icon: LucideIcons.car,
+                tone: MobiStatusBadgeTone.info,
               ),
             ),
           ],

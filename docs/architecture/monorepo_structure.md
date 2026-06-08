@@ -1,5 +1,10 @@
 # MOBI Monorepo Structure Plan
 
+> Historical snapshot: this 2026-05-01 structure plan predates the 2026-05-23
+> Mobio limited-scope cleanup. Treat BioPay, payment, SMS ledger, and
+> ride-request lifecycle references below as historical architecture context
+> only. Current product scope is `docs/product/scope.md`.
+
 Date: 2026-05-01
 
 ## Current Structure

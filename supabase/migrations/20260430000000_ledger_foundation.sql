@@ -1,5 +1,13 @@
 -- MOBI Ledger Foundation
 -- Migration for integrating PayLedger SMS/Transaction tracking into MOBI
+--
+-- This legacy migration is retained so historical migration chains replay, but
+-- Mobio's current production scope removes the ledger/SMS tables in later
+-- cleanup migrations. Drop any pre-existing local/sample shape first so replay
+-- cannot fail on incompatible transaction table columns.
+
+DROP TABLE IF EXISTS public.sms_raw_queue CASCADE;
+DROP TABLE IF EXISTS public.transactions CASCADE;
 
 -- 1. Add sender_id to countries
 -- Used by Android SmsReceiver to filter MoMo transaction SMS
@@ -32,8 +40,18 @@ CREATE TABLE IF NOT EXISTS public.transactions (
 );
 
 -- Deduplication constraint
-ALTER TABLE public.transactions
-    ADD CONSTRAINT transactions_dedup UNIQUE (sms_hash, agent_id);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'transactions_dedup'
+      AND conrelid = 'public.transactions'::regclass
+  ) THEN
+    ALTER TABLE public.transactions
+      ADD CONSTRAINT transactions_dedup UNIQUE (sms_hash, agent_id);
+  END IF;
+END $$;
 
 -- Performance indexes
 CREATE INDEX IF NOT EXISTS idx_transactions_agent ON public.transactions (agent_id);
@@ -43,9 +61,11 @@ CREATE INDEX IF NOT EXISTS idx_transactions_profile ON public.transactions (prof
 -- RLS: user sees only own transactions
 ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "users_own_transactions_select" ON public.transactions;
 CREATE POLICY "users_own_transactions_select" ON public.transactions
     FOR SELECT USING (profile_id = auth.uid());
 
+DROP POLICY IF EXISTS "users_own_transactions_insert" ON public.transactions;
 CREATE POLICY "users_own_transactions_insert" ON public.transactions
     FOR INSERT WITH CHECK (profile_id = auth.uid());
 
@@ -71,9 +91,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_sms_raw_queue_dedup ON public.sms_raw_queu
 -- RLS: user sees own queue items
 ALTER TABLE public.sms_raw_queue ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "users_own_queue_select" ON public.sms_raw_queue;
 CREATE POLICY "users_own_queue_select" ON public.sms_raw_queue
     FOR SELECT USING (profile_id = auth.uid());
 
+DROP POLICY IF EXISTS "users_own_queue_insert" ON public.sms_raw_queue;
 CREATE POLICY "users_own_queue_insert" ON public.sms_raw_queue
     FOR INSERT WITH CHECK (profile_id = auth.uid());
 

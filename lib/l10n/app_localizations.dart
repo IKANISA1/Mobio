@@ -112,12 +112,6 @@ abstract class AppLocalizations {
   /// **'Discover'**
   String get tabDiscover;
 
-  /// Bottom nav tab: BioPay
-  ///
-  /// In en, this message translates to:
-  /// **'BioPay'**
-  String get tabBioPay;
-
   /// Bottom nav tab: Profile
   ///
   /// In en, this message translates to:

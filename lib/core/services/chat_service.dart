@@ -53,6 +53,97 @@ class ChatService {
     }
   }
 
+  Future<bool> isPeerBlocked(String peerId) async {
+    _requireUserId();
+
+    try {
+      final response = await _supabase
+          .rpc('rpc_is_user_blocked', params: {'p_peer_id': peerId})
+          .timeout(_queryTimeout);
+      return response == true;
+    } on AppException {
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error checking chat block status',
+      );
+    }
+  }
+
+  Future<void> blockUser({required String peerId, String? reason}) async {
+    _requireUserId();
+
+    try {
+      await _supabase
+          .rpc(
+            'rpc_block_user',
+            params: {'p_blocked_id': peerId, 'p_reason': reason},
+          )
+          .timeout(_queryTimeout);
+    } on AppException {
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error blocking chat peer',
+      );
+    }
+  }
+
+  Future<void> unblockUser(String peerId) async {
+    _requireUserId();
+
+    try {
+      await _supabase
+          .rpc('rpc_unblock_user', params: {'p_blocked_id': peerId})
+          .timeout(_queryTimeout);
+    } on AppException {
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error unblocking chat peer',
+      );
+    }
+  }
+
+  Future<void> reportUser({
+    required String peerId,
+    String? conversationId,
+    String? tripId,
+    required String category,
+    required String details,
+  }) async {
+    _requireUserId();
+
+    try {
+      await _supabase
+          .rpc(
+            'rpc_report_user',
+            params: {
+              'p_reported_id': peerId,
+              'p_conversation_id': conversationId,
+              'p_trip_id': tripId,
+              'p_category': category,
+              'p_details': details,
+            },
+          )
+          .timeout(_queryTimeout);
+    } on AppException {
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error reporting chat peer',
+      );
+    }
+  }
+
   Future<ChatConversation?> getConversationById(String conversationId) async {
     try {
       final row = await _supabase

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobi_app/features/bookings/models/schedule_trip_state.dart';
 import 'package:mobi_app/models/place.dart';
-import 'package:mobi_app/models/route_info.dart';
+import 'package:mobi_app/models/trip.dart';
 
 void main() {
   group('ScheduleTripState.copyWith', () {
-    test('can clear nullable route and place fields', () {
+    test('can clear nullable place fields', () {
       const origin = PlaceDetails(
         placeId: 'origin',
         formattedAddress: 'Kigali Heights',
@@ -19,16 +19,9 @@ void main() {
         latitude: -1.94,
         longitude: 30.1,
       );
-      const route = RouteInfo(
-        distanceMeters: 4200,
-        duration: '12 mins',
-        encodedPolyline: 'abc',
-      );
-
       final state = ScheduleTripState(
         originDetails: origin,
         destDetails: destination,
-        routeInfo: route,
         userLat: -1.95,
         userLng: 30.06,
         validationMessage: 'Old error',
@@ -37,7 +30,6 @@ void main() {
       final cleared = state.copyWith(
         originDetails: null,
         destDetails: null,
-        routeInfo: null,
         userLat: null,
         userLng: null,
         validationMessage: null,
@@ -45,7 +37,6 @@ void main() {
 
       expect(cleared.originDetails, isNull);
       expect(cleared.destDetails, isNull);
-      expect(cleared.routeInfo, isNull);
       expect(cleared.userLat, isNull);
       expect(cleared.userLng, isNull);
       expect(cleared.validationMessage, isNull);
@@ -103,5 +94,42 @@ void main() {
         );
       },
     );
+  });
+
+  group('ScheduleTripState.fromTrip', () {
+    test('prefills edit mode from an existing scheduled trip', () {
+      final trip = Trip.fromJson({
+        'id': 'trip-1',
+        'author_id': 'user-1',
+        'origin': 'Kigali Heights',
+        'origin_lat': -1.95,
+        'origin_lng': 30.06,
+        'destination': 'Kigali Arena',
+        'dest_lat': -1.94,
+        'dest_lng': 30.1,
+        'departure_date': '2026-06-09',
+        'departure_time': '03:45 PM',
+        'role': 'driver',
+        'vehicle_type': 'private',
+        'is_recurring': true,
+        'recurring_days': [0, 2, 4],
+        'note': 'Two bags',
+      });
+
+      final state = ScheduleTripState.fromTrip(trip);
+
+      expect(state.isEditMode, isTrue);
+      expect(state.editingTrip?.id, 'trip-1');
+      expect(state.selectedRole, 'driver');
+      expect(state.originDetails?.formattedAddress, 'Kigali Heights');
+      expect(state.originDetails?.latitude, -1.95);
+      expect(state.destDetails?.formattedAddress, 'Kigali Arena');
+      expect(state.destDetails?.longitude, 30.1);
+      expect(state.date, DateTime(2026, 6, 9));
+      expect(state.time, const TimeOfDay(hour: 15, minute: 45));
+      expect(state.vehicleId, 'private_');
+      expect(state.isRecurring, isTrue);
+      expect(state.recurringDays, [0, 2, 4]);
+    });
   });
 }

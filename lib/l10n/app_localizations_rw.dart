@@ -15,9 +15,6 @@ class AppLocalizationsRw extends AppLocalizations {
   String get tabDiscover => 'Shakisha';
 
   @override
-  String get tabBioPay => 'BioPay';
-
-  @override
   String get tabProfile => 'Umwirondoro';
 
   @override

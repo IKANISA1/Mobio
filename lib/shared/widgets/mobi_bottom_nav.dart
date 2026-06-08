@@ -7,7 +7,7 @@ import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
 import 'package:mobi_app/shared/widgets/glass_container.dart';
 
-/// Bottom navigation bar — 3-tab design: Discover / BioPay / Profile.
+/// Bottom navigation bar — 3-tab design: Discover / Trips / Profile.
 /// Matches the transito UI with frosted glass background,
 /// active tab pill (green circle + label), and animated transitions.
 /// Each tab now provides opacity + scale feedback on press.
@@ -58,10 +58,10 @@ class MobiBottomNav extends StatelessWidget {
     );
   }
 
-  // 3-tab passenger nav: Home, Pay, Profile
+  // 3-tab passenger nav: Home, Trips, Profile
   static const _passengerItems = [
     _NavItem(LucideIcons.compass, 'Home'),
-    _NavItem(LucideIcons.shieldCheck, 'Pay'),
+    _NavItem(LucideIcons.calendarCheck, 'Trips'),
     _NavItem(LucideIcons.user, 'Profile'),
   ];
 
@@ -137,65 +137,91 @@ class _TappableNavItemState extends State<_TappableNavItem> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    final fastDuration = reduceMotion
+        ? Duration.zero
+        : const Duration(milliseconds: 100);
+    final settleDuration = reduceMotion
+        ? Duration.zero
+        : const Duration(milliseconds: 220);
 
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      selected: widget.isActive,
+      label: '${widget.label} tab',
+      hint: widget.isActive ? 'Current tab' : 'Switch tab',
       onTap: widget.onTap,
-      onTapDown: (_) => setState(() => _isPressed = true),
-      onTapUp: (_) => setState(() => _isPressed = false),
-      onTapCancel: () => setState(() => _isPressed = false),
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 100),
-        opacity: _isPressed ? 0.7 : 1.0,
-        child: AnimatedScale(
-          duration: const Duration(milliseconds: 100),
-          scale: _isPressed ? 0.95 : 1.0,
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
-            padding: EdgeInsets.symmetric(
-              horizontal: widget.isActive ? 12 : 0,
-              vertical: AppSpacing.xs,
-            ),
-            decoration: BoxDecoration(
-              color: widget.isActive
-                  ? cs.primary.withValues(alpha: widget.isAdmin ? 0.1 : 0.14)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(AppRadii.pill),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  widget.icon,
-                  size: 20,
-                  color: widget.isActive ? cs.primary : cs.onSurfaceVariant,
-                ),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 220),
+      child: Tooltip(
+        message: widget.label,
+        child: GestureDetector(
+          onTap: widget.onTap,
+          onTapDown: (_) => setState(() => _isPressed = true),
+          onTapUp: (_) => setState(() => _isPressed = false),
+          onTapCancel: () => setState(() => _isPressed = false),
+          behavior: HitTestBehavior.opaque,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48, minWidth: 64),
+            child: AnimatedOpacity(
+              duration: fastDuration,
+              opacity: _isPressed ? 0.7 : 1.0,
+              child: AnimatedScale(
+                duration: fastDuration,
+                scale: reduceMotion || !_isPressed ? 1.0 : 0.95,
+                child: AnimatedContainer(
+                  duration: settleDuration,
                   curve: Curves.easeOutCubic,
-                  child: widget.isActive
-                      ? Row(
-                          children: [
-                            const SizedBox(width: 8),
-                            Text(
-                              widget.label,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              softWrap: false,
-                              textAlign: TextAlign.center,
-                              style: AppTypography.labelSm.copyWith(
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: -0.2,
-                                color: cs.primary,
-                              ),
-                            ),
-                          ],
-                        )
-                      : const SizedBox.shrink(),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: widget.isActive ? 12 : 0,
+                    vertical: AppSpacing.xs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: widget.isActive
+                        ? cs.primary.withValues(
+                            alpha: widget.isAdmin ? 0.1 : 0.14,
+                          )
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(AppRadii.pill),
+                  ),
+                  child: ExcludeSemantics(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          widget.icon,
+                          size: 20,
+                          color: widget.isActive
+                              ? cs.primary
+                              : cs.onSurfaceVariant,
+                        ),
+                        AnimatedSize(
+                          duration: settleDuration,
+                          curve: Curves.easeOutCubic,
+                          child: widget.isActive
+                              ? Row(
+                                  children: [
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      widget.label,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: false,
+                                      textAlign: TextAlign.center,
+                                      style: AppTypography.labelSm.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        letterSpacing: 0,
+                                        color: cs.primary,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ],
+              ),
             ),
           ),
         ),

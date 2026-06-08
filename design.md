@@ -1,7 +1,7 @@
 # Mobio UI System
 
-> Version: 2.2
-> Last updated: 2026-04-17
+> Version: 2.3
+> Last updated: 2026-06-08
 > Source of truth: `lib/core/theme/`, `lib/shared/widgets/`
 
 ## 1. Product framing
@@ -13,7 +13,7 @@ Non-negotiable constraints:
 - keep the 3-tab shell and current route structure
 - preserve the current core flows: Home, BioPay, Profile, Nearby, Bookings, Schedule, Trip Details, Chat, Admin
 - work additively on top of current business logic and data contracts
-- make screens lighter and faster without inventing new product concepts
+- make screens lighter and faster while supporting the approved bus/public-transport expansion
 
 ## 2. Core design principles
 
@@ -253,6 +253,8 @@ Rules:
 - header should show scope, not explain it
 - use date pills and metadata chips
 - route should be primary, time/status should be structured metadata
+- bus trips should expose agency, route, seat availability, and Google Maps handoff as compact chips/actions
+- never embed a map; use a Google Maps deep link for route or live vehicle position handoff
 - use shared confirm patterns for destructive actions
 
 ### 7.4 Profile
@@ -327,9 +329,11 @@ Every new or refactored screen should pass this checklist:
 The current benchmark screens for the minimalist system are:
 
 - `lib/features/home/home_screen.dart`
-- `lib/features/biopay/biopay_screen.dart`
 - `lib/features/bookings/bookings_screen.dart`
 - `lib/features/profile/profile_screen.dart`
 - `lib/features/nearby/nearby_screen.dart`
 - `lib/features/chat/chat_screen.dart`
 - `lib/features/admin/widgets/admin_ui.dart`
+
+Legacy payment, ledger, and BioPay routes are not benchmark screens for this
+release. They remain intentionally unavailable under the active product scope.

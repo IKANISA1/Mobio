@@ -16,6 +16,7 @@ import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/otp_code_field.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/whatsapp_input.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Admin access screen — approved WhatsApp number plus OTP verification only.
@@ -140,7 +141,16 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
     }
 
     if (result.success) {
-      AdminSessionGuard.grant();
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      if (userId == null) {
+        setState(() {
+          _verifyingCode = false;
+          _error = 'Unable to restore the admin session.';
+        });
+        return;
+      }
+
+      AdminSessionGuard.grant(userId);
       widget.onSuccess();
       return;
     }

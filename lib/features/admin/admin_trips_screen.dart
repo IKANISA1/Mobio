@@ -398,18 +398,6 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                   _loadTrips(silent: true);
                 },
               ),
-              AdminFilterChip(
-                label: 'Completed',
-                icon: LucideIcons.badgeCheck,
-                isSelected: _statusFilter == 'completed',
-                onTap: () {
-                  setState(() {
-                    _statusFilter = 'completed';
-                    _page = 0;
-                  });
-                  _loadTrips(silent: true);
-                },
-              ),
             ],
           ),
         ],
@@ -566,8 +554,6 @@ class _TripRow extends StatelessWidget {
     switch (status) {
       case 'active':
         return MobiStatusBadgeTone.positive;
-      case 'completed':
-        return MobiStatusBadgeTone.brand;
       case 'cancelled':
         return MobiStatusBadgeTone.danger;
       default:

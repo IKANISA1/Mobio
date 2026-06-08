@@ -1,5 +1,11 @@
 # MOBI Repo Inventory
 
+> Historical snapshot: this inventory predates the 2026-05-23 Mobio
+> limited-scope cleanup. Treat BioPay, payment, SMS ledger, and ride-request
+> lifecycle references below as historical context only. Current active package
+> and product scope are reflected in `pubspec.yaml`, `packages/README.md`, and
+> `docs/product/scope.md`.
+
 Update 2026-05-01: theme token source files now live in
 `packages/design-system/lib/src/theme`, and pure model contract source files now
 live in `packages/shared-types/lib/src/models`. The `lib/core/theme` and

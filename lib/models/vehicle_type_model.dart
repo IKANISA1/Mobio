@@ -61,6 +61,8 @@ class VehicleTypeModel {
         return LucideIcons.zap;
       case 'car':
         return LucideIcons.car;
+      case 'bus':
+        return LucideIcons.bus;
       case 'truck':
         return LucideIcons.truck;
       case 'layout-grid':
@@ -83,23 +85,24 @@ class VehicleTypeModel {
       sortOrder: 1,
     ),
     VehicleTypeModel(id: 'cab', label: 'Cab', iconName: 'car', sortOrder: 2),
+    VehicleTypeModel(id: 'bus', label: 'Bus', iconName: 'bus', sortOrder: 3),
     VehicleTypeModel(
       id: 'trike',
       label: 'Trike',
       iconName: 'truck',
-      sortOrder: 3,
+      sortOrder: 4,
     ),
     VehicleTypeModel(
       id: 'truck',
       label: 'Truck',
       iconName: 'layout-grid',
-      sortOrder: 4,
+      sortOrder: 5,
     ),
     VehicleTypeModel(
       id: 'private',
       label: 'Others',
       iconName: 'package',
-      sortOrder: 5,
+      sortOrder: 6,
     ),
   ];
 

@@ -14,7 +14,9 @@ enum AdminWorkspaceTab {
   fleet,
   subscriptions,
   trips,
+  reports,
   finance,
+  health,
   audit,
   broadcasts,
   account,
@@ -861,10 +863,15 @@ class _AdminWorkspaceTabs extends StatelessWidget {
           icon: LucideIcons.mapPin,
           route: '/admin/trips',
         ),
-        AdminWorkspaceTab.finance: (
-          label: 'Finance',
-          icon: LucideIcons.wallet,
-          route: '/admin/finance',
+        AdminWorkspaceTab.reports: (
+          label: 'Reports',
+          icon: LucideIcons.flag,
+          route: '/admin/reports',
+        ),
+        AdminWorkspaceTab.health: (
+          label: 'Health',
+          icon: LucideIcons.activity,
+          route: '/admin/health',
         ),
         AdminWorkspaceTab.audit: (
           label: 'Audit',
@@ -888,7 +895,7 @@ class _AdminWorkspaceTabs extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: AdminWorkspaceTab.values.map((tab) {
+        children: _tabs.keys.map((tab) {
           final config = _tabs[tab]!;
           return Padding(
             padding: const EdgeInsets.only(right: AppSpacing.sm),

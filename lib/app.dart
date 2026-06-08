@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/admin_session_guard.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_enums.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
@@ -11,7 +13,6 @@ import 'package:mobi_app/core/services/firebase_analytics_service.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
 import 'package:mobi_app/core/services/push_notification_service.dart';
-import 'package:mobi_app/features/ledger/providers/ledger_provider.dart';
 import 'package:mobi_app/providers/app_providers.dart';
 import 'package:mobi_app/shared/widgets/mobi_bottom_nav.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -24,7 +25,7 @@ export 'package:mobi_app/core/router/screen_wrappers.dart';
 // MobiShell — Bottom nav shell for StatefulShellRoute
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// Main app shell with 3-tab navigation: Discover / BioPay / Profile.
+/// Main app shell with 3-tab navigation: Discover / Trips / Profile.
 /// Used as the [StatefulShellRoute] builder. Sub-screens push via
 /// the root navigator and appear over the bottom nav.
 class MobiShell extends ConsumerStatefulWidget {
@@ -47,7 +48,7 @@ class _MobiShellState extends ConsumerState<MobiShell> {
   @override
   void initState() {
     super.initState();
-    if (!SupabaseConfig.isConfigured || kIsWeb) {
+    if (!SupabaseConfig.isConfigured) {
       return;
     }
 
@@ -74,6 +75,7 @@ class _MobiShellState extends ConsumerState<MobiShell> {
 
     final currentUser = Supabase.instance.client.auth.currentUser;
     if (currentUser == null || currentUser.isAnonymous) {
+      AdminSessionGuard.revoke();
       ref.read(roleProvider.notifier).set(AppRole.passenger);
       unawaited(FirebaseAnalyticsService.instance.setUserContext());
       return;
@@ -85,10 +87,10 @@ class _MobiShellState extends ConsumerState<MobiShell> {
     }
 
     final role = AppRole.fromString(profile?.role);
+    if (!role.isAdmin) {
+      AdminSessionGuard.revoke();
+    }
     ref.read(roleProvider.notifier).set(role);
-
-    // Sync ledger credentials to native side
-    unawaited(ref.read(ledgerCredentialsSyncProvider.future));
 
     unawaited(
       FirebaseAnalyticsService.instance.setUserContext(
@@ -119,6 +121,28 @@ class _MobiShellState extends ConsumerState<MobiShell> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final role = ref.watch(roleProvider);
+    final isExpandedWidth = MediaQuery.sizeOf(context).width >= 720;
+
+    if (isExpandedWidth) {
+      return Scaffold(
+        backgroundColor: cs.surface,
+        body: SafeArea(
+          child: Row(
+            children: [
+              _MobiNavigationRail(
+                currentIndex: widget.navigationShell.currentIndex,
+                isAdmin: role.isAdmin,
+                onTap: (i) => widget.navigationShell.goBranch(
+                  i,
+                  initialLocation: i == widget.navigationShell.currentIndex,
+                ),
+              ),
+              Expanded(child: widget.navigationShell),
+            ],
+          ),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -146,4 +170,64 @@ class _MobiShellState extends ConsumerState<MobiShell> {
       ),
     );
   }
+}
+
+class _MobiNavigationRail extends StatelessWidget {
+  const _MobiNavigationRail({
+    required this.currentIndex,
+    required this.onTap,
+    required this.isAdmin,
+  });
+
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+  final bool isAdmin;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final items = isAdmin ? _adminItems : _passengerItems;
+
+    return NavigationRail(
+      selectedIndex: currentIndex,
+      onDestinationSelected: onTap,
+      minWidth: 88,
+      backgroundColor: cs.surface,
+      labelType: NavigationRailLabelType.selected,
+      indicatorColor: cs.primaryContainer,
+      selectedIconTheme: IconThemeData(color: cs.onPrimaryContainer),
+      unselectedIconTheme: IconThemeData(color: cs.onSurfaceVariant),
+      selectedLabelTextStyle: TextStyle(
+        color: cs.primary,
+        fontWeight: FontWeight.w700,
+      ),
+      destinations: [
+        for (final item in items)
+          NavigationRailDestination(
+            icon: Tooltip(message: item.label, child: Icon(item.icon)),
+            selectedIcon: Icon(item.icon),
+            label: Text(item.label),
+          ),
+      ],
+    );
+  }
+
+  static const _passengerItems = [
+    _RailItem(LucideIcons.compass, 'Home'),
+    _RailItem(LucideIcons.calendarCheck, 'Trips'),
+    _RailItem(LucideIcons.user, 'Profile'),
+  ];
+
+  static const _adminItems = [
+    _RailItem(LucideIcons.layoutDashboard, 'Ops'),
+    _RailItem(LucideIcons.users, 'Users'),
+    _RailItem(LucideIcons.user, 'Account'),
+  ];
+}
+
+class _RailItem {
+  const _RailItem(this.icon, this.label);
+
+  final IconData icon;
+  final String label;
 }

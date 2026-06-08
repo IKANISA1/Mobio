@@ -7,7 +7,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
-import 'package:mobi_app/core/services/ride_request_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
@@ -25,7 +24,6 @@ import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
-import 'package:mobi_app/shared/widgets/ride_request_sheet.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 
@@ -71,9 +69,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   NotificationService get _notificationService =>
       ref.read(notificationServiceProvider);
 
-  RideRequestService get _rideRequestService =>
-      ref.read(rideRequestServiceProvider);
-
   StreamSubscription<AppNotification>? _notifSub;
 
   @override
@@ -101,28 +96,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.dispose();
   }
 
-  /// Listens for realtime notifications — if one is a ride request, show the sheet.
+  /// Listens for realtime notifications and updates the unread badge.
   void _listenForIncomingRequests() {
     _notifSub = _notificationService.onNotification.listen((notif) {
-      // Update badge
-      setState(() => _unreadCount++);
-
-      // If it's a ride request/offer, auto-show the response sheet
-      final rideRequestTypes = {'ride_request_received', 'ride_offer_received'};
-      if (rideRequestTypes.contains(notif.type)) {
-        final requestId = notif.metadata['ride_request_id'] as String?;
-        if (requestId != null && mounted) {
-          _showIncomingRequest(requestId);
-        }
+      if (mounted) {
+        setState(() => _unreadCount++);
       }
     });
-  }
-
-  Future<void> _showIncomingRequest(String requestId) async {
-    final request = await _rideRequestService.getById(requestId);
-    if (request == null || !request.isPending || !mounted) return;
-
-    showRideRequestSheet(context, request: request);
   }
 
   Future<void> _loadUnreadCount() async {

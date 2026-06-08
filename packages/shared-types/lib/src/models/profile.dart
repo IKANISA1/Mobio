@@ -17,8 +17,6 @@ class Profile {
     this.vehicleNumberPlate,
     this.isDriver = false,
     this.avatarUrl,
-    this.biopayHandleType,
-    this.biopayHandleValue,
     this.createdAt,
   });
 
@@ -34,8 +32,6 @@ class Profile {
   final String? vehicleNumberPlate;
   final bool isDriver;
   final String? avatarUrl;
-  final String? biopayHandleType;
-  final String? biopayHandleValue;
   final String? createdAt;
 
   bool get isAdmin => role == 'admin';
@@ -55,8 +51,6 @@ class Profile {
       vehicleNumberPlate: json['vehicle_number_plate'] as String?,
       isDriver: json['is_driver'] as bool? ?? false,
       avatarUrl: json['avatar_url'] as String?,
-      biopayHandleType: json['biopay_handle_type'] as String?,
-      biopayHandleValue: json['biopay_handle_value'] as String?,
       createdAt: json['created_at'] as String?,
     );
   }
@@ -75,8 +69,6 @@ class Profile {
     'vehicle_number_plate': vehicleNumberPlate,
     'is_driver': isDriver,
     'avatar_url': avatarUrl,
-    'biopay_handle_type': biopayHandleType,
-    'biopay_handle_value': biopayHandleValue,
     'created_at': createdAt,
   };
 

@@ -1,39 +1,25 @@
-Mobio is a Pan-African peer-to-peer ride-sharing marketplace, launching first in Rwanda.
+Mobio helps people in Rwanda discover nearby mobility contacts and coordinate directly.
 
-Get rides instantly — no sign-up, no login wall. Just open the app and go.
+The app is a lightweight marketplace for discovery and communication. It is not a taxi dispatch, fare quote, route tracking, or in-app payment service.
 
 KEY FEATURES
 
-🚗 Real-Time Driver Discovery
-Find available drivers near you with live status updates and real-time location tracking.
+Nearby discovery
+Find nearby drivers or passengers who have chosen to be visible, then view their basic profile and vehicle type.
 
-📅 Trip Scheduling
-Book rides in advance — set your pickup location, date, and time for guaranteed availability.
+Vehicle profiles
+Browse vehicle types such as moto, cab, truck, trike, and private car where available.
 
-🔐 BioPay — Biometric Payments
-Secure, contactless payments powered by facial recognition. No cards, no PINs, no hassle.
+Scheduled trip posts
+Create and view scheduled trip posts so others can see planned routes and times.
 
-📋 Trip Management
-View trip details, track your booking history, and manage all your rides from one place.
+Direct communication
+Continue the conversation through in-app chat or WhatsApp handoff. Fares and trip details are negotiated manually between users outside Mobio.
 
-🎨 Premium Design
-Beautiful minimalist Claymorphic interface with smooth animations and dual light/dark themes for a native app-like experience.
+Privacy controls
+Location visibility is limited to the discovery features users choose to use. Users can report or block abusive contacts.
 
-⚡ Instant Access
-Anonymous authentication gets you riding in seconds. No personal data required to start.
+Made for Rwanda
+Mobio starts with Rwanda-focused mobility coordination and keeps the experience simple for drivers and passengers.
 
-🇷🇼 Made for Rwanda
-Default country, currency (RWF), and MTN MoMo payment support built in from day one. Pan-African expansion coming soon.
-
-PAYMENT OPTIONS
-• Cash — pay your driver directly
-• MTN MoMo — USSD-based mobile money (Rwanda)
-• BioPay — biometric face authentication
-
-WHY MOBIO?
-• Zero sign-up friction — ride immediately
-• Privacy-first — minimal data collection
-• Fair pricing — peer-to-peer marketplace
-• Beautiful, fast, smooth — built for Africa's mobile-first users
-
-Download Mobio and experience the future of ride-sharing in Africa.
+Mobio does not process ride payments, provide automatic fare quotes, dispatch drivers, track active routes, manage trip completion, or settle driver earnings.

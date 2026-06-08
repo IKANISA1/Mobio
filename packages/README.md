@@ -14,6 +14,5 @@ passing analysis/build/test loop.
 | `domain` | Trip, profile, saved-place, entitlement, demand-zone logic in `../lib/core/services` and feature providers |
 | `api-clients` | Supabase and Edge Function clients in `../lib/core/services` and `../lib/features/*/services` |
 | `auth` | `../lib/core/auth`, session services, OTP/login services |
-| `payments` | `payments/lib/src/models`; compatibility exports in `../lib/features/payments/models`; service clients, ledger bridge, and Edge Functions remain in place |
 | `agent-ui` | Future shared operator/agent UI components |
 | `analytics` | Firebase analytics/crash/remote-config services |

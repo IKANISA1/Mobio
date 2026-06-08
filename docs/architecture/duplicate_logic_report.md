@@ -1,5 +1,11 @@
 # Duplicate Logic Report
 
+> Historical snapshot: this report predates the 2026-05-23 Mobio limited-scope
+> cleanup. Treat PayLedger, BioPay, payment, SMS ledger, and ride-request
+> lifecycle references below as historical integration context only. Current
+> product scope is nearby discovery, scheduled trip posts, profiles, and
+> communication.
+
 ## 1. User Identity & Agent Identity
 - **PayLedger** uses `agent_id` (6-char) mapped to `auth.users`.
 - **MOBI** uses `member_id` (6-digit numeric) mapped to `auth.users`.

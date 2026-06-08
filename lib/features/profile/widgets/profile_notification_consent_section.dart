@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/profile/providers/notification_consent_provider.dart';
 import 'package:mobi_app/models/notification_consent_settings.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
+import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 
 class ProfileNotificationConsentSection extends ConsumerWidget {
   const ProfileNotificationConsentSection({super.key});
@@ -34,9 +36,7 @@ class ProfileNotificationConsentSection extends ConsumerWidget {
           clipBehavior: Clip.antiAlias,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(22),
-            side: BorderSide(
-              color: cs.outlineVariant.withValues(alpha: 0.16),
-            ),
+            side: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.16)),
           ),
           child: consent.when(
             data: (settings) => _ConsentControls(settings: settings),
@@ -107,14 +107,8 @@ class _ConsentControls extends ConsumerWidget {
           title: 'Promotional push notifications',
           subtitle: 'Offers and campaign messages as device notifications.',
           value: settings.promotionalPush,
-          onChanged: (value) => unawaited(
-            _save(
-              context,
-              () => ref
-                  .read(notificationConsentProvider.notifier)
-                  .setPromotionalPush(value),
-            ),
-          ),
+          onChanged: (value) =>
+              unawaited(_savePromotionalPush(ref, context, value)),
         ),
       ],
     );
@@ -144,6 +138,49 @@ class _ConsentControls extends ConsumerWidget {
         ),
       );
     }
+  }
+
+  Future<void> _savePromotionalPush(
+    WidgetRef ref,
+    BuildContext context,
+    bool value,
+  ) async {
+    if (value) {
+      final pushService = ref.read(pushNotificationServiceProvider);
+      final hasPermission = await pushService.hasPermission();
+      if (!hasPermission) {
+        if (!context.mounted) return;
+        final action = await PermissionAccessDialog.show(
+          context,
+          config: PermissionAccessDialogConfig.notifications(),
+        );
+        if (action != PermissionAccessDialogAction.grantAccess) {
+          return;
+        }
+
+        final granted = await pushService.requestPermission();
+        if (!granted) {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Notification access was not enabled.'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+          return;
+        }
+      }
+
+      await pushService.registerToken();
+    }
+
+    if (!context.mounted) return;
+    await _save(
+      context,
+      () => ref
+          .read(notificationConsentProvider.notifier)
+          .setPromotionalPush(value),
+    );
   }
 }
 

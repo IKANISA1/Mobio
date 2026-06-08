@@ -163,6 +163,16 @@ abstract final class AppExceptionMapper {
       );
     }
 
+    if (raw.contains('USER_BLOCKED')) {
+      return ForbiddenException(
+        message:
+            'Messaging is unavailable because one of you has blocked the other.',
+        debugMessage: raw,
+        originalError: error,
+        stackTrace: stackTrace,
+      );
+    }
+
     return null;
   }
 }

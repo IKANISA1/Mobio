@@ -14,7 +14,13 @@ import {
   jsonResponse,
   methodNotAllowed,
 } from "../_shared/http.ts";
-import { generateOtpCode, hashOtpCode } from "../_shared/otp-security.ts";
+import {
+  consumeOtpRateLimits,
+  generateOtpCode,
+  hashOtpCode,
+  otpRateLimitBucketKey,
+  requestSourceFingerprint,
+} from "../_shared/otp-security.ts";
 import { createAdminClient } from "../_shared/supabase.ts";
 import { sendWhatsappCloudOtp } from "../_shared/whatsapp-cloud.ts";
 
@@ -32,6 +38,91 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     const phone = normalizePhone(body?.phone, "Valid WhatsApp number required");
     const supabase = createAdminClient();
+
+    const sourceFingerprint = requestSourceFingerprint(req);
+    const rateLimit = await consumeOtpRateLimits(supabase, [
+      {
+        scope: "phone_resend",
+        bucketKey: await otpRateLimitBucketKey([
+          "otp",
+          "admin_login",
+          "phone_resend",
+          phone,
+        ]),
+        windowSeconds: 60,
+        maxRequests: 1,
+      },
+      {
+        scope: "phone_hour",
+        bucketKey: await otpRateLimitBucketKey([
+          "otp",
+          "admin_login",
+          "phone_hour",
+          phone,
+        ]),
+        windowSeconds: 60 * 60,
+        maxRequests: 4,
+      },
+      {
+        scope: "source_5min",
+        bucketKey: await otpRateLimitBucketKey([
+          "otp",
+          "admin_login",
+          "source_5min",
+          sourceFingerprint,
+        ]),
+        windowSeconds: 5 * 60,
+        maxRequests: 8,
+      },
+      {
+        scope: "source_hour",
+        bucketKey: await otpRateLimitBucketKey([
+          "otp",
+          "admin_login",
+          "source_hour",
+          sourceFingerprint,
+        ]),
+        windowSeconds: 60 * 60,
+        maxRequests: 20,
+      },
+      {
+        scope: "global_minute",
+        bucketKey: await otpRateLimitBucketKey([
+          "otp",
+          "admin_login",
+          "global_minute",
+        ]),
+        windowSeconds: 60,
+        maxRequests: 30,
+      },
+    ]);
+
+    if (!rateLimit.allowed) {
+      const retryAfter = rateLimit.retryAfterSeconds;
+
+      await tryRecordAdminAccessAttempt({
+        supabase,
+        phone,
+        status: "rate_limited",
+        reason: "OTP request throttled by resend cooldown.",
+        metadata: {
+          retry_after_seconds: retryAfter,
+          rate_limit_scope: rateLimit.scope,
+          stage: "send_otp",
+        },
+        request: req,
+      });
+
+      return jsonResponse(
+        {
+          success: false,
+          message: `Please wait ${retryAfter}s before requesting another code`,
+          retryAfterSeconds: retryAfter,
+        },
+        429,
+        req,
+      );
+    }
 
     const adminNumber = await resolveAdminWhatsappNumberByPhone(
       supabase,
@@ -59,47 +150,6 @@ Deno.serve(async (req: Request) => {
         "This WhatsApp number is not approved for platform admin. Contact admin.",
         403,
         undefined,
-        req,
-      );
-    }
-
-    const { data: recent, error: recentError } = await supabase
-      .from("otp_codes")
-      .select("created_at")
-      .eq("phone", phone)
-      .eq("purpose", "admin_login")
-      .gte("created_at", new Date(Date.now() - 60_000).toISOString())
-      .order("created_at", { ascending: false })
-      .limit(1);
-
-    if (recentError) {
-      throw recentError;
-    }
-
-    if ((recent ?? []).length > 0) {
-      const sentAt = new Date(recent![0].created_at).getTime();
-      const retryAfter = Math.ceil((sentAt + 60_000 - Date.now()) / 1000);
-
-      await tryRecordAdminAccessAttempt({
-        supabase,
-        phone,
-        status: "rate_limited",
-        reason: "OTP request throttled by resend cooldown.",
-        matchedAdminNumberId: adminNumber.id,
-        metadata: {
-          retry_after_seconds: retryAfter,
-          stage: "send_otp",
-        },
-        request: req,
-      });
-
-      return jsonResponse(
-        {
-          success: false,
-          message: `Please wait ${retryAfter}s before requesting another code`,
-          retryAfterSeconds: retryAfter,
-        },
-        429,
         req,
       );
     }

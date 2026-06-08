@@ -7,6 +7,7 @@ class AdminSessionGuard {
 
   static bool _isAdmin = false;
   static DateTime? _grantedAt;
+  static String? _userId;
 
   /// Admin session timeout — 15 minutes of inactivity.
   static const Duration sessionTimeout = Duration(minutes: 15);
@@ -14,7 +15,21 @@ class AdminSessionGuard {
   /// Whether the current user passed the admin allowlist check this session
   /// AND the session has not expired.
   static bool get isAdmin {
+    if (_userId == null) {
+      return false;
+    }
+
+    return isAdminFor(_userId);
+  }
+
+  /// Whether the fallback admin grant belongs to [userId] and has not expired.
+  static bool isAdminFor(String? userId) {
     if (!_isAdmin || _grantedAt == null) {
+      return false;
+    }
+
+    if (userId == null || userId != _userId) {
+      revoke();
       return false;
     }
 
@@ -28,14 +43,15 @@ class AdminSessionGuard {
   }
 
   /// Called after the allowlist check succeeds.
-  static void grant() {
+  static void grant(String userId) {
     _isAdmin = true;
     _grantedAt = DateTime.now();
+    _userId = userId;
   }
 
   /// Extends the session timeout.
-  static void touch() {
-    if (_isAdmin) {
+  static void touch(String userId) {
+    if (isAdminFor(userId)) {
       _grantedAt = DateTime.now();
     }
   }
@@ -44,5 +60,6 @@ class AdminSessionGuard {
   static void revoke() {
     _isAdmin = false;
     _grantedAt = null;
+    _userId = null;
   }
 }

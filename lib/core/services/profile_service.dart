@@ -1,5 +1,4 @@
 import 'package:mobi_app/core/utils/app_logger.dart';
-import 'package:mobi_app/features/biopay/models/biopay_handle.dart';
 import 'package:mobi_app/models/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -10,7 +9,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// - Updating profile via `rpc_update_profile` RPC
 /// - Enabling/disabling driver mode via RPCs
 /// - Fetching user rating via `get_user_rating()` RPC
-/// - BioPay handle management
 class ProfileService {
   final SupabaseClient _supabase;
 
@@ -70,8 +68,6 @@ class ProfileService {
     String? vehicleType,
     String? vehicleNumberPlate,
     String? avatarUrl,
-    String? bioPayHandleType,
-    String? bioPayHandleValue,
   }) async {
     try {
       final payload = <String, dynamic>{};
@@ -83,12 +79,6 @@ class ProfileService {
         payload['vehicle_number_plate'] = vehicleNumberPlate;
       }
       if (avatarUrl != null) payload['avatar_url'] = avatarUrl;
-      if (bioPayHandleType != null) {
-        payload['biopay_handle_type'] = bioPayHandleType;
-      }
-      if (bioPayHandleValue != null) {
-        payload['biopay_handle_value'] = bioPayHandleValue;
-      }
 
       if (payload.isEmpty) return;
 
@@ -102,8 +92,6 @@ class ProfileService {
   Future<void> saveProfileSettings({
     required String whatsapp,
     required String countryCode,
-    required BiopayHandleType biopayHandleType,
-    required String biopayHandleValue,
     required bool isDriver,
     required String vehicleTypeId,
     required String vehicleNumberPlate,
@@ -114,8 +102,6 @@ class ProfileService {
       countryCode: countryCode,
       vehicleType: isDriver ? vehicleTypeId : null,
       vehicleNumberPlate: isDriver ? vehicleNumberPlate : null,
-      bioPayHandleType: biopayHandleType.storageValue,
-      bioPayHandleValue: biopayHandleValue.trim(),
     );
 
     if (previousIsDriver != isDriver) {

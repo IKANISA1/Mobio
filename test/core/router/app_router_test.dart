@@ -19,8 +19,16 @@ void main() {
       expect(AppRoutes.profile, '/profile');
     });
 
+    test('profile setup route is first-run wizard', () {
+      expect(AppRoutes.profileSetup, '/profile/setup');
+    });
+
     test('trip details route has :id param', () {
       expect(AppRoutes.tripDetails, '/trip/:id');
+    });
+
+    test('trip edit route has :id param', () {
+      expect(AppRoutes.tripEdit, '/trip/:id/edit');
     });
 
     test('biopay sub-routes are prefixed', () {

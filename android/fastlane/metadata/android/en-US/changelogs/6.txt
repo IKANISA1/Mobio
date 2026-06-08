@@ -1,9 +1,8 @@
-Initial release of Mobio — Rwanda's ride-sharing marketplace.
+Initial release of Mobio - Rwanda's mobility discovery marketplace.
 
-• Real-time driver discovery with live tracking
-• Trip scheduling with flexible pickup options
-• BioPay biometric payments (face authentication)
-• Beautiful Claymorphic design with light & dark modes
-• Anonymous sign-in — no login wall
-• MTN MoMo and cash payment support
-• Optimized for Android 14+ with modern security standards
+• Nearby driver and passenger discovery
+• Scheduled trip posts for planned travel
+• Profile and vehicle-type browsing
+• In-app chat and WhatsApp handoff
+• Manual fare and trip-detail negotiation between users
+• Modern Android security and release configuration

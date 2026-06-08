@@ -21,7 +21,7 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 [bundle exec] fastlane android build_and_deploy
 ```
 
-Build AAB with Supabase env vars from .env, then upload to Google Play (production draft)
+Build AAB with Supabase env vars from .env, then upload to Google Play (internal draft by default)
 
 ### android deploy
 
@@ -29,7 +29,7 @@ Build AAB with Supabase env vars from .env, then upload to Google Play (producti
 [bundle exec] fastlane android deploy
 ```
 
-Upload AAB, screenshots, metadata, and mapping to Google Play (production draft)
+Upload AAB, screenshots, metadata, and mapping to Google Play (internal draft by default)
 
 ### android metadata
 
@@ -53,7 +53,7 @@ Upload AAB only to internal track
 [bundle exec] fastlane android promote_to_production
 ```
 
-Promote internal to production
+Promote internal to production. Requires PLAY_PRODUCTION_APPROVED=true.
 
 ----
 

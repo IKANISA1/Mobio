@@ -1,10 +1,9 @@
-Launch release of Mobio — Rwanda's peer-to-peer ride-sharing marketplace.
+Launch release of Mobio - Rwanda's peer-to-peer mobility discovery marketplace.
 
-• Real-time driver discovery with live location tracking
-• Trip scheduling — book rides in advance
-• BioPay biometric payments powered by facial recognition
-• Beautiful Claymorphic UI with light & dark themes
-• Anonymous sign-in — start riding with zero friction
-• MTN MoMo & cash payment support
-• Full Android 15 compatibility with 16 KB memory page support
-• Performance & stability improvements
+• Nearby driver and passenger discovery
+• Scheduled trip posts for planned travel
+• Profile and vehicle-type browsing
+• In-app chat and WhatsApp handoff
+• Manual fare and trip-detail negotiation between users
+• Android 15 compatibility with 16 KB memory page support
+• Performance and stability improvements

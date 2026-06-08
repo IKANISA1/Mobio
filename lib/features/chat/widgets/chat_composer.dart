@@ -143,7 +143,7 @@ class ChatComposer extends StatelessWidget {
                             style: AppTypography.bodyMd,
                             decoration: InputDecoration(
                               hintText:
-                                  'Message about price, pickup, time, or luggage',
+                                  'Message about fare, pickup, time, or luggage',
                               hintStyle: AppTypography.bodyMd.copyWith(
                                 color: cs.onSurfaceVariant,
                               ),

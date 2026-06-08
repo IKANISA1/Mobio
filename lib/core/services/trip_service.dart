@@ -10,6 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 /// - Creating trips through `rpc_create_trip`
 /// - Listing trips (own + nearby)
 /// - Getting trip details by ID
+/// - Updating own scheduled trip posts
 /// - Cancelling trips (status + is_active)
 class TripService {
   final SupabaseClient _supabase;
@@ -226,6 +227,74 @@ class TripService {
         error,
         stackTrace,
         'Error fetching pool suggestions for trip $tripId',
+      );
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Update
+  // ---------------------------------------------------------------------------
+
+  /// Updates an existing scheduled trip post owned by the current user.
+  Future<Trip> updateTrip({
+    required String tripId,
+    required String origin,
+    double? originLat,
+    double? originLng,
+    required String destination,
+    double? destLat,
+    double? destLng,
+    required String departureDate,
+    required String departureTime,
+    required String role,
+    String vehicleType = 'cab',
+    bool isRecurring = false,
+    List<int> recurringDays = const [],
+    String? note,
+  }) async {
+    final userId = _requireUserId('Please sign in to edit this trip.');
+    final normalizedTripId = tripId.trim();
+    if (normalizedTripId.isEmpty) {
+      throw const ValidationException(message: 'Trip ID is required.');
+    }
+
+    try {
+      final rows = await _supabase
+          .from('trips')
+          .update({
+            'origin': origin,
+            'origin_lat': originLat,
+            'origin_lng': originLng,
+            'destination': destination,
+            'dest_lat': destLat,
+            'dest_lng': destLng,
+            'departure_date': departureDate,
+            'departure_time': departureTime,
+            'role': role,
+            'vehicle_type': vehicleType,
+            'is_recurring': isRecurring,
+            'recurring_days': recurringDays,
+            'note': note,
+          })
+          .eq('id', normalizedTripId)
+          .eq('author_id', userId)
+          .select()
+          .timeout(_networkTimeout);
+
+      if ((rows as List).isEmpty) {
+        throw const ForbiddenException(
+          message: 'Trip not found or you do not have permission to edit it.',
+        );
+      }
+
+      return Trip.fromJson(Map<String, dynamic>.from(rows.first as Map));
+    } on AppException {
+      rethrow;
+    } on Object catch (error, stackTrace) {
+      throw AppExceptionMapper.mapAndLog(
+        error,
+        stackTrace,
+        'Error updating trip $normalizedTripId',
       );
     }
   }

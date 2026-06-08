@@ -11,7 +11,6 @@ void main() {
         'total_trips': 500,
         'active_trips': 23,
         'cancelled_trips': 15,
-        'completed_trips': 462,
       };
 
       final stats = AdminDashboardStats.fromJson(json);
@@ -22,7 +21,6 @@ void main() {
       expect(stats.totalTrips, 500);
       expect(stats.activeTrips, 23);
       expect(stats.cancelledTrips, 15);
-      expect(stats.completedTrips, 462);
     });
 
     test('fromJson handles null input', () {
@@ -34,7 +32,6 @@ void main() {
       expect(stats.totalTrips, 0);
       expect(stats.activeTrips, 0);
       expect(stats.cancelledTrips, 0);
-      expect(stats.completedTrips, 0);
     });
 
     test('fromJson handles missing keys', () {
@@ -147,50 +144,62 @@ void main() {
         'id': 'audit-1',
         'admin_id': 'admin-1',
         'admin_name': 'Ops Lead',
-        'action': 'risk_flag_approve',
-        'target_type': 'risk_flag',
-        'target_id': 'flag-1',
-        'details': {'notes': 'Matched SMS receipt'},
+        'action': 'user_report_resolve',
+        'target_type': 'user_report',
+        'target_id': 'report-1',
+        'details': {'notes': 'Resolved unsafe chat report'},
         'created_at': '2026-05-01T10:00:00Z',
       });
 
       expect(item.id, 'audit-1');
       expect(item.adminName, 'Ops Lead');
-      expect(item.action, 'risk_flag_approve');
-      expect(item.targetType, 'risk_flag');
-      expect(item.details['notes'], 'Matched SMS receipt');
+      expect(item.action, 'user_report_resolve');
+      expect(item.targetType, 'user_report');
+      expect(item.details['notes'], 'Resolved unsafe chat report');
     });
   });
 
-  group('AdminRiskFlagItem', () {
-    test('fromJson parses external USSD review queue rows', () {
-      final item = AdminRiskFlagItem.fromJson({
-        'id': 'flag-1',
-        'profile_id': 'driver-1',
-        'profile_name': 'Driver One',
-        'profile_phone': '+250700000000',
-        'transaction_id': 'txn-1',
-        'intent_id': 'intent-1',
-        'flag_type': 'suspicious_amount',
-        'severity': 'high',
-        'description': 'Amount mismatch',
-        'resolved': false,
-        'amount': '5000.00',
-        'currency': 'RWF',
-        'payment_method': 'ussd_momo',
-        'intent_status': 'processing',
-        'transaction_ref': 'ABC123',
-        'transaction_amount': 5000,
-        'transaction_currency': 'RWF',
+  group('AdminUserReportItem', () {
+    test('fromJson parses user report moderation rows', () {
+      final item = AdminUserReportItem.fromJson({
+        'id': 'report-1',
+        'reporter_id': 'user-1',
+        'reporter_name': 'Reporter One',
+        'reporter_phone': '+250780000001',
+        'reported_id': 'user-2',
+        'reported_name': 'Driver Two',
+        'reported_phone': '+250780000002',
+        'conversation_id': 'conversation-1',
+        'trip_id': 'trip-1',
+        'category': 'unsafe_behavior',
+        'details': 'Unsafe pickup request in chat.',
+        'status': 'reviewing',
+        'resolution_notes': 'Contacted both users.',
+        'reviewed_by': 'admin-1',
+        'reviewed_at': '2026-05-01T10:30:00Z',
         'created_at': '2026-05-01T10:00:00Z',
       });
 
-      expect(item.id, 'flag-1');
-      expect(item.profileName, 'Driver One');
+      expect(item.id, 'report-1');
+      expect(item.reporterName, 'Reporter One');
+      expect(item.reportedName, 'Driver Two');
+      expect(item.category, 'unsafe_behavior');
       expect(item.isOpen, isTrue);
-      expect(item.amount, 5000);
-      expect(item.transactionAmount, 5000);
-      expect(item.paymentMethod, 'ussd_momo');
+      expect(item.isResolved, isFalse);
+      expect(item.resolutionNotes, 'Contacted both users.');
+    });
+
+    test('fromJson defaults missing report names and status', () {
+      final item = AdminUserReportItem.fromJson({
+        'id': 'report-minimal',
+        'reporter_id': 'reporter-1',
+        'reported_id': 'reported-1',
+      });
+
+      expect(item.reporterName, 'Unknown reporter');
+      expect(item.reportedName, 'Unknown reported user');
+      expect(item.status, 'open');
+      expect(item.isOpen, isTrue);
     });
   });
 
@@ -254,6 +263,47 @@ void main() {
       expect(summary.promotionalPushCount, 30);
       expect(summary.promotionalCoveragePercent, 50);
       expect(summary.revokedOrDeniedCount, 8);
+    });
+  });
+
+  group('AdminCampaignAudiencePreview', () {
+    test('fromJson parses strict send preview metrics', () {
+      final preview = AdminCampaignAudiencePreview.fromJson({
+        'campaign_id': 'campaign-1',
+        'organization_id': 'org-1',
+        'eligible_recipient_count': 100,
+        'promotional_consent_count': 45,
+        'promotional_in_app_count': '40',
+        'promotional_push_count': 25,
+        'revoked_or_denied_count': 7,
+        'already_sent_count': 0,
+      });
+
+      expect(preview.campaignId, 'campaign-1');
+      expect(preview.organizationId, 'org-1');
+      expect(preview.hasPromotionalRecipients, isTrue);
+      expect(preview.promotionalCoveragePercent, 45);
+      expect(preview.promotionalInAppCount, 40);
+      expect(preview.alreadySentCount, 0);
+    });
+  });
+
+  group('AdminNotificationConsentTrendPoint', () {
+    test('fromJson parses daily consent trend rows', () {
+      final point = AdminNotificationConsentTrendPoint.fromJson({
+        'bucket_date': '2026-05-01',
+        'granted_count': '12',
+        'revoked_or_denied_count': 2,
+        'in_app_granted_count': 9,
+        'push_granted_count': 5,
+      });
+
+      expect(point.bucketDate, '2026-05-01');
+      expect(point.grantedCount, 12);
+      expect(point.revokedOrDeniedCount, 2);
+      expect(point.netGrantedCount, 10);
+      expect(point.inAppGrantedCount, 9);
+      expect(point.pushGrantedCount, 5);
     });
   });
 }

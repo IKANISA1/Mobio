@@ -4,8 +4,6 @@
   "@appTitle": { "description": "App name shown in title bar" },
   "tabDiscover": "Discover",
   "@tabDiscover": { "description": "Bottom nav tab: Discover" },
-  "tabBioPay": "BioPay",
-  "@tabBioPay": { "description": "Bottom nav tab: BioPay" },
   "tabProfile": "Profile",
   "@tabProfile": { "description": "Bottom nav tab: Profile" },
   "tabDashboard": "Dashboard",

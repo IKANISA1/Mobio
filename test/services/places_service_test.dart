@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobi_app/core/services/places_exception.dart';
 import 'package:mobi_app/models/place.dart';
-import 'package:mobi_app/models/route_info.dart';
 
 /// Unit tests for Places models and PlacesException contract.
 /// Verifies that edge-function response shapes are correctly parsed.
@@ -72,48 +71,6 @@ void main() {
       // This is the pattern used in PlaceAutocompleteField as fallback
       expect(fallback.latitude, 0);
       expect(fallback.longitude, 0);
-    });
-  });
-
-  group('RouteInfo', () {
-    test('parses from compute_route response shape', () {
-      const route = RouteInfo(
-        distanceMeters: 130500,
-        duration: '7200s',
-        encodedPolyline: 'abc123polyline',
-        travelMode: 'DRIVE',
-      );
-
-      expect(route.distanceMeters, 130500);
-      expect(route.duration, '7200s');
-      expect(route.encodedPolyline, isNotEmpty);
-      expect(route.travelMode, 'DRIVE');
-    });
-
-    test('defaults travelMode to DRIVE', () {
-      const route = RouteInfo(
-        distanceMeters: 5000,
-        duration: '300s',
-        encodedPolyline: '',
-      );
-
-      expect(route.travelMode, 'DRIVE');
-    });
-
-    test('serializes to and from JSON', () {
-      const original = RouteInfo(
-        distanceMeters: 42000,
-        duration: '2400s',
-        encodedPolyline: 'test_poly',
-        travelMode: 'TWO_WHEELER',
-      );
-
-      final json = original.toJson();
-      final restored = RouteInfo.fromJson(json);
-
-      expect(restored.distanceMeters, original.distanceMeters);
-      expect(restored.duration, original.duration);
-      expect(restored.travelMode, 'TWO_WHEELER');
     });
   });
 

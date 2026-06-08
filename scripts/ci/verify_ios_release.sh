@@ -13,4 +13,5 @@ COCOAPODS_DISABLE_STATS=true flutter build ios --release --no-codesign \
   --dart-define=SUPABASE_URL="$SUPABASE_URL" \
   --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY" \
   --dart-define=PRIVACY_POLICY_URL="$PRIVACY_POLICY_URL" \
+  --dart-define=ACCOUNT_DELETION_URL="$ACCOUNT_DELETION_URL" \
   --dart-define=FIREBASE_IOS_APP_ID="$FIREBASE_IOS_APP_ID"

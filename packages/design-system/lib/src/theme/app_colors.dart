@@ -48,9 +48,6 @@ class AppColors {
   static const warning = Color(0xFFFF9800);
   static const onWarning = Color(0xFFFFFFFF);
 
-  // ─── BioPay brand accent ───
-  static const bioPayGreen = Color(0xFF00C853);
-
   // ═══ Dark palette ═══
   static const dark = _DarkPalette();
 

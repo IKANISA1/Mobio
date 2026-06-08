@@ -5,14 +5,12 @@ import 'package:mobi_shared_types/models/vehicle_type.dart';
 part 'trip.freezed.dart';
 part 'trip.g.dart';
 
-/// Represents the lifecycle status of a trip.
+/// Represents the active state of a scheduled trip post.
 enum TripStatus {
   @JsonValue('active')
   active,
   @JsonValue('cancelled')
   cancelled,
-  @JsonValue('completed')
-  completed,
 }
 
 @freezed
@@ -109,6 +107,8 @@ abstract class Trip with _$Trip {
     switch (vehicleTypeStr) {
       case 'moto':
         return VehicleType.moto;
+      case 'bus':
+        return VehicleType.bus;
       case 'trike':
         return VehicleType.trike;
       case 'truck':

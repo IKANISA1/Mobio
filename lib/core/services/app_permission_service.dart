@@ -23,13 +23,6 @@ class AppPermissionService {
   final PermissionRequester _requestPermission;
   final OpenSettingsCallback _openSettings;
 
-  Future<bool> ensureBiopayCameraAccess() async {
-    if (Platform.isAndroid || Platform.isIOS) {
-      return _ensureActionPermission(Permission.camera);
-    }
-    return Future.value(true);
-  }
-
   /// Requests location permission (whenInUse).
   /// Returns true if granted/limited, false otherwise.
   /// Opens settings if permanently denied.

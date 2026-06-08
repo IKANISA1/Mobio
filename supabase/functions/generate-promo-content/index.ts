@@ -52,7 +52,7 @@ const PROMO_CATEGORIES: PromoCategory[] = [
     videoPath: "nearby-drivers/videos",
     imagePrompts: [
       "A breathtakingly beautiful African female influencer standing on a vibrant, neon-lit street in <CITY>, <COUNTRY> at dusk. She is smiling enthusiastically, looking directly into the camera with bright, empathetic eyes. In the background, a cool local moto-taxi driver sits on his bike, wearing a clean helmet. She holds a sleek smartphone showing a dark-mode app. Cinematic, high-fashion street photography, rich colors, deep emotional connection, highly relatable.",
-      "A handsome young African man smiling warmly at a moto driver in <COUNTRY>. The passenger is holding up his smartphone to scan the driver's face for a seamless cashless payment. Both are sharing a genuine, joyful laugh. Warm golden hour lighting, bustling African urban backdrop, highly aspirational, marketing photography, shallow depth of field.",
+      "A handsome young African man smiling warmly at a moto driver in <COUNTRY>. The passenger is holding up his smartphone to view the driver's profile before agreeing details manually. Both are sharing a genuine, joyful laugh. Warm golden hour lighting, bustling African urban backdrop, highly aspirational, marketing photography, shallow depth of field.",
       "A stunning African fashion model waiting confidently at a modern transit stop in <CITY>. She has flawless glowing skin and a highly relatable, sympathetic smile, looking directly at the viewer. She holds her phone elegantly. The mood is optimistic and premium, suggesting effortless travel. Shot on 85mm lens, beautiful bokeh, vibrant night lights.",
       "Close-up of a charismatic African moto driver in <COUNTRY> taking off his helmet and smiling brilliantly at the camera with extreme warmth and hospitality. The background is a beautifully blurred local street scene. High emotional resonance, suggesting safety, friendliness, and reliable service. Commercial advertisement style.",
     ],
@@ -176,27 +176,37 @@ function layoutMetadataFor(
   return defaults[Math.min(index, defaults.length - 1)];
 }
 
-function isAuthorizedGenerationRequest(req: Request): boolean {
-  const configuredSecret = Deno.env.get("PROMO_GENERATION_SECRET")?.trim();
-  const providedSecret = req.headers.get("x-cron-secret")?.trim();
-  if (
-    configuredSecret &&
-    providedSecret &&
-    configuredSecret === providedSecret
-  ) {
-    return true;
+async function secretDigest(value: string): Promise<Uint8Array> {
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(value),
+  );
+  return new Uint8Array(digest);
+}
+
+function constantTimeEquals(left: Uint8Array, right: Uint8Array): boolean {
+  if (left.length !== right.length) {
+    return false;
   }
 
-  const bearerToken = req.headers.get("Authorization")
-    ?.replace(/^Bearer\s+/i, "")
-    .trim();
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim();
+  let diff = 0;
+  for (let index = 0; index < left.length; index++) {
+    diff |= left[index] ^ right[index];
+  }
+  return diff === 0;
+}
 
-  return !!(
-    bearerToken &&
-    serviceRoleKey &&
-    bearerToken.length > 0 &&
-    bearerToken === serviceRoleKey
+async function isAuthorizedGenerationRequest(req: Request): Promise<boolean> {
+  const configuredSecret = Deno.env.get("PROMO_GENERATION_SECRET")?.trim();
+  const providedSecret = req.headers.get("x-cron-secret")?.trim();
+
+  if (!configuredSecret || !providedSecret) {
+    return false;
+  }
+
+  return constantTimeEquals(
+    await secretDigest(configuredSecret),
+    await secretDigest(providedSecret),
   );
 }
 
@@ -299,7 +309,7 @@ serve(async (req: Request) => {
     return methodNotAllowed("POST", req);
   }
 
-  if (!isAuthorizedGenerationRequest(req)) {
+  if (!(await isAuthorizedGenerationRequest(req))) {
     return errorResponse("Unauthorized", 401, undefined, req);
   }
 

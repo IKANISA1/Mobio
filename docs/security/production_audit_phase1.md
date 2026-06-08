@@ -1,5 +1,12 @@
 # MOBI Production Audit and Phase 1 Hardening
 
+> Historical snapshot: this 2026-05-01 audit predates the 2026-05-23 Mobio
+> limited-scope cleanup. Treat BioPay, payment, SMS ledger, and ride-request
+> lifecycle references below as historical findings only. Current production
+> scope and blockers are in `docs/product/scope.md`,
+> `docs/reports/production-readiness-audit.md`, and
+> `docs/release/go-no-go.md`.
+
 Date: 2026-05-01
 Branch inspected: `feature/mobi-super-app-merger`
 

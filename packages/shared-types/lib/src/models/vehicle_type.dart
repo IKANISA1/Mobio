@@ -1,6 +1,7 @@
 enum VehicleType {
   moto,
   cab,
+  bus,
   trike,
   truck,
   private_;
@@ -12,6 +13,8 @@ enum VehicleType {
         return VehicleType.moto;
       case 'cab':
         return VehicleType.cab;
+      case 'bus':
+        return VehicleType.bus;
       case 'trike':
         return VehicleType.trike;
       case 'truck':
@@ -30,6 +33,8 @@ enum VehicleType {
         return 'Moto';
       case VehicleType.cab:
         return 'Cab';
+      case VehicleType.bus:
+        return 'Bus';
       case VehicleType.trike:
         return 'Trike';
       case VehicleType.truck:
@@ -45,6 +50,8 @@ enum VehicleType {
         return 'MOTO';
       case VehicleType.cab:
         return 'CAB';
+      case VehicleType.bus:
+        return 'BUS';
       case VehicleType.trike:
         return 'TRIKE';
       case VehicleType.truck:

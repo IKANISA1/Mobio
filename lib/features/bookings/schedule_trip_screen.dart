@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/features/bookings/models/schedule_trip_state.dart';
@@ -21,6 +22,7 @@ import 'package:mobi_app/shared/widgets/mobi_input_field.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
+import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 
 /// Schedule Trip screen with route preview map.
@@ -28,12 +30,14 @@ class ScheduleTripScreen extends ConsumerStatefulWidget {
   final String mode;
   final ValueChanged<String> onModeChanged;
   final VoidCallback onBack;
+  final String? editingTripId;
 
   const ScheduleTripScreen({
     super.key,
     required this.mode,
     required this.onModeChanged,
     required this.onBack,
+    this.editingTripId,
   });
 
   @override
@@ -42,15 +46,23 @@ class ScheduleTripScreen extends ConsumerStatefulWidget {
 
 class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   late final TextEditingController _noteController;
+  String? _noteSyncedTripId;
+
+  bool get _isEditMode => widget.editingTripId?.isNotEmpty == true;
 
   @override
   void initState() {
     super.initState();
     _noteController = TextEditingController();
 
-    // Set args immediately
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(scheduleTripArgsProvider.notifier).set(widget.mode);
+      final args = ref.read(scheduleTripArgsProvider.notifier);
+      final editingTripId = widget.editingTripId;
+      if (editingTripId != null && editingTripId.isNotEmpty) {
+        args.setEditTrip(tripId: editingTripId, mode: widget.mode);
+      } else {
+        args.setCreateMode(widget.mode);
+      }
     });
   }
 
@@ -78,9 +90,9 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
         final suggestions =
             ref.read(scheduleTripProvider).value?.poolSuggestions ?? const [];
         if (suggestions.isNotEmpty) {
-          await _showPoolSuggestionsSheet(suggestions);
+          await _showScheduledPostSuggestionsSheet(suggestions);
         }
-        _showSnackBar('Trip scheduled.');
+        _showSnackBar(_isEditMode ? 'Trip updated.' : 'Trip scheduled.');
         widget.onBack();
       } else {
         final message =
@@ -92,14 +104,18 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
       _showSnackBar(
         userMessageForError(
           e,
-          fallback: 'Failed to schedule trip. Please try again.',
+          fallback: _isEditMode
+              ? 'Failed to save changes. Please try again.'
+              : 'Failed to schedule trip. Please try again.',
         ),
         isError: true,
       );
     }
   }
 
-  Future<void> _showPoolSuggestionsSheet(List<Trip> suggestions) async {
+  Future<void> _showScheduledPostSuggestionsSheet(
+    List<Trip> suggestions,
+  ) async {
     if (!mounted) return;
 
     await showModalBottomSheet<void>(
@@ -120,12 +136,12 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Pool suggestions',
+                  'Similar scheduled posts',
                   style: AppTypography.headlineSm.copyWith(color: cs.onSurface),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  'Trips with similar route or timing.',
+                  'People with similar route or timing.',
                   style: AppTypography.bodySm.copyWith(
                     color: cs.onSurfaceVariant,
                   ),
@@ -160,6 +176,31 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
     );
   }
 
+  Future<void> _handleCurrentLocation(
+    ScheduleTripController controller,
+  ) async {
+    final permissionService = ref.read(appPermissionServiceProvider);
+    final hasAccess = await permissionService.hasLocationAccess();
+
+    if (!hasAccess && mounted) {
+      final action = await PermissionAccessDialog.show(
+        context,
+        config: PermissionAccessDialogConfig.location(),
+      );
+      if (action != PermissionAccessDialogAction.grantAccess) {
+        return;
+      }
+
+      final granted = await permissionService.ensureLocationAccess();
+      if (!granted) {
+        _showSnackBar('Location access was not enabled.', isError: true);
+        return;
+      }
+    }
+
+    await controller.handleCurrentLocation();
+  }
+
   @override
   Widget build(BuildContext context) {
     final asyncState = ref.watch(scheduleTripProvider);
@@ -187,12 +228,15 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
     ScheduleTripController controller,
     EdgeInsets mediaPadding,
   ) {
+    _syncNoteController(state);
+    final title = state.isEditMode ? 'Edit trip' : 'Schedule';
+
     return SoftGradient(
       child: Column(
         children: [
           SafeArea(
             bottom: false,
-            child: MobiPageHeader(title: 'Schedule', onBack: widget.onBack),
+            child: MobiPageHeader(title: title, onBack: widget.onBack),
           ),
           Expanded(
             child: SingleChildScrollView(
@@ -230,8 +274,6 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                       TripRouteForm(
                         originDetails: state.originDetails,
                         destDetails: state.destDetails,
-                        routeInfo: state.routeInfo,
-                        isComputingRoute: state.isComputingRoute,
                         isLoadingLocation: state.isLoadingLocation,
                         showErrors: state.showErrors,
                         userLat: state.userLat,
@@ -240,8 +282,9 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                         isSavingFavoriteAddress: state.isSavingFavoriteAddress,
                         onOriginSelected: controller.setOrigin,
                         onDestSelected: controller.setDestination,
-                        onHandleCurrentLocation:
-                            controller.handleCurrentLocation,
+                        onHandleCurrentLocation: () => unawaited(
+                          _handleCurrentLocation(controller),
+                        ),
                         onFavoriteOriginSelected:
                             controller.useFavoriteAsOrigin,
                         onFavoriteDestSelected:
@@ -292,7 +335,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                             : () => _handleSubmit(ref),
                         isLoading: state.isSubmitting,
                         child: Text(
-                          'Schedule',
+                          state.isEditMode ? 'Save changes' : 'Schedule',
                           style: AppTypography.labelLg.copyWith(
                             fontWeight: FontWeight.w700,
                             color: Theme.of(context).colorScheme.onPrimary,
@@ -308,6 +351,17 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
         ],
       ),
     );
+  }
+
+  void _syncNoteController(ScheduleTripState state) {
+    final trip = state.editingTrip;
+    final tripId = trip?.id;
+    if (tripId == null || _noteSyncedTripId == tripId) {
+      return;
+    }
+
+    _noteSyncedTripId = tripId;
+    _noteController.text = trip?.note ?? '';
   }
 }
 

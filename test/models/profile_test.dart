@@ -16,8 +16,6 @@ void main() {
       'vehicle_number_plate': 'RAA 123 B',
       'is_driver': true,
       'avatar_url': null,
-      'biopay_handle_type': 'number',
-      'biopay_handle_value': '780000000',
       'created_at': '2024-01-15T10:00:00Z',
     };
 
@@ -36,8 +34,6 @@ void main() {
       expect(profile.vehicleNumberPlate, 'RAA 123 B');
       expect(profile.isDriver, isTrue);
       expect(profile.avatarUrl, isNull);
-      expect(profile.biopayHandleType, 'number');
-      expect(profile.biopayHandleValue, '780000000');
       expect(profile.createdAt, '2024-01-15T10:00:00Z');
     });
 

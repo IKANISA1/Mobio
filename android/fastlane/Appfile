@@ -1,2 +1,1 @@
-json_key_file("fastlane/play-store-service-account.json")
 package_name("rw.mobi.app")

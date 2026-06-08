@@ -81,6 +81,39 @@ async function loadExistingProfileSeed(
   return ((phoneProfiles as ExistingProfileRow[] | null) ?? [])[0] ?? null;
 }
 
+async function grantAdminPlatformPermissions(
+  supabase: ReturnType<typeof createAdminClient>,
+  profileId: string,
+) {
+  const { data: permissions, error: permissionsError } = await supabase
+    .from("platform_permissions")
+    .select("permission_key");
+
+  if (permissionsError) {
+    throw permissionsError;
+  }
+
+  const rows = ((permissions as Array<{ permission_key: string }> | null) ?? [])
+    .map((permission) => ({
+      profile_id: profileId,
+      permission_key: permission.permission_key,
+      granted_by: profileId,
+      expires_at: null,
+    }));
+
+  if (rows.length == 0) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("profile_platform_permissions")
+    .upsert(rows, { onConflict: "profile_id,permission_key" });
+
+  if (error) {
+    throw error;
+  }
+}
+
 async function ensureAdminUserSession(
   supabase: ReturnType<typeof createAdminClient>,
   anonClient: ReturnType<typeof createAnonClient>,
@@ -179,6 +212,8 @@ async function ensureAdminUserSession(
   if (upsertError) {
     throw upsertError;
   }
+
+  await grantAdminPlatformPermissions(supabase, authUser.id);
 
   const { data: signInData, error: signInError } = await anonClient.auth
     .signInWithPassword({

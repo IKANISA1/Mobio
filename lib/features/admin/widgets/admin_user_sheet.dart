@@ -52,10 +52,10 @@ class AdminUserSheet extends StatelessWidget {
                       : MobiStatusBadgeTone.neutral,
                 ),
                 MobiStatusBadge(
-                  label: user.hasFaceId ? 'Face ready' : 'No face',
-                  tone: user.hasFaceId
+                  label: user.isDriver ? 'Driver profile' : 'Passenger profile',
+                  tone: user.isDriver
                       ? MobiStatusBadgeTone.info
-                      : MobiStatusBadgeTone.warning,
+                      : MobiStatusBadgeTone.neutral,
                 ),
               ],
             ),

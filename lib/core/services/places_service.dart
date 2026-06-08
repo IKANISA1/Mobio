@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:mobi_app/core/services/places_exception.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/models/place.dart';
-import 'package:mobi_app/models/route_info.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PlacesService {
@@ -241,42 +240,6 @@ class PlacesService {
           latitude: (place['position']?['latitude'] as num?)?.toDouble() ?? lat,
           longitude:
               (place['position']?['longitude'] as num?)?.toDouble() ?? lng,
-        );
-      },
-    );
-  }
-
-  /// Computes a route between origin and destination.
-  Future<RouteInfo?> computeRoute({
-    required double originLat,
-    required double originLng,
-    required double destLat,
-    required double destLng,
-    String travelMode = 'DRIVE',
-  }) async {
-    return _callWithRetry<RouteInfo?>(
-      operationName: 'computeRoute',
-      timeout: const Duration(seconds: 10),
-      action: () async {
-        final response = await _supabase.functions.invoke(
-          'maps-gateway',
-          body: {
-            'action': 'compute_route',
-            'origin': {'latitude': originLat, 'longitude': originLng},
-            'destination': {'latitude': destLat, 'longitude': destLng},
-            'travelMode': travelMode,
-          },
-        );
-
-        final data = response.data;
-        if (data == null || data['route'] == null) return null;
-
-        final route = data['route'];
-        return RouteInfo(
-          distanceMeters: (route['distanceMeters'] as num?)?.toInt() ?? 0,
-          duration: route['duration']?.toString() ?? '0s',
-          encodedPolyline: route['encodedPolyline']?.toString() ?? '',
-          travelMode: route['travelMode']?.toString() ?? travelMode,
         );
       },
     );

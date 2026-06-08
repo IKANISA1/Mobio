@@ -5,7 +5,6 @@ class AdminDashboardStats {
   final int totalTrips;
   final int activeTrips;
   final int cancelledTrips;
-  final int completedTrips;
 
   const AdminDashboardStats({
     required this.totalUsers,
@@ -14,7 +13,6 @@ class AdminDashboardStats {
     required this.totalTrips,
     required this.activeTrips,
     required this.cancelledTrips,
-    required this.completedTrips,
   });
 
   factory AdminDashboardStats.fromJson(Map<String, dynamic>? json) {
@@ -25,7 +23,6 @@ class AdminDashboardStats {
       totalTrips: _toInt(json?['total_trips']),
       activeTrips: _toInt(json?['active_trips']),
       cancelledTrips: _toInt(json?['cancelled_trips']),
-      completedTrips: _toInt(json?['completed_trips']),
     );
   }
 }
@@ -363,6 +360,77 @@ class AdminNotificationConsentSummary {
   }
 }
 
+class AdminCampaignAudiencePreview {
+  final String campaignId;
+  final String organizationId;
+  final int eligibleRecipientCount;
+  final int promotionalConsentCount;
+  final int promotionalInAppCount;
+  final int promotionalPushCount;
+  final int revokedOrDeniedCount;
+  final int alreadySentCount;
+
+  const AdminCampaignAudiencePreview({
+    required this.campaignId,
+    required this.organizationId,
+    this.eligibleRecipientCount = 0,
+    this.promotionalConsentCount = 0,
+    this.promotionalInAppCount = 0,
+    this.promotionalPushCount = 0,
+    this.revokedOrDeniedCount = 0,
+    this.alreadySentCount = 0,
+  });
+
+  bool get hasPromotionalRecipients => promotionalConsentCount > 0;
+
+  int get promotionalCoveragePercent => eligibleRecipientCount <= 0
+      ? 0
+      : ((promotionalConsentCount / eligibleRecipientCount) * 100).round();
+
+  factory AdminCampaignAudiencePreview.fromJson(Map<String, dynamic> json) {
+    return AdminCampaignAudiencePreview(
+      campaignId: json['campaign_id'] as String? ?? '',
+      organizationId: json['organization_id'] as String? ?? '',
+      eligibleRecipientCount: _toInt(json['eligible_recipient_count']),
+      promotionalConsentCount: _toInt(json['promotional_consent_count']),
+      promotionalInAppCount: _toInt(json['promotional_in_app_count']),
+      promotionalPushCount: _toInt(json['promotional_push_count']),
+      revokedOrDeniedCount: _toInt(json['revoked_or_denied_count']),
+      alreadySentCount: _toInt(json['already_sent_count']),
+    );
+  }
+}
+
+class AdminNotificationConsentTrendPoint {
+  final String bucketDate;
+  final int grantedCount;
+  final int revokedOrDeniedCount;
+  final int inAppGrantedCount;
+  final int pushGrantedCount;
+
+  const AdminNotificationConsentTrendPoint({
+    required this.bucketDate,
+    this.grantedCount = 0,
+    this.revokedOrDeniedCount = 0,
+    this.inAppGrantedCount = 0,
+    this.pushGrantedCount = 0,
+  });
+
+  int get netGrantedCount => grantedCount - revokedOrDeniedCount;
+
+  factory AdminNotificationConsentTrendPoint.fromJson(
+    Map<String, dynamic> json,
+  ) {
+    return AdminNotificationConsentTrendPoint(
+      bucketDate: json['bucket_date'] as String? ?? '',
+      grantedCount: _toInt(json['granted_count']),
+      revokedOrDeniedCount: _toInt(json['revoked_or_denied_count']),
+      inAppGrantedCount: _toInt(json['in_app_granted_count']),
+      pushGrantedCount: _toInt(json['push_granted_count']),
+    );
+  }
+}
+
 class AdminAuditLogItem {
   final String id;
   final String? adminId;
@@ -400,86 +468,134 @@ class AdminAuditLogItem {
   }
 }
 
-class AdminRiskFlagItem {
+class AdminOperationalHealthEventItem {
   final String id;
-  final String profileId;
-  final String profileName;
-  final String? profilePhone;
-  final String? transactionId;
-  final String? intentId;
-  final String flagType;
+  final String service;
+  final String component;
+  final String status;
   final String severity;
-  final String? description;
-  final bool resolved;
-  final String? resolvedBy;
-  final String? resolvedByName;
-  final String? resolvedAt;
+  final String? issueCode;
+  final String message;
+  final String? functionName;
+  final String? userId;
+  final String userName;
+  final String? subjectType;
+  final String? subjectId;
+  final Map<String, dynamic> metadata;
+  final String? occurredAt;
+  final String ingestOrigin;
   final String? createdAt;
-  final double? amount;
-  final String? currency;
-  final String? paymentMethod;
-  final String? intentStatus;
-  final String? transactionRef;
-  final String? transactionNetwork;
-  final double? transactionAmount;
-  final String? transactionCurrency;
-  final String? transactionTimestamp;
 
-  const AdminRiskFlagItem({
+  const AdminOperationalHealthEventItem({
     required this.id,
-    required this.profileId,
-    required this.profileName,
-    required this.flagType,
+    required this.service,
+    required this.component,
+    required this.status,
     required this.severity,
-    required this.resolved,
-    this.profilePhone,
-    this.transactionId,
-    this.intentId,
-    this.description,
-    this.resolvedBy,
-    this.resolvedByName,
-    this.resolvedAt,
+    required this.message,
+    required this.userName,
+    required this.ingestOrigin,
+    this.issueCode,
+    this.functionName,
+    this.userId,
+    this.subjectType,
+    this.subjectId,
+    this.metadata = const {},
+    this.occurredAt,
     this.createdAt,
-    this.amount,
-    this.currency,
-    this.paymentMethod,
-    this.intentStatus,
-    this.transactionRef,
-    this.transactionNetwork,
-    this.transactionAmount,
-    this.transactionCurrency,
-    this.transactionTimestamp,
   });
 
-  bool get isOpen => !resolved;
+  bool get isError => status == 'error' || severity == 'critical';
+  bool get isWarning => status == 'warn' || severity == 'warning';
 
-  factory AdminRiskFlagItem.fromJson(Map<String, dynamic> json) {
-    return AdminRiskFlagItem(
+  factory AdminOperationalHealthEventItem.fromJson(Map<String, dynamic> json) {
+    return AdminOperationalHealthEventItem(
       id: json['id'] as String? ?? '',
-      profileId: json['profile_id'] as String? ?? '',
-      profileName: (json['profile_name'] as String?)?.trim().isNotEmpty == true
-          ? json['profile_name'] as String
-          : 'Unknown member',
-      profilePhone: json['profile_phone'] as String?,
-      transactionId: json['transaction_id'] as String?,
-      intentId: json['intent_id'] as String?,
-      flagType: json['flag_type'] as String? ?? 'manual_flag',
-      severity: json['severity'] as String? ?? 'low',
-      description: json['description'] as String?,
-      resolved: json['resolved'] as bool? ?? false,
-      resolvedBy: json['resolved_by'] as String?,
-      resolvedByName: json['resolved_by_name'] as String?,
-      resolvedAt: json['resolved_at'] as String?,
+      service: json['service'] as String? ?? 'unknown_service',
+      component: json['component'] as String? ?? 'general',
+      status: json['status'] as String? ?? 'ok',
+      severity: json['severity'] as String? ?? 'info',
+      issueCode: json['issue_code'] as String?,
+      message: json['message'] as String? ?? 'No message',
+      functionName: json['function_name'] as String?,
+      userId: json['user_id'] as String?,
+      userName: (json['user_name'] as String?)?.trim().isNotEmpty == true
+          ? json['user_name'] as String
+          : 'System',
+      subjectType: json['subject_type'] as String?,
+      subjectId: json['subject_id'] as String?,
+      metadata: _toMap(json['metadata']),
+      occurredAt: json['occurred_at'] as String?,
+      ingestOrigin: json['ingest_origin'] as String? ?? 'system',
       createdAt: json['created_at'] as String?,
-      amount: _toDouble(json['amount']),
-      currency: json['currency'] as String?,
-      paymentMethod: json['payment_method'] as String?,
-      intentStatus: json['intent_status'] as String?,
-      transactionRef: json['transaction_ref'] as String?,
-      transactionNetwork: json['transaction_network'] as String?,
-      transactionAmount: _toDouble(json['transaction_amount']),
-      transactionCurrency: json['transaction_currency'] as String?,
-      transactionTimestamp: json['transaction_timestamp'] as String?,
+    );
+  }
+}
+
+class AdminUserReportItem {
+  final String id;
+  final String reporterId;
+  final String reporterName;
+  final String? reporterPhone;
+  final String reportedId;
+  final String reportedName;
+  final String? reportedPhone;
+  final String? conversationId;
+  final String? tripId;
+  final String category;
+  final String details;
+  final String status;
+  final String? resolutionNotes;
+  final String? reviewedBy;
+  final String? reviewedAt;
+  final String? createdAt;
+
+  const AdminUserReportItem({
+    required this.id,
+    required this.reporterId,
+    required this.reporterName,
+    required this.reportedId,
+    required this.reportedName,
+    required this.category,
+    required this.details,
+    required this.status,
+    this.reporterPhone,
+    this.reportedPhone,
+    this.conversationId,
+    this.tripId,
+    this.resolutionNotes,
+    this.reviewedBy,
+    this.reviewedAt,
+    this.createdAt,
+  });
+
+  bool get isOpen => status == 'open' || status == 'reviewing';
+  bool get isResolved => status == 'resolved' || status == 'dismissed';
+
+  factory AdminUserReportItem.fromJson(Map<String, dynamic> json) {
+    return AdminUserReportItem(
+      id: json['id'] as String? ?? '',
+      reporterId: json['reporter_id'] as String? ?? '',
+      reporterName:
+          (json['reporter_name'] as String?)?.trim().isNotEmpty == true
+          ? json['reporter_name'] as String
+          : 'Unknown reporter',
+      reporterPhone: json['reporter_phone'] as String?,
+      reportedId: json['reported_id'] as String? ?? '',
+      reportedName:
+          (json['reported_name'] as String?)?.trim().isNotEmpty == true
+          ? json['reported_name'] as String
+          : 'Unknown reported user',
+      reportedPhone: json['reported_phone'] as String?,
+      conversationId: json['conversation_id'] as String?,
+      tripId: json['trip_id'] as String?,
+      category: json['category'] as String? ?? 'other',
+      details: json['details'] as String? ?? '',
+      status: json['status'] as String? ?? 'open',
+      resolutionNotes: json['resolution_notes'] as String?,
+      reviewedBy: json['reviewed_by'] as String?,
+      reviewedAt: json['reviewed_at'] as String?,
+      createdAt: json['created_at'] as String?,
     );
   }
 }
@@ -489,13 +605,6 @@ int _toInt(dynamic value) {
   if (value is num) return value.toInt();
   if (value is String) return int.tryParse(value) ?? 0;
   return 0;
-}
-
-double? _toDouble(dynamic value) {
-  if (value == null) return null;
-  if (value is num) return value.toDouble();
-  if (value is String) return double.tryParse(value);
-  return null;
 }
 
 Map<String, dynamic> _toMap(dynamic value) {

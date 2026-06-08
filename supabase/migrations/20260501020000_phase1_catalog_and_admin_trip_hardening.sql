@@ -270,9 +270,10 @@ insert into public.vehicle_types (id, label, icon_name, sort_order, is_active)
 values
   ('moto', 'Moto Taxi', 'zap', 1, true),
   ('cab', 'Cab', 'car', 2, true),
-  ('trike', 'Trike', 'truck', 3, true),
-  ('truck', 'Truck', 'layout-grid', 4, true),
-  ('private', 'Others', 'package', 5, true)
+  ('bus', 'Bus', 'bus', 3, true),
+  ('trike', 'Trike', 'truck', 4, true),
+  ('truck', 'Truck', 'layout-grid', 5, true),
+  ('private', 'Others', 'package', 6, true)
 on conflict (id) do update
 set
   label = excluded.label,

@@ -10,8 +10,6 @@ import 'package:mobi_app/core/platform/platform_io.dart';
 import 'package:mobi_app/core/services/firebase_bootstrap_service.dart';
 import 'package:mobi_app/core/services/firebase_remote_config_service.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
-import 'package:mobi_app/models/ride_request.dart';
-import 'package:mobi_app/shared/widgets/ride_request_sheet.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -55,7 +53,7 @@ class PushNotificationService {
   static const _androidChannel = AndroidNotificationChannel(
     'mobio_default',
     'Mobio Notifications',
-    description: 'Trip updates, messages, and BioPay alerts',
+    description: 'Messages, scheduled trip posts, and account alerts',
     importance: Importance.high,
     showBadge: true,
   );
@@ -156,49 +154,9 @@ class PushNotificationService {
       return;
     }
 
-    // Ride request notifications: payload = "ride_request:<id>"
-    if (payload.startsWith('ride_request:')) {
-      final requestId = payload.replaceFirst('ride_request:', '');
-      if (requestId.isNotEmpty) {
-        _openRideRequestSheet(ctx, requestId);
-      }
-      return;
-    }
-
-    // Other notifications: payload is a route path (e.g. /chat?peerId=...)
+    // Payload is a route path (e.g. /chat?peerId=...)
     if (payload.startsWith('/')) {
       GoRouter.of(ctx).push(payload);
-    }
-  }
-
-  /// Opens the ride request response bottom sheet for a given request ID.
-  Future<void> _openRideRequestSheet(
-    BuildContext context,
-    String requestId,
-  ) async {
-    try {
-      final row = await Supabase.instance.client
-          .from('ride_requests')
-          .select()
-          .eq('id', requestId)
-          .maybeSingle();
-
-      if (row == null) {
-        if (kDebugMode) {
-          debugPrint('[push] Ride request $requestId not found');
-        }
-        return;
-      }
-
-      final request = RideRequest.fromJson(row);
-      if (!request.isPending) return;
-
-      if (!context.mounted) return;
-      showRideRequestSheet(context, request: request);
-    } on Object catch (e) {
-      if (kDebugMode) {
-        debugPrint('[push] Failed to open ride request sheet: $e');
-      }
     }
   }
 
@@ -220,20 +178,7 @@ class PushNotificationService {
 
     // Build a payload route for tap navigation
     String? payload;
-    final rideRequestTypes = {
-      'ride_request_received',
-      'ride_offer_received',
-      'ride_request_accepted',
-      'ride_request_declined',
-      'ride_request_cancelled',
-    };
-
-    if (rideRequestTypes.contains(notifType)) {
-      final requestId = data['ride_request_id'] as String? ?? '';
-      payload = 'ride_request:$requestId';
-    } else {
-      payload = data['route'] as String?;
-    }
+    payload = data['route'] as String?;
 
     // Show a local notification since FCM won't display in foreground
     _localNotifications.show(

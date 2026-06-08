@@ -9,7 +9,6 @@ import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/profile/models/edit_profile_state.dart';
 import 'package:mobi_app/features/profile/providers/edit_profile_provider.dart';
-import 'package:mobi_app/features/profile/widgets/profile_biopay_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_contact_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_driver_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_notification_consent_section.dart';
@@ -22,9 +21,14 @@ import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
-  const EditProfileScreen({super.key, required this.onBack});
+  const EditProfileScreen({
+    super.key,
+    required this.onBack,
+    this.isFirstRun = false,
+  });
 
   final VoidCallback onBack;
+  final bool isFirstRun;
 
   @override
   ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -32,21 +36,18 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late final TextEditingController _whatsAppController;
-  late final TextEditingController _handleController;
   late final TextEditingController _vehiclePlateController;
 
   @override
   void initState() {
     super.initState();
     _whatsAppController = TextEditingController();
-    _handleController = TextEditingController();
     _vehiclePlateController = TextEditingController();
   }
 
   @override
   void dispose() {
     _whatsAppController.dispose();
-    _handleController.dispose();
     _vehiclePlateController.dispose();
     super.dispose();
   }
@@ -65,11 +66,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     try {
       final success = await controller.saveProfile(
         whatsApp: _whatsAppController.text,
-        handleValue: _handleController.text,
         vehicleNumberPlate: _vehiclePlateController.text,
       );
       if (success) {
-        _showSnackBar('Profile saved.');
+        _showSnackBar(
+          widget.isFirstRun ? 'Profile setup complete.' : 'Profile saved.',
+        );
         widget.onBack();
       }
     } on Object catch (e) {
@@ -151,7 +153,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         if (prev == null ||
             (prev is AsyncData<EditProfileState> && prev.value.isLoading)) {
           _whatsAppController.text = stateValue.initialWhatsApp;
-          _handleController.text = stateValue.initialHandleValue;
           _vehiclePlateController.text = stateValue.initialVehicleNumberPlate;
         }
       }
@@ -163,7 +164,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         child: SafeArea(
           child: Column(
             children: [
-              MobiPageHeader(title: 'Profile', onBack: widget.onBack),
+              MobiPageHeader(
+                title: widget.isFirstRun ? 'Set up profile' : 'Profile',
+                onBack: widget.onBack,
+              ),
               Expanded(
                 child: MobiAsyncStateView<EditProfileState>(
                   value: asyncState,
@@ -202,6 +206,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (widget.isFirstRun) ...[
+                _FirstRunProfileIntro(isDriver: state.isDriver),
+                const SizedBox(height: AppSpacing.xl),
+              ],
               ProfileContactSection(
                 whatsAppController: _whatsAppController,
                 selectedCountry: state.selectedCountry,
@@ -209,15 +217,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ),
               const SizedBox(height: AppSpacing.xl),
               const ProfileNotificationConsentSection(),
-              const SizedBox(height: AppSpacing.xl),
-              ProfileBiopaySection(
-                handleController: _handleController,
-                handleType: state.handleType,
-                selectedCountry: state.selectedCountry,
-                onHandleTypeChanged: (type) =>
-                    controller.setHandleType(type, _handleController.text),
-                hintText: state.selectedCountry.phonePlaceholder,
-              ),
               const SizedBox(height: AppSpacing.xl),
               ProfileDriverSection(
                 isDriver: state.isDriver,
@@ -255,6 +254,44 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FirstRunProfileIntro extends StatelessWidget {
+  const _FirstRunProfileIntro({required this.isDriver});
+
+  final bool isDriver;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: ext.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(AppRadii.xxl),
+        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.55)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Complete your profile',
+              style: AppTypography.titleLg.copyWith(color: cs.onSurface),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              isDriver
+                  ? 'Add your WhatsApp identity and vehicle details before posting or joining scheduled trips.'
+                  : 'Confirm your WhatsApp identity before posting trips, chatting, or saving preferences.',
+              style: AppTypography.bodyMd.copyWith(color: cs.onSurfaceVariant),
+            ),
+          ],
         ),
       ),
     );

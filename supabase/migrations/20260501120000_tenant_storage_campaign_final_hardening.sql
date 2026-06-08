@@ -50,6 +50,239 @@ $$;
 revoke all on function public.default_organization_id() from public, anon, authenticated;
 grant execute on function public.default_organization_id() to authenticated;
 
+-- Canonical foundations for legacy objects that existed remotely before this
+-- hardening pass. Keep the definitions minimal and aligned with the client
+-- models so clean-checkout migration replay does not depend on dashboard drift.
+create table if not exists public.promo_video_jobs (
+  id uuid primary key default gen_random_uuid(),
+  status text not null default 'pending'
+    check (status in ('pending', 'processing', 'completed', 'failed', 'cancelled')),
+  category text,
+  prompt text,
+  output_path text,
+  error_message text,
+  metadata jsonb not null default '{}'::jsonb,
+  organization_id uuid references public.organizations(id) on delete restrict,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.ride_requests (
+  id uuid primary key default gen_random_uuid(),
+  trip_id uuid references public.trips(id) on delete set null,
+  requester_id uuid not null references public.profiles(id) on delete cascade,
+  responder_id uuid not null references public.profiles(id) on delete cascade,
+  type text not null default 'request'
+    check (type in ('request', 'offer')),
+  status text not null default 'pending'
+    check (status in ('pending', 'accepted', 'declined', 'cancelled')),
+  message text,
+  metadata jsonb not null default '{}'::jsonb,
+  organization_id uuid references public.organizations(id) on delete restrict,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  constraint ride_requests_not_self_check
+    check (requester_id <> responder_id)
+);
+
+create table if not exists public.saved_places (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  label text not null default '',
+  place_id text,
+  formatted_address text not null default '',
+  latitude double precision,
+  longitude double precision,
+  metadata jsonb not null default '{}'::jsonb,
+  organization_id uuid references public.organizations(id) on delete restrict,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.trip_requests (
+  id uuid primary key default gen_random_uuid(),
+  trip_id uuid references public.trips(id) on delete cascade,
+  requester_id uuid not null references public.profiles(id) on delete cascade,
+  status text not null default 'pending'
+    check (status in ('pending', 'approved', 'accepted', 'declined', 'cancelled')),
+  message text,
+  metadata jsonb not null default '{}'::jsonb,
+  organization_id uuid references public.organizations(id) on delete restrict,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+drop trigger if exists set_promo_video_jobs_updated_at on public.promo_video_jobs;
+create trigger set_promo_video_jobs_updated_at
+before update on public.promo_video_jobs
+for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_ride_requests_updated_at on public.ride_requests;
+create trigger set_ride_requests_updated_at
+before update on public.ride_requests
+for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_saved_places_updated_at on public.saved_places;
+create trigger set_saved_places_updated_at
+before update on public.saved_places
+for each row execute function public.handle_updated_at();
+
+drop trigger if exists set_trip_requests_updated_at on public.trip_requests;
+create trigger set_trip_requests_updated_at
+before update on public.trip_requests
+for each row execute function public.handle_updated_at();
+
+create unique index if not exists uq_ride_requests_pending_actor_trip_type
+  on public.ride_requests(
+    requester_id,
+    responder_id,
+    coalesce(trip_id, '00000000-0000-0000-0000-000000000000'::uuid),
+    type
+  )
+  where status = 'pending';
+
+create index if not exists idx_ride_requests_requester_status
+  on public.ride_requests(requester_id, status, created_at desc);
+create index if not exists idx_ride_requests_responder_status
+  on public.ride_requests(responder_id, status, created_at desc);
+create index if not exists idx_trip_requests_trip_status
+  on public.trip_requests(trip_id, status, created_at desc);
+create index if not exists idx_trip_requests_requester_status
+  on public.trip_requests(requester_id, status, created_at desc);
+create index if not exists idx_saved_places_user_updated
+  on public.saved_places(user_id, updated_at desc);
+
+alter table public.promo_video_jobs enable row level security;
+alter table public.ride_requests enable row level security;
+alter table public.saved_places enable row level security;
+alter table public.trip_requests enable row level security;
+
+revoke all on public.promo_video_jobs from anon, authenticated;
+revoke all on public.ride_requests from anon, authenticated;
+revoke all on public.saved_places from anon, authenticated;
+revoke all on public.trip_requests from anon, authenticated;
+
+grant all on public.promo_video_jobs to service_role;
+grant select, insert, update, delete on public.ride_requests to authenticated;
+grant select, insert, update, delete on public.saved_places to authenticated;
+grant select, insert, update, delete on public.trip_requests to authenticated;
+grant all on public.ride_requests to service_role;
+grant all on public.saved_places to service_role;
+grant all on public.trip_requests to service_role;
+
+drop policy if exists ride_requests_participant_read on public.ride_requests;
+create policy ride_requests_participant_read
+  on public.ride_requests
+  for select
+  to authenticated
+  using (requester_id = auth.uid() or responder_id = auth.uid());
+
+drop policy if exists ride_requests_requester_insert on public.ride_requests;
+create policy ride_requests_requester_insert
+  on public.ride_requests
+  for insert
+  to authenticated
+  with check (requester_id = auth.uid());
+
+drop policy if exists ride_requests_participant_update on public.ride_requests;
+create policy ride_requests_participant_update
+  on public.ride_requests
+  for update
+  to authenticated
+  using (requester_id = auth.uid() or responder_id = auth.uid())
+  with check (requester_id = auth.uid() or responder_id = auth.uid());
+
+drop policy if exists saved_places_owner_read on public.saved_places;
+create policy saved_places_owner_read
+  on public.saved_places
+  for select
+  to authenticated
+  using (user_id = auth.uid());
+
+drop policy if exists saved_places_owner_insert on public.saved_places;
+create policy saved_places_owner_insert
+  on public.saved_places
+  for insert
+  to authenticated
+  with check (user_id = auth.uid());
+
+drop policy if exists saved_places_owner_update on public.saved_places;
+create policy saved_places_owner_update
+  on public.saved_places
+  for update
+  to authenticated
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid());
+
+drop policy if exists saved_places_owner_delete on public.saved_places;
+create policy saved_places_owner_delete
+  on public.saved_places
+  for delete
+  to authenticated
+  using (user_id = auth.uid());
+
+drop policy if exists trip_requests_owner_read on public.trip_requests;
+create policy trip_requests_owner_read
+  on public.trip_requests
+  for select
+  to authenticated
+  using (requester_id = auth.uid());
+
+drop policy if exists trip_requests_owner_insert on public.trip_requests;
+create policy trip_requests_owner_insert
+  on public.trip_requests
+  for insert
+  to authenticated
+  with check (requester_id = auth.uid());
+
+drop policy if exists trip_requests_owner_update on public.trip_requests;
+create policy trip_requests_owner_update
+  on public.trip_requests
+  for update
+  to authenticated
+  using (requester_id = auth.uid())
+  with check (requester_id = auth.uid());
+
+insert into storage.buckets (
+  id,
+  name,
+  public,
+  file_size_limit,
+  allowed_mime_types
+)
+values
+  (
+    'media',
+    'media',
+    true,
+    52428800,
+    array[
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+      'video/mp4',
+      'application/pdf'
+    ]
+  ),
+  (
+    'tickets',
+    'tickets',
+    false,
+    10485760,
+    array[
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'application/pdf'
+    ]
+  )
+on conflict (id) do update
+set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
 -- Add tenant keys to legacy operational tables that were still missing them.
 alter table public.admin_whatsapp_numbers
   add column if not exists organization_id uuid references public.organizations(id) on delete restrict;

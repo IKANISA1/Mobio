@@ -220,36 +220,6 @@ class SkeletonLayouts {
     );
   }
 
-  /// BioPay hub skeleton — stat cards + action buttons.
-  static Widget biopayHub() {
-    return const Padding(
-      padding: EdgeInsets.fromLTRB(24, 16, 24, 40),
-      child: Column(
-        children: [
-          // Status card
-          LoadingSkeleton(height: 120, borderRadius: 32),
-          SizedBox(height: 20),
-          // Action buttons row
-          Row(
-            children: [
-              Expanded(child: LoadingSkeleton.actionTile()),
-              SizedBox(width: 12),
-              Expanded(child: LoadingSkeleton.actionTile()),
-            ],
-          ),
-          SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(child: LoadingSkeleton.actionTile()),
-              SizedBox(width: 12),
-              Expanded(child: LoadingSkeleton.actionTile()),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   /// Chat message list skeleton.
   static Widget chatMessages({int count = 5}) {
     return Padding(

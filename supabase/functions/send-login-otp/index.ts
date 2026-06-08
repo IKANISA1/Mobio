@@ -7,7 +7,13 @@ import {
   jsonResponse,
   methodNotAllowed,
 } from "../_shared/http.ts";
-import { generateOtpCode, hashOtpCode } from "../_shared/otp-security.ts";
+import {
+  consumeOtpRateLimits,
+  generateOtpCode,
+  hashOtpCode,
+  otpRateLimitBucketKey,
+  requestSourceFingerprint,
+} from "../_shared/otp-security.ts";
 import { normalizePhone } from "../_shared/phone.ts";
 import { createAdminClient } from "../_shared/supabase.ts";
 import { sendWhatsappCloudOtp } from "../_shared/whatsapp-cloud.ts";
@@ -37,22 +43,66 @@ Deno.serve(async (req: Request) => {
     requestedRole = normalizeRole(body?.role);
     const supabase = createAdminClient();
 
-    const { data: recent, error: recentError } = await supabase
-      .from("otp_codes")
-      .select("created_at")
-      .eq("phone", phone)
-      .eq("purpose", "app_login")
-      .gte("created_at", new Date(Date.now() - 60_000).toISOString())
-      .order("created_at", { ascending: false })
-      .limit(1);
+    const sourceFingerprint = requestSourceFingerprint(req);
+    const rateLimit = await consumeOtpRateLimits(supabase, [
+      {
+        scope: "phone_resend",
+        bucketKey: await otpRateLimitBucketKey([
+          "otp",
+          "app_login",
+          "phone_resend",
+          phone,
+        ]),
+        windowSeconds: 60,
+        maxRequests: 1,
+      },
+      {
+        scope: "phone_hour",
+        bucketKey: await otpRateLimitBucketKey([
+          "otp",
+          "app_login",
+          "phone_hour",
+          phone,
+        ]),
+        windowSeconds: 60 * 60,
+        maxRequests: 5,
+      },
+      {
+        scope: "source_5min",
+        bucketKey: await otpRateLimitBucketKey([
+          "otp",
+          "app_login",
+          "source_5min",
+          sourceFingerprint,
+        ]),
+        windowSeconds: 5 * 60,
+        maxRequests: 10,
+      },
+      {
+        scope: "source_hour",
+        bucketKey: await otpRateLimitBucketKey([
+          "otp",
+          "app_login",
+          "source_hour",
+          sourceFingerprint,
+        ]),
+        windowSeconds: 60 * 60,
+        maxRequests: 30,
+      },
+      {
+        scope: "global_minute",
+        bucketKey: await otpRateLimitBucketKey([
+          "otp",
+          "app_login",
+          "global_minute",
+        ]),
+        windowSeconds: 60,
+        maxRequests: 60,
+      },
+    ]);
 
-    if (recentError) {
-      throw recentError;
-    }
-
-    if ((recent ?? []).length > 0) {
-      const sentAt = new Date(recent![0].created_at).getTime();
-      const retryAfter = Math.ceil((sentAt + 60_000 - Date.now()) / 1000);
+    if (!rateLimit.allowed) {
+      const retryAfter = rateLimit.retryAfterSeconds;
 
       await tryRecordAppAuthAttempt({
         supabase,
@@ -62,6 +112,7 @@ Deno.serve(async (req: Request) => {
         reason: "OTP request throttled by resend cooldown.",
         metadata: {
           retry_after_seconds: retryAfter,
+          rate_limit_scope: rateLimit.scope,
           stage: "send_login_otp",
         },
         request: req,

@@ -68,10 +68,13 @@ void main() {
       expect(trip.vehicleTypeStr, 'cab');
     });
 
-    test('TripStatus enum serialization', () {
+    test('TripStatus enum stays limited to scheduled-post states', () {
       expect(TripStatus.active.name, 'active');
       expect(TripStatus.cancelled.name, 'cancelled');
-      expect(TripStatus.completed.name, 'completed');
+      expect(
+        TripStatus.values.map((status) => status.name),
+        isNot(contains('completed')),
+      );
     });
   });
 
@@ -111,6 +114,7 @@ void main() {
       final mapping = {
         'cab': VehicleType.cab,
         'moto': VehicleType.moto,
+        'bus': VehicleType.bus,
         'trike': VehicleType.trike,
         'truck': VehicleType.truck,
         'private': VehicleType.private_,
