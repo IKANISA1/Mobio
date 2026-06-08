@@ -66,8 +66,8 @@ scripts/qa/preflight_secret_history_purge.sh
 If it passes, remove the historical Google Play service-account file:
 
 ```bash
-git filter-repo --path android/fastlane/play-store-service-account.json --invert-paths
-git log --all -- android/fastlane/play-store-service-account.json
+git filter-repo --path android/fastlane/play-store-service-account.json --invert-paths --force
+git log --all --full-history -- android/fastlane/play-store-service-account.json
 scripts/qa/check_secret_history.sh
 scripts/qa/scan_secrets.sh
 ```
@@ -76,8 +76,7 @@ If `git filter-repo` is unavailable, install it through the approved developer
 tooling channel first. After reviewing the rewritten history, push with lease:
 
 ```bash
-git push --force-with-lease origin --all
-git push --force-with-lease origin --tags
+git push --force-with-lease=main:<old-remote-main-hash> origin main
 ```
 
 Then confirm the old key cannot be used, CI has the replacement

@@ -25,20 +25,19 @@ and optional coordinates only. A non-destructive secret-history purge preflight
 now exists for the later Git history rewrite. Local Supabase replay now reaches
 the final scope cleanup migration and passes backend/storage assertions.
 Production release still needs linked Supabase validation, physical-device
-smoke testing, credential rotation/history cleanup for the previously tracked
-Play service account, and Play Console upload validation.
+smoke testing, provider-side rotation/revocation evidence for the previously
+tracked Play service account, and Play Console upload validation. Git history
+cleanup for the Play service-account path is complete for current refs.
 
 ## Passed In This Pass
 
 - `scripts/qa/scan_secrets.sh`: passed; it now fails if the old Play
   service-account JSON path reappears.
-- `scripts/qa/check_secret_history.sh`: failed as expected; Git history still
-  contains `android/fastlane/play-store-service-account.json` in commit
-  `b10e74f` from 2026-03-27. This makes the credential-history blocker
-  repeatable and auditable.
+- `scripts/qa/check_secret_history.sh`: passed after rewriting history to purge
+  `android/fastlane/play-store-service-account.json` from current refs.
 - `scripts/qa/preflight_secret_history_purge.sh`: added as a non-destructive
-  check for the later history rewrite. It currently fails before any rewrite
-  because `git-filter-repo` is not installed in this shell.
+  check for history rewrite readiness. It now passes when the repo is clean and
+  `git-filter-repo` is available on `PATH`.
 - The GitHub Release workflow now checks out full history and sets
   `REQUIRE_SECRET_HISTORY_CLEAN=true`, so release config validation fails
   closed until the Play service-account history purge is complete.
@@ -177,12 +176,10 @@ Play service account, and Play Console upload validation.
 
 ## Production Blockers
 
-- Previously tracked `android/fastlane/play-store-service-account.json` requires
-  key rotation/revocation and Git history purge. The new
-  `scripts/qa/check_secret_history.sh` gate and release config history gate
-  currently fail on commit `b10e74f`, so this blocker is still active.
-  `scripts/qa/preflight_secret_history_purge.sh` also shows `git-filter-repo`
-  is missing from the current shell.
+- Previously tracked `android/fastlane/play-store-service-account.json` has
+  been purged from current Git refs and the secret-history gate now passes.
+  Production still requires provider-side evidence that the exposed Play key was
+  revoked/rotated and that the replacement key is stored only in CI secrets.
 - Linked Supabase RLS/storage/realtime assertions were not run in this pass; the
   local Mobio project ref is not accessible with the cached Supabase CLI account.
 - Signed Android AAB/APK builds locally, but the build has not been installed or

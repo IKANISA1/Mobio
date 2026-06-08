@@ -80,12 +80,17 @@ if [[ ! -f android/key.properties ]]; then
 fi
 
 target="${1:-appbundle}"
+target_platform_args=()
+if [[ -n "${ANDROID_TARGET_PLATFORMS:-}" ]]; then
+  target_platform_args+=(--target-platform="$ANDROID_TARGET_PLATFORMS")
+fi
 
 case "$target" in
   appbundle)
     output="build/app/outputs/bundle/release/app-release.aab"
     rm -f "$output"
     "$FLUTTER_BIN" build appbundle --release \
+      "${target_platform_args[@]}" \
       --dart-define-from-file="$dart_define_file"
 
     test -s "$output"
@@ -95,10 +100,16 @@ case "$target" in
     ;;
   apk)
     output="build/app/outputs/flutter-apk/app-release.apk"
-    rm -f "$output"
+    gradle_output="build/app/outputs/apk/release/app-release.apk"
+    rm -f "$output" "$gradle_output"
     "$FLUTTER_BIN" build apk --release \
+      "${target_platform_args[@]}" \
       --dart-define-from-file="$dart_define_file"
 
+    if [[ ! -s "$output" && -s "$gradle_output" ]]; then
+      mkdir -p "$(dirname "$output")"
+      cp "$gradle_output" "$output"
+    fi
     test -s "$output"
 
     echo

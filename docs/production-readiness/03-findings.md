@@ -10,7 +10,7 @@ Date: 2026-05-06
 
 | Severity | Area | Finding | Evidence | Risk | Recommended fix | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| P0 | Secrets | Google Play service-account JSON was tracked. | `android/fastlane/play-store-service-account.json` was tracked; `android/fastlane/Appfile:1` previously referenced it. | Store publishing compromise. | Rotate/revoke key, purge Git history, keep only CI secret. | Partially fixed locally: file deleted, Fastlane env-based. |
+| P0 | Secrets | Google Play service-account JSON was tracked. | `android/fastlane/play-store-service-account.json` was tracked; `android/fastlane/Appfile:1` previously referenced it. | Store publishing compromise. | Rotate/revoke key, keep only CI secret, and retain passing history/secret gates. | Git history purge complete for current refs; provider-side revoke/rotation evidence still pending. |
 | P0 | Validation | Flutter/Dart tooling initially failed due system disk exhaustion. | Historical `flutter --version`/`dart --version` failed writing `engine.stamp`; current evidence in `docs/reports/production-readiness-audit.md` shows analyzer, full Flutter tests, release contract tests, signed AAB/APK builds, and local backend checks passing. | Production still needs physical-device smoke and Play upload validation. | Attach authorized Android device and validate Play Console upload after key rotation. | Locally improved, external smoke/upload pending. |
 | P0 | Supabase migrations | Migration chain appeared to depend on remote-only tables/buckets, and linked validation remains unavailable. | Current local Docker Desktop replay, local DB lint, and SQL assertions are documented in `docs/reports/production-readiness-audit.md`; linked access to the intended project still returns login-role 403 without `SUPABASE_DB_PASSWORD`. | Staging/production drift may remain until linked replay and assertions run. | Provide privileged linked access or `SUPABASE_DB_PASSWORD`, replay staging, and rerun linked assertions. | Locally improved, linked validation blocked. |
 | P1 | Admin revocation | Role-only admin fallback survived allowlist deactivation. | Old `has_platform_permission` in `20260501090000...sql` allowed `profiles.role = 'admin'`. | Offboarded admins could retain server access. | Bind fallback to active allowlist; revoke explicit grants on deactivation. | Fixed locally in `20260501132000...sql`. |
@@ -36,4 +36,4 @@ Date: 2026-05-06
 - Linked Supabase validation is still blocked by missing privileged access or
   `SUPABASE_DB_PASSWORD`; physical Android smoke and Play upload validation are
   still external release gates.
-- The deleted Play service-account file still exists in Git history until a history rewrite is performed outside this working-tree patch.
+- The deleted Play service-account file is no longer present in current Git refs after the history rewrite; production still needs external evidence that the exposed Play key was revoked/rotated.

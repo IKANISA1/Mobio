@@ -271,7 +271,7 @@ Missing or not proven in this pass:
 | --- | --- | --- |
 | `dart format ...` | Passed | Formatted touched Dart files. |
 | `scripts/qa/scan_secrets.sh` | Passed | No forbidden Play service-account JSON path and no committed secret patterns found. |
-| `scripts/qa/check_secret_history.sh` | Failed as expected | Git history still contains `android/fastlane/play-store-service-account.json` in commit `b10e74f` from 2026-03-27; production remains blocked until the exposed key is revoked/rotated and history is purged. |
+| `scripts/qa/check_secret_history.sh` | Passed after history rewrite | Rewritten Git refs no longer contain `android/fastlane/play-store-service-account.json`; the old exposed Play key still needs provider-side revoke/rotation evidence before production release. |
 | `flutter analyze --no-fatal-infos --no-fatal-warnings` | Passed | No analyzer issues, including after deleting route-info source and generated files. |
 | `flutter test` | Passed | 154 tests passed after adding backend schema-cleanup, report/block, release-scope, smoke-tooling, scheduled-trip no-route/no-fare, backend route-disablement, chat-assist, promo-prompt, shared-contract cleanup, historical-doc boundary coverage, secret-history purge preflight coverage, and removing obsolete route-calculation DTO tests. |
 | `flutter test test/release/backend_scope_boundary_test.dart test/release/report_block_contract_test.dart test/release/scope_boundary_test.dart` | Passed | 25 release contract tests passed, including guards that legacy BioPay/payment/ledger packages are not shipped, stale ProGuard rules for deleted high-risk dependencies are absent, shared ride-request DTOs are absent, legacy-named backend functions are inert, cleanup migrations remove legacy schema objects, scheduled trip posts do not expose completed trip lifecycle state, scheduled trips and maps backend do not compute automatic routes or fares, Play/public website metadata stays within the marketplace scope, release builds require `ACCOUNT_DELETION_URL`, historical docs defer to current product scope, secret-history purge has a non-destructive preflight, and Play uploads default to internal validation with a production approval guard. |
@@ -290,7 +290,7 @@ Missing or not proven in this pass:
 | `bash -n scripts/qa/preflight_secret_history_purge.sh scripts/qa/check_secret_history.sh scripts/qa/scan_secrets.sh` | Passed | Secret-scan and history-purge helper scripts parse. |
 | `bash -n scripts/release/go_no_go_check.sh` | Passed | Production go/no-go gate parses. |
 | `RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false ./scripts/release/go_no_go_check.sh` | Failed as expected | Production go/no-go skips are not allowed unless `GO_NO_GO_DRY_RUN=true` is set. |
-| `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false ./scripts/release/go_no_go_check.sh` | Failed as expected | Aggregate no-go gate allows Flutter/device skips only in dry-run mode and still refuses production approval with `NO-GO: dry-run mode cannot approve production`. In this shell it also reported the hard blockers: historical Play service-account JSON still in Git history, linked Supabase credentials incomplete, release config env absent, Play service-account rotation/upload validation not acknowledged, and required Play evidence file paths absent. |
+| `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false ./scripts/release/go_no_go_check.sh` | Failed as expected | Aggregate no-go gate allows Flutter/device skips only in dry-run mode and still refuses production approval with `NO-GO: dry-run mode cannot approve production`. After history rewrite, remaining hard blockers are linked Supabase credentials, release config env, Play service-account rotation/upload validation acknowledgement, and required non-template Play evidence file paths. |
 | `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false PLAY_SERVICE_ACCOUNT_ROTATED=true PLAY_CONSOLE_UPLOAD_VALIDATED=true ./scripts/release/go_no_go_check.sh` | Failed as expected | Aggregate no-go gate rejects Play acknowledgements unless `PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE` and `PLAY_CONSOLE_UPLOAD_EVIDENCE` point to existing files. |
 | `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false PLAY_SERVICE_ACCOUNT_ROTATED=true PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE=docs/release/evidence/play-service-account-rotation.example.md PLAY_CONSOLE_UPLOAD_VALIDATED=true PLAY_CONSOLE_UPLOAD_EVIDENCE=docs/release/evidence/play-console-upload.example.md ./scripts/release/go_no_go_check.sh` | Failed as expected | Aggregate no-go gate rejects committed `*.example.md` templates as production evidence. |
 | `scripts/qa/preflight_secret_history_purge.sh` | Blocked as expected | Current shell does not have `git-filter-repo`, so the destructive history purge is not ready to run here. This is safer than attempting a rewrite from the dirty shared worktree. |
@@ -323,12 +323,11 @@ Missing or not proven in this pass:
 
 ## Production Blockers
 
-1. Rotate/revoke and history-purge the previously tracked Play service-account
-   JSON. `scripts/qa/check_secret_history.sh` and release config validation
-   with `REQUIRE_SECRET_HISTORY_CLEAN=true` currently fail because commit
-   `b10e74f` still contains `android/fastlane/play-store-service-account.json`.
-   The non-destructive purge preflight also shows `git-filter-repo` is not
-   installed in the current shell.
+1. Rotate/revoke the previously tracked Play service-account JSON in Google
+   Cloud/Play Console and store the replacement only in CI secret storage. The
+   Git history purge is complete for current refs and
+   `scripts/qa/check_secret_history.sh` now passes, but provider-side revocation
+   evidence is still external.
 2. Provide privileged linked Supabase access, or `SUPABASE_DB_PASSWORD`, and run
    linked lint/storage/RLS gates against the intended staging or production
    project.
@@ -342,7 +341,7 @@ Missing or not proven in this pass:
 
 | Priority | Task | File paths | Acceptance criteria |
 | --- | --- | --- | --- |
-| P0 | Credential cleanup | `android/fastlane/play-store-service-account.json`, repo history, Play Console, `scripts/qa/preflight_secret_history_purge.sh`, `scripts/qa/check_secret_history.sh` | Old key revoked, new key in CI secret only, `scripts/qa/preflight_secret_history_purge.sh` passes in a clean full clone with `git-filter-repo`, `scripts/qa/scan_secrets.sh` passes, and `scripts/qa/check_secret_history.sh` passes after history purge. |
+| P0 | Credential cleanup | `android/fastlane/play-store-service-account.json`, repo history, Play Console, `scripts/qa/preflight_secret_history_purge.sh`, `scripts/qa/check_secret_history.sh` | Git history purge is complete and both `scripts/qa/scan_secrets.sh` and `scripts/qa/check_secret_history.sh` pass. Remaining acceptance criteria: old key revoked in Google Cloud/Play Console, replacement key stored only in CI secret storage, and non-template evidence recorded. |
 | P0 | Linked backend validation | `scripts/ci/verify_backend.sh`, `supabase/tests/*.sql` | Run with `SUPABASE_PROJECT_REF` plus `SUPABASE_ACCESS_TOKEN` or `SUPABASE_DB_PASSWORD`; linked gates pass or produce filed blockers with exact SQL failures. |
 | P0 | Release smoke | `scripts/release/build_android_release.sh`, Android device | Signed AAB installs, launches, logs in, nearby/schedule/chat work. |
 | P0 | Final go/no-go gate | `scripts/release/go_no_go_check.sh`, `docs/release/evidence/*.example.md` | Gate passes with linked Supabase credentials, release signing/Play secrets, revoked/rotated Play key acknowledgement plus non-template evidence file, Play Console validation acknowledgement plus non-template evidence file, and physical Android smoke evidence. |

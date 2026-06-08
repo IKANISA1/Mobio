@@ -33,14 +33,17 @@ replay, Play Console upload validation, and physical-device Android smoke.
 linked Supabase credentials and Play service-account Git history. The release
 workflow checks out full history, requires `REQUIRE_SECRET_HISTORY_CLEAN=true`,
 and Fastlane production promotion requires `PLAY_PRODUCTION_APPROVED=true`.
-The Play service-account history gate still fails until the exposed key is
-revoked/rotated and commit `b10e74f` is purged from history.
+
+2026-06-08 update: the Play service-account file has been purged from current
+Git refs and `scripts/qa/check_secret_history.sh` now passes. Production still
+requires provider-side evidence that the exposed Play key was revoked/rotated
+and that the replacement key lives only in approved CI secret storage.
 
 ## Top Launch Blockers
 
 | Severity | Area | Finding | Status |
 | --- | --- | --- | --- |
-| P0 | Secrets | Google Play service-account private key was tracked at `android/fastlane/play-store-service-account.json`; local working tree now deletes it and Fastlane reads `PLAY_STORE_SERVICE_ACCOUNT_JSON`, but history rotation/purge is still required. | Partially fixed |
+| P0 | Secrets | Google Play service-account private key was tracked at `android/fastlane/play-store-service-account.json`; Git history purge is complete for current refs and Fastlane reads `PLAY_STORE_SERVICE_ACCOUNT_JSON`, but provider-side revoke/rotation evidence is still required. | Git fixed, external evidence pending |
 | P0 | Validation | Historical Flutter/Dart disk issues are no longer the active local blocker. Current local evidence includes clean Flutter analyzer, full Flutter tests, release contract tests, backend checks, secret scan, public-site verifier, and signed Android AAB/APK builds. Physical-device smoke and Play upload validation are still external blockers. | Locally improved, externally blocked |
 | P0 | Database | Static migration concerns were followed by local Docker Desktop replay, local DB lint, and local SQL assertions. Linked Supabase access remains blocked by missing privileged credentials or `SUPABASE_DB_PASSWORD`, so staging/production validation is still open. | Locally improved, linked validation blocked |
 | P1 | Admin auth | Admin permission fallback previously trusted `profiles.role = 'admin'` after allowlist deactivation. A migration now binds the fallback to active admin WhatsApp numbers and revokes explicit grants on deactivation. | Fixed locally, unvalidated against DB |
