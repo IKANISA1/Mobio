@@ -20,6 +20,8 @@ if (keystorePropertiesFile.exists()) {
 val isReleaseTaskRequested = gradle.startParameter.taskNames.any { taskName ->
     taskName.contains("Release", ignoreCase = true)
 }
+val releaseShrinkingEnabled =
+    providers.gradleProperty("mobi.release.shrink").map { it.toBoolean() }.orElse(true)
 if (isReleaseTaskRequested && !keystorePropertiesFile.exists()) {
     throw GradleException(
         "Missing android/key.properties. Release builds must use the production signing config.",
@@ -74,8 +76,8 @@ android {
             } else {
                 signingConfigs.getByName("debug")
             }
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = releaseShrinkingEnabled.get()
+            isShrinkResources = releaseShrinkingEnabled.get()
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

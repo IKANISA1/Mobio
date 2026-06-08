@@ -11,6 +11,14 @@ else
   FLUTTER_BIN="${FLUTTER_BIN:-flutter}"
 fi
 
+if [[ -z "${JAVA_HOME:-}" && -x /usr/libexec/java_home ]]; then
+  java_17_home="$(/usr/libexec/java_home -v 17 2>/dev/null || true)"
+  if [[ -n "$java_17_home" ]]; then
+    export JAVA_HOME="$java_17_home"
+    export PATH="$JAVA_HOME/bin:$PATH"
+  fi
+fi
+
 if [[ "${MOBI_DISABLE_GRADLE_DAEMON:-true}" == "true" ]]; then
   export GRADLE_OPTS="-Dorg.gradle.daemon=false ${GRADLE_OPTS:-}"
 fi
@@ -84,6 +92,10 @@ target_platform_args=()
 if [[ -n "${ANDROID_TARGET_PLATFORMS:-}" ]]; then
   target_platform_args+=(--target-platform="$ANDROID_TARGET_PLATFORMS")
 fi
+gradle_property_args=()
+if [[ -n "${ANDROID_RELEASE_SHRINK:-}" ]]; then
+  gradle_property_args+=(--android-project-arg="mobi.release.shrink=$ANDROID_RELEASE_SHRINK")
+fi
 
 case "$target" in
   appbundle)
@@ -91,6 +103,7 @@ case "$target" in
     rm -f "$output"
     "$FLUTTER_BIN" build appbundle --release \
       "${target_platform_args[@]}" \
+      "${gradle_property_args[@]}" \
       --dart-define-from-file="$dart_define_file"
 
     test -s "$output"
@@ -104,6 +117,7 @@ case "$target" in
     rm -f "$output" "$gradle_output"
     "$FLUTTER_BIN" build apk --release \
       "${target_platform_args[@]}" \
+      "${gradle_property_args[@]}" \
       --dart-define-from-file="$dart_define_file"
 
     if [[ ! -s "$output" && -s "$gradle_output" ]]; then
