@@ -6,6 +6,22 @@ cd "$repo_root"
 
 failures=0
 dry_run="${GO_NO_GO_DRY_RUN:-false}"
+release_target="${RELEASE_TARGET:-all}"
+
+case "$release_target" in
+  all|android|ios) ;;
+  *)
+    echo "RELEASE_TARGET must be one of: all, android, ios" >&2
+    exit 1
+    ;;
+esac
+
+if [[ -f .env ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
+fi
 
 run_gate() {
   local name="$1"
@@ -69,7 +85,12 @@ run_gate \
   env REQUIRE_LINKED_SUPABASE=true ./scripts/ci/verify_backend.sh
 run_gate \
   "Release config and signing gates" \
-  env REQUIRE_ANDROID_SIGNING=true REQUIRE_SECRET_HISTORY_CLEAN=true ./scripts/ci/verify_release_config.sh
+  env \
+    REQUIRE_ANDROID_SIGNING=true \
+    REQUIRE_SECRET_HISTORY_CLEAN=true \
+    REQUIRE_IOS_FIREBASE="$([[ "$release_target" == "android" ]] && echo false || echo true)" \
+    REQUIRE_IOS_NATIVE="$([[ "$release_target" == "android" ]] && echo false || echo true)" \
+    ./scripts/ci/verify_release_config.sh
 
 require_evidence \
   PLAY_SERVICE_ACCOUNT_ROTATED \

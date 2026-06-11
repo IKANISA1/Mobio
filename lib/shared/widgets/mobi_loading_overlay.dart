@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
 /// Full-screen semi-transparent loading overlay.
@@ -66,16 +67,23 @@ class _OverlayContentState extends State<_OverlayContent>
     return FadeTransition(
       opacity: _opacity,
       child: ColoredBox(
-        color: cs.surface.withValues(alpha: 0.7),
+        color: cs.surface.withValues(alpha: ext.scrimAlpha),
         child: Center(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
             decoration: BoxDecoration(
               color: ext.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(28),
+              border: Border.all(
+                color: ext.borderSubtle.withValues(
+                  alpha: ext.surfacePanelBorderAlpha,
+                ),
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
+                  color: Colors.black.withValues(
+                    alpha: ext.surfacePanelShadowAlpha,
+                  ),
                   blurRadius: 30,
                   offset: const Offset(0, 10),
                 ),
@@ -96,8 +104,7 @@ class _OverlayContentState extends State<_OverlayContent>
                   const SizedBox(height: 16),
                   Text(
                     widget.message!,
-                    style: TextStyle(
-                      fontSize: 14,
+                    style: AppTypography.bodySm.copyWith(
                       color: cs.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
                     ),

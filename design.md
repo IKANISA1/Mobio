@@ -1,6 +1,6 @@
 # Mobio UI System
 
-> Version: 2.3
+> Version: 3.0
 > Last updated: 2026-06-08
 > Source of truth: `lib/core/theme/`, `lib/shared/widgets/`
 
@@ -13,7 +13,7 @@ Non-negotiable constraints:
 - keep the 3-tab shell and current route structure
 - preserve the current core flows: Home, BioPay, Profile, Nearby, Bookings, Schedule, Trip Details, Chat, Admin
 - work additively on top of current business logic and data contracts
-- make screens lighter and faster while supporting the approved bus/public-transport expansion
+- make screens darker, more immersive, and faster while supporting the approved bus/public-transport expansion
 
 ## 2. Core design principles
 
@@ -23,7 +23,8 @@ Non-negotiable constraints:
 - stronger hierarchy through spacing and grouping
 - one reusable pattern for each repeated job
 - sentence case by default
-- calm surfaces over decorative depth
+- immersive gradient surfaces over decorative depth
+- Revolut-reference command bars, circular actions, and floating black navigation
 
 Practical rule:
 
@@ -54,22 +55,50 @@ The main UI problems were:
 
 Brand:
 
-- primary remains Mobio green
-- secondary and tertiary stay muted and functional
+- primary is `#8885F0` periwinkle
+- secondary is `#D38B96` dusty rose
+- tertiary/success is `#3CD070` mint green
+- warning/error emphasis is `#FF5E43` vibrant orange-red
 
 Neutrals:
 
-- dark mode uses graphite and charcoal surfaces
-- light mode uses soft warm neutrals instead of flat white everywhere
+- dark mode uses black, ink, and deep violet surfaces
+- light mode remains available but is secondary to the dark shell
 
 Semantic usage:
 
-- `primary`: selection, CTA, live state
+- `primary`: selection, focus, premium gradient node
 - `primaryContainer`: secure and brand-tinted surfaces
-- `secondaryContainer`: supporting info and neutral transport metadata
-- `tertiaryContainer`: secondary highlight surfaces
+- `secondaryContainer`: profile, promo, and warm secondary surfaces
+- `tertiaryContainer`: live, confirmed, and positive transport state
 - `errorContainer`: destructive or warning states
+- `info`: route, analytics, map, calendar, and informational links
+- `aqua`: live mobility, map pulse, and route availability accents
+- `caution`: pending, review, limited availability, and non-destructive warnings
 - `surfaceContainer*`: general layout surfaces and cards
+- `textTertiary` and `textDisabled`: timestamps, captions, and inactive controls
+- `borderStrong` and `borderSubtle`: raised chrome and quiet panel divisions
+
+Support palette:
+
+- `info` is `#4D8DFF`, with `infoContainer` `#0F274F`
+- `aqua` is `#5DE2E7`, with `aquaContainer` `#0B3439`
+- `caution` is `#FFB84D`, with `cautionContainer` `#3A2608`
+- depth stops are `#18124A`, `#10164B`, `#2A1639`, `#39202D`, `#0F3421`, `#3E1510`
+
+Revolut-reference rule:
+
+- use the support palette for small semantic accents and depth, not as competing brand colors
+- command bars, circular actions, and bottom navigation use black chrome with tokenized overlay alpha
+- primary CTAs stay white pill controls on dark surfaces unless a semantic state requires otherwise
+
+Gradient presets:
+
+- `SoftGradientTone.shell`: default Home, Trips, Admin, and Chat shell
+- `SoftGradientTone.nearby`: aqua mobility depth for map and nearby discovery
+- `SoftGradientTone.profile`: dusty rose profile/account depth
+- `SoftGradientTone.success`: mint confirmation and live success depth
+- `SoftGradientTone.alert`: orange-red failure and destructive-state depth
 
 ### 4.3 Typography rules
 
@@ -81,6 +110,7 @@ Families:
 Rules:
 
 - keep the scale tight
+- keep letter spacing at `0`
 - reserve `display*` and `heroNumber` for rare moments
 - default to `titleLg`, `titleMd`, `bodySm`, `labelMd`
 - keep titles short
@@ -148,6 +178,11 @@ Usage:
 - bottom navigation and persistent overlay treatment
 
 ### 5.2 Reusable components
+
+`MobiTopCommandBar`
+
+- avatar/logo, black search pill, and two circular command buttons
+- default primary shell chrome for Home, Trips, Profile, and product hubs
 
 `MobiPageHeader`
 

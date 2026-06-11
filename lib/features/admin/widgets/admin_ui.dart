@@ -117,7 +117,8 @@ class AdminWorkspaceFrame extends StatelessWidget {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: AppTypography.headlineLg.copyWith(
-                                        color: cs.onSurface,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w800,
                                       ),
                                     ),
                                     if (showSubtitle) ...[
@@ -196,20 +197,19 @@ class AdminPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: ext.surfaceContainerLowest,
+        color: ext.surfaceContainer.withValues(alpha: ext.surfacePanelAlpha),
         borderRadius: BorderRadius.circular(radius),
-        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.72)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.035),
-            blurRadius: 28,
-            spreadRadius: -22,
-            offset: const Offset(0, 18),
+            color: Colors.black.withValues(alpha: 0.24),
+            blurRadius: 30,
+            spreadRadius: -14,
+            offset: const Offset(0, 16),
           ),
         ],
       ),
@@ -244,7 +244,10 @@ class AdminSectionHeader extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: AppTypography.titleLg.copyWith(color: cs.onSurface),
+                style: AppTypography.titleLg.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               if (showSubtitle) ...[
                 const SizedBox(height: AppSpacing.xs),
@@ -313,9 +316,9 @@ class AdminMetricCard extends StatelessWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   color: accent.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(14),
+                  shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 18, color: accent),
+                child: Icon(icon, size: 18, color: Colors.white),
               ),
             ],
           ),
@@ -325,8 +328,9 @@ class AdminMetricCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppTypography.headlineLg.copyWith(
-              color: cs.onSurface,
+              color: Colors.white,
               fontSize: 28,
+              fontWeight: FontWeight.w800,
             ),
           ),
           if (showHint) ...[
@@ -953,12 +957,13 @@ class AdminIconButton extends StatelessWidget {
 
 Color _toneColor(BuildContext context, MobiStatusBadgeTone tone) {
   final cs = Theme.of(context).colorScheme;
+  final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
   return switch (tone) {
     MobiStatusBadgeTone.brand => cs.primary,
-    MobiStatusBadgeTone.positive => cs.primary,
-    MobiStatusBadgeTone.info => cs.tertiary,
-    MobiStatusBadgeTone.warning => Colors.amber.shade800,
+    MobiStatusBadgeTone.positive => cs.tertiary,
+    MobiStatusBadgeTone.info => ext.info,
+    MobiStatusBadgeTone.warning => ext.caution,
     MobiStatusBadgeTone.danger => cs.error,
     MobiStatusBadgeTone.neutral => cs.onSurfaceVariant,
   };

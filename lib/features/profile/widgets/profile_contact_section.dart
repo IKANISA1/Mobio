@@ -42,10 +42,7 @@ class ProfileContactSection extends StatelessWidget {
                 child: TextField(
                   controller: whatsAppController,
                   keyboardType: TextInputType.phone,
-                  style: AppTypography.titleMd.copyWith(
-                    letterSpacing: -0.4,
-                    color: cs.onSurface,
-                  ),
+                  style: AppTypography.titleMd.copyWith(color: cs.onSurface),
                   decoration: InputDecoration(
                     hintText: selectedCountry.phonePlaceholder,
                     hintStyle: AppTypography.titleMd.copyWith(
@@ -81,7 +78,9 @@ class ProfileContactSection extends StatelessWidget {
           decoration: BoxDecoration(
             color: ext.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.1)),
+            border: Border.all(
+              color: ext.borderSubtle.withValues(alpha: ext.cardBorderAlpha),
+            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -90,10 +89,7 @@ class ProfileContactSection extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 selectedCountry.dialingCode,
-                style: AppTypography.titleMd.copyWith(
-                  letterSpacing: -0.4,
-                  color: cs.onSurface,
-                ),
+                style: AppTypography.titleMd.copyWith(color: cs.onSurface),
               ),
             ],
           ),
@@ -110,7 +106,11 @@ class ProfileContactSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: ext.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: ext.surfaceContainer.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: ext.borderSubtle.withValues(
+            alpha: ext.surfacePanelBorderAlpha,
+          ),
+        ),
       ),
       child: child,
     );

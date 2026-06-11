@@ -2,21 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
 import 'package:mobi_app/core/services/location_service.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
+import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/models/trip.dart';
+import 'package:mobi_app/models/vehicle_type.dart';
 import 'package:mobi_app/models/vehicle_type_model.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
 import 'package:mobi_app/shared/widgets/driver_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
-import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
+import 'package:mobi_app/shared/widgets/mobi_top_command_bar.dart';
 import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
@@ -54,11 +58,21 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   @override
   void initState() {
     super.initState();
+    if (SupabaseConfig.isLocalUiPreview) {
+      _loadLocalPreviewData();
+      return;
+    }
+
     _loadVehicleTypes();
     _loadLocationAndDrivers();
   }
 
   Future<void> _loadLocationAndDrivers() async {
+    if (SupabaseConfig.isLocalUiPreview) {
+      _loadLocalPreviewData();
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _hasError = false;
@@ -109,6 +123,11 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   }
 
   Future<void> _requestLocationAndReload() async {
+    if (SupabaseConfig.isLocalUiPreview) {
+      _loadLocalPreviewData();
+      return;
+    }
+
     final permissionService = ref.read(appPermissionServiceProvider);
     final action = await PermissionAccessDialog.show(
       context,
@@ -130,6 +149,13 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   }
 
   Future<void> _loadVehicleTypes() async {
+    if (SupabaseConfig.isLocalUiPreview) {
+      if (mounted) {
+        setState(() => _vehicleTypes = VehicleTypeModel.fallbackTypes);
+      }
+      return;
+    }
+
     final types = await ref.read(vehicleTypeServiceProvider).getAll();
     if (mounted) setState(() => _vehicleTypes = types);
   }
@@ -138,7 +164,57 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
     setState(() {
       _vehicleId = id;
     });
-    _loadLocationAndDrivers();
+    if (SupabaseConfig.isLocalUiPreview) {
+      _loadLocalPreviewData();
+    } else {
+      _loadLocationAndDrivers();
+    }
+  }
+
+  void _loadLocalPreviewData() {
+    final source = AppConstants.mockTrips
+        .where((trip) => trip.role == 'driver')
+        .where(_matchesSelectedVehicle)
+        .take(5)
+        .toList();
+    final drivers = <NearbyDriver>[];
+
+    for (var i = 0; i < source.length; i++) {
+      final trip = source[i];
+      final type = trip.effectiveVehicleType;
+      drivers.add(
+        NearbyDriver(
+          driverId: trip.authorId,
+          memberId: AppConstants.getDriverId(trip.authorId),
+          vehicleTypeId: type == VehicleType.private_ ? 'private' : type.name,
+          latitude: trip.originLat ?? -1.9441,
+          longitude: trip.originLng ?? 30.0619,
+          distanceKm: 0.4 + (i * 0.35),
+        ),
+      );
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _vehicleTypes = VehicleTypeModel.fallbackTypes;
+      _nearbyDrivers = drivers;
+      _userLat = -1.9441;
+      _isLoading = false;
+      _hasError = false;
+    });
+  }
+
+  bool _matchesSelectedVehicle(Trip trip) {
+    if (_vehicleId == 'all') {
+      return true;
+    }
+
+    final type = trip.effectiveVehicleType;
+    final id = type == VehicleType.private_ ? 'private' : type.name;
+    return id == _vehicleId;
   }
 
   @override
@@ -171,6 +247,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
     }
 
     return SoftGradient(
+      tone: SoftGradientTone.nearby,
       child: SafeArea(
         bottom: false,
         child: RefreshIndicator.adaptive(
@@ -185,18 +262,64 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                 padding: EdgeInsets.only(bottom: 136 + mediaPadding.bottom),
                 sliver: SliverMainAxisGroup(
                   slivers: [
-                    // Header — compact, using MobiPageHeader
                     SliverToBoxAdapter(
-                      child: MobiPageHeader(
-                        title: 'Nearby',
-                        onBack: widget.onBack,
-                        showBackButton: widget.onBack != null,
-                        trailing: MobiStatusBadge(
-                          label: '${driverTrips.length}',
-                          icon: LucideIcons.mapPin,
-                          tone: driverTrips.isNotEmpty
-                              ? MobiStatusBadgeTone.positive
-                              : MobiStatusBadgeTone.neutral,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.screenPadding,
+                          AppSpacing.md,
+                          AppSpacing.screenPadding,
+                          0,
+                        ),
+                        child: Column(
+                          children: [
+                            MobiTopCommandBar(
+                              searchHint: 'Search nearby',
+                              actions: [
+                                const MobiTopCommandBarAction(
+                                  icon: LucideIcons.map,
+                                  label: 'Map',
+                                ),
+                                MobiTopCommandBarAction(
+                                  icon: widget.onBack == null
+                                      ? LucideIcons.slidersHorizontal
+                                      : LucideIcons.arrowLeft,
+                                  label: widget.onBack == null
+                                      ? 'Filters'
+                                      : 'Back',
+                                  onTap: widget.onBack,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: AppSpacing.xl),
+                            Text(
+                              'Find a ride nearby',
+                              textAlign: TextAlign.center,
+                              style: AppTypography.displayLg.copyWith(
+                                color: Colors.white,
+                                fontSize: 40,
+                                height: 1.08,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.sm),
+                            Text(
+                              driverTrips.isNotEmpty
+                                  ? '${driverTrips.length} active drivers'
+                                  : 'Live availability around you',
+                              textAlign: TextAlign.center,
+                              style: AppTypography.bodyLg.copyWith(
+                                color: Colors.white.withValues(alpha: 0.78),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            MobiStatusBadge(
+                              label: '${driverTrips.length}',
+                              icon: LucideIcons.mapPin,
+                              tone: driverTrips.isNotEmpty
+                                  ? MobiStatusBadgeTone.positive
+                                  : MobiStatusBadgeTone.neutral,
+                            ),
+                          ],
                         ),
                       ).animate().fade(duration: 400.ms).slideY(begin: -0.1),
                     ),

@@ -28,16 +28,16 @@ class MobiStatusBadge extends StatelessWidget {
         fg: cs.onPrimaryContainer,
       ),
       MobiStatusBadgeTone.positive => (
-        bg: cs.primary.withValues(alpha: 0.12),
-        fg: cs.primary,
+        bg: cs.tertiaryContainer,
+        fg: cs.onTertiaryContainer,
       ),
       MobiStatusBadgeTone.info => (
-        bg: cs.secondaryContainer,
-        fg: cs.onSecondaryContainer,
+        bg: ext.infoContainer,
+        fg: ext.onInfoContainer,
       ),
       MobiStatusBadgeTone.warning => (
-        bg: Colors.amber.withValues(alpha: 0.14),
-        fg: Colors.amber.shade800,
+        bg: ext.cautionContainer,
+        fg: ext.onCautionContainer,
       ),
       MobiStatusBadgeTone.danger => (
         bg: cs.errorContainer,

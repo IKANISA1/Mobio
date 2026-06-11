@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
-/// Full-screen background layer using a classic radial gradient.
-///
-/// Provides a consistent, clean surface behind app content.
-/// Cards and containers sit on top with their own opaque backgrounds.
+enum SoftGradientTone { shell, nearby, profile, success, alert }
+
+/// Full-screen immersive background layer.
 class SoftGradient extends StatelessWidget {
   final Widget child;
+  final SoftGradientTone tone;
 
-  const SoftGradient({super.key, required this.child});
+  const SoftGradient({
+    super.key,
+    required this.child,
+    this.tone = SoftGradientTone.shell,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final colors = _colorsFor(ext);
 
     return Stack(
       fit: StackFit.expand,
@@ -23,26 +28,56 @@ class SoftGradient extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [ext.surfaceBright, cs.surface],
+              stops: const [0, 0.42, 1],
+              colors: colors,
             ),
           ),
         ),
-        Positioned(
-          top: -80,
-          right: -40,
-          child: IgnorePointer(
-            child: Container(
-              width: 220,
-              height: 220,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: cs.primary.withValues(alpha: 0.05),
-              ),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withValues(alpha: 0),
+                Colors.black.withValues(alpha: ext.scrimAlpha * 0.38),
+                Colors.black.withValues(alpha: ext.scrimAlpha),
+              ],
             ),
           ),
         ),
         child,
       ],
     );
+  }
+
+  List<Color> _colorsFor(MobiThemeExtension ext) {
+    return switch (tone) {
+      SoftGradientTone.shell => [
+        ext.backgroundGradientTop,
+        ext.backgroundGradientMid,
+        ext.backgroundGradientBottom,
+      ],
+      SoftGradientTone.nearby => [
+        AppColors.aqua,
+        AppColors.aquaContainer,
+        ext.backgroundGradientBottom,
+      ],
+      SoftGradientTone.profile => [
+        AppColors.brandDustyRose,
+        AppColors.roseDepth,
+        ext.backgroundGradientBottom,
+      ],
+      SoftGradientTone.success => [
+        AppColors.brandMintGreen,
+        AppColors.mintDepth,
+        ext.backgroundGradientBottom,
+      ],
+      SoftGradientTone.alert => [
+        AppColors.brandOrangeRed,
+        AppColors.orangeDepth,
+        ext.backgroundGradientBottom,
+      ],
+    };
   }
 }

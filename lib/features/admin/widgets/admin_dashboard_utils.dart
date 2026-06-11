@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/services/admin_service.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 
 class AdminDashboardUtils {
@@ -80,11 +81,12 @@ class AdminDashboardUtils {
 
   static Color toneColor(BuildContext context, MobiStatusBadgeTone tone) {
     final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     return switch (tone) {
       MobiStatusBadgeTone.brand => cs.primary,
-      MobiStatusBadgeTone.positive => cs.primary,
-      MobiStatusBadgeTone.info => cs.tertiary,
-      MobiStatusBadgeTone.warning => Colors.amber.shade800,
+      MobiStatusBadgeTone.positive => cs.tertiary,
+      MobiStatusBadgeTone.info => ext.info,
+      MobiStatusBadgeTone.warning => ext.caution,
       MobiStatusBadgeTone.danger => cs.error,
       MobiStatusBadgeTone.neutral => cs.onSurfaceVariant,
     };

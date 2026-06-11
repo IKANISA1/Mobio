@@ -26,12 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>Mobio needs camera access to capture and scan BioPay faces securely on-device.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Mobio needs your location to show nearby drivers and calculate routes.</string>
+	<string>Mobio uses your location to show nearby drivers and passengers and prepare Google Maps handoff.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Mobio needs your location to show nearby drivers and calculate routes.</string>
+	<string>Mobio uses your location to show nearby drivers and passengers and prepare Google Maps handoff.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

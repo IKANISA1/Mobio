@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 
@@ -59,12 +60,13 @@ class PermissionAccessDialog extends StatelessWidget {
     BuildContext context, {
     required PermissionAccessDialogConfig config,
   }) async {
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final action =
         await showGeneralDialog<PermissionAccessDialogAction>(
           context: context,
           barrierDismissible: false,
           barrierLabel: config.title,
-          barrierColor: Colors.black.withValues(alpha: 0.72),
+          barrierColor: Colors.black.withValues(alpha: ext.scrimAlpha),
           pageBuilder: (context, animation, secondaryAnimation) {
             return SafeArea(
               child: Center(
@@ -127,7 +129,7 @@ class PermissionAccessDialog extends StatelessWidget {
                     config.title,
                     textAlign: TextAlign.center,
                     style: AppTypography.headlineMd.copyWith(
-                      letterSpacing: -0.8,
+                      letterSpacing: 0,
                       color: cs.onSurface,
                     ),
                   ),

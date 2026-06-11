@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
-import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
 import 'package:mobi_app/shared/widgets/glass_container.dart';
 
-/// Bottom navigation bar — 3-tab design: Discover / Trips / Profile.
-/// Matches the transito UI with frosted glass background,
-/// active tab pill (green circle + label), and animated transitions.
-/// Each tab now provides opacity + scale feedback on press.
+/// Floating bottom navigation bar.
 class MobiBottomNav extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -51,8 +47,8 @@ class MobiBottomNav extends StatelessWidget {
       child: isAdmin
           ? _AdminNavContainer(child: navRow)
           : GlassCard(
-              customBorderRadius: BorderRadius.circular(AppRadii.hero),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              customBorderRadius: BorderRadius.circular(42),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               child: navRow,
             ),
     );
@@ -80,20 +76,21 @@ class _AdminNavContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: ext.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(AppRadii.hero),
-        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.75)),
+        color: ext.surfaceContainerLowest.withValues(alpha: ext.navChromeAlpha),
+        borderRadius: BorderRadius.circular(42),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: ext.cardBorderAlpha),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.035),
-            blurRadius: 28,
-            spreadRadius: -22,
-            offset: const Offset(0, 18),
+            color: Colors.black.withValues(alpha: ext.surfacePanelShadowAlpha),
+            blurRadius: 30,
+            spreadRadius: -12,
+            offset: const Offset(0, 16),
           ),
         ],
       ),
@@ -137,6 +134,7 @@ class _TappableNavItemState extends State<_TappableNavItem> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final fastDuration = reduceMotion
         ? Duration.zero
@@ -170,52 +168,44 @@ class _TappableNavItemState extends State<_TappableNavItem> {
                 child: AnimatedContainer(
                   duration: settleDuration,
                   curve: Curves.easeOutCubic,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: widget.isActive ? 12 : 0,
-                    vertical: AppSpacing.xs,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
                   ),
                   decoration: BoxDecoration(
                     color: widget.isActive
-                        ? cs.primary.withValues(
-                            alpha: widget.isAdmin ? 0.1 : 0.14,
-                          )
+                        ? ext.surfaceContainerHigh.withValues(alpha: 0.84)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(AppRadii.pill),
                   ),
                   child: ExcludeSemantics(
-                    child: Row(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           widget.icon,
-                          size: 20,
+                          size: 22,
                           color: widget.isActive
-                              ? cs.primary
+                              ? Colors.white
                               : cs.onSurfaceVariant,
                         ),
-                        AnimatedSize(
-                          duration: settleDuration,
-                          curve: Curves.easeOutCubic,
-                          child: widget.isActive
-                              ? Row(
-                                  children: [
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      widget.label,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      softWrap: false,
-                                      textAlign: TextAlign.center,
-                                      style: AppTypography.labelSm.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 0,
-                                        color: cs.primary,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : const SizedBox.shrink(),
+                        const SizedBox(height: 2),
+                        Text(
+                          widget.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          textAlign: TextAlign.center,
+                          style: AppTypography.labelSm.copyWith(
+                            fontWeight: widget.isActive
+                                ? FontWeight.w800
+                                : FontWeight.w600,
+                            letterSpacing: 0,
+                            color: widget.isActive
+                                ? Colors.white
+                                : cs.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),

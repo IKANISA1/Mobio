@@ -17,12 +17,11 @@ import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_confirm_dialog.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
-import 'package:mobi_app/shared/widgets/mobi_info_chip.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
+import 'package:mobi_app/shared/widgets/mobi_top_command_bar.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
-import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -66,6 +65,26 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       _isLoading = true;
       _error = null;
     });
+
+    if (SupabaseConfig.isLocalUiPreview) {
+      final trips = AppConstants.mockTrips;
+      if (mounted) {
+        setState(() {
+          _myTrips = trips
+              .where((trip) => trip.role == 'passenger')
+              .take(3)
+              .map((trip) => trip.copyWith(status: 'active'))
+              .toList();
+          _nearbyTrips = trips
+              .where((trip) => trip.role == 'driver')
+              .take(4)
+              .map((trip) => trip.copyWith(status: 'active'))
+              .toList();
+          _isLoading = false;
+        });
+      }
+      return;
+    }
 
     final hasSession =
         SupabaseConfig.isConfigured &&
@@ -153,6 +172,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   @override
   Widget build(BuildContext context) {
     final mediaPadding = MediaQuery.paddingOf(context);
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final grouped = _groupTrips(_currentTrips);
 
     return SoftGradient(
@@ -176,58 +196,53 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                       0,
                     ),
                     sliver: SliverToBoxAdapter(
-                      child: MobiSurfacePanel(
-                        padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.lg,
-                          AppSpacing.lg,
-                          AppSpacing.lg,
-                          AppSpacing.lg,
-                        ),
-                        borderRadius: AppRadii.hero,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                if (widget.onBack != null)
-                                  TappableIconButton(
-                                    icon: LucideIcons.chevronLeft,
-                                    onTap: widget.onBack,
-                                  )
-                                else
-                                  const TappableIconButton(
-                                    icon: LucideIcons.menu,
-                                  ),
-                                const SizedBox(width: AppSpacing.md),
-                                Expanded(
-                                  child: Text(
-                                    'Trips',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTypography.titleLg.copyWith(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.primary,
-                                    ),
-                                  ),
-                                ),
-                                MobiStatusBadge(
-                                  label: '${_currentTrips.length}',
-                                  icon: _activeToggle == 0
-                                      ? LucideIcons.calendarCheck
-                                      : LucideIcons.mapPin,
-                                  tone: MobiStatusBadgeTone.brand,
-                                ),
-                              ],
+                      child: Column(
+                        children: [
+                          MobiTopCommandBar(
+                            actions: [
+                              const MobiTopCommandBarAction(
+                                icon: LucideIcons.calendarDays,
+                                label: 'Calendar',
+                              ),
+                              MobiTopCommandBarAction(
+                                icon: LucideIcons.plus,
+                                label: 'Schedule',
+                                onTap: widget.onSchedule,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: AppSpacing.xl),
+                          Text(
+                            'Trips',
+                            textAlign: TextAlign.center,
+                            style: AppTypography.displayLg.copyWith(
+                              color: Colors.white,
+                              fontSize: 42,
+                              height: 1.05,
                             ),
-                            const SizedBox(height: AppSpacing.lg),
-                            MobiToggle(
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
+                          Text(
+                            _currentTrips.isEmpty
+                                ? 'Plan, track, and manage rides'
+                                : '${_currentTrips.length} active records',
+                            textAlign: TextAlign.center,
+                            style: AppTypography.bodyLg.copyWith(
+                              color: Colors.white.withValues(alpha: 0.76),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.lg),
+                          MobiSurfacePanel(
+                            padding: const EdgeInsets.all(AppSpacing.xs),
+                            borderRadius: AppRadii.pill,
+                            child: MobiToggle(
                               labels: const ['Mine', 'Nearby'],
                               selectedIndex: _activeToggle,
                               onChanged: _switchToggle,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -263,21 +278,23 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                   width: 64,
                   height: 64,
                   child: Material(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Colors.white,
                     shape: const CircleBorder(),
                     elevation: 3,
                     shadowColor: Theme.of(
                       context,
-                    ).colorScheme.primary.withValues(alpha: 0.18),
+                    ).colorScheme.primary.withValues(alpha: 0.22),
                     child: InkWell(
                       onTap: widget.onSchedule,
                       customBorder: const CircleBorder(),
-                      splashColor: Colors.white.withValues(alpha: 0.12),
+                      splashColor: Colors.white.withValues(
+                        alpha: ext.pressedWhiteAlpha,
+                      ),
                       child: const Center(
                         child: Icon(
                           LucideIcons.plus,
                           size: 24,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -428,6 +445,11 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         ? 'Active'
         : '${s[0].toUpperCase()}${s.substring(1).toLowerCase()}';
 
+    final statusLabel = capitalize(trip.status);
+    final statusTone = trip.status == 'active'
+        ? MobiStatusBadgeTone.positive
+        : MobiStatusBadgeTone.danger;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
       child: Hero(
@@ -435,147 +457,103 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         child: Material(
           type: MaterialType.transparency,
           child: ClayCard(
-            padding: const EdgeInsets.all(AppSpacing.xl),
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            borderRadius: AppRadii.hero,
             onTap: () => widget.onTripDetails(trip.id ?? ''),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (isNearby && trip.authorId.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
-                              child: Text(
-                                nearbyLabel,
-                                style: AppTypography.labelMd.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                            ),
-                          Text(
-                            route,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTypography.titleLg.copyWith(
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
+                SizedBox.square(
+                  dimension: 58,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Theme.of(context).colorScheme.primary,
+                          Theme.of(context).colorScheme.tertiary,
                         ],
                       ),
                     ),
-                    const SizedBox(width: AppSpacing.md),
-                    Icon(
-                      isNearby
-                          ? LucideIcons.messageCircle
-                          : LucideIcons.chevronRight,
-                      size: 18,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.md),
-                Wrap(
-                  spacing: AppSpacing.xs,
-                  runSpacing: AppSpacing.xs,
-                  children: [
-                    MobiInfoChip(label: timeDisplay, icon: LucideIcons.clock),
-                    MobiStatusBadge(
-                      label: vType.displayName,
-                      icon: getVehicleIcon(vType),
-                      tone: MobiStatusBadgeTone.info,
-                    ),
-                    MobiStatusBadge(
-                      label: capitalize(trip.status),
-                      tone: trip.status == 'active'
-                          ? MobiStatusBadgeTone.positive
-                          : MobiStatusBadgeTone.danger,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.md),
-                Container(
-                  padding: const EdgeInsets.only(top: AppSpacing.md),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      top: BorderSide(
-                        color: Theme.of(
-                          context,
-                        ).extension<MobiThemeExtension>()!.surfaceContainer,
-                        width: 1,
-                      ),
+                    child: Icon(
+                      getVehicleIcon(vType),
+                      size: 26,
+                      color: Colors.white,
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (!isNearby && trip.status != 'cancelled')
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
+                      if (isNearby && trip.authorId.isNotEmpty)
+                        Text(
+                          nearbyLabel,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.labelMd.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      Text(
+                        route,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.titleMd.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        '$timeDisplay · ${vType.displayName}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.bodySm.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    MobiStatusBadge(label: statusLabel, tone: statusTone),
+                    const SizedBox(height: AppSpacing.xs),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (!isNearby && trip.status != 'cancelled')
+                          InkWell(
                             onTap: () => _cancelTrip(trip),
-                            borderRadius: BorderRadius.circular(24),
-                            splashColor: Theme.of(
-                              context,
-                            ).colorScheme.error.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(AppRadii.pill),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 8,
+                                horizontal: AppSpacing.xs,
+                                vertical: 6,
                               ),
                               child: Text(
                                 'Cancel',
-                                style: AppTypography.labelLg.copyWith(
+                                style: AppTypography.labelMd.copyWith(
                                   color: Theme.of(context).colorScheme.error,
                                 ),
                               ),
                             ),
                           ),
-                        )
-                      else
-                        const SizedBox.shrink(),
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () => widget.onTripDetails(trip.id ?? ''),
-                          borderRadius: BorderRadius.circular(24),
-                          splashColor: Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.12),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 8,
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Details',
-                                  style: AppTypography.labelLg.copyWith(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Icon(
-                                  LucideIcons.arrowRight,
-                                  size: 12,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
-                              ],
-                            ),
-                          ),
+                        Icon(
+                          isNearby
+                              ? LucideIcons.messageCircle
+                              : LucideIcons.chevronRight,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -586,6 +564,18 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   }
 
   Future<void> _cancelTrip(Trip trip) async {
+    if (SupabaseConfig.isLocalUiPreview) {
+      if (mounted) {
+        setState(() {
+          _myTrips = _myTrips.where((item) => item.id != trip.id).toList();
+          _nearbyTrips = _nearbyTrips
+              .where((item) => item.id != trip.id)
+              .toList();
+        });
+      }
+      return;
+    }
+
     final confirmed = await MobiConfirmDialog.show(
       context: context,
       title: 'Cancel trip?',

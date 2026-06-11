@@ -39,16 +39,16 @@ class MobiStateBanner extends StatelessWidget {
         accentBackground: cs.primaryContainer,
       ),
       MobiStateBannerTone.info => (
-        accent: cs.onSecondaryContainer,
-        accentBackground: cs.secondaryContainer,
+        accent: ext.onInfoContainer,
+        accentBackground: ext.infoContainer,
       ),
       MobiStateBannerTone.positive => (
-        accent: cs.primary,
-        accentBackground: cs.primary.withValues(alpha: 0.12),
+        accent: cs.onTertiaryContainer,
+        accentBackground: cs.tertiaryContainer,
       ),
       MobiStateBannerTone.warning => (
-        accent: Colors.amber.shade800,
-        accentBackground: Colors.amber.withValues(alpha: 0.16),
+        accent: ext.onCautionContainer,
+        accentBackground: ext.cautionContainer,
       ),
       MobiStateBannerTone.danger => (
         accent: cs.onErrorContainer,

@@ -54,7 +54,9 @@ class ProfileVehicleSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: ext.surfaceContainerLow,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: ext.borderSubtle.withValues(alpha: ext.cardBorderAlpha),
+        ),
       ),
       child: Row(
         children: vehicleTypes.map((vt) {
@@ -76,7 +78,9 @@ class ProfileVehicleSection extends StatelessWidget {
                       border: Border.all(
                         color: isSelected
                             ? cs.primary.withValues(alpha: 0.45)
-                            : cs.outlineVariant.withValues(alpha: 0.1),
+                            : ext.borderSubtle.withValues(
+                                alpha: ext.cardBorderAlpha,
+                              ),
                       ),
                     ),
                     child: Column(
@@ -127,7 +131,9 @@ class ProfileVehicleSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: ext.surfaceContainerLow,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: ext.borderSubtle.withValues(alpha: ext.cardBorderAlpha),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,10 +153,7 @@ class ProfileVehicleSection extends StatelessWidget {
                 FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z0-9 -]')),
                 LengthLimitingTextInputFormatter(16),
               ],
-              style: AppTypography.titleMd.copyWith(
-                letterSpacing: -0.4,
-                color: cs.onSurface,
-              ),
+              style: AppTypography.titleMd.copyWith(color: cs.onSurface),
               decoration: InputDecoration(
                 hintText: 'RAA 123 A',
                 hintStyle: AppTypography.titleMd.copyWith(
@@ -177,7 +180,11 @@ class ProfileVehicleSection extends StatelessWidget {
       decoration: BoxDecoration(
         color: ext.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: ext.surfaceContainer.withValues(alpha: 0.1)),
+        border: Border.all(
+          color: ext.borderSubtle.withValues(
+            alpha: ext.surfacePanelBorderAlpha,
+          ),
+        ),
       ),
       child: child,
     );

@@ -74,6 +74,10 @@ String? _adminRouteGuard(GoRouterState state) {
     return null;
   }
 
+  if (!SupabaseConfig.isConfigured) {
+    return isProtectedAdminRoute ? AppRoutes.discover : null;
+  }
+
   // Check if user has an active session
   try {
     final user = Supabase.instance.client.auth.currentUser;
@@ -214,7 +218,9 @@ GoRouter createRouter() {
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     observers: FirebaseAnalyticsService.instance.observers,
-    initialLocation: SupabaseConfig.isConfigured ? '/' : '/config-error',
+    initialLocation: SupabaseConfig.shouldShowConfigError
+        ? AppRoutes.configError
+        : AppRoutes.discover,
     errorBuilder: (context, state) => const NotFoundScreen(),
     refreshListenable: _SupabaseAuthRefreshListenable(),
     redirect: (context, state) =>

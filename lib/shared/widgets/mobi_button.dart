@@ -43,7 +43,7 @@ class MobiButton extends StatelessWidget {
             child: InkWell(
               onTap: isLoading ? null : onPressed,
               borderRadius: BorderRadius.circular(AppRadii.pill),
-              splashColor: colors.fg.withValues(alpha: 0.08),
+              splashColor: colors.fg.withValues(alpha: ext.pressedWhiteAlpha),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding:
@@ -92,9 +92,9 @@ class MobiButton extends StatelessWidget {
     switch (variant) {
       case MobiButtonVariant.primary:
         return _ButtonColors(
-          bg: cs.primary,
-          fg: cs.onPrimary,
-          border: cs.primary.withValues(alpha: 0.18),
+          bg: cs.onSurface,
+          fg: cs.onInverseSurface,
+          border: Colors.white.withValues(alpha: ext.surfacePanelBorderAlpha),
         );
       case MobiButtonVariant.whatsapp:
         return const _ButtonColors(
@@ -104,9 +104,9 @@ class MobiButton extends StatelessWidget {
         );
       case MobiButtonVariant.ghost:
         return _ButtonColors(
-          bg: ext.surfaceContainerLowest,
+          bg: ext.surfaceContainerHigh.withValues(alpha: 0.72),
           fg: cs.onSurface,
-          border: cs.outlineVariant.withValues(alpha: 0.6),
+          border: Colors.white.withValues(alpha: ext.cardBorderAlpha),
         );
       case MobiButtonVariant.danger:
         return _ButtonColors(
@@ -116,9 +116,9 @@ class MobiButton extends StatelessWidget {
         );
       case MobiButtonVariant.success:
         return _ButtonColors(
-          bg: AppColors.surfaceTint,
-          fg: cs.onPrimary,
-          border: cs.primary.withValues(alpha: 0.18),
+          bg: AppColors.brandMintGreen,
+          fg: AppColors.onSuccess,
+          border: AppColors.brandMintGreen.withValues(alpha: 0.24),
         );
     }
   }

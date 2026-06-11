@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
@@ -15,6 +17,7 @@ import 'package:mobi_app/features/home/widgets/home_header.dart';
 import 'package:mobi_app/features/home/widgets/home_hero_card.dart';
 import 'package:mobi_app/features/home/widgets/scheduled_trip_card.dart';
 import 'package:mobi_app/models/trip.dart';
+import 'package:mobi_app/models/vehicle_type.dart';
 import 'package:mobi_app/models/vehicle_type_model.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
 import 'package:mobi_app/shared/widgets/driver_card.dart';
@@ -74,6 +77,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    if (SupabaseConfig.isLocalUiPreview) {
+      _loadLocalPreviewData();
+      return;
+    }
+
     _loadVehicleTypes();
     _loadData();
     _loadUnreadCount();
@@ -84,7 +92,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void didUpdateWidget(covariant HomeScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.mode != widget.mode) {
-      unawaited(_loadData());
+      if (SupabaseConfig.isLocalUiPreview) {
+        _loadLocalPreviewData();
+      } else {
+        unawaited(_loadData());
+      }
     }
   }
 
@@ -98,6 +110,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   /// Listens for realtime notifications and updates the unread badge.
   void _listenForIncomingRequests() {
+    if (SupabaseConfig.isLocalUiPreview) {
+      return;
+    }
+
     _notifSub = _notificationService.onNotification.listen((notif) {
       if (mounted) {
         setState(() => _unreadCount++);
@@ -106,6 +122,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _loadUnreadCount() async {
+    if (SupabaseConfig.isLocalUiPreview) {
+      if (mounted) setState(() => _unreadCount = 1);
+      return;
+    }
+
     try {
       final count = await _notificationService.getUnreadCount();
       if (mounted) setState(() => _unreadCount = count);
@@ -115,6 +136,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _loadData() async {
+    if (SupabaseConfig.isLocalUiPreview) {
+      _loadLocalPreviewData();
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _hasError = false;
@@ -173,18 +199,77 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _loadVehicleTypes() async {
+    if (SupabaseConfig.isLocalUiPreview) {
+      if (mounted) {
+        setState(() => _vehicleTypes = VehicleTypeModel.fallbackTypes);
+      }
+      return;
+    }
+
     final types = await ref.read(vehicleTypeServiceProvider).getAll();
     if (mounted) setState(() => _vehicleTypes = types);
   }
 
   void _switchVehicle(String id) {
     setState(() => _vehicleId = id);
-    _loadData();
+    if (SupabaseConfig.isLocalUiPreview) {
+      _loadLocalPreviewData();
+    } else {
+      _loadData();
+    }
   }
 
   void _toggleDriverOnline(bool value) {
     setState(() => _isDriverOnline = value);
+    if (SupabaseConfig.isLocalUiPreview) {
+      return;
+    }
+
     _driverLocationService.setDriverOnlineStatus(value);
+  }
+
+  void _loadLocalPreviewData() {
+    final trips = AppConstants.mockTrips;
+    final isDriver = widget.mode == 'driver';
+    final nearby = trips
+        .where(
+          (trip) => isDriver ? trip.role == 'passenger' : trip.role == 'driver',
+        )
+        .where(_matchesSelectedVehicle)
+        .take(3)
+        .toList();
+    final scheduled = trips
+        .where(
+          (trip) => isDriver ? trip.role == 'driver' : trip.role == 'passenger',
+        )
+        .where((trip) => trip.status == 'active' || trip.status == 'approved')
+        .take(3)
+        .toList();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _vehicleTypes = VehicleTypeModel.fallbackTypes;
+      _nearbyCount = nearby.length;
+      _nearbyPreview = nearby;
+      _scheduledPreview = scheduled;
+      _demandZones = const [];
+      _unreadCount = 1;
+      _isLoading = false;
+      _hasError = false;
+    });
+  }
+
+  bool _matchesSelectedVehicle(Trip trip) {
+    if (_vehicleId == 'all') {
+      return true;
+    }
+
+    final type = trip.effectiveVehicleType;
+    final id = type == VehicleType.private_ ? 'private' : type.name;
+    return id == _vehicleId;
   }
 
   @override
@@ -205,7 +290,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             padding: EdgeInsets.only(bottom: 136 + mediaPadding.bottom),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
@@ -214,24 +299,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     AppSpacing.screenPadding,
                     0,
                   ),
-                  child: MobiSurfacePanel(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                    ),
-                    borderRadius: AppRadii.hero,
-                    child: Column(
-                      children: [
-                        HomeHeader(
-                          isDriver: isDriver,
-                          unreadCount: _unreadCount,
-                          isDriverOnline: _isDriverOnline,
-                          onDriverOnlineToggle: _toggleDriverOnline,
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        MobiToggle(
+                  child: Column(
+                    children: [
+                      HomeHeader(
+                        isDriver: isDriver,
+                        unreadCount: _unreadCount,
+                        isDriverOnline: _isDriverOnline,
+                        onDriverOnlineToggle: _toggleDriverOnline,
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      MobiSurfacePanel(
+                        padding: const EdgeInsets.all(AppSpacing.xs),
+                        borderRadius: AppRadii.pill,
+                        child: MobiToggle(
                           labels: isDriver
                               ? const ['Ride', 'Drive']
                               : const ['Passenger', 'Driver'],
@@ -240,8 +320,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             i == 0 ? 'passenger' : 'driver',
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ).animate().fade(duration: 400.ms).slideY(begin: -0.1),
                 ),
                 const SizedBox(height: AppSpacing.xl),
@@ -279,6 +359,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         label: 'Schedule',
                         accent: Theme.of(context).colorScheme.secondary,
                         onTap: () => widget.onSchedule?.call(),
+                      ),
+                      MobiActionItem(
+                        icon: LucideIcons.calendarDays,
+                        label: 'Trips',
+                        accent: Theme.of(context).colorScheme.tertiary,
+                        onTap: () => widget.onViewBookings?.call(),
                       ),
                     ],
                   ).animate(delay: 200.ms).fade().slideY(begin: 0.1),

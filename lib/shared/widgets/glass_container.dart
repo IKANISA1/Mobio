@@ -38,7 +38,7 @@ class GlassCard extends StatelessWidget {
               color: Colors.white.withValues(
                 alpha: ext.glassCardBorderWhiteAlpha,
               ),
-              width: 1,
+              width: 1.1,
             ),
             gradient: LinearGradient(
               begin: Alignment.topLeft,

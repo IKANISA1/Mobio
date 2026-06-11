@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
@@ -55,7 +54,7 @@ class MobiFeatureTile extends StatelessWidget {
     final containerSize = isDense ? 40.0 : 48.0;
     final tilePadding = isDense
         ? const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
+            horizontal: AppSpacing.lg,
             vertical: AppSpacing.md,
           )
         : const EdgeInsets.symmetric(
@@ -73,11 +72,13 @@ class MobiFeatureTile extends StatelessWidget {
             height: containerSize,
             decoration: BoxDecoration(
               color: accentBackground ?? resolvedAccent.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(
-                isDense ? AppRadii.md : AppRadii.lg,
-              ),
+              shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: iconSize, color: resolvedAccent),
+            child: Icon(
+              icon,
+              size: iconSize,
+              color: accentBackground == null ? Colors.white : resolvedAccent,
+            ),
           ),
           SizedBox(width: isDense ? AppSpacing.sm : AppSpacing.md),
           Expanded(
@@ -92,9 +93,7 @@ class MobiFeatureTile extends StatelessWidget {
                       (compact ? AppTypography.bodySm : AppTypography.titleMd)
                           .copyWith(
                             color: cs.onSurface,
-                            fontWeight: compact
-                                ? FontWeight.w600
-                                : FontWeight.w700,
+                            fontWeight: FontWeight.w700,
                           ),
                 ),
                 if (showSubtitle) ...[

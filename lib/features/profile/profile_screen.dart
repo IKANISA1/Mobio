@@ -7,7 +7,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
-import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
@@ -15,6 +14,7 @@ import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_feature_tile.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
+import 'package:mobi_app/shared/widgets/mobi_top_command_bar.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -100,6 +100,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     if (_isLoading) {
       return SoftGradient(
+        tone: SoftGradientTone.profile,
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.screenPadding,
@@ -128,6 +129,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     if (_error != null) {
       return SoftGradient(
+        tone: SoftGradientTone.profile,
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.screenPadding),
@@ -168,6 +170,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
 
     return SoftGradient(
+      tone: SoftGradientTone.profile,
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.screenPadding,
@@ -178,71 +181,83 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         child: Column(
           children:
               [
-                    ClayCard(
-                      padding: const EdgeInsets.all(AppSpacing.xl),
-                      borderRadius: AppRadii.hero,
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 56,
-                                height: 56,
-                                decoration: BoxDecoration(
-                                  color: cs.primaryContainer,
-                                  borderRadius: BorderRadius.circular(
-                                    AppRadii.xl,
-                                  ),
-                                ),
-                                child: Icon(
-                                  LucideIcons.user,
-                                  size: 24,
-                                  color: cs.onPrimaryContainer,
-                                ),
-                              ),
-                              const SizedBox(width: AppSpacing.md),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      _userCode,
-                                      style: AppTypography.headlineLg.copyWith(
-                                        color: cs.onSurface,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Member profile',
-                                      style: AppTypography.bodySm.copyWith(
-                                        color: cs.onSurfaceVariant,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                    MobiTopCommandBar(
+                      searchHint: 'Search settings',
+                      actions: [
+                        MobiTopCommandBarAction(
+                          icon: LucideIcons.userCog,
+                          label: 'Edit profile',
+                          onTap: widget.onEditProfile,
+                        ),
+                        MobiTopCommandBarAction(
+                          icon: LucideIcons.shield,
+                          label: 'Security',
+                          onTap: widget.onAdminGateway,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sectionGap),
+                    Column(
+                      children: [
+                        Container(
+                          width: 112,
+                          height: 112,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [cs.primary, cs.secondary],
+                            ),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.22),
+                              width: 2,
+                            ),
                           ),
-                          const SizedBox(height: AppSpacing.md),
-                          Wrap(
-                            spacing: AppSpacing.xs,
-                            runSpacing: AppSpacing.xs,
-                            alignment: WrapAlignment.center,
-                            children: [
-                              MobiStatusBadge(
-                                label: 'Since $_memberSince',
-                                icon: LucideIcons.calendarDays,
-                                tone: MobiStatusBadgeTone.brand,
-                              ),
-                              const MobiStatusBadge(
-                                label: 'Secure',
-                                icon: LucideIcons.shieldCheck,
-                                tone: MobiStatusBadgeTone.positive,
-                              ),
-                            ],
+                          child: const Icon(
+                            LucideIcons.user,
+                            size: 42,
+                            color: Colors.white,
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        Text(
+                          'MOBI $_userCode',
+                          textAlign: TextAlign.center,
+                          style: AppTypography.displayLg.copyWith(
+                            color: Colors.white,
+                            fontSize: 38,
+                            height: 1.05,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          '@mobi$_userCode',
+                          textAlign: TextAlign.center,
+                          style: AppTypography.bodyLg.copyWith(
+                            color: Colors.white.withValues(alpha: 0.72),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        Wrap(
+                          spacing: AppSpacing.xs,
+                          runSpacing: AppSpacing.xs,
+                          alignment: WrapAlignment.center,
+                          children: [
+                            MobiStatusBadge(
+                              label: 'Since $_memberSince',
+                              icon: LucideIcons.calendarDays,
+                              tone: MobiStatusBadgeTone.brand,
+                            ),
+                            const MobiStatusBadge(
+                              label: 'Secure',
+                              icon: LucideIcons.shieldCheck,
+                              tone: MobiStatusBadgeTone.positive,
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                     const SizedBox(height: AppSpacing.sectionGap),
 

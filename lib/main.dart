@@ -49,7 +49,12 @@ Future<void> main() async {
 
       // Validate Supabase config is injected
       if (!SupabaseConfig.isConfigured) {
-        if (kDebugMode) {
+        if (SupabaseConfig.isLocalUiPreview) {
+          debugPrint(
+            'SUPABASE_URL and SUPABASE_ANON_KEY not set. '
+            'Starting Mobio in local UI preview mode.',
+          );
+        } else if (kDebugMode) {
           debugPrint(
             '⚠️  SUPABASE_URL and SUPABASE_ANON_KEY not set.\n'
             '   Run with: flutter run '

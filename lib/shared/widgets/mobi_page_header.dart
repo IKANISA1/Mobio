@@ -3,14 +3,10 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 
-/// Compact page header for pushed screens (not tab shells).
-///
-/// Shows a back button + title + optional trailing badge/action.
-/// Used consistently across NearbyScreen, TripDetailsScreen,
-/// EditProfileScreen, ChatScreen, and admin screens.
+/// Reference-style pushed-page header.
 class MobiPageHeader extends StatelessWidget {
   final String title;
   final VoidCallback? onBack;
@@ -29,8 +25,8 @@ class MobiPageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final showSubtitle = subtitle != null;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -39,36 +35,40 @@ class MobiPageHeader extends StatelessWidget {
         AppSpacing.screenPadding,
         0,
       ),
-      child: MobiSurfacePanel(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        borderRadius: AppRadii.hero,
-        child: Row(
-          children: [
-            if (showBackButton) ...[
-              TappableIconButton(
-                icon: LucideIcons.chevronLeft,
-                onTap: onBack ?? () => Navigator.maybePop(context),
+      child: Row(
+        children: [
+          if (showBackButton) ...[
+            TappableIconButton(
+              icon: LucideIcons.chevronLeft,
+              onTap: onBack ?? () => Navigator.maybePop(context),
+              backgroundColor: Colors.black.withValues(
+                alpha: ext.blackChromeAlpha,
               ),
-              const SizedBox(width: AppSpacing.sm),
-            ],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.titleLg.copyWith(color: cs.primary),
-                  ),
-                  if (showSubtitle) ...[const SizedBox(height: 2), subtitle!],
-                ],
-              ),
+              iconColor: Colors.white,
+              borderRadius: AppRadii.pill,
             ),
-            ?trailing,
+            const SizedBox(width: AppSpacing.md),
           ],
-        ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.headlineLg.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                if (showSubtitle) ...[const SizedBox(height: 4), subtitle!],
+              ],
+            ),
+          ),
+          ?trailing,
+        ],
       ),
     );
   }

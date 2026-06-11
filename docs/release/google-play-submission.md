@@ -1,6 +1,6 @@
 # Google Play Submission Checklist
 
-Last updated: 2026-05-24
+Last updated: 2026-06-11
 
 ## Current Android Readiness
 
@@ -15,12 +15,12 @@ Last updated: 2026-05-24
 - Play uploads default to the internal testing track through GitHub Actions and
   Fastlane. Set `PLAY_RELEASE_TRACK=production` only after go/no-go approval,
   and set `PLAY_PRODUCTION_APPROVED=true` for production-track validation.
-- A signed local release AAB was built on 2026-05-23 at
+- A signed local release AAB was built on 2026-06-11 at
   `build/app/outputs/bundle/release/app-release.aab` with SHA-256
-  `ce11278526a031ffa233b9c81988f0c2ce17919796175d101b8fe0688bff67f9`.
+  `4f33ee3e589a5c24b9ad3d0f6b6ad9dbcee969360657d0159cdccfa58017ba9b`.
 - A signed local release APK was also built at
   `build/app/outputs/flutter-apk/app-release.apk` with SHA-256
-  `862f9d989d32750fd229c35e3286c2ae76f24adab6f43ccda5fbacd93710d4df` and
+  `c2c05cfc3c3ff9417fe83f46877163b5d2a99f82d1f034a3549313c68c337cb5` and
   verified with APK Signature Scheme v2. Physical-device smoke and Play Console
   upload validation are still required.
 - Required build defines: `SUPABASE_URL`, `SUPABASE_ANON_KEY`,
@@ -40,10 +40,10 @@ Last updated: 2026-05-24
 - `maps-gateway` rejects route-computation requests with a 410 scope response;
   Play/store copy must continue to avoid route calculation, fare quote,
   dispatch, and payment claims.
-- Local Supabase replay through
-  `20260524001000_final_scope_cleanup_after_linked_history.sql` passed DB lint,
-  backend security assertions, and storage/realtime audit. Linked Supabase
-  replay/assertions are still required before Play production.
+- Linked Supabase migrations and Edge Functions were updated on 2026-06-11.
+  `supabase db push --linked --dry-run` reported the remote database is up to
+  date, and `REQUIRE_LINKED_SUPABASE=true ./scripts/ci/verify_backend.sh`
+  passed after the public-transport RPC qualification migration.
 - Public landing, privacy, terms, and account-deletion pages now describe the
   same limited marketplace/discovery scope.
 - Live public pages were verified on `https://mobio.ikanisa.com/`,
@@ -79,7 +79,10 @@ Last updated: 2026-05-24
    the production/public domain.
 13. Run the final fail-closed go/no-go gate after linked Supabase, Play upload,
    key-rotation, and device-smoke evidence exists:
-   `PLAY_SERVICE_ACCOUNT_ROTATED=true PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE=/secure/path/play-service-account-rotation.md PLAY_CONSOLE_UPLOAD_VALIDATED=true PLAY_CONSOLE_UPLOAD_EVIDENCE=/secure/path/play-console-upload.md ./scripts/release/go_no_go_check.sh`.
+   `RELEASE_TARGET=android PLAY_SERVICE_ACCOUNT_ROTATED=true PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE=/secure/path/play-service-account-rotation.md PLAY_CONSOLE_UPLOAD_VALIDATED=true PLAY_CONSOLE_UPLOAD_EVIDENCE=/secure/path/play-console-upload.md ./scripts/release/go_no_go_check.sh`.
+   `RELEASE_TARGET=android` keeps iOS Firebase/native checks out of the Google
+   Play gate; use the default target after Android is submitted and iOS release
+   work resumes.
    Evidence templates live under `docs/release/evidence/`; do not commit
    service-account JSON, private keys, access tokens, or credential screenshots.
    The gate rejects `*.example.md` template paths.

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
+import 'package:mobi_app/shared/widgets/mobi_top_command_bar.dart';
 
 class HomeHeader extends StatelessWidget {
   final bool isDriver;
@@ -24,79 +24,26 @@ class HomeHeader extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          child: Row(
-            children: [
-              SizedBox.square(
-                dimension: 24,
-                child: ClipRect(
-                  child: Transform.scale(
-                    scale: 1.38,
-                    child: Image.asset(
-                      'icon/mobi_logo_transparent.png',
-                      fit: BoxFit.contain,
-                      filterQuality: FilterQuality.high,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Flexible(
-                child: Text(
-                  'Mobio',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.titleLg.copyWith(color: cs.primary),
-                ),
-              ),
-            ],
-          ),
+        MobiTopCommandBar(
+          showNotificationDot: unreadCount > 0,
+          actions: const [
+            MobiTopCommandBarAction(
+              icon: LucideIcons.barChart3,
+              label: 'Activity',
+            ),
+            MobiTopCommandBarAction(
+              icon: LucideIcons.calendarCheck,
+              label: 'Trips',
+            ),
+          ],
         ),
-        SizedBox(
-          width: 40,
-          height: 40,
-          child: Stack(
-            children: [
-              Center(
-                child: Icon(
-                  LucideIcons.bell,
-                  size: 22,
-                  color: cs.onSurfaceVariant,
-                ),
-              ),
-              if (unreadCount > 0)
-                Positioned(
-                  right: 4,
-                  top: 4,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 1,
-                    ),
-                    constraints: const BoxConstraints(minWidth: 18),
-                    decoration: BoxDecoration(
-                      color: cs.error,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      unreadCount > 99 ? '99+' : '$unreadCount',
-                      textAlign: TextAlign.center,
-                      style: AppTypography.labelSm.copyWith(
-                        color: cs.onError,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-        if (isDriver) const SizedBox(width: 8),
+        if (isDriver) const SizedBox(height: AppSpacing.md),
         if (isDriver)
           Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               MobiStatusBadge(
                 label: isDriverOnline ? 'Online' : 'Offline',

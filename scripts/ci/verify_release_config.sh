@@ -104,10 +104,12 @@ if missing:
 PY
 fi
 
-require_file ios/Runner/Info.plist
-require_file ios/Runner/Runner.entitlements
-require_file ios/Runner.xcodeproj/project.pbxproj
+if [[ "${REQUIRE_IOS_NATIVE:-true}" == "true" ]]; then
+  require_file ios/Runner/Info.plist
+  require_file ios/Runner/Runner.entitlements
+  require_file ios/Runner.xcodeproj/project.pbxproj
 
-require_contains 'remote-notification' ios/Runner/Info.plist
-require_contains 'Runner/Runner.entitlements' ios/Runner.xcodeproj/project.pbxproj
-require_contains 'aps-environment' ios/Runner/Runner.entitlements
+  require_contains 'remote-notification' ios/Runner/Info.plist
+  require_contains 'Runner/Runner.entitlements' ios/Runner.xcodeproj/project.pbxproj
+  require_contains 'aps-environment' ios/Runner/Runner.entitlements
+fi

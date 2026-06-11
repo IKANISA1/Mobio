@@ -12,6 +12,7 @@ import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
+import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
 import 'package:mobi_app/shared/widgets/otp_code_field.dart';
 import 'package:mobi_app/shared/widgets/whatsapp_input.dart';
 
@@ -262,24 +263,15 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
                           ),
                         ),
                         const SizedBox(height: AppSpacing.lg),
-                        SegmentedButton<AppRole>(
-                          segments: const [
-                            ButtonSegment<AppRole>(
-                              value: AppRole.passenger,
-                              icon: Icon(LucideIcons.user),
-                              label: Text('Passenger'),
-                            ),
-                            ButtonSegment<AppRole>(
-                              value: AppRole.driver,
-                              icon: Icon(LucideIcons.bike),
-                              label: Text('Driver'),
-                            ),
-                          ],
-                          selected: {_role},
-                          onSelectionChanged: _otpRequested || _isBusy
-                              ? null
-                              : (value) => setState(() {
-                                  _role = value.first;
+                        MobiToggle(
+                          labels: const ['Passenger', 'Driver'],
+                          selectedIndex: _role == AppRole.passenger ? 0 : 1,
+                          onChanged: _otpRequested || _isBusy
+                              ? (_) {}
+                              : (index) => setState(() {
+                                  _role = index == 0
+                                      ? AppRole.passenger
+                                      : AppRole.driver;
                                 }),
                         ),
                         const SizedBox(height: AppSpacing.lg),

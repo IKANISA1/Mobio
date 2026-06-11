@@ -19,14 +19,14 @@ class AppTypography {
     fontSize: 36,
     fontWeight: FontWeight.w800,
     height: 1.12,
-    letterSpacing: -1.2,
+    letterSpacing: 0,
   );
 
   static TextStyle displayMd = _manrope.copyWith(
     fontSize: 30,
     fontWeight: FontWeight.w800,
     height: 1.14,
-    letterSpacing: -0.9,
+    letterSpacing: 0,
   );
 
   // ─── Headline ───
@@ -34,21 +34,21 @@ class AppTypography {
     fontSize: 24,
     fontWeight: FontWeight.w800,
     height: 1.2,
-    letterSpacing: -0.6,
+    letterSpacing: 0,
   );
 
   static TextStyle headlineMd = _manrope.copyWith(
     fontSize: 20,
     fontWeight: FontWeight.w800,
     height: 1.2,
-    letterSpacing: -0.4,
+    letterSpacing: 0,
   );
 
   static TextStyle headlineSm = _manrope.copyWith(
     fontSize: 18,
     fontWeight: FontWeight.w800,
     height: 1.25,
-    letterSpacing: -0.2,
+    letterSpacing: 0,
   );
 
   // ─── Title ───
@@ -56,7 +56,7 @@ class AppTypography {
     fontSize: 18,
     fontWeight: FontWeight.w800,
     height: 1.28,
-    letterSpacing: -0.2,
+    letterSpacing: 0,
   );
 
   static TextStyle titleMd = _manrope.copyWith(
@@ -88,19 +88,19 @@ class AppTypography {
   static TextStyle labelSm = _inter.copyWith(
     fontSize: 11,
     fontWeight: FontWeight.w700,
-    letterSpacing: 0.3,
+    letterSpacing: 0,
   );
 
   static TextStyle labelMd = _inter.copyWith(
     fontSize: 12,
     fontWeight: FontWeight.w700,
-    letterSpacing: 0.2,
+    letterSpacing: 0,
   );
 
   static TextStyle labelLg = _inter.copyWith(
     fontSize: 13,
     fontWeight: FontWeight.w700,
-    letterSpacing: 0.1,
+    letterSpacing: 0,
   );
 
   // ─── Special ───
@@ -108,7 +108,7 @@ class AppTypography {
     fontSize: 44,
     fontWeight: FontWeight.w800,
     height: 0.94,
-    letterSpacing: -2.0,
+    letterSpacing: 0,
   );
 
   static TextStyle chipText = _inter.copyWith(
@@ -119,6 +119,6 @@ class AppTypography {
   static TextStyle badgeText = _inter.copyWith(
     fontSize: 11,
     fontWeight: FontWeight.w700,
-    letterSpacing: 0.2,
+    letterSpacing: 0,
   );
 }

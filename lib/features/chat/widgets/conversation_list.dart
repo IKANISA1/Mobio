@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/features/chat/models/chat_conversation.dart';
 import 'package:mobi_app/models/trip.dart';
@@ -72,13 +71,20 @@ class ConversationList extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    width: 56,
-                    height: 56,
+                    width: 58,
+                    height: 58,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(20),
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [cs.primary, cs.secondary],
+                      ),
                     ),
-                    child: Icon(LucideIcons.messageCircle, color: cs.primary),
+                    child: const Icon(
+                      LucideIcons.messageCircle,
+                      color: Colors.white,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -89,7 +95,10 @@ class ConversationList extends StatelessWidget {
                           title,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: AppTypography.titleMd,
+                          style: AppTypography.titleMd.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                         if (memberId != null && memberId.isNotEmpty) ...[
                           const SizedBox(height: 2),

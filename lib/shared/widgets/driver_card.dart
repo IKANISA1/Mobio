@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
-import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
@@ -49,10 +48,14 @@ class DriverCard extends StatelessWidget {
                     width: 56,
                     height: 56,
                     decoration: BoxDecoration(
-                      color: ext.surfaceContainer,
-                      borderRadius: BorderRadius.circular(AppRadii.xl),
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [cs.primary, cs.tertiary],
+                      ),
                     ),
-                    child: Icon(icon, size: 24, color: cs.primary),
+                    child: Icon(icon, size: 24, color: Colors.white),
                   ),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
@@ -62,7 +65,8 @@ class DriverCard extends StatelessWidget {
                         Text(
                           driverId,
                           style: AppTypography.titleLg.copyWith(
-                            color: cs.onSurface,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xs),
@@ -90,17 +94,17 @@ class DriverCard extends StatelessWidget {
                       width: 44,
                       height: 44,
                       child: Material(
-                        color: ext.surfaceContainer,
+                        color: ext.surfaceContainerHigh.withValues(alpha: 0.76),
                         shape: const CircleBorder(),
                         child: InkWell(
                           onTap: onChat,
                           customBorder: const CircleBorder(),
                           splashColor: cs.primary.withValues(alpha: 0.18),
-                          child: Center(
+                          child: const Center(
                             child: Icon(
                               LucideIcons.messageCircle,
                               size: 20,
-                              color: cs.primary,
+                              color: Colors.white,
                             ),
                           ),
                         ),

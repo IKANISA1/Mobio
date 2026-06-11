@@ -176,9 +176,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
     );
   }
 
-  Future<void> _handleCurrentLocation(
-    ScheduleTripController controller,
-  ) async {
+  Future<void> _handleCurrentLocation(ScheduleTripController controller) async {
     final permissionService = ref.read(appPermissionServiceProvider);
     final hasAccess = await permissionService.hasLocationAccess();
 
@@ -253,6 +251,31 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Center(
+                        child: Column(
+                          children: [
+                            Text(
+                              state.isEditMode ? 'Edit trip' : 'Schedule ride',
+                              textAlign: TextAlign.center,
+                              style: AppTypography.displayMd.copyWith(
+                                color: Colors.white,
+                                fontSize: 36,
+                                height: 1.08,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.sm),
+                            Text(
+                              'Route, timing, and vehicle in one flow',
+                              textAlign: TextAlign.center,
+                              style: AppTypography.bodyLg.copyWith(
+                                color: Colors.white.withValues(alpha: 0.74),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.sectionGap),
                       if (state.validationMessage != null) ...[
                         MobiStateBanner(
                           icon: LucideIcons.alertTriangle,
@@ -282,9 +305,8 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                         isSavingFavoriteAddress: state.isSavingFavoriteAddress,
                         onOriginSelected: controller.setOrigin,
                         onDestSelected: controller.setDestination,
-                        onHandleCurrentLocation: () => unawaited(
-                          _handleCurrentLocation(controller),
-                        ),
+                        onHandleCurrentLocation: () =>
+                            unawaited(_handleCurrentLocation(controller)),
                         onFavoriteOriginSelected:
                             controller.useFavoriteAsOrigin,
                         onFavoriteDestSelected:
@@ -338,7 +360,9 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                           state.isEditMode ? 'Save changes' : 'Schedule',
                           style: AppTypography.labelLg.copyWith(
                             fontWeight: FontWeight.w700,
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onInverseSurface,
                           ),
                         ),
                       ),

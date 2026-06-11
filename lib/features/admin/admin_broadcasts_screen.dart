@@ -1257,11 +1257,11 @@ class _DetailMetric extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final accent = switch (tone) {
-      MobiStatusBadgeTone.positive => Colors.green,
-      MobiStatusBadgeTone.warning => Colors.orange,
+      MobiStatusBadgeTone.positive => cs.tertiary,
+      MobiStatusBadgeTone.warning => ext.caution,
       MobiStatusBadgeTone.danger => cs.error,
       MobiStatusBadgeTone.brand => cs.primary,
-      MobiStatusBadgeTone.info => cs.secondary,
+      MobiStatusBadgeTone.info => ext.info,
       MobiStatusBadgeTone.neutral => cs.onSurfaceVariant,
     };
 

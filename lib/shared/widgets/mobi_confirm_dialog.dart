@@ -123,7 +123,9 @@ class _MobiConfirmDialogContent extends StatelessWidget {
                     child: InkWell(
                       onTap: () => Navigator.pop(context, true),
                       borderRadius: BorderRadius.circular(AppRadii.pill),
-                      splashColor: Colors.white.withValues(alpha: 0.12),
+                      splashColor: Colors.white.withValues(
+                        alpha: ext.pressedWhiteAlpha,
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           vertical: AppSpacing.sm,

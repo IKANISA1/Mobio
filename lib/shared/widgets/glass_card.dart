@@ -3,11 +3,7 @@ import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
-/// Base surface card used across the app.
-///
-/// The original `ClayCard` name is preserved for compatibility, but the visual
-/// treatment is calmer: lighter borders, restrained elevation, and tighter
-/// motion that fits a minimalist mobile UI.
+/// Base translucent surface card used across the app.
 class ClayCard extends StatefulWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -76,7 +72,7 @@ class _ClayCardState extends State<ClayCard>
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final radius = BorderRadius.circular(widget.borderRadius);
-    final surfaceColor = widget.color ?? ext.surfaceContainerLowest;
+    final surfaceColor = widget.color ?? ext.surfaceContainer;
 
     final card = Material(
       color: Colors.transparent,
@@ -86,7 +82,7 @@ class _ClayCardState extends State<ClayCard>
           borderRadius: radius,
           boxShadow: ext.clayCardShadow,
           border: Border.all(
-            color: cs.outlineVariant.withValues(alpha: ext.cardBorderAlpha),
+            color: Colors.white.withValues(alpha: ext.cardBorderAlpha),
           ),
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -127,7 +123,7 @@ class _ClayCardState extends State<ClayCard>
                   child: InkWell(
                     onTap: widget.onTap,
                     borderRadius: radius,
-                    splashColor: cs.primary.withValues(alpha: 0.08),
+                    splashColor: cs.primary.withValues(alpha: 0.12),
                     highlightColor: Colors.transparent,
                     child: child,
                   ),

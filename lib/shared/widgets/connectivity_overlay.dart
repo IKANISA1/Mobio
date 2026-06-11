@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
 class ConnectivityOverlay extends StatefulWidget {
   final Widget child;
@@ -73,6 +75,9 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay>
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+
     return Stack(
       children: [
         widget.child,
@@ -98,11 +103,18 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay>
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.errorContainer,
+                    color: cs.errorContainer,
                     borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: ext.borderSubtle.withValues(
+                        alpha: ext.surfacePanelBorderAlpha,
+                      ),
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
+                        color: Colors.black.withValues(
+                          alpha: ext.surfacePanelShadowAlpha,
+                        ),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -112,20 +124,16 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay>
                     children: [
                       Icon(
                         LucideIcons.wifiOff,
-                        color: Theme.of(context).colorScheme.onErrorContainer,
+                        color: cs.onErrorContainer,
                         size: 20,
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           'No internet connection',
-                          style: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onErrorContainer,
+                          style: AppTypography.labelMd.copyWith(
+                            color: cs.onErrorContainer,
                             fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                            fontFamily: 'Manrope',
                           ),
                         ),
                       ),

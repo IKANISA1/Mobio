@@ -4,12 +4,22 @@ on:
   push:
     tags: ['v*']
   workflow_dispatch:
+    inputs:
+      release_target:
+        description: 'Release target to validate'
+        required: true
+        default: android
+        type: choice
+        options:
+          - android
+          - all
 
 permissions:
   contents: write
 
 jobs:
   ios-validation:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.release_target != 'android' }}
     runs-on: macos-latest
     timeout-minutes: 35
     environment: Mobio
@@ -36,6 +46,7 @@ jobs:
 
   build-and-release:
     needs: ios-validation
+    if: ${{ always() && (github.event_name != 'workflow_dispatch' || inputs.release_target == 'android' || needs.ios-validation.result == 'success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     environment: Mobio
@@ -87,6 +98,8 @@ jobs:
           PLAY_PRODUCTION_APPROVED: ${{ vars.PLAY_PRODUCTION_APPROVED || 'false' }}
           REQUIRE_ANDROID_SIGNING: 'true'
           REQUIRE_SECRET_HISTORY_CLEAN: 'true'
+          REQUIRE_IOS_FIREBASE: ${{ github.event_name == 'workflow_dispatch' && inputs.release_target == 'android' && 'false' || 'true' }}
+          REQUIRE_IOS_NATIVE: ${{ github.event_name == 'workflow_dispatch' && inputs.release_target == 'android' && 'false' || 'true' }}
         run: ./scripts/ci/verify_release_config.sh
 
       - name: Write Android signing files

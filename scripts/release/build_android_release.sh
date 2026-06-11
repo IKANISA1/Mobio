@@ -101,10 +101,15 @@ case "$target" in
   appbundle)
     output="build/app/outputs/bundle/release/app-release.aab"
     rm -f "$output"
-    "$FLUTTER_BIN" build appbundle --release \
-      "${target_platform_args[@]}" \
-      "${gradle_property_args[@]}" \
-      --dart-define-from-file="$dart_define_file"
+    build_cmd=("$FLUTTER_BIN" build appbundle --release --no-pub)
+    if ((${#target_platform_args[@]})); then
+      build_cmd+=("${target_platform_args[@]}")
+    fi
+    if ((${#gradle_property_args[@]})); then
+      build_cmd+=("${gradle_property_args[@]}")
+    fi
+    build_cmd+=(--dart-define-from-file="$dart_define_file")
+    "${build_cmd[@]}"
 
     test -s "$output"
 
@@ -115,10 +120,15 @@ case "$target" in
     output="build/app/outputs/flutter-apk/app-release.apk"
     gradle_output="build/app/outputs/apk/release/app-release.apk"
     rm -f "$output" "$gradle_output"
-    "$FLUTTER_BIN" build apk --release \
-      "${target_platform_args[@]}" \
-      "${gradle_property_args[@]}" \
-      --dart-define-from-file="$dart_define_file"
+    build_cmd=("$FLUTTER_BIN" build apk --release --no-pub)
+    if ((${#target_platform_args[@]})); then
+      build_cmd+=("${target_platform_args[@]}")
+    fi
+    if ((${#gradle_property_args[@]})); then
+      build_cmd+=("${gradle_property_args[@]}")
+    fi
+    build_cmd+=(--dart-define-from-file="$dart_define_file")
+    "${build_cmd[@]}"
 
     if [[ ! -s "$output" && -s "$gradle_output" ]]; then
       mkdir -p "$(dirname "$output")"

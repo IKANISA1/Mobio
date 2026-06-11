@@ -249,27 +249,22 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
           120,
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Route map
-            if (hasCoords)
-              Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.xl),
-                child: RouteMapCard(
-                  originLat: trip.originLat!,
-                  originLng: trip.originLng!,
-                  destLat: trip.destLat!,
-                  destLng: trip.destLng!,
-                  originLabel: trip.origin,
-                  destLabel: trip.destination,
-                  height: 200,
-                ),
+            Text(
+              '${trip.origin} → ${trip.destination}',
+              textAlign: TextAlign.center,
+              style: AppTypography.displayMd.copyWith(
+                color: Colors.white,
+                fontSize: 34,
+                height: 1.1,
               ),
-
-            // Status + metadata chips
+            ),
+            const SizedBox(height: AppSpacing.md),
             Wrap(
               spacing: AppSpacing.xs,
               runSpacing: AppSpacing.xs,
+              alignment: WrapAlignment.center,
               children: [
                 MobiStatusBadge(
                   label: trip.status ?? 'active',
@@ -289,17 +284,22 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
                   ),
               ],
             ),
-            const SizedBox(height: AppSpacing.lg),
-
-            // Route text — compact
-            Text(
-              '${trip.origin} → ${trip.destination}',
-              style: AppTypography.titleLg.copyWith(
-                color: cs.onSurface,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
             const SizedBox(height: AppSpacing.xl),
+
+            // Route map
+            if (hasCoords)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+                child: RouteMapCard(
+                  originLat: trip.originLat!,
+                  originLng: trip.originLng!,
+                  destLat: trip.destLat!,
+                  destLng: trip.destLng!,
+                  originLabel: trip.origin,
+                  destLabel: trip.destination,
+                  height: 200,
+                ),
+              ),
 
             // Main details card — simplified
             Hero(
@@ -447,14 +447,14 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
                   Icon(
                     LucideIcons.messageCircle,
                     size: 20,
-                    color: cs.onPrimary,
+                    color: cs.onInverseSurface,
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Text(
                     isTripOwner ? 'Chats' : 'Chat',
                     style: AppTypography.labelLg.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: cs.onPrimary,
+                      color: cs.onInverseSurface,
                     ),
                   ),
                 ],

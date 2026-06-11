@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/services/admin_service.dart';
+import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
@@ -51,25 +52,25 @@ class AdminStatsGrid extends StatelessWidget {
           label: 'Drivers',
           value: stats!.activeDrivers.toString(),
           icon: LucideIcons.car,
-          color: const Color(0xFF00C853),
+          color: AppColors.success,
         ),
         _StatCard(
           label: 'Active Trips',
           value: stats!.activeTrips.toString(),
           icon: LucideIcons.mapPin,
-          color: const Color(0xFF2979FF),
+          color: AppColors.info,
         ),
         _StatCard(
           label: 'Total Users',
           value: stats!.totalUsers.toString(),
           icon: LucideIcons.users,
-          color: const Color(0xFFFF9100),
+          color: AppColors.caution,
         ),
         _StatCard(
           label: 'Trip Posts',
           value: stats!.totalTrips.toString(),
           icon: LucideIcons.calendarDays,
-          color: const Color(0xFF651FFF),
+          color: AppColors.primary,
         ),
       ],
     );
@@ -125,7 +126,7 @@ class _StatCard extends StatelessWidget {
             value,
             style: AppTypography.headlineMd.copyWith(
               height: 1,
-              letterSpacing: -1,
+              letterSpacing: 0,
             ),
           ),
         ],

@@ -18,10 +18,33 @@ void main() {
           manifest,
           isNot(contains('android.permission.RECEIVE_BOOT_COMPLETED')),
         );
+        expect(manifest, contains('com.google.android.gms.permission.AD_ID'));
+        expect(
+          manifest,
+          contains('android.permission.ACCESS_ADSERVICES_AD_ID'),
+        );
+        expect(
+          manifest,
+          contains('android.permission.ACCESS_ADSERVICES_ATTRIBUTION'),
+        );
+        expect(manifest, contains('tools:node="remove"'));
         expect(manifest, isNot(contains('SmsReceiver')));
         expect(manifest, isNot(contains('BootReceiver')));
       },
     );
+
+    test('iOS plist does not declare inactive BioPay or route calculation', () {
+      final plist = File('ios/Runner/Info.plist').readAsStringSync();
+
+      expect(plist, isNot(contains('NSCameraUsageDescription')));
+      expect(plist, isNot(contains('BioPay')));
+      expect(plist, isNot(contains('face scan')));
+      expect(plist, isNot(contains('scan BioPay faces')));
+      expect(plist, isNot(contains('calculate routes')));
+      expect(plist, isNot(contains('route calculation')));
+      expect(plist, contains('nearby drivers and passengers'));
+      expect(plist, contains('Google Maps handoff'));
+    });
 
     test('profile edit flow does not expose BioPay handle editing', () {
       final editScreen = File(
@@ -278,7 +301,14 @@ void main() {
       expect(releaseScript, contains('"ACCOUNT_DELETION_URL"'));
       expect(releaseScript, contains('missing.append(key)'));
       expect(releaseScript, contains('Add them to .env or export them'));
+      expect(releaseScript, contains(r'build_cmd=("$FLUTTER_BIN" build'));
+      expect(releaseScript, contains('build appbundle --release --no-pub'));
+      expect(releaseScript, contains('build apk --release --no-pub'));
+      expect(releaseScript, contains(r'${#target_platform_args[@]}'));
+      expect(releaseScript, contains(r'${#gradle_property_args[@]}'));
       expect(releaseConfig, contains('require_var ACCOUNT_DELETION_URL'));
+      expect(releaseConfig, contains('REQUIRE_IOS_FIREBASE:-true'));
+      expect(releaseConfig, contains('REQUIRE_IOS_NATIVE:-true'));
       expect(profileScreen, contains('SupabaseConfig.accountDeletionUrl'));
       expect(profileScreen, contains('Delete Account'));
     });
@@ -316,6 +346,12 @@ void main() {
           );
 
       expect(releaseWorkflow, contains("PLAY_RELEASE_TRACK || 'internal'"));
+      expect(releaseWorkflow, contains('release_target:'));
+      expect(releaseWorkflow, contains('default: android'));
+      expect(releaseWorkflow, contains("inputs.release_target != 'android'"));
+      expect(releaseWorkflow, contains("inputs.release_target == 'android'"));
+      expect(releaseWorkflow, contains('REQUIRE_IOS_FIREBASE:'));
+      expect(releaseWorkflow, contains('REQUIRE_IOS_NATIVE:'));
       expect(releaseWorkflow, contains('fetch-depth: 0'));
       expect(releaseWorkflow, contains("REQUIRE_SECRET_HISTORY_CLEAN: 'true'"));
       expect(releaseWorkflow, contains('SUPABASE_DB_PASSWORD'));
@@ -359,8 +395,24 @@ void main() {
       expect(smokeScript, contains('generated_signing_files'));
       expect(smokeScript, contains('rm -f android/key.properties'));
       expect(goNoGoScript, contains('REQUIRE_LINKED_SUPABASE=true'));
+      expect(goNoGoScript, contains('source .env'));
       expect(goNoGoScript, contains('REQUIRE_SECRET_HISTORY_CLEAN=true'));
       expect(goNoGoScript, contains('REQUIRE_ANDROID_SIGNING=true'));
+      expect(goNoGoScript, contains('RELEASE_TARGET:-all'));
+      expect(goNoGoScript, contains('all|android|ios'));
+      expect(goNoGoScript, contains('RELEASE_TARGET must be one of'));
+      expect(
+        goNoGoScript,
+        contains(
+          r'REQUIRE_IOS_FIREBASE="$([[ "$release_target" == "android" ]] && echo false || echo true)"',
+        ),
+      );
+      expect(
+        goNoGoScript,
+        contains(
+          r'REQUIRE_IOS_NATIVE="$([[ "$release_target" == "android" ]] && echo false || echo true)"',
+        ),
+      );
       expect(goNoGoScript, contains('PLAY_SERVICE_ACCOUNT_ROTATED'));
       expect(goNoGoScript, contains('PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE'));
       expect(goNoGoScript, contains('PLAY_CONSOLE_UPLOAD_VALIDATED'));

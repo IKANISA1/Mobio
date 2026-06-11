@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// Supabase configuration.
 ///
 /// This app requires values injected at build time via `--dart-define`.
@@ -30,8 +32,24 @@ class SupabaseConfig {
   /// Edge functions base URL derived from project URL.
   static String get functionsBaseUrl => '$url/functions/v1';
 
+  /// Enables local UI QA when backend dart-defines are intentionally absent.
+  ///
+  /// This is ignored in release builds so production still fails closed.
+  static const localUiPreviewEnabled = bool.fromEnvironment(
+    'MOBI_LOCAL_UI_PREVIEW',
+    defaultValue: true,
+  );
+
   /// Validate that configuration is present (call at app startup).
   static bool get isConfigured => url.isNotEmpty && anonKey.isNotEmpty;
+
+  static bool get canRunWithoutBackend =>
+      !kReleaseMode && localUiPreviewEnabled;
+
+  static bool get isLocalUiPreview => !isConfigured && canRunWithoutBackend;
+
+  static bool get shouldShowConfigError =>
+      !isConfigured && !canRunWithoutBackend;
 
   static bool get hasPrivacyPolicyUrl => privacyPolicyUrl.isNotEmpty;
 

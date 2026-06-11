@@ -161,6 +161,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SoftGradient(
+        tone: SoftGradientTone.profile,
         child: SafeArea(
           child: Column(
             children: [
@@ -206,6 +207,31 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Center(
+                child: Column(
+                  children: [
+                    Text(
+                      widget.isFirstRun ? 'Set up profile' : 'Edit profile',
+                      textAlign: TextAlign.center,
+                      style: AppTypography.displayMd.copyWith(
+                        color: Colors.white,
+                        fontSize: 36,
+                        height: 1.08,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      'Identity, contact, and driver settings',
+                      textAlign: TextAlign.center,
+                      style: AppTypography.bodyLg.copyWith(
+                        color: Colors.white.withValues(alpha: 0.74),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sectionGap),
               if (widget.isFirstRun) ...[
                 _FirstRunProfileIntro(isDriver: state.isDriver),
                 const SizedBox(height: AppSpacing.xl),
@@ -248,7 +274,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   'Save changes',
                   style: AppTypography.labelLg.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: Theme.of(context).colorScheme.onInverseSurface,
                   ),
                 ),
               ),
