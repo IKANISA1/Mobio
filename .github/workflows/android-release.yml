@@ -1,0 +1,108 @@
+name: Android Play Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upload-internal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: Mobio
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          fetch-depth: 0
+
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: '3.38.9'
+          channel: stable
+          cache: true
+
+      - uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282 # v2
+        with:
+          deno-version: v2.x
+
+      - uses: supabase/setup-cli@ab058987d8d6c725971f6cf9d0b5c98467e30bd1 # v1
+        with:
+          version: 2.84.2
+
+      - name: Verify Flutter app
+        run: ./scripts/ci/verify_flutter.sh
+
+      - name: Verify linked Supabase backend
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+          REQUIRE_LINKED_SUPABASE: 'true'
+        run: ./scripts/ci/verify_backend.sh
+
+      - name: Validate Android release configuration
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+          PLAY_RELEASE_TRACK: ${{ vars.PLAY_RELEASE_TRACK }}
+          PLAY_RELEASE_STATUS: ${{ vars.PLAY_RELEASE_STATUS }}
+          PLAY_PRODUCTION_APPROVED: ${{ vars.PLAY_PRODUCTION_APPROVED }}
+          REQUIRE_ANDROID_SIGNING: 'true'
+          REQUIRE_SECRET_HISTORY_CLEAN: 'true'
+          REQUIRE_IOS_FIREBASE: 'false'
+          REQUIRE_IOS_NATIVE: 'false'
+        run: ./scripts/ci/verify_release_config.sh
+
+      - name: Write Android signing files
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          PRESERVE_ANDROID_SIGNING_FILES: 'true'
+        run: ./scripts/ci/write_android_signing_files.sh
+
+      - name: Build signed Android App Bundle
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
+        run: ./scripts/release/build_android_release.sh appbundle
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      - name: Upload mapping artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-release-mapping
+          path: build/app/outputs/mapping/release/mapping.txt
+          retention-days: 30
+
+      - name: Upload draft to Google Play internal track
+        uses: r0adkll/upload-google-play@eb49699984a39f23558439581660aa6f088acfd6 # v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
+          packageName: rw.mobi.app
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          mappingFile: build/app/outputs/mapping/release/mapping.txt
+          track: ${{ vars.PLAY_RELEASE_TRACK }}
+          status: ${{ vars.PLAY_RELEASE_STATUS }}
+
+      - name: Clean Android signing files
+        if: always()
+        run: rm -f android/key.properties android/app/release.keystore
