@@ -54,6 +54,32 @@ class VehicleTypeModel {
   /// Local asset path for fallback image.
   String get localAssetPath => 'assets/vehicles/$id.png';
 
+  static const Map<String, int> _displayRank = {
+    'moto': 1,
+    'bus': 2,
+    'cab': 3,
+    'truck': 4,
+    'trike': 5,
+    'private': 6,
+    'private_': 6,
+  };
+
+  int get displayRank => _displayRank[id] ?? (1000 + sortOrder);
+
+  static int compareDisplayOrder(VehicleTypeModel a, VehicleTypeModel b) {
+    final rankComparison = a.displayRank.compareTo(b.displayRank);
+    if (rankComparison != 0) return rankComparison;
+
+    final sortComparison = a.sortOrder.compareTo(b.sortOrder);
+    if (sortComparison != 0) return sortComparison;
+
+    return a.label.toLowerCase().compareTo(b.label.toLowerCase());
+  }
+
+  static List<VehicleTypeModel> ordered(Iterable<VehicleTypeModel> types) {
+    return types.toList()..sort(compareDisplayOrder);
+  }
+
   /// Resolve the Lucide icon from `iconName`.
   IconData get icon {
     switch (iconName) {
@@ -86,18 +112,18 @@ class VehicleTypeModel {
       iconName: 'bike',
       sortOrder: 1,
     ),
-    VehicleTypeModel(id: 'cab', label: 'Cab', iconName: 'car', sortOrder: 2),
-    VehicleTypeModel(id: 'bus', label: 'Bus', iconName: 'bus', sortOrder: 3),
-    VehicleTypeModel(
-      id: 'trike',
-      label: 'Trike',
-      iconName: 'truck',
-      sortOrder: 4,
-    ),
+    VehicleTypeModel(id: 'bus', label: 'Bus', iconName: 'bus', sortOrder: 2),
+    VehicleTypeModel(id: 'cab', label: 'Cab', iconName: 'car', sortOrder: 3),
     VehicleTypeModel(
       id: 'truck',
       label: 'Truck',
       iconName: 'layout-grid',
+      sortOrder: 4,
+    ),
+    VehicleTypeModel(
+      id: 'trike',
+      label: 'Trike',
+      iconName: 'truck',
       sortOrder: 5,
     ),
     VehicleTypeModel(

@@ -48,11 +48,16 @@ class VehicleTypeService {
         countryMap.putIfAbsent(vtId, () => []).add(cId);
       }
 
-      final result = vtRows.map((r) {
-        final json = r as Map<String, dynamic>;
-        final id = json['id'] as String? ?? '';
-        return VehicleTypeModel.fromJson(json, countries: countryMap[id] ?? []);
-      }).toList();
+      final result = VehicleTypeModel.ordered(
+        vtRows.map((r) {
+          final json = r as Map<String, dynamic>;
+          final id = json['id'] as String? ?? '';
+          return VehicleTypeModel.fromJson(
+            json,
+            countries: countryMap[id] ?? [],
+          );
+        }),
+      );
 
       if (includeInactive) {
         _cachedAll = result;
@@ -63,7 +68,7 @@ class VehicleTypeService {
       return result;
     } on Object catch (_) {
       // Offline fallback
-      const fallback = VehicleTypeModel.fallbackTypes;
+      final fallback = VehicleTypeModel.ordered(VehicleTypeModel.fallbackTypes);
       _cached = fallback;
       return fallback;
     }

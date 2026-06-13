@@ -91,6 +91,28 @@ abstract class Trip with _$Trip {
     /// Day indices (0=Mon..6=Sun) for recurring trips.
     @JsonKey(name: 'recurring_days') @Default([]) List<int> recurringDays,
 
+    /// Server-normalized timestamp for sorting and pool matching.
+    @JsonKey(name: 'starts_at') String? startsAt,
+
+    /// Optional repeat end date. Server defaults recurring trips to a 90-day window.
+    @JsonKey(name: 'recurrence_end_date') String? recurrenceEndDate,
+
+    /// Specific dates excluded from a recurring trip schedule.
+    @JsonKey(name: 'recurrence_skip_dates')
+    @Default([])
+    List<String> recurrenceSkipDates,
+
+    /// Stable place references used to edit and re-submit routes without losing
+    /// route identity.
+    @JsonKey(name: 'origin_place_id') String? originPlaceId,
+    @JsonKey(name: 'destination_place_id') String? destinationPlaceId,
+
+    /// Client idempotency key used by `rpc_create_trip`.
+    @JsonKey(name: 'client_request_id') String? clientRequestId,
+
+    /// Server cancellation timestamp.
+    @JsonKey(name: 'cancelled_at') String? cancelledAt,
+
     /// Joined date display (legacy UI).
     String? joinedDate,
 

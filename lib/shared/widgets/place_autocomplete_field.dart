@@ -107,12 +107,10 @@ class _PlaceAutocompleteFieldState
               : prediction.description;
           widget.onPlaceSelected(details);
         } else {
-          widget.onPlaceSelected(
-            PlaceDetails(
-              placeId: prediction.placeId,
-              formattedAddress: prediction.description,
-              latitude: 0,
-              longitude: 0,
+          widget.onPlaceSelected(null);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Select that location again to confirm the route.'),
             ),
           );
         }
@@ -123,14 +121,7 @@ class _PlaceAutocompleteFieldState
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(e.userMessage)));
-        widget.onPlaceSelected(
-          PlaceDetails(
-            placeId: prediction.placeId,
-            formattedAddress: prediction.description,
-            latitude: 0,
-            longitude: 0,
-          ),
-        );
+        widget.onPlaceSelected(null);
       }
     }
   }

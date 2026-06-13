@@ -104,15 +104,18 @@ void main() {
         'origin': 'Kigali Heights',
         'origin_lat': -1.95,
         'origin_lng': 30.06,
+        'origin_place_id': 'origin-place',
         'destination': 'Kigali Arena',
         'dest_lat': -1.94,
         'dest_lng': 30.1,
+        'destination_place_id': 'destination-place',
         'departure_date': '2026-06-09',
         'departure_time': '03:45 PM',
         'role': 'driver',
         'vehicle_type': 'private',
         'is_recurring': true,
         'recurring_days': [0, 2, 4],
+        'client_request_id': 'trip-request-1',
         'note': 'Two bags',
       });
 
@@ -122,14 +125,17 @@ void main() {
       expect(state.editingTrip?.id, 'trip-1');
       expect(state.selectedRole, 'driver');
       expect(state.originDetails?.formattedAddress, 'Kigali Heights');
+      expect(state.originDetails?.placeId, 'origin-place');
       expect(state.originDetails?.latitude, -1.95);
       expect(state.destDetails?.formattedAddress, 'Kigali Arena');
+      expect(state.destDetails?.placeId, 'destination-place');
       expect(state.destDetails?.longitude, 30.1);
       expect(state.date, DateTime(2026, 6, 9));
       expect(state.time, const TimeOfDay(hour: 15, minute: 45));
       expect(state.vehicleId, 'private_');
       expect(state.isRecurring, isTrue);
       expect(state.recurringDays, [0, 2, 4]);
+      expect(state.clientRequestId, 'trip-request-1');
     });
   });
 }

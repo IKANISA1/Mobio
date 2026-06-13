@@ -365,6 +365,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
         isSubmitting: true,
         showErrors: false,
         poolSuggestions: const [],
+        poolSuggestionMessage: null,
         validationMessage: null,
       ),
     );
@@ -390,6 +391,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
             .updateTrip(
               tripId: s.editingTrip!.id!,
               origin: s.originDetails!.formattedAddress,
+              originPlaceId: s.originDetails!.placeId,
               originLat: s.originDetails!.latitude != 0
                   ? s.originDetails!.latitude
                   : null,
@@ -397,6 +399,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
                   ? s.originDetails!.longitude
                   : null,
               destination: s.destDetails!.formattedAddress,
+              destinationPlaceId: s.destDetails!.placeId,
               destLat: s.destDetails!.latitude != 0
                   ? s.destDetails!.latitude
                   : null,
@@ -436,6 +439,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
           .read(tripServiceProvider)
           .createTrip(
             origin: s.originDetails!.formattedAddress,
+            originPlaceId: s.originDetails!.placeId,
             originLat: s.originDetails!.latitude != 0
                 ? s.originDetails!.latitude
                 : null,
@@ -443,6 +447,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
                 ? s.originDetails!.longitude
                 : null,
             destination: s.destDetails!.formattedAddress,
+            destinationPlaceId: s.destDetails!.placeId,
             destLat: s.destDetails!.latitude != 0
                 ? s.destDetails!.latitude
                 : null,
@@ -456,6 +461,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
             vehicleType: s.vehicleId == 'private_' ? 'private' : s.vehicleId,
             isRecurring: s.isRecurring,
             recurringDays: s.recurringDays,
+            clientRequestId: s.clientRequestId,
             note: note.trim().isEmpty ? null : note.trim(),
           );
       await _loadPoolSuggestions(trip);
@@ -501,6 +507,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
           finalState.copyWith(
             createdTrip: trip,
             poolSuggestions: suggestions,
+            poolSuggestionMessage: null,
             isLoadingPoolSuggestions: false,
           ),
         );
@@ -513,6 +520,8 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
           finalState.copyWith(
             createdTrip: trip,
             poolSuggestions: const [],
+            poolSuggestionMessage:
+                'Trip scheduled, but matching suggestions are unavailable.',
             isLoadingPoolSuggestions: false,
           ),
         );

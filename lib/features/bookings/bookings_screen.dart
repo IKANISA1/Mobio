@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
@@ -47,6 +48,7 @@ class BookingsScreen extends ConsumerStatefulWidget {
 class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   int _activeToggle = 0; // 0 = mine, 1 = nearby
   bool _isLoading = true;
+  bool _authRequired = false;
   String? _error;
   List<Trip> _myTrips = [];
   List<Trip> _nearbyTrips = [];
@@ -60,6 +62,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   Future<void> _loadTrips() async {
     setState(() {
       _isLoading = true;
+      _authRequired = false;
       _error = null;
     });
 
@@ -93,6 +96,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
           _myTrips = [];
           _nearbyTrips = [];
           _isLoading = false;
+          _authRequired = true;
         });
       }
       return;
@@ -110,6 +114,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
           _myTrips = results[0];
           _nearbyTrips = results[1];
           _isLoading = false;
+          _authRequired = false;
         });
       }
     } on Object catch (e) {
@@ -237,6 +242,8 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                   // Content
                   if (_isLoading)
                     ..._buildLoadingSlivers()
+                  else if (_authRequired)
+                    SliverToBoxAdapter(child: _buildAuthRequiredState())
                   else if (_error != null)
                     SliverToBoxAdapter(child: _buildErrorState())
                   else if (_currentTrips.isEmpty)
@@ -323,6 +330,19 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         icon: LucideIcons.alertTriangle,
         onRetry: _loadTrips,
         height: 220,
+      ),
+    );
+  }
+
+  Widget _buildAuthRequiredState() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
+      child: AiEmptyState(
+        title: 'Sign in to manage trips',
+        icon: LucideIcons.lock,
+        height: 260,
+        onAction: () => context.go('/login?redirect=/bookings'),
+        actionLabel: 'Sign in',
       ),
     );
   }

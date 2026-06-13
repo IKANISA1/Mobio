@@ -17,6 +17,7 @@ import 'package:mobi_app/features/bookings/widgets/trip_vehicle_grid.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_async_state_view.dart';
+import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_input_field.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
@@ -87,10 +88,14 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
     try {
       final trip = await controller.submitTrip(note: _noteController.text);
       if (trip != null) {
-        final suggestions =
-            ref.read(scheduleTripProvider).value?.poolSuggestions ?? const [];
+        final scheduleState = ref.read(scheduleTripProvider).value;
+        final suggestions = scheduleState?.poolSuggestions ?? const [];
         if (suggestions.isNotEmpty) {
           await _showScheduledPostSuggestionsSheet(suggestions);
+        }
+        final poolMessage = scheduleState?.poolSuggestionMessage;
+        if (poolMessage != null && poolMessage.isNotEmpty) {
+          _showSnackBar(poolMessage);
         }
         _showSnackBar(_isEditMode ? 'Trip updated.' : 'Trip scheduled.');
         widget.onBack();
@@ -118,58 +123,51 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   ) async {
     if (!mounted) return;
 
-    await showModalBottomSheet<void>(
+    await MobiBottomSheet.show<void>(
       context: context,
-      isScrollControlled: true,
+      title: 'Similar scheduled posts',
       builder: (context) {
         final cs = Theme.of(context).colorScheme;
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.xl,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Similar scheduled posts',
-                  style: AppTypography.headlineSm.copyWith(color: cs.onSurface),
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            0,
+            AppSpacing.lg,
+            AppSpacing.md,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'People with similar route or timing.',
+                style: AppTypography.bodySm.copyWith(
+                  color: cs.onSurfaceVariant,
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  'People with similar route or timing.',
-                  style: AppTypography.bodySm.copyWith(
-                    color: cs.onSurfaceVariant,
-                  ),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 360),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: suggestions.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: AppSpacing.sm),
+                  itemBuilder: (context, index) {
+                    final trip = suggestions[index];
+                    return _PoolSuggestionTile(trip: trip);
+                  },
                 ),
-                const SizedBox(height: AppSpacing.md),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 360),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: suggestions.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: AppSpacing.sm),
-                    itemBuilder: (context, index) {
-                      final trip = suggestions[index];
-                      return _PoolSuggestionTile(trip: trip);
-                    },
-                  ),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Done'),
                 ),
-                const SizedBox(height: AppSpacing.lg),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Done'),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },

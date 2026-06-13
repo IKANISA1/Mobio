@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/models/trip.dart';
 
 /// Unit tests for Trip model serialization and TripService data contracts.
@@ -32,6 +33,13 @@ void main() {
         'vehicle_type': 'cab',
         'is_recurring': false,
         'recurring_days': <int>[],
+        'starts_at': '2026-03-25T08:30:00Z',
+        'origin_place_id': 'origin-place',
+        'destination_place_id': 'destination-place',
+        'client_request_id': 'trip-request-1',
+        'recurrence_end_date': null,
+        'recurrence_skip_dates': <String>[],
+        'cancelled_at': null,
         'joined_date': null,
         'created_at': '2026-03-25T08:00:00Z',
         'updated_at': '2026-03-25T08:00:00Z',
@@ -59,6 +67,11 @@ void main() {
       expect(trip.vehicleTypeStr, 'cab');
       expect(trip.isRecurring, false);
       expect(trip.recurringDays, isEmpty);
+      expect(trip.startsAt, '2026-03-25T08:30:00Z');
+      expect(trip.originPlaceId, 'origin-place');
+      expect(trip.destinationPlaceId, 'destination-place');
+      expect(trip.clientRequestId, 'trip-request-1');
+      expect(trip.recurrenceSkipDates, isEmpty);
     });
 
     test('applies defaults for missing optional fields', () {
@@ -182,6 +195,73 @@ void main() {
 
       expect(trip.status, 'active');
       expect(trip.isActive, true);
+    });
+  });
+
+  group('expandTripsForScheduleWindow', () {
+    test('expands recurring trips into upcoming bounded occurrences', () {
+      final rows = [
+        Trip.fromJson({
+          'id': 'recurring-1',
+          'author_id': 'u1',
+          'origin': 'A',
+          'destination': 'B',
+          'departure_date': '2026-06-01',
+          'departure_time': '08:30',
+          'is_recurring': true,
+          'recurring_days': [0, 2],
+          'recurrence_end_date': '2026-06-17',
+          'recurrence_skip_dates': ['2026-06-15'],
+        }),
+        Trip.fromJson({
+          'id': 'single-1',
+          'author_id': 'u1',
+          'origin': 'C',
+          'destination': 'D',
+          'departure_date': '2026-06-15',
+          'departure_time': '07:15',
+        }),
+      ];
+
+      final expanded = expandTripsForScheduleWindow(
+        rows,
+        DateTime(2026, 6, 13, 12),
+      );
+
+      expect(
+        expanded.map((trip) => '${trip.id}:${trip.departureDate}').toList(),
+        ['single-1:2026-06-15', 'recurring-1:2026-06-17'],
+      );
+      expect(expanded[1].startsAt, '2026-06-17T08:30:00.000Z');
+    });
+
+    test('does not keep expired single or recurring trips', () {
+      final rows = [
+        Trip.fromJson({
+          'id': 'past-single',
+          'author_id': 'u1',
+          'origin': 'A',
+          'destination': 'B',
+          'departure_date': '2026-06-01',
+          'departure_time': '08:30',
+        }),
+        Trip.fromJson({
+          'id': 'past-recurring',
+          'author_id': 'u1',
+          'origin': 'A',
+          'destination': 'B',
+          'departure_date': '2026-05-01',
+          'departure_time': '08:30',
+          'is_recurring': true,
+          'recurring_days': [0],
+          'recurrence_end_date': '2026-06-01',
+        }),
+      ];
+
+      expect(
+        expandTripsForScheduleWindow(rows, DateTime(2026, 6, 13)),
+        isEmpty,
+      );
     });
   });
 }

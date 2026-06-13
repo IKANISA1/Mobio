@@ -26,9 +26,11 @@ class ScheduleTripState {
   final double? userLng;
   final List<FavoriteAddress> favoriteAddresses;
   final List<Trip> poolSuggestions;
+  final String? poolSuggestionMessage;
   final Trip? createdTrip;
   final Trip? editingTrip;
   final String? validationMessage;
+  final String clientRequestId;
 
   ScheduleTripState({
     this.vehicleTypes = const [],
@@ -50,11 +52,14 @@ class ScheduleTripState {
     this.userLng,
     this.favoriteAddresses = const [],
     this.poolSuggestions = const [],
+    this.poolSuggestionMessage,
     this.createdTrip,
     this.editingTrip,
     this.validationMessage,
+    String? clientRequestId,
   }) : date = date ?? DateTime.now(),
-       time = time ?? TimeOfDay.now();
+       time = time ?? TimeOfDay.now(),
+       clientRequestId = clientRequestId ?? _newClientRequestId();
 
   factory ScheduleTripState.fromTrip(
     Trip trip, {
@@ -67,13 +72,16 @@ class ScheduleTripState {
           ? 'private_'
           : trip.vehicleTypeStr,
       originDetails: PlaceDetails(
-        placeId: 'trip-origin-${trip.id ?? trip.hashCode}',
+        placeId:
+            trip.originPlaceId ?? 'trip-origin-${trip.id ?? trip.hashCode}',
         formattedAddress: trip.origin,
         latitude: trip.originLat ?? 0,
         longitude: trip.originLng ?? 0,
       ),
       destDetails: PlaceDetails(
-        placeId: 'trip-destination-${trip.id ?? trip.hashCode}',
+        placeId:
+            trip.destinationPlaceId ??
+            'trip-destination-${trip.id ?? trip.hashCode}',
         formattedAddress: trip.destination,
         latitude: trip.destLat ?? 0,
         longitude: trip.destLng ?? 0,
@@ -85,6 +93,7 @@ class ScheduleTripState {
       selectedRole: trip.role,
       favoriteAddresses: favoriteAddresses,
       editingTrip: trip,
+      clientRequestId: trip.clientRequestId,
     );
   }
 
@@ -108,9 +117,11 @@ class ScheduleTripState {
     Object? userLng = _unset,
     List<FavoriteAddress>? favoriteAddresses,
     List<Trip>? poolSuggestions,
+    Object? poolSuggestionMessage = _unset,
     Object? createdTrip = _unset,
     Object? editingTrip = _unset,
     Object? validationMessage = _unset,
+    String? clientRequestId,
   }) {
     return ScheduleTripState(
       vehicleTypes: vehicleTypes ?? this.vehicleTypes,
@@ -139,6 +150,9 @@ class ScheduleTripState {
       userLng: identical(userLng, _unset) ? this.userLng : userLng as double?,
       favoriteAddresses: favoriteAddresses ?? this.favoriteAddresses,
       poolSuggestions: poolSuggestions ?? this.poolSuggestions,
+      poolSuggestionMessage: identical(poolSuggestionMessage, _unset)
+          ? this.poolSuggestionMessage
+          : poolSuggestionMessage as String?,
       createdTrip: identical(createdTrip, _unset)
           ? this.createdTrip
           : createdTrip as Trip?,
@@ -148,6 +162,7 @@ class ScheduleTripState {
       validationMessage: identical(validationMessage, _unset)
           ? this.validationMessage
           : validationMessage as String?,
+      clientRequestId: clientRequestId ?? this.clientRequestId,
     );
   }
 
@@ -167,6 +182,12 @@ class ScheduleTripState {
     if (destDetails == null) {
       return 'Choose a destination.';
     }
+    if (!_hasResolvedRoute(originDetails!)) {
+      return 'Choose a pickup from the location results.';
+    }
+    if (!_hasResolvedRoute(destDetails!)) {
+      return 'Choose a destination from the location results.';
+    }
     if (selectedDateTime.isBefore(now)) {
       return 'Choose a future departure time.';
     }
@@ -175,6 +196,16 @@ class ScheduleTripState {
     }
     return null;
   }
+}
+
+String _newClientRequestId() {
+  return 'trip-${DateTime.now().microsecondsSinceEpoch}';
+}
+
+bool _hasResolvedRoute(PlaceDetails details) {
+  return details.placeId.trim().isNotEmpty &&
+      details.formattedAddress.trim().isNotEmpty &&
+      (details.latitude != 0 || details.longitude != 0);
 }
 
 DateTime _parseTripDate(String value) {
