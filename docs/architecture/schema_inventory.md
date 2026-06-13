@@ -78,3 +78,10 @@ rather than reviving removed payment or ride-request lifecycle tables:
   confirmation status, payment status, and ticket reference.
 - `bus_location_events`: Driver-app or GPS-hardware position heartbeats for
   Google Maps live-location handoff.
+
+The approved expansion tables above do not imply Google Routes API or route
+matrix support. They should store agency schedules, route definitions, and
+trusted location snapshots/events. Do not add `distance_meters`,
+`duration_seconds`, route polylines, fare-distance basis, route matrix cache, or
+dispatch-grade routing fields to Mobio tables. Those concepts are out of context
+for this app and must not become Mobio schema.

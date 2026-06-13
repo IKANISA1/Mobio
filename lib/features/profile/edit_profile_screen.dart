@@ -17,6 +17,7 @@ import 'package:mobi_app/features/profile/widgets/profile_subscription_section.d
 import 'package:mobi_app/features/profile/widgets/profile_vehicle_section.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_async_state_view.dart';
+import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
@@ -119,53 +120,41 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     EditProfileState state,
     EditProfileController controller,
   ) {
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-
-    showModalBottomSheet<void>(
+    MobiBottomSheet.show<void>(
       context: context,
-      backgroundColor: ext.surfaceContainerLow,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppRadii.hero),
-        ),
-      ),
+      title: 'Country code',
       builder: (context) {
-        return SafeArea(
-          child: ListView.separated(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            itemCount: state.countries.length,
-            separatorBuilder: (context, index) => Divider(
-              height: 1,
-              color: Theme.of(
-                context,
-              ).colorScheme.outlineVariant.withValues(alpha: 0.1),
-            ),
-            itemBuilder: (context, index) {
-              final country = state.countries[index];
-              return ListTile(
-                leading: Text(
-                  country.flag,
-                  style: const TextStyle(fontSize: 22),
-                ),
-                title: Text(
-                  country.name,
-                  style: AppTypography.titleMd.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-                trailing: Text(
-                  country.dialingCode,
-                  style: AppTypography.bodyMd.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                onTap: () {
-                  controller.setCountryCode(country.dialingCode);
-                  Navigator.of(context).pop();
-                },
-              );
-            },
+        return ListView.separated(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          itemCount: state.countries.length,
+          separatorBuilder: (context, index) => Divider(
+            height: 1,
+            color: Theme.of(
+              context,
+            ).colorScheme.outlineVariant.withValues(alpha: 0.1),
           ),
+          itemBuilder: (context, index) {
+            final country = state.countries[index];
+            return ListTile(
+              leading: Text(country.flag, style: const TextStyle(fontSize: 22)),
+              title: Text(
+                country.name,
+                style: AppTypography.titleMd.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+              trailing: Text(
+                country.dialingCode,
+                style: AppTypography.bodyMd.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+              onTap: () {
+                controller.setCountryCode(country.dialingCode);
+                Navigator.of(context).pop();
+              },
+            );
+          },
         );
       },
     );

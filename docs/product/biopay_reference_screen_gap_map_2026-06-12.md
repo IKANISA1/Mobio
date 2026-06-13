@@ -32,9 +32,9 @@ fit, face guide, and `Center`, `Turn`, `Hold` pose sequencing.
 | Get QR Code | `/biopay/qr` | Restored with QR generation, `Generate QR Code`, and `Share QR Code`. |
 | QR Scan | `/biopay/scan` | Restored with `MobileScanner`, safe token resolution, and external USSD dial action. |
 | NFC | `/biopay/nfc` | Restored as `Activate NFC` then tap/hold near a BioPay NFC tag; no public read/write developer wording. |
-| Admin Dashboard | `/admin/finance` | Restored as BioPay Ops inside the MOBI admin shell. |
-| Admin Payees/Payee Detail | `/admin/finance` Payees section | Restored with role-gated payee search/detail backed by Supabase RPCs. |
-| Admin System Status | `/admin/finance` Status section | Restored with AWS provider, database, USSD handoff, and audit readiness. |
+| Admin Dashboard | `/admin/biopay` | Restored as BioPay Ops inside the MOBI admin shell. `/admin/finance` is a compatibility redirect only. |
+| Admin Payees/Payee Detail | `/admin/biopay` Payees section | Restored with role-gated payee search/detail backed by Supabase RPCs. |
+| Admin System Status | `/admin/biopay` Status section | Restored with AWS provider, database, USSD handoff, and audit readiness. |
 | Admin Activity | Not supported in MOBI | Do not restore as a MOBI screen. External confirmation belongs in the BioPay Ops `Confirmations` section. |
 
 ## Reference Contracts Adopted
@@ -66,7 +66,8 @@ fit, face guide, and `Center`, `Turn`, `Hold` pose sequencing.
 The BioPay reference admin screens are restored in MOBI as one role-gated
 operations console instead of a separate legacy app shell:
 
-- `/admin/finance` opens `BioPay Ops` for platform admins.
+- `/admin/biopay` opens `BioPay Ops` for platform admins.
+- `/admin/finance` remains a compatibility redirect for old admin links and should not be used in new UI copy.
 - Summary metrics show payees, requests, pending external confirmations, and
   match rate.
 - Payee list/search is backed by active `biopay_profiles` and profile display

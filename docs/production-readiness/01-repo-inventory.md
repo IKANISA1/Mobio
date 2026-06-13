@@ -47,6 +47,12 @@ Date: 2026-05-06
   support. Camera, ML Kit Face Detection, TFLite, NFC, QR scanning, local auth,
   SMS ingestion, and payment-state dependencies were removed from the active
   Mobio package in the limited-scope cleanup.
+- Google/Firebase API inventory: see `docs/reports/google_api_sdk_findings.md`.
+  Needed Google Maps Platform APIs are Places API New and Geocoding API through
+  the server-side `maps-gateway`. Google Routes API, Compute Route Matrix,
+  Directions API, Distance Matrix API, route ETA/distance/polyline/matrix,
+  fare-distance, and dispatch-grade routing are permanently out of context for
+  this app.
 - Web/PWA: Flutter web shell with generated service worker; Cloudflare Pages deploy scripts.
 - Supabase functions: Deno, `npm:@supabase/supabase-js@2`, `jsr:@supabase/functions-js/edge-runtime.d.ts`, Google/Gemini integrations.
 

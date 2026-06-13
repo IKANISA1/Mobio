@@ -9,6 +9,9 @@ apk_path="${ANDROID_RELEASE_APK:-build/app/outputs/flutter-apk/app-release.apk}"
 evidence_dir="${ANDROID_SMOKE_EVIDENCE_DIR:-build/reports/android-smoke}"
 timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
 evidence_file="$evidence_dir/smoke-$timestamp.log"
+window_file="$evidence_dir/smoke-$timestamp-window.txt"
+screenshot_file="$evidence_dir/smoke-$timestamp.png"
+xml_file="$evidence_dir/smoke-$timestamp.xml"
 generated_signing_files=false
 
 cleanup_generated_signing_files() {
@@ -21,6 +24,10 @@ trap cleanup_generated_signing_files EXIT
 
 if ! command -v adb >/dev/null 2>&1; then
   echo "adb is required for Android release smoke." >&2
+  exit 127
+fi
+if ! command -v rg >/dev/null 2>&1; then
+  echo "ripgrep (rg) is required for Android release smoke foreground checks." >&2
   exit 127
 fi
 
@@ -103,8 +110,21 @@ mkdir -p "$evidence_dir"
 
 echo "Installing $apk_path on $device..."
 adb -s "$device" install -r "$apk_path" >> "$evidence_file" 2>&1
+{
+  echo
+  echo "== installed package =="
+  adb -s "$device" shell dumpsys package "$package_name" |
+    awk '
+      /versionCode=|versionName=|firstInstallTime=|lastUpdateTime=|timeStamp=|primaryCpuAbi=|apkSigningVersion=/ {
+        print
+      }
+    '
+} >> "$evidence_file" 2>&1
 
 echo "Launching $package_name..."
+adb -s "$device" logcat -c || true
+adb -s "$device" shell input keyevent WAKEUP >/dev/null 2>&1 || true
+adb -s "$device" shell wm dismiss-keyguard >/dev/null 2>&1 || true
 adb -s "$device" shell monkey -p "$package_name" -c android.intent.category.LAUNCHER 1 >> "$evidence_file" 2>&1
 sleep "${ANDROID_SMOKE_WAIT_SECONDS:-8}"
 
@@ -119,12 +139,71 @@ if [[ -z "$pid" ]]; then
   exit 1
 fi
 
+adb -s "$device" shell dumpsys window > "$window_file"
+adb -s "$device" exec-out screencap -p > "$screenshot_file" || true
+adb -s "$device" exec-out uiautomator dump /dev/tty > "$xml_file" || true
+
+current_focus="$(rg -m1 'mCurrentFocus=' "$window_file" || true)"
+keyguard_showing="$(
+  awk '
+    /KeyguardServiceDelegate/ { in_keyguard = 1; next }
+    in_keyguard && /showing=/ { print; exit }
+  ' "$window_file"
+)"
+if [[ "$current_focus" == *"NotificationShade"* ||
+  "$keyguard_showing" == *"showing=true"* ||
+  "$current_focus" == *"Keyguard"* ]]; then
+  {
+    echo
+    echo "== foreground check =="
+    echo "current_focus=$current_focus"
+    echo "keyguard=$keyguard_showing"
+    echo "window_snapshot=$window_file"
+    echo "screenshot=$screenshot_file"
+    echo "ui_tree=$xml_file"
+  } >> "$evidence_file"
+  echo "Mobio launched but the device is locked or System UI is covering the app. Evidence: $evidence_file" >&2
+  exit 2
+fi
+
+if [[ "$current_focus" != *"$package_name"* ]]; then
+  {
+    echo
+    echo "== foreground check =="
+    echo "current_focus=$current_focus"
+    echo "expected_package=$package_name"
+    echo "window_snapshot=$window_file"
+    echo "screenshot=$screenshot_file"
+    echo "ui_tree=$xml_file"
+  } >> "$evidence_file"
+  echo "Mobio is running but is not the foreground app. Evidence: $evidence_file" >&2
+  exit 3
+fi
+
+logcat_snapshot="$(mktemp)"
+adb -s "$device" logcat -d -t 500 > "$logcat_snapshot" || true
+if rg -i 'FATAL EXCEPTION|Application Not Responding|ANR in|FlutterError' "$logcat_snapshot" >/dev/null; then
+  {
+    echo
+    echo "== recent logcat =="
+    cat "$logcat_snapshot"
+  } >> "$evidence_file"
+  rm -f "$logcat_snapshot"
+  echo "Mobio launch produced fatal/ANR/FlutterError logcat output. Evidence: $evidence_file" >&2
+  exit 4
+fi
+
 {
   echo
   echo "pid=$pid"
+  echo "current_focus=$current_focus"
+  echo "window_snapshot=$window_file"
+  echo "screenshot=$screenshot_file"
+  echo "ui_tree=$xml_file"
   echo
   echo "== recent logcat =="
-  adb -s "$device" logcat -d -t 200
+  cat "$logcat_snapshot"
 } >> "$evidence_file" 2>&1
+rm -f "$logcat_snapshot"
 
 echo "Android release smoke passed. Evidence: $evidence_file"

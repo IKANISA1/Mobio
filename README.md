@@ -126,7 +126,49 @@ firebase deploy --only hosting --project gen-lang-client-0172279957
 | `SUPABASE_URL` | **Yes** | Supabase project URL |
 | `SUPABASE_ANON_KEY` | **Yes** | Supabase anonymous key |
 | `PRIVACY_POLICY_URL` | **Yes** | Public privacy-policy URL used in-app and for Play review |
-| `MAPS_API_KEY` | Optional | Google Maps Android API key (set in `local.properties` or env) |
+| `MAPS_API_KEY` | Optional | Legacy/native Google Maps key placeholder only. The active app does not embed Google Maps or use the Google Routes API. |
+
+## Google Maps And Route Scope
+
+Mobio intentionally does **not** compute routes, ETAs, route distance,
+duration, fare-distance basis, route polylines, or driver/passenger route
+matrices. Do not recommend or add Google Routes API `computeRoutes`, Google
+Routes API `computeRouteMatrix`, Directions API, Distance Matrix API, or a
+custom route engine for the active scheduled-trip marketplace.
+
+The approved implementation is:
+
+- Store user-entered route labels and optional coordinates for scheduled trip
+  posts.
+- Use Google Places/Geocoding only for place lookup and reverse geocoding
+  through the server-side Supabase `maps-gateway`.
+- Open external Google Maps deep links when a user wants map display,
+  navigation, traffic, route rendering, or current vehicle position viewing.
+- Keep fares, timing, and pickup coordination manually agreed between users in
+  chat or WhatsApp for legacy scheduled-trip posts.
+
+The backend enforces this boundary: `maps-gateway` returns `410` for
+`compute_route`, and release tests guard that route computation remains absent.
+Route ETA, route distance, route duration, route polyline, route matrix,
+fare-distance basis, and dispatch-grade routing are out of context for this app.
+They must not be introduced into Mobio documentation, code, schema, release
+gates, API enablement, or store copy.
+
+### Google/Firebase Release Evidence Gates
+
+Production go/no-go uses non-secret evidence files for Google/Firebase
+readiness. Do not paste API keys or service-account JSON into docs. Set these
+environment variables only after the named evidence file exists:
+
+| Variable | Evidence required |
+|----------|-------------------|
+| `GOOGLE_MAPS_SERVER_SECRET_VALIDATED=true` plus `GOOGLE_MAPS_SERVER_SECRET_EVIDENCE=/path/to/file.md` | Supabase `maps-gateway` has `GOOGLE_MAPS_SERVER_API_KEY` configured; no Gemini or client Maps key is accepted for server Maps calls. |
+| `FCM_HTTP_V1_SECRET_VALIDATED=true` plus `FCM_HTTP_V1_SECRET_EVIDENCE=/path/to/file.md` | `send-push` deployment has FCM HTTP v1 service-account secrets configured. |
+| `IOS_FIREBASE_APNS_VALIDATED=true` plus `IOS_FIREBASE_APNS_EVIDENCE=/path/to/file.md` | iOS Firebase app registration, bundle id, APNs capability, and APNs key/certificate setup were verified. |
+| `IOS_CRASHLYTICS_SYMBOLS_VALIDATED=true` plus `IOS_CRASHLYTICS_SYMBOLS_EVIDENCE=/path/to/file.md` | iOS Crashlytics dSYM upload was verified for the release build. |
+
+The current Google/Firebase implementation inventory and required SDK/API work
+is tracked in [`docs/reports/google_api_sdk_findings.md`](./docs/reports/google_api_sdk_findings.md).
 
 ## Android Release Signing
 

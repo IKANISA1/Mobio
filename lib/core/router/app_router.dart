@@ -48,6 +48,8 @@ abstract class AppRoutes {
   static const String adminSubscriptions = '/admin/subscriptions';
   static const String adminTrips = '/admin/trips';
   static const String adminReports = '/admin/reports';
+  static const String adminBioPayOps = '/admin/biopay';
+  @Deprecated('Use adminBioPayOps. Kept as a redirect for old admin links.')
   static const String adminFinance = '/admin/finance';
   static const String adminHealth = '/admin/health';
   static const String adminAudit = '/admin/audit';
@@ -287,8 +289,12 @@ GoRouter createRouter() {
                 ),
               ),
               GoRoute(
-                path: '/admin/finance',
+                path: '/admin/biopay',
                 builder: (context, state) => const BioPayAdminConsoleScreen(),
+              ),
+              GoRoute(
+                path: '/admin/finance',
+                redirect: (context, state) => '/admin/biopay',
               ),
             ],
           ),

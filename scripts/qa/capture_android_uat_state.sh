@@ -14,6 +14,10 @@ if ! command -v adb >/dev/null 2>&1; then
   echo "adb is required for Android UAT capture." >&2
   exit 127
 fi
+if ! command -v rg >/dev/null 2>&1; then
+  echo "ripgrep (rg) is required for Android UAT foreground checks." >&2
+  exit 127
+fi
 
 if [[ -n "${ANDROID_SERIAL:-}" ]]; then
   device="$ANDROID_SERIAL"
@@ -64,10 +68,31 @@ if rg -q "mDreamingLockscreen=true|Enter your PIN|keyguard_pin_view" "$window_fi
   exit 2
 fi
 
+current_focus="$(rg -m1 'mCurrentFocus=' "$window_file" || true)"
+keyguard_showing="$(
+  awk '
+    /KeyguardServiceDelegate/ { in_keyguard = 1; next }
+    in_keyguard && /showing=/ { print; exit }
+  ' "$window_file"
+)"
+if [[ "$current_focus" == *"NotificationShade"* ||
+  "$keyguard_showing" == *"showing=true"* ||
+  "$current_focus" == *"Keyguard"* ]]; then
+  echo "Android UAT capture stopped: device is locked or System UI is covering the app. Evidence: $evidence_dir" >&2
+  echo "current_focus=$current_focus" >&2
+  exit 2
+fi
+
 pid="$(adb -s "$device" shell pidof "$package_name" | tr -d '\r' || true)"
 if [[ -z "$pid" ]]; then
   echo "Android UAT capture stopped: $package_name is not running. Evidence: $evidence_dir" >&2
   exit 3
+fi
+
+if [[ "$current_focus" != *"$package_name"* ]]; then
+  echo "Android UAT capture stopped: $package_name is running but not foreground. Evidence: $evidence_dir" >&2
+  echo "current_focus=$current_focus" >&2
+  exit 4
 fi
 
 echo "Android UAT state captured. device=$device package=$package_name pid=$pid evidence=$evidence_dir"

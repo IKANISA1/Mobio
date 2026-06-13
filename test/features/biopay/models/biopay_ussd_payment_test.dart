@@ -20,7 +20,7 @@ void main() {
     expect(request.token, 'scan-token-1');
     expect(request.channel, BioPayRequestChannel.qr);
     expect(request.status, BioPayRequestStatus.readyToDial);
-    expect(request.amountLabel, 'RWF 1500');
+    expect(request.amountLabel, 'RWF 1,500');
     expect(request.toJson()['token'], 'scan-token-1');
 
     final markedPaid = request.copyWith(

@@ -10,7 +10,7 @@ Mobio is an existing production mobility app. The system must refine the current
 
 Non-negotiable constraints:
 
-- keep the 3-tab shell and current route structure
+- keep the 4-branch shell and current route structure
 - preserve the current core flows: Home, BioPay, Profile, Nearby, Bookings, Schedule, Trip Details, Chat, Admin
 - work additively on top of current business logic and data contracts
 - make screens darker, more immersive, and faster while supporting the approved bus/public-transport expansion
@@ -94,7 +94,7 @@ Revolut-reference rule:
 
 Gradient presets:
 
-- `SoftGradientTone.shell`: default Home, Trips, Admin, and Chat shell
+- `SoftGradientTone.shell`: default Home, Trips, BioPay, Admin, and Chat shell
 - `SoftGradientTone.nearby`: aqua mobility depth for map and nearby discovery
 - `SoftGradientTone.profile`: dusty rose profile/account depth
 - `SoftGradientTone.success`: mint confirmation and live success depth
@@ -280,9 +280,11 @@ Rules:
 ### 7.2 BioPay
 
 - one identity header with brand and region badges
-- only the 3 primary actions visible
+- use the shared dark shell, command bar, circular action row, and tokenized panels
+- keep 3-4 primary actions visible
 - no repeated brand subtitles inside every action tile
 - use state banners for availability constraints
+- keep QR/scanner/NFC readability high, but do not reintroduce a separate light product system
 
 ### 7.3 Bookings
 
@@ -323,7 +325,7 @@ Keep the current navigation architecture.
 
 Rules:
 
-- 3 top-level tabs only
+- 4 top-level branches only: Home, Trips, BioPay, and Profile
 - use short labels and icon-led scanning
 - push secondary flows over the shell
 - prefer contextual entry points from cards, tiles, and FABs
@@ -368,8 +370,10 @@ The current benchmark screens for the minimalist system are:
 - `lib/features/bookings/bookings_screen.dart`
 - `lib/features/profile/profile_screen.dart`
 - `lib/features/nearby/nearby_screen.dart`
+- `lib/features/biopay/biopay_screen.dart`
 - `lib/features/chat/chat_screen.dart`
 - `lib/features/admin/widgets/admin_ui.dart`
 
-Legacy payment, ledger, and BioPay routes are not benchmark screens for this
-release. They remain intentionally unavailable under the active product scope.
+Legacy payment and ledger routes are not benchmark screens for this release.
+They remain intentionally unavailable under the active product scope. BioPay is
+active only as an external USSD handoff and face/QR/NFC identity surface.

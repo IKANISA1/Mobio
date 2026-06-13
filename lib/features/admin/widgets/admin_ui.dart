@@ -15,7 +15,7 @@ enum AdminWorkspaceTab {
   subscriptions,
   trips,
   reports,
-  finance,
+  biopayOps,
   health,
   audit,
   broadcasts,
@@ -879,6 +879,11 @@ class _AdminWorkspaceTabs extends StatelessWidget {
           label: 'Reports',
           icon: LucideIcons.flag,
           route: '/admin/reports',
+        ),
+        AdminWorkspaceTab.biopayOps: (
+          label: 'BioPay',
+          icon: LucideIcons.scanFace,
+          route: '/admin/biopay',
         ),
         AdminWorkspaceTab.health: (
           label: 'Health',

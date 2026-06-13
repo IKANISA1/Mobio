@@ -82,8 +82,9 @@ The restored BioPay UI must fit the current Mobio Revolut-style shell:
 
 - Bottom navigation includes `BioPay` as a first-class tab.
 - BioPay home uses four icon-first action tiles: `QR`, `Scan`, `Face`, `NFC`.
-- Admin BioPay uses `/admin/finance` as a BioPay Ops console inside the current
+- Admin BioPay uses `/admin/biopay` as a BioPay Ops console inside the current
   admin shell instead of restoring the old standalone BioPay admin app.
+  `/admin/finance` is retained only as a compatibility redirect.
 - QR generation is a payee/share surface and does not expose the payer-side
   dialer action.
 - QR scan, NFC, and face scan result screens first use `Dial USSD`, then

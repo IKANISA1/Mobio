@@ -87,6 +87,18 @@
 
 ---
 
+## Rule 6: No Automatic Route Computation In Active Marketplace
+
+- Active scheduled-trip posts store route labels and optional coordinates only.
+- Mobio must not compute Google-backed ETA, route distance, route duration, route polylines, route matrices, fare-distance basis, automatic dispatch, or route tracking for legacy scheduled-trip posts.
+- Do not recommend or enable Google Routes API `computeRoutes`, Google Routes API `computeRouteMatrix`, Directions API, Distance Matrix API, or a custom routing engine for the active marketplace.
+- Google Places/Geocoding may be used server-side for place lookup and reverse geocoding.
+- Google Maps is used by external deep link handoff for route display, navigation, traffic, route rendering, and trusted vehicle position viewing.
+- `maps-gateway` returning `410` for `compute_route` is intentional and must remain guarded by tests.
+- Route ETA, distance, duration, polyline, matrix, fare-distance, and dispatch-grade routing are out of context for this app and must never be recommended as Mobio work.
+
+---
+
 ## Quick Reference
 
 | Rule | One-Liner |
@@ -96,3 +108,4 @@
 | **3. UI Integrity** | Follow `design.md` exactly — no ad-hoc styles |
 | **4. Auth Method** | WhatsApp OTP required for passenger/driver app access; admin OTP is separate and allowlisted |
 | **5. Build Env Vars** | `SUPABASE_URL` + `SUPABASE_ANON_KEY` mandatory on every APK/AAB build — use `./scripts/release/build_android_release.sh` |
+| **6. Route Scope** | No route ETA, distance, polyline, matrix, fare-distance, dispatch, or Google Routes API in active marketplace |

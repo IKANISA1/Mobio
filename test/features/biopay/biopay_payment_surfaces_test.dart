@@ -57,7 +57,7 @@ void main() {
 
     expect(find.text('Number'), findsOneWidget);
     expect(find.text('Code'), findsOneWidget);
-    expect(find.text('AMOUNT TO RECEIVE'), findsOneWidget);
+    expect(find.text('AMOUNT'), findsOneWidget);
     expect(find.text('MoMo number / MoMo Pay code'), findsNothing);
     expect(find.text('Amount (RWF, optional)'), findsNothing);
     expect(find.text('No QR request'), findsNothing);
@@ -70,7 +70,7 @@ void main() {
 
     expect(find.text('Share QR Code'), findsOneWidget);
     expect(find.text('0788767816'), findsWidgets);
-    expect(find.text('RWF 2500'), findsOneWidget);
+    expect(find.text('RWF 2,500'), findsOneWidget);
     expect(find.text('Dial USSD'), findsNothing);
     expect(find.textContaining('Token expires'), findsNothing);
 
@@ -135,7 +135,9 @@ void main() {
 
     expect(find.text('Face scan'), findsOneWidget);
     expect(find.text('Start Face Scan'), findsOneWidget);
-    expect(find.text('AWS face match'), findsOneWidget);
+    expect(find.text('AMOUNT'), findsOneWidget);
+    expect(find.text('Amount (RWF, optional)'), findsNothing);
+    expect(find.text('AWS face match'), findsNothing);
     expect(find.text('Capture with AWS face match'), findsNothing);
   });
 

@@ -37,6 +37,10 @@ if [[ -f "supabase/functions/biopay-face-provider/index_test.ts" ]]; then
   deno test "${deno_args[@]}" --allow-env supabase/functions/biopay-face-provider/index_test.ts
 fi
 
+if [[ -f "supabase/functions/maps-gateway/index_test.ts" ]]; then
+  deno test "${deno_args[@]}" --allow-env supabase/functions/maps-gateway/index_test.ts
+fi
+
 if [[ -f "supabase/functions/_shared/otp-security_test.ts" ]]; then
   deno test "${deno_args[@]}" --allow-env supabase/functions/_shared/otp-security_test.ts
 fi

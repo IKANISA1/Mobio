@@ -121,6 +121,7 @@ class PlacesService {
     String input, {
     double? nearLat,
     double? nearLng,
+    String? sessionToken,
   }) async {
     if (input.trim().isEmpty) return [];
 
@@ -142,6 +143,9 @@ class PlacesService {
           'action': 'autocomplete',
           'query': input,
         };
+        if (sessionToken != null && sessionToken.trim().isNotEmpty) {
+          body['sessionToken'] = sessionToken.trim();
+        }
 
         // Pass user location for proximity bias
         if (nearLat != null && nearLng != null) {
@@ -174,14 +178,20 @@ class PlacesService {
 
         final List<PlacePrediction> predictions = [];
         for (final suggestion in suggestions) {
+          final placeId = suggestion['placeId']?.toString().trim() ?? '';
+          final type = suggestion['type']?.toString() ?? 'place';
+          if (type != 'place' || placeId.isEmpty) {
+            continue;
+          }
+
           predictions.add(
             PlacePrediction(
-              placeId: suggestion['placeId']?.toString() ?? '',
+              placeId: placeId,
               description: suggestion['label']?.toString() ?? '',
               primaryText: suggestion['primaryText'] as String?,
               secondaryText: suggestion['secondaryText'] as String?,
               distanceMeters: (suggestion['distanceMeters'] as num?)?.toInt(),
-              predictionType: suggestion['type']?.toString() ?? 'place',
+              predictionType: type,
             ),
           );
         }
@@ -191,14 +201,33 @@ class PlacesService {
   }
 
   /// Fetches place details (geometry/address) for a specific [placeId].
-  Future<PlaceDetails?> getPlaceDetails(String placeId) async {
+  Future<PlaceDetails?> getPlaceDetails(
+    String placeId, {
+    String? sessionToken,
+  }) async {
+    final normalizedPlaceId = placeId.trim();
+    if (normalizedPlaceId.isEmpty) {
+      throw const PlacesException(
+        kind: PlacesErrorKind.serverError,
+        message: 'Place details require a non-empty place ID.',
+      );
+    }
+
     return _callWithRetry<PlaceDetails?>(
       operationName: 'placeDetails',
       timeout: const Duration(seconds: 10),
       action: () async {
+        final body = <String, dynamic>{
+          'action': 'place_details',
+          'placeId': normalizedPlaceId,
+        };
+        if (sessionToken != null && sessionToken.trim().isNotEmpty) {
+          body['sessionToken'] = sessionToken.trim();
+        }
+
         final response = await _supabase.functions.invoke(
           'maps-gateway',
-          body: {'action': 'place_details', 'placeId': placeId},
+          body: body,
         );
 
         final data = response.data;

@@ -1,0 +1,339 @@
+--------- beginning of system
+06-13 13:05:11.748  1739  4802 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=rw.mobi.app/.MainActivity} from uid 2000
+--------- beginning of main
+06-13 13:05:11.751 21000 21000 D FirebaseSessions: App backgrounded on rw.mobi.app
+06-13 13:05:11.752 21000 21000 D com.llfbandit.app_links: Intent { flg=0x10000000 cmp=rw.mobi.app/.MainActivity }
+06-13 13:05:11.753 21000 21000 D FirebaseSessions: App foregrounded on rw.mobi.app
+06-13 13:05:11.778  3785 26280 I NetworkScheduler: (REDACTED) Error inserting %s
+06-13 13:05:12.141  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717387): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:12.145  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717388): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:12.151  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717389): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:12.158  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717390): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:12.165  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717391): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:12.632  3393  3429 I QcrilOemhookMsgTunnel: [0]processOemHookIndication length=21
+06-13 13:05:12.633  3393  3393 D QcrilMsgTunnelIfaceManager: handleMessage what = 0
+06-13 13:05:12.706  3393  3429 I QcrilOemhookMsgTunnel: [0]processOemHookIndication length=21
+06-13 13:05:12.706  3393  3393 D QcrilMsgTunnelIfaceManager: handleMessage what = 0
+06-13 13:05:12.716  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:12.724  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:12.743  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:12.744  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:12.769  2542  2542 D GlobalActionsDialogLite: Service changed before actions created
+06-13 13:05:12.769  2542  2542 D GlobalActionsDialogLite: Service changed before actions created
+06-13 13:05:12.772  4100  4100 D ConnectivityMonitorStateMachine: [onServiceStateChanged] {subId=11} ServiceState= {mVoiceRegState=0(IN_SERVICE), mDataRegState=0(IN_SERVICE), mChannelNumber=1391, duplexMode()=1, mCellBandwidths=[15000], mOperatorAlphaLong=null, mOperatorAlphaShort=null, isManualNetworkSelection=false(automatic), getRilVoiceRadioTechnology=14(LTE), getRilDataRadioTechnology=14(LTE), mCssIndicator=unsupported, mNetworkId=-1, mSystemId=-1, mCdmaRoamingIndicator=-1, mCdmaDefaultRoamingIndicator=-1, mIsEmergencyOnly=false, isUsingCarrierAggregation=true, mArfcnRsrpBoost=0, mNetworkRegistrationInfos=[NetworkRegistrationInfo{ domain=CS transportType=WWAN registrationState=HOME mInitialRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[VOICE,SMS,VIDEO] cellIdentity=null voiceSpecificInfo=VoiceSpecificRegistrationInfo { mCssSupported=false mRoamingIndicator=1 mSystemIsInPrl=-1 mDefaultRoamingIndicator=-1} dataSpecificInfo=null nrState=**** rRplmn=63510 isUsingCarrierAggregation=false}, NetworkRegistrationInfo{ domain=PS transportType=WWAN registrationState=HOME mInitialRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[DATA] cellIdentity=null voiceSpecificInfo=null dataSpecificInfo=android.telephony.DataSpecificRegistrationInfo :{ maxDataCalls = 20 isDcNrRestricted = false isNrAvailable = false isEnDcAvailable = false LteVopsSupportInfo :  mVopsSupport = 3 mEmcBearerSupport = 3 } nrState=**** rRplmn=63510 isUsingCarrierAggregation=true}], mNrFrequencyRange=0, mOperatorAlphaLongRaw=MTN Rwandacell, mOperatorAlphaShortRaw=MTNRW, mIsDataRoamingFromRegistration=false, mIsIwlanPreferred=false}
+06-13 13:05:12.772  4100  4100 D ConnectivityMonitorStateMachine: [onServiceStateChanged] {subId=11} vops:false
+06-13 13:05:12.772  4100 10567 D ConnectivityMonitorStateMachine: [Default] {subId=11} processMessage(SERVICE_STATE_CHANGED) { when=0 what=544768 obj={mVoiceRegState=0(IN_SERVICE), mDataRegState=0(IN_SERVICE), mChannelNumber=1391, duplexMode()=1, mCellBandwidths=[15000], mOperatorAlphaLong=null, mOperatorAlphaShort=null, isManualNetworkSelection=false(automatic), getRilVoiceRadioTechnology=14(LTE), getRilDataRadioTechnology=14(LTE), mCssIndicator=unsupported, mNetworkId=-1, mSystemId=-1, mCdmaRoamingIndicator=-1, mCdmaDefaultRoamingIndicator=-1, mIsEmergencyOnly=false, isUsingCarrierAggregation=true, mArfcnRsrpBoost=0, mNetworkRegistrationInfos=[NetworkRegistrationInfo{ domain=CS transportType=WWAN registrationState=HOME mInitialRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[VOICE,SMS,VIDEO] cellIdentity=null voiceSpecificInfo=VoiceSpecificRegistrationInfo { mCssSupported=false mRoamingIndicator=1 mSystemIsInPrl=-1 mDefaultRoamingIndicator=-1} dataSpecificInfo=null nrState=**** rRplmn=63510 isUsingCarrierAggregation=false}, NetworkRegistrationInfo{ domain=PS transportType=WWAN registrationState=HOME mInitialRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[DATA] cellIdentity=null voiceSpecificInfo=null dataSpecificInfo=android.telephony.DataSpecificRegistrationInfo :{ maxDataCalls = 20 isDcNrRestricted = false isNrAvailable = false isEnDcAvailable = false LteVopsSupportInfo :  mVopsSupport = 3 mEmcBearerSupport = 3 } nrState=**** rRplmn=63510 isUsingCarrierAggregation=true}], mNrFrequencyRange=0, mOperatorAlphaLongRaw=MTN Rwandacell, mOperatorAlphaShortRaw=MTNRW, mIsDataRoamingFromRegistration=false, mIsIwlanPreferred=false} target=aga }
+06-13 13:05:12.772  1739  4802 I LocationAccessPolicy: com.facebook.katana is aware of fine but the app-ops permission is specifically denied.
+06-13 13:05:12.773  1739  4802 I LocationAccessPolicy: com.facebook.katana is aware of coarse but the app-ops permission is specifically denied.
+06-13 13:05:12.773  4100 10567 D ConnectivityMonitorStateMachine: [updateServiceState] {subId=11} ServiceState Changed: 0 -> 0
+06-13 13:05:12.774  1739  4802 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:1222 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:3085 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:1616 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:492 android.os.Binder.execTransactInternal:1285
+06-13 13:05:12.775  1739  1966 W BroadcastQueue: Permission Denial: receiving Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 (has extras) } to ProcessRecord{a929e26 2542:com.android.systemui/u0a243} (pid=2542, uid=10243) requires android.permission.READ_PHONE_STATE due to sender android (uid 1001)
+06-13 13:05:12.775  1739  4802 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:1272 android.content.Context.sendBroadcastMultiplePermissions:2272 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:3089 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:1616 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:492
+06-13 13:05:12.775  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:12.775  1739  1966 W BroadcastQueue: Permission Denial: receiving Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 (has extras) } to com.google.android.cellbroadcastreceiver/com.android.cellbroadcastreceiver.CellBroadcastReceiver requires android.permission.READ_PHONE_STATE due to sender android (uid 1001)
+06-13 13:05:12.776  1739  1966 W BroadcastQueue: Permission Denial: receiving Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 (has extras) } to ProcessRecord{a929e26 2542:com.android.systemui/u0a243} (pid=2542, uid=10243) requires android.permission.ACCESS_FINE_LOCATION due to sender android (uid 1001)
+06-13 13:05:12.777  1739  1966 W BroadcastQueue: Permission Denial: receiving Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 (has extras) } to com.google.android.cellbroadcastreceiver/com.android.cellbroadcastreceiver.CellBroadcastReceiver requires android.permission.ACCESS_FINE_LOCATION due to sender android (uid 1001)
+06-13 13:05:12.777  1739  4802 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:1272 android.content.Context.sendBroadcastMultiplePermissions:2272 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:3096 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:1616 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:492
+06-13 13:05:12.778  1739  1966 W BroadcastQueue: Permission Denial: receiving Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 (has extras) } to ProcessRecord{a929e26 2542:com.android.systemui/u0a243} (pid=2542, uid=10243) requires android.permission.READ_PHONE_STATE due to sender android (uid 1001)
+06-13 13:05:12.778  1739  4802 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:1272 android.content.Context.sendBroadcastMultiplePermissions:2272 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:3100 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:1616 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:492
+06-13 13:05:12.778  1739  1966 W BroadcastQueue: Permission Denial: receiving Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 (has extras) } to com.google.android.cellbroadcastreceiver/com.android.cellbroadcastreceiver.CellBroadcastReceiver requires android.permission.READ_PHONE_STATE due to sender android (uid 1001)
+06-13 13:05:12.779  2816  2816 D ServiceStateProvider: subId=11
+06-13 13:05:12.786 20284 20284 D CellBroadcastReceiver: onReceive Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 cmp=com.google.android.cellbroadcastreceiver/com.android.cellbroadcastreceiver.CellBroadcastReceiver (has extras) }
+06-13 13:05:12.787 20284 20284 D CellBroadcastReceiver: onServiceStateChanged, ss: 0
+06-13 13:05:12.787 20284 20284 D CellBroadcastReceiver: networkOperator: 63510
+06-13 13:05:12.787 20284 20284 D CellBroadcastReceiver: update supported roaming operator as
+06-13 13:05:12.788  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 13:05:12.788  2816  2816 I Telephony:  isRttSupported: false
+06-13 13:05:12.788  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 13:05:12.788  2816  2816 I Telephony:  isRoaming: false
+06-13 13:05:12.788  2816  2816 I Telephony:  isOnWfc: false
+06-13 13:05:12.789  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 13:05:12.789  2816  2816 I Telephony:  isRttSupported: false
+06-13 13:05:12.789  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 13:05:12.789  2816  2816 I Telephony:  isRoaming: false
+06-13 13:05:12.789  2816  2816 I Telephony:  isOnWfc: false
+06-13 13:05:13.148  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717574): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:13.153  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-13 13:05:13.155  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717575): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:13.158  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717576): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:13.165  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717577): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:13.171  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-13 13:05:13.171  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717578): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:13.411  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:13.415  2542  2542 D GlobalActionsDialogLite: Service changed before actions created
+06-13 13:05:13.415  2542  2542 D GlobalActionsDialogLite: Service changed before actions created
+06-13 13:05:13.418  4100  4100 D ConnectivityMonitorStateMachine: [onServiceStateChanged] {subId=11} ServiceState= {mVoiceRegState=0(IN_SERVICE), mDataRegState=0(IN_SERVICE), mChannelNumber=1391, duplexMode()=1, mCellBandwidths=[15000, 20000], mOperatorAlphaLong=null, mOperatorAlphaShort=null, isManualNetworkSelection=false(automatic), getRilVoiceRadioTechnology=14(LTE), getRilDataRadioTechnology=14(LTE), mCssIndicator=unsupported, mNetworkId=-1, mSystemId=-1, mCdmaRoamingIndicator=-1, mCdmaDefaultRoamingIndicator=-1, mIsEmergencyOnly=false, isUsingCarrierAggregation=true, mArfcnRsrpBoost=0, mNetworkRegistrationInfos=[NetworkRegistrationInfo{ domain=CS transportType=WWAN registrationState=HOME mInitialRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[VOICE,SMS,VIDEO] cellIdentity=null voiceSpecificInfo=VoiceSpecificRegistrationInfo { mCssSupported=false mRoamingIndicator=1 mSystemIsInPrl=-1 mDefaultRoamingIndicator=-1} dataSpecificInfo=null nrState=**** rRplmn=63510 isUsingCarrierAggregation=false}, NetworkRegistrationInfo{ domain=PS transportType=WWAN registrationState=HOME mInitialRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[DATA] cellIdentity=null voiceSpecificInfo=null dataSpecificInfo=android.telephony.DataSpecificRegistrationInfo :{ maxDataCalls = 20 isDcNrRestricted = false isNrAvailable = false isEnDcAvailable = false LteVopsSupportInfo :  mVopsSupport = 3 mEmcBearerSupport = 3 } nrState=**** rRplmn=63510 isUsingCarrierAggregation=true}], mNrFrequencyRange=0, mOperatorAlphaLongRaw=MTN Rwandacell, mOperatorAlphaShortRaw=MTNRW, mIsDataRoamingFromRegistration=false, mIsIwlanPreferred=false}
+06-13 13:05:13.418  4100  4100 D ConnectivityMonitorStateMachine: [onServiceStateChanged] {subId=11} vops:false
+06-13 13:05:13.419  1739  5415 I LocationAccessPolicy: com.facebook.katana is aware of fine but the app-ops permission is specifically denied.
+06-13 13:05:13.419  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:13.419  4100 10567 D ConnectivityMonitorStateMachine: [Default] {subId=11} processMessage(SERVICE_STATE_CHANGED) { when=0 what=544768 obj={mVoiceRegState=0(IN_SERVICE), mDataRegState=0(IN_SERVICE), mChannelNumber=1391, duplexMode()=1, mCellBandwidths=[15000, 20000], mOperatorAlphaLong=null, mOperatorAlphaShort=null, isManualNetworkSelection=false(automatic), getRilVoiceRadioTechnology=14(LTE), getRilDataRadioTechnology=14(LTE), mCssIndicator=unsupported, mNetworkId=-1, mSystemId=-1, mCdmaRoamingIndicator=-1, mCdmaDefaultRoamingIndicator=-1, mIsEmergencyOnly=false, isUsingCarrierAggregation=true, mArfcnRsrpBoost=0, mNetworkRegistrationInfos=[NetworkRegistrationInfo{ domain=CS transportType=WWAN registrationState=HOME mInitialRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[VOICE,SMS,VIDEO] cellIdentity=null voiceSpecificInfo=VoiceSpecificRegistrationInfo { mCssSupported=false mRoamingIndicator=1 mSystemIsInPrl=-1 mDefaultRoamingIndicator=-1} dataSpecificInfo=null nrState=**** rRplmn=63510 isUsingCarrierAggregation=false}, NetworkRegistrationInfo{ domain=PS transportType=WWAN registrationState=HOME mInitialRegistrationState=HOME roamingType=NOT_ROAMING accessNetworkTechnology=LTE rejectCause=0 emergencyEnabled=false availableServices=[DATA] cellIdentity=null voiceSpecificInfo=null dataSpecificInfo=android.telephony.DataSpecificRegistrationInfo :{ maxDataCalls = 20 isDcNrRestricted = false isNrAvailable = false isEnDcAvailable = false LteVopsSupportInfo :  mVopsSupport = 3 mEmcBearerSupport = 3 } nrState=**** rRplmn=63510 isUsingCarrierAggregation=true}], mNrFrequencyRange=0, mOperatorAlphaLongRaw=MTN Rwandacell, mOperatorAlphaShortRaw=MTNRW, mIsDataRoamingFromRegistration=false, mIsIwlanPreferred=false} target=aga }
+06-13 13:05:13.419  1739  5415 I LocationAccessPolicy: com.facebook.katana is aware of coarse but the app-ops permission is specifically denied.
+06-13 13:05:13.420  4100 10567 D ConnectivityMonitorStateMachine: [updateServiceState] {subId=11} ServiceState Changed: 0 -> 0
+06-13 13:05:13.421  1739  5415 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:1222 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:3085 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:1616 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:492 android.os.Binder.execTransactInternal:1285
+06-13 13:05:13.423  1739  1966 W BroadcastQueue: Permission Denial: receiving Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 (has extras) } to ProcessRecord{a929e26 2542:com.android.systemui/u0a243} (pid=2542, uid=10243) requires android.permission.READ_PHONE_STATE due to sender android (uid 1001)
+06-13 13:05:13.423  1739  5415 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:1272 android.content.Context.sendBroadcastMultiplePermissions:2272 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:3089 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:1616 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:492
+06-13 13:05:13.423  1739  1966 W BroadcastQueue: Permission Denial: receiving Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 (has extras) } to com.google.android.cellbroadcastreceiver/com.android.cellbroadcastreceiver.CellBroadcastReceiver requires android.permission.READ_PHONE_STATE due to sender android (uid 1001)
+06-13 13:05:13.424  1739  1966 W BroadcastQueue: Permission Denial: receiving Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 (has extras) } to ProcessRecord{a929e26 2542:com.android.systemui/u0a243} (pid=2542, uid=10243) requires android.permission.ACCESS_FINE_LOCATION due to sender android (uid 1001)
+06-13 13:05:13.425  1739  1966 W BroadcastQueue: Permission Denial: receiving Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 (has extras) } to com.google.android.cellbroadcastreceiver/com.android.cellbroadcastreceiver.CellBroadcastReceiver requires android.permission.ACCESS_FINE_LOCATION due to sender android (uid 1001)
+06-13 13:05:13.425  1739  5415 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:1272 android.content.Context.sendBroadcastMultiplePermissions:2272 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:3096 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:1616 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:492
+06-13 13:05:13.426  1739  1966 W BroadcastQueue: Permission Denial: receiving Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 (has extras) } to ProcessRecord{a929e26 2542:com.android.systemui/u0a243} (pid=2542, uid=10243) requires android.permission.READ_PHONE_STATE due to sender android (uid 1001)
+06-13 13:05:13.426  1739  5415 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcastMultiplePermissions:1272 android.content.Context.sendBroadcastMultiplePermissions:2272 com.android.server.TelephonyRegistry.broadcastServiceStateChanged:3100 com.android.server.TelephonyRegistry.notifyServiceStateForPhoneId:1616 com.android.internal.telephony.ITelephonyRegistry$Stub.onTransact:492
+06-13 13:05:13.426  1739  1966 W BroadcastQueue: Permission Denial: receiving Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 (has extras) } to com.google.android.cellbroadcastreceiver/com.android.cellbroadcastreceiver.CellBroadcastReceiver requires android.permission.READ_PHONE_STATE due to sender android (uid 1001)
+06-13 13:05:13.432 20284 20284 D CellBroadcastReceiver: onReceive Intent { act=android.intent.action.SERVICE_STATE flg=0x1000010 cmp=com.google.android.cellbroadcastreceiver/com.android.cellbroadcastreceiver.CellBroadcastReceiver (has extras) }
+06-13 13:05:13.434 20284 20284 D CellBroadcastReceiver: onServiceStateChanged, ss: 0
+06-13 13:05:13.434  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 13:05:13.434  2816  2816 I Telephony:  isRttSupported: false
+06-13 13:05:13.434  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 13:05:13.434  2816  2816 I Telephony:  isRoaming: false
+06-13 13:05:13.434  2816  2816 I Telephony:  isOnWfc: false
+06-13 13:05:13.434 20284 20284 D CellBroadcastReceiver: networkOperator: 63510
+06-13 13:05:13.434 20284 20284 D CellBroadcastReceiver: update supported roaming operator as
+06-13 13:05:13.435  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 13:05:13.435  2816  2816 I Telephony:  isRttSupported: false
+06-13 13:05:13.435  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 13:05:13.435  2816  2816 I Telephony:  isRoaming: false
+06-13 13:05:13.435  2816  2816 I Telephony:  isOnWfc: false
+06-13 13:05:13.517  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:13.562 22256 22515 E msys    : E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 13:05:13.625  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:13.629  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10145; state: DISABLED
+06-13 13:05:13.630  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10145; state: DISABLED
+06-13 13:05:13.630  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10145; state: DISABLED
+06-13 13:05:13.630  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10145; state: ENABLED
+06-13 13:05:13.631  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10145; state: ENABLED
+06-13 13:05:13.643  1055  1055 D Zygote  : Forked child process 26724
+06-13 13:05:13.644  1739  1968 I ActivityManager: Start proc 26724:com.google.android.partnersetup/u0a145 for service {com.google.android.partnersetup/com.google.android.partnersetup.InstalledAppJobService}
+06-13 13:05:13.649 21000 21029 I TRuntime.CctTransportBackend: Making request to: https://firebaselogging.googleapis.com/v0cc/log/batch?format=json_proto3
+06-13 13:05:13.657 26724 26724 I id.partnersetup: Using CollectorTypeCC GC.
+06-13 13:05:13.665 26724 26724 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-13 13:05:13.668  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 168419799; UID 10145; state: DISABLED
+06-13 13:05:13.669  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 273564678; UID 10145; state: DISABLED
+06-13 13:05:13.670  4291  4321 D ForegroundUtils: Foreground UID status:
+06-13 13:05:13.670  4291  4321 D ForegroundUtils: UID: 1002 is in foreground: true
+06-13 13:05:13.670  4291  4321 D ForegroundUtils: UID: 10164 is in foreground: true
+06-13 13:05:13.670  4291  4321 D ForegroundUtils: UID: 10238 is in foreground: false
+06-13 13:05:13.670  4291  4321 D ForegroundUtils: UID: 10243 is in foreground: true
+06-13 13:05:13.670  4291  4321 D ForegroundUtils: UID: 10250 is in foreground: false
+06-13 13:05:13.670  4291  4321 D ForegroundUtils: UID: 10898 is in foreground: true
+06-13 13:05:13.672 26724 26724 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10145; state: ENABLED
+06-13 13:05:13.672  3785 26055 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+06-13 13:05:13.677  3785 26055 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+06-13 13:05:13.684 26724 26724 D nativeloader: Configuring clns-4 for other apk /system/framework/org.apache.http.legacy.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~VdkYU7E2S7EdRPcRGkp-DQ==/com.google.android.partnersetup-LQcUSneB06KVUb6oZeh2eQ==/lib/arm64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.partnersetup
+06-13 13:05:13.690  3785 26583 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+06-13 13:05:13.704  3785 26280 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+06-13 13:05:13.713 26724 26724 W id.partnersetup: Failed to find entry 'classes.dex': Entry not found
+06-13 13:05:13.714 26724 26724 W id.partnersetup: Failed to find entry 'classes.dex': Entry not found
+06-13 13:05:13.715 26724 26724 W id.partnersetup: Failed to find entry 'classes.dex': Entry not found
+06-13 13:05:13.716 26724 26724 D nativeloader: Configuring clns-5 for other apk /data/app/~~VdkYU7E2S7EdRPcRGkp-DQ==/com.google.android.partnersetup-LQcUSneB06KVUb6oZeh2eQ==/base.apk:/data/app/~~VdkYU7E2S7EdRPcRGkp-DQ==/com.google.android.partnersetup-LQcUSneB06KVUb6oZeh2eQ==/split_config.en.apk:/data/app/~~VdkYU7E2S7EdRPcRGkp-DQ==/com.google.android.partnersetup-LQcUSneB06KVUb6oZeh2eQ==/split_config.es.apk:/data/app/~~VdkYU7E2S7EdRPcRGkp-DQ==/com.google.android.partnersetup-LQcUSneB06KVUb6oZeh2eQ==/split_config.xxhdpi.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~VdkYU7E2S7EdRPcRGkp-DQ==/com.google.android.partnersetup-LQcUSneB06KVUb6oZeh2eQ==/lib/arm64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.partnersetup
+06-13 13:05:13.726  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:13.730 26724 26724 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-13 13:05:13.734 26724 26724 V GraphicsEnvironment: ANGLE Developer option for 'com.google.android.partnersetup' set to: 'default'
+06-13 13:05:13.734 26724 26724 V GraphicsEnvironment: ANGLE GameManagerService for com.google.android.partnersetup: false
+06-13 13:05:13.736 26724 26724 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+06-13 13:05:13.737 26724 26724 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+06-13 13:05:13.766 26724 26724 W id.partnersetup: Method void xj.c(android.app.Activity) failed lock verification and will run slower.
+06-13 13:05:13.766 26724 26724 W id.partnersetup: Common causes for lock verification issues are non-optimized dex code
+06-13 13:05:13.766 26724 26724 W id.partnersetup: and incorrect proguard optimizations.
+06-13 13:05:13.769 26724 26724 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10145; state: ENABLED
+06-13 13:05:13.770  1739  5437 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10145; state: ENABLED
+06-13 13:05:13.793  1739  5437 D ActivityManager: sync unfroze 23821 com.google.process.gservices
+06-13 13:05:13.813  1739  4816 W JobScheduler: Job didn't exist in JobStore: efd5fae #u0a145/4096 com.google.android.partnersetup/.InstalledAppJobService
+06-13 13:05:13.830  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:13.831  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:13.876  3785  3785 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.auth.aang.events.services.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+06-13 13:05:13.930 26724 26724 I GooglePartnerSetup: Phenotype client.register successes
+06-13 13:05:14.046  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:14.060 26724 26746 I GooglePartnerSetup: Phenotype commit successes
+06-13 13:05:14.153  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:14.155  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717761): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:14.158  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717762): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:14.165  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717763): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:14.168  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717764): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:14.175  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717765): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:14.195  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10164; state: DISABLED
+06-13 13:05:14.196  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10164; state: DISABLED
+06-13 13:05:14.196  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10164; state: DISABLED
+06-13 13:05:14.196  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10164; state: ENABLED
+06-13 13:05:14.196  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10164; state: ENABLED
+06-13 13:05:14.206  1055  1055 D Zygote  : Forked child process 26755
+06-13 13:05:14.206  1739  1968 I ActivityManager: Start proc 26755:com.google.process.gapps/u0a164 for content provider {com.google.android.gsf/com.google.android.gsf.settings.GoogleSettingsProvider}
+06-13 13:05:14.213 26755 26755 I e.process.gapps: Using CollectorTypeCC GC.
+06-13 13:05:14.218 26755 26755 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-13 13:05:14.226 26755 26755 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10164; state: ENABLED
+06-13 13:05:14.242 26755 26755 D nativeloader: Configuring clns-shared-4 for other apk /system/framework/org.apache.http.legacy.jar. target_sdk_version=33, uses_libraries=ALL, library_path=/system_ext/priv-app/GoogleServicesFramework/lib/arm64:/system_ext/priv-app/GoogleServicesFramework/GoogleServicesFramework.apk!/lib/arm64-v8a:/system/lib64:/system_ext/lib64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gsf:/system_ext/priv-app/GoogleServicesFramework:/system/lib64:/system_ext/lib64
+06-13 13:05:14.248 26755 26755 D nativeloader: Configuring clns-shared-5 for other apk /system_ext/priv-app/GoogleServicesFramework/GoogleServicesFramework.apk. target_sdk_version=33, uses_libraries=, library_path=/system_ext/priv-app/GoogleServicesFramework/lib/arm64:/system_ext/priv-app/GoogleServicesFramework/GoogleServicesFramework.apk!/lib/arm64-v8a:/system/lib64:/system_ext/lib64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gsf:/system_ext/priv-app/GoogleServicesFramework:/system/lib64:/system_ext/lib64
+06-13 13:05:14.254  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:14.255  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:14.258 26755 26755 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-13 13:05:14.263 26755 26755 V GraphicsEnvironment: ANGLE Developer option for 'com.google.android.gsf' set to: 'default'
+06-13 13:05:14.263 26755 26755 V GraphicsEnvironment: ANGLE GameManagerService for com.google.android.gsf: false
+06-13 13:05:14.266 26755 26755 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+06-13 13:05:14.266 26755 26755 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+06-13 13:05:14.323 26755 26755 I GoogleHttpClient: GMS http client unavailable, use old client
+06-13 13:05:14.351 26755 26768 I carui   : CarUi plugin is disabled
+06-13 13:05:14.374  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 201794303; UID 10164; state: ENABLED
+06-13 13:05:14.465  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:14.466  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:14.497  1739  1966 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10193; state: DISABLED
+06-13 13:05:14.497  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10193; state: ENABLED
+06-13 13:05:14.507  1055  1055 D Zygote  : Forked child process 26769
+06-13 13:05:14.508  1739  1968 I ActivityManager: Start proc 26769:com.android.chrome/u0a193 for broadcast {com.android.chrome/com.google.android.apps.chrome.rlz.RevenueStatsConfigurationUpdateReceiver}
+06-13 13:05:14.518 26769 26769 I .android.chrome: Using CollectorTypeCC GC.
+06-13 13:05:14.523 26769 26769 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-13 13:05:14.532  4291  4321 D ForegroundUtils: Foreground UID status:
+06-13 13:05:14.532  4291  4321 D ForegroundUtils: UID: 1002 is in foreground: true
+06-13 13:05:14.532  4291  4321 D ForegroundUtils: UID: 10164 is in foreground: true
+06-13 13:05:14.532  4291  4321 D ForegroundUtils: UID: 10238 is in foreground: false
+06-13 13:05:14.532  4291  4321 D ForegroundUtils: UID: 10243 is in foreground: true
+06-13 13:05:14.532  4291  4321 D ForegroundUtils: UID: 10250 is in foreground: false
+06-13 13:05:14.532  4291  4321 D ForegroundUtils: UID: 10898 is in foreground: true
+06-13 13:05:14.533 26769 26769 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10193; state: ENABLED
+06-13 13:05:14.543 26769 26769 W .android.chrome: Failed to find entry 'classes.dex': Entry not found
+06-13 13:05:14.546 26769 26769 D nativeloader: Configuring clns-4 for other apk /data/app/~~AjVKHYS1ZQtoZGqPZEljug==/com.google.android.trichromelibrary_782710233-l-xCTOf3NG8dZHkyASztpw==/base.apk. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~bBgtzKH0lY-zaGLKQ4o9kg==/com.android.chrome-2amFuGaFBvbs0SK8zcdODA==/lib/arm64:/data/app/~~bBgtzKH0lY-zaGLKQ4o9kg==/com.android.chrome-2amFuGaFBvbs0SK8zcdODA==/base.apk!/lib/arm64-v8a:/data/app/~~AjVKHYS1ZQtoZGqPZEljug==/com.google.android.trichromelibrary_782710233-l-xCTOf3NG8dZHkyASztpw==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.android.chrome
+06-13 13:05:14.563 26769 26769 D nativeloader: Configuring clns-5 for other apk /data/app/~~bBgtzKH0lY-zaGLKQ4o9kg==/com.android.chrome-2amFuGaFBvbs0SK8zcdODA==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~bBgtzKH0lY-zaGLKQ4o9kg==/com.android.chrome-2amFuGaFBvbs0SK8zcdODA==/lib/arm64:/data/app/~~bBgtzKH0lY-zaGLKQ4o9kg==/com.android.chrome-2amFuGaFBvbs0SK8zcdODA==/base.apk!/lib/arm64-v8a:/data/app/~~AjVKHYS1ZQtoZGqPZEljug==/com.google.android.trichromelibrary_782710233-l-xCTOf3NG8dZHkyASztpw==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.android.chrome
+06-13 13:05:14.577  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:14.578  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:14.590 26769 26769 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-13 13:05:14.596 26769 26769 V GraphicsEnvironment: ANGLE Developer option for 'com.android.chrome' set to: 'default'
+06-13 13:05:14.596 26769 26769 V GraphicsEnvironment: ANGLE GameManagerService for com.android.chrome: false
+06-13 13:05:14.596 26769 26769 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+06-13 13:05:14.599 26769 26769 I LoadedApk: No resource references to update in package com.google.android.trichromelibrary
+06-13 13:05:14.601 26769 26769 D NetworkSecurityConfig: Using Network Security Config from resource 0_resource_name_obfuscated debugBuild: false
+06-13 13:05:14.604 26769 26769 D NetworkSecurityConfig: Using Network Security Config from resource 0_resource_name_obfuscated debugBuild: false
+06-13 13:05:14.614 26769 26769 I cr_SplitCompatApp: version=149.0.7827.102 (782710233) minSdkVersion=29 processName=com.android.chrome isIsolatedProcess=false splits=chrome,config.en,dev_ui,on_demand,stack_unwinder
+06-13 13:05:14.738 26769 26769 I cr_LibraryLoader: Loading monochrome_64 from within /data/app/~~bBgtzKH0lY-zaGLKQ4o9kg==/com.android.chrome-2amFuGaFBvbs0SK8zcdODA==/base.apk
+06-13 13:05:14.748 26769 26785 I .android.chrome: Could not load runtime generated app image: Invalid image header in '/data/user/0/com.android.chrome/cache/oat_primary/arm64/split_chrome.art'
+06-13 13:05:14.757 26769 26769 D nativeloader: Load /data/app/~~bBgtzKH0lY-zaGLKQ4o9kg==/com.android.chrome-2amFuGaFBvbs0SK8zcdODA==/base.apk!/lib/arm64-v8a/libchromium_android_linker.so using class loader ns clns-5 (caller=/data/app/~~bBgtzKH0lY-zaGLKQ4o9kg==/com.android.chrome-2amFuGaFBvbs0SK8zcdODA==/base.apk): ok
+06-13 13:05:14.758 26769 26769 I cr_Linker: loadLibraryImplLocked: monochrome_64, relroMode=1
+06-13 13:05:14.819 26769 26769 D nativeloader: Load /data/app/~~AjVKHYS1ZQtoZGqPZEljug==/com.google.android.trichromelibrary_782710233-l-xCTOf3NG8dZHkyASztpw==/base.apk!/lib/arm64-v8a/libmonochrome_64.so using class loader ns clns-5 (caller=/data/app/~~bBgtzKH0lY-zaGLKQ4o9kg==/com.android.chrome-2amFuGaFBvbs0SK8zcdODA==/base.apk): ok
+06-13 13:05:14.856 26769 26769 I cr_LibraryLoader: Successfully loaded native library
+06-13 13:05:14.865 26769 26769 I cr_CachingUmaRecorder: Flushed 8 samples from 8 histograms, 0 samples were dropped.
+06-13 13:05:14.874 21000 21029 I TRuntime.CctTransportBackend: Status Code: 200
+06-13 13:05:14.915 26769 26769 I cr_CombinedPProvider: #linkNativeInternal() 0
+06-13 13:05:14.915 26769 26769 I cr_PolicyProvider: #setManagerAndSource() 0
+06-13 13:05:14.918 26769 26769 I cr_PolicyCacheProvider: #refresh() true
+06-13 13:05:14.984 26792 26792 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+06-13 13:05:15.009   645   645 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+06-13 13:05:15.012 26792 26794 W AdrenoUtils: <ReadGpuID_from_sysfs:197>: Failed to open /sys/class/kgsl/kgsl-3d0/gpu_model
+06-13 13:05:15.012 26792 26794 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
+06-13 13:05:15.023  4100  4138 D StateService: Country ISO: rw
+06-13 13:05:15.045 26769 26769 I cr_SplitCompatClassLoader: Splits: null
+06-13 13:05:15.063  1739  4816 D CompatibilityChangeReporter: Compat change id reported: 161145287; UID 10193; state: DISABLED
+06-13 13:05:15.116  3785  3785 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.libs.gmscorelogger.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+06-13 13:05:15.155  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717949): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:15.161  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717950): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:15.165  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717951): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:15.171  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717952): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:15.178  1072  1072 W socket_writer_q: type=1400 audit(0.0:254717953): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:15.385 26804 26804 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+06-13 13:05:15.390 26804 26804 I AndroidRuntime: Using default boot image
+06-13 13:05:15.390 26804 26804 I AndroidRuntime: Leaving lock profiling enabled
+06-13 13:05:15.393 26804 26804 I app_process: Using CollectorTypeCC GC.
+06-13 13:05:15.465 26804 26804 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+06-13 13:05:15.477 26804 26804 D nativeloader: Load libicu_jni.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-13 13:05:15.477 26804 26804 D app_process: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+06-13 13:05:15.477 26804 26804 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt70l.dat
+06-13 13:05:15.478 26804 26804 D nativeloader: Load libjavacore.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-13 13:05:15.479 26804 26804 D nativeloader: Load libopenjdk.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-13 13:05:15.480 26804 26804 I app_process: Priority-to-niceness mapping: 19, 16, 13, 10, 0, -2, -4, -5, -6, -8
+06-13 13:05:15.505 26804 26804 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-13 13:05:15.505 26804 26804 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+06-13 13:05:15.514  1739  4802 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-13 13:05:15.515  4224  8355 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-13 13:05:15.518  1739  1739 D BatterySaverPolicy: accessibility changed to true, updating policy.
+06-13 13:05:15.519  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 13:05:15.519  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 13:05:15.519  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 13:05:15.519  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 13:05:15.519  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 13:05:15.519  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 13:05:15.519  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 13:05:15.519  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 13:05:15.519  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 13:05:15.520  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 13:05:15.520  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 13:05:15.520  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 13:05:15.520  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 13:05:15.520  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 13:05:15.520  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 13:05:15.520  1739  5437 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-13 13:05:15.521  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 13:05:15.521  4224  8355 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-13 13:05:15.521  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 13:05:15.522  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 13:05:15.523  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 13:05:15.523  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 13:05:15.523  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 13:05:15.523  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 13:05:15.523  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 13:05:15.524  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 13:05:15.524  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 13:05:15.524  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 13:05:15.524  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 13:05:15.524  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 13:05:15.524  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 13:05:15.525  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 13:05:15.525  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 13:05:15.525  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 13:05:15.525  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 13:05:15.525  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 13:05:15.526  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 13:05:15.526  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 13:05:15.530 28386 28386 I SafetyCenterAccessibilityListener: accessibility event occurred, safety center feature not enabled.
+06-13 13:05:15.539  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-13 13:05:15.539  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-13 13:05:16.031  1739  2417 D ActivityManager: freezing 28846 com.google.android.googlequicksearchbox:search
+06-13 13:05:16.158  1072  1072 W socket_writer_q: type=1400 audit(0.0:254718135): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:16.161  1072  1072 W socket_writer_q: type=1400 audit(0.0:254718136): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:16.168  1072  1072 W socket_writer_q: type=1400 audit(0.0:254718137): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:16.175  1072  1072 W socket_writer_q: type=1400 audit(0.0:254718138): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:16.179  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-13 13:05:16.178  1072  1072 W socket_writer_q: type=1400 audit(0.0:254718139): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:16.187  4100  4138 D DeviceStateHelper: Wifi freq: 5180
+06-13 13:05:16.188  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-51
+06-13 13:05:16.188  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-51
+06-13 13:05:16.189  7449  7556 I BugleRcsEngine: Connected state: [1], networkType: [WIFI] [CONTEXT thread_id=751 ]
+06-13 13:05:16.189  7449  7581 I BugleRcsEngine: handleMessage processing message:[NOTIFY_UPTIME_IGNORE_STATE_CHANGED] with [non-null]:RcsEngineImpl reference [CONTEXT log_prefix="RcsEngineImpl[DUAL_REG]:[7ff84873-078a]>Handler" thread_id=759 ]
+06-13 13:05:16.191  1739  2710 D CompatibilityChangeReporter: Compat change id reported: 319212206; UID 10164; state: ENABLED
+06-13 13:05:16.191  1739  2710 D CompatibilityChangeReporter: Compat change id reported: 319212206; UID 10164; state: DISABLED
+06-13 13:05:16.196  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-13 13:05:16.196  1085  1180 D CHRE    : @ 2310330.367: Parsed nanoapp message from host: app ID 0x476f6f676c00100b, endpoint 0x97, msgType 112, payload size 14
+06-13 13:05:16.196  1085  1180 I CHRE    : @ 2310330.367: [NanoMinion] received MSG Type 0x70, Version 1, 10 bytes
+06-13 13:05:16.196  1085  1180 I CHRE    : @ 2310330.367: [AR] context-signal: has_bt=0, bt=0, has_wifi=1, wifi=1
+06-13 13:05:16.199  3785 25790 I NearbyMediums: Wifi changed new SSID: "FreeBeer"
+06-13 13:05:16.199  3785 25790 I NearbyMediums: WifiLanConnectivityInfo is not changed, skip notify.
+06-13 13:05:16.201  1739  2455 D ConnectivityService: NetReassign [no changes] [c 0] [a 4] [i 4]
+06-13 13:05:16.205  3785  4022 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 13:05:16.205  3785  4022 W .gms.persistent: Large reply transaction of 1056768 bytes, interface descriptor , code 1
+06-13 13:05:16.545 26804 26804 W libc    : Access denied finding property "qemu.sf.lcd_density"
+06-13 13:05:16.545 26804 26804 W libc    : Access denied finding property "qemu.sf.lcd_density"
+06-13 13:05:16.553 26804 26804 W AccessibilityNodeInfoDumper: Fetch time: 5ms
+06-13 13:05:16.556  1739  2710 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-13 13:05:16.557  4224  8355 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-13 13:05:16.558 26804 26804 D AndroidRuntime: Shutting down VM
+06-13 13:05:16.559  1739  1739 D BatterySaverPolicy: accessibility changed to false, updating policy.
+06-13 13:05:16.563  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 13:05:16.563  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 13:05:16.563  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 13:05:16.564  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 13:05:16.564  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 13:05:16.570  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 13:05:16.570  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 13:05:16.570  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 13:05:16.571  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 13:05:16.572  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 13:05:16.573  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 13:05:16.573  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 13:05:16.573  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 13:05:16.573  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 13:05:16.573  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 13:05:16.574  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 13:05:16.574  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 13:05:16.575  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-13 13:05:16.575  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 13:05:16.691  3785 24798 I NearbySharing: Network state changed: NetworkState(isRestricted=false, isOnline=true, isCongested=false, isMetered=false, isWifiConnected=true)
+06-13 13:05:17.165  1072  1072 W socket_writer_q: type=1400 audit(0.0:254718325): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:17.168  1072  1072 W socket_writer_q: type=1400 audit(0.0:254718326): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:17.175  1072  1072 W socket_writer_q: type=1400 audit(0.0:254718327): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:17.178  1072  1072 W socket_writer_q: type=1400 audit(0.0:254718328): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 13:05:17.188  1072  1072 W socket_writer_q: type=1400 audit(0.0:254718329): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0

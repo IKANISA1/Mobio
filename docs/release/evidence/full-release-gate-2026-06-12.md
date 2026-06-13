@@ -70,8 +70,8 @@ Passed inside the dry run:
 Blocked inside the dry run:
 
 - Release config/signing gate: missing `KEYSTORE_BASE64`.
-- Play service-account key rotation evidence:
-  `PLAY_SERVICE_ACCOUNT_ROTATED=true` is not set.
+- Play service-account credential retention/use evidence:
+  `PLAY_SERVICE_ACCOUNT_RETAINED=true` is not set.
 - Play Console upload validation evidence:
   `PLAY_CONSOLE_UPLOAD_VALIDATED=true` is not set.
 - Android release smoke was intentionally skipped because this pass must not

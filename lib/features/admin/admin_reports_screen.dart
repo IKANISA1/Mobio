@@ -9,6 +9,7 @@ import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/features/admin/widgets/admin_dashboard_utils.dart';
 import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_input_field.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
@@ -101,60 +102,50 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
 
   Future<String?> _showReviewReportSheet(String status) async {
     final notesController = TextEditingController();
-    final result = await showModalBottomSheet<String>(
+    final result = await MobiBottomSheet.show<String>(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
+      title: '${_humanize(status)} report',
       builder: (context) {
-        final cs = Theme.of(context).colorScheme;
-        return SafeArea(
-          top: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              MediaQuery.viewInsetsOf(context).bottom + AppSpacing.lg,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${_humanize(status)} report',
-                  style: AppTypography.titleLg.copyWith(color: cs.onSurface),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                MobiInputField(
-                  label: 'Resolution notes',
-                  hint: 'Decision or follow-up action',
-                  controller: notesController,
-                  maxLines: 4,
-                  keyboardType: TextInputType.multiline,
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Row(
-                  children: [
-                    Expanded(
-                      child: MobiButton(
-                        variant: MobiButtonVariant.ghost,
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('Cancel'),
-                      ),
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            0,
+            AppSpacing.lg,
+            AppSpacing.md,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              MobiInputField(
+                label: 'Resolution notes',
+                hint: 'Decision or follow-up action',
+                controller: notesController,
+                maxLines: 4,
+                keyboardType: TextInputType.multiline,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Row(
+                children: [
+                  Expanded(
+                    child: MobiButton(
+                      variant: MobiButtonVariant.ghost,
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Cancel'),
                     ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: MobiButton(
-                        onPressed: () => Navigator.of(
-                          context,
-                        ).pop(notesController.text.trim()),
-                        child: Text(_humanize(status)),
-                      ),
+                  ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: MobiButton(
+                      onPressed: () => Navigator.of(
+                        context,
+                      ).pop(notesController.text.trim()),
+                      child: Text(_humanize(status)),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+            ],
           ),
         );
       },
@@ -165,195 +156,175 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
 
   Future<void> _showReportDetailSheet(AdminUserReportItem report) {
     final cs = Theme.of(context).colorScheme;
-    return showModalBottomSheet<void>(
+    return MobiBottomSheet.show<void>(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
+      title: 'Report details',
       builder: (context) {
-        return SafeArea(
-          top: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              MediaQuery.viewInsetsOf(context).bottom + AppSpacing.lg,
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.sizeOf(context).height * 0.86,
-              ),
-              child: SingleChildScrollView(
-                child: Column(
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            0,
+            AppSpacing.lg,
+            AppSpacing.md,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Report details',
-                                style: AppTypography.titleLg.copyWith(
-                                  color: cs.onSurface,
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.xs),
-                              Text(
-                                AdminDashboardUtils.formatTimestamp(
-                                  report.createdAt,
-                                ),
-                                style: AppTypography.bodySm.copyWith(
-                                  color: cs.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AdminDashboardUtils.formatTimestamp(
+                              report.createdAt,
+                            ),
+                            style: AppTypography.bodySm.copyWith(
+                              color: cs.onSurfaceVariant,
+                            ),
                           ),
-                        ),
-                        AdminActionChip(
-                          label: 'Close',
-                          icon: LucideIcons.x,
-                          onTap: () => Navigator.of(context).pop(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Wrap(
-                      spacing: AppSpacing.sm,
-                      runSpacing: AppSpacing.sm,
-                      children: [
-                        MobiStatusBadge(
-                          label: _humanize(report.status),
-                          tone: _statusTone(report.status),
-                        ),
-                        MobiStatusBadge(
-                          label: _humanize(report.category),
-                          tone: report.category == 'unsafe_behavior'
-                              ? MobiStatusBadgeTone.danger
-                              : MobiStatusBadgeTone.info,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Text(
-                      '${report.reporterName} reported ${report.reportedName}',
-                      style: AppTypography.titleMd.copyWith(
-                        color: cs.onSurface,
+                        ],
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.sm),
-                    SelectableText(
-                      report.details.trim().isEmpty
-                          ? 'No details provided.'
-                          : report.details,
-                      style: AppTypography.bodyMd.copyWith(
-                        color: cs.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isWide = constraints.maxWidth >= 640;
-                        final fields = [
-                          AdminFieldPair(
-                            label: 'Reporter',
-                            value: report.reporterPhone ?? report.reporterId,
-                          ),
-                          AdminFieldPair(
-                            label: 'Reported',
-                            value: report.reportedPhone ?? report.reportedId,
-                          ),
-                          AdminFieldPair(
-                            label: 'Trip',
-                            value: report.tripId ?? 'None',
-                          ),
-                          AdminFieldPair(
-                            label: 'Conversation',
-                            value: report.conversationId ?? 'None',
-                          ),
-                          AdminFieldPair(label: 'Report ID', value: report.id),
-                        ];
-                        if (!isWide) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              for (final field in fields) ...[
-                                field,
-                                const SizedBox(height: AppSpacing.md),
-                              ],
-                            ],
-                          );
-                        }
-                        return Wrap(
-                          spacing: AppSpacing.xl,
-                          runSpacing: AppSpacing.md,
-                          children: [
-                            for (final field in fields)
-                              SizedBox(width: 220, child: field),
-                          ],
-                        );
-                      },
-                    ),
-                    if (report.resolutionNotes?.trim().isNotEmpty == true) ...[
-                      const SizedBox(height: AppSpacing.lg),
-                      Text(
-                        'Resolution notes',
-                        style: AppTypography.labelLg.copyWith(
-                          color: cs.onSurface,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      SelectableText(
-                        report.resolutionNotes!,
-                        style: AppTypography.bodyMd.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: AppSpacing.lg),
-                    Wrap(
-                      spacing: AppSpacing.sm,
-                      runSpacing: AppSpacing.sm,
-                      children: [
-                        AdminActionChip(
-                          label: 'Reviewing',
-                          icon: LucideIcons.eye,
-                          onTap: report.status == 'open'
-                              ? () {
-                                  Navigator.of(context).pop();
-                                  _reviewReport(report, 'reviewing');
-                                }
-                              : null,
-                        ),
-                        AdminActionChip(
-                          label: 'Resolve',
-                          icon: LucideIcons.checkCircle2,
-                          tone: MobiStatusBadgeTone.positive,
-                          onTap: report.isResolved
-                              ? null
-                              : () {
-                                  Navigator.of(context).pop();
-                                  _reviewReport(report, 'resolved');
-                                },
-                        ),
-                        AdminActionChip(
-                          label: 'Dismiss',
-                          icon: LucideIcons.xCircle,
-                          tone: MobiStatusBadgeTone.warning,
-                          onTap: report.isResolved
-                              ? null
-                              : () {
-                                  Navigator.of(context).pop();
-                                  _reviewReport(report, 'dismissed');
-                                },
-                        ),
-                      ],
+                    AdminActionChip(
+                      label: 'Close',
+                      icon: LucideIcons.x,
+                      onTap: () => Navigator.of(context).pop(),
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: AppSpacing.lg),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    MobiStatusBadge(
+                      label: _humanize(report.status),
+                      tone: _statusTone(report.status),
+                    ),
+                    MobiStatusBadge(
+                      label: _humanize(report.category),
+                      tone: report.category == 'unsafe_behavior'
+                          ? MobiStatusBadgeTone.danger
+                          : MobiStatusBadgeTone.info,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                Text(
+                  '${report.reporterName} reported ${report.reportedName}',
+                  style: AppTypography.titleMd.copyWith(color: cs.onSurface),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                SelectableText(
+                  report.details.trim().isEmpty
+                      ? 'No details provided.'
+                      : report.details,
+                  style: AppTypography.bodyMd.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isWide = constraints.maxWidth >= 640;
+                    final fields = [
+                      AdminFieldPair(
+                        label: 'Reporter',
+                        value: report.reporterPhone ?? report.reporterId,
+                      ),
+                      AdminFieldPair(
+                        label: 'Reported',
+                        value: report.reportedPhone ?? report.reportedId,
+                      ),
+                      AdminFieldPair(
+                        label: 'Trip',
+                        value: report.tripId ?? 'None',
+                      ),
+                      AdminFieldPair(
+                        label: 'Conversation',
+                        value: report.conversationId ?? 'None',
+                      ),
+                      AdminFieldPair(label: 'Report ID', value: report.id),
+                    ];
+                    if (!isWide) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (final field in fields) ...[
+                            field,
+                            const SizedBox(height: AppSpacing.md),
+                          ],
+                        ],
+                      );
+                    }
+                    return Wrap(
+                      spacing: AppSpacing.xl,
+                      runSpacing: AppSpacing.md,
+                      children: [
+                        for (final field in fields)
+                          SizedBox(width: 220, child: field),
+                      ],
+                    );
+                  },
+                ),
+                if (report.resolutionNotes?.trim().isNotEmpty == true) ...[
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    'Resolution notes',
+                    style: AppTypography.labelLg.copyWith(color: cs.onSurface),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  SelectableText(
+                    report.resolutionNotes!,
+                    style: AppTypography.bodyMd.copyWith(
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: AppSpacing.lg),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    AdminActionChip(
+                      label: 'Reviewing',
+                      icon: LucideIcons.eye,
+                      onTap: report.status == 'open'
+                          ? () {
+                              Navigator.of(context).pop();
+                              _reviewReport(report, 'reviewing');
+                            }
+                          : null,
+                    ),
+                    AdminActionChip(
+                      label: 'Resolve',
+                      icon: LucideIcons.checkCircle2,
+                      tone: MobiStatusBadgeTone.positive,
+                      onTap: report.isResolved
+                          ? null
+                          : () {
+                              Navigator.of(context).pop();
+                              _reviewReport(report, 'resolved');
+                            },
+                    ),
+                    AdminActionChip(
+                      label: 'Dismiss',
+                      icon: LucideIcons.xCircle,
+                      tone: MobiStatusBadgeTone.warning,
+                      onTap: report.isResolved
+                          ? null
+                          : () {
+                              Navigator.of(context).pop();
+                              _reviewReport(report, 'dismissed');
+                            },
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         );

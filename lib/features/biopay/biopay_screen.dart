@@ -13,12 +13,15 @@ import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/utils/money_formatting.dart';
 import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
 import 'package:mobi_app/features/biopay/models/biopay_admin.dart';
 import 'package:mobi_app/features/biopay/models/biopay_ussd_payment.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
+import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
+import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:ndef/ndef.dart' as ndef;
 import 'package:qr_flutter/qr_flutter.dart';
@@ -29,8 +32,11 @@ const _bioPayQrOrange = Color(0xFFFF9800);
 const _bioPayScanTeal = Color(0xFF14B8A6);
 const _bioPayInk = Color(0xFF101828);
 const _bioPayMuted = Color(0xFF667085);
-const _bioPayCanvas = Color(0xFFFFFFFF);
+const _bioPayCanvas = Color(0xFFFBFCFF);
 const _bioPayPanel = Color(0xFFF5F7FA);
+const _bioPayChrome = Color(0xFF050815);
+const _bioPayDarkPanel = Color(0xFF171B3E);
+const _bioPayDarkPanelAlt = Color(0xFF202654);
 
 ThemeData _bioPayLightTheme(BuildContext context) {
   final base = Theme.of(context);
@@ -75,78 +81,96 @@ class BioPayScreen extends StatelessWidget {
       data: _bioPayLightTheme(context),
       child: Scaffold(
         backgroundColor: _bioPayCanvas,
-        body: SafeArea(
-          bottom: false,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.screenPadding,
-              AppSpacing.xl,
-              AppSpacing.screenPadding,
-              132,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Align(
-                  alignment: Alignment.centerRight,
-                  child: _BioPayIconBox(
-                    icon: LucideIcons.scanFace,
-                    color: _bioPayBlue,
-                    background: Color(0xFFEAF2FF),
-                  ),
-                ),
-                const SizedBox(height: 86),
-                Text(
-                  'Pay & Get Paid\nInstantly',
-                  style: AppTypography.displayLg.copyWith(
-                    color: _bioPayInk,
-                    fontSize: 40,
-                    height: 1.02,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0,
-                  ),
-                ),
-                const SizedBox(height: 28),
-                GridView.count(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 14,
-                  crossAxisSpacing: 14,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  childAspectRatio: 1.12,
-                  children: [
-                    _BioPayHomeTile(
+        body: _BioPayLightCanvas(
+          child: SafeArea(
+            bottom: false,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.screenPadding,
+                AppSpacing.xl,
+                AppSpacing.screenPadding,
+                132,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Align(
+                    alignment: Alignment.centerRight,
+                    child: _BioPayIconBox(
                       icon: LucideIcons.scanFace,
-                      label: 'Face Scan',
-                      color: _bioPayBlue,
-                      onTap: onFace,
+                      color: Colors.white,
+                      background: _bioPayChrome,
                     ),
-                    _BioPayHomeTile(
-                      icon: LucideIcons.nfc,
-                      label: 'NFC Tap',
-                      color: _bioPayNfcPurple,
-                      onTap: onNfc,
+                  ),
+                  const SizedBox(height: 66),
+                  Text(
+                    'Pay & Get Paid\nInstant & Secure',
+                    style: AppTypography.displayLg.copyWith(
+                      color: Colors.white,
+                      fontSize: 40,
+                      height: 1.02,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0,
                     ),
-                    _BioPayHomeTile(
-                      icon: LucideIcons.qrCode,
-                      label: 'Get QR',
-                      color: _bioPayQrOrange,
-                      onTap: onQr,
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
+                  MobiSurfacePanel(
+                    padding: const EdgeInsets.all(AppSpacing.sm),
+                    borderRadius: AppRadii.xxl,
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: AppSpacing.sm,
+                      crossAxisSpacing: AppSpacing.sm,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      childAspectRatio: 1.1,
+                      children: [
+                        _BioPayHomeTile(
+                          icon: LucideIcons.scanFace,
+                          label: 'Face Scan',
+                          color: _bioPayBlue,
+                          onTap: onFace,
+                        ),
+                        _BioPayHomeTile(
+                          icon: LucideIcons.nfc,
+                          label: 'NFC Tap',
+                          color: _bioPayNfcPurple,
+                          onTap: onNfc,
+                        ),
+                        _BioPayHomeTile(
+                          icon: LucideIcons.qrCode,
+                          label: 'Get QR',
+                          color: _bioPayQrOrange,
+                          onTap: onQr,
+                        ),
+                        _BioPayHomeTile(
+                          icon: LucideIcons.scanLine,
+                          label: 'Scan QR',
+                          color: _bioPayScanTeal,
+                          onTap: onScan,
+                        ),
+                      ],
                     ),
-                    _BioPayHomeTile(
-                      icon: LucideIcons.scanLine,
-                      label: 'Scan QR',
-                      color: _bioPayScanTeal,
-                      onTap: onScan,
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+}
+
+class _BioPayLightCanvas extends StatelessWidget {
+  const _BioPayLightCanvas({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SoftGradient(child: child);
   }
 }
 
@@ -169,25 +193,93 @@ class _BioPayHomeTile extends StatelessWidget {
       button: true,
       label: label,
       child: Material(
-        color: _bioPayPanel,
-        borderRadius: BorderRadius.circular(18),
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+        shadowColor: Colors.black.withValues(alpha: 0.22),
+        elevation: 5,
         child: InkWell(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
           onTap: onTap,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: color, size: 36),
-              const SizedBox(height: AppSpacing.md),
-              Text(
-                label,
-                style: AppTypography.labelLg.copyWith(
-                  color: _bioPayInk,
-                  fontWeight: FontWeight.w900,
+          child: Ink(
+            decoration: BoxDecoration(
+              color: _bioPayDarkPanel.withValues(alpha: 0.78),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white.withValues(alpha: 0.08),
+                  _bioPayDarkPanelAlt.withValues(alpha: 0.68),
+                ],
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _BioPayActionGlyph(icon: icon, accent: color),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.labelLg.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BioPayActionGlyph extends StatelessWidget {
+  const _BioPayActionGlyph({required this.icon, required this.accent});
+
+  final IconData icon;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.square(
+      dimension: 52,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _bioPayInk,
+          borderRadius: BorderRadius.circular(17),
+          boxShadow: [
+            BoxShadow(
+              color: accent.withValues(alpha: 0.20),
+              blurRadius: 18,
+              offset: const Offset(0, 9),
+            ),
+          ],
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              right: 8,
+              top: 8,
+              child: SizedBox.square(
+                dimension: 7,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: accent,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+            Icon(icon, color: Colors.white, size: 24),
+          ],
         ),
       ),
     );
@@ -199,22 +291,34 @@ class _BioPayIconBox extends StatelessWidget {
     required this.icon,
     required this.color,
     required this.background,
+    this.dimension = 48,
+    this.iconSize = 24,
   });
 
   final IconData icon;
   final Color color;
   final Color background;
+  final double dimension;
+  final double iconSize;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox.square(
-      dimension: 48,
+      dimension: dimension,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.72)),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.14),
+              blurRadius: 24,
+              offset: const Offset(0, 12),
+            ),
+          ],
         ),
-        child: Icon(icon, color: color, size: 24),
+        child: Icon(icon, color: color, size: iconSize),
       ),
     );
   }
@@ -318,7 +422,7 @@ class _BioPayAdminConsoleScreenState
     final snapshot = _snapshot;
 
     return AdminWorkspaceFrame(
-      currentTab: AdminWorkspaceTab.finance,
+      currentTab: AdminWorkspaceTab.biopayOps,
       title: 'BioPay Ops',
       subtitle: 'AWS face identity and external USSD handoff.',
       actions: [
@@ -909,10 +1013,6 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
             const _NfcReadyHint()
           else
             _ResolvedPaymentPreview(request: _request!),
-          if (_request == null) ...[
-            const SizedBox(height: AppSpacing.md),
-            const _DetailRow(label: 'Ready', value: 'Hold near your NFC tag'),
-          ],
           if (_tagLabel != null) ...[
             const SizedBox(height: AppSpacing.md),
             _DetailRow(label: 'NFC', value: _tagLabel!),
@@ -963,7 +1063,6 @@ class _BioPayFaceEnrollScreenState
   CameraController? _camera;
   final List<List<int>> _capturedFrames = [];
   String? _sessionId;
-  String? _providerStatus;
   String? _error;
   int _captureStepIndex = 0;
   bool _busy = false;
@@ -990,7 +1089,6 @@ class _BioPayFaceEnrollScreenState
       if (!mounted) return;
       setState(() {
         _sessionId = result.sessionId;
-        _providerStatus = result.provider;
       });
     } on Object catch (error) {
       if (!mounted) return;
@@ -1031,7 +1129,6 @@ class _BioPayFaceEnrollScreenState
       if (!mounted) return;
       setState(() {
         _enrolled = result.status == 'enrolled';
-        _providerStatus = result.provider;
         if (!_enrolled) {
           _capturedFrames.clear();
           _captureStepIndex = 0;
@@ -1123,7 +1220,6 @@ class _BioPayFaceEnrollScreenState
             capturedCount: capturedCount,
             totalSteps: _enrollmentChallenges.length,
             sessionReady: _sessionId != null,
-            provider: _providerStatus ?? 'AWS Rekognition',
           ),
           const SizedBox(height: AppSpacing.lg),
           if (readyForCapture)
@@ -1146,26 +1242,10 @@ class _BioPayFaceEnrollScreenState
             currentStepId: currentChallenge.id,
             hasError: _error != null,
           ),
-          const SizedBox(height: AppSpacing.lg),
-          _DetailRow(
-            label: 'Provider',
-            value: _providerStatus ?? 'AWS Rekognition',
-          ),
-          if (_sessionId != null)
-            _DetailRow(label: 'Session', value: _sessionId!),
-          if (_enrolled) const _DetailRow(label: 'Enrollment', value: 'Saved'),
           if (_error != null) ...[
             const SizedBox(height: AppSpacing.md),
             _InlineError(message: _error!),
           ],
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            'Center, Turn, Hold',
-            style: AppTypography.headlineSm.copyWith(
-              color: cs.onSurface,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
         ],
       ),
     );
@@ -1198,7 +1278,7 @@ class BioPayFaceScanScreen extends ConsumerStatefulWidget {
 
 class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
   final TextEditingController _amountController = TextEditingController(
-    text: '1500',
+    text: formatWholeAmount(1500),
   );
   CameraController? _camera;
   BioPayUssdPaymentRequest? _request;
@@ -1367,18 +1447,7 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
           if (_request != null)
             _ResolvedPaymentPreview(request: _request!)
           else ...[
-            _FaceEnrollmentStatusPanel(
-              title: readyForPreview ? 'Center' : 'Face match',
-              body: readyForPreview
-                  ? 'Center your face before matching.'
-                  : 'Start the camera before AWS match.',
-              capturedCount: 0,
-              totalSteps: 1,
-              sessionReady: readyForPreview,
-              provider: 'AWS Rekognition',
-            ),
-            const SizedBox(height: AppSpacing.md),
-            _BioPayAmountField(controller: _amountController),
+            _BioPayReceiveAmountField(controller: _amountController),
             const SizedBox(height: AppSpacing.md),
             if (readyForPreview)
               _CameraFrame(
@@ -1390,7 +1459,8 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
             else
               _FaceEnrollmentStandby(
                 iconColor: Theme.of(context).colorScheme.primary,
-                label: 'AWS face match',
+                height: 376,
+                guideSize: const Size(190, 258),
               ),
           ],
           if (_matchLabel != null) ...[
@@ -1498,7 +1568,7 @@ class _BioPayAdminMetrics extends StatelessWidget {
       crossAxisCount: columns,
       crossAxisSpacing: AppSpacing.md,
       mainAxisSpacing: AppSpacing.md,
-      childAspectRatio: columns == 4 ? 1.7 : 1.35,
+      childAspectRatio: columns == 4 ? 1.3 : 0.85,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
@@ -1634,7 +1704,7 @@ class _BioPayAdminOverview extends StatelessWidget {
           crossAxisCount: 3,
           crossAxisSpacing: AppSpacing.lg,
           mainAxisSpacing: AppSpacing.lg,
-          childAspectRatio: 0.86,
+          childAspectRatio: 0.78,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           children: children,
@@ -2422,39 +2492,55 @@ class _PoseCueDot extends StatelessWidget {
 }
 
 class _FaceEnrollmentStandby extends StatelessWidget {
-  const _FaceEnrollmentStandby({required this.iconColor, required this.label});
+  const _FaceEnrollmentStandby({
+    required this.iconColor,
+    this.label,
+    this.height = 260,
+    this.guideSize = const Size(156, 212),
+  });
 
   final Color iconColor;
-  final String label;
+  final String? label;
+  final double height;
+  final Size guideSize;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 260,
+      height: height,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: Colors.black,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(26),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.18),
+              blurRadius: 24,
+              offset: const Offset(0, 12),
+            ),
+          ],
         ),
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
-                width: 156,
-                height: 212,
+                width: guideSize.width,
+                height: guideSize.height,
                 child: CustomPaint(
                   painter: _BioPayStandbyOvalPainter(color: iconColor),
                 ),
               ),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                label,
-                style: AppTypography.labelLg.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
+              if (label != null) ...[
+                const SizedBox(height: AppSpacing.lg),
+                Text(
+                  label!,
+                  style: AppTypography.labelLg.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),
@@ -2503,7 +2589,6 @@ class _FaceEnrollmentStatusPanel extends StatelessWidget {
     required this.capturedCount,
     required this.totalSteps,
     required this.sessionReady,
-    required this.provider,
   });
 
   final String title;
@@ -2511,17 +2596,21 @@ class _FaceEnrollmentStatusPanel extends StatelessWidget {
   final int capturedCount;
   final int totalSteps;
   final bool sessionReady;
-  final String provider;
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: cs.surfaceContainerHighest.withValues(alpha: 0.58),
-        borderRadius: BorderRadius.circular(AppRadii.xl),
-        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.42)),
+        color: _bioPayDarkPanel.withValues(alpha: 0.76),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+        boxShadow: [
+          BoxShadow(
+            color: _bioPayBlue.withValues(alpha: 0.07),
+            blurRadius: 26,
+            offset: const Offset(0, 14),
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
@@ -2530,7 +2619,9 @@ class _FaceEnrollmentStatusPanel extends StatelessWidget {
           children: [
             Icon(
               sessionReady ? LucideIcons.scanFace : LucideIcons.camera,
-              color: sessionReady ? cs.primary : cs.onSurfaceVariant,
+              color: sessionReady
+                  ? _bioPayBlue
+                  : Colors.white.withValues(alpha: 0.58),
               size: 24,
             ),
             const SizedBox(width: AppSpacing.md),
@@ -2546,7 +2637,7 @@ class _FaceEnrollmentStatusPanel extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: AppTypography.labelLg.copyWith(
-                            color: cs.onSurface,
+                            color: Colors.white,
                             fontWeight: FontWeight.w900,
                           ),
                         ),
@@ -2555,7 +2646,7 @@ class _FaceEnrollmentStatusPanel extends StatelessWidget {
                       Text(
                         '${capturedCount.clamp(0, totalSteps)}/$totalSteps',
                         style: AppTypography.labelLg.copyWith(
-                          color: cs.primary,
+                          color: _bioPayBlue,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -2567,18 +2658,8 @@ class _FaceEnrollmentStatusPanel extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.bodySm.copyWith(
-                      color: cs.onSurfaceVariant,
+                      color: Colors.white.withValues(alpha: 0.70),
                       height: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    provider,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.labelSm.copyWith(
-                      color: cs.onSurfaceVariant,
-                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
@@ -2616,51 +2697,54 @@ class _BioPayFlowScreen extends StatelessWidget {
       data: _bioPayLightTheme(context),
       child: Scaffold(
         backgroundColor: _bioPayCanvas,
-        body: SafeArea(
-          bottom: false,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 132),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  children: [
-                    _BioPayBackAvatar(onTap: onBack),
-                    Expanded(
-                      child: Text(
-                        title,
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTypography.titleMd.copyWith(
-                          color: _bioPayInk,
-                          fontWeight: FontWeight.w900,
+        body: _BioPayLightCanvas(
+          child: SafeArea(
+            bottom: false,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 132),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      _BioPayBackAvatar(onTap: onBack),
+                      Expanded(
+                        child: Text(
+                          title,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.titleMd.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                       ),
-                    ),
-                    _BioPayIconBox(
-                      icon: icon,
-                      color: _bioPayBlue,
-                      background: const Color(0xFFEAF2FF),
+                      _BioPayIconBox(
+                        icon: icon,
+                        color: Colors.white,
+                        background: _bioPayChrome,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 42),
+                  child,
+                  if (primaryLabel.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.xl),
+                    MobiButton(
+                      onPressed: onPrimary,
+                      isLoading: isPrimaryLoading,
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                        vertical: 19,
+                      ),
+                      child: Text(primaryLabel),
                     ),
                   ],
-                ),
-                const SizedBox(height: 42),
-                child,
-                if (primaryLabel.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.xl),
-                  MobiButton(
-                    onPressed: onPrimary,
-                    isLoading: isPrimaryLoading,
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lg,
-                      vertical: 19,
-                    ),
-                    child: Text(primaryLabel),
-                  ),
                 ],
-              ],
+              ),
             ),
           ),
         ),
@@ -2684,17 +2768,19 @@ class _BioPayBackAvatar extends StatelessWidget {
         child: SizedBox.square(
           dimension: 42,
           child: Material(
-            color: _bioPayCanvas,
+            color: _bioPayChrome,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: const BorderSide(color: Color(0xFFE4E7EC)),
+              side: BorderSide(color: Colors.white.withValues(alpha: 0.16)),
             ),
+            elevation: 8,
+            shadowColor: _bioPayBlue.withValues(alpha: 0.10),
             child: InkWell(
               borderRadius: BorderRadius.circular(12),
               onTap: onTap,
               child: const Icon(
                 LucideIcons.chevronLeft,
-                color: _bioPayInk,
+                color: Colors.white,
                 size: 22,
               ),
             ),
@@ -2835,38 +2921,6 @@ IconData _channelIcon(BioPayRequestChannel channel) {
   };
 }
 
-class _BioPayAmountField extends StatelessWidget {
-  const _BioPayAmountField({required this.controller});
-
-  final TextEditingController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
-    return TextField(
-      controller: controller,
-      keyboardType: TextInputType.number,
-      textInputAction: TextInputAction.done,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      style: AppTypography.titleMd.copyWith(
-        color: cs.onSurface,
-        fontWeight: FontWeight.w800,
-      ),
-      decoration: InputDecoration(
-        labelText: 'Amount (RWF, optional)',
-        prefixIcon: const Icon(LucideIcons.badgeDollarSign),
-        filled: true,
-        fillColor: cs.surfaceContainerHighest,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadii.lg),
-          borderSide: BorderSide.none,
-        ),
-      ),
-    );
-  }
-}
-
 class _BioPayReceiverField extends StatelessWidget {
   const _BioPayReceiverField({
     required this.controller,
@@ -2884,8 +2938,6 @@ class _BioPayReceiverField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -2896,8 +2948,16 @@ class _BioPayReceiverField extends StatelessWidget {
             height: 64,
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: cs.surfaceContainerHighest,
+              color: _bioPayDarkPanel.withValues(alpha: 0.76),
               borderRadius: BorderRadius.circular(AppRadii.xxl),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+              boxShadow: [
+                BoxShadow(
+                  color: _bioPayBlue.withValues(alpha: 0.07),
+                  blurRadius: 24,
+                  offset: const Offset(0, 12),
+                ),
+              ],
             ),
             child: Row(
               children: [
@@ -2928,14 +2988,14 @@ class _BioPayReceiverField extends StatelessWidget {
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             onChanged: onChanged,
             style: AppTypography.displayMd.copyWith(
-              color: _bioPayInk,
+              color: Colors.white,
               fontWeight: FontWeight.w900,
               letterSpacing: 0,
             ),
             decoration: InputDecoration(
               hintText: usesCode ? 'MoMo Pay code' : 'MoMo number',
               hintStyle: AppTypography.titleLg.copyWith(
-                color: cs.onSurfaceVariant.withValues(alpha: 0.42),
+                color: Colors.white.withValues(alpha: 0.36),
                 fontWeight: FontWeight.w800,
               ),
               contentPadding: const EdgeInsets.symmetric(
@@ -2943,10 +3003,22 @@ class _BioPayReceiverField extends StatelessWidget {
                 vertical: AppSpacing.lg,
               ),
               filled: true,
-              fillColor: cs.surfaceContainerHighest,
+              fillColor: _bioPayDarkPanel.withValues(alpha: 0.74),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(AppRadii.xl),
-                borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(24),
+                borderSide: BorderSide(
+                  color: Colors.white.withValues(alpha: 0.12),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(24),
+                borderSide: BorderSide(
+                  color: Colors.white.withValues(alpha: 0.12),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(24),
+                borderSide: const BorderSide(color: _bioPayBlue, width: 1.4),
               ),
             ),
           ),
@@ -2971,8 +3043,6 @@ class _QrReceiverModeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
     return Expanded(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -2982,6 +3052,9 @@ class _QrReceiverModeButton extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: selected ? Colors.white : null,
+            gradient: selected
+                ? const LinearGradient(colors: [_bioPayInk, Color(0xFF1D2939)])
+                : null,
             borderRadius: BorderRadius.circular(AppRadii.xl),
             boxShadow: selected
                 ? [
@@ -2996,7 +3069,9 @@ class _QrReceiverModeButton extends StatelessWidget {
           child: Text(
             label,
             style: AppTypography.titleMd.copyWith(
-              color: selected ? _bioPayBlue : cs.onSurfaceVariant,
+              color: selected
+                  ? Colors.white
+                  : Colors.white.withValues(alpha: 0.68),
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -3056,18 +3131,17 @@ class _BioPayReceiveAmountFieldState extends State<_BioPayReceiveAmountField> {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final showPlaceholder =
         widget.controller.text.isEmpty && !_focusNode.hasFocus;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Divider(color: cs.outlineVariant.withValues(alpha: 0.5), height: 32),
+        Divider(color: Colors.white.withValues(alpha: 0.12), height: 32),
         Text(
-          'AMOUNT TO RECEIVE',
+          'AMOUNT',
           style: AppTypography.labelLg.copyWith(
-            color: cs.onSurfaceVariant,
+            color: Colors.white.withValues(alpha: 0.68),
             fontWeight: FontWeight.w900,
             letterSpacing: 1.8,
           ),
@@ -3085,17 +3159,17 @@ class _BioPayReceiveAmountFieldState extends State<_BioPayReceiveAmountField> {
                 keyboardType: TextInputType.number,
                 textAlign: TextAlign.center,
                 textInputAction: TextInputAction.done,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                inputFormatters: const [GroupedWholeNumberTextInputFormatter()],
                 onChanged: widget.onChanged,
                 style: AppTypography.displayMd.copyWith(
-                  color: _bioPayInk,
+                  color: Colors.white,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 0,
                 ),
                 decoration: InputDecoration(
                   prefixText: widget.controller.text.isEmpty ? null : 'RWF ',
                   prefixStyle: AppTypography.displayMd.copyWith(
-                    color: cs.onSurfaceVariant,
+                    color: Colors.white.withValues(alpha: 0.70),
                     fontWeight: FontWeight.w900,
                     letterSpacing: 0,
                   ),
@@ -3104,10 +3178,25 @@ class _BioPayReceiveAmountFieldState extends State<_BioPayReceiveAmountField> {
                     vertical: AppSpacing.lg,
                   ),
                   filled: true,
-                  fillColor: cs.surfaceContainerHighest,
+                  fillColor: _bioPayDarkPanel.withValues(alpha: 0.74),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppRadii.xl),
-                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.12),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide(
+                      color: Colors.white.withValues(alpha: 0.12),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: const BorderSide(
+                      color: _bioPayBlue,
+                      width: 1.4,
+                    ),
                   ),
                 ),
               ),
@@ -3119,7 +3208,7 @@ class _BioPayReceiveAmountFieldState extends State<_BioPayReceiveAmountField> {
                       Text(
                         'RWF ',
                         style: AppTypography.displayMd.copyWith(
-                          color: cs.onSurfaceVariant,
+                          color: Colors.white.withValues(alpha: 0.70),
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0,
                         ),
@@ -3127,7 +3216,7 @@ class _BioPayReceiveAmountFieldState extends State<_BioPayReceiveAmountField> {
                       Text(
                         '0.00',
                         style: AppTypography.displayMd.copyWith(
-                          color: _bioPayMuted.withValues(alpha: 0.54),
+                          color: Colors.white.withValues(alpha: 0.38),
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0,
                         ),
@@ -3169,7 +3258,7 @@ class _ResolvedPaymentPreview extends StatelessWidget {
               child: Text(
                 'Tap Dial USSD to open the phone dialer',
                 style: AppTypography.bodyMd.copyWith(
-                  color: cs.onSurfaceVariant,
+                  color: Colors.white.withValues(alpha: 0.72),
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -3196,12 +3285,13 @@ class _QrPreview extends StatelessWidget {
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.07),
-                  blurRadius: 18,
-                  offset: const Offset(0, 10),
+                  color: _bioPayBlue.withValues(alpha: 0.10),
+                  blurRadius: 30,
+                  offset: const Offset(0, 16),
                 ),
               ],
             ),
@@ -3243,14 +3333,44 @@ class _NfcReadyHint extends StatelessWidget {
 
     return Column(
       children: [
-        Icon(LucideIcons.nfc, color: cs.primary, size: 44),
-        const SizedBox(height: AppSpacing.md),
-        Text(
-          'Receive with NFC',
-          textAlign: TextAlign.center,
-          style: AppTypography.headlineSm.copyWith(
-            color: cs.onSurface,
-            fontWeight: FontWeight.w900,
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: _bioPayDarkPanel.withValues(alpha: 0.76),
+            borderRadius: BorderRadius.circular(26),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+            boxShadow: [
+              BoxShadow(
+                color: _bioPayNfcPurple.withValues(alpha: 0.10),
+                blurRadius: 26,
+                offset: const Offset(0, 14),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.xl,
+              vertical: AppSpacing.xl,
+            ),
+            child: Column(
+              children: [
+                _BioPayIconBox(
+                  icon: LucideIcons.nfc,
+                  color: cs.primary,
+                  background: cs.primary.withValues(alpha: 0.10),
+                  dimension: 58,
+                  iconSize: 28,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  'Receive with NFC',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.headlineSm.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -3295,7 +3415,7 @@ class _QrScannerSurfaceState extends State<_QrScannerSurface> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(28),
           child: AspectRatio(
             aspectRatio: 1,
             child: Stack(
@@ -3428,8 +3548,6 @@ class _DetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: Row(
@@ -3438,7 +3556,7 @@ class _DetailRow extends StatelessWidget {
             child: Text(
               label,
               style: AppTypography.bodyMd.copyWith(
-                color: cs.onSurfaceVariant,
+                color: Colors.white.withValues(alpha: 0.68),
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -3446,7 +3564,7 @@ class _DetailRow extends StatelessWidget {
           Text(
             value,
             style: AppTypography.titleMd.copyWith(
-              color: cs.onSurface,
+              color: Colors.white,
               fontWeight: FontWeight.w900,
             ),
           ),

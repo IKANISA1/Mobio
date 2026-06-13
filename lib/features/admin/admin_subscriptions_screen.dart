@@ -9,11 +9,13 @@ import 'package:mobi_app/core/services/vehicle_type_service.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/core/utils/money_formatting.dart';
 import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
 import 'package:mobi_app/models/country.dart';
 import 'package:mobi_app/models/subscription_plan_model.dart';
 import 'package:mobi_app/models/vehicle_type_model.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 
@@ -113,7 +115,7 @@ class _AdminSubscriptionsScreenState
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final priceController = TextEditingController(
-      text: plan.price.toStringAsFixed(0),
+      text: formatWholeAmount(plan.price),
     );
 
     final vehicleType = _vehicleTypes
@@ -121,13 +123,9 @@ class _AdminSubscriptionsScreenState
         .firstOrNull;
     final country = _countries.where((c) => c.id == plan.countryId).firstOrNull;
 
-    await showModalBottomSheet<void>(
+    await MobiBottomSheet.show<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: ext.surfaceContainerLowest,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-      ),
+      includeViewInsets: false,
       builder: (context) {
         return SafeArea(
           top: false,
@@ -151,11 +149,9 @@ class _AdminSubscriptionsScreenState
                 const SizedBox(height: AppSpacing.lg),
                 TextField(
                   controller: priceController,
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: const [
+                    GroupedWholeNumberTextInputFormatter(),
                   ],
                   style: AppTypography.titleMd.copyWith(color: cs.onSurface),
                   decoration: InputDecoration(
@@ -194,8 +190,9 @@ class _AdminSubscriptionsScreenState
                     Expanded(
                       child: MobiButton(
                         onPressed: () {
-                          final price =
-                              double.tryParse(priceController.text) ?? 0;
+                          final price = parseGroupedAmount(
+                            priceController.text,
+                          );
                           Navigator.of(context).pop();
                           _savePlan(plan, price);
                         },
@@ -593,6 +590,7 @@ class _AdminSubscriptionsScreenState
         plan.countryId,
         plan.currency,
         plan.intervalLabel,
+        formatWholeAmount(plan.price),
         plan.price.toStringAsFixed(0),
         vehicleType?.label,
         country?.name,
@@ -726,7 +724,7 @@ class _PlanRow extends StatelessWidget {
     );
 
     final priceWidget = Text(
-      '${plan.price.toStringAsFixed(0)} ${plan.currency}',
+      '${formatWholeAmount(plan.price)} ${plan.currency}',
       style: AppTypography.titleMd.copyWith(
         color: cs.onSurface,
         fontWeight: FontWeight.w700,

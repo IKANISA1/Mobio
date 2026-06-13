@@ -17,6 +17,7 @@ import 'package:mobi_app/core/services/supabase_session_service.dart';
 import 'package:mobi_app/core/theme/app_theme.dart';
 import 'package:mobi_app/core/theme/theme_provider.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
+import 'package:mobi_app/core/utils/web_splash_cleanup.dart';
 import 'package:mobi_app/l10n/app_localizations.dart';
 import 'package:mobi_app/providers/app_providers.dart';
 import 'package:mobi_app/shared/widgets/connectivity_overlay.dart';
@@ -119,6 +120,7 @@ Future<void> main() async {
       );
 
       FlutterNativeSplash.remove();
+      removeWebSplashFallback();
     },
     (error, stack) {
       AppLogger.error('UncaughtZoneError: $error\n$stack');

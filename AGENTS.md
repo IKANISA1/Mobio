@@ -75,6 +75,16 @@ payment ledgers, SMS payment ingestion, or in-app payment APIs unless a new
 approved product document explicitly changes this scope. Legacy code for those
 areas must be isolated from active UI and documented before removal.
 
+Do not recommend or implement Google Routes API, Compute Route Matrix,
+Directions API, Distance Matrix API, route ETA/duration, route distance,
+fare-distance basis, route polylines, or dispatch-grade routing for the active
+scheduled-trip marketplace. The approved map behavior is Google Places/Geocoding
+for place lookup, optional stored coordinates, and external Google Maps deep
+links. `maps-gateway` must keep returning 410 for `compute_route`. Route
+ETA/duration, route distance, route polylines, route matrices, fare-distance
+basis, and dispatch-grade routing are out of context for this app and must not
+be proposed as Mobio work.
+
 ## Secrets And Release Hygiene
 
 - Do not commit `.env`, service-role keys, Google Play service-account JSON,

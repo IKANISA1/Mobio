@@ -4,6 +4,28 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo_root"
 
+lock_dir="${TMPDIR:-/tmp}/mobi_android_release_build.lock"
+if ! mkdir "$lock_dir" 2>/dev/null; then
+  existing_pid="$(cat "$lock_dir/pid" 2>/dev/null || true)"
+  if [[ -n "$existing_pid" ]] && ! kill -0 "$existing_pid" 2>/dev/null; then
+    rm -rf "$lock_dir"
+    mkdir "$lock_dir"
+  else
+    if [[ -n "$existing_pid" ]]; then
+      echo "Another Android release build is already running (pid $existing_pid). Stop it before starting a new release build." >&2
+    else
+      echo "Another Android release build is already running. Stop it before starting a new release build." >&2
+    fi
+    exit 1
+  fi
+fi
+if [[ ! -d "$lock_dir" ]]; then
+  echo "Another Android release build is already running. Stop it before starting a new release build." >&2
+  exit 1
+fi
+printf '%s\n' "$$" > "$lock_dir/pid"
+trap 'rm -rf "$lock_dir"; rm -f "${dart_define_file:-}"' EXIT
+
 default_flutter="/Volumes/PRO-G40/flutter_3_44/bin/flutter"
 if [[ -z "${FLUTTER_BIN:-}" && -x "$default_flutter" ]]; then
   FLUTTER_BIN="$default_flutter"
@@ -54,7 +76,6 @@ fi
 tmpdir="${TMPDIR:-/tmp}"
 tmpdir="${tmpdir%/}"
 dart_define_file="$(mktemp "$tmpdir/mobi-dart-defines.XXXXXX")"
-trap 'rm -f "${dart_define_file:-}"' EXIT
 
 python3 - <<'PY' "$dart_define_file"
 import json
@@ -131,12 +152,19 @@ gradle_property_args=()
 if [[ -n "${ANDROID_RELEASE_SHRINK:-}" ]]; then
   gradle_property_args+=(--android-project-arg="mobi.release.shrink=$ANDROID_RELEASE_SHRINK")
 fi
+flutter_verbosity_args=()
+if [[ "${FLUTTER_BUILD_VERBOSE:-false}" == "true" ]]; then
+  flutter_verbosity_args+=("--verbose")
+fi
 
 case "$target" in
   appbundle)
     output="build/app/outputs/bundle/release/app-release.aab"
     rm -f "$output"
     build_cmd=("$FLUTTER_BIN" build appbundle --release --no-pub)
+    if ((${#flutter_verbosity_args[@]})); then
+      build_cmd+=("${flutter_verbosity_args[@]}")
+    fi
     if ((${#target_platform_args[@]})); then
       build_cmd+=("${target_platform_args[@]}")
     fi
@@ -159,6 +187,9 @@ case "$target" in
     gradle_output="build/app/outputs/apk/release/app-release.apk"
     rm -f "$output" "$gradle_output"
     build_cmd=("$FLUTTER_BIN" build apk --release --no-pub)
+    if ((${#flutter_verbosity_args[@]})); then
+      build_cmd+=("${flutter_verbosity_args[@]}")
+    fi
     if ((${#target_platform_args[@]})); then
       build_cmd+=("${target_platform_args[@]}")
     fi

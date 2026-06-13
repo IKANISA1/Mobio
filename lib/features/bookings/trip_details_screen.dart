@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
@@ -58,7 +60,9 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
     });
 
     try {
-      final trip = await _tripService.getTripById(widget.tripId);
+      final trip = SupabaseConfig.isLocalUiPreview
+          ? _previewTrip(widget.tripId)
+          : await _tripService.getTripById(widget.tripId);
       if (mounted) {
         setState(() {
           _trip = trip;
@@ -77,6 +81,12 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
         });
       }
     }
+  }
+
+  Trip? _previewTrip(String id) {
+    final trips = AppConstants.mockTrips;
+    if (trips.isEmpty) return null;
+    return trips.firstWhere((trip) => trip.id == id, orElse: () => trips.first);
   }
 
   Future<void> _handleCancel() async {
@@ -119,7 +129,9 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
 
   void _openChat() {
     final trip = _trip;
-    final currentUserId = Supabase.instance.client.auth.currentUser?.id;
+    final currentUserId = SupabaseConfig.isConfigured
+        ? Supabase.instance.client.auth.currentUser?.id
+        : null;
     if (trip == null || trip.id == null || currentUserId == null) {
       return;
     }
@@ -236,7 +248,9 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
         ? trip.time
         : '—';
     final isCancelled = trip.status == 'cancelled';
-    final currentUserId = Supabase.instance.client.auth.currentUser?.id;
+    final currentUserId = SupabaseConfig.isConfigured
+        ? Supabase.instance.client.auth.currentUser?.id
+        : null;
     final isTripOwner = currentUserId != null && trip.authorId == currentUserId;
 
     return Expanded(

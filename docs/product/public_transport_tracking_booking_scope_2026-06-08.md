@@ -115,6 +115,19 @@ Do not reuse removed BioPay, ledger, `payment_intents`, `ride_requests`, or
 - Mobio owns agency, booking, and trusted-location data.
 - Google Maps owns map display, navigation, traffic, and route rendering.
 
+## Permanent Route API Exclusion
+
+Google Routes API, Compute Route Matrix, Directions API, Distance Matrix API,
+route ETA/duration calculation, distance-based fare calculation, route
+polylines, and dispatch-grade routing are permanently out of context for Mobio.
+Public transport support should model agency schedules, route definitions,
+trusted vehicle location events, seat inventory, booking holds, and
+booking-specific payments. Map display, navigation, traffic, and route rendering
+remain an external Google Maps deep-link handoff.
+
+Do not enable route-computation APIs or add Mobio-owned ETA, distance, polyline,
+matrix, fare-distance, or dispatch-routing contracts to this app.
+
 ## Open Implementation Gaps
 
 - Agency/fleet/route/schedule tables and RLS policies are not implemented yet.

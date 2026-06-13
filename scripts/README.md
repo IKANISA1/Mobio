@@ -38,16 +38,21 @@ BioPay recovery proof:
   `scripts/release/go_no_go_check.sh` enables this strict BioPay mode by
   default unless `RUN_BIOPAY_GATE=false` is used in dry-run mode.
 
-Final go/no-go requires external Play evidence paths:
+Final go/no-go requires external Play and Google/Firebase evidence paths:
 
-- `PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE`
 - `PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE`
 - `PLAY_CONSOLE_UPLOAD_EVIDENCE`
+- `GOOGLE_MAPS_SERVER_SECRET_EVIDENCE`
+- `FCM_HTTP_V1_SECRET_EVIDENCE`
+- `IOS_FIREBASE_APNS_EVIDENCE` when the release target includes iOS
+- `IOS_CRASHLYTICS_SYMBOLS_EVIDENCE` when the release target includes iOS
 
-Use a real non-template evidence file in `docs/release/evidence`. Rotation is
-not mandatory when the owner explicitly approves retaining the current Play
-service-account key and provides `PLAY_SERVICE_ACCOUNT_RETAINED=true` with
-`PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE`. Do not commit secret values or Play
-service-account JSON.
+Use a real non-template evidence file in `docs/release/evidence`. The Play
+service-account gate is cleared by owner-approved retention/use evidence:
+`PLAY_SERVICE_ACCOUNT_RETAINED=true` with
+`PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE`. The Google/Firebase gates are
+cleared by validation acknowledgements plus existing non-template evidence
+files. Do not commit secret values, API keys, private keys, service-account JSON,
+or credential screenshots.
 
 Do not move existing script paths without updating GitHub Actions and README commands in the same change.

@@ -12,6 +12,7 @@ import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
 import 'package:mobi_app/models/country.dart';
 import 'package:mobi_app/models/vehicle_type_model.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 
@@ -119,12 +120,8 @@ class _AdminVehicleTypesScreenState
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final selected = Set<String>.from(vehicleType.countryIds);
 
-    await showModalBottomSheet<void>(
+    await MobiBottomSheet.show<void>(
       context: context,
-      backgroundColor: ext.surfaceContainerLowest,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-      ),
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setSheetState) {

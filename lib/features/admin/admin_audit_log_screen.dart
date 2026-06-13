@@ -11,6 +11,7 @@ import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/admin/widgets/admin_dashboard_utils.dart';
 import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 
 class AdminAuditLogScreen extends ConsumerStatefulWidget {
@@ -66,155 +67,132 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
         ? 'No detail payload'
         : const JsonEncoder.withIndent('  ').convert(item.details);
 
-    return showModalBottomSheet<void>(
+    return MobiBottomSheet.show<void>(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
+      title: 'Audit event',
       builder: (context) {
         final tone = _actionTone(item.action);
-        return SafeArea(
-          top: false,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.lg,
-              AppSpacing.lg,
-              MediaQuery.viewInsetsOf(context).bottom + AppSpacing.lg,
-            ),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.sizeOf(context).height * 0.86,
-              ),
-              child: SingleChildScrollView(
-                child: Column(
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            0,
+            AppSpacing.lg,
+            AppSpacing.md,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Audit event',
-                                style: AppTypography.titleLg.copyWith(
-                                  color: cs.onSurface,
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.xs),
-                              Text(
-                                AdminDashboardUtils.formatTimestamp(
-                                  item.createdAt,
-                                ),
-                                style: AppTypography.bodySm.copyWith(
-                                  color: cs.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AdminDashboardUtils.formatTimestamp(item.createdAt),
+                            style: AppTypography.bodySm.copyWith(
+                              color: cs.onSurfaceVariant,
+                            ),
                           ),
-                        ),
-                        AdminActionChip(
-                          label: 'Close',
-                          icon: LucideIcons.x,
-                          onTap: () => Navigator.of(context).pop(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Wrap(
-                      spacing: AppSpacing.sm,
-                      runSpacing: AppSpacing.sm,
-                      children: [
-                        MobiStatusBadge(
-                          label: _humanize(item.action),
-                          tone: tone,
-                        ),
-                        MobiStatusBadge(
-                          label: _humanize(item.targetType),
-                          tone: MobiStatusBadgeTone.neutral,
-                        ),
-                        if (_isSensitiveAction(item))
-                          const MobiStatusBadge(
-                            label: 'Sensitive',
-                            icon: LucideIcons.shieldAlert,
-                            tone: MobiStatusBadgeTone.warning,
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isWide = constraints.maxWidth >= 640;
-                        final fields = [
-                          AdminFieldPair(label: 'Actor', value: item.adminName),
-                          AdminFieldPair(label: 'Action', value: item.action),
-                          AdminFieldPair(
-                            label: 'Target type',
-                            value: item.targetType,
-                          ),
-                          AdminFieldPair(
-                            label: 'Target ID',
-                            value: item.targetId ?? 'None',
-                          ),
-                          AdminFieldPair(
-                            label: 'Created',
-                            value: item.createdAt ?? 'Unknown',
-                          ),
-                        ];
-                        if (!isWide) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              for (final field in fields) ...[
-                                field,
-                                const SizedBox(height: AppSpacing.md),
-                              ],
-                            ],
-                          );
-                        }
-                        return Wrap(
-                          spacing: AppSpacing.xl,
-                          runSpacing: AppSpacing.md,
-                          children: [
-                            for (final field in fields)
-                              SizedBox(width: 220, child: field),
-                          ],
-                        );
-                      },
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Text(
-                      'Detail payload',
-                      style: AppTypography.labelLg.copyWith(
-                        color: cs.onSurface,
+                        ],
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.xs),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Theme.of(
-                          context,
-                        ).extension<MobiThemeExtension>()!.surfaceContainerLow,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: cs.outlineVariant.withValues(alpha: 0.5),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        child: SelectableText(
-                          payload,
-                          style: AppTypography.bodySm.copyWith(
-                            color: cs.onSurface,
-                            fontFamily: 'monospace',
-                          ),
-                        ),
-                      ),
+                    AdminActionChip(
+                      label: 'Close',
+                      icon: LucideIcons.x,
+                      onTap: () => Navigator.of(context).pop(),
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: AppSpacing.lg),
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    MobiStatusBadge(label: _humanize(item.action), tone: tone),
+                    MobiStatusBadge(
+                      label: _humanize(item.targetType),
+                      tone: MobiStatusBadgeTone.neutral,
+                    ),
+                    if (_isSensitiveAction(item))
+                      const MobiStatusBadge(
+                        label: 'Sensitive',
+                        icon: LucideIcons.shieldAlert,
+                        tone: MobiStatusBadgeTone.warning,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isWide = constraints.maxWidth >= 640;
+                    final fields = [
+                      AdminFieldPair(label: 'Actor', value: item.adminName),
+                      AdminFieldPair(label: 'Action', value: item.action),
+                      AdminFieldPair(
+                        label: 'Target type',
+                        value: item.targetType,
+                      ),
+                      AdminFieldPair(
+                        label: 'Target ID',
+                        value: item.targetId ?? 'None',
+                      ),
+                      AdminFieldPair(
+                        label: 'Created',
+                        value: item.createdAt ?? 'Unknown',
+                      ),
+                    ];
+                    if (!isWide) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (final field in fields) ...[
+                            field,
+                            const SizedBox(height: AppSpacing.md),
+                          ],
+                        ],
+                      );
+                    }
+                    return Wrap(
+                      spacing: AppSpacing.xl,
+                      runSpacing: AppSpacing.md,
+                      children: [
+                        for (final field in fields)
+                          SizedBox(width: 220, child: field),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                Text(
+                  'Detail payload',
+                  style: AppTypography.labelLg.copyWith(color: cs.onSurface),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).extension<MobiThemeExtension>()!.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: cs.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: SelectableText(
+                      payload,
+                      style: AppTypography.bodySm.copyWith(
+                        color: cs.onSurface,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         );

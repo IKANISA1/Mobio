@@ -3,6 +3,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/core/utils/money_formatting.dart';
 import 'package:mobi_app/models/subscription_plan_model.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
@@ -106,7 +107,7 @@ class ProfileSubscriptionSection extends StatelessWidget {
           ),
           const SizedBox(width: AppSpacing.sm),
           Text(
-            '${plan.price.toStringAsFixed(0)} ${plan.currency}',
+            '${formatWholeAmount(plan.price)} ${plan.currency}',
             style: AppTypography.labelSm.copyWith(
               color: cs.primary,
               fontWeight: FontWeight.w800,

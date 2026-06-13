@@ -32,5 +32,25 @@ void main() {
       expect(uri.queryParameters['api'], '1');
       expect(uri.queryParameters['query'], '-1.9441,30.0619');
     });
+
+    test('builds a Google Maps multi-driver deep link', () {
+      final uri = GoogleMapsDeepLinkService.nearbyDriverLocationsUri(
+        originLat: -1.9503,
+        originLng: 30.0588,
+        drivers: const [
+          (latitude: -1.9441, longitude: 30.0619),
+          (latitude: -1.9428, longitude: 30.0654),
+        ],
+      );
+
+      expect(uri.scheme, 'https');
+      expect(uri.host, 'www.google.com');
+      expect(uri.path, '/maps/dir/');
+      expect(uri.queryParameters['api'], '1');
+      expect(uri.queryParameters['origin'], '-1.9503,30.0588');
+      expect(uri.queryParameters['destination'], '-1.9428,30.0654');
+      expect(uri.queryParameters['waypoints'], '-1.9441,30.0619');
+      expect(uri.queryParameters['travelmode'], 'driving');
+    });
   });
 }

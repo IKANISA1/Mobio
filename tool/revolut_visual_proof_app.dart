@@ -6,19 +6,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/router/error_screens.dart';
 import 'package:mobi_app/core/theme/app_theme.dart';
+import 'package:mobi_app/features/admin/admin_audit_log_screen.dart';
+import 'package:mobi_app/features/admin/admin_auth_screen.dart';
+import 'package:mobi_app/features/admin/admin_broadcasts_screen.dart';
+import 'package:mobi_app/features/admin/admin_dashboard_screen.dart';
+import 'package:mobi_app/features/admin/admin_operational_health_screen.dart';
+import 'package:mobi_app/features/admin/admin_reports_screen.dart';
+import 'package:mobi_app/features/admin/admin_subscriptions_screen.dart';
+import 'package:mobi_app/features/admin/admin_trips_screen.dart';
+import 'package:mobi_app/features/admin/admin_users_screen.dart';
+import 'package:mobi_app/features/admin/admin_vehicle_types_screen.dart';
 import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
+import 'package:mobi_app/features/biopay/biopay_screen.dart';
 import 'package:mobi_app/features/bookings/bookings_screen.dart';
 import 'package:mobi_app/features/bookings/schedule_trip_screen.dart';
+import 'package:mobi_app/features/bookings/trip_details_screen.dart';
 import 'package:mobi_app/features/chat/chat_screen.dart';
 import 'package:mobi_app/features/home/home_screen.dart';
 import 'package:mobi_app/features/nearby/nearby_screen.dart';
+import 'package:mobi_app/features/notifications/notifications_screen.dart';
+import 'package:mobi_app/features/profile/edit_profile_screen.dart';
 import 'package:mobi_app/features/profile/profile_screen.dart';
 import 'package:mobi_app/shared/widgets/mobi_bottom_nav.dart';
 
+import 'revolut_preview_services.dart';
+
 void main() {
   GoogleFonts.config.allowRuntimeFetching = false;
-  runApp(const ProviderScope(child: RevolutVisualProofApp()));
+  runApp(
+    ProviderScope(
+      overrides: revolutPreviewOverrides,
+      child: const RevolutVisualProofApp(),
+    ),
+  );
 }
 
 class RevolutVisualProofApp extends StatelessWidget {
@@ -72,13 +94,42 @@ class _VisualProofHostState extends State<_VisualProofHost> {
   static const _screens = [
     'home_shell',
     'bookings_shell',
+    'biopay_shell',
     'profile_shell',
     'home',
     'bookings',
     'schedule',
+    'trip_details',
+    'trip_edit',
     'profile',
+    'edit_profile',
+    'profile_setup',
+    'notifications',
     'chat',
     'nearby',
+    'biopay_home',
+    'biopay_qr',
+    'biopay_scan',
+    'biopay_face_scan',
+    'biopay_face_enroll',
+    'biopay_nfc',
+    'admin_auth',
+    'admin_dashboard',
+    'admin_users',
+    'admin_trips',
+    'admin_biopay_ops',
+    'admin_vehicle_types',
+    'admin_subscriptions',
+    'admin_reports',
+    'admin_health',
+    'admin_audit',
+    'admin_broadcasts',
+    'config_error',
+    'not_found',
+    'login_large_text',
+    'schedule_keyboard',
+    'edit_profile_large_text',
+    'admin_reports_large_text',
     'admin',
     'home_scroll',
     'bookings_scroll',
@@ -166,7 +217,8 @@ class _VisualProofSurface extends StatelessWidget {
     final shellIndex = switch (baseScreen) {
       'home_shell' => 0,
       'bookings_shell' => 1,
-      'profile_shell' => 2,
+      'biopay_shell' => 2,
+      'profile_shell' => 3,
       _ => null,
     };
     var child = _screenFor(baseScreen);
@@ -174,6 +226,8 @@ class _VisualProofSurface extends StatelessWidget {
     if (scrollOffset != null) {
       child = _ScrollProofFrame(offset: scrollOffset, child: child);
     }
+
+    child = _mediaFrameFor(screen, child);
 
     if (shellIndex == null) {
       return Scaffold(body: child);
@@ -206,10 +260,23 @@ Widget _screenFor(String screen) {
       onSchedule: () {},
       onTripDetails: (_) {},
     ),
+    'biopay_shell' || 'biopay_home' => BioPayScreen(
+      onQr: () {},
+      onScan: () {},
+      onFace: () {},
+      onNfc: () {},
+    ),
     'schedule' => ScheduleTripScreen(
       mode: 'passenger',
       onModeChanged: (_) {},
       onBack: () {},
+    ),
+    'trip_details' => TripDetailsScreen(tripId: 't1', onBack: () {}),
+    'trip_edit' => ScheduleTripScreen(
+      mode: 'driver',
+      onModeChanged: (_) {},
+      onBack: () {},
+      editingTripId: 't1',
     ),
     'profile' || 'profile_shell' => ProfileScreen(
       isDarkMode: true,
@@ -217,8 +284,37 @@ Widget _screenFor(String screen) {
       onEditProfile: () {},
       onAdminGateway: () {},
     ),
+    'edit_profile' ||
+    'edit_profile_large_text' => EditProfileScreen(onBack: () {}),
+    'profile_setup' => EditProfileScreen(isFirstRun: true, onBack: () {}),
+    'notifications' => NotificationsScreen(onBack: () {}),
     'chat' => TripChatScreen(onBack: () {}),
     'nearby' => NearbyScreen(onChat: (_) {}, onTripDetails: (_) {}),
+    'biopay_qr' => BioPayQrScreen(onBack: () {}),
+    'biopay_scan' => BioPayScanScreen(onBack: () {}),
+    'biopay_face_scan' => BioPayFaceScanScreen(onBack: () {}),
+    'biopay_face_enroll' => BioPayFaceEnrollScreen(onBack: () {}),
+    'biopay_nfc' => BioPayNfcScreen(onBack: () {}),
+    'admin_auth' ||
+    'login_large_text' => AdminAuthScreen(onBack: () {}, onSuccess: () {}),
+    'admin_dashboard' => const AdminDashboardScreen(),
+    'admin_users' => const AdminUsersScreen(),
+    'admin_trips' => AdminTripsScreen(onBack: () {}),
+    'admin_biopay_ops' => const BioPayAdminConsoleScreen(),
+    'admin_vehicle_types' => AdminVehicleTypesScreen(onBack: () {}),
+    'admin_subscriptions' => AdminSubscriptionsScreen(onBack: () {}),
+    'admin_reports' ||
+    'admin_reports_large_text' => AdminReportsScreen(onBack: () {}),
+    'admin_health' => AdminOperationalHealthScreen(onBack: () {}),
+    'admin_audit' => AdminAuditLogScreen(onBack: () {}),
+    'admin_broadcasts' => AdminBroadcastsScreen(onBack: () {}),
+    'schedule_keyboard' => ScheduleTripScreen(
+      mode: 'passenger',
+      onModeChanged: (_) {},
+      onBack: () {},
+    ),
+    'config_error' => const ConfigErrorScreen(),
+    'not_found' => const NotFoundScreen(),
     'admin' => _adminPreview(),
     _ => const _UnknownScreen(),
   };
@@ -229,6 +325,7 @@ String _baseScreenFor(String screen) {
     'home_scroll' => 'home_shell',
     'bookings_scroll' => 'bookings_shell',
     'profile_scroll' => 'profile_shell',
+    'schedule_keyboard' => 'schedule_keyboard',
     _ => screen,
   };
 }
@@ -240,6 +337,29 @@ double? _scrollOffsetFor(String screen) {
     'profile_scroll' => 520,
     _ => null,
   };
+}
+
+Widget _mediaFrameFor(String screen, Widget child) {
+  final largeText = screen.endsWith('_large_text');
+  final keyboard = screen.endsWith('_keyboard');
+  if (!largeText && !keyboard) {
+    return child;
+  }
+
+  return Builder(
+    builder: (context) {
+      final media = MediaQuery.of(context);
+      return MediaQuery(
+        data: media.copyWith(
+          textScaler: largeText ? const TextScaler.linear(2) : media.textScaler,
+          viewInsets: keyboard
+              ? media.viewInsets.copyWith(bottom: 320)
+              : media.viewInsets,
+        ),
+        child: child,
+      );
+    },
+  );
 }
 
 class _ScrollProofFrame extends StatefulWidget {

@@ -1,0 +1,931 @@
+--------- beginning of main
+06-13 09:00:26.735  1739  2010 W Binder  : Caught a RuntimeException from the binder stub implementation.
+06-13 09:00:26.735  1739  2010 W Binder  : java.lang.ArrayIndexOutOfBoundsException: Array index out of range: 0
+06-13 09:00:26.735  1739  2010 W Binder  : 	at android.util.ArraySet.valueAt(ArraySet.java:422)
+06-13 09:00:26.735  1739  2010 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.updateContentCaptureOptions(ContentCapturePerUserService.java:733)
+06-13 09:00:26.735  1739  2010 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.setContentCaptureWhitelist(ContentCapturePerUserService.java:646)
+06-13 09:00:26.735  1739  2010 W Binder  : 	at android.service.contentcapture.IContentCaptureServiceCallback$Stub.onTransact(IContentCaptureServiceCallback.java:115)
+06-13 09:00:26.735  1739  2010 W Binder  : 	at android.os.Binder.execTransactInternal(Binder.java:1285)
+06-13 09:00:26.735  1739  2010 W Binder  : 	at android.os.Binder.execTransact(Binder.java:1244)
+06-13 09:00:26.735  4224  4895 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-13 09:00:26.736  1739  4287 E AppSearchAppIndxrImpl: Certificate not found for package: org.chromium.webapk.a7114f462cff010e2_v2
+06-13 09:00:26.740  4224  4895 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-13 09:00:26.742  1739  2535 W Binder  : Caught a RuntimeException from the binder stub implementation.
+06-13 09:00:26.742  1739  2535 W Binder  : java.lang.ArrayIndexOutOfBoundsException: Array index out of range: 0
+06-13 09:00:26.742  1739  2535 W Binder  : 	at android.util.ArraySet.valueAt(ArraySet.java:422)
+06-13 09:00:26.742  1739  2535 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.updateContentCaptureOptions(ContentCapturePerUserService.java:733)
+06-13 09:00:26.742  1739  2535 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.setContentCaptureWhitelist(ContentCapturePerUserService.java:646)
+06-13 09:00:26.742  1739  2535 W Binder  : 	at android.service.contentcapture.IContentCaptureServiceCallback$Stub.onTransact(IContentCaptureServiceCallback.java:115)
+06-13 09:00:26.742  1739  2535 W Binder  : 	at android.os.Binder.execTransactInternal(Binder.java:1285)
+06-13 09:00:26.742  1739  2535 W Binder  : 	at android.os.Binder.execTransact(Binder.java:1244)
+06-13 09:00:26.744  4224  4895 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-13 09:00:26.745  1739  2535 W Binder  : Caught a RuntimeException from the binder stub implementation.
+06-13 09:00:26.745  1739  2535 W Binder  : java.lang.ArrayIndexOutOfBoundsException: Array index out of range: 0
+06-13 09:00:26.745  1739  2535 W Binder  : 	at android.util.ArraySet.valueAt(ArraySet.java:422)
+06-13 09:00:26.745  1739  2535 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.updateContentCaptureOptions(ContentCapturePerUserService.java:733)
+06-13 09:00:26.745  1739  2535 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.setContentCaptureWhitelist(ContentCapturePerUserService.java:646)
+06-13 09:00:26.745  1739  2535 W Binder  : 	at android.service.contentcapture.IContentCaptureServiceCallback$Stub.onTransact(IContentCaptureServiceCallback.java:115)
+06-13 09:00:26.745  1739  2535 W Binder  : 	at android.os.Binder.execTransactInternal(Binder.java:1285)
+06-13 09:00:26.745  1739  2535 W Binder  : 	at android.os.Binder.execTransact(Binder.java:1244)
+06-13 09:00:26.748  4224  4895 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-13 09:00:26.755  4224  4895 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-13 09:00:26.755  1739  4282 W AppSearchIcing: status-util.h:31: Error: 3, Message: Invalid cycle detected in type configs. 'android$apps-db/AppFunctionNamedDataTypeMetadataDocument-com.google.android.apps.wellbeing' references or inherits from itself.
+06-13 09:00:26.756  1739  2948 W Binder  : Caught a RuntimeException from the binder stub implementation.
+06-13 09:00:26.756  1739  2948 W Binder  : java.lang.ArrayIndexOutOfBoundsException: Array index out of range: 0
+06-13 09:00:26.756  1739  2948 W Binder  : 	at android.util.ArraySet.valueAt(ArraySet.java:422)
+06-13 09:00:26.756  1739  2948 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.updateContentCaptureOptions(ContentCapturePerUserService.java:733)
+06-13 09:00:26.756  1739  2948 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.setContentCaptureWhitelist(ContentCapturePerUserService.java:646)
+06-13 09:00:26.756  1739  2948 W Binder  : 	at android.service.contentcapture.IContentCaptureServiceCallback$Stub.onTransact(IContentCaptureServiceCallback.java:115)
+06-13 09:00:26.756  1739  2948 W Binder  : 	at android.os.Binder.execTransactInternal(Binder.java:1285)
+06-13 09:00:26.756  1739  2948 W Binder  : 	at android.os.Binder.execTransact(Binder.java:1244)
+06-13 09:00:26.757  4224  4895 I AiAiTextClassifier: [VisualCortexAdapter]: provideRegistration: Registered Prominent Screen Entities for updates.
+06-13 09:00:26.762  1739  2948 W Binder  : Caught a RuntimeException from the binder stub implementation.
+06-13 09:00:26.762  1739  2948 W Binder  : java.lang.ArrayIndexOutOfBoundsException: Array index out of range: 0
+06-13 09:00:26.762  1739  2948 W Binder  : 	at android.util.ArraySet.valueAt(ArraySet.java:422)
+06-13 09:00:26.762  1739  2948 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.updateContentCaptureOptions(ContentCapturePerUserService.java:733)
+06-13 09:00:26.762  1739  2948 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.setContentCaptureWhitelist(ContentCapturePerUserService.java:646)
+06-13 09:00:26.762  1739  2948 W Binder  : 	at android.service.contentcapture.IContentCaptureServiceCallback$Stub.onTransact(IContentCaptureServiceCallback.java:115)
+06-13 09:00:26.762  1739  2948 W Binder  : 	at android.os.Binder.execTransactInternal(Binder.java:1285)
+06-13 09:00:26.762  1739  2948 W Binder  : 	at android.os.Binder.execTransact(Binder.java:1244)
+06-13 09:00:26.763  1739  2948 W Binder  : Caught a RuntimeException from the binder stub implementation.
+06-13 09:00:26.763  1739  2948 W Binder  : java.lang.ArrayIndexOutOfBoundsException: Array index out of range: 0
+06-13 09:00:26.763  1739  2948 W Binder  : 	at android.util.ArraySet.valueAt(ArraySet.java:422)
+06-13 09:00:26.763  1739  2948 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.updateContentCaptureOptions(ContentCapturePerUserService.java:733)
+06-13 09:00:26.763  1739  2948 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.setContentCaptureWhitelist(ContentCapturePerUserService.java:646)
+06-13 09:00:26.763  1739  2948 W Binder  : 	at android.service.contentcapture.IContentCaptureServiceCallback$Stub.onTransact(IContentCaptureServiceCallback.java:115)
+06-13 09:00:26.763  1739  2948 W Binder  : 	at android.os.Binder.execTransactInternal(Binder.java:1285)
+06-13 09:00:26.763  1739  2948 W Binder  : 	at android.os.Binder.execTransact(Binder.java:1244)
+06-13 09:00:26.763  1739  2948 W Binder  : Caught a RuntimeException from the binder stub implementation.
+06-13 09:00:26.763  1739  2948 W Binder  : java.lang.ArrayIndexOutOfBoundsException: Array index out of range: 0
+06-13 09:00:26.763  1739  2948 W Binder  : 	at android.util.ArraySet.valueAt(ArraySet.java:422)
+06-13 09:00:26.763  1739  2948 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.updateContentCaptureOptions(ContentCapturePerUserService.java:733)
+06-13 09:00:26.763  1739  2948 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.setContentCaptureWhitelist(ContentCapturePerUserService.java:646)
+06-13 09:00:26.763  1739  2948 W Binder  : 	at android.service.contentcapture.IContentCaptureServiceCallback$Stub.onTransact(IContentCaptureServiceCallback.java:115)
+06-13 09:00:26.763  1739  2948 W Binder  : 	at android.os.Binder.execTransactInternal(Binder.java:1285)
+06-13 09:00:26.763  1739  2948 W Binder  : 	at android.os.Binder.execTransact(Binder.java:1244)
+06-13 09:00:26.770 28386 24078 I PermissionControllerServiceImpl: Updating user sensitive for uid 10898
+06-13 09:00:26.772  1739  4282 W AppSearchResult: Converting throwable to failed result.
+06-13 09:00:26.772  1739  4282 W AppSearchResult: android.app.appsearch.exceptions.AppSearchException: Invalid cycle detected in type configs. 'android$apps-db/AppFunctionNamedDataTypeMetadataDocument-com.google.android.apps.wellbeing' references or inherits from itself.
+06-13 09:00:26.772  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.external.localstorage.AppSearchImpl.checkCodeOneOf(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:22)
+06-13 09:00:26.772  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.external.localstorage.AppSearchImpl.checkSuccess(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:7)
+06-13 09:00:26.772  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.external.localstorage.AppSearchImpl.doSetSchemaNoChangeNotificationLocked(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:695)
+06-13 09:00:26.772  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.external.localstorage.AppSearchImpl.doSetSchemaWithChangeNotificationNoGetSchemaLocked(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:76)
+06-13 09:00:26.772  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.external.localstorage.AppSearchImpl.setSchema(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:90)
+06-13 09:00:26.772  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.AppSearchManagerService$Stub.lambda$setSchema$0(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:21)
+06-13 09:00:26.772  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.AppSearchManagerService$Stub$$ExternalSyntheticLambda10.run(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:41)
+06-13 09:00:26.772  1739  4282 W AppSearchResult: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-13 09:00:26.772  1739  4282 W AppSearchResult: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-13 09:00:26.772  1739  4282 W AppSearchResult: 	at java.lang.Thread.run(Thread.java:1564)
+06-13 09:00:26.772  1739  4287 E AppSearchAppIndxrHlp: Failed to setSchema in batch due to invalid schema.
+06-13 09:00:26.772  1739  4287 E AppSearchAppIndxrHlp: android.app.appsearch.exceptions.AppSearchException: Invalid cycle detected in type configs. 'android$apps-db/AppFunctionNamedDataTypeMetadataDocument-com.google.android.apps.wellbeing' references or inherits from itself.
+06-13 09:00:26.772  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.sync.SyncAppSearchBase.executeAppSearchResultOperation(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:50)
+06-13 09:00:26.772  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.sync.SyncAppSearchSessionImpl.setSchema(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:20)
+06-13 09:00:26.772  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.appsindexer.AppSearchHelper.setSchemasForPackages(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:420)
+06-13 09:00:26.772  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.appsindexer.AppsIndexerImpl.doUpdateIncrementalPut(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:198)
+06-13 09:00:26.772  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.appsindexer.AppsIndexerUserInstance.doUpdate(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:129)
+06-13 09:00:26.772  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.appsindexer.AppsIndexerUserInstance$$ExternalSyntheticLambda3.run(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:9)
+06-13 09:00:26.772  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.appsindexer.AppsIndexerUserInstance$$ExternalSyntheticLambda0.run(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:10)
+06-13 09:00:26.772  1739  4287 E AppSearchAppIndxrHlp: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-13 09:00:26.772  1739  4287 E AppSearchAppIndxrHlp: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-13 09:00:26.772  1739  4287 E AppSearchAppIndxrHlp: 	at java.lang.Thread.run(Thread.java:1564)
+06-13 09:00:26.775 20067 20097 E Finsky  : [788] [Counters] attempted to use a non-positive increment for: 4753
+--------- beginning of system
+06-13 09:00:26.776  1739  1964 W AccessibilitySecurityPolicy: Skipping accessibility service com.vzw.hss.myverizon/com.vz.assisttouch.services.AssistiveTouchService: it does not require the permission android.permission.BIND_ACCESSIBILITY_SERVICE
+06-13 09:00:26.793  1739  4282 W AppSearchIcing: status-util.h:31: Error: 3, Message: Invalid cycle detected in type configs. 'android$apps-db/AppFunctionNamedDataTypeMetadataDocument-com.google.android.apps.wellbeing' references or inherits from itself.
+06-13 09:00:26.795  1739  4282 W AppSearchResult: Converting throwable to failed result.
+06-13 09:00:26.795  1739  4282 W AppSearchResult: android.app.appsearch.exceptions.AppSearchException: Invalid cycle detected in type configs. 'android$apps-db/AppFunctionNamedDataTypeMetadataDocument-com.google.android.apps.wellbeing' references or inherits from itself.
+06-13 09:00:26.795  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.external.localstorage.AppSearchImpl.checkCodeOneOf(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:22)
+06-13 09:00:26.795  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.external.localstorage.AppSearchImpl.checkSuccess(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:7)
+06-13 09:00:26.795  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.external.localstorage.AppSearchImpl.doSetSchemaNoChangeNotificationLocked(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:695)
+06-13 09:00:26.795  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.external.localstorage.AppSearchImpl.doSetSchemaWithChangeNotificationNoGetSchemaLocked(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:76)
+06-13 09:00:26.795  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.external.localstorage.AppSearchImpl.setSchema(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:90)
+06-13 09:00:26.795  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.AppSearchManagerService$Stub.lambda$setSchema$0(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:21)
+06-13 09:00:26.795  1739  4282 W AppSearchResult: 	at com.android.server.appsearch.AppSearchManagerService$Stub$$ExternalSyntheticLambda10.run(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:41)
+06-13 09:00:26.795  1739  4282 W AppSearchResult: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-13 09:00:26.795  1739  4282 W AppSearchResult: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-13 09:00:26.795  1739  4282 W AppSearchResult: 	at java.lang.Thread.run(Thread.java:1564)
+06-13 09:00:26.795  1739  4287 E AppSearchAppIndxrHlp: Skipping invalid schemas for package: com.google.android.apps.wellbeing
+06-13 09:00:26.795  1739  4287 E AppSearchAppIndxrHlp: android.app.appsearch.exceptions.AppSearchException: Invalid cycle detected in type configs. 'android$apps-db/AppFunctionNamedDataTypeMetadataDocument-com.google.android.apps.wellbeing' references or inherits from itself.
+06-13 09:00:26.795  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.sync.SyncAppSearchBase.executeAppSearchResultOperation(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:50)
+06-13 09:00:26.795  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.sync.SyncAppSearchSessionImpl.setSchema(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:20)
+06-13 09:00:26.795  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.appsindexer.AppSearchHelper.setSchemasForPackages(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:520)
+06-13 09:00:26.795  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.appsindexer.AppsIndexerImpl.doUpdateIncrementalPut(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:198)
+06-13 09:00:26.795  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.appsindexer.AppsIndexerUserInstance.doUpdate(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:129)
+06-13 09:00:26.795  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.appsindexer.AppsIndexerUserInstance$$ExternalSyntheticLambda3.run(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:9)
+06-13 09:00:26.795  1739  4287 E AppSearchAppIndxrHlp: 	at com.android.server.appsearch.appsindexer.AppsIndexerUserInstance$$ExternalSyntheticLambda0.run(go/retraceme 4b35b1d0335779bf3503db8b6d4c463377b1dccaf52b5251bacbe47de43d3dd8:10)
+06-13 09:00:26.795  1739  4287 E AppSearchAppIndxrHlp: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-13 09:00:26.795  1739  4287 E AppSearchAppIndxrHlp: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-13 09:00:26.795  1739  4287 E AppSearchAppIndxrHlp: 	at java.lang.Thread.run(Thread.java:1564)
+06-13 09:00:26.801  1739  2139 E VerityUtils: Failed to measure fs-verity, errno 1: /data/app/~~-PXLPnz0r3EYWPhxsJNiCw==/rw.mobi.app-Gs-WODEIQyVw8yMP391HUA==/base.apk
+06-13 09:00:26.815  1739  1964 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-13 09:00:26.821  1739  1964 W AccessibilitySecurityPolicy: Skipping accessibility service com.vzw.hss.myverizon/com.vz.assisttouch.services.AssistiveTouchService: it does not require the permission android.permission.BIND_ACCESSIBILITY_SERVICE
+06-13 09:00:26.825 20067 20097 I Finsky  : [788] AIM: AppInfoManager-Perf > ItemModel > CacheSize=137, cacheHitCount=0, cacheMissCount=0, total appsWithNoServerDataCount=5. Missed  in cache (limit 10) : []
+06-13 09:00:26.827  1739  1964 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-13 09:00:26.837  3777 23254 I Auth    : (REDACTED) [SupervisedAccountIntentOperation] onHandleIntent: %s
+06-13 09:00:26.842  3777 23259 W AppInstallOperation: FDL Migration::InstallIntentOperation by FDL Module [CONTEXT service_id=77 ]
+06-13 09:00:26.843 20067 20097 I Finsky  : [788] AIM: AppInfoManager-Perf > ItemModel > CacheSize=137, cacheHitCount=0, cacheMissCount=0, total appsWithNoServerDataCount=5. Missed  in cache (limit 10) : []
+06-13 09:00:26.844  3777 23252 I FraudProtectUtils: (REDACTED) Latest bank app list size: %d, %s isBankApp: %b
+06-13 09:00:26.844  3777 23252 I PackageInstalledIntentO: (REDACTED) Package %s is not a bank app. Skipping updates.
+06-13 09:00:26.848  3777 20239 W SQLiteLog: (28) double-quoted string literal: "rw.mobi.app"
+06-13 09:00:26.861 20240 23282 I EuiccGoogle: [804] EuiccServiceImpl.onGetEuiccProfileInfoList: onGetEuiccProfileInfoList: Profile nickname = Airalo.
+06-13 09:00:26.861 20240 23282 I EuiccGoogle: [804] EuiccServiceImpl.onGetEuiccProfileInfoList: onGetEuiccProfileInfoList: Profile info = EuiccProfileInfo (nickname=Airalo, serviceProviderName=Airalo, profileName=WEBBING, profileClass=2, state=1, CarrierIdentifier=CarrierIdentifier{mcc=208,mnc=01,spn=null,imsi=null,gid1=536E617065,gid2=null,carrierid=-1,specificCarrierId=-1}, policyRules=0, accessRules=[cert: 0361DD850DD3AB65D92DF4189A26413DA53AFFAA318F7DAD914794ADA2C9B409 pkg: null access: 1]).
+06-13 09:00:26.861 20067 20097 I Finsky  : [788] AIM: AppInfoManager-Perf > ItemModel > CacheSize=137, cacheHitCount=0, cacheMissCount=0, total appsWithNoServerDataCount=5. Missed  in cache (limit 10) : []
+06-13 09:00:26.864  2816  2816 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-13 09:00:26.876  3777 23254 I NearbyDiscovery: (REDACTED) processGrantSlicePermission: %s
+06-13 09:00:26.877 20240 23287 I EuiccGoogle: [805] EuiccServiceImpl.onGetEuiccProfileInfoList: onGetEuiccProfileInfoList: slotId = 1
+06-13 09:00:26.883 20240 23287 I EuiccGoogle: [805] EuiccServiceImpl.onGetEuiccProfileInfoList: slotId = 1, isRemovable = false
+06-13 09:00:26.883 20240 23287 I EuiccGoogle: [805] EuiccServiceImpl.onGetEuiccProfileInfoList: onGetEuiccProfileInfoList: isRemovable = false.
+06-13 09:00:26.883 20240 23287 I EuiccGoogle: [805] EuiccServiceImpl.onGetEuiccProfileInfoList: getSimCardState for slotId: 1
+06-13 09:00:26.884  2816  2816 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-13 09:00:26.885 20240 23287 I EuiccGoogle: [805] EuiccServiceImpl.onGetEuiccProfileInfoList: GetEuiccProfileInfoListResult: simCardState :11and simCardStateAtTelephony:11 for slot:1
+06-13 09:00:26.886 20240 23287 I EuiccGoogle: [805] EuiccServiceImpl.getProfileInfoList: getProfileInfoList: slotId = 1, includeTestProfiles = false
+06-13 09:00:26.886 20240 23287 I EuiccGoogle: [805] EuiccServiceImpl.getProfileInfoList: getProfileInfoList: slotId = 1, includeTestProfiles = false.
+06-13 09:00:26.886 20240 23287 I EuiccGoogle: [805] EuiccServiceImpl.getEidFromSlotId: getEidFromSlotId: slotId = 1.
+06-13 09:00:26.886 20240 23287 I EuiccGoogle: [805] NetworkFetcher.getEidForSlot: getEidForSlot: 1
+06-13 09:00:26.889 20240 23287 I EuiccGoogle: [805] BlockingEuiccCardManager.requestAllProfiles: requestAllProfiles: cardId = [Stpz4SlgTJntxIFxwskWtO6mzh4]
+06-13 09:00:26.890  2816  2816 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-13 09:00:26.892  3777  3777 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.common.BIND_SHARED_PREFS pkg=com.google.android.gms }
+06-13 09:00:26.892  3777  3777 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.common.BIND_SHARED_PREFS pkg=com.google.android.gms }
+06-13 09:00:26.895 20067 20094 I Finsky  : [785] AIM: AppInfoManager-Perf > getApps > data collection finished
+06-13 09:00:26.900 13532 13556 I dzpd    : (REDACTED) GetContext(%s, %s): Fetch from the %s surface finished with status: %s
+06-13 09:00:26.900  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-13 09:00:26.901 13532 13556 I eigq    : (REDACTED) ContextResult succeeded for ContextKey: %s. %s
+06-13 09:00:26.901 13532 13565 I eigq    : (REDACTED) ContextResult succeeded for ContextKey: %s. %s
+06-13 09:00:26.908  2759  2759 D QCNEJ/DataCallAgent: onSubscriptionsChanged: new DDS 11
+06-13 09:00:26.908  2759  3438 D QCNEJ/DataCallAgent: phoneCount: 2
+06-13 09:00:26.908  2759  3438 D QCNEJ/DataCallAgent: subs for 0th slot: [11]
+06-13 09:00:26.909 20067 20093 I Finsky  : [784] AIM: AppInfoManager-Perf > ItemModel > CacheSize=137, cacheHitCount=0, cacheMissCount=0, total appsWithNoServerDataCount=5. Missed  in cache (limit 10) : []
+06-13 09:00:26.910 20067 20093 I Finsky  : [784] AIM: AppInfoManager-Perf > getApps > data collection finished
+06-13 09:00:26.912  2759  2759 D QCNEJ/WwanInfoRelay: onSubscriptionsChanged currDDSId: 11 new DDS 11
+06-13 09:00:26.912  2778  2778 D XDivertUtility:  isAllSubActive true
+06-13 09:00:26.914  7449  7580 I BugleRcsEngine: SIM state event delay enabled: attempts 0, maxAttempts 3, delaySeconds 90 MSIM delayseconds 90, effective delay seconds 90 [CONTEXT thread_id=758 ]
+06-13 09:00:26.915  7449  7580 I BugleRcsEngine: posted simEventProcessTask to handler with delay 90 [CONTEXT thread_id=758 ]
+06-13 09:00:26.917 13532 13556 I eihc    : (REDACTED) Updating context input '%s' with dynamic class '%s' containing %s entities. %s
+06-13 09:00:26.917 13532 13565 I eihc    : (REDACTED) Updating context input '%s' with dynamic class '%s' containing %s entities. %s
+06-13 09:00:26.918 13532 13565 I eihc    : (REDACTED) Clearing context input '%s'. %s
+06-13 09:00:26.919 13532 13556 I eihc    : (REDACTED) Clearing context input '%s'. %s
+06-13 09:00:26.925 13532 13565 I eigw    : (REDACTED) Sending speech biasing context update to SODA with locale %s. %s
+06-13 09:00:26.925 13532 13556 I eigw    : (REDACTED) Sending speech biasing context update to SODA with locale %s. %s
+06-13 09:00:26.929 20504 20504 I Finsky:background: [2] onSubscriptionsChanged
+06-13 09:00:26.929  3777 23249 I EsimModuleInit: onSubscriptionsChanged: triggering backup [CONTEXT service_id=333 ]
+06-13 09:00:26.929 13532 13562 I eups    : (REDACTED) #getSodaAsrUpdateRequest inserting app domain: %s
+06-13 09:00:26.929 13532 13559 I eups    : (REDACTED) #getSodaAsrUpdateRequest inserting app domain: %s
+06-13 09:00:26.930 20067 20094 I Finsky  : [785] AIM: AppInfoManager-Perf > maybeDestroyAppInfoManager is called. actives = 1
+06-13 09:00:26.930 13532 13558 I evho    : #updateAndGetSnapshot
+06-13 09:00:26.930 20067 20067 I Finsky  : [2] onSubscriptionsChanged
+06-13 09:00:26.931 13532 13562 I evho    : (REDACTED) Listening for responses for locale %s
+06-13 09:00:26.931 20067 20093 I Finsky  : [784] AIM: AppInfoManager-Perf > maybeDestroyAppInfoManager is called. actives = 0
+06-13 09:00:26.932  2759  3438 D QCNEJ/DataCallAgent: mSubInfoReady[0] is set to true
+06-13 09:00:26.932  2759  3438 D QCNEJ/DataCallAgent: subs for 1th slot: [9]
+06-13 09:00:26.933  2759  3438 D QCNEJ/DataCallAgent: mSubInfoReady[1] is set to true
+06-13 09:00:26.938 14861 14861 I fsrt    : (REDACTED) Created gRPC endpoint for service %s
+06-13 09:00:26.944  4861 23155 I BugleDataModel: Scheduling country code detector action, because a subscription changed its state.
+06-13 09:00:26.946  2816  2816 D MultiSimSettingController: notifySubscriptionInfoChanged
+06-13 09:00:26.951 13532 13559 I evho    : (REDACTED) >>> [%s] Emitting request locale: %s, secondaryLocales: %s, resources: %s, requestClient: %s
+06-13 09:00:26.951 14861 14914 I evkh    : SRM: AccountScoped session starting on service-side.
+06-13 09:00:26.952  2816  2816 D CallNotifier: updatePhoneStateListeners: update CF notifications.
+06-13 09:00:26.952  2816  2816 I NotificationMgr: updateCfi: subId= 9, visible=N
+06-13 09:00:26.953 14861 14914 I evhz    : (REDACTED) <<< [%s] Received request for primary locale %s. Secondary locales: '%s'
+06-13 09:00:26.953 14861 14914 I evhz    : (REDACTED) <<< [%s] Requested resources IDs: %s. Request client: %s.
+06-13 09:00:26.953  3785 23264 I EsimCloudBackupIntentOp: (REDACTED) onHandleIntent: %s
+06-13 09:00:26.954  3785 23264 I EsimCloudBackupIntentOp: (REDACTED) Backup triggered on action: %s
+06-13 09:00:26.954  3785 23264 I EsimCloudBackupIntentOp: EsimBackupTaskService scheduled [CONTEXT service_id=333 ]
+06-13 09:00:26.954 14861 14914 I evgy    : (REDACTED) [%s] #collectSodaResourcesAndWriteToSodaResourcesStore
+06-13 09:00:26.955 14861 14914 I DefaultLPManager: #getAvailablePackages
+06-13 09:00:26.955 14861 14896 I DefaultLPManager: #getRequestedPackages
+06-13 09:00:26.955 14861 14895 I DefaultLPManager: #getAvailablePackages
+06-13 09:00:26.955 14861 14905 I evgy    : (REDACTED) [%s] #getInstalledLanguagePacks
+06-13 09:00:26.956 14861 14905 I evex    : (REDACTED) [%s] #updateResource begin
+06-13 09:00:26.956 14861 14905 I evex    : (REDACTED) [%s] #updateResource end
+06-13 09:00:26.957 13532 13559 I evho    : (REDACTED) <<< [%s] Reading SodaResourceManager message with updated resourceIds: %s. Total set: %s
+06-13 09:00:26.957 14861 14895 I eykf    : #getDownloadableLanguagePacks
+06-13 09:00:26.957 13532 13559 I evho    : (REDACTED) <<< [%s] Reading SodaResourceManager message with updated resourceIds: %s. Total set: %s
+06-13 09:00:26.957 14861 14895 I eykx    : (REDACTED) Loaded languagepack (LP) flag value from latest config %s: %s
+06-13 09:00:26.957 14861 14895 W SystemLPSourceImpl: #getAvailablePackages: Note there is not reason to call this method, as getInstalledPackages() returns the same LanguagePacks for this impl.
+06-13 09:00:26.957 14861 14895 W LegacyLPSourceImpl: #getAvailablePackages: Note there is no reason to call this method, as getInstalledPackages() returns the same LanguagePacks for this impl.
+06-13 09:00:26.957 14861 14895 I DefaultLPManager: #getInstalledPackages
+06-13 09:00:26.957 14861 14895 I eykf    : #getInstalledPackages from MDD
+06-13 09:00:26.957 14861 14895 I eykf    : #GetLanguagePackList
+06-13 09:00:26.957 14861 14895 I eykf    : MDD.getFileGroupsByFilter(langpack-domain_xx-XX_ver_zipfile)
+06-13 09:00:26.959 14861 14883 I SystemLPSourceImpl: (REDACTED) Parsed system partition LanguagePack metadata file: %s
+06-13 09:00:26.959  2816  2816 I NotificationMgr: updateMwi(): subId 9 update to false
+06-13 09:00:26.959 14861 14883 I SystemLPSourceImpl: (REDACTED) Parsed system partition LanguagePack metadata file: %s
+06-13 09:00:26.960 14861 14896 I ZipLPPopulator: #addNewFileGroups
+06-13 09:00:26.960 14861 14896 I eykf    : #getDownloadableLanguagePacks
+06-13 09:00:26.960 14861 14896 I eykx    : (REDACTED) Loaded languagepack (LP) flag value from latest config %s: %s
+06-13 09:00:26.960 14861 14896 W SystemLPSourceImpl: #getRequestedPackages: There is not reason to call this method, as the result is always empty.
+06-13 09:00:26.960 14861 14896 W LegacyLPSourceImpl: #getRequestedPackages: There is no reason to call this method, as the result is always empty.
+06-13 09:00:26.960  4861 23155 I BugleDataModel: Scheduling self participants refresh action, because a subscription changed its state.
+06-13 09:00:26.961 14861 14896 I LPRequestState: (REDACTED) [%s] #resolveDesiredLanguagePacks
+06-13 09:00:26.961 14861 14896 I ZipLPPopulator: #addNewFileGroups complete
+06-13 09:00:26.961 14861 14896 I eykf    : #getPendingPackages from MDD
+06-13 09:00:26.961 14861 14896 I eykf    : #GetLanguagePackList
+06-13 09:00:26.961 14861 14896 I eykf    : MDD.getFileGroupsByFilter(langpack-domain_xx-XX_ver_zipfile)
+06-13 09:00:26.964 14861 14914 I eykf    : #getDownloadableLanguagePacks
+06-13 09:00:26.964 14861 14914 I eykx    : (REDACTED) Loaded languagepack (LP) flag value from latest config %s: %s
+06-13 09:00:26.964  2816  2816 D CallNotifier: updatePhoneStateListeners: update CF notifications.
+06-13 09:00:26.964 14861 14914 W SystemLPSourceImpl: #getAvailablePackages: Note there is not reason to call this method, as getInstalledPackages() returns the same LanguagePacks for this impl.
+06-13 09:00:26.964  2816  2816 I NotificationMgr: updateCfi: subId= 11, visible=N
+06-13 09:00:26.964 14861 14914 W LegacyLPSourceImpl: #getAvailablePackages: Note there is no reason to call this method, as getInstalledPackages() returns the same LanguagePacks for this impl.
+06-13 09:00:26.966 14861 14890 I SystemLPSourceImpl: (REDACTED) Parsed system partition LanguagePack metadata file: %s
+06-13 09:00:26.966  1739  1966 D ActivityManager: sync unfroze 20329 com.google.android.dialer
+06-13 09:00:26.967  1739  1937 W Looper  : Drained
+06-13 09:00:26.968  2816  2816 I NotificationMgr: updateMwi(): subId 11 update to false
+06-13 09:00:26.972 14861 14892 I LegacyLPSourceImpl: (REDACTED) Parsing legacy read-only LanguagePack metadata file: %s
+06-13 09:00:26.974  4861 23243 I Bugle   : pSIM transferStatus is empty [CONTEXT sub_id=11 ]
+06-13 09:00:26.975 14861 14891 I LegacyLPSourceImpl: (REDACTED) Parsing legacy read-only LanguagePack metadata file: %s
+06-13 09:00:26.976  1739  1966 D CompatibilityChangeReporter: Compat change id reported: 168419799; UID 10179; state: DISABLED
+06-13 09:00:26.976  1739  1966 D CompatibilityChangeReporter: Compat change id reported: 273564678; UID 10179; state: DISABLED
+06-13 09:00:26.978 14861 14891 I LegacyLPSourceImpl: (REDACTED) Parsing legacy read-only LanguagePack metadata file: %s
+06-13 09:00:26.978  2816  2816 I Telephony: TelecomAccountRegistry: onSubscriptionsChanged - update accounts
+06-13 09:00:26.980  4861 23243 I Bugle   : eSIM is not converted pSIM [CONTEXT sub_id=9 ]
+06-13 09:00:26.980  2816  2816 I Telephony: PstnIncomingCallNotifier: Unregistering: [0]
+06-13 09:00:26.980  2816  2816 D Telephony: Unregistering: Handler (com.android.internal.telephony.GsmCdmaPhone) {3bb7136}
+06-13 09:00:26.981  2816  2816 I ImsCallbackAM [0]: Local callback removed: android.telephony.ims.ImsMmTelManager$CapabilityCallback$CapabilityBinder@3f8a230
+06-13 09:00:26.981  2816  2816 I ImsCallbackAM [0]: Local callback removed: android.telephony.ims.RegistrationManager$RegistrationCallback$RegistrationBinder@367dea9
+06-13 09:00:26.981  4861 23155 I RcsProvisioningFlow: Scheduling 3 using PWQ with updateTrigger: 2, scheduledAt: 2026-06-13T07:00:26.979Z, initialDelaySeconds: 0.
+06-13 09:00:26.982  2816  2816 I Telephony: PstnIncomingCallNotifier: Unregistering: [1]
+06-13 09:00:26.982  2816  2816 D Telephony: Unregistering: Handler (com.android.internal.telephony.GsmCdmaPhone) {d3a811b}
+06-13 09:00:26.982  2816  2816 I ImsCallbackAM [1]: Local callback removed: android.telephony.ims.ImsMmTelManager$CapabilityCallback$CapabilityBinder@9b6e306
+06-13 09:00:26.982  2816  2816 I ImsCallbackAM [1]: Local callback removed: android.telephony.ims.RegistrationManager$RegistrationCallback$RegistrationBinder@8aeadc7
+06-13 09:00:26.994 20329 20329 I DialerMwiNotificationReceiver: com.android.dialer.voicemail.notification.receivers.MwiNotificationReceiver.onReceive:77 enter
+06-13 09:00:26.995  2816  2816 I Telephony: TelecomAccountRegistry: setupAccounts: Found 2 phones.  Attempting to register.
+06-13 09:00:26.995  2816  2816 I Telephony: TelecomAccountRegistry: setupAccounts: Phone with subscription id 11
+06-13 09:00:27.012  2816  2816 D Telephony: isEmergencyPreferredAccount: subId=11, activeData=11
+06-13 09:00:27.015  3777  3777 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.onboardingconsent.api.ConsentManagerApiService.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsApiService }
+06-13 09:00:27.015  3777  3777 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.onboardingconsent.api.ConsentManagerApiService.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsApiService }
+06-13 09:00:27.016  2816  2816 D Telephony: isEmergencyPreferredAccount: userDefaultData=11, isActiveDataOppurtunistic=false
+06-13 09:00:27.018  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.018  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.018  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.018  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.018  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.025  1739  4775 I Telecom : PhoneAccountRegistrar: Modify account: [ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 11, UserHandle{0}]: TSI.rPA@cAk
+06-13 09:00:27.030  3777  3882 I ConsentManagerApiServic: (REDACTED) ConsentManagerApiService onGetService success %s
+06-13 09:00:27.033  1739  4775 I Telecom : CallsManager: handlePhoneAccountChanged: phoneAccount=[[X] PhoneAccount: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 11, UserHandle{0} Capabilities: CallProvider MultiUser PlaceEmerg EmerPrefer SimSub  Audio Routes: BESW Schemes: tel voicemail  Extras: Bundle[{android.telecom.extra.SUPPORTS_VIDEO_CALLING_FALLBACK=true, android.telecom.extra.SUPPORTS_HANDOVER_FROM=true, android.telecom.extra.SORT_ORDER=0}] GroupId: ***]: TSI.rPA@cAk
+06-13 09:00:27.036  1739  4775 I Telecom : PhoneAccountRegistrar: getSimCallManager: SimCallManager for subId 11 queried, returning: null: TSI.rPA@cAk
+06-13 09:00:27.037  1739  4775 I Telecom : PhoneAccountRegistrar: Notifying telephony of voice service override change for 1 SIMs, hasService = false: TSI.rPA@cAk
+06-13 09:00:27.037  3777  4010 I GetConsentOperation: (REDACTED) GetConsentOperation executing for package %s key %s
+06-13 09:00:27.037  4861 23243 W Bugle   : BuglePhoneNumberUtils: canonicalizeMccMnc: invalid mccmnc. mcc: null, mnc: null
+06-13 09:00:27.037  3777  4010 I ProtoConsentDataManager: (REDACTED) getConsent: Getting consent for package=[%s], key=[%s]
+06-13 09:00:27.038  3777  4010 I GetConsentOperation: GetConsentOperation success [CONTEXT service_id=460 ]
+06-13 09:00:27.042  2816  2816 I Telephony: AccountEntry: Registered phoneAccount: [[ ] PhoneAccount: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 11, UserHandle{0} Capabilities: CallProvider MultiUser PlaceEmerg EmerPrefer SimSub  Audio Routes: BESW Schemes: tel voicemail  Extras: Bundle[{android.telecom.extra.SUPPORTS_VIDEO_CALLING_FALLBACK=true, android.telecom.extra.SUPPORTS_HANDOVER_FROM=true, android.telecom.extra.SORT_ORDER=0}] GroupId: ***] with handle: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 11, UserHandle{0}
+06-13 09:00:27.042  2816  2816 I Telephony: PstnIncomingCallNotifier: Registering: [0]
+06-13 09:00:27.042  2816  2816 D Telephony: Registering: Handler (com.android.internal.telephony.GsmCdmaPhone) {3bb7136}
+06-13 09:00:27.043  2816  2816 I ImsCallbackAM [0]: Local callback added: android.telephony.ims.ImsMmTelManager$CapabilityCallback$CapabilityBinder@59be9e0
+06-13 09:00:27.043  2816  2816 I ImsCallbackAM [0]: Local callback added: android.telephony.ims.RegistrationManager$RegistrationCallback$RegistrationBinder@7e50499
+06-13 09:00:27.043  2816  2816 I Telephony: TelecomAccountRegistry: setupAccounts: Phone with subscription id 9
+06-13 09:00:27.044 20329 20329 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: BROADCAST_RECEIVER_INTENT_EXTRAS, function parameters: [vkf,android.telephony.action.SHOW_VOICEMAIL_NOTIFICATION,[0,true,null]], return value: <empty>
+06-13 09:00:27.051  2816  2816 D Telephony: isEmergencyPreferredAccount: subId=9, activeData=11
+06-13 09:00:27.053  2816  2816 D Telephony: isEmergencyPreferredAccount: userDefaultData=11, isActiveDataOppurtunistic=false
+06-13 09:00:27.053  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.053  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.053  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.053  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.053  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.057  1739  4775 I Telecom : PhoneAccountRegistrar: Modify account: [ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 9, UserHandle{0}]: TSI.rPA@cAo
+06-13 09:00:27.057 23290 23290 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+06-13 09:00:27.058 20329 20329 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: BROADCAST_RECEIVER_INTENT_EXTRAS, function parameters: [vkf,android.telephony.action.SHOW_VOICEMAIL_NOTIFICATION,[[com.android.phone/com.android.services.telephony.TelephonyConnectionService : [PII]57]]], return value: <empty>
+06-13 09:00:27.059 20329 20329 I DialerMwiNotificationReceiver: com.android.dialer.voicemail.notification.receivers.MwiNotificationReceiver.handleNotification:113 clear the MWI notification
+06-13 09:00:27.062  1739  4775 I Telecom : CallsManager: handlePhoneAccountChanged: phoneAccount=[[X] PhoneAccount: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 9, UserHandle{0} Capabilities: CallProvider MultiUser PlaceEmerg SimSub  Audio Routes: BESW Schemes: tel voicemail  Extras: Bundle[{android.telecom.extra.SUPPORTS_VIDEO_CALLING_FALLBACK=true, android.telecom.extra.SUPPORTS_HANDOVER_FROM=true, android.telecom.extra.SORT_ORDER=1}] GroupId: ***]: TSI.rPA@cAo
+06-13 09:00:27.063 23290 23290 I AndroidRuntime: Using default boot image
+06-13 09:00:27.063 23290 23290 I AndroidRuntime: Leaving lock profiling enabled
+06-13 09:00:27.067  1739  4775 I Telecom : PhoneAccountRegistrar: getSimCallManager: SimCallManager for subId 9 queried, returning: null: TSI.rPA@cAo
+06-13 09:00:27.067 23290 23290 I app_process: Using CollectorTypeCC GC.
+06-13 09:00:27.067  1739  4775 I Telecom : PhoneAccountRegistrar: Notifying telephony of voice service override change for 1 SIMs, hasService = false: TSI.rPA@cAo
+06-13 09:00:27.069  2816  2816 I Telephony: AccountEntry: Registered phoneAccount: [[ ] PhoneAccount: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 9, UserHandle{0} Capabilities: CallProvider MultiUser PlaceEmerg SimSub  Audio Routes: BESW Schemes: tel voicemail  Extras: Bundle[{android.telecom.extra.SUPPORTS_VIDEO_CALLING_FALLBACK=true, android.telecom.extra.SUPPORTS_HANDOVER_FROM=true, android.telecom.extra.SORT_ORDER=1}] GroupId: ***] with handle: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 9, UserHandle{0}
+06-13 09:00:27.069  2816  2816 I Telephony: PstnIncomingCallNotifier: Registering: [1]
+06-13 09:00:27.069  2816  2816 D Telephony: Registering: Handler (com.android.internal.telephony.GsmCdmaPhone) {d3a811b}
+06-13 09:00:27.069  2816  2816 I ImsCallbackAM [1]: Local callback added: android.telephony.ims.ImsMmTelManager$CapabilityCallback$CapabilityBinder@d5114f8
+06-13 09:00:27.069  2816  2816 I ImsCallbackAM [1]: Local callback added: android.telephony.ims.RegistrationManager$RegistrationCallback$RegistrationBinder@fb9add1
+06-13 09:00:27.074  2816  2816 D MultiSimSettingController: onSubscriptionsChanged
+06-13 09:00:27.074  2816  2816 D MultiSimSettingController: isReadyToReevaluate: subInfoInitialized=true, carrierConfigsLoaded=true
+06-13 09:00:27.074  2816  2816 D MultiSimSettingController: updateDefaults
+06-13 09:00:27.074  2816  2816 D MultiSimSettingController: isReadyToReevaluate: subInfoInitialized=true, carrierConfigsLoaded=true
+06-13 09:00:27.075  2816  2816 D MultiSimSettingController: [updateDefaultValues] change: 0
+06-13 09:00:27.075  2816  2816 D MultiSimSettingController: isReadyToReevaluate: subInfoInitialized=true, carrierConfigsLoaded=true
+06-13 09:00:27.079  2816  2816 I ImsExternalCallTracker: handleVideoCapabilitiesChanged : isVideoCapable = false
+06-13 09:00:27.080  2816  2816 D ImsExternalCallTracker: refreshCallPullState
+06-13 09:00:27.080  2816  2816 I Telephony: handleVideoCapabilitesChanged. Video capability - false
+06-13 09:00:27.082  2816  2816 D Telephony: isEmergencyPreferredAccount: subId=11, activeData=11
+06-13 09:00:27.083  2816  2816 D Telephony: isEmergencyPreferredAccount: userDefaultData=11, isActiveDataOppurtunistic=false
+06-13 09:00:27.083  2816  2816 I ImsCallbackAM [0]: Local callback added: android.telephony.ims.ImsMmTelManager$CapabilityCallback$CapabilityBinder@59be9e0
+06-13 09:00:27.084  4861 23243 W Bugle   : BuglePhoneNumberUtils: canonicalizeMccMnc: invalid mccmnc. mcc: null, mnc: null
+06-13 09:00:27.085  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.085  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.085  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.085  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.085  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.089  1739  5432 I Telecom : PhoneAccountRegistrar: Modify account: [ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 11, UserHandle{0}]: TSI.rPA@cA0
+06-13 09:00:27.090  3777  3777 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.feedback.internal.IFeedbackService dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+06-13 09:00:27.090  3777  3777 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.feedback.internal.IFeedbackService dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+06-13 09:00:27.091  1739  5432 I Telecom : CallsManager: handlePhoneAccountChanged: phoneAccount=[[X] PhoneAccount: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 11, UserHandle{0} Capabilities: CallProvider MultiUser PlaceEmerg EmerPrefer SimSub  Audio Routes: BESW Schemes: tel voicemail  Extras: Bundle[{android.telecom.extra.SUPPORTS_VIDEO_CALLING_FALLBACK=true, android.telecom.extra.SUPPORTS_HANDOVER_FROM=true, android.telecom.extra.SORT_ORDER=0}] GroupId: ***]: TSI.rPA@cA0
+06-13 09:00:27.096  1739  5432 I Telecom : PhoneAccountRegistrar: getSimCallManager: SimCallManager for subId 11 queried, returning: null: TSI.rPA@cA0
+06-13 09:00:27.096  1739  5432 I Telecom : PhoneAccountRegistrar: Notifying telephony of voice service override change for 1 SIMs, hasService = false: TSI.rPA@cA0
+06-13 09:00:27.096 20329 20329 I DialerBroadcastReceiverStrategyImpl: com.android.dialer.broadcastreceiverstrategy.impl.BroadcastReceiverStrategyImpl.backgroundThenInlineThenForeground:78 try doing work using a background service
+06-13 09:00:27.097  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.097  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.097  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.097  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.097  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.097  2816  2816 I ImsExternalCallTracker: handleVideoCapabilitiesChanged : isVideoCapable = false
+06-13 09:00:27.097  2816  2816 D ImsExternalCallTracker: refreshCallPullState
+06-13 09:00:27.097  2816  2816 I Telephony: handleVideoCapabilitesChanged. Video capability - false
+06-13 09:00:27.107  2816  2816 D Telephony: isEmergencyPreferredAccount: subId=9, activeData=11
+06-13 09:00:27.110  2816  2816 D Telephony: isEmergencyPreferredAccount: userDefaultData=11, isActiveDataOppurtunistic=false
+06-13 09:00:27.110  2816  2816 I ImsCallbackAM [1]: Local callback added: android.telephony.ims.ImsMmTelManager$CapabilityCallback$CapabilityBinder@d5114f8
+06-13 09:00:27.114  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.114  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.114  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.114  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.114  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.117 20329 20367 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: NOTIFICATION_CANCEL, function parameters: [LegacyVoicemail_:9,1], return value: <empty>
+06-13 09:00:27.120  1739  5178 I Telecom : PhoneAccountRegistrar: Modify account: [ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 9, UserHandle{0}]: TSI.rPA@cA4
+06-13 09:00:27.122 20067 20086 I Finsky  : [777] WM::SCH: Logging work initialize for 12-1
+06-13 09:00:27.124 20329 20329 I DialerMwiReceiver: com.android.dialer.voicemail.service.receivers.MwiReceiver.onReceive:74 Received ACTION_SHOW_VOICEMAIL_NOTIFICATION
+06-13 09:00:27.127  1739  5178 I Telecom : CallsManager: handlePhoneAccountChanged: phoneAccount=[[X] PhoneAccount: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 9, UserHandle{0} Capabilities: CallProvider MultiUser PlaceEmerg SimSub  Audio Routes: BESW Schemes: tel voicemail  Extras: Bundle[{android.telecom.extra.SUPPORTS_VIDEO_CALLING_FALLBACK=true, android.telecom.extra.SUPPORTS_HANDOVER_FROM=true, android.telecom.extra.SORT_ORDER=1}] GroupId: ***]: TSI.rPA@cA4
+06-13 09:00:27.128 20329 20329 I DialerBroadcastReceiverStrategyImpl: com.android.dialer.broadcastreceiverstrategy.impl.BroadcastReceiverStrategyImpl.backgroundThenInlineThenForeground:78 try doing work using a background service
+06-13 09:00:27.131 20067 20086 I Finsky  : [777] WM::SCH: Logging work initialize for 12-1
+06-13 09:00:27.134  1739  5178 I Telecom : PhoneAccountRegistrar: getSimCallManager: SimCallManager for subId 9 queried, returning: null: TSI.rPA@cA4
+06-13 09:00:27.134  1739  5178 I Telecom : PhoneAccountRegistrar: Notifying telephony of voice service override change for 1 SIMs, hasService = false: TSI.rPA@cA4
+06-13 09:00:27.135 20329 20329 I DialerMwiNotificationReceiver: com.android.dialer.voicemail.notification.receivers.MwiNotificationReceiver.onReceive:77 enter
+06-13 09:00:27.135 20329 20329 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: BROADCAST_RECEIVER_INTENT_EXTRAS, function parameters: [vkf,android.telephony.action.SHOW_VOICEMAIL_NOTIFICATION,[0,true,null]], return value: <empty>
+06-13 09:00:27.135 20329 20329 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: BROADCAST_RECEIVER_INTENT_EXTRAS, function parameters: [vkf,android.telephony.action.SHOW_VOICEMAIL_NOTIFICATION,[[com.android.phone/com.android.services.telephony.TelephonyConnectionService : [PII]1568]]], return value: <empty>
+06-13 09:00:27.135 20329 20329 I DialerMwiNotificationReceiver: com.android.dialer.voicemail.notification.receivers.MwiNotificationReceiver.handleNotification:113 clear the MWI notification
+06-13 09:00:27.135 20329 20329 I DialerBroadcastReceiverStrategyImpl: com.android.dialer.broadcastreceiverstrategy.impl.BroadcastReceiverStrategyImpl.backgroundThenInlineThenForeground:78 try doing work using a background service
+06-13 09:00:27.138  4861  4888 I BugleConnectivity: isOnSatellite(9): false [CONTEXT ratelimit_period="1 SECONDS" skipped=3 ]
+06-13 09:00:27.138  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.138  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.138  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.138  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.138  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.139  4861  4888 I BugleConnectivity: 9 is not on satellite and no other subscriptions are on satellite [CONTEXT ratelimit_period="1 SECONDS" skipped=3 ]
+06-13 09:00:27.141 20329 20329 I DialerMwiReceiver: com.android.dialer.voicemail.service.receivers.MwiReceiver.onReceive:74 Received ACTION_SHOW_VOICEMAIL_NOTIFICATION
+06-13 09:00:27.142 20329 20329 I DialerBroadcastReceiverStrategyImpl: com.android.dialer.broadcastreceiverstrategy.impl.BroadcastReceiverStrategyImpl.backgroundThenInlineThenForeground:78 try doing work using a background service
+06-13 09:00:27.143  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.143  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.143  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.143  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.143  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.144  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.144  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.144  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.144  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.144  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.144 19533 19676 I HeadsetPhoneState: stopListenForPhoneState(), no listener indicates nothing is listening
+06-13 09:00:27.145 19533 19676 W HeadsetPhoneState: startListenForPhoneState, no event to listen
+06-13 09:00:27.153  4861 23155 D WM-GreedyScheduler: Ignoring {WorkSpec: 1ff25c62-f395-46de-8803-9948bf660afc}. Requires ContentUri triggers.
+06-13 09:00:27.154  4861 23155 D WM-GreedyScheduler: Ignoring {WorkSpec: 795367c0-c2d0-42dd-b9e7-6cde89ad2c5a}. Requires ContentUri triggers.
+06-13 09:00:27.154  4861 23155 D WM-GreedyScheduler: Starting work for ff0e7770-f36b-441a-924d-6ea0e35a68c0
+06-13 09:00:27.174 20240 23287 I EuiccGoogle: [805] EuiccServiceImpl.onGetEuiccProfileInfoList: onGetEuiccProfileInfoList: Profile nickname = Airalo.
+06-13 09:00:27.174 20240 23287 I EuiccGoogle: [805] EuiccServiceImpl.onGetEuiccProfileInfoList: onGetEuiccProfileInfoList: Profile info = EuiccProfileInfo (nickname=Airalo, serviceProviderName=Airalo, profileName=WEBBING, profileClass=2, state=1, CarrierIdentifier=CarrierIdentifier{mcc=208,mnc=01,spn=null,imsi=null,gid1=536E617065,gid2=null,carrierid=-1,specificCarrierId=-1}, policyRules=0, accessRules=[cert: 0361DD850DD3AB65D92DF4189A26413DA53AFFAA318F7DAD914794ADA2C9B409 pkg: null access: 1]).
+06-13 09:00:27.177  2816  2816 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-13 09:00:27.180  4861 23312 D WM-Processor: swv: processing WorkGenerationalId(workSpecId=ff0e7770-f36b-441a-924d-6ea0e35a68c0, generation=0)
+06-13 09:00:27.182  4861 23312 D MddListenableWorkerFactory: createWorker for class: com.google.android.apps.messaging.shared.datamodel.workqueue.WorkQueueWorkerShim
+06-13 09:00:27.182 20067 20094 I Finsky  : [785] SCH: Scheduling phonesky job Id: 12-1, CT: 1781334026512, Constraints: [{ L: 15000, D: 86400000, C: CHARGING_NONE, I: IDLE_NONE, N: NET_ANY, B: BATTERY_ANY }]
+06-13 09:00:27.184 23290 23290 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+06-13 09:00:27.187  2816  2816 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-13 09:00:27.191 20067 20097 I Finsky  : [788] SCH: Scheduling 1 system job(s)
+06-13 09:00:27.192 20067 20097 I Finsky  : [788] SCH: Scheduling system job Id: 9065, L: 14321, D: 47441832, C: false, I: false, N: 1
+06-13 09:00:27.198 20329 23305 I DialerVvmCarrierIdentifierImpl: com.android.dialer.voicemail.service.impl.carriermapping.VvmCarrierIdentifierImpl.getVvmCarrierNameBlocking:101 Looking up carrier name for phone account handle: 9 [CONTEXT ratelimit_period="1 MINUTES" skipped=63 ]
+06-13 09:00:27.198 23290 23290 D nativeloader: Load libicu_jni.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-13 09:00:27.199 23290 23290 D app_process: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+06-13 09:00:27.199 23290 23290 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt70l.dat
+06-13 09:00:27.199 20329 20371 I DialerRestVoicemailEnabledFn: com.android.dialer.voicemail.service.impl.vvmclients.rest.RestVoicemailEnabledFn.isEnabled:87 device does not support REST [CONTEXT ratelimit_period="1 MINUTES" skipped=239 ]
+06-13 09:00:27.200 23290 23290 D nativeloader: Load libjavacore.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-13 09:00:27.201 23290 23290 D nativeloader: Load libopenjdk.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-13 09:00:27.203 23290 23290 I app_process: Priority-to-niceness mapping: 19, 16, 13, 10, 0, -2, -4, -5, -6, -8
+06-13 09:00:27.209  2816  2816 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-13 09:00:27.212  4861  4861 D WM-WorkerWrapper: Starting work for com.google.android.apps.messaging.shared.datamodel.workqueue.WorkQueueWorkerShim
+06-13 09:00:27.215  2759  2759 D QCNEJ/DataCallAgent: onSubscriptionsChanged: new DDS 11
+06-13 09:00:27.215  2759  3438 D QCNEJ/DataCallAgent: phoneCount: 2
+06-13 09:00:27.215  2759  3438 D QCNEJ/DataCallAgent: subs for 0th slot: [11]
+06-13 09:00:27.216  2759  3438 D QCNEJ/DataCallAgent: mSubInfoReady[0] is set to true
+06-13 09:00:27.216  2759  3438 D QCNEJ/DataCallAgent: subs for 1th slot: [9]
+06-13 09:00:27.217  4861 23294 I RcsProvisioningFlow: Handling SIM state update work request for 3 with updateTrigger 2, scheduledAt 2026-06-13T07:00:26.979Z.
+06-13 09:00:27.217  4861 23294 I RcsProvisioningFlow: Beginning update task for phone SIMs state scheduledAt: 2026-06-13T07:00:26.979Z
+06-13 09:00:27.218  2759  2759 D QCNEJ/WwanInfoRelay: onSubscriptionsChanged currDDSId: 11 new DDS 11
+06-13 09:00:27.219  2816  3134 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-13 09:00:27.221  7449  7580 I BugleRcsEngine: SIM state event delay enabled: attempts 1, maxAttempts 3, delaySeconds 90 MSIM delayseconds 90, effective delay seconds 90 [CONTEXT thread_id=758 ]
+06-13 09:00:27.221  7449  7580 I BugleRcsEngine: posted simEventProcessTask to handler with delay 90 [CONTEXT thread_id=758 ]
+06-13 09:00:27.223  2778  2778 D XDivertUtility:  isAllSubActive true
+06-13 09:00:27.226  3777 24732 I EsimModuleInit: onSubscriptionsChanged: triggering backup [CONTEXT service_id=333 ]
+06-13 09:00:27.226 20504 20504 I Finsky:background: [2] onSubscriptionsChanged
+06-13 09:00:27.227  2759  3438 D QCNEJ/DataCallAgent: mSubInfoReady[1] is set to true
+06-13 09:00:27.228  4861 23155 I BugleDataModel: Scheduling country code detector action, because a subscription changed its state.
+06-13 09:00:27.228  2816  2816 D MultiSimSettingController: notifySubscriptionInfoChanged
+06-13 09:00:27.229  4861 23155 I BugleDataModel: Scheduling self participants refresh action, because a subscription changed its state.
+06-13 09:00:27.230  2816  2816 D CallNotifier: updatePhoneStateListeners: update CF notifications.
+06-13 09:00:27.230  2816  2816 I NotificationMgr: updateCfi: subId= 9, visible=N
+06-13 09:00:27.237  2816  2816 I NotificationMgr: updateMwi(): subId 9 update to false
+06-13 09:00:27.237 23290 23290 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-13 09:00:27.238 23290 23290 D AndroidRuntime: Calling main entry com.android.commands.monkey.Monkey
+06-13 09:00:27.239  3785 23264 I EsimCloudBackupIntentOp: (REDACTED) onHandleIntent: %s
+06-13 09:00:27.239  3785 23264 I EsimCloudBackupIntentOp: (REDACTED) Backup triggered on action: %s
+06-13 09:00:27.239 23290 23290 W Monkey  : args: [-p, rw.mobi.app, -c, android.intent.category.LAUNCHER, 1]
+06-13 09:00:27.239  3785 23264 I EsimCloudBackupIntentOp: EsimBackupTaskService scheduled [CONTEXT service_id=333 ]
+06-13 09:00:27.240 23290 23290 W Monkey  :  arg: "-p"
+06-13 09:00:27.240 23290 23290 W Monkey  :  arg: "rw.mobi.app"
+06-13 09:00:27.240 23290 23290 W Monkey  :  arg: "-c"
+06-13 09:00:27.240 23290 23290 W Monkey  :  arg: "android.intent.category.LAUNCHER"
+06-13 09:00:27.240 23290 23290 W Monkey  :  arg: "1"
+06-13 09:00:27.240 23290 23290 W Monkey  : data="rw.mobi.app"
+06-13 09:00:27.240 23290 23290 W Monkey  : data="android.intent.category.LAUNCHER"
+06-13 09:00:27.242  4861 23243 W Bugle   : BuglePhoneNumberUtils: canonicalizeMccMnc: invalid mccmnc. mcc: null, mnc: null
+06-13 09:00:27.244 20067 20067 I Finsky  : [2] onSubscriptionsChanged
+06-13 09:00:27.250  2816  2816 D CallNotifier: updatePhoneStateListeners: update CF notifications.
+06-13 09:00:27.251  2816  2816 I NotificationMgr: updateCfi: subId= 11, visible=N
+06-13 09:00:27.253  2816  2816 I NotificationMgr: updateMwi(): subId 11 update to false
+06-13 09:00:27.260  4861 23312 I RcsProvisioningFlow: Scheduling 3 using PWQ with updateTrigger: 2, scheduledAt: 2026-06-13T07:00:27.260Z, initialDelaySeconds: 0.
+06-13 09:00:27.261  4861 23294 I RcsProvisioningFlow: Lock acquired for updating phone SIMs state with update trigger: 2.
+06-13 09:00:27.261  4861 23294 I RcsProvisioningFlow: subscriptionUtilsList subIds: [11, 9]
+06-13 09:00:27.264  2816  2816 I Telephony: TelecomAccountRegistry: onSubscriptionsChanged - update accounts
+06-13 09:00:27.264  2816  2816 I Telephony: PstnIncomingCallNotifier: Unregistering: [0]
+06-13 09:00:27.264  2816  2816 D Telephony: Unregistering: Handler (com.android.internal.telephony.GsmCdmaPhone) {3bb7136}
+06-13 09:00:27.264  2816  2816 I ImsCallbackAM [0]: Local callback removed: android.telephony.ims.ImsMmTelManager$CapabilityCallback$CapabilityBinder@59be9e0
+06-13 09:00:27.264  2816  2816 I ImsCallbackAM [0]: Local callback removed: android.telephony.ims.RegistrationManager$RegistrationCallback$RegistrationBinder@7e50499
+06-13 09:00:27.264  2816  2816 I Telephony: PstnIncomingCallNotifier: Unregistering: [1]
+06-13 09:00:27.264  2816  2816 D Telephony: Unregistering: Handler (com.android.internal.telephony.GsmCdmaPhone) {d3a811b}
+06-13 09:00:27.264  2816  2816 I ImsCallbackAM [1]: Local callback removed: android.telephony.ims.ImsMmTelManager$CapabilityCallback$CapabilityBinder@d5114f8
+06-13 09:00:27.265  2816  2816 I ImsCallbackAM [1]: Local callback removed: android.telephony.ims.RegistrationManager$RegistrationCallback$RegistrationBinder@fb9add1
+06-13 09:00:27.265  2816  2816 I Telephony: TelecomAccountRegistry: setupAccounts: Found 2 phones.  Attempting to register.
+06-13 09:00:27.265  2816  2816 I Telephony: TelecomAccountRegistry: setupAccounts: Phone with subscription id 11
+06-13 09:00:27.268  4861 23294 I Bugle   : TelephonySubscriptionInfoAsOfLMR1: getActiveSubscriptionInfo(): empty sub info [CONTEXT ratelimit_period="1 MINUTES" sub_id=-1 skipped=19 ]
+06-13 09:00:27.268  4861 23294 I Bugle   : getSimSerialNumber: system returned empty sub info [CONTEXT sub_id=-1 ]
+06-13 09:00:27.270  4861 23294 I BugleSimStateTracker: Looking up Fi through package names.
+06-13 09:00:27.271 20329 20329 I DialerMwiNotificationReceiver: com.android.dialer.voicemail.notification.receivers.MwiNotificationReceiver.onReceive:77 enter
+06-13 09:00:27.272  1739  1966 W BroadcastQueue: Skipping deliver [background] BroadcastRecord{9d0fa2c u-1 android.net.conn.CONNECTIVITY_CHANGE} to ReceiverList{43c1cf5 23290 (unknown name)/2000/u-1 remote:752dc83}: process gone or crashing
+06-13 09:00:27.274  2816  2816 D Telephony: isEmergencyPreferredAccount: subId=11, activeData=11
+06-13 09:00:27.278  4861 23243 W Bugle   : BuglePhoneNumberUtils: canonicalizeMccMnc: invalid mccmnc. mcc: null, mnc: null
+06-13 09:00:27.278  2816  2816 D Telephony: isEmergencyPreferredAccount: userDefaultData=11, isActiveDataOppurtunistic=false
+06-13 09:00:27.280  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.280  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.280  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.280  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.280  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.286  4861 23294 I BugleSimStateTracker: default call SIM: redacted-pii:sim_id[chars:19,last3:184], default sms SIM redacted-pii:sim_id[chars:19,last3:184]. default data SIM redacted-pii:sim_id[chars:19,last3:184].
+06-13 09:00:27.287  1739  2948 I Telecom : PhoneAccountRegistrar: Modify account: [ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 11, UserHandle{0}]: TSI.rPA@cBY
+06-13 09:00:27.290  1739  2948 I Telecom : CallsManager: handlePhoneAccountChanged: phoneAccount=[[X] PhoneAccount: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 11, UserHandle{0} Capabilities: CallProvider MultiUser PlaceEmerg EmerPrefer SimSub  Audio Routes: BESW Schemes: tel voicemail  Extras: Bundle[{android.telecom.extra.SUPPORTS_VIDEO_CALLING_FALLBACK=true, android.telecom.extra.SUPPORTS_HANDOVER_FROM=true, android.telecom.extra.SORT_ORDER=0}] GroupId: ***]: TSI.rPA@cBY
+06-13 09:00:27.293  1739  2948 I Telecom : PhoneAccountRegistrar: getSimCallManager: SimCallManager for subId 11 queried, returning: null: TSI.rPA@cBY
+06-13 09:00:27.294  1739  2948 I Telecom : PhoneAccountRegistrar: Notifying telephony of voice service override change for 1 SIMs, hasService = false: TSI.rPA@cBY
+06-13 09:00:27.295  2816  2816 I Telephony: AccountEntry: Registered phoneAccount: [[ ] PhoneAccount: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 11, UserHandle{0} Capabilities: CallProvider MultiUser PlaceEmerg EmerPrefer SimSub  Audio Routes: BESW Schemes: tel voicemail  Extras: Bundle[{android.telecom.extra.SUPPORTS_VIDEO_CALLING_FALLBACK=true, android.telecom.extra.SUPPORTS_HANDOVER_FROM=true, android.telecom.extra.SORT_ORDER=0}] GroupId: ***] with handle: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 11, UserHandle{0}
+06-13 09:00:27.295  2816  2816 I Telephony: PstnIncomingCallNotifier: Registering: [0]
+06-13 09:00:27.295  2816  2816 D Telephony: Registering: Handler (com.android.internal.telephony.GsmCdmaPhone) {3bb7136}
+06-13 09:00:27.295 20329 20329 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: BROADCAST_RECEIVER_INTENT_EXTRAS, function parameters: [vkf,android.telephony.action.SHOW_VOICEMAIL_NOTIFICATION,[0,true,null]], return value: <empty>
+06-13 09:00:27.295  2816  2816 I ImsCallbackAM [0]: Local callback added: android.telephony.ims.ImsMmTelManager$CapabilityCallback$CapabilityBinder@5a832ca
+06-13 09:00:27.296  2816  2816 I ImsCallbackAM [0]: Local callback added: android.telephony.ims.RegistrationManager$RegistrationCallback$RegistrationBinder@a535c3b
+06-13 09:00:27.296  2816  2816 I Telephony: TelecomAccountRegistry: setupAccounts: Phone with subscription id 9
+06-13 09:00:27.303  2816  2816 D Telephony: isEmergencyPreferredAccount: subId=9, activeData=11
+06-13 09:00:27.304  4861 23294 I Bugle   : getSimSerialNumber: system returned empty sub info [CONTEXT sub_id=-1 ]
+06-13 09:00:27.304 20329 20329 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: BROADCAST_RECEIVER_INTENT_EXTRAS, function parameters: [vkf,android.telephony.action.SHOW_VOICEMAIL_NOTIFICATION,[[com.android.phone/com.android.services.telephony.TelephonyConnectionService : [PII]57]]], return value: <empty>
+06-13 09:00:27.304 20329 20329 I DialerMwiNotificationReceiver: com.android.dialer.voicemail.notification.receivers.MwiNotificationReceiver.handleNotification:113 clear the MWI notification
+06-13 09:00:27.305  4861 23294 I BugleSimStateTracker: Looking up Fi through package names.
+06-13 09:00:27.305 20329 20329 I DialerBroadcastReceiverStrategyImpl: com.android.dialer.broadcastreceiverstrategy.impl.BroadcastReceiverStrategyImpl.backgroundThenInlineThenForeground:78 try doing work using a background service
+06-13 09:00:27.308 20329 20329 I DialerMwiReceiver: com.android.dialer.voicemail.service.receivers.MwiReceiver.onReceive:74 Received ACTION_SHOW_VOICEMAIL_NOTIFICATION
+06-13 09:00:27.308 20329 20329 I DialerBroadcastReceiverStrategyImpl: com.android.dialer.broadcastreceiverstrategy.impl.BroadcastReceiverStrategyImpl.backgroundThenInlineThenForeground:78 try doing work using a background service
+06-13 09:00:27.308  4861 23294 I BugleSimStateTracker: default call SIM: redacted-pii:sim_id[chars:19,last3:184], default sms SIM redacted-pii:sim_id[chars:19,last3:184]. default data SIM redacted-pii:sim_id[chars:19,last3:184].
+06-13 09:00:27.310 20329 20367 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: NOTIFICATION_CANCEL, function parameters: [LegacyVoicemail_:11,1], return value: <empty>
+06-13 09:00:27.315  1739  5432 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=rw.mobi.app/.MainActivity} from uid 2000
+06-13 09:00:27.319  2816  2816 D Telephony: isEmergencyPreferredAccount: userDefaultData=11, isActiveDataOppurtunistic=false
+06-13 09:00:27.320  1739  5432 D CompatibilityChangeReporter: Compat change id reported: 184838306; UID 10898; state: DISABLED
+06-13 09:00:27.320  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.320  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.320  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.320  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.320  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.320  1739  5432 D CompatibilityChangeReporter: Compat change id reported: 185004937; UID 10898; state: DISABLED
+06-13 09:00:27.320 20067 20087 I Finsky  : [778] [ContentSync] finished, scheduled=true
+06-13 09:00:27.320  1739  5432 D CompatibilityChangeReporter: Compat change id reported: 181136395; UID 10898; state: DISABLED
+06-13 09:00:27.320  1739  5432 D CompatibilityChangeReporter: Compat change id reported: 174042936; UID 10898; state: DISABLED
+06-13 09:00:27.320 20067 20093 I Finsky  : [784] SCH: Scheduling phonesky job Id: 12-1, CT: 1781334026636, Constraints: [{ L: 15000, D: 86400000, C: CHARGING_NONE, I: IDLE_NONE, N: NET_ANY, B: BATTERY_ANY }]
+06-13 09:00:27.321 20329 20329 I DialerMwiNotificationReceiver: com.android.dialer.voicemail.notification.receivers.MwiNotificationReceiver.onReceive:77 enter
+06-13 09:00:27.322 20329 20329 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: BROADCAST_RECEIVER_INTENT_EXTRAS, function parameters: [vkf,android.telephony.action.SHOW_VOICEMAIL_NOTIFICATION,[0,true,null]], return value: <empty>
+06-13 09:00:27.322 20329 20329 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: BROADCAST_RECEIVER_INTENT_EXTRAS, function parameters: [vkf,android.telephony.action.SHOW_VOICEMAIL_NOTIFICATION,[[com.android.phone/com.android.services.telephony.TelephonyConnectionService : [PII]1568]]], return value: <empty>
+06-13 09:00:27.322 20329 20329 I DialerMwiNotificationReceiver: com.android.dialer.voicemail.notification.receivers.MwiNotificationReceiver.handleNotification:113 clear the MWI notification
+06-13 09:00:27.322 20329 20329 I DialerBroadcastReceiverStrategyImpl: com.android.dialer.broadcastreceiverstrategy.impl.BroadcastReceiverStrategyImpl.backgroundThenInlineThenForeground:78 try doing work using a background service
+06-13 09:00:27.325  1739  5432 D ActivityTaskManager: Temporarily retain top process state for launching app
+06-13 09:00:27.326  4861 23294 I BugleSimStateTracker: Subscription is carrier config identified: true [CONTEXT sub_id=11 ]
+06-13 09:00:27.326  1739  5432 D CompatibilityChangeReporter: Compat change id reported: 205907456; UID 10898; state: ENABLED
+06-13 09:00:27.326 20067 20093 I Finsky  : [784] SCH: Scheduling 0 system job(s)
+06-13 09:00:27.328 20067 20093 I Finsky  : [784] [ContentSync] finished, scheduled=true
+06-13 09:00:27.329  1739  4802 I Telecom : PhoneAccountRegistrar: Modify account: [ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 9, UserHandle{0}]: TSI.rPA@cBk
+06-13 09:00:27.330 23290 23290 I Monkey  : Events injected: 1
+06-13 09:00:27.336  4861 23294 I BugleSimStateTracker: Subscription is carrier config identified: true [CONTEXT sub_id=9 ]
+06-13 09:00:27.338  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-13 09:00:27.342  1739  4802 I Telecom : CallsManager: handlePhoneAccountChanged: phoneAccount=[[X] PhoneAccount: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 9, UserHandle{0} Capabilities: CallProvider MultiUser PlaceEmerg SimSub  Audio Routes: BESW Schemes: tel voicemail  Extras: Bundle[{android.telecom.extra.SUPPORTS_VIDEO_CALLING_FALLBACK=true, android.telecom.extra.SUPPORTS_HANDOVER_FROM=true, android.telecom.extra.SORT_ORDER=1}] GroupId: ***]: TSI.rPA@cBk
+06-13 09:00:27.353 20329 20367 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: NOTIFICATION_CANCEL, function parameters: [LegacyVoicemail_:9,1], return value: <empty>
+06-13 09:00:27.353  1739  4802 I Telecom : PhoneAccountRegistrar: getSimCallManager: SimCallManager for subId 9 queried, returning: null: TSI.rPA@cBk
+06-13 09:00:27.354  1739  4802 I Telecom : PhoneAccountRegistrar: Notifying telephony of voice service override change for 1 SIMs, hasService = false: TSI.rPA@cBk
+06-13 09:00:27.358  4861 23294 I BugleSimStateTracker: Looking up Fi through package names.
+06-13 09:00:27.359  2542  2639 W Parcel  : Expecting binder but got null!
+06-13 09:00:27.360  2816  2816 I Telephony: AccountEntry: Registered phoneAccount: [[ ] PhoneAccount: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 9, UserHandle{0} Capabilities: CallProvider MultiUser PlaceEmerg SimSub  Audio Routes: BESW Schemes: tel voicemail  Extras: Bundle[{android.telecom.extra.SUPPORTS_VIDEO_CALLING_FALLBACK=true, android.telecom.extra.SUPPORTS_HANDOVER_FROM=true, android.telecom.extra.SORT_ORDER=1}] GroupId: ***] with handle: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 9, UserHandle{0}
+06-13 09:00:27.360  2816  2816 I Telephony: PstnIncomingCallNotifier: Registering: [1]
+06-13 09:00:27.360  2816  2816 D Telephony: Registering: Handler (com.android.internal.telephony.GsmCdmaPhone) {d3a811b}
+06-13 09:00:27.361  2816  2816 I ImsCallbackAM [1]: Local callback added: android.telephony.ims.ImsMmTelManager$CapabilityCallback$CapabilityBinder@81ae27a
+06-13 09:00:27.361  2816  2816 I ImsCallbackAM [1]: Local callback added: android.telephony.ims.RegistrationManager$RegistrationCallback$RegistrationBinder@8cfca2b
+06-13 09:00:27.362 23217 23217 W libc    : Access denied finding property "qemu.sf.lcd_density"
+06-13 09:00:27.363 23217 23217 W libc    : Access denied finding property "qemu.sf.lcd_density"
+06-13 09:00:27.364  2816  2816 D MultiSimSettingController: onSubscriptionsChanged
+06-13 09:00:27.365  2816  2816 D MultiSimSettingController: isReadyToReevaluate: subInfoInitialized=true, carrierConfigsLoaded=true
+06-13 09:00:27.365  2816  2816 D MultiSimSettingController: updateDefaults
+06-13 09:00:27.365  2816  2816 D MultiSimSettingController: isReadyToReevaluate: subInfoInitialized=true, carrierConfigsLoaded=true
+06-13 09:00:27.366  1739  1739 W ActivityManager: Slow operation: 52ms so far, now at startProcess: done creating new process record
+06-13 09:00:27.366  1739  1739 W ActivityManager: Slow operation: 52ms so far, now at startProcess: stepping in to startProcess
+06-13 09:00:27.367  2816  2816 D MultiSimSettingController: [updateDefaultValues] change: 0
+06-13 09:00:27.367  2816  2816 D MultiSimSettingController: isReadyToReevaluate: subInfoInitialized=true, carrierConfigsLoaded=true
+06-13 09:00:27.368  1739  5432 D CoreBackPreview: Window{847ee47 u0 Splash Screen rw.mobi.app}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@33e5f3f, mPriority=0}
+06-13 09:00:27.370  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10145; state: DISABLED
+06-13 09:00:27.370  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10145; state: DISABLED
+06-13 09:00:27.370  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10145; state: DISABLED
+06-13 09:00:27.370  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10145; state: ENABLED
+06-13 09:00:27.371  1739  1739 W ActivityManager: Slow operation: 57ms so far, now at startProcess: done starting proc!
+06-13 09:00:27.371  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10145; state: ENABLED
+06-13 09:00:27.376  2816  2816 I ImsExternalCallTracker: handleVideoCapabilitiesChanged : isVideoCapable = false
+06-13 09:00:27.376  2816  2816 D ImsExternalCallTracker: refreshCallPullState
+06-13 09:00:27.376  2816  2816 I Telephony: handleVideoCapabilitesChanged. Video capability - false
+06-13 09:00:27.377  1055  1055 D Zygote  : Forked child process 23328
+06-13 09:00:27.379  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10898; state: DISABLED
+06-13 09:00:27.379  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10898; state: DISABLED
+06-13 09:00:27.379  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10898; state: DISABLED
+06-13 09:00:27.379  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10898; state: ENABLED
+06-13 09:00:27.380  1739  1968 I ActivityManager: Start proc 23328:com.google.android.partnersetup/u0a145 for service {com.google.android.partnersetup/com.google.android.partnersetup.InstalledAppJobService}
+06-13 09:00:27.380  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10898; state: ENABLED
+06-13 09:00:27.382 23290 23290 I Monkey  : ## Network stats: elapsed time=57ms (0ms mobile, 0ms wifi, 57ms not connected)
+06-13 09:00:27.382  2816  3134 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-13 09:00:27.383 20329 20329 I DialerMwiReceiver: com.android.dialer.voicemail.service.receivers.MwiReceiver.onReceive:74 Received ACTION_SHOW_VOICEMAIL_NOTIFICATION
+06-13 09:00:27.383 20329 20329 I DialerBroadcastReceiverStrategyImpl: com.android.dialer.broadcastreceiverstrategy.impl.BroadcastReceiverStrategyImpl.backgroundThenInlineThenForeground:78 try doing work using a background service
+06-13 09:00:27.385  2816  2816 D Telephony: isEmergencyPreferredAccount: subId=11, activeData=11
+06-13 09:00:27.386  2816  3134 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-13 09:00:27.391  2816  2816 D Telephony: isEmergencyPreferredAccount: userDefaultData=11, isActiveDataOppurtunistic=false
+06-13 09:00:27.392  2816  2816 I ImsCallbackAM [0]: Local callback added: android.telephony.ims.ImsMmTelManager$CapabilityCallback$CapabilityBinder@5a832ca
+06-13 09:00:27.393 23290 23290 I app_process: System.exit called, status: 0
+06-13 09:00:27.393 23290 23290 I AndroidRuntime: VM exiting with result code 0.
+06-13 09:00:27.394  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.394  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.394  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.394  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.394  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.396  2542  2639 E OpenGLRenderer: Unable to match the desired swap behavior.
+06-13 09:00:27.401 23328 23328 I id.partnersetup: Using CollectorTypeCC GC.
+06-13 09:00:27.406  1739  5178 I Telecom : PhoneAccountRegistrar: Modify account: [ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 11, UserHandle{0}]: TSI.rPA@cBw
+06-13 09:00:27.411 23328 23328 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-13 09:00:27.413  1739  5178 I Telecom : CallsManager: handlePhoneAccountChanged: phoneAccount=[[X] PhoneAccount: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 11, UserHandle{0} Capabilities: CallProvider MultiUser PlaceEmerg EmerPrefer SimSub  Audio Routes: BESW Schemes: tel voicemail  Extras: Bundle[{android.telecom.extra.SUPPORTS_VIDEO_CALLING_FALLBACK=true, android.telecom.extra.SUPPORTS_HANDOVER_FROM=true, android.telecom.extra.SORT_ORDER=0}] GroupId: ***]: TSI.rPA@cBw
+06-13 09:00:27.416  4861 23294 I BugleSimStateTracker: Looking up Fi through package names.
+06-13 09:00:27.417  1055  1055 D Zygote  : Forked child process 23340
+06-13 09:00:27.417  1739  5178 I Telecom : PhoneAccountRegistrar: getSimCallManager: SimCallManager for subId 11 queried, returning: null: TSI.rPA@cBw
+06-13 09:00:27.417  1739  5178 I Telecom : PhoneAccountRegistrar: Notifying telephony of voice service override change for 1 SIMs, hasService = false: TSI.rPA@cBw
+06-13 09:00:27.417  1739  1968 I ActivityManager: Start proc 23340:rw.mobi.app/u0a898 for top-activity {rw.mobi.app/rw.mobi.app.MainActivity}
+06-13 09:00:27.419  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.419  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.419  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.419  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.419  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.419  2816  2816 I ImsExternalCallTracker: handleVideoCapabilitiesChanged : isVideoCapable = false
+06-13 09:00:27.419  2816  2816 D ImsExternalCallTracker: refreshCallPullState
+06-13 09:00:27.419  2816  2816 I Telephony: handleVideoCapabilitesChanged. Video capability - false
+06-13 09:00:27.422  2816  2816 D Telephony: isEmergencyPreferredAccount: subId=9, activeData=11
+06-13 09:00:27.425  2816  2816 D Telephony: isEmergencyPreferredAccount: userDefaultData=11, isActiveDataOppurtunistic=false
+06-13 09:00:27.425  2816  2816 I ImsCallbackAM [1]: Local callback added: android.telephony.ims.ImsMmTelManager$CapabilityCallback$CapabilityBinder@81ae27a
+06-13 09:00:27.430  1739  4844 D CompatibilityChangeReporter: Compat change id reported: 168419799; UID 10145; state: DISABLED
+06-13 09:00:27.430  1739  4844 D CompatibilityChangeReporter: Compat change id reported: 273564678; UID 10145; state: DISABLED
+06-13 09:00:27.431  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.431  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.431  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.431  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.431  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: All newly built SimSubscriptionInfos: [(simId: redacted-pii:sim_id[chars:19,last3:184],
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: subId: 11,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: simSlot: 0,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: imsi: redacted-pii:imsi[chars:15],
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: phoneNumber: redacted-pii:phone_number[chars:13,last2:76],
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: countryCode: RW,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: networkOperatorName: MTN Rwandacell,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: subscriptionGroupUuid: ,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: mcc: 635,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: mnc: 10,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: simCarrierId: 1682,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: iccid: redacted-pii:sim_iccid[chars:19],
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: isFi: false,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: loggableGuid: efc7603f-5a4f-4d09-b5ec-f91c0ffb0990,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: formattedMsisdn: redacted-pii:phone_number[chars:13,last2:76],
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: simOperatorName: MTN Rwandacell,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: simOperator: 63510,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: groupIdLevel1: ,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: preferredSubscriptionName: MTN Rwandacell), (simId: redacted-pii:sim_id[chars:20,last3:742],
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: subId: 9,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: simSlot: 1,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: imsi: redacted-pii:imsi[chars:15],
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: phoneNumber: redacted-pii:phone_number[chars:0,last2:],
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: countryCode: HK,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: networkOperatorName: ,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: subscriptionGroupUuid: ,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: mcc: 454,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: mnc: 35,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: simCarrierId: 772,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: iccid: redacted-pii:sim_iccid[chars:20],
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: isFi: false,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: loggableGuid: 8d2a48fe-8294-42a2-8143-d560b81a53af,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: formattedMsisdn: redacted-pii:phone_number[chars:0,last2:],
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: simOperatorName: Airalo,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: simOperator: 45435,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: groupIdLevel1: 536E617065,
+06-13 09:00:27.431  4861 23294 I RcsProvisioningFlow: preferredSubscriptionName: Airalo)]
+06-13 09:00:27.438 23328 23328 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10145; state: ENABLED
+06-13 09:00:27.440  4291 15113 D ForegroundUtils: Foreground UID status:
+06-13 09:00:27.440  4291 15113 D ForegroundUtils: UID: 1002 is in foreground: true
+06-13 09:00:27.440  4291 15113 D ForegroundUtils: UID: 10164 is in foreground: true
+06-13 09:00:27.440  4291 15113 D ForegroundUtils: UID: 10238 is in foreground: false
+06-13 09:00:27.440  4291 15113 D ForegroundUtils: UID: 10243 is in foreground: true
+06-13 09:00:27.440  4291 15113 D ForegroundUtils: UID: 10250 is in foreground: false
+06-13 09:00:27.445  4861 23294 I RcsProvisioningFlow: Storing updated SimSubscriptionInfo list in PhoneSimsStateDataStore: [(redacted-pii:sim_id[chars:19,last3:184], efc7603f-5a4f-4d09-b5ec-f91c0ffb0990), (redacted-pii:sim_id[chars:20,last3:742], 8d2a48fe-8294-42a2-8143-d560b81a53af)]
+06-13 09:00:27.446  4861 23294 I RcsProvisioningFlow: Storing updated SimSubscriptionInfo list in SimStateStore: [(redacted-pii:sim_id[chars:19,last3:184], efc7603f-5a4f-4d09-b5ec-f91c0ffb0990), (redacted-pii:sim_id[chars:20,last3:742], 8d2a48fe-8294-42a2-8143-d560b81a53af)]
+06-13 09:00:27.452  4861 23294 I RcsProvisioningFlow: Sim subscription infos have not changed, skipping saving
+06-13 09:00:27.452 23217 23217 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@3817d; boundsInParent: Rect(0, 0 - 28, 28); boundsInScreen: Rect(543, 2260 - 540, 2282); packageName: com.android.systemui; className: android.widget.ImageView; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; viewIdResName: com.android.systemui:id/red; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+06-13 09:00:27.452 23217 23217 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@3853e; boundsInParent: Rect(0, 0 - 28, 28); boundsInScreen: Rect(543, 2260 - 540, 2282); packageName: com.android.systemui; className: android.widget.ImageView; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; viewIdResName: com.android.systemui:id/blue; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+06-13 09:00:27.452 23217 23217 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@38cc0; boundsInParent: Rect(0, 0 - 28, 28); boundsInScreen: Rect(540, 2260 - 537, 2282); packageName: com.android.systemui; className: android.widget.ImageView; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; viewIdResName: com.android.systemui:id/green; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+06-13 09:00:27.452  4861 23294 I RcsProvisioningFlow: Phone defaults have not changed in SimStateStore, skipping saving
+06-13 09:00:27.452 23217 23217 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@39081; boundsInParent: Rect(0, 0 - 28, 28); boundsInScreen: Rect(540, 2260 - 537, 2282); packageName: com.android.systemui; className: android.widget.ImageView; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; viewIdResName: com.android.systemui:id/yellow; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+06-13 09:00:27.453  4861 23294 I RcsProvisioningFlow: Phone defaults have not changed in PhoneSimsStateDataStore, skipping saving
+06-13 09:00:27.453 23340 23340 I rw.mobi.app: Using CollectorTypeCC GC.
+06-13 09:00:27.456  1739  4844 I Telecom : PhoneAccountRegistrar: Modify account: [ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 9, UserHandle{0}]: TSI.rPA@cB0
+06-13 09:00:27.459 23328 23328 D nativeloader: Configuring clns-4 for other apk /system/framework/org.apache.http.legacy.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~VdkYU7E2S7EdRPcRGkp-DQ==/com.google.android.partnersetup-LQcUSneB06KVUb6oZeh2eQ==/lib/arm64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.partnersetup
+06-13 09:00:27.461 23340 23340 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-13 09:00:27.464  1739  4844 I Telecom : CallsManager: handlePhoneAccountChanged: phoneAccount=[[X] PhoneAccount: ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 9, UserHandle{0} Capabilities: CallProvider MultiUser PlaceEmerg SimSub  Audio Routes: BESW Schemes: tel voicemail  Extras: Bundle[{android.telecom.extra.SUPPORTS_VIDEO_CALLING_FALLBACK=true, android.telecom.extra.SUPPORTS_HANDOVER_FROM=true, android.telecom.extra.SORT_ORDER=1}] GroupId: ***]: TSI.rPA@cB0
+06-13 09:00:27.464 23217 23217 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@3ae89; boundsInParent: Rect(0, 0 - 0, 0); boundsInScreen: Rect(540, 1938 - 540, 1938); packageName: com.android.systemui; className: android.widget.LinearLayout; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; viewIdResName: com.android.systemui:id/ambient_indication_info_container; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+06-13 09:00:27.468  4861 23294 I RcsProvisioningFlow: No new or updated SIMs on phone sim state update.
+06-13 09:00:27.469  1739  4844 I Telecom : PhoneAccountRegistrar: getSimCallManager: SimCallManager for subId 9 queried, returning: null: TSI.rPA@cB0
+06-13 09:00:27.469  1739  4844 I Telecom : PhoneAccountRegistrar: Notifying telephony of voice service override change for 1 SIMs, hasService = false: TSI.rPA@cB0
+06-13 09:00:27.475  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.475  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.475  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.475  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.475  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.476 23340 23340 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10898; state: ENABLED
+06-13 09:00:27.477  4291 15113 D ForegroundUtils: Foreground UID status:
+06-13 09:00:27.477  4291 15113 D ForegroundUtils: UID: 1002 is in foreground: true
+06-13 09:00:27.477  4291 15113 D ForegroundUtils: UID: 10164 is in foreground: true
+06-13 09:00:27.477  4291 15113 D ForegroundUtils: UID: 10238 is in foreground: false
+06-13 09:00:27.477  4291 15113 D ForegroundUtils: UID: 10243 is in foreground: true
+06-13 09:00:27.477  4291 15113 D ForegroundUtils: UID: 10250 is in foreground: false
+06-13 09:00:27.477  4291 15113 D ForegroundUtils: UID: 10898 is in foreground: true
+06-13 09:00:27.483  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.483  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.483  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.483  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.483  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.484  2816  2816 I Telephony: isRttCurrentlySupported -- regular acct, hasVoiceAvailability: false
+06-13 09:00:27.484  2816  2816 I Telephony:  isRttSupported: false
+06-13 09:00:27.484  2816  2816 I Telephony:  alwaysAllowWhileRoaming: false
+06-13 09:00:27.484  2816  2816 I Telephony:  isRoaming: false
+06-13 09:00:27.484  2816  2816 I Telephony:  isOnWfc: false
+06-13 09:00:27.486  4861 23325 I WM-WorkerWrapper: Worker result SUCCESS for Work [ id=ff0e7770-f36b-441a-924d-6ea0e35a68c0, tags={ com.google.android.apps.messaging.shared.datamodel.workqueue.WorkQueueWorkerShim,sim_state_update_queue-WORK_TYPE_UPDATE_PHONE_SIMS_STATE } ]
+06-13 09:00:27.485 19533 19676 I HeadsetPhoneState: stopListenForPhoneState(), no listener indicates nothing is listening
+06-13 09:00:27.486 19533 19676 W HeadsetPhoneState: startListenForPhoneState, no event to listen
+06-13 09:00:27.486 23328 23328 W id.partnersetup: Failed to find entry 'classes.dex': Entry not found
+06-13 09:00:27.487 23328 23328 W id.partnersetup: Failed to find entry 'classes.dex': Entry not found
+06-13 09:00:27.488 23340 23340 I rw.mobi.app: Failed to add image file: Failed to find OatDexFile for DexFile /data/app/~~cMW3FhamGi7hdCY7B-nXCw==/rw.mobi.app-K5-kdlSBQzmzIr2TSznIrA==/base.apk (canonical path /data/app/~~cMW3FhamGi7hdCY7B-nXCw==/rw.mobi.app-K5-kdlSBQzmzIr2TSznIrA==/base.apk) in OatFile /data/app/~~-PXLPnz0r3EYWPhxsJNiCw==/rw.mobi.app-Gs-WODEIQyVw8yMP391HUA==/oat/arm64/base.odex
+06-13 09:00:27.489 23328 23328 W id.partnersetup: Failed to find entry 'classes.dex': Entry not found
+06-13 09:00:27.489  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-13 09:00:27.489 23340 23340 D nativeloader: Configuring clns-4 for other apk /data/app/~~-PXLPnz0r3EYWPhxsJNiCw==/rw.mobi.app-Gs-WODEIQyVw8yMP391HUA==/base.apk. target_sdk_version=35, uses_libraries=, library_path=/data/app/~~-PXLPnz0r3EYWPhxsJNiCw==/rw.mobi.app-Gs-WODEIQyVw8yMP391HUA==/lib/arm64:/data/app/~~-PXLPnz0r3EYWPhxsJNiCw==/rw.mobi.app-Gs-WODEIQyVw8yMP391HUA==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/rw.mobi.app
+06-13 09:00:27.489 23328 23328 D nativeloader: Configuring clns-5 for other apk /data/app/~~VdkYU7E2S7EdRPcRGkp-DQ==/com.google.android.partnersetup-LQcUSneB06KVUb6oZeh2eQ==/base.apk:/data/app/~~VdkYU7E2S7EdRPcRGkp-DQ==/com.google.android.partnersetup-LQcUSneB06KVUb6oZeh2eQ==/split_config.en.apk:/data/app/~~VdkYU7E2S7EdRPcRGkp-DQ==/com.google.android.partnersetup-LQcUSneB06KVUb6oZeh2eQ==/split_config.es.apk:/data/app/~~VdkYU7E2S7EdRPcRGkp-DQ==/com.google.android.partnersetup-LQcUSneB06KVUb6oZeh2eQ==/split_config.xxhdpi.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~VdkYU7E2S7EdRPcRGkp-DQ==/com.google.android.partnersetup-LQcUSneB06KVUb6oZeh2eQ==/lib/arm64, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.partnersetup
+06-13 09:00:27.491  4861  4861 D WM-Processor: swv ff0e7770-f36b-441a-924d-6ea0e35a68c0 executed; reschedule = false
+06-13 09:00:27.493  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10217; state: DISABLED
+06-13 09:00:27.494  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10217; state: DISABLED
+06-13 09:00:27.494  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10217; state: ENABLED
+06-13 09:00:27.498 23340 23340 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-13 09:00:27.502  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10217; state: ENABLED
+06-13 09:00:27.505 23340 23340 V GraphicsEnvironment: ANGLE Developer option for 'rw.mobi.app' set to: 'default'
+06-13 09:00:27.505 23340 23340 V GraphicsEnvironment: ANGLE GameManagerService for rw.mobi.app: false
+06-13 09:00:27.505 23340 23340 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+06-13 09:00:27.505  4291 15113 D ForegroundUtils: Foreground UID status:
+06-13 09:00:27.505  4291 15113 D ForegroundUtils: UID: 1002 is in foreground: true
+06-13 09:00:27.505  4291 15113 D ForegroundUtils: UID: 10164 is in foreground: true
+06-13 09:00:27.505  4291 15113 D ForegroundUtils: UID: 10238 is in foreground: false
+06-13 09:00:27.505  4291 15113 D ForegroundUtils: UID: 10243 is in foreground: true
+06-13 09:00:27.505  4291 15113 D ForegroundUtils: UID: 10250 is in foreground: false
+06-13 09:00:27.505  4291 15113 D ForegroundUtils: UID: 10898 is in foreground: true
+06-13 09:00:27.510  1055  1055 D Zygote  : Forked child process 23356
+06-13 09:00:27.510  1739  1968 I ActivityManager: Start proc 23356:com.google.android.contacts/u0a217 for service {com.google.android.contacts/androidx.work.impl.background.systemjob.SystemJobService}
+06-13 09:00:27.513 23328 23328 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-13 09:00:27.515 23340 23340 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+06-13 09:00:27.516 23340 23340 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+06-13 09:00:27.517 23328 23328 V GraphicsEnvironment: ANGLE Developer option for 'com.google.android.partnersetup' set to: 'default'
+06-13 09:00:27.517 23328 23328 V GraphicsEnvironment: ANGLE GameManagerService for com.google.android.partnersetup: false
+06-13 09:00:27.520 23328 23328 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+06-13 09:00:27.520 23328 23328 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+06-13 09:00:27.520  1739  5178 D TelephonyManager: requestModemActivityInfo: Sending result to app: ModemActivityInfo{ mTimestamp=2295639305 mSleepTimeMs=968456924 mIdleTimeMs=75023449 mActivityStatsTechSpecificInfo=[{mRat=UNKNOWN,mFrequencyRange=UNKNOWN,mTxTimeMs[]=[71123, 146726, 1726946, 2329839, 19708602],mRxTimeMs=1227943894}]}
+06-13 09:00:27.521 23340 23340 D CompatibilityChangeReporter: Compat change id reported: 183155436; UID 10898; state: ENABLED
+06-13 09:00:27.521 23217 23217 W AccessibilityNodeInfoDumper: Fetch time: 152ms
+06-13 09:00:27.526  1739  4844 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-13 09:00:27.526 23340 23340 D FirebaseSessions: Dependency to CRASHLYTICS added.
+06-13 09:00:27.528 23340 23340 I FirebaseApp: Device unlocked: initializing all Firebase APIs for app [DEFAULT]
+06-13 09:00:27.529 23217 23217 D AndroidRuntime: Shutting down VM
+06-13 09:00:27.532 23340 23340 I FirebaseCrashlytics: Initializing Firebase Crashlytics 20.0.4 for rw.mobi.app
+06-13 09:00:27.537 23356 23356 I ndroid.contacts: Using CollectorTypeCC GC.
+06-13 09:00:27.542  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10539; state: DISABLED
+06-13 09:00:27.543  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10539; state: DISABLED
+06-13 09:00:27.543  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10539; state: DISABLED
+06-13 09:00:27.543  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10539; state: ENABLED
+06-13 09:00:27.544  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10539; state: ENABLED
+06-13 09:00:27.546  4861 23325 D WM-GreedyScheduler: Cancelling work ID ff0e7770-f36b-441a-924d-6ea0e35a68c0
+06-13 09:00:27.548  4224  4237 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-13 09:00:27.554  4861 23325 D WM-GreedyScheduler: Ignoring {WorkSpec: 1ff25c62-f395-46de-8803-9948bf660afc}. Requires ContentUri triggers.
+06-13 09:00:27.555  4861 23325 D WM-GreedyScheduler: Ignoring {WorkSpec: 795367c0-c2d0-42dd-b9e7-6cde89ad2c5a}. Requires ContentUri triggers.
+06-13 09:00:27.556  1739  1739 D BatterySaverPolicy: accessibility changed to false, updating policy.
+06-13 09:00:27.564 20329 20367 I DialerVvmServiceProviderImpl: com.android.dialer.voicemail.service.impl.VvmServiceProviderImpl.logVvmServiceUnavailable:217 VvmService unavailable! VvmCarrierService exists?: false, VvmConfiguration exists?: false, VvmAccountState exists?: false [CONTEXT enable_persistent_logger=true ratelimit_period="1 MINUTES" skipped=15 ]
+06-13 09:00:27.564 23340 23340 D FirebaseSessions: Subscriber CRASHLYTICS registered.
+06-13 09:00:27.565 23356 23356 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-13 09:00:27.566  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 09:00:27.566  1055  1055 D Zygote  : Forked child process 23376
+06-13 09:00:27.566  1739  1968 I ActivityManager: Start proc 23376:com.openai.chatgpt/u0a539 for service {com.openai.chatgpt/com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService}
+06-13 09:00:27.567  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 09:00:27.567  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 09:00:27.567  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 09:00:27.568 23328 23328 W id.partnersetup: Method void xj.c(android.app.Activity) failed lock verification and will run slower.
+06-13 09:00:27.568 23328 23328 W id.partnersetup: Common causes for lock verification issues are non-optimized dex code
+06-13 09:00:27.568 23328 23328 W id.partnersetup: and incorrect proguard optimizations.
+06-13 09:00:27.568  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 09:00:27.570  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 09:00:27.570 23328 23328 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10145; state: ENABLED
+06-13 09:00:27.571  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 09:00:27.571  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 09:00:27.571  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 09:00:27.571  1739  2710 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10145; state: ENABLED
+06-13 09:00:27.571  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 09:00:27.583  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 09:00:27.584  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 09:00:27.584  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 09:00:27.584 23376 23376 I .openai.chatgpt: Using CollectorTypeCC GC.
+06-13 09:00:27.585  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 09:00:27.588  1445  1495 I adbd    : jdwp connection from 23356
+06-13 09:00:27.590  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 09:00:27.592 23376 23376 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-13 09:00:27.592  1739  2948 D CompatibilityChangeReporter: Compat change id reported: 168419799; UID 10217; state: DISABLED
+06-13 09:00:27.592  1739  2948 D CompatibilityChangeReporter: Compat change id reported: 273564678; UID 10217; state: DISABLED
+06-13 09:00:27.590  1072  1072 W socket_writer_q: type=1400 audit(0.0:251995572): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 09:00:27.596 20329 20376 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: NOTIFICATION_CANCEL, function parameters: [LegacyVoicemail_:11,1], return value: <empty>
+06-13 09:00:27.598 23340 23340 D nativeloader: Load /data/app/~~-PXLPnz0r3EYWPhxsJNiCw==/rw.mobi.app-Gs-WODEIQyVw8yMP391HUA==/base.apk!/lib/arm64-v8a/libdatastore_shared_counter.so using class loader ns clns-4 (caller=/data/app/~~-PXLPnz0r3EYWPhxsJNiCw==/rw.mobi.app-Gs-WODEIQyVw8yMP391HUA==/base.apk): ok
+06-13 09:00:27.599 23356 23356 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10217; state: ENABLED
+06-13 09:00:27.602  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 09:00:27.602 23340 23340 D FirebaseSessions: Initializing Firebase Sessions 3.0.4.
+06-13 09:00:27.603 23340 23340 I FirebaseInitProvider: FirebaseApp initialization successful
+06-13 09:00:27.603 23340 23340 D FLTFireContextHolder: received application context.
+06-13 09:00:27.603  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 09:00:27.603  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-13 09:00:27.605  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 09:00:27.605  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-13 09:00:27.607  1072  1072 W socket_writer_q: type=1400 audit(0.0:251995573): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 09:00:27.608  1739  2010 D CompatibilityChangeReporter: Compat change id reported: 168419799; UID 10539; state: DISABLED
+06-13 09:00:27.609  1739  2010 D CompatibilityChangeReporter: Compat change id reported: 273564678; UID 10539; state: DISABLED
+06-13 09:00:27.610  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 09:00:27.612  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-13 09:00:27.612  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 09:00:27.613  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-13 09:00:27.613  4291 15113 D ForegroundUtils: Foreground UID status:
+06-13 09:00:27.613  4291 15113 D ForegroundUtils: UID: 1002 is in foreground: true
+06-13 09:00:27.613  4291 15113 D ForegroundUtils: UID: 10164 is in foreground: true
+06-13 09:00:27.613  4291 15113 D ForegroundUtils: UID: 10238 is in foreground: false
+06-13 09:00:27.613  4291 15113 D ForegroundUtils: UID: 10243 is in foreground: true
+06-13 09:00:27.613  4291 15113 D ForegroundUtils: UID: 10250 is in foreground: false
+06-13 09:00:27.613  4291 15113 D ForegroundUtils: UID: 10898 is in foreground: true
+06-13 09:00:27.624 23376 23376 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10539; state: ENABLED
+06-13 09:00:27.629  4224  4224 I AiAiEcho: (REDACTED) AppFetcherImpl onPackageChanged %s.
+06-13 09:00:27.632  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-13 09:00:27.627  1072  1072 W socket_writer_q: type=1400 audit(0.0:251995574): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 09:00:27.637  1072  1072 W socket_writer_q: type=1400 audit(0.0:251995575): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 09:00:27.650  1072  1072 W socket_writer_q: type=1400 audit(0.0:251995576): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 09:00:27.664 23376 23376 D nativeloader: Configuring clns-4 for other apk /system/framework/org.apache.http.legacy.jar. target_sdk_version=37, uses_libraries=ALL, library_path=/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/lib/arm64:/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/base.apk!/lib/arm64-v8a:/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/split_config.arm64_v8a.apk!/lib/arm64-v8a:/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/split_config.en.apk!/lib/arm64-v8a:/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/split_config.xxhdpi.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.openai.chatgpt
+06-13 09:00:27.674 23340 23368 W rw.mobi.app: ClassLoaderContext classpath size mismatch. expected=1, found=0 (DLC[];PCL[base.apk*781738098]{PCL[/system/framework/org.apache.http.legacy.jar*1601893742]#PCL[/system/framework/com.android.location.provider.jar*989331189]#PCL[/system/framework/com.android.media.remotedisplay.jar*373201994]} | DLC[];PCL[])
+06-13 09:00:27.679 18318 18563 E msys    : E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 09:00:27.685  4224 23400 I AiAiEcho: (REDACTED) AppIndexer Package:[%s] UserProfile:[%d] Enabled:[%s].
+06-13 09:00:27.687  4224 23400 I AiAiEcho: (REDACTED) AppFetcherImplV2 updateApps package:[%s], userId:[%d], reason:[%s].
+06-13 09:00:27.696 18318 18563 E msys    : E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 09:00:27.700 23340 23368 I DynamiteModule: Considering local module com.google.android.gms.measurement.dynamite:155 and remote module com.google.android.gms.measurement.dynamite:194
+06-13 09:00:27.700 23340 23368 I DynamiteModule: Selected remote version of com.google.android.gms.measurement.dynamite, version >= 194
+06-13 09:00:27.701 23356 23356 W ndroid.contacts: Failed to find entry 'classes.dex': Entry not found
+06-13 09:00:27.702 23340 23368 V DynamiteModule: Dynamite loader version >= 2, using loadModule2NoCrashUtils
+06-13 09:00:27.703 23356 23356 W ndroid.contacts: Failed to find entry 'classes.dex': Entry not found
+06-13 09:00:27.709 23356 23356 W ndroid.contacts: Failed to find entry 'classes.dex': Entry not found
+06-13 09:00:27.716 23356 23356 D nativeloader: Configuring clns-4 for other apk /data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/base.apk:/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/split_config.arm64_v8a.apk:/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/split_config.en.apk:/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/split_config.xxhdpi.apk. target_sdk_version=37, uses_libraries=, library_path=/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/lib/arm64:/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/base.apk!/lib/arm64-v8a:/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/split_config.arm64_v8a.apk!/lib/arm64-v8a:/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/split_config.en.apk!/lib/arm64-v8a:/data/app/~~RSzDS3A0x2SEM
+06-13 09:00:27.723 23340 23406 D nativeloader: Load /data/app/~~-PXLPnz0r3EYWPhxsJNiCw==/rw.mobi.app-Gs-WODEIQyVw8yMP391HUA==/base.apk!/lib/arm64-v8a/libflutter.so using class loader ns clns-4 (caller=/data/app/~~-PXLPnz0r3EYWPhxsJNiCw==/rw.mobi.app-Gs-WODEIQyVw8yMP391HUA==/base.apk): ok
+06-13 09:00:27.723  1739  2948 D CompatibilityChangeReporter: Compat change id reported: 161145287; UID 10898; state: DISABLED
+06-13 09:00:27.731 23340 23368 W System  : ClassLoader referenced unknown path:
+06-13 09:00:27.732 23340 23368 D nativeloader: Configuring clns-5 for other apk . target_sdk_version=37, uses_libraries=, library_path=/data/app/~~wNtZ1CYwEqoWvZ1-OV-aXQ==/com.google.android.gms-TmWo9WlpjocYOuhs3fxXTw==/lib/arm64:/data/app/~~wNtZ1CYwEqoWvZ1-OV-aXQ==/com.google.android.gms-TmWo9WlpjocYOuhs3fxXTw==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+06-13 09:00:27.732 23356 23356 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-13 09:00:27.746 23356 23356 V GraphicsEnvironment: ANGLE Developer option for 'com.google.android.contacts' set to: 'default'
+06-13 09:00:27.746 23356 23356 V GraphicsEnvironment: ANGLE GameManagerService for com.google.android.contacts: false
+06-13 09:00:27.746 23356 23356 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+06-13 09:00:27.757 23356 23356 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+06-13 09:00:27.760 23356 23356 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+06-13 09:00:27.761 23376 23376 W .openai.chatgpt: Failed to find entry 'classes.dex': Entry not found
+06-13 09:00:27.762 23376 23376 W .openai.chatgpt: Failed to find entry 'classes.dex': Entry not found
+06-13 09:00:27.763 23376 23376 W .openai.chatgpt: Failed to find entry 'classes.dex': Entry not found
+06-13 09:00:27.764 23376 23376 D nativeloader: Configuring clns-5 for other apk /data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/base.apk:/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/split_config.arm64_v8a.apk:/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/split_config.en.apk:/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/split_config.xxhdpi.apk. target_sdk_version=37, uses_libraries=, library_path=/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/lib/arm64:/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/base.apk!/lib/arm64-v8a:/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/split_config.arm64_v8a.apk!/lib/arm64-v8a:/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/split_config.en.apk!/lib/arm64-v8a:/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/split_config.xxh
+06-13 09:00:27.770 14861 14895 I DefaultLPManager: #getPackage
+06-13 09:00:27.771 14861 14895 I evgy    : (REDACTED) [%s] Installed LanguagePacks: %s
+06-13 09:00:27.771 14861 14895 I evgy    : (REDACTED) [%s] Pending pack: %s
+06-13 09:00:27.781 23340 23384 I FirebaseCrashlytics: Saved version control info
+06-13 09:00:27.787 23340 23368 W rw.mobi.app: ClassLoaderContext classpath element checksum mismatch. expected=781738098, found=485900610 (DLC[];PCL[base.apk*781738098]{PCL[/system/framework/org.apache.http.legacy.jar*1601893742]#PCL[/system/framework/com.android.location.provider.jar*989331189]#PCL[/system/framework/com.android.media.remotedisplay.jar*373201994]} | DLC[];PCL[/data/app/~~-PXLPnz0r3EYWPhxsJNiCw==/rw.mobi.app-Gs-WODEIQyVw8yMP391HUA==/base.apk*485900610])
+06-13 09:00:27.797 23340 23414 D vulkan  : searching for layers in '/data/app/~~-PXLPnz0r3EYWPhxsJNiCw==/rw.mobi.app-Gs-WODEIQyVw8yMP391HUA==/lib/arm64'
+06-13 09:00:27.798 23340 23414 D vulkan  : searching for layers in '/data/app/~~-PXLPnz0r3EYWPhxsJNiCw==/rw.mobi.app-Gs-WODEIQyVw8yMP391HUA==/base.apk!/lib/arm64-v8a'
+06-13 09:00:27.810 23376 23376 D nativeloader: Load /data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/split_config.arm64_v8a.apk!/lib/arm64-v8a/libpairipcore.so using class loader ns clns-5 (caller=/data/app/~~oHn__mRYYFVtL-W2G8Bj0Q==/com.openai.chatgpt-yI8ZJA06A1hAYo9YYGL1aQ==/base.apk): ok
+06-13 09:00:27.820 23340 23414 I AdrenoVK-0: ===== BEGIN DUMP OF OVERRIDDEN SETTINGS =====
+06-13 09:00:27.820 23340 23414 I AdrenoVK-0: ===== END DUMP OF OVERRIDDEN SETTINGS =====
+06-13 09:00:27.821 23340 23414 I AdrenoVK-0: QUALCOMM build          : 85da404, I46ff5fc46f
+06-13 09:00:27.821 23340 23414 I AdrenoVK-0: Build Date              : 11/30/20
+06-13 09:00:27.821 23340 23414 I AdrenoVK-0: Shader Compiler Version : EV031.31.04.01
+06-13 09:00:27.821 23340 23414 I AdrenoVK-0: Local Branch            : promo490_3_Google
+06-13 09:00:27.821 23340 23414 I AdrenoVK-0: Remote Branch           :
+06-13 09:00:27.821 23340 23414 I AdrenoVK-0: Remote Branch           :
+06-13 09:00:27.821 23340 23414 I AdrenoVK-0: Reconstruct Branch      :
+06-13 09:00:27.821 23340 23414 I AdrenoVK-0: Build Config            : S P 10.0.4 AArch64
+06-13 09:00:27.821 23340 23414 I AdrenoVK-0: Driver Path             : /vendor/lib64/hw/vulkan.adreno.so
+06-13 09:00:27.832 23340 23414 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+06-13 09:00:27.864  3777  3777 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.semanticlocationhistory.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsApiService }
+06-13 09:00:27.864  3777  3777 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.semanticlocationhistory.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsApiService }
+06-13 09:00:27.877 23340 23414 I AdrenoGLES-0: QUALCOMM build                   : 85da404, I46ff5fc46f
+06-13 09:00:27.877 23340 23414 I AdrenoGLES-0: Build Date                       : 11/30/20
+06-13 09:00:27.877 23340 23414 I AdrenoGLES-0: OpenGL ES Shader Compiler Version: EV031.31.04.01
+06-13 09:00:27.877 23340 23414 I AdrenoGLES-0: Local Branch                     : promo490_3_Google
+06-13 09:00:27.877 23340 23414 I AdrenoGLES-0: Remote Branch                    :
+06-13 09:00:27.877 23340 23414 I AdrenoGLES-0: Remote Branch                    :
+06-13 09:00:27.877 23340 23414 I AdrenoGLES-0: Reconstruct Branch               :
+06-13 09:00:27.877 23340 23414 I AdrenoGLES-0: Build Config                     : S P 10.0.4 AArch64
+06-13 09:00:27.877 23340 23414 I AdrenoGLES-0: Driver Path                      : /vendor/lib64/egl/libGLESv2_adreno.so
+06-13 09:00:27.900 23340 23414 I AdrenoGLES-0: PFP: 0x016ee190, ME: 0x00000000
+06-13 09:00:27.901 23340 23414 W AdrenoUtils: <ReadGpuID_from_sysfs:197>: Failed to open /sys/class/kgsl/kgsl-3d0/gpu_model
+06-13 09:00:27.901 23340 23414 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
+06-13 09:00:27.903 23356 23356 I SdnProvider: onCreate
+06-13 09:00:27.903 23356 23356 I YourInfoProvider: YourInfoProvider onCreate
+06-13 09:00:27.903 23356 23356 I OtherContactsProvider: onCreate started
+06-13 09:00:27.903 23356 23356 I OtherContactsProvider: onCreate finished
+06-13 09:00:27.908 23340 23414 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(104)] Using the Impeller rendering backend (OpenGLES).
+06-13 09:00:27.933 23340 23382 D FirebaseSessions: Notified CRASHLYTICS of new session c0acc68d6c0242a9a46a082117311106
+06-13 09:00:27.959  1739  1770 W system_server: Suspending all threads took: 6.791ms
+06-13 09:00:27.970 23340 23340 D com.llfbandit.app_links: Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=rw.mobi.app/.MainActivity }
+06-13 09:00:27.974 23328 23328 I GooglePartnerSetup: Phenotype client.register successes
+06-13 09:00:27.974  1739  1940 W ActivityTaskManager: Activity top resumed state loss timeout for ActivityRecord{7419b7f u0 rw.mobi.app/.MainActivity} t484}
+06-13 09:00:27.974  1739  1940 W ActivityTaskManager: Activity pause timeout for ActivityRecord{7419b7f u0 rw.mobi.app/.MainActivity} t484}
+06-13 09:00:27.994 23340 23340 D FLTFireContextHolder: received application context.
+06-13 09:00:28.001 23356 23356 D CompatibilityChangeReporter: Compat change id reported: 183155436; UID 10217; state: ENABLED
+06-13 09:00:28.014  1739  2710 D CompatibilityChangeReporter: Compat change id reported: 161145287; UID 10217; state: DISABLED
+06-13 09:00:28.031  1739  1775 W JobScheduler: Job didn't exist in JobStore: e1fb01e #u0a145/4096 com.google.android.partnersetup/.InstalledAppJobService
+06-13 09:00:28.038 23340 23340 D FirebaseSessions: App foregrounded on rw.mobi.app
+06-13 09:00:28.038 23340 23340 D FirebaseSessions: Process rw.mobi.app is stale
+06-13 09:00:28.044 23340 23340 D CompatibilityChangeReporter: Compat change id reported: 237531167; UID 10898; state: DISABLED
+06-13 09:00:28.049 23340 23382 D FirebaseSessions: Cold app start detected
+06-13 09:00:28.049 23340 23382 D FirebaseSessions: Process rw.mobi.app is stale
+06-13 09:00:28.052 23340 23401 W Parcel  : Expecting binder but got null!
+06-13 09:00:28.056 23340 23439 E rw.mobi.app: No package ID 6a found for ID 0x6a0b0013.
+06-13 09:00:28.057 23340 23439 I FA      : App measurement initialized, version: 170009
+06-13 09:00:28.057 23340 23439 I FA      : To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+06-13 09:00:28.057 23340 23439 I FA      : To enable faster debug mode event logging run:
+06-13 09:00:28.057 23340 23439 I FA      :   adb shell setprop debug.firebase.analytics.app rw.mobi.app
+06-13 09:00:28.060  1739  1775 D CoreBackPreview: Window{81e146a u0 rw.mobi.app/rw.mobi.app.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@968fda4, mPriority=0}
+06-13 09:00:28.064 23340 23340 D FirebaseSessions: App backgrounded on rw.mobi.app
+06-13 09:00:28.081 23340 23382 D FirebaseSessions: Session Event Type: SESSION_START
+06-13 09:00:28.081 23340 23382 D FirebaseSessions: Successfully logged Session Start event.
+06-13 09:00:28.087  3785 21725 I PhenotypeResourceReader: unable to find any Phenotype resource metadata for rw.mobi.app
+06-13 09:00:28.096  1739  1770 I system_server: Background concurrent copying GC freed 67MB AllocSpace bytes, 119(3700KB) LOS objects, 53% free, 83MB/179MB, paused 580us,7.248ms total 1.704s
+06-13 09:00:28.098 23356 23440 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10217; state: ENABLED
+06-13 09:00:28.104   704   704 I SDM     : HWCDisplay::GetColorModeCount: Supported color mode count = 3
+06-13 09:00:28.104 23340 23401 E OpenGLRenderer: Unable to match the desired swap behavior.
+06-13 09:00:28.105  3777  3777 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-13 09:00:28.106  3777  3777 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-13 09:00:28.114 23340 23381 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10898; state: ENABLED
+06-13 09:00:28.115 23340 23392 D FirebaseSessions: Notified CRASHLYTICS of new session ff99fe5982604cc89fbb5eb933501ac6
+06-13 09:00:28.116  1739  2948 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10898; state: ENABLED
+06-13 09:00:28.121 23340 23439 I FA      : Tag Manager is not found and thus will not be used
+06-13 09:00:28.132  3777  3777 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.people.contactssync.service.START pkg=com.google.android.gms }
+06-13 09:00:28.132  3777  3777 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.people.contactssync.service.START pkg=com.google.android.gms }
+06-13 09:00:28.146 23328 23397 I GooglePartnerSetup: Phenotype commit successes
+06-13 09:00:28.164 23376 23376 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-13 09:00:28.170 23376 23376 V GraphicsEnvironment: ANGLE Developer option for 'com.openai.chatgpt' set to: 'default'
+06-13 09:00:28.171 23376 23376 V GraphicsEnvironment: ANGLE GameManagerService for com.openai.chatgpt: false
+06-13 09:00:28.171 23376 23376 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+06-13 09:00:28.173 23376 23376 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+06-13 09:00:28.173 23376 23376 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+06-13 09:00:28.206  1739  2139 E VerityUtils: Failed to measure fs-verity, errno 1: /data/app/~~-PXLPnz0r3EYWPhxsJNiCw==/rw.mobi.app-Gs-WODEIQyVw8yMP391HUA==/base.apk
+06-13 09:00:28.220  3777  4831 I PeopleChimeraService: onService. callbacks = cxzl@c302170, request = com.google.android.gms.common.internal.GetServiceRequest@74e8ce9
+06-13 09:00:28.237 23356 23450 I SingleContactWidgetApiI: Refreshing widgets: []
+06-13 09:00:28.243 23376 23376 I SignatureCheck: Signature check ok
+06-13 09:00:28.243 23376 23376 D LicenseClient: Connecting to the licensing service...
+06-13 09:00:28.244  3777  4831 I PeopleChimeraService: onService. callbacks = cxzl@972d6e, request = com.google.android.gms.common.internal.GetServiceRequest@14a0c0f
+06-13 09:00:28.249 23356 23450 I SingleContactWidgetApiI: Refreshing widgets: []
+06-13 09:00:28.286  1739  1772 W System  : A resource failed to call close.
+06-13 09:00:28.303 23376 23376 D CompatibilityChangeReporter: Compat change id reported: 183155436; UID 10539; state: ENABLED
+06-13 09:00:28.312  3777  4831 I PeopleChimeraService: onService. callbacks = cxzl@48cb27a, request = com.google.android.gms.common.internal.GetServiceRequest@2a55a2b
+06-13 09:00:28.334  3777  4831 I PeopleChimeraService: onService. callbacks = cxzl@a22ae88, request = com.google.android.gms.common.internal.GetServiceRequest@721f021
+06-13 09:00:28.338  4291 15113 D ForegroundUtils: Foreground UID status:
+06-13 09:00:28.338  4291 15113 D ForegroundUtils: UID: 1002 is in foreground: true
+06-13 09:00:28.338  4291 15113 D ForegroundUtils: UID: 10164 is in foreground: true
+06-13 09:00:28.338  4291 15113 D ForegroundUtils: UID: 10238 is in foreground: false
+06-13 09:00:28.338  4291 15113 D ForegroundUtils: UID: 10243 is in foreground: true
+06-13 09:00:28.338  4291 15113 D ForegroundUtils: UID: 10250 is in foreground: false
+06-13 09:00:28.338  4291 15113 D ForegroundUtils: UID: 10898 is in foreground: false
+06-13 09:00:28.343  3777  4835 I PeopleChimeraService: onService. callbacks = cxzl@b237c46, request = com.google.android.gms.common.internal.GetServiceRequest@21d6e07
+06-13 09:00:28.374 23356 23469 D nativeloader: Load /data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/split_config.arm64_v8a.apk!/lib/arm64-v8a/libdatastore_shared_counter.so using class loader ns clns-4 (caller=/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/base.apk): ok
+06-13 09:00:28.401 14861 14865 I earchbox:search: Background concurrent copying GC freed 18MB AllocSpace bytes, 151(3764KB) LOS objects, 75% free, 12MB/48MB, paused 1.234ms,54us total 459.459ms
+06-13 09:00:28.441 23376 23376 W DdRumContentProvider: processImportance:230
+06-13 09:00:28.470 23376 23485 D CompatibilityChangeReporter: Compat change id reported: 160794467; UID 10539; state: ENABLED
+06-13 09:00:28.499  1739  4802 D ActivityManager: sync unfroze 20625 com.google.process.gapps

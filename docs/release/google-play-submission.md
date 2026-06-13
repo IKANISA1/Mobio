@@ -38,8 +38,12 @@ Last updated: 2026-06-11
 - Active scheduled-trip models/admin screens expose scheduled post state only;
   no completed trip lifecycle filter/status is shipped.
 - `maps-gateway` rejects route-computation requests with a 410 scope response;
-  Play/store copy must continue to avoid route calculation, fare quote,
-  dispatch, and payment claims.
+  this is intentional product-scope behavior. Play/store copy must continue to
+  avoid route calculation, ETA, distance, polyline, route matrix, fare quote,
+  dispatch, and payment claims. Google Routes API, Compute Route Matrix,
+  Directions API, Distance Matrix API, ETA/distance/polyline/matrix, and
+  dispatch-grade routing are out of context for this app and must not be listed
+  as Mobio release-readiness work.
 - Linked Supabase migrations and Edge Functions were updated on 2026-06-11.
   `supabase db push --linked --dry-run` reported the remote database is up to
   date, and `REQUIRE_LINKED_SUPABASE=true ./scripts/ci/verify_backend.sh`
@@ -78,11 +82,15 @@ Last updated: 2026-06-11
 12. Re-verify `PRIVACY_POLICY_URL` and `ACCOUNT_DELETION_URL` over HTTPS on
    the production/public domain.
 13. Run the final fail-closed go/no-go gate after linked Supabase, Play upload,
-   key-rotation, and device-smoke evidence exists:
-   `RELEASE_TARGET=android PLAY_SERVICE_ACCOUNT_ROTATED=true PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE=/secure/path/play-service-account-rotation.md PLAY_CONSOLE_UPLOAD_VALIDATED=true PLAY_CONSOLE_UPLOAD_EVIDENCE=/secure/path/play-console-upload.md ./scripts/release/go_no_go_check.sh`.
+   owner-approved credential-use, Google Maps server-key proof, FCM HTTP v1
+   proof, and device-smoke evidence exists:
+   `RELEASE_TARGET=android PLAY_SERVICE_ACCOUNT_RETAINED=true PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE=docs/release/evidence/play-service-account-retention-2026-06-12.md PLAY_CONSOLE_UPLOAD_VALIDATED=true PLAY_CONSOLE_UPLOAD_EVIDENCE=/secure/path/play-console-upload.md GOOGLE_MAPS_SERVER_SECRET_VALIDATED=true GOOGLE_MAPS_SERVER_SECRET_EVIDENCE=/secure/path/maps-gateway-secret.md FCM_HTTP_V1_SECRET_VALIDATED=true FCM_HTTP_V1_SECRET_EVIDENCE=/secure/path/fcm-http-v1-secret.md ./scripts/release/go_no_go_check.sh`.
    `RELEASE_TARGET=android` keeps iOS Firebase/native checks out of the Google
    Play gate; use the default target after Android is submitted and iOS release
-   work resumes.
+   work resumes. When the target includes iOS, also provide
+   `IOS_FIREBASE_APNS_VALIDATED`, `IOS_FIREBASE_APNS_EVIDENCE`,
+   `IOS_CRASHLYTICS_SYMBOLS_VALIDATED`, and
+   `IOS_CRASHLYTICS_SYMBOLS_EVIDENCE`.
    Evidence templates live under `docs/release/evidence/`; do not commit
    service-account JSON, private keys, access tokens, or credential screenshots.
    The gate rejects `*.example.md` template paths.

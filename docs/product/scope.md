@@ -54,6 +54,30 @@ systems unless the interaction is inside the new approved bus booking/payment
 surface. Active legacy-trip UI must not present Mobio as calculating,
 collecting, settling, or adjudicating trip payments.
 
+## Route Computation Boundary
+
+The active marketplace must not compute or display Google-backed route ETA,
+route distance, route duration, route polyline, fare-distance basis, automatic
+dispatch ranking, or driver/passenger route matrices. Do not recommend or enable
+Google Routes API `computeRoutes`, Google Routes API `computeRouteMatrix`,
+Directions API, Distance Matrix API, or a custom routing engine for legacy
+scheduled trip posts.
+
+The approved Google integration is limited to:
+
+- Google Places/Geocoding through the server-side `maps-gateway` for place
+  lookup and reverse geocoding.
+- Stored route labels and optional coordinates on scheduled trip posts.
+- External Google Maps deep links for map display, navigation, traffic, route
+  rendering, and trusted vehicle position viewing.
+
+`maps-gateway` returning `410` for `compute_route` is intentional product-scope
+behavior, not a missing production-readiness feature. Route ETA, route distance,
+route duration, route polylines, route matrices, fare-distance basis, and
+dispatch-grade routing are out of context for this app. They must not be added
+to Mobio code, schema, APIs, UI, store copy, release gates, or future Mobio
+scope documents.
+
 ## Legacy Code Rule
 
 Legacy payment, BioPay, ledger, ride-request, and lifecycle code may exist in

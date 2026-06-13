@@ -1,0 +1,414 @@
+06-13 08:44:45.573 I/Finsky  (20067): [784] A library licensing entry already exists for rw.mobi.app.
+06-13 08:44:45.835 V/DynamiteModule(20329): Dynamite loader version >= 2, using loadModule2NoCrashUtils
+06-13 08:44:45.988 I/Finsky:background(20504): [2] [BGP] Initializing crash detector...
+06-13 08:44:46.049 I/Finsky:background(20504): [785] SettingNotFoundException, fall through to G.downloadBytesOverMobileMaximum
+06-13 08:44:46.051 I/Finsky:background(20504): [785] SettingNotFoundException, fall through to G.downloadBytesOverMobileRecommended
+06-13 08:44:47.522 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:44:47.527 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:44:48.328 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:44:49.198 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:44:49.380 D/AndroidRuntime(20673): >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+06-13 08:44:49.406 I/AndroidRuntime(20673): Using default boot image
+06-13 08:44:49.406 I/AndroidRuntime(20673): Leaving lock profiling enabled
+06-13 08:44:49.530 E/MQTTBypassDGWStreamGroupCallbacks.cpp(18318): onStreamGroupError StreamGroupNetworkRequest request cancelled: max retries reached; last err (TransientError domain: MNSSecureTCP code: 1 detail: SecureTCP connection establish timeout)
+06-13 08:44:49.530 W/MQTTBypassDGWStreamGroupConnection.cpp(18318): Restarting due to reason: StreamError
+06-13 08:44:49.774 D/AndroidRuntime(20673): Calling main entry com.android.commands.monkey.Monkey
+06-13 08:44:49.776 W/Monkey  (20673): args: [-p, rw.mobi.app, -c, android.intent.category.LAUNCHER, 1]
+06-13 08:44:49.777 W/Monkey  (20673):  arg: "rw.mobi.app"
+06-13 08:44:49.778 W/Monkey  (20673): data="rw.mobi.app"
+06-13 08:44:49.838 W/BroadcastQueue( 1739): Skipping deliver [background] BroadcastRecord{808aa98 u-1 android.net.conn.CONNECTIVITY_CHANGE} to ReceiverList{93b22f1 20673 (unknown name)/2000/u-1 remote:ef4ac0a}: process gone or crashing
+06-13 08:44:49.872 I/ActivityTaskManager( 1739): START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=rw.mobi.app/.MainActivity} from uid 2000
+06-13 08:44:49.911 I/AndroidRuntime(20673): VM exiting with result code 0.
+06-13 08:44:49.912 I/ActivityManager( 1739): Start proc 20687:rw.mobi.app/u0a898 for top-activity {rw.mobi.app/rw.mobi.app.MainActivity}
+06-13 08:44:49.920 I/rw.mobi.app(20687): Using CollectorTypeCC GC.
+06-13 08:44:49.955 I/rw.mobi.app(20687): Failed to add image file: Dex cache count and dex file count mismatch while trying to initialize from image
+06-13 08:44:49.959 D/nativeloader(20687): Configuring clns-4 for other apk /data/app/~~cMW3FhamGi7hdCY7B-nXCw==/rw.mobi.app-K5-kdlSBQzmzIr2TSznIrA==/base.apk. target_sdk_version=35, uses_libraries=, library_path=/data/app/~~cMW3FhamGi7hdCY7B-nXCw==/rw.mobi.app-K5-kdlSBQzmzIr2TSznIrA==/lib/arm64:/data/app/~~cMW3FhamGi7hdCY7B-nXCw==/rw.mobi.app-K5-kdlSBQzmzIr2TSznIrA==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/rw.mobi.app
+06-13 08:44:49.976 V/GraphicsEnvironment(20687): ANGLE Developer option for 'rw.mobi.app' set to: 'default'
+06-13 08:44:49.976 V/GraphicsEnvironment(20687): ANGLE GameManagerService for rw.mobi.app: false
+06-13 08:44:49.986 D/FirebaseSessions(20687): Dependency to CRASHLYTICS added.
+06-13 08:44:49.991 I/FirebaseCrashlytics(20687): Initializing Firebase Crashlytics 20.0.4 for rw.mobi.app
+06-13 08:44:50.006 D/FirebaseSessions(20687): Subscriber CRASHLYTICS registered.
+06-13 08:44:50.021 W/rw.mobi.app(20687): ClassLoaderContext classpath size mismatch. expected=1, found=0 (DLC[];PCL[base.apk*781738098]{PCL[/system/framework/org.apache.http.legacy.jar*1601893742]#PCL[/system/framework/com.android.location.provider.jar*989331189]#PCL[/system/framework/com.android.media.remotedisplay.jar*373201994]} | DLC[];PCL[])
+06-13 08:44:50.024 V/DynamiteModule(20687): Dynamite loader version >= 2, using loadModule2NoCrashUtils
+06-13 08:44:50.028 D/nativeloader(20687): Load /data/app/~~cMW3FhamGi7hdCY7B-nXCw==/rw.mobi.app-K5-kdlSBQzmzIr2TSznIrA==/base.apk!/lib/arm64-v8a/libdatastore_shared_counter.so using class loader ns clns-4 (caller=/data/app/~~cMW3FhamGi7hdCY7B-nXCw==/rw.mobi.app-K5-kdlSBQzmzIr2TSznIrA==/base.apk): ok
+06-13 08:44:50.030 I/FirebaseCrashlytics(20687): Saved version control info
+06-13 08:44:50.052 D/FirebaseSessions(20687): Notified CRASHLYTICS of new session 9e3f98e087d74f9d95a7121663c152fa
+06-13 08:44:50.058 D/nativeloader(20687): Load /data/app/~~cMW3FhamGi7hdCY7B-nXCw==/rw.mobi.app-K5-kdlSBQzmzIr2TSznIrA==/base.apk!/lib/arm64-v8a/libflutter.so using class loader ns clns-4 (caller=/data/app/~~cMW3FhamGi7hdCY7B-nXCw==/rw.mobi.app-K5-kdlSBQzmzIr2TSznIrA==/base.apk): ok
+06-13 08:44:50.059 W/rw.mobi.app(20687): ClassLoaderContext classpath element checksum mismatch. expected=781738098, found=485900610 (DLC[];PCL[base.apk*781738098]{PCL[/system/framework/org.apache.http.legacy.jar*1601893742]#PCL[/system/framework/com.android.location.provider.jar*989331189]#PCL[/system/framework/com.android.media.remotedisplay.jar*373201994]} | DLC[];PCL[/data/app/~~cMW3FhamGi7hdCY7B-nXCw==/rw.mobi.app-K5-kdlSBQzmzIr2TSznIrA==/base.apk*485900610])
+06-13 08:44:50.108 D/vulkan  (20687): searching for layers in '/data/app/~~cMW3FhamGi7hdCY7B-nXCw==/rw.mobi.app-K5-kdlSBQzmzIr2TSznIrA==/lib/arm64'
+06-13 08:44:50.108 D/vulkan  (20687): searching for layers in '/data/app/~~cMW3FhamGi7hdCY7B-nXCw==/rw.mobi.app-K5-kdlSBQzmzIr2TSznIrA==/base.apk!/lib/arm64-v8a'
+06-13 08:44:50.117 I/PhenotypeResourceReader( 3785): unable to find any Phenotype resource metadata for rw.mobi.app
+06-13 08:44:50.142 E/rw.mobi.app(20687): No package ID 6a found for ID 0x6a0b0013.
+06-13 08:44:50.143 I/FA      (20687):   adb shell setprop debug.firebase.analytics.app rw.mobi.app
+06-13 08:44:50.318 D/com.llfbandit.app_links(20687): Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=rw.mobi.app/.MainActivity }
+06-13 08:44:50.349 D/FirebaseSessions(20687): App foregrounded on rw.mobi.app
+06-13 08:44:50.355 D/FirebaseSessions(20687): Process rw.mobi.app is stale
+06-13 08:44:50.361 D/CoreBackPreview( 1739): Window{6136904 u0 rw.mobi.app/rw.mobi.app.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@b869122, mPriority=0}
+06-13 08:44:50.361 D/FirebaseSessions(20687): Notified CRASHLYTICS of new session c0acc68d6c0242a9a46a082117311106
+06-13 08:44:50.363 D/FirebaseSessions(20687): App backgrounded on rw.mobi.app
+06-13 08:44:50.392 W/ProcessStats( 1739): Tracking association SourceState{86ede12 rw.mobi.app/10898 Top #3316497} whose proc state 1 is better than process ProcessState{188b4bb com.google.android.gms/10164 pkg=com.google.android.gms (sub)} proc state 8 (8 skipped)
+06-13 08:44:50.439 W/AdvertisingIdSettings( 3777): Package rw.mobi.app failed Ad Id permission check. Apps that target Android SDK 33 or higher should declare com.google.android.gms.permission.AD_ID in the app manifest to access Ad Id.
+06-13 08:44:50.462 W/AdvertisingIdSettings( 3777): Package rw.mobi.app failed Ad Id permission check. Apps that target Android SDK 33 or higher should declare com.google.android.gms.permission.AD_ID in the app manifest to access Ad Id.
+06-13 08:44:50.483 I/NetworkScheduler( 3785): (REDACTED) Error inserting %s
+06-13 08:44:50.485 I/NetworkScheduler( 3785): (REDACTED) Error inserting %s
+06-13 08:44:50.544 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:44:50.906 D/NetworkMonitor/416( 2643): PROBE_HTTPS https://www.google.com/generate_204 Probe failed with exception java.net.SocketTimeoutException: Read timed out
+06-13 08:44:51.804 D/ConnectivityService( 1739): requestNetwork for uid/pid:10898/20687 activeRequest: null callbackRequest: 121759 [NetworkRequest [ REQUEST id=121760, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10898 RequestorUid: 10898 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|LOST|NC
+06-13 08:44:51.808 D/OemPaidWifiNetworkFactory( 1739): got request NetworkRequest [ REQUEST id=121760, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10898 RequestorUid: 10898 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]
+06-13 08:44:51.808 D/MultiInternetWifiNetworkFactory( 1739): got request NetworkRequest [ REQUEST id=121760, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10898 RequestorUid: 10898 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]
+06-13 08:44:51.809 D/WifiNetworkFactory( 1739): got request NetworkRequest [ REQUEST id=121760, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10898 RequestorUid: 10898 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]
+06-13 08:44:51.809 D/UntrustedWifiNetworkFactory( 1739): got request NetworkRequest [ REQUEST id=121760, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10898 RequestorUid: 10898 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]
+06-13 08:44:51.898 I/NetworkScheduler( 3785): (REDACTED) Error inserting %s
+06-13 08:44:52.898 E/msys    (18318): E[N MQTT]onConnectError(562)=>Connect Error: folly::AsyncSocketException: AsyncSocketException: connect failed, type = Socket not open, errno = 110 (Connection timed out)
+06-13 08:44:54.747 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:44:54.751 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:44:55.395 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:44:56.034 D/ProfileInstaller(20687): Installing profile for rw.mobi.app
+06-13 08:44:56.092 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:00.465 W/ProcessStats( 1739): Tracking association SourceState{86ede12 rw.mobi.app/10898 Top #3316613} whose proc state 1 is better than process ProcessState{188b4bb com.google.android.gms/10164 pkg=com.google.android.gms (sub)} proc state 8 (236 skipped)
+06-13 08:45:01.980 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:01.986 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:02.076 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:02.846 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:05.706 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:05.706 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:05.706 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:05.706 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:05.707 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:05.707 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:09.214 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:09.220 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:09.847 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:10.770 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:16.450 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:16.458 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:17.651 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:18.034 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:21.749 D/AndroidRuntime(20992): >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+06-13 08:45:21.754 I/AndroidRuntime(20992): Using default boot image
+06-13 08:45:21.754 I/AndroidRuntime(20992): Leaving lock profiling enabled
+06-13 08:45:21.876 D/AndroidRuntime(20992): Calling main entry com.android.commands.uiautomator.Launcher
+06-13 08:45:23.137 I/AccessibilityNodeInfoDumper(20992): Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@3ae7f; boundsInParent: Rect(0, 0 - 0, 0); boundsInScreen: Rect(573, 1946 - 573, 1946); packageName: com.android.systemui; className: android.widget.LinearLayout; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; viewIdResName: com.android.systemui:id/ambient_indication_info_container; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+06-13 08:45:23.155 D/AndroidRuntime(20992): Shutting down VM
+06-13 08:45:23.675 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:23.679 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:24.331 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:26.210 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:30.906 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:30.911 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:33.139 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:35.393 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:38.139 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:38.145 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:38.971 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:45.375 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:45.380 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:45.469 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:47.790 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:49.642 E/envl    ( 9819): java.util.concurrent.ExecutionException: fepk: Account was no longer valid when task executed.
+06-13 08:45:50.191 E/fekb    ( 9819): java.lang.IllegalStateException: Room cannot verify the data integrity. Looks like you've changed schema but forgot to update the version number. You can simply fix this by increasing the version number. Expected identity hash: 9c4eda4e81021ecdb487965477e19017, found: ebf2b5d7d34e9c66dab22c6d16796d4a
+06-13 08:45:50.359 I/NearbyDiscovery( 3785): (REDACTED) ApFastPairScanner: eventType=%s, intReq=%s, scanning=%s, scanAllowed=%s, bleEnabled=%s, lockScanRate=%s, startScanningByLowPowerMode=%s
+06-13 08:45:50.564 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:45:50.615 I/NearbyDiscovery( 3785): (REDACTED) ApFastPairScanner: eventType=%s, intReq=%s, scanning=%s, scanAllowed=%s, bleEnabled=%s, lockScanRate=%s, startScanningByLowPowerMode=%s
+06-13 08:45:50.830 I/org.webrtc.Logging(21049): CrashStartupListener: Checking conference crashes for 4 account(s).
+06-13 08:45:51.032 D/nativeloader(21049): Load /data/app/~~nefhBUHkfUPG9-g-Qfs19w==/com.google.android.apps.tachyon-orDPvV_p0KuaSdpx7U9pLw==/lib/arm64/libnative_crash_handler_jni.so using class loader ns clns-4 (caller=/data/app/~~nefhBUHkfUPG9-g-Qfs19w==/com.google.android.apps.tachyon-orDPvV_p0KuaSdpx7U9pLw==/base.apk!classes4.dex): ok
+06-13 08:45:52.262 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.mainline.primary.libs' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:52.298 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.uwb' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:52.593 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.appsearch' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:52.596 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:52.599 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:52.600 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.art' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:52.650 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.mediaprovider' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:52.705 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.resolv' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:52.738 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.media' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:52.866 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.sdkext' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:52.901 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.adservices' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:52.902 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.tethering' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:52.998 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.cellbroadcast' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:53.223 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.tzdata4' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:53.257 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.permission' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:53.321 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.wifi' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:54.384 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:54.492 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:55.320 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.media.swcodec' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:55.446 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.btservices' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:55.505 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.adbd' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:55.569 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.conscrypt' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:55.627 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.neuralnetworks' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:55.634 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.ipsec' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:55.658 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.ondevicepersonalization' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:55.766 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.extservices' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:55.864 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.os.statsd' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:55.918 W/Finsky  (20067): [2] STU: Failed to get storage stats for package 'com.google.android.scheduling' (1601: Error getting stats: android.content.pm.PackageManager.NameNotFoundException)
+06-13 08:45:59.817 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:45:59.821 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:00.801 I/NearbyDiscovery( 3785): (REDACTED) ApFastPairScanner: eventType=%s, intReq=%s, scanning=%s, scanAllowed=%s, bleEnabled=%s, lockScanRate=%s, startScanningByLowPowerMode=%s
+06-13 08:46:01.142 I/NearbyDiscovery( 3785): (REDACTED) ApFastPairScanner: eventType=%s, intReq=%s, scanning=%s, scanAllowed=%s, bleEnabled=%s, lockScanRate=%s, startScanningByLowPowerMode=%s
+06-13 08:46:01.730 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:01.847 E/MQTTBypassDGWStreamGroupCallbacks.cpp(18318): onStreamGroupError StreamGroupNetworkRequest request cancelled: max retries reached; last err (TransientError domain: MNSSecureTCP code: 1 detail: SecureTCP connection establish timeout)
+06-13 08:46:01.848 W/MQTTBypassDGWStreamGroupConnection.cpp(18318): Restarting due to reason: StreamError
+06-13 08:46:02.871 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:05.245 I/vendor.rmt_storage( 1121): wakelock acquired: 1, error no: 11
+06-13 08:46:05.343 I/vendor.rmt_storage( 1121): rmt_storage_client_thread: /boot/modem_fs2: About to block rmt_storage client thread (th_id: 529853914288) wakelock released: 1, error no: 0
+06-13 08:46:07.048 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:07.054 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:07.875 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:09.109 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:14.280 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:14.285 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:14.377 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:15.956 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:17.834 D/AndroidRuntime(21257): >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+06-13 08:46:17.838 I/AndroidRuntime(21257): Using default boot image
+06-13 08:46:17.838 I/AndroidRuntime(21257): Leaving lock profiling enabled
+06-13 08:46:17.955 D/AndroidRuntime(21257): Calling main entry com.android.commands.svc.Svc
+06-13 08:46:17.969 D/AndroidRuntime(21257): Shutting down VM
+06-13 08:46:17.991 I/NearbyDiscovery( 3785): (REDACTED) ApFastPairScanner: eventType=%s, intReq=%s, scanning=%s, scanAllowed=%s, bleEnabled=%s, lockScanRate=%s, startScanningByLowPowerMode=%s
+06-13 08:46:18.085 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:46:18.113 I/NearbyDiscovery( 3785): (REDACTED) ApFastPairScanner: eventType=%s, intReq=%s, scanning=%s, scanAllowed=%s, bleEnabled=%s, lockScanRate=%s, startScanningByLowPowerMode=%s
+06-13 08:46:21.516 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:21.520 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:21.607 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:22.887 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:23.052 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:28.749 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:28.755 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:29.707 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:29.802 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:30.729 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:30.919 I/NearbyDiscovery( 3785): (REDACTED) ApFastPairScanner: eventType=%s, intReq=%s, scanning=%s, scanAllowed=%s, bleEnabled=%s, lockScanRate=%s, startScanningByLowPowerMode=%s
+06-13 08:46:31.236 I/NearbyDiscovery( 3785): (REDACTED) ApFastPairScanner: eventType=%s, intReq=%s, scanning=%s, scanAllowed=%s, bleEnabled=%s, lockScanRate=%s, startScanningByLowPowerMode=%s
+06-13 08:46:31.671 E/msys    (18676): E[N WA]_WAJMNSStreamImplOnMNSFailure(287)=>[LogLevel:I] WAJMNSStream/impl/callback/onMNSFailure/p=0xb400006e79eca070 (error=MNSTCPSocketReceive(): Received EOF)
+06-13 08:46:35.984 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:35.990 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:37.080 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:37.906 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:38.618 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:43.206 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:43.211 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:44.015 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:44.138 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:49.573 I/NearbyDiscovery( 3785): (REDACTED) ApFastPairScanner: eventType=%s, intReq=%s, scanning=%s, scanAllowed=%s, bleEnabled=%s, lockScanRate=%s, startScanningByLowPowerMode=%s
+06-13 08:46:49.691 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:46:49.705 I/NearbyDiscovery( 3785): (REDACTED) ApFastPairScanner: eventType=%s, intReq=%s, scanning=%s, scanAllowed=%s, bleEnabled=%s, lockScanRate=%s, startScanningByLowPowerMode=%s
+06-13 08:46:50.425 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:50.429 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:52.273 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:52.683 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:57.648 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:57.653 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:58.734 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:46:59.221 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:04.854 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:47:04.876 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:04.879 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:06.119 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:06.968 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:09.210 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:09.216 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:12.107 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:12.113 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:13.916 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:15.198 E/MQTTBypassDGWStreamGroupCallbacks.cpp(18318): onStreamGroupError StreamGroupNetworkRequest request cancelled: max retries reached; last err (TransientError domain: MNSSecureTCP code: 1 detail: SecureTCP connection establish timeout)
+06-13 08:47:15.199 W/MQTTBypassDGWStreamGroupConnection.cpp(18318): Restarting due to reason: StreamError
+06-13 08:47:16.223 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:16.759 D/AndroidRuntime(21422): >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+06-13 08:47:16.764 I/AndroidRuntime(21422): Using default boot image
+06-13 08:47:16.764 I/AndroidRuntime(21422): Leaving lock profiling enabled
+06-13 08:47:16.878 D/AndroidRuntime(21422): Calling main entry com.android.commands.monkey.Monkey
+06-13 08:47:16.879 W/Monkey  (21422): args: [-p, rw.mobi.app, -c, android.intent.category.LAUNCHER, 1]
+06-13 08:47:16.880 W/Monkey  (21422):  arg: "rw.mobi.app"
+06-13 08:47:16.880 W/Monkey  (21422): data="rw.mobi.app"
+06-13 08:47:16.900 W/BroadcastQueue( 1739): Skipping deliver [background] BroadcastRecord{f97455b u-1 android.net.conn.CONNECTIVITY_CHANGE} to ReceiverList{9ec71f8 21422 (unknown name)/2000/u-1 remote:52d5a55}: process gone or crashing
+06-13 08:47:16.930 I/ActivityTaskManager( 1739): START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=rw.mobi.app/.MainActivity} from uid 2000
+06-13 08:47:16.939 D/com.llfbandit.app_links(20687): Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=rw.mobi.app/.MainActivity }
+06-13 08:47:16.945 D/FirebaseSessions(20687): App foregrounded on rw.mobi.app
+06-13 08:47:16.951 W/ProcessStats( 1739): Tracking association SourceState{86ede12 rw.mobi.app/10898 Top #3317239} whose proc state 1 is better than process ProcessState{188b4bb com.google.android.gms/10164 pkg=com.google.android.gms (sub)} proc state 8 (32 skipped)
+06-13 08:47:16.962 I/AndroidRuntime(21422): VM exiting with result code 0.
+06-13 08:47:16.988 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:47:17.445 W/ActivityTaskManager( 1739): Activity top resumed state loss timeout for ActivityRecord{726b262 u0 rw.mobi.app/.MainActivity} t483}
+06-13 08:47:17.446 W/ActivityTaskManager( 1739): Activity pause timeout for ActivityRecord{726b262 u0 rw.mobi.app/.MainActivity} t483}
+06-13 08:47:19.327 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:19.331 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:19.936 D/FirebaseSessions(20687): App backgrounded on rw.mobi.app
+06-13 08:47:20.102 W/AdvertisingIdSettings( 3777): Package rw.mobi.app failed Ad Id permission check. Apps that target Android SDK 33 or higher should declare com.google.android.gms.permission.AD_ID in the app manifest to access Ad Id.
+06-13 08:47:20.110 W/AdvertisingIdSettings( 3777): Package rw.mobi.app failed Ad Id permission check. Apps that target Android SDK 33 or higher should declare com.google.android.gms.permission.AD_ID in the app manifest to access Ad Id.
+06-13 08:47:20.145 I/NetworkScheduler( 3785): (REDACTED) Error inserting %s
+06-13 08:47:21.335 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:21.340 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:26.566 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:26.571 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:26.657 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:30.317 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:33.321 E/msys    (18318): E[N MQTT]onConnectError(562)=>Connect Error: folly::AsyncSocketException: AsyncSocketException: connect failed, type = Socket not open, errno = 110 (Connection timed out)
+06-13 08:47:33.785 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:33.790 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:34.685 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:39.228 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:39.228 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:39.229 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:39.231 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:40.576 I/vendor.rmt_storage( 1121): wakelock acquired: 1, error no: 11
+06-13 08:47:40.671 I/vendor.rmt_storage( 1121): rmt_storage_client_thread: /boot/modem_fs1: About to block rmt_storage client thread (th_id: 540886715568) wakelock released: 1, error no: 0
+06-13 08:47:41.015 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:41.020 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:41.108 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:41.937 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:48.246 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:48.252 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:49.142 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:49.230 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:55.480 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:55.485 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:56.188 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:47:57.089 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:02.715 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:02.721 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:03.526 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:04.362 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:08.363 W/byml    (14861): android.content.pm.PackageManager$NameNotFoundException: com.google.android.apps.weather
+06-13 08:48:09.948 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:09.953 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:11.078 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:17.185 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:17.191 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:18.645 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:18.724 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:21.702 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:21.707 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:24.414 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:24.419 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:25.302 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:27.386 E/MQTTBypassDGWStreamGroupCallbacks.cpp(18318): onStreamGroupError StreamGroupNetworkRequest request cancelled: max retries reached; last err (TransientError domain: MNSSecureTCP code: 1 detail: SecureTCP connection establish timeout)
+06-13 08:48:27.387 W/MQTTBypassDGWStreamGroupConnection.cpp(18318): Restarting due to reason: StreamError
+06-13 08:48:28.411 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:31.646 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:31.651 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:33.857 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:38.880 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:38.885 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:38.973 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:46.116 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:46.121 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:47.474 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:53.354 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:53.360 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:48:55.566 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:00.588 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:00.594 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:01.747 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:07.810 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:07.813 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:08.638 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:15.046 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:15.051 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:16.279 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:19.809 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:22.276 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:22.282 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:24.238 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:27.560 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:49:29.510 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:29.516 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:29.603 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:30.776 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:36.655 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:49:36.741 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:36.745 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:38.251 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:39.261 E/MQTTBypassDGWStreamGroupCallbacks.cpp(18318): onStreamGroupError StreamGroupNetworkRequest request cancelled: max retries reached; last err (TransientError domain: MNSSecureTCP code: 1 detail: SecureTCP connection establish timeout)
+06-13 08:49:39.262 W/MQTTBypassDGWStreamGroupConnection.cpp(18318): Restarting due to reason: StreamError
+06-13 08:49:40.286 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:42.731 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:49:43.970 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:43.975 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:44.594 I/vendor.rmt_storage( 1121): wakelock acquired: 1, error no: 11
+06-13 08:49:44.709 I/vendor.rmt_storage( 1121): rmt_storage_client_thread: /boot/modem_fs2: About to block rmt_storage client thread (th_id: 529853914288) wakelock released: 1, error no: 0
+06-13 08:49:45.318 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:45.777 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:49:48.816 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:49:51.201 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:51.206 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:51.295 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:51.851 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:49:53.139 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:58.429 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:49:58.435 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:00.048 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:00.349 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:05.665 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:05.670 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:05.674 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:05.674 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:05.675 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:05.675 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:05.675 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:05.675 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:07.174 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:07.243 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:09.215 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:09.220 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:12.898 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:12.905 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:13.751 E/msys    (18318): E[N MQTT]onConnectError(562)=>Connect Error: folly::AsyncSocketException: AsyncSocketException: connect failed, type = Socket not open, errno = 110 (Connection timed out)
+06-13 08:50:14.740 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:14.908 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:18.847 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:20.127 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:20.135 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:21.082 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:21.999 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:27.359 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:27.364 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:27.453 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:28.154 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:34.374 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:50:34.592 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:34.597 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:36.784 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:37.032 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:39.227 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:39.229 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:39.229 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:39.234 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:40.442 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:50:41.826 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:41.831 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:42.559 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:43.359 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:49.059 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:49.064 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:50.477 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:51.353 E/MQTTBypassDGWStreamGroupCallbacks.cpp(18318): onStreamGroupError StreamGroupNetworkRequest request cancelled: max retries reached; last err (TransientError domain: MNSSecureTCP code: 1 detail: SecureTCP connection establish timeout)
+06-13 08:50:51.354 W/MQTTBypassDGWStreamGroupConnection.cpp(18318): Restarting due to reason: StreamError
+06-13 08:50:51.644 E/LocSvc_APIClientBase( 1078): onResponseCb:917] ERROR: 5 ID: 2772
+06-13 08:50:51.684 D/Diag_Lib( 1085):  Diag_LSM_Init: Failed to open handle to diag driver, error = 13
+06-13 08:50:51.693 E/LocSvc_misc_utils( 1078): logDlError:129] dlopen error: dlopen failed: library "libloc_api_wds.so" not found
+06-13 08:50:51.707 D/Diag_Lib( 1085):  Diag_LSM_Init: Failed to open handle to diag driver, error = 13
+06-13 08:50:51.707 D/Diag_Lib( 1085):  Diag_LSM_Init: Failed to open handle to diag driver, error = 13
+06-13 08:50:51.728 D/Diag_Lib( 1085):  Diag_LSM_Init: Failed to open handle to diag driver, error = 13
+06-13 08:50:52.369 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:52.971 D/LOWI-9.0.0.89.e( 1431): [LOWIScanResultReceiver] Send scan meas to listener
+06-13 08:50:52.971 D/LOWI-9.0.0.89.e( 1431): [LOWIScanResultReceiver] Enter passive listening mode
+06-13 08:50:52.973 D/LOWI-9.0.0.89.e( 1431): [LOWIControllerExtn] sendLOWILpDiscoveryScanResponse: Not a discovery scan response
+06-13 08:50:56.293 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:56.299 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:50:58.241 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:01.673 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:51:03.529 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:03.534 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:03.622 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:04.429 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:07.747 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:51:10.759 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:10.765 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:10.798 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:51:12.335 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:12.808 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:16.865 I/NullBinder( 3785): NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 08:51:17.994 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:17.999 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:19.933 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:20.389 E/msys    (18318): E[N mns:DGWClient]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:21.331 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname
+06-13 08:51:21.332 E/msys    (18318): E[N mns:TigonMNS]_LogError(304)=>Failed to resolve using system DNS resolver, getaddrinfo(): No address associated with hostname

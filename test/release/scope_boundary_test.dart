@@ -68,38 +68,46 @@ void main() {
       expect(editState, isNot(contains('BiopayHandleType')));
     });
 
-    test('admin payment review surface is not in active navigation', () {
-      final router = File('lib/core/router/app_router.dart').readAsStringSync();
-      final adminUi = File(
-        'lib/features/admin/widgets/admin_ui.dart',
-      ).readAsStringSync();
-      final adminService = File(
-        'lib/core/services/admin_service.dart',
-      ).readAsStringSync();
-      final complianceService = File(
-        'lib/core/services/admin/admin_compliance_service.dart',
-      ).readAsStringSync();
-      final adminModels = File(
-        'packages/shared-types/lib/src/models/admin/admin_models.dart',
-      ).readAsStringSync();
+    test(
+      'admin BioPay ops is explicit and legacy finance review is absent',
+      () {
+        final router = File(
+          'lib/core/router/app_router.dart',
+        ).readAsStringSync();
+        final adminUi = File(
+          'lib/features/admin/widgets/admin_ui.dart',
+        ).readAsStringSync();
+        final adminService = File(
+          'lib/core/services/admin_service.dart',
+        ).readAsStringSync();
+        final complianceService = File(
+          'lib/core/services/admin/admin_compliance_service.dart',
+        ).readAsStringSync();
+        final adminModels = File(
+          'packages/shared-types/lib/src/models/admin/admin_models.dart',
+        ).readAsStringSync();
 
-      expect(
-        File(
-          'lib/features/admin/admin_finance_review_screen.dart',
-        ).existsSync(),
-        isFalse,
-      );
-      expect(router, isNot(contains('admin_finance_review_screen.dart')));
-      expect(router, contains("path: '/admin/finance'"));
-      expect(router, contains('ScopeUnavailableScreen'));
-      expect(adminUi, isNot(contains("label: 'Finance'")));
-      expect(adminUi, isNot(contains("route: '/admin/finance'")));
-      expect(adminService, isNot(contains('listRiskFlags')));
-      expect(adminService, isNot(contains('reviewRiskFlag')));
-      expect(complianceService, isNot(contains('rpc_admin_list_risk_flags')));
-      expect(complianceService, isNot(contains('admin-review-transaction')));
-      expect(adminModels, isNot(contains('AdminRiskFlagItem')));
-    });
+        expect(
+          File(
+            'lib/features/admin/admin_finance_review_screen.dart',
+          ).existsSync(),
+          isFalse,
+        );
+        expect(router, isNot(contains('admin_finance_review_screen.dart')));
+        expect(router, contains("path: '/admin/biopay'"));
+        expect(router, contains("path: '/admin/finance'"));
+        expect(router, contains("=> '/admin/biopay'"));
+        expect(adminUi, isNot(contains("label: 'Finance'")));
+        expect(adminUi, contains("label: 'BioPay'"));
+        expect(adminUi, contains("route: '/admin/biopay'"));
+        expect(adminUi, isNot(contains("route: '/admin/finance'")));
+        expect(adminService, isNot(contains('listRiskFlags')));
+        expect(adminService, isNot(contains('reviewRiskFlag')));
+        expect(complianceService, isNot(contains('rpc_admin_list_risk_flags')));
+        expect(complianceService, isNot(contains('admin-review-transaction')));
+        expect(adminModels, isNot(contains('AdminRiskFlagItem')));
+      },
+    );
 
     test(
       'login copy stays within discovery, trips, chat, and profile scope',
@@ -270,7 +278,7 @@ void main() {
       expect(referenceMap, contains('Confirm Match'));
       expect(referenceMap, contains('hide the raw full USSD string'));
       expect(referenceMap, contains('BioPay Ops'));
-      expect(referenceMap, contains('/admin/finance'));
+      expect(referenceMap, contains('/admin/biopay'));
       expect(referenceMap, contains('RWF amount field'));
       expect(
         referenceMap,
@@ -357,7 +365,6 @@ void main() {
       expect(biopayScreen, contains('straight_1'));
       expect(biopayScreen, contains('turn_pose'));
       expect(biopayScreen, contains('straight_2'));
-      expect(biopayScreen, contains('Center, Turn, Hold'));
       expect(biopayScreen, contains('_FittedCameraPreview'));
       expect(biopayScreen, contains('_BioPayFaceOvalGuide'));
       expect(biopayScreen, contains('_PoseCueStrip'));
@@ -365,8 +372,10 @@ void main() {
         biopayScreen,
         contains('Camera permission is required to enroll your face'),
       );
-      expect(biopayScreen, contains('Amount (RWF, optional)'));
-      expect(biopayScreen, contains('AMOUNT TO RECEIVE'));
+      expect(biopayScreen, isNot(contains('Amount (RWF, optional)')));
+      expect(biopayScreen, contains('AMOUNT'));
+      expect(biopayScreen, contains('_BioPayReceiveAmountField'));
+      expect(biopayScreen, contains('GroupedWholeNumberTextInputFormatter'));
       expect(biopayScreen, contains('Number'));
       expect(biopayScreen, contains('Code'));
       expect(biopayScreen, isNot(contains('MoMo number / MoMo Pay code')));
@@ -647,8 +656,6 @@ void main() {
           r'REQUIRE_IOS_NATIVE="$([[ "$release_target" == "android" ]] && echo false || echo true)"',
         ),
       );
-      expect(goNoGoScript, contains('PLAY_SERVICE_ACCOUNT_ROTATED'));
-      expect(goNoGoScript, contains('PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE'));
       expect(goNoGoScript, contains('PLAY_SERVICE_ACCOUNT_RETAINED'));
       expect(goNoGoScript, contains('PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE'));
       expect(goNoGoScript, contains('PLAY_CONSOLE_UPLOAD_VALIDATED'));
@@ -849,7 +856,10 @@ void main() {
       );
       expect(runbook, contains('preflight_secret_history_purge.sh'));
       expect(playChecklist, contains('preflight_secret_history_purge.sh'));
-      expect(playChecklist, contains('PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE'));
+      expect(
+        playChecklist,
+        contains('PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE'),
+      );
       expect(playChecklist, contains('PLAY_CONSOLE_UPLOAD_EVIDENCE'));
       expect(scriptsReadme, contains('preflight_secret_history_purge.sh'));
       expect(

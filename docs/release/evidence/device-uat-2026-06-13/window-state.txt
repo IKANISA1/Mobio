@@ -1,0 +1,3 @@
+  mCurrentFocus=Window{ef516da u0 NotificationShade}
+  mFocusedApp=ActivityRecord{726b262 u0 rw.mobi.app/.MainActivity} t483}
+    mAwake=true mScreenOnEarly=true mScreenOnFully=true

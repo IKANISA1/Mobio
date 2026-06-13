@@ -10,6 +10,7 @@ import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
+import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_confirm_dialog.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
@@ -238,10 +239,10 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
 
   Future<void> _showCampaignDetails(AdminCampaignApprovalItem campaign) async {
     final detailFuture = _loadCampaignDetail(campaign.id);
-    await showModalBottomSheet<void>(
+    await MobiBottomSheet.show<void>(
       context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
+      title: campaign.title,
+      maxHeightFraction: 0.9,
       builder: (context) =>
           _CampaignDetailSheet(campaign: campaign, detailFuture: detailFuture),
     );
@@ -1055,34 +1056,21 @@ class _CampaignDetailSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    return FractionallySizedBox(
-      heightFactor: 0.9,
+    return SizedBox(
+      height: MediaQuery.sizeOf(context).height * 0.72,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg,
-          AppSpacing.md,
-          AppSpacing.lg,
-          AppSpacing.lg,
-        ),
+        padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, 0),
         child: Column(
           children: [
-            Container(
-              width: 44,
-              height: 4,
-              decoration: BoxDecoration(
-                color: cs.outlineVariant,
-                borderRadius: BorderRadius.circular(999),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.lg),
             Row(
               children: [
                 Expanded(
                   child: Text(
-                    campaign.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.titleLg.copyWith(color: cs.onSurface),
+                    _statusLabel(campaign.status),
+                    style: AppTypography.bodySm.copyWith(
+                      color: cs.onSurfaceVariant,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 IconButton(

@@ -5,7 +5,6 @@ import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/admin_service.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/admin/models/admin_users_state.dart';
 import 'package:mobi_app/features/admin/providers/admin_users_provider.dart';
 import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
@@ -15,6 +14,7 @@ import 'package:mobi_app/features/admin/widgets/admin_user_metrics.dart';
 import 'package:mobi_app/features/admin/widgets/admin_user_sheet.dart';
 import 'package:mobi_app/features/admin/widgets/admin_user_widgets.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 
 /// Admin user directory with search, filters, bulk actions, and detail review.
 class AdminUsersScreen extends ConsumerStatefulWidget {
@@ -54,15 +54,8 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
   Future<void> _showUserSheet(AdminUserListItem user) async {
     final currentUserId = ref.read(adminServiceProvider).currentUserId;
 
-    await showModalBottomSheet<void>(
+    await MobiBottomSheet.show<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(
-        context,
-      ).extension<MobiThemeExtension>()!.surfaceContainerLowest,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-      ),
       builder: (context) => AdminUserSheet(
         user: user,
         currentUserId: currentUserId,

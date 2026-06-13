@@ -70,6 +70,11 @@ Date: 2026-05-06
 - `supabase db query --linked --file supabase/tests/backend_security_assertions.sql`
 - Cloudflare Pages deploy checks and header verification
 - Firebase/Crashlytics/Remote Config production verification
+- Google/Firebase API inventory verification from
+  `docs/reports/google_api_sdk_findings.md`, including Maps gateway secret
+  evidence, maps-gateway tests, iOS Firebase/APNs evidence where applicable, and
+  FCM HTTP v1 deployment evidence. Route APIs are not part of this validation
+  because they are out of context for Mobio.
 - Google Play upload/draft validation
 - iOS no-codesign and full archive validation on a working macOS/iOS toolchain
 

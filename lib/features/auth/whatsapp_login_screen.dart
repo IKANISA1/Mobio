@@ -42,7 +42,6 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
   String _number = '';
   String _countryCode = '+250';
   String? _error;
-  String? _statusMessage;
   int? _attemptsRemaining;
   bool _sendingCode = false;
   bool _verifyingCode = false;
@@ -93,7 +92,6 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
     setState(() {
       _sendingCode = true;
       _error = null;
-      _statusMessage = null;
       _attemptsRemaining = null;
     });
 
@@ -113,11 +111,6 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
       setState(() {
         _sendingCode = false;
         _otpRequested = true;
-        _statusMessage =
-            result.message ??
-            (isResend
-                ? 'A fresh verification code was sent to WhatsApp.'
-                : 'Verification code sent to WhatsApp.');
       });
       return;
     }
@@ -137,7 +130,6 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
     setState(() {
       _verifyingCode = true;
       _error = null;
-      _statusMessage = null;
       _attemptsRemaining = null;
     });
 
@@ -180,7 +172,6 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
     setState(() {
       _otpRequested = false;
       _error = null;
-      _statusMessage = null;
       _attemptsRemaining = null;
       _resendCooldown = 0;
       _otpController.clear();
@@ -421,28 +412,10 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
       );
     }
 
-    if (_statusMessage != null) {
-      return const _LoginNotice(
-        icon: LucideIcons.badgeCheck,
-        title: 'Code sent',
-        subtitle: null,
-        accent: AppColors.brandMintGreen,
-      );
-    }
-
-    return _LoginNotice(
-      icon: _otpRequested ? LucideIcons.timer : LucideIcons.lock,
-      title: _otpRequested ? 'Code required' : 'WhatsApp',
-      subtitle: null,
-      accent: _otpRequested ? AppColors.brandMintGreen : AppColors.info,
-    );
+    return const SizedBox.shrink();
   }
 
-  bool get _shouldShowNotice =>
-      _otpRequested ||
-      _error != null ||
-      _attemptsRemaining != null ||
-      _statusMessage != null;
+  bool get _shouldShowNotice => _error != null || _attemptsRemaining != null;
 }
 
 class _ChromeCircleButton extends StatelessWidget {

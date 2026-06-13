@@ -1,17 +1,17 @@
 # BioPay Live Readiness Evidence
 
-Generated: 2026-06-13T05:10:30Z
+Generated: 2026-06-13T06:56:07Z
 Repository: /Volumes/PRO-G40/MOBI/mobi_app
 
 ## Result
 
-- Checks run: 55
-- Failures: 0
-- Warnings: 1
-- Live AWS required: false
+- Checks run: 59
+- Failures: 7
+- Warnings: 0
+- Live AWS required: true
 - Live Supabase required: true
 - Live Android device required: true
-- Strict live proof required: false
+- Strict live proof required: true
 
 ## Checks
 
@@ -21,7 +21,7 @@ Repository: /Volumes/PRO-G40/MOBI/mobi_app
 - PASS: BioPay enrollment route - lib/core/router/app_router.dart contains 'path: '/biopay/enroll''
 - PASS: BioPay NFC route - lib/core/router/app_router.dart contains 'path: '/biopay/nfc''
 - PASS: No public BioPay activity route - lib/core/router/app_router.dart does not contain 'path: '/biopay/activity''
-- PASS: Admin BioPay route - lib/core/router/app_router.dart contains 'path: '/admin/finance''
+- PASS: Admin BioPay route - lib/core/router/app_router.dart contains 'path: '/admin/biopay''; '/admin/finance' remains a compatibility redirect
 - PASS: Profile BioPay enrollment entry - lib/features/profile/profile_screen.dart contains 'BioPay Face'
 - PASS: Profile routes to enrollment - lib/core/router/screen_wrappers.dart contains 'context.push('/biopay/enroll')'
 - PASS: USSD dialer handoff - lib/core/services/biopay_ussd_service.dart contains 'Uri.parse('tel:'
@@ -62,10 +62,14 @@ Repository: /Volumes/PRO-G40/MOBI/mobi_app
 - PASS: Deno edge check - biopay-face-provider compiles
 - PASS: Deno edge tests - biopay-face-provider metadata contract passed
 - PASS: Focused Flutter BioPay tests - feature, router, and boundary tests passed
-- WARN: Live AWS provider proof - skipped; set REQUIRE_BIOPAY_AWS_LIVE=true to require AWS env/config proof
-- PASS: env BIOPAY_FACE_HEALTH_URL - present
+- FAIL: env FACE_PROVIDER - missing
+- FAIL: FACE_PROVIDER value - expected aws_rekognition
+- FAIL: env AWS_REGION - missing
+- FAIL: env AWS_ACCESS_KEY_ID - missing
+- FAIL: env AWS_SECRET_ACCESS_KEY - missing
+- FAIL: env AWS_REKOGNITION_COLLECTION_ID - missing
+- FAIL: env BIOPAY_FACE_HEALTH_URL - missing
 - PASS: env SUPABASE_ANON_KEY - present
-- PASS: Live BioPay face health - HTTP 200 AWS provider health
 - PASS: Device camera feature - 13111JEC215558 exposes android.hardware.camera
 - PASS: Device NFC feature - 13111JEC215558 exposes android.hardware.nfc
 - PASS: Installed package permissions - rw.mobi.app requests camera and NFC

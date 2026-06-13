@@ -6,6 +6,7 @@ import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
+import 'package:mobi_app/core/services/google_maps_deep_link_service.dart';
 import 'package:mobi_app/core/services/location_service.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
@@ -18,7 +19,6 @@ import 'package:mobi_app/shared/widgets/driver_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
-import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_top_command_bar.dart';
 import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
@@ -47,6 +47,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   bool _isLoading = true;
   bool _hasError = false;
   double? _userLat;
+  double? _userLng;
   LocationService get _locationService => ref.read(locationServiceProvider);
 
   DriverLocationService get _driverLocationService =>
@@ -93,6 +94,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
       if (mounted && position != null) {
         setState(() {
           _userLat = position.latitude;
+          _userLng = position.longitude;
         });
 
         final drivers = await _driverLocationService.findNearbyDrivers(
@@ -202,9 +204,34 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
       _vehicleTypes = VehicleTypeModel.fallbackTypes;
       _nearbyDrivers = drivers;
       _userLat = -1.9441;
+      _userLng = 30.0619;
       _isLoading = false;
       _hasError = false;
     });
+  }
+
+  Future<void> _openDriversInGoogleMaps() async {
+    final userLat = _userLat;
+    final userLng = _userLng;
+    if (userLat == null || userLng == null || _nearbyDrivers.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No driver locations available.')),
+      );
+      return;
+    }
+
+    final opened = await GoogleMapsDeepLinkService.openNearbyDriverLocations(
+      originLat: userLat,
+      originLng: userLng,
+      drivers: _nearbyDrivers.map(
+        (driver) => (latitude: driver.latitude, longitude: driver.longitude),
+      ),
+    );
+    if (!mounted || opened) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Unable to open Google Maps.')),
+    );
   }
 
   bool _matchesSelectedVehicle(Trip trip) {
@@ -274,10 +301,12 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                           children: [
                             MobiTopCommandBar(
                               searchHint: 'Search nearby',
+                              showSearch: false,
                               actions: [
-                                const MobiTopCommandBarAction(
+                                MobiTopCommandBarAction(
                                   icon: LucideIcons.map,
                                   label: 'Map',
+                                  onTap: _openDriversInGoogleMaps,
                                 ),
                                 MobiTopCommandBarAction(
                                   icon: widget.onBack == null
@@ -299,25 +328,6 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                                 fontSize: 40,
                                 height: 1.08,
                               ),
-                            ),
-                            const SizedBox(height: AppSpacing.sm),
-                            Text(
-                              driverTrips.isNotEmpty
-                                  ? '${driverTrips.length} active drivers'
-                                  : 'Live availability around you',
-                              textAlign: TextAlign.center,
-                              style: AppTypography.bodyLg.copyWith(
-                                color: Colors.white.withValues(alpha: 0.78),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: AppSpacing.lg),
-                            MobiStatusBadge(
-                              label: '${driverTrips.length}',
-                              icon: LucideIcons.mapPin,
-                              tone: driverTrips.isNotEmpty
-                                  ? MobiStatusBadgeTone.positive
-                                  : MobiStatusBadgeTone.neutral,
                             ),
                           ],
                         ),

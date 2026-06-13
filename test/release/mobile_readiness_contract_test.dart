@@ -104,7 +104,7 @@ void main() {
       expect(chatScreen, contains('showChatReportSheet'));
       expect(chatScreen, contains('MobiConfirmDialog.show'));
       expect(chatModerationSheet, contains('ChatReportDraft'));
-      expect(chatModerationSheet, contains('showModalBottomSheet'));
+      expect(chatModerationSheet, contains('MobiBottomSheet.show'));
       expect(chatModerationSheet, contains('Unsafe behavior'));
       expect(chatModerationSheet, contains('Route mismatch'));
     });

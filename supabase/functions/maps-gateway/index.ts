@@ -33,6 +33,12 @@ type MapsGatewayRequest = {
   travelMode?: string;
 };
 
+type MapsGatewayDeps = {
+  authenticate?: (authorization: string) => Promise<{ id: string }>;
+  fetchImpl?: typeof fetch;
+  recordFailure?: (error: unknown, userId: string | null) => Promise<void>;
+};
+
 const RWANDA_REGION_CODE = "rw";
 const RWANDA_LANGUAGE_CODE = "en";
 const RWANDA_BOUNDS = {
@@ -74,9 +80,6 @@ class RateLimiter {
 }
 
 const rateLimiter = new RateLimiter();
-
-// Prune stale rate-limit buckets every 10 minutes.
-setInterval(() => rateLimiter.prune(), 10 * 60 * 1000);
 
 // ── Response Cache ──────────────────────────────────────────────────────
 
@@ -121,22 +124,13 @@ class ResponseCache {
 
 const responseCache = new ResponseCache();
 
-// ── API Key Resolution ──────────────────────────────────────────────────
-
-const mapsApiKeyConfig = resolveMapsApiKey();
-const mapsApiKey = mapsApiKeyConfig.apiKey;
-
-if (!mapsApiKey) {
-  console.warn(
-    "maps-gateway loaded without GOOGLE_MAPS_SERVER_API_KEY or GEMINI_API_KEY. Requests will fail until a Google credential is configured.",
-  );
-} else if (mapsApiKeyConfig.source == "GEMINI_API_KEY") {
-  console.info(
-    "maps-gateway is using GEMINI_API_KEY as its Google Maps Platform credential.",
-  );
-}
-
-Deno.serve(async (request: Request) => {
+export async function handleMapsGatewayRequest(
+  request: Request,
+  deps: MapsGatewayDeps = {},
+) {
+  const authenticate = deps.authenticate ?? requireUser;
+  const fetchImpl = deps.fetchImpl ?? fetch;
+  const recordFailure = deps.recordFailure ?? defaultRecordFailure;
   const corsResponse = handleCors(request);
   if (corsResponse) {
     return corsResponse;
@@ -154,7 +148,7 @@ Deno.serve(async (request: Request) => {
   let userIdForTelemetry: string | null = null;
 
   try {
-    const user = await requireUser(authorization);
+    const user = await authenticate(authorization);
     userIdForTelemetry = user.id;
 
     // ── Rate limiting ───────────────────────────────────────────────
@@ -196,7 +190,7 @@ Deno.serve(async (request: Request) => {
       }
     }
 
-    const response = await handleAction(body);
+    const response = await handleAction(body, { fetchImpl });
 
     // ── Cache store ─────────────────────────────────────────────────
     if (cacheable && cacheKey) {
@@ -226,14 +220,24 @@ Deno.serve(async (request: Request) => {
     }
 
     console.error("maps-gateway failed", error);
-    await recordEdgeFunctionFailure(createAdminClient(), {
-      functionName: "maps-gateway",
-      error,
-      userId: userIdForTelemetry,
-    });
+    await recordFailure(error, userIdForTelemetry);
     return errorResponse("Maps gateway failed", 500, undefined, request);
   }
-});
+}
+
+if (import.meta.main) {
+  // Prune stale rate-limit buckets every 10 minutes in the served runtime.
+  setInterval(() => rateLimiter.prune(), 10 * 60 * 1000);
+  Deno.serve((request) => handleMapsGatewayRequest(request));
+}
+
+async function defaultRecordFailure(error: unknown, userId: string | null) {
+  await recordEdgeFunctionFailure(createAdminClient(), {
+    functionName: "maps-gateway",
+    error,
+    userId,
+  });
+}
 
 async function requireUser(authorization: string) {
   const client = createUserClient(authorization);
@@ -251,16 +255,17 @@ async function requireUser(authorization: string) {
 
 async function handleAction(
   body: MapsGatewayRequest,
+  deps: { fetchImpl: typeof fetch },
 ): Promise<Record<string, unknown>> {
   switch (body.action) {
     case "autocomplete":
-      return { suggestions: await autocompletePlaces(body) };
+      return { suggestions: await autocompletePlaces(body, deps) };
     case "text_search":
-      return { places: await textSearchPlaces(body) };
+      return { places: await textSearchPlaces(body, deps) };
     case "place_details":
-      return { place: await fetchPlaceDetails(body) };
+      return { place: await fetchPlaceDetails(body, deps) };
     case "reverse_geocode":
-      return { place: await reverseGeocode(body) };
+      return { place: await reverseGeocode(body, deps) };
     case "compute_route":
       throw new HttpError(410, "Route calculation is outside Mobio scope", {
         scope:
@@ -273,7 +278,10 @@ async function handleAction(
   }
 }
 
-async function autocompletePlaces(body: MapsGatewayRequest) {
+async function autocompletePlaces(
+  body: MapsGatewayRequest,
+  deps: { fetchImpl: typeof fetch },
+) {
   const query = body.query?.trim() ?? "";
   if (query.length < 1) {
     return [];
@@ -282,8 +290,9 @@ async function autocompletePlaces(body: MapsGatewayRequest) {
   const limit = clampInt(body.limit, 1, 8, 5);
   const payload: Record<string, unknown> = {
     input: query,
-    // Enable semantic query predictions (Gemini-powered) alongside place predictions
-    includeQueryPredictions: true,
+    // Mobio selects concrete places only; free-form query predictions do not
+    // have a place ID and must not trigger Place Details calls.
+    includeQueryPredictions: false,
     // Cursor position for mid-word predictions (defaults to end of input)
     inputOffset: query.length,
     includedRegionCodes: [RWANDA_REGION_CODE],
@@ -335,14 +344,11 @@ async function autocompletePlaces(body: MapsGatewayRequest) {
           "suggestions.placePrediction.structuredFormat.secondaryText.text",
           "suggestions.placePrediction.distanceMeters",
           "suggestions.placePrediction.types",
-          // Query predictions (semantic/natural language)
-          "suggestions.queryPrediction.text.text",
-          "suggestions.queryPrediction.structuredFormat.mainText.text",
-          "suggestions.queryPrediction.structuredFormat.secondaryText.text",
         ].join(","),
       },
       body: JSON.stringify(payload),
     },
+    deps,
   );
 
   const results: Array<Record<string, unknown>> = [];
@@ -379,33 +385,17 @@ async function autocompletePlaces(body: MapsGatewayRequest) {
       continue;
     }
 
-    // ── Query prediction (semantic suggestions) ──
-    const queryPrediction = asMap(item.queryPrediction);
-    if (Object.keys(queryPrediction).length > 0) {
-      const queryText =
-        queryPrediction.structuredFormat?.mainText?.text?.toString().trim() ??
-          queryPrediction.text?.text?.toString().trim() ??
-          "";
-      const querySecondary = queryPrediction.structuredFormat?.secondaryText
-        ?.text?.toString().trim();
-
-      if (queryText) {
-        results.push({
-          placeId: null,
-          label: querySecondary ? `${queryText}, ${querySecondary}` : queryText,
-          primaryText: queryText,
-          secondaryText: querySecondary || null,
-          distanceMeters: null,
-          type: "query",
-        });
-      }
-    }
+    // Query predictions are intentionally ignored. They do not carry place IDs,
+    // and Mobio's route-posting UI requires confirmed place details.
   }
 
   return results.slice(0, limit);
 }
 
-async function textSearchPlaces(body: MapsGatewayRequest) {
+async function textSearchPlaces(
+  body: MapsGatewayRequest,
+  deps: { fetchImpl: typeof fetch },
+) {
   const query = body.query?.trim() ?? "";
   if (query.length < 3) {
     return [];
@@ -436,6 +426,7 @@ async function textSearchPlaces(body: MapsGatewayRequest) {
       },
       body: JSON.stringify(payload),
     },
+    deps,
   );
 
   return asArray(response.places)
@@ -445,7 +436,10 @@ async function textSearchPlaces(body: MapsGatewayRequest) {
     .slice(0, limit);
 }
 
-async function fetchPlaceDetails(body: MapsGatewayRequest) {
+async function fetchPlaceDetails(
+  body: MapsGatewayRequest,
+  deps: { fetchImpl: typeof fetch },
+) {
   const placeId = body.placeId?.trim();
   if (!placeId) {
     throw new HttpError(400, "placeId is required for place_details");
@@ -467,7 +461,7 @@ async function fetchPlaceDetails(body: MapsGatewayRequest) {
     headers: {
       "X-Goog-FieldMask": "id,displayName,formattedAddress,location",
     },
-  });
+  }, deps);
 
   const place = toPlaceResult(asMap(response));
   if (!place.position) {
@@ -480,7 +474,10 @@ async function fetchPlaceDetails(body: MapsGatewayRequest) {
   return place;
 }
 
-async function reverseGeocode(body: MapsGatewayRequest) {
+async function reverseGeocode(
+  body: MapsGatewayRequest,
+  deps: { fetchImpl: typeof fetch },
+) {
   const location = parseLatLng(body.location, "location");
   if (!location) {
     throw new HttpError(400, "location is required for reverse_geocode");
@@ -497,7 +494,7 @@ async function reverseGeocode(body: MapsGatewayRequest) {
     url.searchParams.set("language", languageCode);
   }
 
-  const response = await fetch(url.toString());
+  const response = await deps.fetchImpl(url.toString());
   const json = await response.json();
   if (!response.ok) {
     throw new HttpError(
@@ -535,8 +532,9 @@ async function reverseGeocode(body: MapsGatewayRequest) {
 async function googleFetchJson(
   url: string,
   init: RequestInit & { headers?: HeadersInit },
+  deps: { fetchImpl: typeof fetch },
 ) {
-  const response = await fetch(url, {
+  const response = await deps.fetchImpl(url, {
     ...init,
     headers: {
       "X-Goog-Api-Key": requireMapsApiKey(),
@@ -561,38 +559,15 @@ async function googleFetchJson(
 }
 
 function requireMapsApiKey(): string {
+  const mapsApiKey = Deno.env.get("GOOGLE_MAPS_SERVER_API_KEY")?.trim();
   if (!mapsApiKey) {
     throw new HttpError(
       500,
-      "GOOGLE_MAPS_SERVER_API_KEY or GEMINI_API_KEY is not configured in Supabase secrets",
+      "GOOGLE_MAPS_SERVER_API_KEY is not configured in Supabase secrets",
     );
   }
 
   return mapsApiKey;
-}
-
-function resolveMapsApiKey(): {
-  apiKey: string | null;
-  source:
-    | "GOOGLE_MAPS_SERVER_API_KEY"
-    | "GOOGLE_MAPS_API_KEY"
-    | "GEMINI_API_KEY"
-    | null;
-} {
-  for (
-    const source of [
-      "GOOGLE_MAPS_SERVER_API_KEY",
-      "GOOGLE_MAPS_API_KEY",
-      "GEMINI_API_KEY",
-    ] as const
-  ) {
-    const value = Deno.env.get(source)?.trim();
-    if (value) {
-      return { apiKey: value, source };
-    }
-  }
-
-  return { apiKey: null, source: null };
 }
 
 function parseLatLng(value: unknown, fieldName: string): LatLng | null {

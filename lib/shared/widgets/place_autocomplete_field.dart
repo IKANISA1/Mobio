@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +54,7 @@ class _PlaceAutocompleteFieldState
 
   bool _isLoadingDetails = false;
   bool _showClear = false;
+  String? _sessionToken;
 
   @override
   void initState() {
@@ -90,16 +93,30 @@ class _PlaceAutocompleteFieldState
     _focusNode.unfocus();
     _controller.text = prediction.description;
 
+    final sessionToken = _sessionToken;
+    if (prediction.placeId.trim().isEmpty ||
+        prediction.predictionType != 'place') {
+      widget.onPlaceSelected(null);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Select a listed place to confirm it.')),
+      );
+      return;
+    }
+
     setState(() {
       _isLoadingDetails = true;
     });
 
     try {
-      final details = await _placesService.getPlaceDetails(prediction.placeId);
+      final details = await _placesService.getPlaceDetails(
+        prediction.placeId,
+        sessionToken: sessionToken,
+      );
 
       if (mounted) {
         setState(() {
           _isLoadingDetails = false;
+          _sessionToken = null;
         });
         if (details != null) {
           _controller.text = details.formattedAddress.isNotEmpty
@@ -129,7 +146,19 @@ class _PlaceAutocompleteFieldState
   void _clearData() {
     _controller.clear();
     _focusNode.unfocus();
+    _sessionToken = null;
     widget.onPlaceSelected(null);
+  }
+
+  String _ensureSessionToken() {
+    final existing = _sessionToken;
+    if (existing != null) return existing;
+
+    final random = Random.secure();
+    final bytes = List<int>.generate(16, (_) => random.nextInt(256));
+    final token = base64UrlEncode(bytes).replaceAll('=', '');
+    _sessionToken = token;
+    return token;
   }
 
   String _formatDistance(int meters) {
@@ -227,6 +256,7 @@ class _PlaceAutocompleteFieldState
                 pattern,
                 nearLat: widget.userLat,
                 nearLng: widget.userLng,
+                sessionToken: _ensureSessionToken(),
               );
               if (kDebugMode) {
                 debugPrint(

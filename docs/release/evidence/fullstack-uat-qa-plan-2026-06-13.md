@@ -1,6 +1,6 @@
 # MOBI Fullstack UAT, QA, and Production Readiness Plan
 
-Date: 2026-06-13  
+Date: 2026-06-13
 Scope: MOBI Flutter app, BioPay, Supabase backend, edge functions, database, admin surfaces, PWA/public web, Android device release, release/store gates.
 
 ## Executive Correction
@@ -47,7 +47,7 @@ P0 gaps:
 - Full frontend UAT has not yet been executed across every screen and state.
 - Full backend UAT has not yet been executed across all migrations, RLS policies, edge functions, RPCs, and live API contracts.
 - Release build reproducibility must be proven. A fresh release APK exists, but recent build runs showed unstable Gradle/native-library behavior and terminated runs.
-- Exposed Supabase tokens and project secrets in conversation history must be rotated before production release.
+- Credential values must stay out of committed files, reports, screenshots, and shell-visible command arguments. Rotation is not tracked as a release blocker by owner direction.
 - Real OTP, USSD, face enrollment, face match, QR scan, NFC activation, and admin confirmation flows still need end-to-end UAT evidence.
 - Legacy or boundary functions such as `create-payment-intent`, `verify-payment-status`, `parse-sms`, `reconcile-momo-sms`, and `admin-review-transaction` must be proven either intentionally unavailable or correctly scoped.
 
@@ -275,7 +275,7 @@ Goal: remove release-blocking security and privacy risks.
 
 Checks:
 
-- Rotate exposed Supabase anon/service/platform tokens and any pasted secrets.
+- Confirm credentials are supplied through approved non-logged local or CI secret paths.
 - Run secret scan across repository and release artifacts.
 - Verify no service-role key is embedded in Flutter, web, APK, or public config.
 - Verify AWS keys are server-side only.
@@ -286,7 +286,7 @@ Checks:
 
 Exit criteria:
 
-- No known exposed credential remains valid.
+- No service-role, platform access token, database password, or provider secret is embedded in a public artifact or committed file.
 - Biometric and payment boundaries are documented and visible where needed.
 
 ### 9. Web/PWA QA
@@ -318,7 +318,7 @@ Required artifacts:
 - Backend function test logs.
 - Database/RLS assertion logs.
 - Release build logs.
-- Secret rotation proof or blocker note.
+- Credential-use/retention evidence or blocker note.
 - Go/no-go checklist with P0/P1/P2 findings.
 
 Go criteria:
@@ -333,7 +333,7 @@ Go criteria:
 No-go criteria:
 
 - Any crash on critical user journey.
-- Any exposed valid secret.
+- Any service-role, platform access token, database password, or provider secret embedded in a public artifact or committed file.
 - Any unauthorized data access.
 - Any in-app payment claim or behavior that conflicts with the USSD-only boundary.
 - Any non-reproducible release build.
@@ -397,7 +397,7 @@ Local tools:
 External-gated items:
 
 - Real USSD payment completion requires the phone/operator and must remain outside the app.
-- Production credential rotation changes must be tracked carefully and may invalidate existing deploys.
+- Production credential changes must be tracked carefully and may invalidate existing deploys.
 - Play Console submission or external production release requires explicit human approval.
 
 ## First Commands to Execute
@@ -426,7 +426,7 @@ Current state is not production-ready until the full UAT above is executed and P
 
 The strongest current area is BioPay restoration proof: the current APK exposes BioPay entry points, uses AWS provider health server-side, has camera/NFC/dialer capability, and keeps payment outside the app through USSD handoff.
 
-The weakest current areas are release reproducibility, full app screen coverage, backend-wide function/API validation, credential rotation after exposed secrets, and complete on-device coverage beyond BioPay.
+The weakest current areas are release reproducibility, full app screen coverage, backend-wide function/API validation, credential-use evidence, and complete on-device coverage beyond BioPay.
 
 ## Immediate Next Step
 
@@ -436,4 +436,3 @@ Execute Phase 1 and Phase 2, then update this folder with:
 - `fullstack-uat-screen-manifest-2026-06-13.csv`
 - `fullstack-backend-function-matrix-2026-06-13.md`
 - `fullstack-go-no-go-2026-06-13.md`
-

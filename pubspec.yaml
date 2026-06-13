@@ -38,6 +38,7 @@ dependencies:
   # Utilities
   intl: ^0.20.2
   logger: ^2.7.0
+  web: ^1.1.1
   freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
   supabase_flutter: ^2.12.0
@@ -103,14 +104,14 @@ flutter_launcher_icons:
     image_path: "icon/mobi_logo_transparent.png"
 
 flutter_native_splash:
-  color: "#02030A"
-  color_dark: "#02030A"
+  background_image: "icon/mobi_splash_gradient.png"
+  background_image_dark: "icon/mobi_splash_gradient.png"
   image: "icon/mobi_logo_transparent.png"
   image_dark: "icon/mobi_logo_transparent.png"
   android_12:
     image: "icon/mobi_logo_transparent.png"
     image_dark: "icon/mobi_logo_transparent.png"
-    icon_background_color: "#02030A"
-    icon_background_color_dark: "#02030A"
-    color: "#02030A"
-    color_dark: "#02030A"
+    icon_background_color: "#10164B"
+    icon_background_color_dark: "#10164B"
+    color: "#10164B"
+    color_dark: "#10164B"

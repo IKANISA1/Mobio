@@ -25,6 +25,8 @@ class MobiBottomSheet {
     String? title,
     bool isDismissible = true,
     bool enableDrag = true,
+    bool useSafeArea = true,
+    bool includeViewInsets = true,
     double? maxHeightFraction,
   }) {
     return showModalBottomSheet<T>(
@@ -32,13 +34,17 @@ class MobiBottomSheet {
       isDismissible: isDismissible,
       enableDrag: enableDrag,
       isScrollControlled: true,
+      useSafeArea: useSafeArea,
       backgroundColor: Colors.transparent,
       constraints: BoxConstraints(
         maxHeight:
             MediaQuery.sizeOf(context).height * (maxHeightFraction ?? 0.85),
       ),
-      builder: (ctx) =>
-          _MobiBottomSheetContent(title: title, child: builder(ctx)),
+      builder: (ctx) => _MobiBottomSheetContent(
+        title: title,
+        includeViewInsets: includeViewInsets,
+        child: builder(ctx),
+      ),
     );
   }
 }
@@ -46,76 +52,88 @@ class MobiBottomSheet {
 class _MobiBottomSheetContent extends StatelessWidget {
   final String? title;
   final Widget child;
+  final bool includeViewInsets;
 
-  const _MobiBottomSheetContent({this.title, required this.child});
+  const _MobiBottomSheetContent({
+    this.title,
+    required this.child,
+    required this.includeViewInsets,
+  });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: ext.surfaceContainerLowest,
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(AppRadii.hero),
-        ),
-        border: Border(
-          top: BorderSide(
-            color: cs.outlineVariant.withValues(
-              alpha: ext.surfacePanelBorderAlpha,
-            ),
-          ),
-        ),
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOutCubic,
+      padding: EdgeInsets.only(
+        bottom: includeViewInsets ? MediaQuery.viewInsetsOf(context).bottom : 0,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Handle bar
-          Padding(
-            padding: const EdgeInsets.only(top: AppSpacing.sm),
-            child: Center(
-              child: Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: cs.outlineVariant,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: ext.surfaceContainerLowest,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(AppRadii.hero),
+          ),
+          border: Border(
+            top: BorderSide(
+              color: cs.outlineVariant.withValues(
+                alpha: ext.surfacePanelBorderAlpha,
               ),
             ),
           ),
-
-          // Title
-          if (title != null) ...[
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.screenPadding,
-                AppSpacing.lg,
-                AppSpacing.screenPadding,
-                AppSpacing.sm,
-              ),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  title!,
-                  style: AppTypography.titleLg.copyWith(color: cs.onSurface),
+              padding: const EdgeInsets.only(top: AppSpacing.sm),
+              child: Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: cs.outlineVariant,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
             ),
-          ] else
-            const SizedBox(height: AppSpacing.md),
 
-          // Content
-          Flexible(
-            child: Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.paddingOf(context).bottom + AppSpacing.md,
+            // Title
+            if (title != null) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.screenPadding,
+                  AppSpacing.lg,
+                  AppSpacing.screenPadding,
+                  AppSpacing.sm,
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    title!,
+                    style: AppTypography.titleLg.copyWith(color: cs.onSurface),
+                  ),
+                ),
               ),
-              child: child,
+            ] else
+              const SizedBox(height: AppSpacing.md),
+
+            // Content
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.paddingOf(context).bottom + AppSpacing.md,
+                ),
+                child: child,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -39,7 +39,9 @@ void main() {
       expect(AppRoutes.nfc, startsWith('/biopay'));
     });
 
-    test('admin BioPay operations route uses existing admin finance slot', () {
+    test('admin BioPay operations route uses explicit BioPay path', () {
+      expect(AppRoutes.adminBioPayOps, '/admin/biopay');
+      // ignore: deprecated_member_use_from_same_package
       expect(AppRoutes.adminFinance, '/admin/finance');
     });
   });

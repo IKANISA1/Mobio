@@ -69,29 +69,10 @@ require_evidence() {
 
 require_play_service_account_decision() {
   echo
-  echo "== Play service-account key decision =="
-
-  local rotation_ok=false
-  if [[ "${PLAY_SERVICE_ACCOUNT_ROTATED:-false}" == "true" ]]; then
-    local rotation_evidence="${PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE:-}"
-    if [[ -n "$rotation_evidence" &&
-      -f "$rotation_evidence" &&
-      "$rotation_evidence" != *.example.md ]]; then
-      echo "PASS: Play service-account key revoked/rotated in Google Cloud IAM ($rotation_evidence)"
-      rotation_ok=true
-    else
-      echo "FAIL: set PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE to an existing non-template evidence file." >&2
-      failures=$((failures + 1))
-      return
-    fi
-  fi
-
-  if [[ "$rotation_ok" == "true" ]]; then
-    return
-  fi
+  echo "== Play service-account credential decision =="
 
   if [[ "${PLAY_SERVICE_ACCOUNT_RETAINED:-false}" != "true" ]]; then
-    echo "FAIL: set PLAY_SERVICE_ACCOUNT_ROTATED=true after rotation, or PLAY_SERVICE_ACCOUNT_RETAINED=true after owner-approved key retention." >&2
+    echo "FAIL: set PLAY_SERVICE_ACCOUNT_RETAINED=true after owner-approved credential retention/use." >&2
     failures=$((failures + 1))
     return
   fi
@@ -109,7 +90,7 @@ require_play_service_account_decision() {
     return
   fi
 
-  echo "PASS: Play service-account key retained by owner decision ($retention_evidence)"
+  echo "PASS: Play service-account credential retained by owner decision ($retention_evidence)"
 }
 
 if [[ "${RUN_FLUTTER_GATE:-true}" == "true" ]]; then
@@ -136,6 +117,28 @@ run_gate \
     REQUIRE_IOS_FIREBASE="$([[ "$release_target" == "android" ]] && echo false || echo true)" \
     REQUIRE_IOS_NATIVE="$([[ "$release_target" == "android" ]] && echo false || echo true)" \
     ./scripts/ci/verify_release_config.sh
+
+require_evidence \
+  GOOGLE_MAPS_SERVER_SECRET_VALIDATED \
+  GOOGLE_MAPS_SERVER_SECRET_EVIDENCE \
+  "Google Maps server key configured for maps-gateway"
+
+require_evidence \
+  FCM_HTTP_V1_SECRET_VALIDATED \
+  FCM_HTTP_V1_SECRET_EVIDENCE \
+  "FCM HTTP v1 service-account secrets configured for send-push"
+
+if [[ "$release_target" != "android" ]]; then
+  require_evidence \
+    IOS_FIREBASE_APNS_VALIDATED \
+    IOS_FIREBASE_APNS_EVIDENCE \
+    "iOS Firebase registration and APNs capability/key validated"
+
+  require_evidence \
+    IOS_CRASHLYTICS_SYMBOLS_VALIDATED \
+    IOS_CRASHLYTICS_SYMBOLS_EVIDENCE \
+    "iOS Crashlytics dSYM upload validated"
+fi
 
 if [[ "${RUN_BIOPAY_GATE:-true}" == "true" ]]; then
   run_gate \

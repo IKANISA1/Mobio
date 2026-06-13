@@ -26,8 +26,10 @@ now exists for the later Git history rewrite. Local Supabase replay now reaches
 the final scope cleanup migration and passes backend/storage assertions.
 Production release still needs linked Supabase validation, physical-device
 smoke testing, provider-side rotation/revocation evidence for the previously
-tracked Play service account, and Play Console upload validation. Git history
-cleanup for the Play service-account path is complete for current refs.
+tracked Play service account, Play Console upload validation, Google Maps
+server-secret evidence for `maps-gateway`, and FCM HTTP v1 deployment evidence.
+Git history cleanup for the Play service-account path is complete for current
+refs.
 
 ## Passed In This Pass
 
@@ -72,6 +74,11 @@ cleanup for the Play service-account path is complete for current refs.
 - `PlacesService` no longer exposes route computation, `maps-gateway` returns
   410 for `compute_route`, chat assist suggests manually agreed fares, and promo
   generation no longer contains face-scan/cashless-payment imagery prompts.
+- Google Routes API, Compute Route Matrix, Directions API, Distance Matrix API,
+  route ETA/duration, route distance, route polylines, fare-distance basis, and
+  dispatch-grade routing are out of context for this app. Do not classify their
+  absence as a go/no-go blocker, roadmap item, or production-readiness task for
+  Mobio.
 - Obsolete ProGuard/R8 keep rules for deleted TFLite, ML Kit face, camera, and
   QR scanner dependencies were removed; release-scope tests now guard those
   rules from reappearing.
@@ -114,7 +121,9 @@ cleanup for the Play service-account path is complete for current refs.
 - Added `scripts/release/go_no_go_check.sh` as the final fail-closed production
   gate. It aggregates local verification, secret-history proof, linked Supabase
   checks, release/signing config, Play key rotation acknowledgement plus
-  evidence file, Play Console upload acknowledgement plus evidence file, and
+  evidence file, Play Console upload acknowledgement plus evidence file, Google
+  Maps server-secret evidence, FCM HTTP v1 secret evidence, iOS Firebase/APNs
+  and Crashlytics dSYM evidence when the release target includes iOS, and
   physical Android smoke.
 - `RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false ./scripts/release/go_no_go_check.sh`:
   failed immediately as expected because production go/no-go skips require
@@ -124,13 +133,13 @@ cleanup for the Play service-account path is complete for current refs.
   dry-run mode and still refuses production approval with
   `NO-GO: dry-run mode cannot approve production`. In this shell it also
   reported the hard blockers: historical Play credential still in Git history,
-  linked Supabase credentials incomplete, release config env absent, Play key
-  rotation/upload validation not acknowledged, and required Play evidence file
-  paths absent.
-- `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false PLAY_SERVICE_ACCOUNT_ROTATED=true PLAY_CONSOLE_UPLOAD_VALIDATED=true ./scripts/release/go_no_go_check.sh`:
-  failed as expected because `PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE` and
+  linked Supabase credentials incomplete, release config env absent, Play
+  credential-use/upload validation not acknowledged, and required Play evidence
+  file paths absent.
+- `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false PLAY_SERVICE_ACCOUNT_RETAINED=true PLAY_CONSOLE_UPLOAD_VALIDATED=true ./scripts/release/go_no_go_check.sh`:
+  failed as expected because `PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE` and
   `PLAY_CONSOLE_UPLOAD_EVIDENCE` were not set to existing files.
-- `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false PLAY_SERVICE_ACCOUNT_ROTATED=true PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE=docs/release/evidence/play-service-account-rotation.example.md PLAY_CONSOLE_UPLOAD_VALIDATED=true PLAY_CONSOLE_UPLOAD_EVIDENCE=docs/release/evidence/play-console-upload.example.md ./scripts/release/go_no_go_check.sh`:
+- `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false PLAY_SERVICE_ACCOUNT_RETAINED=true PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE=docs/release/evidence/play-service-account-retention.example.md PLAY_CONSOLE_UPLOAD_VALIDATED=true PLAY_CONSOLE_UPLOAD_EVIDENCE=docs/release/evidence/play-console-upload.example.md ./scripts/release/go_no_go_check.sh`:
   failed as expected because the gate rejects committed `*.example.md` templates
   as production evidence.
 - `./scripts/ci/verify_release_config.sh` now requires `ACCOUNT_DELETION_URL`
@@ -209,5 +218,5 @@ cleanup for the Play service-account path is complete for current refs.
 | Verify admin report queue on linked backend | `lib/features/admin/admin_reports_screen.dart`, `supabase/migrations/20260501133000_user_reports_blocks.sql` | Operators can list and resolve `user_reports` through active admin UI on staging/production; RPC authorization remains server-enforced. |
 | Secret history purge | `docs/security/secret_rotation_runbook.md`, `scripts/qa/preflight_secret_history_purge.sh`, `scripts/qa/check_secret_history.sh`, Play Console/IAM | Exposed Play key is revoked, replacement secret is only in CI, preflight passes in a clean full clone with `git-filter-repo`, history is rewritten/pushed with lease, and `scripts/qa/check_secret_history.sh` passes. |
 | Release build smoke | `scripts/release/build_android_release.sh`, `scripts/release/smoke_android_release.sh`, Android CI/device | Signed AAB builds with release secrets, uploads to Play Console validation, writes temporary signing files from env when needed, cleans them afterward, and passes physical-device smoke with evidence under `build/reports/android-smoke/`. |
-| Final go/no-go gate | `scripts/release/go_no_go_check.sh`, `docs/release/evidence/*.example.md` | Gate passes only after all local, linked backend, Play credential, Play upload, and physical-device smoke blockers are cleared with existing non-template evidence files for Play key rotation and Play upload validation. |
+| Final go/no-go gate | `scripts/release/go_no_go_check.sh`, `docs/release/evidence/*.example.md` | Gate passes only after all local, linked backend, Play credential, Play upload, Google Maps server-secret, FCM HTTP v1, iOS Firebase/APNs/dSYM when applicable, and physical-device smoke blockers are cleared with existing non-template evidence files. |
 | Keep public policy URLs release-gated | `landing/privacy-policy.html`, `landing/account-deletion.html`, `scripts/web/verify_public_site.sh`, hosting config | Every release verifies `PRIVACY_POLICY_URL` and `ACCOUNT_DELETION_URL` over HTTPS and reruns the public-site scope verifier before deploy. |

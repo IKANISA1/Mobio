@@ -17,6 +17,13 @@ package_name="${ANDROID_PACKAGE_NAME:-rw.mobi.app}"
 
 mkdir -p "$evidence_dir"
 
+if [[ -f .env ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
+fi
+
 if [[ "$require_live" == "true" ]]; then
   require_aws_live=true
   require_supabase_live=true
@@ -86,6 +93,52 @@ require_env() {
   else
     record FAIL "env $name" "missing"
   fi
+}
+
+biopay_health_url() {
+  if [[ -n "${BIOPAY_FACE_HEALTH_URL:-}" ]]; then
+    printf '%s\n' "$BIOPAY_FACE_HEALTH_URL"
+  elif [[ -n "${SUPABASE_URL:-}" ]]; then
+    printf '%s/functions/v1/biopay-face-provider/health\n' "${SUPABASE_URL%/}"
+  fi
+}
+
+prove_live_biopay_health() {
+  local name="$1"
+  local health_url
+  health_url="$(biopay_health_url)"
+  # The deployed health payload proves FACE_PROVIDER=aws_rekognition and
+  # AWS_REKOGNITION_COLLECTION_ID without exposing local AWS credentials.
+  require_env SUPABASE_ANON_KEY
+  if [[ -z "$health_url" ]]; then
+    record FAIL "$name" "BIOPAY_FACE_HEALTH_URL or SUPABASE_URL is required"
+    return
+  fi
+  if [[ -z "${SUPABASE_ANON_KEY:-}" ]]; then
+    return
+  fi
+
+  local health_body
+  local health_code
+  health_body="$(mktemp)"
+  health_code="$(
+    curl -sS \
+      -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+      -H "apikey: $SUPABASE_ANON_KEY" \
+      -o "$health_body" \
+      -w "%{http_code}" \
+      "$health_url" || true
+  )"
+  if [[ "$health_code" == "200" ]] &&
+    rg -q '"provider"[[:space:]]*:[[:space:]]*"aws_rekognition"' "$health_body" &&
+    rg -q '"production_ready"[[:space:]]*:[[:space:]]*true' "$health_body" &&
+    rg -q '"provider_collection_id"[[:space:]]*:[[:space:]]*"[^"]+"' "$health_body" &&
+    rg -q '"payment_boundary"' "$health_body"; then
+    record PASS "$name" "HTTP 200 FACE_PROVIDER=aws_rekognition health at $health_url"
+  else
+    record FAIL "$name" "HTTP $health_code did not prove AWS provider health at $health_url"
+  fi
+  rm -f "$health_body"
 }
 
 section() {
@@ -171,43 +224,14 @@ fi
 
 section "Optional live AWS proof"
 if [[ "$require_aws_live" == "true" ]]; then
-  require_env FACE_PROVIDER
-  if [[ "${FACE_PROVIDER:-}" == "aws_rekognition" ]]; then
-    record PASS "FACE_PROVIDER value" "aws_rekognition"
-  else
-    record FAIL "FACE_PROVIDER value" "expected aws_rekognition"
-  fi
-  require_env AWS_REGION
-  require_env AWS_ACCESS_KEY_ID
-  require_env AWS_SECRET_ACCESS_KEY
-  require_env AWS_REKOGNITION_COLLECTION_ID
+  prove_live_biopay_health "Live AWS provider proof"
 else
   record WARN "Live AWS provider proof" "skipped; set REQUIRE_BIOPAY_AWS_LIVE=true to require AWS env/config proof"
 fi
 
 section "Optional live Supabase edge proof"
 if [[ "$require_supabase_live" == "true" ]]; then
-  require_env BIOPAY_FACE_HEALTH_URL
-  require_env SUPABASE_ANON_KEY
-  if [[ -n "${BIOPAY_FACE_HEALTH_URL:-}" && -n "${SUPABASE_ANON_KEY:-}" ]]; then
-    health_body="$(mktemp)"
-    health_code="$(
-      curl -sS \
-        -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
-        -H "apikey: $SUPABASE_ANON_KEY" \
-        -o "$health_body" \
-        -w "%{http_code}" \
-        "$BIOPAY_FACE_HEALTH_URL" || true
-    )"
-    if [[ "$health_code" == "200" ]] &&
-      rg -q '"provider"[[:space:]]*:[[:space:]]*"aws_rekognition"' "$health_body" &&
-      rg -q '"payment_boundary"' "$health_body"; then
-      record PASS "Live BioPay face health" "HTTP 200 AWS provider health"
-    else
-      record FAIL "Live BioPay face health" "HTTP $health_code did not prove AWS provider health"
-    fi
-    rm -f "$health_body"
-  fi
+  prove_live_biopay_health "Live Supabase BioPay face health"
 else
   record WARN "Live Supabase edge proof" "skipped; set REQUIRE_BIOPAY_SUPABASE_LIVE=true with BIOPAY_FACE_HEALTH_URL and SUPABASE_ANON_KEY"
 fi

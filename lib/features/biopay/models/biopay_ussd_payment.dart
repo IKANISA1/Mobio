@@ -1,3 +1,5 @@
+import 'package:mobi_app/core/utils/money_formatting.dart';
+
 enum BioPayRequestStatus {
   draft,
   readyToDial,
@@ -96,11 +98,7 @@ class BioPayUssdPaymentRequest {
 
   String get amountLabel {
     if (amountMinor <= 0) return 'Open amount';
-    final value = amountMinor / 100;
-    final compact = value == value.roundToDouble()
-        ? value.toStringAsFixed(0)
-        : value.toStringAsFixed(2);
-    return '$currency $compact';
+    return formatCurrencyAmount(currency, amountMinor / 100);
   }
 
   factory BioPayUssdPaymentRequest.fromJson(Map<String, dynamic> json) {

@@ -11,6 +11,7 @@ import 'package:mobi_app/features/admin/widgets/admin_stats_grid.dart';
 import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
 import 'package:mobi_app/features/admin/widgets/admin_whatsapp_sheet.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 
 /// Admin dashboard with live platform health, access control, and action queues.
@@ -37,10 +38,9 @@ class AdminDashboardScreen extends ConsumerWidget {
     WidgetRef ref, {
     AdminWhatsappNumberItem? existing,
   }) {
-    showModalBottomSheet<void>(
+    MobiBottomSheet.show<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      includeViewInsets: false,
       builder: (ctx) => AdminWhatsappSheet(
         existing: existing,
         onSave:

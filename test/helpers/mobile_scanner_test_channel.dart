@@ -14,48 +14,46 @@ const MethodChannel _mobileScannerOrientationChannel = MethodChannel(
 );
 
 void installMobileScannerTestChannel() {
-  final messenger =
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-  messenger.setMockMethodCallHandler(_mobileScannerMethodChannel, (
-    MethodCall call,
-  ) async {
-    return switch (call.method) {
-      'state' => 0,
-      'request' => false,
-      'getSupportedLenses' => <int>[],
-      'analyzeImage' => null,
-      'start' => null,
-      'pause' ||
-      'stop' ||
-      'toggleTorch' ||
-      'setScale' ||
-      'resetScale' ||
-      'updateScanWindow' ||
-      'setFocus' => null,
-      _ => null,
-    };
-  });
-  for (final channel in [
-    _mobileScannerEventChannel,
-    _mobileScannerOrientationChannel,
-  ]) {
-    messenger.setMockMethodCallHandler(channel, (MethodCall call) async {
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+    ..setMockMethodCallHandler(_mobileScannerMethodChannel, (
+      MethodCall call,
+    ) async {
       return switch (call.method) {
-        'listen' || 'cancel' => null,
+        'state' => 0,
+        'request' => false,
+        'getSupportedLenses' => <int>[],
+        'analyzeImage' => null,
+        'start' => null,
+        'pause' ||
+        'stop' ||
+        'toggleTorch' ||
+        'setScale' ||
+        'resetScale' ||
+        'updateScanWindow' ||
+        'setFocus' => null,
         _ => null,
       };
-    });
-  }
+    })
+    ..setMockMethodCallHandler(
+      _mobileScannerEventChannel,
+      _handleMobileScannerStreamCall,
+    )
+    ..setMockMethodCallHandler(
+      _mobileScannerOrientationChannel,
+      _handleMobileScannerStreamCall,
+    );
 }
 
 void uninstallMobileScannerTestChannel() {
-  final messenger =
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-  for (final channel in [
-    _mobileScannerMethodChannel,
-    _mobileScannerEventChannel,
-    _mobileScannerOrientationChannel,
-  ]) {
-    messenger.setMockMethodCallHandler(channel, null);
-  }
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+    ..setMockMethodCallHandler(_mobileScannerMethodChannel, null)
+    ..setMockMethodCallHandler(_mobileScannerEventChannel, null)
+    ..setMockMethodCallHandler(_mobileScannerOrientationChannel, null);
+}
+
+Future<Object?> _handleMobileScannerStreamCall(MethodCall call) async {
+  return switch (call.method) {
+    'listen' || 'cancel' => null,
+    _ => null,
+  };
 }

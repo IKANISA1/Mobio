@@ -27,6 +27,7 @@ The canonical scope document is `docs/product/scope.md`.
 | Scheduled trips | `TripService`, `bookings` screens, `schedule_trip_provider`, `trips` table/RPCs. |
 | Chat/WhatsApp | `ChatService`, `features/chat`, WhatsApp login/handoff helpers. |
 | Notifications | Firebase/Supabase notification services plus notification consent/admin campaign code. |
+| Google/Firebase APIs | Current findings and needed API/SDK work are tracked in `docs/reports/google_api_sdk_findings.md`; route APIs are permanently out of context for Mobio. |
 | CI/CD | GitHub Actions for CI, release, Cloudflare Pages/PWA; release depends on env vars and signing/Play secrets. |
 | Android release | `rw.mobi.app`, target SDK 35, compile SDK 36, signing via `android/key.properties`; Play upload uses `PLAY_STORE_SERVICE_ACCOUNT_JSON`. |
 
@@ -159,7 +160,9 @@ The canonical scope document is `docs/product/scope.md`.
   aggregates Flutter verification, secret scans, secret-history proof, linked
   Supabase gates, release/signing config, Play service-account rotation
   acknowledgement plus evidence file, Play Console upload validation
-  acknowledgement plus evidence file, and physical Android smoke.
+  acknowledgement plus evidence file, Google Maps server-secret evidence, FCM
+  HTTP v1 secret evidence, iOS Firebase/APNs and Crashlytics dSYM evidence when
+  the release target includes iOS, and physical Android smoke.
 - Disabled active scheduled-trip route computation after origin/destination
   selection. The UI now stores route labels and optional coordinates only, and
   chat/schedule copy frames fares and timing as manually agreed by users.
@@ -173,6 +176,16 @@ The canonical scope document is `docs/product/scope.md`.
 - Cleaned active chat-assist and promo-generation prompts so suggestions and
   marketing assets stay inside profile discovery, scheduled trip posts, and
   manually agreed fare coordination.
+- Recommendation boundary: Google Routes API, Compute Route Matrix, Directions
+  API, Distance Matrix API, ETA/duration, route distance, route polyline,
+  fare-distance basis, and dispatch-grade routing must not be recommended as
+  production-readiness gaps, roadmap items, or Mobio implementation work. Their
+  absence is intentional because those capabilities are out of context for this
+  app.
+- Added `docs/reports/google_api_sdk_findings.md` as the authoritative
+  Google/Firebase API inventory. The needed implementation work is limited to
+  Places/Geocoding gateway hardening, Firebase/FCM release evidence, and
+  optional-infrastructure configuration; route APIs remain permanently excluded.
 - Removed the inactive shared ride-request DTO export/files from
   `packages/shared-types`.
 - Removed obsolete ProGuard/R8 keep rules for deleted TFLite, ML Kit face,
@@ -290,9 +303,9 @@ Missing or not proven in this pass:
 | `bash -n scripts/qa/preflight_secret_history_purge.sh scripts/qa/check_secret_history.sh scripts/qa/scan_secrets.sh` | Passed | Secret-scan and history-purge helper scripts parse. |
 | `bash -n scripts/release/go_no_go_check.sh` | Passed | Production go/no-go gate parses. |
 | `RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false ./scripts/release/go_no_go_check.sh` | Failed as expected | Production go/no-go skips are not allowed unless `GO_NO_GO_DRY_RUN=true` is set. |
-| `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false ./scripts/release/go_no_go_check.sh` | Failed as expected | Aggregate no-go gate allows Flutter/device skips only in dry-run mode and still refuses production approval with `NO-GO: dry-run mode cannot approve production`. After history rewrite, remaining hard blockers are linked Supabase credentials, release config env, Play service-account rotation/upload validation acknowledgement, and required non-template Play evidence file paths. |
-| `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false PLAY_SERVICE_ACCOUNT_ROTATED=true PLAY_CONSOLE_UPLOAD_VALIDATED=true ./scripts/release/go_no_go_check.sh` | Failed as expected | Aggregate no-go gate rejects Play acknowledgements unless `PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE` and `PLAY_CONSOLE_UPLOAD_EVIDENCE` point to existing files. |
-| `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false PLAY_SERVICE_ACCOUNT_ROTATED=true PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE=docs/release/evidence/play-service-account-rotation.example.md PLAY_CONSOLE_UPLOAD_VALIDATED=true PLAY_CONSOLE_UPLOAD_EVIDENCE=docs/release/evidence/play-console-upload.example.md ./scripts/release/go_no_go_check.sh` | Failed as expected | Aggregate no-go gate rejects committed `*.example.md` templates as production evidence. |
+| `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false ./scripts/release/go_no_go_check.sh` | Failed as expected | Aggregate no-go gate allows Flutter/device skips only in dry-run mode and still refuses production approval with `NO-GO: dry-run mode cannot approve production`. After history rewrite, remaining hard blockers are linked Supabase credentials, release config env, Play service-account retention/upload validation acknowledgement, and required non-template Play evidence file paths. |
+| `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false PLAY_SERVICE_ACCOUNT_RETAINED=true PLAY_CONSOLE_UPLOAD_VALIDATED=true ./scripts/release/go_no_go_check.sh` | Failed as expected | Aggregate no-go gate rejects Play acknowledgements unless `PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE` and `PLAY_CONSOLE_UPLOAD_EVIDENCE` point to existing files. |
+| `GO_NO_GO_DRY_RUN=true RUN_FLUTTER_GATE=false RUN_ANDROID_SMOKE=false PLAY_SERVICE_ACCOUNT_RETAINED=true PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE=docs/release/evidence/play-service-account-retention.example.md PLAY_CONSOLE_UPLOAD_VALIDATED=true PLAY_CONSOLE_UPLOAD_EVIDENCE=docs/release/evidence/play-console-upload.example.md ./scripts/release/go_no_go_check.sh` | Failed as expected | Aggregate no-go gate rejects committed `*.example.md` templates as production evidence. |
 | `scripts/qa/preflight_secret_history_purge.sh` | Blocked as expected | Current shell does not have `git-filter-repo`, so the destructive history purge is not ready to run here. This is safer than attempting a rewrite from the dirty shared worktree. |
 | `./scripts/ci/verify_backend.sh` | Passed with linked gates skipped | Secret scan, frozen-lock Deno checks, BioPay scope-unavailable tests, and OTP security tests passed. Linked Supabase gates skipped because `SUPABASE_PROJECT_REF` plus `SUPABASE_ACCESS_TOKEN` or `SUPABASE_DB_PASSWORD` were not available. CI/release workflows now pass both linked credential options when configured. |
 | `REQUIRE_LINKED_SUPABASE=true ./scripts/ci/verify_backend.sh` | Failed as expected | Local Deno checks/tests passed, then the script exited nonzero because linked credentials were incomplete. This proves the linked gate can be made mandatory in release contexts. |
@@ -344,7 +357,7 @@ Missing or not proven in this pass:
 | P0 | Credential cleanup | `android/fastlane/play-store-service-account.json`, repo history, Play Console, `scripts/qa/preflight_secret_history_purge.sh`, `scripts/qa/check_secret_history.sh` | Git history purge is complete and both `scripts/qa/scan_secrets.sh` and `scripts/qa/check_secret_history.sh` pass. Remaining acceptance criteria: old key revoked in Google Cloud/Play Console, replacement key stored only in CI secret storage, and non-template evidence recorded. |
 | P0 | Linked backend validation | `scripts/ci/verify_backend.sh`, `supabase/tests/*.sql` | Run with `SUPABASE_PROJECT_REF` plus `SUPABASE_ACCESS_TOKEN` or `SUPABASE_DB_PASSWORD`; linked gates pass or produce filed blockers with exact SQL failures. |
 | P0 | Release smoke | `scripts/release/build_android_release.sh`, Android device | Signed AAB installs, launches, logs in, nearby/schedule/chat work. |
-| P0 | Final go/no-go gate | `scripts/release/go_no_go_check.sh`, `docs/release/evidence/*.example.md` | Gate passes with linked Supabase credentials, release signing/Play secrets, revoked/rotated Play key acknowledgement plus non-template evidence file, Play Console validation acknowledgement plus non-template evidence file, and physical Android smoke evidence. |
+| P0 | Final go/no-go gate | `scripts/release/go_no_go_check.sh`, `docs/release/evidence/*.example.md` | Gate passes with linked Supabase credentials, release signing/Play secrets, revoked/rotated Play key acknowledgement plus non-template evidence file, Play Console validation acknowledgement plus non-template evidence file, Google Maps server-secret evidence, FCM HTTP v1 evidence, iOS Firebase/APNs/dSYM evidence when applicable, and physical Android smoke evidence. |
 | P0 | Legacy schema cleanup replay | `supabase/migrations/20260501134000_scope_cleanup_legacy_trip_payment_biopay.sql`, `supabase/tests/backend_security_assertions.sql` | Migration replay is now proven locally through Docker Desktop; linked staging replay and assertions pass without breaking current profile, nearby discovery, scheduled trips, chat, reports/blocks, admin moderation, storage, or notification gates. Current regression tests cover manifest, active profile edit, admin finance navigation, login copy, removed Flutter ride-request lifecycle entry points, removed Flutter/native BioPay/payment/ledger package code, inert legacy-named Edge Functions, and cleanup-migration intent. |
 | P1 | Report/block | `lib/features/chat`, `lib/features/admin/admin_reports_screen.dart`, `supabase/migrations/20260501133000_user_reports_blocks.sql`, `supabase/tests/backend_security_assertions.sql`, `test/release/report_block_contract_test.dart` | Users can report/block from chat; blocked users cannot create/open/send chat; admins can review reports through `/admin/reports`; linked RLS assertions pass against staging/production. |
 | P1 | Scope docs cleanup | `docs/architecture/*`, `docs/security/*`, `docs/production-readiness/*`, `docs/product/*`, `supabase/docs/*` | Current schema inventory describes the limited marketplace schema; older BioPay/payment/ledger/ride-request audit documents are marked as historical snapshots and point back to current scope. Release tests guard the highest-risk doc entry points. |

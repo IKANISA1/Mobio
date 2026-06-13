@@ -5,6 +5,7 @@ import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/vehicle_type_model.dart';
+import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
 import 'package:mobi_app/shared/widgets/vehicle_type_icon.dart';
 
@@ -327,15 +328,10 @@ class _AgencySelector extends StatelessWidget {
             .toList()
           ..sort();
 
-    showModalBottomSheet<void>(
+    MobiBottomSheet.show<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(
-        context,
-      ).extension<MobiThemeExtension>()!.surfaceContainerLow,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
+      title: 'Select agency',
+      maxHeightFraction: 0.78,
       builder: (context) {
         return _AgencyPickerSheet(
           agencies: normalizedAgencies,
@@ -384,104 +380,96 @@ class _AgencyPickerSheetState extends State<_AgencyPickerSheet> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
     final filtered = widget.agencies
         .where((agency) => agency.toLowerCase().contains(_query.toLowerCase()))
         .toList();
 
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(20, 18, 20, 20 + bottomInset),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Select agency',
-              style: AppTypography.titleMd.copyWith(color: cs.onSurface),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            TextField(
-              controller: _searchController,
-              autofocus: true,
-              textCapitalization: TextCapitalization.words,
-              onChanged: (value) => setState(() => _query = value.trim()),
-              style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
-              decoration: InputDecoration(
-                hintText: 'Search agencies',
-                prefixIcon: const Icon(LucideIcons.search, size: 20),
-                filled: true,
-                fillColor: Theme.of(
-                  context,
-                ).extension<MobiThemeExtension>()!.surfaceContainerLowest,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(22),
-                  borderSide: BorderSide(
-                    color: cs.outlineVariant.withValues(alpha: 0.35),
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(22),
-                  borderSide: BorderSide(
-                    color: cs.outlineVariant.withValues(alpha: 0.35),
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(22),
-                  borderSide: BorderSide(color: cs.primary),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: _searchController,
+            autofocus: true,
+            textCapitalization: TextCapitalization.words,
+            onChanged: (value) => setState(() => _query = value.trim()),
+            style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
+            decoration: InputDecoration(
+              hintText: 'Search agencies',
+              prefixIcon: const Icon(LucideIcons.search, size: 20),
+              filled: true,
+              fillColor: Theme.of(
+                context,
+              ).extension<MobiThemeExtension>()!.surfaceContainerLow,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(22),
+                borderSide: BorderSide(
+                  color: cs.outlineVariant.withValues(alpha: 0.35),
                 ),
               ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(22),
+                borderSide: BorderSide(
+                  color: cs.outlineVariant.withValues(alpha: 0.35),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(22),
+                borderSide: BorderSide(color: cs.primary),
+              ),
             ),
-            const SizedBox(height: AppSpacing.md),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 360),
-              child: filtered.isEmpty
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.lg),
-                        child: Text(
-                          'No agencies found',
-                          style: AppTypography.bodyMd.copyWith(
-                            color: cs.onSurfaceVariant,
-                          ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 360),
+            child: filtered.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      child: Text(
+                        'No agencies found',
+                        style: AppTypography.bodyMd.copyWith(
+                          color: cs.onSurfaceVariant,
                         ),
                       ),
-                    )
-                  : ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: filtered.length,
-                      separatorBuilder: (context, index) => Divider(
-                        height: 1,
-                        color: cs.outlineVariant.withValues(alpha: 0.18),
-                      ),
-                      itemBuilder: (context, index) {
-                        final agency = filtered[index];
-                        final selected = agency == widget.selectedAgency;
-                        return ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            agency,
-                            style: AppTypography.bodyMd.copyWith(
-                              color: cs.onSurface,
-                              fontWeight: selected
-                                  ? FontWeight.w800
-                                  : FontWeight.w600,
-                            ),
-                          ),
-                          trailing: selected
-                              ? Icon(
-                                  LucideIcons.check,
-                                  color: cs.primary,
-                                  size: 20,
-                                )
-                              : null,
-                          onTap: () => widget.onSelected(agency),
-                        );
-                      },
                     ),
-            ),
-          ],
-        ),
+                  )
+                : ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: filtered.length,
+                    separatorBuilder: (context, index) => Divider(
+                      height: 1,
+                      color: cs.outlineVariant.withValues(alpha: 0.18),
+                    ),
+                    itemBuilder: (context, index) {
+                      final agency = filtered[index];
+                      final selected = agency == widget.selectedAgency;
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          agency,
+                          style: AppTypography.bodyMd.copyWith(
+                            color: cs.onSurface,
+                            fontWeight: selected
+                                ? FontWeight.w800
+                                : FontWeight.w600,
+                          ),
+                        ),
+                        trailing: selected
+                            ? Icon(
+                                LucideIcons.check,
+                                color: cs.primary,
+                                size: 20,
+                              )
+                            : null,
+                        onTap: () => widget.onSelected(agency),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }
