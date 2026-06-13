@@ -1,7 +1,7 @@
 # Mobio UI System
 
-> Version: 3.0
-> Last updated: 2026-06-08
+> Version: 3.1
+> Last updated: 2026-06-11
 > Source of truth: `lib/core/theme/`, `lib/shared/widgets/`
 
 ## 1. Product framing
@@ -161,10 +161,11 @@ Usage:
 
 ### 5.1 Base surfaces
 
-`ClayCard`
+`ClayCard` compatibility alias
 
-- default content surface
-- restrained elevation
+- default translucent content surface
+- retained source name for compatibility only
+- not a public legacy-surface design direction
 - subtle press feedback
 
 `MobiSurfacePanel`

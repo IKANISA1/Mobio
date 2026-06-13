@@ -33,8 +33,20 @@ if [[ -f "supabase/functions/biopay-api/index_test.ts" ]]; then
   deno test "${deno_args[@]}" --allow-env supabase/functions/biopay-api/index_test.ts
 fi
 
+if [[ -f "supabase/functions/biopay-face-provider/index_test.ts" ]]; then
+  deno test "${deno_args[@]}" --allow-env supabase/functions/biopay-face-provider/index_test.ts
+fi
+
 if [[ -f "supabase/functions/_shared/otp-security_test.ts" ]]; then
   deno test "${deno_args[@]}" --allow-env supabase/functions/_shared/otp-security_test.ts
+fi
+
+if [[ -f "supabase/functions/_shared/phone_test.ts" ]]; then
+  deno test "${deno_args[@]}" --allow-env supabase/functions/_shared/phone_test.ts
+fi
+
+if [[ -f "supabase/functions/_shared/whatsapp-cloud_test.ts" ]]; then
+  deno test "${deno_args[@]}" --allow-env supabase/functions/_shared/whatsapp-cloud_test.ts
 fi
 
 if [[ -n "${SUPABASE_PROJECT_REF:-}" ]]; then

@@ -11,9 +11,14 @@ class EditProfileState {
   final bool initialIsDriver;
   final String vehicleTypeId;
   final List<VehicleTypeModel> vehicleTypes;
+  final List<String> transportAgencyNames;
   final List<SubscriptionPlanModel> allPlans;
   final String initialWhatsApp;
+  final String initialMomoNumber;
+  final String initialMomoPayCode;
   final String initialVehicleNumberPlate;
+  final String initialBusAgencyName;
+  final String initialBusPassengerCapacity;
 
   const EditProfileState({
     this.countries = const [],
@@ -24,9 +29,14 @@ class EditProfileState {
     this.initialIsDriver = false,
     this.vehicleTypeId = 'cab',
     this.vehicleTypes = const [],
+    this.transportAgencyNames = const [],
     this.allPlans = const [],
     this.initialWhatsApp = '',
+    this.initialMomoNumber = '',
+    this.initialMomoPayCode = '',
     this.initialVehicleNumberPlate = '',
+    this.initialBusAgencyName = '',
+    this.initialBusPassengerCapacity = '',
   });
 
   EditProfileState copyWith({
@@ -38,9 +48,14 @@ class EditProfileState {
     bool? initialIsDriver,
     String? vehicleTypeId,
     List<VehicleTypeModel>? vehicleTypes,
+    List<String>? transportAgencyNames,
     List<SubscriptionPlanModel>? allPlans,
     String? initialWhatsApp,
+    String? initialMomoNumber,
+    String? initialMomoPayCode,
     String? initialVehicleNumberPlate,
+    String? initialBusAgencyName,
+    String? initialBusPassengerCapacity,
   }) {
     return EditProfileState(
       countries: countries ?? this.countries,
@@ -51,10 +66,16 @@ class EditProfileState {
       initialIsDriver: initialIsDriver ?? this.initialIsDriver,
       vehicleTypeId: vehicleTypeId ?? this.vehicleTypeId,
       vehicleTypes: vehicleTypes ?? this.vehicleTypes,
+      transportAgencyNames: transportAgencyNames ?? this.transportAgencyNames,
       allPlans: allPlans ?? this.allPlans,
       initialWhatsApp: initialWhatsApp ?? this.initialWhatsApp,
+      initialMomoNumber: initialMomoNumber ?? this.initialMomoNumber,
+      initialMomoPayCode: initialMomoPayCode ?? this.initialMomoPayCode,
       initialVehicleNumberPlate:
           initialVehicleNumberPlate ?? this.initialVehicleNumberPlate,
+      initialBusAgencyName: initialBusAgencyName ?? this.initialBusAgencyName,
+      initialBusPassengerCapacity:
+          initialBusPassengerCapacity ?? this.initialBusPassengerCapacity,
     );
   }
 

@@ -99,10 +99,17 @@ class VehicleTypeService {
 
   /// Update a vehicle type (admin only).
   Future<void> update(VehicleTypeModel model) async {
-    await _supabase
-        .from('vehicle_types')
-        .update(model.toJson())
-        .eq('id', model.id);
+    await _supabase.rpc(
+      'rpc_admin_update_vehicle_type',
+      params: {
+        'p_vehicle_type_id': model.id,
+        'p_label': model.label,
+        'p_icon_name': model.iconName,
+        'p_image_url': model.imageUrl,
+        'p_sort_order': model.sortOrder,
+        'p_is_active': model.isActive,
+      },
+    );
     invalidateCache();
   }
 
@@ -111,36 +118,20 @@ class VehicleTypeService {
     String vehicleTypeId,
     List<String> countryIds,
   ) async {
-    final client = _supabase;
-
-    // Delete existing allocations
-    await client
-        .from('vehicle_type_countries')
-        .delete()
-        .eq('vehicle_type_id', vehicleTypeId);
-
-    // Insert new allocations
-    if (countryIds.isNotEmpty) {
-      final rows = countryIds
-          .map(
-            (cId) => <String, dynamic>{
-              'vehicle_type_id': vehicleTypeId,
-              'country_id': cId,
-            },
-          )
-          .toList();
-      await client.from('vehicle_type_countries').insert(rows);
-    }
+    await _supabase.rpc(
+      'rpc_admin_set_vehicle_type_countries',
+      params: {'p_vehicle_type_id': vehicleTypeId, 'p_country_ids': countryIds},
+    );
 
     invalidateCache();
   }
 
   /// Toggle active status for a vehicle type (admin only).
   Future<void> toggleActive(String vehicleTypeId, bool isActive) async {
-    await _supabase
-        .from('vehicle_types')
-        .update({'is_active': isActive})
-        .eq('id', vehicleTypeId);
+    await _supabase.rpc(
+      'rpc_admin_set_vehicle_type_active',
+      params: {'p_vehicle_type_id': vehicleTypeId, 'p_is_active': isActive},
+    );
     invalidateCache();
   }
 }

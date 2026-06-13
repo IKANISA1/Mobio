@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Centralized shadow tokens matching transito's `index.css` shadow system.
+/// Centralized shadow tokens for MOBI dark glass surfaces.
 ///
 /// Both light and dark variants provided — light mode uses softer shadows,
 /// dark mode uses heavier shadows for depth on dark backgrounds.

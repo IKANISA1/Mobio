@@ -19,6 +19,7 @@ import 'package:mobi_app/features/admin/admin_subscriptions_screen.dart';
 import 'package:mobi_app/features/admin/admin_trips_screen.dart';
 import 'package:mobi_app/features/admin/admin_users_screen.dart';
 import 'package:mobi_app/features/admin/admin_vehicle_types_screen.dart';
+import 'package:mobi_app/features/biopay/biopay_screen.dart';
 import 'package:mobi_app/features/bookings/trip_details_screen.dart';
 import 'package:mobi_app/features/chat/chat_screen.dart';
 import 'package:mobi_app/features/profile/edit_profile_screen.dart';
@@ -55,6 +56,7 @@ abstract class AppRoutes {
   static const String scanQr = '/biopay/scan';
   static const String faceScan = '/biopay/face-scan';
   static const String faceEnroll = '/biopay/enroll';
+  static const String nfc = '/biopay/nfc';
 
   static const String configError = '/config-error';
 }
@@ -240,7 +242,7 @@ GoRouter createRouter() {
         ),
       ),
 
-      // ── Main shell with 3-tab bottom nav ──
+      // ── Main shell with bottom nav ──
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return MobiShell(navigationShell: navigationShell);
@@ -272,7 +274,25 @@ GoRouter createRouter() {
               ),
             ],
           ),
-          // Tab 2: Profile
+          // Tab 2: BioPay
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/biopay',
+                builder: (context, state) => BioPayScreen(
+                  onQr: () => context.push('/biopay/qr'),
+                  onScan: () => context.push('/biopay/scan'),
+                  onFace: () => context.push('/biopay/face-scan'),
+                  onNfc: () => context.push('/biopay/nfc'),
+                ),
+              ),
+              GoRoute(
+                path: '/admin/finance',
+                builder: (context, state) => const BioPayAdminConsoleScreen(),
+              ),
+            ],
+          ),
+          // Tab 3: Profile
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -293,6 +313,11 @@ GoRouter createRouter() {
         path: '/nearby',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const NearbyScreenWrapper(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const NotificationsScreenWrapper(),
       ),
       GoRoute(
         path: '/ledger',
@@ -379,12 +404,6 @@ GoRouter createRouter() {
             AdminReportsScreen(onBack: () => safePop(context)),
       ),
       GoRoute(
-        path: '/admin/finance',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            ScopeUnavailableScreen(onBack: () => safePop(context)),
-      ),
-      GoRoute(
         path: '/admin/health',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
@@ -405,37 +424,35 @@ GoRouter createRouter() {
             AdminBroadcastsScreen(onBack: () => safePop(context)),
       ),
 
-      // ── Legacy payment/BioPay routes kept explicit but inactive ──
-      GoRoute(
-        path: '/biopay',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            ScopeUnavailableScreen(onBack: () => safePop(context)),
-      ),
       GoRoute(
         path: '/biopay/qr',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
-            ScopeUnavailableScreen(onBack: () => safePop(context)),
+            BioPayQrScreen(onBack: () => safePop(context)),
       ),
       GoRoute(
         path: '/biopay/scan',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
-            ScopeUnavailableScreen(onBack: () => safePop(context)),
+            BioPayScanScreen(onBack: () => safePop(context)),
       ),
       GoRoute(
         path: '/biopay/face-scan',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
-            ScopeUnavailableScreen(onBack: () => safePop(context)),
+            BioPayFaceScanScreen(onBack: () => safePop(context)),
       ),
-
       GoRoute(
         path: '/biopay/enroll',
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) =>
-            ScopeUnavailableScreen(onBack: () => safePop(context)),
+            BioPayFaceEnrollScreen(onBack: () => safePop(context)),
+      ),
+      GoRoute(
+        path: '/biopay/nfc',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) =>
+            BioPayNfcScreen(onBack: () => safePop(context)),
       ),
     ],
   );

@@ -7,8 +7,17 @@ import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 
 class ConnectivityOverlay extends StatefulWidget {
   final Widget child;
+  final Future<List<ConnectivityResult>> Function()? checkConnectivity;
+  final Stream<List<ConnectivityResult>>? connectivityStream;
+  final Duration offlineDebounce;
 
-  const ConnectivityOverlay({super.key, required this.child});
+  const ConnectivityOverlay({
+    super.key,
+    required this.child,
+    this.checkConnectivity,
+    this.connectivityStream,
+    this.offlineDebounce = const Duration(milliseconds: 1500),
+  });
 
   @override
   State<ConnectivityOverlay> createState() => _ConnectivityOverlayState();
@@ -21,6 +30,7 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay>
   late final Animation<Offset> _slideAnimation;
 
   StreamSubscription<List<ConnectivityResult>>? _subscription;
+  Timer? _offlineDebounceTimer;
   bool _isOffline = false;
 
   @override
@@ -36,13 +46,14 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay>
         );
 
     _checkInitialConnectivity();
-    _subscription = _connectivity.onConnectivityChanged.listen(
-      _handleConnectivityChanged,
-    );
+    _subscription =
+        (widget.connectivityStream ?? _connectivity.onConnectivityChanged)
+            .listen(_handleConnectivityChanged);
   }
 
   Future<void> _checkInitialConnectivity() async {
-    final results = await _connectivity.checkConnectivity();
+    final results =
+        await (widget.checkConnectivity ?? _connectivity.checkConnectivity)();
     if (!mounted) {
       return;
     }
@@ -50,25 +61,43 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay>
   }
 
   void _handleConnectivityChanged(List<ConnectivityResult> results) {
-    // If the list only contains 'none' or is empty, we are disconnected
-    final isOffline = results.every((r) => r == ConnectivityResult.none);
+    final hasKnownConnection = results.any((r) => r != ConnectivityResult.none);
+    final shouldShowOffline = results.isNotEmpty && !hasKnownConnection;
 
-    if (isOffline != _isOffline) {
-      setState(() {
-        _isOffline = isOffline;
+    _offlineDebounceTimer?.cancel();
+
+    if (shouldShowOffline) {
+      _offlineDebounceTimer = Timer(widget.offlineDebounce, () {
+        if (mounted) {
+          _setOffline(true);
+        }
       });
+      return;
+    }
 
-      if (_isOffline) {
-        _animController.forward();
-      } else {
-        _animController.reverse();
-      }
+    _setOffline(false);
+  }
+
+  void _setOffline(bool isOffline) {
+    if (isOffline == _isOffline) {
+      return;
+    }
+
+    setState(() {
+      _isOffline = isOffline;
+    });
+
+    if (_isOffline) {
+      _animController.forward();
+    } else {
+      _animController.reverse();
     }
   }
 
   @override
   void dispose() {
     _subscription?.cancel();
+    _offlineDebounceTimer?.cancel();
     _animController.dispose();
     super.dispose();
   }
@@ -82,68 +111,69 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay>
       children: [
         widget.child,
 
-        // Use SafeArea so the banner doesn't overlap the status bar text on newer OS versions
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: SafeArea(
-            bottom: false,
-            child: SlideTransition(
-              position: _slideAnimation,
-              child: Material(
-                type: MaterialType.transparency,
-                child: Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: cs.errorContainer,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: ext.borderSubtle.withValues(
-                        alpha: ext.surfacePanelBorderAlpha,
-                      ),
+        if (_isOffline)
+          // Use SafeArea so the banner doesn't overlap the status bar text on newer OS versions.
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              bottom: false,
+              child: SlideTransition(
+                position: _slideAnimation,
+                child: Material(
+                  type: MaterialType.transparency,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(
-                          alpha: ext.surfacePanelShadowAlpha,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: cs.errorContainer,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: ext.borderSubtle.withValues(
+                          alpha: ext.surfacePanelBorderAlpha,
                         ),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        LucideIcons.wifiOff,
-                        color: cs.onErrorContainer,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'No internet connection',
-                          style: AppTypography.labelMd.copyWith(
-                            color: cs.onErrorContainer,
-                            fontWeight: FontWeight.w600,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(
+                            alpha: ext.surfacePanelShadowAlpha,
+                          ),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          LucideIcons.wifiOff,
+                          color: cs.onErrorContainer,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'No internet connection',
+                            style: AppTypography.labelMd.copyWith(
+                              color: cs.onErrorContainer,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
       ],
     );
   }

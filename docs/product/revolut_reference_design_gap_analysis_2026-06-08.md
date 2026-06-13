@@ -1,346 +1,234 @@
 # Revolut Reference Design Gap Analysis
 
-Date: 2026-06-08
-
-Reference inputs:
-
-- Attached Revolut screenshots for Home, Invest, Crypto, RevPoints, Analytics, Profile, Contact, and Payments surfaces.
-- New MOBI/Collect node colors:
-  - `#8885F0` Periwinkle
-  - `#D38B96` Dusty rose
-  - `#FF5E43` Vibrant orange-red
-  - `#3CD070` Mint green
+> Date: 2026-06-12
+> Scope: MOBI Flutter app, design tokens, static web shell, launch surfaces, and
+> product docs
+> Source contract: `design.md`
+> Reference folder supplied by user: `/Users/jeanbosco/Downloads/Revolut10`
 
 ## Executive Finding
 
-The current MOBI design system is coherent, but it is not close to the attached
-Revolut reference. It currently reads as a premium minimalist mobility app with
-green brand tokens, warm/light surfaces, 3-tab navigation, compact clay cards,
-and operational widgets.
+MOBI is now materially aligned with the Revolut reference grammar in the source
+contract, launch surfaces, shared widgets, local preview harness, and visual
+goldens. The current implementation follows the reference pattern of a dark
+immersive shell, black command chrome, large centered hero hierarchy, circular
+actions, translucent panels, white/black pill controls, and a restrained
+four-color MOBI palette.
 
-The Revolut reference reads as an immersive fintech shell: dark gradient-first
-screens, black pill search, circular command buttons, central hero balances or
-product statements, translucent rounded cards, circular quick actions, and a
-floating black multi-item bottom bar.
+It is still not defensible to claim "100% same look and feel" as a release
+statement. The reference images are now inspectable, and MOBI has passing
+goldens, browser-runtime screenshots, and native Android/iOS screenshots across
+the primary screen matrix. Motion-video proof was attempted on native targets
+and remains blocked by device/build-state issues, so the remaining gaps are
+motion-video proof, production data realism, and product-approved density
+differences.
+There are also deliberate product differences: MOBI is a transport network, not
+a finance app, and `design.md` currently preserves a three-tab shell.
 
-Current Revolut-reference correlation score: `34/100`.
+- **Design-token and contract alignment:** `94/100`
+- **Implemented source alignment:** `94/100`
+- **Evidence-backed visual parity:** `95/100`
+- **Release claim:** not ready for "100% same look and feel" wording
 
-Target after implementation: `90-95/100` reference grammar match while keeping
-MOBI content, MOBI routing, and MOBI legal/product boundaries. Exact 100 percent
-visual copying of Revolut logos, product names, proprietary card imagery, and
-financial/crypto/payment claims should not be shipped. The correct target is:
-same interaction grammar, hierarchy, rhythm, density, and material feel, with
-MOBI-owned content and the four provided colors.
+The correct target remains: Revolut-level interaction grammar, rhythm, density,
+surface treatment, and hierarchy, with MOBI-owned content, MOBI routes, and the
+four approved colors. Do not copy Revolut marks, copy, financial claims,
+proprietary card imagery, crypto/invest labels, RevPoints labels, or unsupported
+product flows.
 
-## Current MOBI Design System
+## Reference Evidence
 
-Current source of truth:
+The supplied folder is readable in this pass. It contains 12 reference PNGs:
 
-- Product spec: `design.md`
-- Flutter tokens: `packages/design-system/lib/src/theme/`
-- App compatibility exports: `lib/core/theme/`
-- Shared widgets: `lib/shared/widgets/`
+`IMG_2739.PNG`, `IMG_2740.PNG`, `IMG_2741.PNG`, `IMG_2742.PNG`,
+`IMG_2743.PNG`, `IMG_2747.PNG`, `IMG_2748.PNG`, `IMG_2749.PNG`,
+`IMG_2750.PNG`, `IMG_2751.PNG`, `IMG_2752.PNG`, and `IMG_2755.PNG`.
 
-Current strengths:
+All reference captures are `1170x2532`. The MOBI evidence set now includes 14
+golden screenshots, 20 browser-runtime screenshots, and 26 native Android/iOS
+screenshots:
 
-- Centralized theme package and compatibility exports already exist.
-- Shared components already cover panels, buttons, bottom navigation, badges,
-  chips, action rows, toggles, loading states, dialogs, and empty/error states.
-- Current app routes are isolated behind a `StatefulShellRoute`, so shell and
-  visual system work can be done without rewriting business logic.
-- Existing visual audit already pushes toward shorter copy and reusable widgets.
+- `Home`, `Bookings`, `Schedule`, `Profile`, `Chat`, `Nearby`, and `Admin`
+- compact phone: `390x844`, rendered as `1170x2532`
+- large phone: `430x932`, rendered as `1290x2796`
+- runtime shell states: `home_shell`, `bookings_shell`, and `profile_shell`
+- runtime evidence folder:
+  `docs/release/evidence/revolut-runtime-2026-06-12/`
+- native evidence folder:
+  `docs/release/evidence/revolut-native-2026-06-12/`
+- motion-proof attempt folder:
+  `docs/release/evidence/revolut-motion-2026-06-12/`
 
-Current dominant visual language:
+Direct inspection of the reference screenshots confirms these visible rules:
 
-- Primary color is `#006D2F` green.
-- Dark palette uses graphite/charcoal surfaces.
-- Light palette uses soft warm neutral surfaces.
-- Typography uses Manrope headlines and Inter body.
-- Screen padding is 24, section gaps are 32, and card radii are 24-32.
-- Bottom navigation is a 3-item floating glass card: Home, Trips, Profile.
-- Home is a mobility dashboard with a header panel, mode toggle, metric hero
-  card, rectangular action row, vehicle filters, and scheduled trip lists.
+1. Saturated top gradient fading into a near-black lower shell.
+2. Top command chrome with avatar, black search pill, and black circular
+   actions.
+3. Oversized centered hero content before secondary lists.
+4. Four-wide circular action rows with short labels.
+5. Heavy translucent panels with low-contrast borders.
+6. White or black pill CTAs rather than saturated filled buttons.
+7. Floating black bottom navigation with active capsule treatment.
+8. Low-copy rows and cards with strong icon/avatar anchoring.
+9. Large product-section panels that fill horizontal space.
+10. Visual depth from gradient, blur, opacity, and spacing, not heavy shadow.
 
-## Revolut Reference System
+## MOBI Contract Alignment
 
-The attached Revolut screenshots consistently show these rules:
+Authoritative source surfaces:
 
-1. Backgrounds are full-screen dark gradients, not card-first pages.
-2. Top chrome is avatar plus black pill search plus two circular command buttons.
-3. Primary screen content is centered and large: amount, product statement, or
-   product invitation.
-4. Quick actions are circular icon buttons with labels below.
-5. Cards are dark translucent rounded rectangles with minimal borders and no
-   heavy decorative shadows.
-6. CTAs are often white or translucent pills on dark backgrounds.
-7. Bottom navigation is a floating black rounded pill with 5 visible sections
-   and a larger active capsule.
-8. Profile and detail screens use black background, large identity typography,
-   circular close/back controls, and simple dark list panels.
-9. Dense operational copy is suppressed. Most surfaces use title, one support
-   line, and direct action.
-10. The reference relies on depth through opacity, blur, gradient, and spatial
-    hierarchy rather than bright card colors.
+- `design.md`
+- `packages/design-system/lib/src/theme/`
+- compatibility exports in `lib/core/theme/`
+- shared widgets in `lib/shared/widgets/`
+- launch/PWA/bootstrap colors in `pubspec.yaml`, `web/`, and Android
+  `values-v31`
+
+Current aligned tokens:
+
+| Role | Token | Value | Status |
+| --- | --- | ---: | --- |
+| Primary brand | `brandPeriwinkle` | `#8885F0` | aligned |
+| Secondary warmth | `brandDustyRose` | `#D38B96` | aligned |
+| Urgent/error | `brandOrangeRed` | `#FF5E43` | aligned |
+| Success/live | `brandMintGreen` | `#3CD070` | aligned |
+| Base shell | dark background | `#02030A` | aligned |
+| Command/navigation chrome | tokenized black alpha | extension-backed | aligned |
+| Secondary info | `info`, `aqua`, `caution` | tokenized | aligned |
 
 ## Critical Gap Matrix
 
-| Area | Current MOBI | Revolut Reference | Gap | Severity |
+| Area | Current MOBI state | Revolut target | Gap | Severity |
 | --- | --- | --- | --- | --- |
-| Brand color | Green-first `#006D2F` with muted secondary/tertiary | Blue, teal, purple, black, white, and high-contrast accent nodes | Replace brand system with four supplied colors and dark gradient neutrals | P0 |
-| Background | Soft neutral gradient plus top decorative orb | Full-screen immersive dark gradient | Replace `SoftGradient`; remove decorative orb | P0 |
-| Theme mode | Light and dark both supported; light is first-class | Reference is predominantly dark | Make dark visual system default for shell; retain accessible light mode as secondary | P0 |
-| Typography | Manrope/Inter with negative display tracking | System-like, clean, large white type, no cramped labels | Set letter spacing to 0 and increase hero/display scale | P0 |
-| Top chrome | MOBI logo/title inside surface panel | Avatar, black pill search, circular command buttons | Create shared `MobiTopCommandBar` | P0 |
-| Navigation | 3-tab glass nav, active icon plus text | 5-item black pill nav, active capsule | Restyle immediately; decide whether to expand to 5 product-owned tabs | P0/P1 |
-| Home hierarchy | Header card, toggle, hero metrics, filters | Centered hero statement/amount, circular actions, cards below | Rebuild Home composition | P1 |
-| Actions | Rectangular action tiles | Circular icon buttons with labels below | Replace `MobiActionRow` visual treatment | P1 |
-| Cards | Clay/glass/panel mix, visible borders, surface shadows | One family of translucent dark rounded cards | Normalize `ClayCard`, `MobiSurfacePanel`, `GlassCard` | P1 |
-| Buttons | Filled green primary, ghost/danger/success variants | Large white/translucent pills | Retokenize `MobiButton` variants | P1 |
-| Profile | Compact profile card and feature tiles | Large centered avatar/name, black surface, list panel rows | Rebuild Profile composition | P1 |
-| Bookings/Payments analog | Trip list with header/toggle; no Revolut command bar | Payments list has top command bar and large list panel | Restyle bookings/contact-like lists into Revolut list grammar | P1 |
-| Analytics/details | Admin/metrics are operational panels | Analytics is black, cards in metric grid | Restyle metrics panels and admin detail surfaces | P2 |
-| Motion | Fade/scale/slide animations | Subtle movement, mostly static material | Reduce animation amplitude | P2 |
-| Test coverage | Widget tests exist for nav and shared states | Needs visual regression/golden proof | Add route screenshot/golden matrix | P2 |
+| Reference evidence | 12 Revolut PNGs inspected at `1170x2532` | Inspectable source screenshots | Closed for static reference inventory | Done |
+| Visual proof | 14 MOBI goldens, 20 browser-runtime screenshots, and 26 native screenshots pass for the main matrix | Native device screenshots plus transition endpoints | Android/iOS screenshot blocker is cleared; motion video was attempted but remains blocked | P0 |
+| Top chrome | Home runtime and native proof match avatar/search/circular-action grammar | Same command grammar on every main route | Covered on shell, nearby, profile, bookings, and schedule evidence | Done |
+| Hero rhythm | Home uses centered transport hero and large numeric focus | Revolut uses oversized single-value/section hero | Good direction; segmented mode control adds product density | P1 |
+| Action row | Home uses circular Nearby/Schedule/Trips actions | Revolut uses four circular actions | Add/justify fourth action only if product-owned | P1 |
+| Bottom nav | Floating dark nav exists in app shell | Five-slot floating black nav in reference | Three-slot shell is a `design.md` product constraint | P1 |
+| Panels | Metric/cards use dark translucent panels | Heavy full-width translucent panels | Some MOBI cards are more bordered and operational | P1 |
+| Bookings/Profile/Chat | Golden, browser-runtime, Android native, and iOS native covered | Low-copy list/detail panels | Pushed chat/detail proof captured natively | Done |
+| Static launch/PWA | Legacy splash/static colors replaced | No contradictory pre-app flash | Android/iOS native screenshots show no contradictory post-launch chrome | Done |
+| Landing CSS | Four-color/dark contract applied | Same visual language as app | Aligned; keep zero letter-spacing | P1 |
+| Admin | Dark operational cards, golden-covered | Analytics-like dense panels | Accept density; admin is not consumer Revolut parity | P2 |
+| Copy density | Reduced contract language and stale labels | Reference has very sparse explanatory text | Continue deleting helper paragraphs while touching screens | P2 |
 
-## Four-Color Token Map
+## Findings
 
-Use the attached colors as the new brand nodes, not as flat one-color theming.
+### P0: Motion proof is still blocked, so 100/100 is still overreach
 
-| Token | Color | Usage |
-| --- | --- | --- |
-| `brandPeriwinkle` | `#8885F0` | Primary gradient node, selected nav highlight, focus ring, premium surfaces |
-| `brandDustyRose` | `#D38B96` | Warm promo surfaces, profile/identity accents, secondary gradient node |
-| `brandOrangeRed` | `#FF5E43` | Urgent states, notification dots, destructive/warning accents, live alerts |
-| `brandMintGreen` | `#3CD070` | Positive/live states, success, confirmed transport state, safe CTA accents |
+The source direction is strong, `flutter analyze --no-pub` is clean, focused
+preview tests pass, the Revolut-reference golden matrix passes, browser runtime
+screenshots cover the main matrix, and native Android/iOS screenshots now cover
+pushed details, shell endpoints, scroll states, safe-area behavior, and dense
+route states. Full repo release gates also pass at the Flutter and linked
+backend layers. A 100/100 claim would still be overreach because motion/video
+proof is not captured yet and product approval is still needed for the remaining
+density differences.
 
-Recommended neutral system:
+Motion proof was attempted on 2026-06-12:
 
-- `appBlack`: `#02030A`
-- `surfaceBlack`: `#070812`
-- `surfaceRaised`: `#151627`
-- `surfaceRaisedHigh`: `#22243A`
-- `surfaceStroke`: `rgba(255,255,255,0.14)`
-- `onSurface`: `#F7F7FF`
-- `onSurfaceMuted`: `#B9BBCD`
-- `onSurfaceSubtle`: `#85889F`
+- iOS simulator debug build was blocked by generated SwiftPM/package target
+  integrity reporting an iOS 13.0 minimum against Firebase products that require
+  iOS 15.0 or higher.
+- Existing simulator app recording was blocked when `simctl` became
+  unresponsive.
+- Android Pixel 4a debug proof builds succeeded, but install was blocked by the
+  existing release-signed `rw.mobi.app` on the device.
 
-Recommended gradients:
+Evidence:
+`docs/release/evidence/revolut-motion-2026-06-12/README.md`.
 
-- Home: `#8885F0 -> #111A46 -> #02030A`
-- Mobility/live: `#3CD070 -> #0C3F3B -> #02030A`
-- Rewards/promos: `#D38B96 -> #8885F0 -> #211148`
-- Warning/action required: `#FF5E43 -> #3A1112 -> #02030A`
+### P1: MOBI now matches the core Revolut shell grammar
 
-## Compatibility Constraints
+The inspected reference screens and MOBI home runtime screenshot both use a
+saturated top-to-black gradient, black pill search, circular command actions,
+large center hierarchy, circular quick actions, icon-first chips, and dark
+translucent lower panels. This is the strongest parity area.
 
-1. `design.md` currently says to keep the 3-tab shell and current route
-   structure. The Revolut reference strongly implies 5 visible bottom tabs.
-   This is the biggest product/design conflict.
-2. MOBI has removed or constrained legacy payment/BioPay behavior in prior
-   scope boundaries. Do not introduce unsupported payment, crypto, invest, or
-   rewards promises just to mimic Revolut labels.
-3. A direct Revolut clone would create brand/IP and product-truth risks. Use
-   Revolut as the UI grammar reference, not as copied content.
-4. Current shared components can be retokenized and restyled. A full rewrite is
-   unnecessary and would risk business logic.
+### P1: Runtime and native QA found and fixed visual blockers
 
-Recommended resolution:
+The browser-runtime capture exposed a chat preview crash in profile web mode and
+tiny raster vehicle thumbnails inside Revolut-style chips. Chat preview now uses
+a deterministic local trip instead of debug-only constants, and vehicle
+surfaces use Lucide icons for a cleaner reference-aligned treatment. Native
+proof also exposed timing drift in the capture harness, so the Android proof
+target now accepts launch links for deterministic per-screen capture.
 
-- Keep current product-owned route meanings.
-- Use a Revolut-style 5-slot shell only if each slot maps to a real MOBI
-  feature. Suggested MOBI mapping:
-  - Home
-  - Trips
-  - Nearby
-  - Chat
-  - Profile
-- If route expansion is not approved, keep 3 tabs but make the bar, active
-  capsule, icon scale, black material, and safe-area positioning match the
-  Revolut reference.
+### P1: MOBI is still denser than the reference
 
-## Implementation Plan
+The Revolut captures keep section pages extremely sparse: one large hero, one
+wide pill CTA or one action row, then a small number of full-width panels. MOBI
+still exposes operational transport controls earlier: mode toggle, availability
+state, metrics, vehicle chips, and route actions. This is acceptable for product
+utility, but it prevents exact visual sameness.
 
-### Phase 0: Token and Contract Reset
+### P1: Static shell contradictions have been removed
 
-Files to change:
+Native splash, web bootstrap, PWA manifest, Android 12 splash styles, iOS launch
+backgrounds, and the landing page no longer carry the older green/static launch
+language. The regenerated Android/iOS launch PNGs sample to `#02030A`.
 
-- `packages/design-system/lib/src/theme/app_colors.dart`
-- `packages/design-system/lib/src/theme/app_theme.dart`
-- `packages/design-system/lib/src/theme/mobi_theme_extension.dart`
-- `packages/design-system/lib/src/theme/app_typography.dart`
-- `packages/design-system/lib/src/theme/app_radii.dart`
-- `design.md`
+### P1: The three-tab shell is an intentional design-contract difference
 
-Actions:
+The reference uses a five-slot bottom nav. MOBI currently preserves a three-tab
+product shell under `design.md`. Do not add fake top-level tabs just to mimic the
+reference. Only promote real destinations if MOBI approves them as first-class
+product routes.
 
-1. Replace green-first brand tokens with the four supplied brand nodes.
-2. Add gradient and glass-material tokens to `MobiThemeExtension`.
-3. Set display/headline letter spacing to `0`.
-4. Preserve accessibility contrast by mapping white text to dark surfaces.
-5. Update `design.md` to define the Revolut-inspired MOBI shell contract.
+### P2: Legacy naming is now compatibility-only
 
-Acceptance criteria:
+`ClayCard` remains as a source-level compatibility alias, but the public product
+language and current behavior are dark translucent panels. New docs and UI copy
+must not reintroduce legacy surface language.
 
-- No feature screen should hard-code old green accents.
-- Theme still compiles in light and dark modes.
-- Text contrast stays accessible on dark surfaces.
+## Required Cleanup State
 
-### Phase 1: Shell and Shared Components
+The following are not allowed in active design-facing surfaces:
 
-Files to change:
+- legacy brand narrative
+- legacy public surface language
+- generic Material colors as brand substitutes
+- unsupported payment, crypto, invest, rewards, or bank-account labels
+- long helper paragraphs where a chip, badge, icon, or direct action is enough
+- splash or PWA colors that flash a different brand system before Flutter loads
+- nonzero letter spacing in app or landing UI
 
-- `lib/shared/widgets/soft_gradient.dart`
-- `lib/shared/widgets/glass_container.dart`
-- `lib/shared/widgets/mobi_surface_panel.dart`
-- `lib/shared/widgets/mobi_bottom_nav.dart`
-- `lib/shared/widgets/mobi_action_row.dart`
-- `lib/shared/widgets/mobi_button.dart`
-- New: `lib/shared/widgets/mobi_top_command_bar.dart`
+The following are allowed:
 
-Actions:
+- the four MOBI colors as primary brand nodes
+- black, navy, violet-depth, and translucent surface neutrals
+- `info`, `aqua`, and `caution` as secondary semantic tokens
+- source-level compatibility aliases when changing names would create churn
+- three product-owned tabs while the product contract remains three-tab
 
-1. Replace `SoftGradient` with a full-screen dark gradient layer using the four
-   brand colors as screen-specific nodes.
-2. Remove the decorative orb from the background.
-3. Convert surface panels to translucent dark cards with white border alpha.
-4. Convert action rows to circular icon controls with labels below.
-5. Convert primary buttons to large white/translucent pills.
-6. Rebuild bottom nav as a black floating pill with larger active capsule.
-7. Add a shared top command bar: avatar, search pill, and circular command
-   buttons.
+## Acceptance Gates
 
-Acceptance criteria:
+1. Done: reference folder inventory is accessible and contains 12 PNG captures.
+2. Done: active scanned files contain no legacy splash/static brand tokens.
+3. Done: `flutter analyze --no-pub` passes.
+4. Done: focused local preview widget tests pass for Home, Bookings, Schedule,
+   Profile, and Chat.
+5. Done: golden screenshots cover Home, Bookings, Schedule, Profile, Chat,
+   Nearby, and Admin at `390x844` and `430x932`.
+6. Done: browser-runtime screenshots cover 10 screen/shell states at `390x844`
+   and `430x932`, with zero real browser errors in final capture logs.
+7. Done: native Android and iOS screenshots cover 13 states each, including
+   shell endpoints, pushed/detail surfaces, scroll states, and safe-area
+   behavior.
+8. Blocked: capture motion/video proof for animated transitions. Current
+   blockers are documented in
+   `docs/release/evidence/revolut-motion-2026-06-12/README.md`.
+9. Remaining: get product approval for the remaining transport-density
+   differences before any 100/100 claim.
 
-- Home, Trips, and Profile share the same top command bar grammar.
-- Bottom nav visually matches the reference material and spacing.
-- Touch targets remain at least 48 logical pixels.
+## Current Verdict
 
-### Phase 2: Main Passenger Screen Conversion
+MOBI is now close enough to the Revolut visual system to use the reference as a
+serious design benchmark, and the browser-runtime plus native-device evidence
+materially improves the proof position. It is still not close enough to certify
+100/100 release parity. The remaining work is unblocked motion proof, selective
+density approval/reduction, and release-signing/Play evidence, not another broad
+token rewrite.
 
-Files to change:
-
-- `lib/features/home/home_screen.dart`
-- `lib/features/home/widgets/home_header.dart`
-- `lib/features/home/widgets/home_hero_card.dart`
-- `lib/features/bookings/bookings_screen.dart`
-- `lib/features/nearby/nearby_screen.dart`
-- `lib/features/chat/chat_screen.dart`
-- `lib/features/profile/profile_screen.dart`
-
-Actions:
-
-1. Rebuild Home around a centered hero and circular action strip.
-2. Restyle bookings into a Revolut payments/contact-list grammar: command bar,
-   dark list panel, avatar/route icons, date/status right alignment.
-3. Restyle Nearby as the mobility equivalent of a product discovery page with
-   dark promo cards and compact action chips.
-4. Restyle Chat list/details into black detail surfaces with large identity
-   headers and list cards.
-5. Rebuild Profile with centered avatar/name, top close/upgrade-style action
-   slot, dark plan card, and simple list rows.
-
-Acceptance criteria:
-
-- No screen still looks like the old green clay-card system.
-- Every primary route has the same top chrome, nav, card radius, and button
-  material.
-- Product copy remains MOBI-specific and does not promise unsupported financial
-  services.
-
-### Phase 3: Secondary and Admin Surfaces
-
-Files to change:
-
-- `lib/features/bookings/trip_details_screen.dart`
-- `lib/features/bookings/schedule_trip_screen.dart`
-- `lib/features/profile/edit_profile_screen.dart`
-- `lib/features/admin/*`
-- `lib/shared/widgets/mobi_metric_tile.dart`
-- `lib/shared/widgets/mobi_feature_tile.dart`
-
-Actions:
-
-1. Convert detail pages to black profile/contact/analytics-style layouts.
-2. Convert metrics into dark rounded analytics cards.
-3. Keep admin operational density, but retokenize surfaces and typography.
-4. Replace remaining feature tiles that still use the old rectangular language.
-
-Acceptance criteria:
-
-- Pushed routes feel like Revolut detail sheets/pages.
-- Admin remains usable and scannable, not a consumer marketing surface.
-
-### Phase 4: Validation
-
-Run:
-
-- `flutter analyze`
-- `flutter test`
-- Existing route/accessibility matrix tests
-- New screenshot/golden route matrix for compact mobile viewport
-
-Recommended new tests:
-
-- Bottom nav has stable 5-slot or approved 3-slot layout.
-- Top command bar controls have semantic labels.
-- Text scale does not clip hero text, buttons, or nav labels.
-- Theme tokens expose all four supplied colors.
-- No old `#006D2F` brand usage remains except migration comments or historical
-  docs.
-
-## Immediate Edit Order
-
-1. Update token package and docs.
-2. Rebuild `SoftGradient`, `MobiSurfacePanel`, `GlassCard`, `MobiButton`,
-   `MobiActionRow`, and `MobiBottomNav`.
-3. Add `MobiTopCommandBar`.
-4. Convert Home.
-5. Convert Bookings and Profile.
-6. Convert Nearby, Chat, and pushed detail routes.
-7. Run analyzer/tests and produce screenshots.
-
-## Go/No-Go for Visual Parity
-
-Go if:
-
-- User approves Revolut-style 5-slot navigation or confirms 3-slot route
-  preservation.
-- The four new colors replace old green as the brand nodes.
-- Business-scope labels remain MOBI-owned.
-
-No-go if:
-
-- The target is literal Revolut cloning including brand marks, product names,
-  crypto/invest/payment promises, or proprietary imagery.
-- Unsupported payment/crypto/rewards workflows are added only for appearance.
-
-Recommended next implementation target:
-
-- Proceed with Phase 0 and Phase 1 immediately.
-- Keep route count at 3 for the first implementation unless explicit approval
-  is given to expand the shell to 5 MOBI-owned tabs.
-
-## Implementation Status
-
-2026-06-08 pass:
-
-- Phase 0 complete: token package now uses the four supplied brand nodes,
-  dark-first surface tokens, gradient background extension tokens, and zero
-  letter spacing.
-- Phase 1 complete: shared background, panels, cards, buttons, circular actions,
-  bottom navigation, and top command bar now follow the Revolut-reference
-  material grammar while preserving MOBI route contracts.
-- Phase 2 primary-pass complete: Home, Trips/Bookings, Nearby, Chat list rows,
-  and Profile now use centered hero content, black command bars, circular
-  action/list affordances, and dark translucent row surfaces.
-- Pushed-route/admin pass complete: Trip Details, Schedule, Edit Profile, and
-  core admin panels now use the same black detail-page, hero, circular icon,
-  dark panel, and metric-card grammar.
-
-Residual gaps before claiming full visual parity:
-
-- A screenshot/golden matrix is still needed to prove visual parity across
-  compact and large mobile viewports.
-- Real device or browser visual QA is still needed to catch overlap, clipping,
-  and hero/list density issues that static analyzer and widget tests cannot
-  prove.
+Do not rebuild the AAB for this design pass.

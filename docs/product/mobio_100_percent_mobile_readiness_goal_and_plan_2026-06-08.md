@@ -15,7 +15,7 @@ Bring Mobio to a defensible 100% mobile UI, accessibility, adaptive-layout, prod
 - scheduled trip post create, view, edit, and cancel
 - basic moderation and admin operations for users, scheduled posts, chat reports, roles, audit logs, operational health, and broadcasts
 
-The goal is not to revive payments, BioPay, ledgers, fare engines, automatic dispatch, trip lifecycle settlement, refunds, earnings, or route tracking. Those remain inactive unless a new approved product document changes scope.
+The goal is not to revive in-app payments, ledgers, fare engines, automatic dispatch, trip lifecycle settlement, refunds, earnings, or route tracking. BioPay was later reactivated by `docs/product/biopay_ussd_aws_reactivation_scope_2026-06-12.md` as an external USSD handoff and AWS face-identity surface only.
 
 ## Definition of 100%
 
@@ -40,13 +40,13 @@ Deliverables:
 
 - Update the audit into an implementation tracker with each route/surface mapped to owner, status, and proof required.
 - Keep inactive legacy routes explicitly unavailable or remove deep-link exposure only if product approves.
-- Update `design.md` so BioPay no longer appears as an active benchmark screen.
+- Keep `design.md` and route inventories aligned with the later BioPay USSD/AWS reactivation scope instead of the older inactive-BioPay assumption.
 - Add a route inventory test that fails when new screens, dialogs, or inactive legacy routes are introduced without tracker coverage.
 
 Acceptance gates:
 
 - Scope boundary tests pass.
-- No active imports, routes, services, prompts, or UI revive payments, BioPay, ledgers, fare engines, automatic dispatch, or trip settlement.
+- No active imports, routes, services, prompts, or UI revive in-app payments, ledgers, fare engines, automatic dispatch, or trip settlement; BioPay remains limited to USSD handoff and AWS face identity.
 - The implementation tracker covers every route, overlay, modal, sheet, wizard, and inactive fallback.
 
 ### 2. Shared Shell and Modal Foundation
@@ -155,7 +155,7 @@ Acceptance gates:
 
 ## Known Risks
 
-- Flutter commands previously hung without output. Runtime validation must be retried with a controlled process plan before claiming release proof.
+- Flutter validation now passes when run serially. Avoid parallel Flutter test runs because native-assets output can race and produce false toolchain failures.
 - Backend support for `rpc_update_trip` exists in an older migration, but live Supabase deployment still needs proof before edit can be marked production-ready.
 - The app is currently portrait-locked, so adaptive readiness needs a product decision: keep portrait-only but prove large-screen portrait behavior, or support orientation changes.
 - The worktree may contain unrelated existing changes. Do not revert user or generated work outside this objective.

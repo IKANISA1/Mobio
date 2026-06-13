@@ -5,7 +5,6 @@ import {
   tryRecordAdminAccessAttempt,
 } from "../_shared/admin-access.ts";
 import {
-  normalizePhone,
   resolveAdminWhatsappNumberByPhone,
 } from "../_shared/admin-whatsapp.ts";
 import {
@@ -22,7 +21,11 @@ import {
   requestSourceFingerprint,
 } from "../_shared/otp-security.ts";
 import { createAdminClient } from "../_shared/supabase.ts";
-import { sendWhatsappCloudOtp } from "../_shared/whatsapp-cloud.ts";
+import { normalizePhoneWithCountry } from "../_shared/phone.ts";
+import {
+  sendWhatsappCloudOtp,
+  whatsappCloudDeliveryErrorMetadata,
+} from "../_shared/whatsapp-cloud.ts";
 
 Deno.serve(async (req: Request) => {
   const corsResponse = handleCors(req);
@@ -36,7 +39,11 @@ Deno.serve(async (req: Request) => {
 
   try {
     const body = await req.json();
-    const phone = normalizePhone(body?.phone, "Valid WhatsApp number required");
+    const phone = normalizePhoneWithCountry(
+      body?.phone,
+      body?.countryCode,
+      "Valid WhatsApp number required",
+    );
     const supabase = createAdminClient();
 
     const sourceFingerprint = requestSourceFingerprint(req);
@@ -155,14 +162,15 @@ Deno.serve(async (req: Request) => {
     }
 
     const code = generateOtpCode();
-    const codeHash = await hashOtpCode(code);
+    const purpose = "admin_login";
+    const codeHash = await hashOtpCode(code, { phone, purpose });
     const expiresAt = new Date(Date.now() + 5 * 60_000).toISOString();
 
     const { data: insertedOtp, error: insertError } = await supabase
       .from("otp_codes")
       .insert({
         phone,
-        purpose: "admin_login",
+        purpose,
         code: "000000",
         code_hash: codeHash,
         expires_at: expiresAt,
@@ -190,11 +198,24 @@ Deno.serve(async (req: Request) => {
         matchedAdminNumberId: adminNumber.id,
         metadata: {
           stage: "send_otp",
+          delivery_error: whatsappCloudDeliveryErrorMetadata(deliveryError),
         },
         request: req,
       });
 
       throw deliveryError;
+    }
+
+    const { error: invalidateError } = await supabase
+      .from("otp_codes")
+      .update({ verified: true })
+      .eq("phone", phone)
+      .eq("purpose", purpose)
+      .eq("verified", false)
+      .neq("id", insertedOtp.id);
+
+    if (invalidateError) {
+      throw invalidateError;
     }
 
     try {
@@ -229,6 +250,18 @@ Deno.serve(async (req: Request) => {
       error.message == "Valid WhatsApp number required"
     ) {
       return errorResponse(error.message, 400, undefined, req);
+    }
+
+    if (
+      error instanceof Error &&
+      error.name == "WhatsappCloudDeliveryError"
+    ) {
+      return errorResponse(
+        "WhatsApp delivery failed. Please try again in a moment.",
+        502,
+        undefined,
+        req,
+      );
     }
 
     console.error("send-otp error:", error);

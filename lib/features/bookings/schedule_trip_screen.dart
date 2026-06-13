@@ -263,15 +263,6 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                                 height: 1.08,
                               ),
                             ),
-                            const SizedBox(height: AppSpacing.sm),
-                            Text(
-                              'Route, timing, and vehicle in one flow',
-                              textAlign: TextAlign.center,
-                              style: AppTypography.bodyLg.copyWith(
-                                color: Colors.white.withValues(alpha: 0.74),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
                           ],
                         ),
                       ),

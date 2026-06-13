@@ -53,7 +53,7 @@ Upload AAB only to internal track
 [bundle exec] fastlane android promote_to_production
 ```
 
-Promote internal to production. Requires PLAY_PRODUCTION_APPROVED=true.
+Promote internal to production
 
 ----
 

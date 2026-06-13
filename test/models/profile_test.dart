@@ -10,10 +10,14 @@ void main() {
       'display_name': 'JB',
       'phone': '+250780000000',
       'whatsapp': '+250780000000',
+      'momo_number': '0780000000',
+      'momo_pay_code': '123456',
       'role': 'driver',
       'country_code': '+250',
-      'vehicle_type': 'moto',
+      'vehicle_type': 'bus',
       'vehicle_number_plate': 'RAA 123 B',
+      'bus_agency_name': 'Volcano Express',
+      'bus_passenger_capacity': 58,
       'is_driver': true,
       'avatar_url': null,
       'created_at': '2024-01-15T10:00:00Z',
@@ -28,10 +32,14 @@ void main() {
       expect(profile.displayName, 'JB');
       expect(profile.phone, '+250780000000');
       expect(profile.whatsapp, '+250780000000');
+      expect(profile.momoNumber, '0780000000');
+      expect(profile.momoPayCode, '123456');
       expect(profile.role, 'driver');
       expect(profile.countryCode, '+250');
-      expect(profile.vehicleType, 'moto');
+      expect(profile.vehicleType, 'bus');
       expect(profile.vehicleNumberPlate, 'RAA 123 B');
+      expect(profile.busAgencyName, 'Volcano Express');
+      expect(profile.busPassengerCapacity, 58);
       expect(profile.isDriver, isTrue);
       expect(profile.avatarUrl, isNull);
       expect(profile.createdAt, '2024-01-15T10:00:00Z');
@@ -65,8 +73,12 @@ void main() {
       expect(json['id'], 'abc-123');
       expect(json['member_id'], 'M00042');
       expect(json['role'], 'driver');
+      expect(json['momo_number'], '0780000000');
+      expect(json['momo_pay_code'], '123456');
       expect(json['is_driver'], isTrue);
-      expect(json['vehicle_type'], 'moto');
+      expect(json['vehicle_type'], 'bus');
+      expect(json['bus_agency_name'], 'Volcano Express');
+      expect(json['bus_passenger_capacity'], 58);
     });
 
     test('toString provides useful debug output', () {

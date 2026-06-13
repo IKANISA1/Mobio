@@ -1,0 +1,539 @@
+--------- beginning of system
+06-12 18:23:58.636  1739  2479 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=rw.mobi.app/.MainActivity} from uid 2000
+--------- beginning of main
+06-12 18:23:58.641 24383 24383 D com.llfbandit.app_links: Intent { flg=0x10000000 cmp=rw.mobi.app/.MainActivity }
+06-12 18:23:58.649 24383 24383 D FirebaseSessions: App foregrounded on rw.mobi.app
+06-12 18:23:58.655  1739  2479 I ActivityManager: Killing 22235:com.whatsapp.w4b/u0a79 (adj 995): empty for 1805s
+06-12 18:23:58.658  1739  4802 E ClipboardService: Denying clipboard access to rw.mobi.app, application is not in focus nor is it a system service for user 0
+06-12 18:23:58.668  1739  2023 I libprocessgroup: Successfully killed process cgroup uid 10079 pid 22235 in 0ms
+06-12 18:23:58.668  1739  2479 W ProcessStats: Tracking association SourceState{ce45926 rw.mobi.app/10895 Top #3222957} whose proc state 1 is better than process ProcessState{8a26107 com.google.android.gms/10164 pkg=com.google.android.gms (sub)} proc state 8 (15 skipped)
+06-12 18:23:58.671 27062 27062 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-12 18:23:58.671 27062 27062 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-12 18:23:58.680 24383 24383 D FirebaseSessions: App backgrounded on rw.mobi.app
+06-12 18:23:58.720  1055  1055 I Zygote  : Process 22235 exited due to signal 9 (Killed)
+06-12 18:23:58.720  4291  9348 D ForegroundUtils: UID: 10079 deleted.
+06-12 18:23:59.361  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246286): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:23:59.368  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246287): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:23:59.371  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246288): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:23:59.375  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246289): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:23:59.381  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246290): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:00.010  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:24:00.011  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:24:00.011  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:24:00.012  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:24:00.013  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:24:00.013  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:24:00.014  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:24:00.016  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:24:00.016  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:24:00.017  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:24:00.017  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:24:00.017  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:24:00.023  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:24:00.028  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:24:00.030  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-12 18:24:00.031  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:00.031  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:00.031  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:24:00.058  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-12 18:24:00.059  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:00.059  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:00.059  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:24:00.086 27062 27062 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.semanticlocationhistory.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsApiService }
+06-12 18:24:00.086 27062 27062 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.semanticlocationhistory.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsApiService }
+06-12 18:24:00.216   659   659 D libnos_transport: Calling App 2 with params 0x0001
+06-12 18:24:00.218   659   659 E libnos_datagram: can't send spi message: Try again
+06-12 18:24:00.223   659   659 E libnos_datagram: can't send spi message: Try again
+06-12 18:24:00.229   659   659 E libnos_datagram: can't send spi message: Try again
+06-12 18:24:00.235   659   659 E libnos_datagram: can't send spi message: Try again
+06-12 18:24:00.241   659   659 E libnos_datagram: can't send spi message: Try again
+06-12 18:24:00.247   659   659 D libnos_transport: App 2 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:00.247   659   659 D libnos_transport: Send app 2 command data (58 bytes)
+06-12 18:24:00.248   659   659 D libnos_transport: Send app 2 go command 0x00020001
+06-12 18:24:00.249   659   659 D libnos_transport: Polling app 2
+06-12 18:24:00.257   659   659 D libnos_transport: App 2 poll=16 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.265   659   659 D libnos_transport: App 2 poll=32 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.273   659   659 D libnos_transport: App 2 poll=48 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.281   659   659 D libnos_transport: App 2 poll=64 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.289   659   659 D libnos_transport: App 2 poll=80 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.297   659   659 D libnos_transport: App 2 poll=96 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.305   659   659 D libnos_transport: App 2 poll=112 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.312   659   659 D libnos_transport: App 2 polled=124 status=0x80000000 reply_len=1658 flags=0x0000
+06-12 18:24:00.312   659   659 D libnos_transport: Read app 2 reply data (1658 bytes)
+06-12 18:24:00.324   659   659 D libnos_transport: App 2 returning 0x0
+06-12 18:24:00.334   659   659 D libnos_transport: Calling App 2 with params 0x0002
+06-12 18:24:00.335   659   659 D libnos_transport: App 2 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:00.335   659   659 D libnos_transport: Send app 2 command data (1542 bytes)
+06-12 18:24:00.347   659   659 D libnos_transport: Send app 2 go command 0x00020002
+06-12 18:24:00.347   659   659 D libnos_transport: Polling app 2
+06-12 18:24:00.356   659   659 D libnos_transport: App 2 poll=16 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.357   659   659 D libnos_transport: App 2 polled=18 status=0x80000000 reply_len=116 flags=0x0000
+06-12 18:24:00.358   659   659 D libnos_transport: Read app 2 reply data (116 bytes)
+06-12 18:24:00.359   659   659 D libnos_transport: App 2 returning 0x0
+06-12 18:24:00.361  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246472): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:00.369   660   660 I android.hardware.keymaster@4.1-service.citadel: Batch attestation requested.
+06-12 18:24:00.369   659   659 D libnos_transport: Calling App 2 with params 0x0005
+06-12 18:24:00.370   659   659 D libnos_transport: App 2 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:00.370   659   659 D libnos_transport: Send app 2 command data (1806 bytes)
+06-12 18:24:00.368  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246473): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:00.375  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246474): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:00.383   659   659 D libnos_transport: Send app 2 go command 0x00020005
+06-12 18:24:00.381  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246475): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:00.384   659   659 D libnos_transport: Polling app 2
+06-12 18:24:00.385  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246476): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:00.392   659   659 D libnos_transport: App 2 poll=16 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.399   659   659 D libnos_transport: App 2 polled=28 status=0x80000000 reply_len=468 flags=0x0000
+06-12 18:24:00.399   659   659 D libnos_transport: Read app 2 reply data (468 bytes)
+06-12 18:24:00.403   659   659 D libnos_transport: App 2 returning 0x0
+06-12 18:24:00.404   659   670 D libnos_transport: Calling App 2 with params 0x001a
+06-12 18:24:00.404   659   670 D libnos_transport: App 2 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:00.404   659   670 D libnos_transport: Send app 2 command data (241 bytes)
+06-12 18:24:00.406   659   670 D libnos_transport: Send app 2 go command 0x0002001a
+06-12 18:24:00.407   659   670 D libnos_transport: Polling app 2
+06-12 18:24:00.411   659   670 D libnos_transport: App 2 polled=7 status=0x80000000 reply_len=231 flags=0x0000
+06-12 18:24:00.411   659   670 D libnos_transport: Read app 2 reply data (231 bytes)
+06-12 18:24:00.413   659   670 D libnos_transport: App 2 returning 0x0
+06-12 18:24:00.413   659   659 D libnos_transport: Calling App 2 with params 0x001b
+06-12 18:24:00.414   659   659 D libnos_transport: App 2 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:00.414   659   659 D libnos_transport: Send app 2 command data (13 bytes)
+06-12 18:24:00.415   659   659 D libnos_transport: Send app 2 go command 0x0002001b
+06-12 18:24:00.415   659   659 D libnos_transport: Polling app 2
+06-12 18:24:00.423   659   659 D libnos_transport: App 2 poll=16 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.432   659   659 D libnos_transport: App 2 poll=32 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.441   659   659 D libnos_transport: App 2 poll=48 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.449   659   659 D libnos_transport: App 2 poll=64 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.458   659   659 D libnos_transport: App 2 poll=80 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.467   659   659 D libnos_transport: App 2 poll=96 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.475   659   659 D libnos_transport: App 2 poll=112 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.484   659   659 D libnos_transport: App 2 poll=128 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:00.491   659   659 D libnos_transport: App 2 polled=140 status=0x80000000 reply_len=91 flags=0x0000
+06-12 18:24:00.491   659   659 D libnos_transport: Read app 2 reply data (91 bytes)
+06-12 18:24:00.492   659   659 D libnos_transport: App 2 returning 0x0
+06-12 18:24:00.559   659   659 D libnos_transport: Calling App 2 with params 0x0007
+06-12 18:24:00.559   659   659 D libnos_transport: App 2 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:00.559   659   659 D libnos_transport: Send app 2 command data (1542 bytes)
+06-12 18:24:00.570   659   659 D libnos_transport: Send app 2 go command 0x00020007
+06-12 18:24:00.571   659   659 D libnos_transport: Polling app 2
+06-12 18:24:00.572   659   659 D libnos_transport: App 2 polled=3 status=0x80000000 reply_len=0 flags=0x0000
+06-12 18:24:00.572   659   659 D libnos_transport: App 2 returning 0x0
+06-12 18:24:00.585   659   659 D libnos_transport: Calling App 2 with params 0x0000
+06-12 18:24:00.585   659   659 D libnos_transport: App 2 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:00.585   659   659 D libnos_transport: Send app 2 command data (66 bytes)
+06-12 18:24:00.586   659   659 D libnos_transport: Send app 2 go command 0x00020000
+06-12 18:24:00.586   659   659 D libnos_transport: Polling app 2
+06-12 18:24:00.587   659   659 D libnos_transport: App 2 polled=2 status=0x80000000 reply_len=0 flags=0x0000
+06-12 18:24:00.588   659   659 D libnos_transport: App 2 returning 0x0
+06-12 18:24:00.690 24383 25029 I FA      : Application backgrounded at: timestamp_millis: 1781281438686
+06-12 18:24:01.066   657   671 D DrmLibTime: got the req here! ret=0
+06-12 18:24:01.066   657   671 D DrmLibTime: command id, time_cmd_id = 770
+06-12 18:24:01.066   657   671 D DrmLibTime: time_getutcsec starts!
+06-12 18:24:01.066   657   671 D DrmLibTime: QSEE Time Listener: time_getutcsec
+06-12 18:24:01.066   657   671 D DrmLibTime: QSEE Time Listener: get_utc_seconds
+06-12 18:24:01.066   657   671 D DrmLibTime: QSEE Time Listener: time_get_modem_time
+06-12 18:24:01.066   657   671 D DrmLibTime: QSEE Time Listener: Checking if ATS_MODEM is set or not.
+06-12 18:24:01.066   657   671 D QC-time-services: Lib:time_genoff_operation: pargs->base = 13
+06-12 18:24:01.067   657   671 D QC-time-services: Lib:time_genoff_operation: pargs->operation = 2
+06-12 18:24:01.067   657   671 D QC-time-services: Lib:time_genoff_operation: pargs->ts_val = 0
+06-12 18:24:01.067   657   671 D QC-time-services: Lib:time_genoff_operation: Send to server  passed!!
+06-12 18:24:01.068   859  1132 D QC-time-services: Daemon: Connection accepted:time_genoff
+06-12 18:24:01.071   859 25036 D QC-time-services: Daemon:Received base = 13, unit = 1, operation = 2,value = 0
+06-12 18:24:01.071   859 25036 D QC-time-services: Daemon:genoff_opr: Base = 13, val = 0, operation = 2
+06-12 18:24:01.071   859 25036 D QC-time-services: offset is: 1 for base: 13
+06-12 18:24:01.071   657   671 E QC-time-services: Receive Passed == base = 13, unit = 1, operation = 2, result = 0
+06-12 18:24:01.071   657   671 D DrmLibTime: QSEE Time Listener: ATS_MODEM is set. Try to retrieve it.
+06-12 18:24:01.071   859  1132 E QC-time-services: Daemon: Time-services: Waiting to acceptconnection
+06-12 18:24:01.072   859  1132 D QC-time-services: Daemon: Connection accepted:time_genoff
+06-12 18:24:01.072   859 25037 D QC-time-services: Daemon:Received base = 13, unit = 1, operation = 1,value = 0
+06-12 18:24:01.072   859 25037 D QC-time-services: Daemon:genoff_opr: Base = 13, val = 0, operation = 1
+06-12 18:24:01.072   859 25037 D QC-time-services: Daemon: genoff get for 13
+06-12 18:24:01.072   859 25037 D QC-time-services: Daemon:Value read from QTimer mseconds = 2243055250
+06-12 18:24:01.072   859 25037 D QC-time-services: Daemon:Value read from RTC mseconds on boot = 24059708000
+06-12 18:24:01.072   859 25037 D QC-time-services: Daemon:Value read from QTimer mseconds = 2243055250
+06-12 18:24:01.072   859 25037 D QC-time-services: Daemon:Value read from generic offset = 1754978688192
+06-12 18:24:01.072   859 25037 D QC-time-services: Daemon:Delta read on boot mseconds = 24059696782
+06-12 18:24:01.072   859 25037 D QC-time-services: Daemon:Final Time = 1781281440224
+06-12 18:24:01.072   657   671 D DrmLibTime: QSEE Time Listener: Time GenOff - seconds: 1781281440
+06-12 18:24:01.072   657   671 D DrmLibTime: time_getutcsec returns 0, sec = 1781281440; nsec = 0
+06-12 18:24:01.072   657   671 D DrmLibTime: time_getutcsec finished! 
+06-12 18:24:01.073   859  1132 E QC-time-services: Daemon: Time-services: Waiting to acceptconnection
+06-12 18:24:01.074   657   671 D DrmLibTime: iotcl_continue_command finished! and return 0 
+06-12 18:24:01.074   657   671 D DrmLibTime: before calling ioctl to read the next time_cmd
+06-12 18:24:01.088   659   667 D libnos_transport: Calling App 0 with params 0x0200
+06-12 18:24:01.090   659   667 D libnos_transport: App 0 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:01.090   659   667 D libnos_transport: Send app 0 command data (0 bytes)
+06-12 18:24:01.090   659   667 D libnos_transport: Send app 0 go command 0x00000200
+06-12 18:24:01.091   659   667 D libnos_transport: Polling app 0
+06-12 18:24:01.092   659   667 D libnos_transport: App 0 polled=3 status=0x80000000 reply_len=92 flags=0x0000
+06-12 18:24:01.092   659   667 D libnos_transport: Read app 0 reply data (92 bytes)
+06-12 18:24:01.093   659   667 D libnos_transport: App 0 returning 0x0
+06-12 18:24:01.139   659   659 D libnos_transport: Calling App 2 with params 0x0007
+06-12 18:24:01.139   659   659 D libnos_transport: App 2 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:01.139   659   659 D libnos_transport: Send app 2 command data (1542 bytes)
+06-12 18:24:01.150   659   659 D libnos_transport: Send app 2 go command 0x00020007
+06-12 18:24:01.151   659   659 D libnos_transport: Polling app 2
+06-12 18:24:01.153   659   659 D libnos_transport: App 2 polled=3 status=0x80000000 reply_len=0 flags=0x0000
+06-12 18:24:01.153   659   659 D libnos_transport: App 2 returning 0x0
+06-12 18:24:01.365  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246659): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:01.371  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246660): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:01.378  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246661): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:01.381  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246662): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:01.388  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246663): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:01.653   659   667 D libnos_transport: Calling App 0 with params 0x0200
+06-12 18:24:01.655   659   667 D libnos_transport: App 0 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:01.655   659   667 D libnos_transport: Send app 0 command data (0 bytes)
+06-12 18:24:01.656   659   667 D libnos_transport: Send app 0 go command 0x00000200
+06-12 18:24:01.656   659   667 D libnos_transport: Polling app 0
+06-12 18:24:01.658   659   667 D libnos_transport: App 0 polled=3 status=0x80000000 reply_len=92 flags=0x0000
+06-12 18:24:01.658   659   667 D libnos_transport: Read app 0 reply data (92 bytes)
+06-12 18:24:01.658   659   659 D libnos_transport: Calling App 2 with params 0x0001
+06-12 18:24:01.659   659   667 D libnos_transport: App 0 returning 0x0
+06-12 18:24:01.660   659   659 D libnos_transport: App 2 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:01.660   659   659 D libnos_transport: Send app 2 command data (58 bytes)
+06-12 18:24:01.661   659   659 D libnos_transport: Send app 2 go command 0x00020001
+06-12 18:24:01.661   659   659 D libnos_transport: Polling app 2
+06-12 18:24:01.669   659   659 D libnos_transport: App 2 poll=16 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:01.678   659   659 D libnos_transport: App 2 poll=32 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:01.687   659   659 D libnos_transport: App 2 poll=48 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:01.688   659   659 D libnos_transport: App 2 polled=51 status=0x80000000 reply_len=1658 flags=0x0000
+06-12 18:24:01.688   659   659 D libnos_transport: Read app 2 reply data (1658 bytes)
+06-12 18:24:01.701   659   659 D libnos_transport: App 2 returning 0x0
+06-12 18:24:01.702   659   670 D libnos_transport: Calling App 2 with params 0x0002
+06-12 18:24:01.703   659   670 D libnos_transport: App 2 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:01.703   659   670 D libnos_transport: Send app 2 command data (1542 bytes)
+06-12 18:24:01.714   659   670 D libnos_transport: Send app 2 go command 0x00020002
+06-12 18:24:01.715   659   670 D libnos_transport: Polling app 2
+06-12 18:24:01.724   659   670 D libnos_transport: App 2 poll=16 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:01.725   659   670 D libnos_transport: App 2 polled=18 status=0x80000000 reply_len=116 flags=0x0000
+06-12 18:24:01.725   659   670 D libnos_transport: Read app 2 reply data (116 bytes)
+06-12 18:24:01.727   659   670 D libnos_transport: App 2 returning 0x0
+06-12 18:24:01.728   660   660 I android.hardware.keymaster@4.1-service.citadel: Batch attestation requested.
+06-12 18:24:01.728   659   659 D libnos_transport: Calling App 2 with params 0x0005
+06-12 18:24:01.729   659   659 D libnos_transport: App 2 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:01.729   659   659 D libnos_transport: Send app 2 command data (1755 bytes)
+06-12 18:24:01.741   659   659 D libnos_transport: Send app 2 go command 0x00020005
+06-12 18:24:01.742   659   659 D libnos_transport: Polling app 2
+06-12 18:24:01.750   659   659 D libnos_transport: App 2 poll=16 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:01.756   659   659 D libnos_transport: App 2 polled=26 status=0x80000000 reply_len=467 flags=0x0000
+06-12 18:24:01.756   659   659 D libnos_transport: Read app 2 reply data (467 bytes)
+06-12 18:24:01.760   659   659 D libnos_transport: App 2 returning 0x0
+06-12 18:24:01.761   659   670 D libnos_transport: Calling App 2 with params 0x001a
+06-12 18:24:01.761   659   670 D libnos_transport: App 2 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:01.761   659   670 D libnos_transport: Send app 2 command data (189 bytes)
+06-12 18:24:01.763   659   670 D libnos_transport: Send app 2 go command 0x0002001a
+06-12 18:24:01.764   659   670 D libnos_transport: Polling app 2
+06-12 18:24:01.766   659   670 D libnos_transport: App 2 polled=5 status=0x80000000 reply_len=188 flags=0x0000
+06-12 18:24:01.766   659   670 D libnos_transport: Read app 2 reply data (188 bytes)
+06-12 18:24:01.769   659   670 D libnos_transport: App 2 returning 0x0
+06-12 18:24:01.769   659   659 D libnos_transport: Calling App 2 with params 0x001b
+06-12 18:24:01.770   659   659 D libnos_transport: App 2 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:01.770   659   659 D libnos_transport: Send app 2 command data (12 bytes)
+06-12 18:24:01.771   659   659 D libnos_transport: Send app 2 go command 0x0002001b
+06-12 18:24:01.771   659   659 D libnos_transport: Polling app 2
+06-12 18:24:01.780   659   659 D libnos_transport: App 2 poll=16 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:01.789   659   659 D libnos_transport: App 2 poll=32 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:01.797   659   659 D libnos_transport: App 2 poll=48 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:01.806   659   659 D libnos_transport: App 2 poll=64 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:01.814   659   659 D libnos_transport: App 2 poll=80 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:01.822   659   659 D libnos_transport: App 2 poll=96 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:01.831   659   659 D libnos_transport: App 2 poll=112 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:01.839   659   659 D libnos_transport: App 2 poll=128 status=0x00000000 reply_len=0 flags=0x0001
+06-12 18:24:01.847   659   659 D libnos_transport: App 2 polled=143 status=0x80000000 reply_len=90 flags=0x0000
+06-12 18:24:01.847   659   659 D libnos_transport: Read app 2 reply data (90 bytes)
+06-12 18:24:01.848   659   659 D libnos_transport: App 2 returning 0x0
+06-12 18:24:01.903 27174 15381 E WorkSourceUtil: Could not find package: com.google.android.gms.westworld
+06-12 18:24:02.349   659   667 D libnos_transport: Calling App 0 with params 0x0200
+06-12 18:24:02.351   659   667 D libnos_transport: App 0 inspection status=0x00000000 reply_len=0 protocol=1 flags=0x0000
+06-12 18:24:02.351   659   667 D libnos_transport: Send app 0 command data (0 bytes)
+06-12 18:24:02.352   659   667 D libnos_transport: Send app 0 go command 0x00000200
+06-12 18:24:02.352   659   667 D libnos_transport: Polling app 0
+06-12 18:24:02.354   659   667 D libnos_transport: App 0 polled=3 status=0x80000000 reply_len=92 flags=0x0000
+06-12 18:24:02.354   659   667 D libnos_transport: Read app 0 reply data (92 bytes)
+06-12 18:24:02.356   659   667 D libnos_transport: App 0 returning 0x0
+06-12 18:24:02.368  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246846): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:02.375  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246847): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:02.381  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246848): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:02.388  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246849): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:02.391  1072  1072 W socket_writer_q: type=1400 audit(0.0:242246850): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:03.375  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247032): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:03.378  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247033): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:03.388  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247034): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:03.391  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247035): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:03.395  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247036): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:03.804  1431 19628 D LOWI-9.0.0.89.e: [LOWI-ROME-RTT] event_handler: Valid data with length 48
+06-12 18:24:03.805  1431 19628 D LOWI-9.0.0.89.e: [LOWI-HELIUM-RTT] RomeNLRecvMessage: The Received RomeMsgType: ROME_P2P_PEER_EVENT_MSG
+06-12 18:24:03.805  1431 19628 D LOWI-9.0.0.89.e: [LOWIRangingFSM] FSM: Received Event EVENT_P2P_STATUS_UPDATE, Current state: STATE_READY_AND_IDLE
+06-12 18:24:03.805  1431 19628 D LOWI-9.0.0.89.e: [LOWI-ROME-RTT]  RomeExtractP2PInfo - P2P EVENT Received!
+06-12 18:24:03.805  1431 19628 D LOWI-9.0.0.89.e: [LOWI-P2P-RTT] p2pStoreStatusInfo: Peer status = PEER_STATUS_CONNECTED Mac:1a:6e:14:2d:db:22
+06-12 18:24:03.805  1431 19628 D LOWI-9.0.0.89.e: [LOWIRangingFSM] FSM: New FSM state: STATE_READY_AND_IDLE
+06-12 18:24:03.805  1431 19628 D LOWI-9.0.0.89.e: [LOWI-ROME-RTT] RomeWaitOnActivityOnSocketOrPipe: issue blocking select 
+06-12 18:24:03.808  1431 19627 D LOWI-9.0.0.89.e: [LOWI-Scan] wait_event:Wait done with Cmd 103
+06-12 18:24:03.808  1431 19627 D LOWI-9.0.0.89.e: [LOWI-Scan] do_listen_events: Rcvd valid Netlink Cmd 0 Err 0
+06-12 18:24:03.810  2643 19465 D IpClient/wlan0: interfaceLinkStateChanged: ifindex 30 up
+06-12 18:24:03.810  1431  1469 D LOWI-9.0.0.89.e: [LOWINetlinkSocketReceiver] unpackRTMLinkMessage: RTM_NEWLINK - ifname wlan0, flags 0x11003 ([UP])
+06-12 18:24:03.810  1431  1469 D LOWI-9.0.0.89.e: [LOWINetlinkSocketReceiver] processNetlinkPacket: ifname(wlan0) status(1)
+06-12 18:24:03.810  1431  1469 D LOWI-9.0.0.89.e: [LOWIController] intfStateReceived: ifname(wlan0) state(1)
+06-12 18:24:03.811  1094 19451 I WifiHAL : event received NL80211_CMD_VENDOR, vendor_id = 0x1374, subcmd = 0x33
+06-12 18:24:03.811  1394  1394 I cnss-daemon: nl80211 response handler invoked
+06-12 18:24:03.811  1394  1394 I cnss-daemon: nl80211_response_handler: cmd 103, vendorID 4980, subcmd 51  received
+06-12 18:24:03.811  1431  1472 D LOWI-9.0.0.89.e: [LOWIEventReceiver] handleEvent:FROM:NA, TO:NA, REQ:NA, IREQ:NA, REQ_ID:0, RESP:NA, INFO:INTF-STATUS-UPDATE
+06-12 18:24:03.811  1431  1472 D LOWI-9.0.0.89.e: [LOWIEventReceiver] Info to [INTF-STATUS-UPDATE]
+06-12 18:24:03.811  1431  1472 D LOWI-9.0.0.89.e: [LOWIController] updateIntfState: WIFI enabled 1 mNlWifiStatus 2 mWifiStateEnabled 1
+06-12 18:24:03.811  1431  1472 D LOWI-9.0.0.89.e: [LOWIController] isWifiEnabled: mNlWifiStatus 1 mWifiStateEnabled 1
+06-12 18:24:03.812  1431 19627 D LOWI-9.0.0.89.e: [LOWI-Scan] wait_event:Wait done with Cmd 103
+06-12 18:24:03.812 19456 19456 I wpa_supplicant: wlan0: Associated with 1a:6e:14:2d:db:22
+06-12 18:24:03.813  1431 19627 D LOWI-9.0.0.89.e: [LOWI-Scan] do_listen_events: Rcvd valid Netlink Cmd 0 Err 0
+06-12 18:24:03.813 19456 19456 I wpa_supplicant: wlan0: CTRL-EVENT-CONNECTED - Connection to 1a:6e:14:2d:db:22 completed [id=0 id_str=%7B%22configKey%22%3A%22%5C%22FreeBeer%5C%22WPA_PSK%22%2C%22creatorUid%22%3A%221000%22%7D]
+06-12 18:24:03.813  1094 19451 I WifiHAL : event received NL80211_CMD_VENDOR, vendor_id = 0x1374, subcmd = 0xa5
+06-12 18:24:03.813  1394  1394 I cnss-daemon: nl80211 response handler invoked
+06-12 18:24:03.813  1394  1394 I cnss-daemon: nl80211_response_handler: cmd 103, vendorID 4980, subcmd 165  received
+06-12 18:24:03.813  1431 19627 D LOWI-9.0.0.89.e: [LOWI-Scan] wait_event:Wait done with Cmd 103
+06-12 18:24:03.813  1431 19627 D LOWI-9.0.0.89.e: [LOWI-Scan] do_listen_events: Rcvd valid Netlink Cmd 0 Err 0
+06-12 18:24:03.814  1394  1394 I cnss-daemon: nl80211 response handler invoked
+06-12 18:24:03.814  1394  1394 I cnss-daemon: nl80211_response_handler: cmd 103, vendorID 4980, subcmd 165  received
+06-12 18:24:03.814  1431  1469 D LOWI-9.0.0.89.e: [LOWINetlinkSocketReceiver] unpackRTMLinkMessage: RTM_NEWLINK - ifname wlan0, flags 0x11043 ([UP][RUNNING])
+06-12 18:24:03.814  1431  1469 D LOWI-9.0.0.89.e: [LOWINetlinkSocketReceiver] processNetlinkPacket: ifname(wlan0) status(2)
+06-12 18:24:03.814  1431  1469 D LOWI-9.0.0.89.e: [LOWIController] intfStateReceived: ifname(wlan0) state(2)
+06-12 18:24:03.814  2643 19465 D IpClient/wlan0: interfaceLinkStateChanged: ifindex 30 up
+06-12 18:24:03.814  1431  1472 D LOWI-9.0.0.89.e: [LOWIEventReceiver] handleEvent:FROM:NA, TO:NA, REQ:NA, IREQ:NA, REQ_ID:0, RESP:NA, INFO:INTF-STATUS-UPDATE
+06-12 18:24:03.814  1431  1472 D LOWI-9.0.0.89.e: [LOWIEventReceiver] Info to [INTF-STATUS-UPDATE]
+06-12 18:24:03.814  1431  1472 D LOWI-9.0.0.89.e: [LOWIController] updateIntfState: WIFI enabled 2 mNlWifiStatus 1 mWifiStateEnabled 1
+06-12 18:24:03.814  1431  1472 D LOWI-9.0.0.89.e: [LOWIController] isWifiEnabled: mNlWifiStatus 2 mWifiStateEnabled 1
+06-12 18:24:03.814  1431  1472 D LOWI-9.0.0.89.e: [LOWIController] notifyWlanInterfaceStatusChange: Send Interface state request LOWIController_125
+06-12 18:24:03.814  1431  1472 D LOWI-9.0.0.89.e: [LOWIController] isWifiEnabled: mNlWifiStatus 2 mWifiStateEnabled 1
+06-12 18:24:03.814  1431  1472 D LOWI-9.0.0.89.e: [LOWIController] requestMeasurements: Internal Message 2 sent to driver
+06-12 18:24:03.815  1431  1472 D LOWI-9.0.0.89.e: [LOWIController] issueRequest: LOWIController_125 sent to driver request - SUCCESS
+06-12 18:24:03.815  1431 19627 D LOWI-9.0.0.89.e: [LOWI-Scan] wips_wait_on_nl_socket: read returned 6, Received string: Close 
+06-12 18:24:03.815  1431 19627 D LOWI-9.0.0.89.e: [LOWI-Scan] do_listen_events: Select Error return - -301
+06-12 18:24:03.815  1431 19627 D LOWI-9.0.0.89.e: [LOWI-Scan] No dump done. Error -301
+06-12 18:24:03.815  1431 19627 D LOWI-9.0.0.89.e: [LOWI-Scan] WipsScanUsingNL: passive scan cached 0, took 903716 ms, err -301
+06-12 18:24:03.815  1431 19627 D LOWI-9.0.0.89.e: [LOWI-Scan] lowi_proc_req_passive_scan_with_live_meas - No WLAN Frames to be parsed
+06-12 18:24:03.815  1431 19627 D LOWI-9.0.0.89.e: [LOWIWifiDriverInterface] Scan terminated for passive listening request
+06-12 18:24:03.815  1431 19627 D LOWI-9.0.0.89.e: [LOWIScanResultReceiver] run:Execute new request LOWIController_125
+06-12 18:24:03.815  1431 19627 D LOWI-9.0.0.89.e: [LOWI-Scan] lowi_update_wifi_interface: FTMRR Already registered
+06-12 18:24:03.815  1431 19627 D LOWI-9.0.0.89.e: [LOWIScanResultReceiver] Send scan meas to listener
+06-12 18:24:03.815  1431 19627 D LOWI-9.0.0.89.e: [LOWIScanResultReceiver] Enter passive listening mode
+06-12 18:24:03.815  1431 19627 D LOWI-9.0.0.89.e: [LOWIWifiDriverInterface] getMeasurements - Passive listening mode
+06-12 18:24:03.815  1431  1472 D LOWI-9.0.0.89.e: [LOWIEventReceiver] handleEvent:FROM:NA, TO:NA, REQ:NA, IREQ:NA, REQ_ID:0, RESP:NA, INFO:NA
+06-12 18:24:03.815  1431  1472 D LOWI-9.0.0.89.e: [LOWIBackgroundScanMgr] isRspForBgScanMgr: req(LOWI_INTERNAL_MESSAGE) -- not handled
+06-12 18:24:03.815  1431  1472 D LOWI-9.0.0.89.e: [LOWIController] Measurements received
+06-12 18:24:03.816  1094 19451 I WifiHAL : event received NL80211_CMD_VENDOR, vendor_id = 0x1374, subcmd = 0xa5
+06-12 18:24:03.816  1431 19627 D LOWI-9.0.0.89.e: [LOWI-Scan] WipsScanUsingNL:wait -1 sec for netlink message
+06-12 18:24:03.817 19456 19456 I wpa_supplicant: wlan0: CTRL-EVENT-SUBNET-STATUS-UPDATE status=0
+06-12 18:24:03.823  1431  1469 D LOWI-9.0.0.89.e: [LOWINetlinkSocketReceiver] unpackRTMLinkMessage: RTM_NEWLINK - ifname wlan0, flags 0x11043 ([UP][RUNNING])
+06-12 18:24:03.823  2643 19465 D IpClient/wlan0: interfaceLinkStateChanged: ifindex 30 up
+06-12 18:24:03.823  1431  1469 D LOWI-9.0.0.89.e: [LOWINetlinkSocketReceiver] processNetlinkPacket: ifname(wlan0) status(2)
+06-12 18:24:03.823  1431  1469 D LOWI-9.0.0.89.e: [LOWIController] intfStateReceived: ifname(wlan0) state(2)
+06-12 18:24:03.823  1431  1472 D LOWI-9.0.0.89.e: [LOWIEventReceiver] handleEvent:FROM:NA, TO:NA, REQ:NA, IREQ:NA, REQ_ID:0, RESP:NA, INFO:INTF-STATUS-UPDATE
+06-12 18:24:03.823  1431  1472 D LOWI-9.0.0.89.e: [LOWIEventReceiver] Info to [INTF-STATUS-UPDATE]
+06-12 18:24:03.824  1431  1472 D LOWI-9.0.0.89.e: [LOWIController] updateIntfState: WIFI enabled 2 mNlWifiStatus 2 mWifiStateEnabled 1
+06-12 18:24:03.824  1431  1472 D LOWI-9.0.0.89.e: [LOWIController] isWifiEnabled: mNlWifiStatus 2 mWifiStateEnabled 1
+06-12 18:24:03.832  2759  3438 D QCNEJ/WlanStaInfoRelay: Received action: android.net.wifi.RSSI_CHANGED
+06-12 18:24:03.832  1739  2448 I WifiClientModeImpl[2240470171:wlan0]: Update current security type to 2
+06-12 18:24:03.836  4100  4138 D DeviceStateHelper: Wifi freq: 5785
+06-12 18:24:03.839  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-50
+06-12 18:24:03.839  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-50
+06-12 18:24:03.839  2759  3438 D QCNEJ/WlanStaInfoRelay: Received action: android.net.wifi.STATE_CHANGE
+06-12 18:24:03.840  2759  3438 D QCNEJ/WlanStaInfoRelay: Received action: android.net.wifi.STATE_CHANGE
+06-12 18:24:03.843  1739  2448 I WifiClientModeImpl[2240470171:wlan0]: Update current security type to 2
+06-12 18:24:03.843  7449  7556 I BugleRcsEngine: Connected state: [1], networkType: [WIFI] [CONTEXT thread_id=751 ]
+06-12 18:24:03.844  7449  7581 I BugleRcsEngine: handleMessage processing message:[NOTIFY_UPTIME_IGNORE_STATE_CHANGED] with [non-null]:RcsEngineImpl reference [CONTEXT log_prefix="RcsEngineImpl[DUAL_REG]:[7ff84873-078a]>Handler" thread_id=759 ]
+06-12 18:24:03.854  1739  2455 E ConnectivityService: BUG: NetworkAgentInfo{network{348}  handle{1498054316045}  ni{WIFI CONNECTED extra: } created=2026-06-12T15:41:01.574Z Score(Policies : TRANSPORT_PRIMARY&EVER_EVALUATED&IS_UNMETERED&EVER_VALIDATED&IS_VALIDATED ; KeepConnected : 0)  created 2240473368 firstValidated 2240474867 lastValidated 2240474867  lp{{InterfaceName: wlan0 LinkAddresses: [ fe80::f0b5:dff:fe24:a06b/64,192.168.1.120/24,fd6e:143d:db22:10:f0b5:dff:fe24:a06b/64,fd6e:143d:db22:10:5c5:c012:5031:9c50/64,2605:59c0:377e:2e10:f0b5:dff:fe24:a06b/64,2605:59c0:377e:2e10:7c6d:195a:318d:5d5c/64 ] DnsAddresses: [ /fd6e:143d:db22:10::1,/192.168.1.1 ] UsePrivateDns: true PrivateDnsServerName: dns.google ValidatedPrivateDnsAddresses: [8.8.4.4,2001:4860:4860::8888,2001:4860:4860::8844,8.8.8.8] Domains: lan MTU: 0 ServerAddress: /192.168.1.1 TcpBufferSizes: 524288,2097152,8388608,262144,524288,4194304 Routes: [ ff00::/8 -> :: wlan0 mtu 0,fe80::/64 -> :: wlan0 mtu 0,fd6e:143d:db22:10::/64 -> :: wlan0 mtu 0,::/0 -> fe80::7624:9fff:fe57:853e wlan0 mtu 0,2605:59c0:377e:2e00::/56 -> fe80::7624:9fff:fe57:853e wlan0 mtu 0,fd6e:143d:db22::/48 -> fe80::7624:9fff:fe57:853e wlan0 mtu 0,2605:59c0:377e:2e10::/64 -> :: wlan0 mtu 0,192.168.1.0/24 -> 0.0.0.0 wlan0 mtu 0,0.0.0.0/0 -> 192.168.1.1 wlan0 mtu 0 ]}}  nc{[ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&VALIDATED&NOT_ROAMING&FOREGROUND&NOT_CONGESTED&NOT_SUSPENDED&NOT_VCN_MANAGED LinkUpBandwidth>=13121Kbps LinkDnBandwidth>=36361Kbps Specifier: <WifiNetworkAgentSpecifier [WifiConfiguration=, SSID="FreeBeer", BSSID=1a:6e:14:3d:db:22, band=2, mMatchLocalOnlySpecifiers=false]> TransportInfo: <SSID: "FreeBeer", BSSID: 00:00:00:00:00:00, MAC: f2:b5:0d:24:a0:6b, IP: /192.168.1.120, Security type: 2, Supplicant state: ASSOCIATED, Wi-Fi standard: 11n, RSSI: -50, Link speed: 780Mbps, Tx Link speed: 780Mbps, Max Supported Tx Link speed: 144Mbps, Rx Link speed: 468Mbps, Max Supported Rx Link speed: 144Mbps, Frequency: 5785MHz, Net ID: 56, Metered hint: false, score: 100, isUsable: true, CarrierMerged: false, SubscriptionId: -1, IsPrimary: 1, Trusted: true, Restricted: false, Ephemeral: false, OEM paid: false, OEM private: false, OSU AP: false, FQDN: <none>, Provider friendly name: <none>, Requesting package name: <none>"FreeBeer"wpa2-pskMLO Information: , Is TID-To-Link negotiation supported by the AP: false, AP MLD Address: <none>, AP MLO Link Id: <none>, AP MLO Affiliated links: <none>, Vendor Data: <none>> SignalStrength: -50 OwnerUid: 1000 AdminUids: [1000] SSID: "FreeBeer" UnderlyingNetworks: Null]}  factorySerialNumber=9} lost immutable capabilities:specifier changed: WifiNetworkAgentSpecifier [WifiConfiguration=, SSID="FreeBeer", BSSID=1a:6e:14:3d:db:22, band=2, mMatchLocalOnlySpecifiers=false] -> WifiNetworkAgentSpecifier [WifiConfiguration=, SSID="FreeBeer", BSSID=1a:6e:14:2d:db:22, band=1, mMatchLocalOnlySpecifiers=false]
+06-12 18:24:03.860  1739  1966 I DropBoxManagerService: add tag=system_server_wtf isTagEnabled=true flags=0x2
+06-12 18:24:03.862  1739  2455 D ConnectivityService: NetReassign [no changes] [c 0] [a 1] [i 2]
+06-12 18:24:03.863  2643 19465 D IpClient/wlan0: interfaceLinkStateChanged: ifindex 30 up
+06-12 18:24:03.865  4100  4138 D DeviceStateHelper: Wifi freq: 2412
+06-12 18:24:03.866  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-50
+06-12 18:24:03.867  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-50
+06-12 18:24:03.871  2643 19465 D IpClient/wlan0: interfaceLinkStateChanged: ifindex 30 up
+06-12 18:24:03.871  7449  7556 I BugleRcsEngine: Connected state: [1], networkType: [WIFI] [CONTEXT thread_id=751 ]
+06-12 18:24:03.872  7449  7581 I BugleRcsEngine: handleMessage processing message:[NOTIFY_UPTIME_IGNORE_STATE_CHANGED] with [non-null]:RcsEngineImpl reference [CONTEXT log_prefix="RcsEngineImpl[DUAL_REG]:[7ff84873-078a]>Handler" thread_id=759 ]
+06-12 18:24:03.875  2782  2782 D GRIL-S  : [3840]> UPDATE_DEVICE_STATE DeviceState: Usb:1, Wifi: 1, Wifi AP: 0, Earpiece: 0, Bluetooth: 1, Wireless charging: 0, Screen: 0, Camera: 0, 0, -, -, Motion: 0, Bluetooth tethering: 0, Voice: 0, Wifi 2.4G: 1, Radio: 1, Bluetooth connected: 0, Bluetooth media: 0, Wifi Band: 1, Wifi AP Band: 0, Wifi call: 0, mmWave: 0, mCellBackhaul: 0, mHallSensor: 0
+06-12 18:24:03.877  2782  4139 D GRIL-S  : [3840]< UPDATE_DEVICE_STATE 
+06-12 18:24:03.878  4100  4138 I SconeBluetoothSarContro: No config
+06-12 18:24:03.883 27174 29215 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-12 18:24:03.884 27174 29215 W .gms.persistent: Large reply transaction of 1056768 bytes, interface descriptor , code 1
+06-12 18:24:03.886 27174 25043 I NearbyMediums: Wifi changed new SSID: "FreeBeer"
+06-12 18:24:03.887 27174 25043 I NearbyMediums: WifiLanConnectivityInfo is not changed, skip notify.
+06-12 18:24:03.889 27174 29215 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-12 18:24:03.889 27174 29215 W .gms.persistent: Large reply transaction of 1056768 bytes, interface descriptor , code 1
+06-12 18:24:03.891  1739  2455 D ConnectivityService: NetReassign [no changes] [c 0] [a 3] [i 6]
+06-12 18:24:03.891  1085  1180 D CHRE    : @ 2243058.069: Parsed nanoapp message from host: app ID 0x476f6f676c00100b, endpoint 0x91, msgType 112, payload size 14
+06-12 18:24:03.891  1085  1180 I CHRE    : @ 2243058.069: [NanoMinion] received MSG Type 0x70, Version 1, 10 bytes
+06-12 18:24:03.891  1085  1180 I CHRE    : @ 2243058.069: [AR] context-signal: has_bt=0, bt=0, has_wifi=1, wifi=1
+06-12 18:24:03.895  1085  1180 D CHRE    : @ 2243058.072: Parsed nanoapp message from host: app ID 0x476f6f676c00100b, endpoint 0x91, msgType 112, payload size 14
+06-12 18:24:03.895  1085  1180 I CHRE    : @ 2243058.072: [NanoMinion] received MSG Type 0x70, Version 1, 10 bytes
+06-12 18:24:03.895  1085  1180 I CHRE    : @ 2243058.072: [AR] context-signal: has_bt=0, bt=0, has_wifi=1, wifi=1
+06-12 18:24:03.896 27174 25043 I NearbyMediums: Wifi changed new SSID: "FreeBeer"
+06-12 18:24:03.896 27174 25043 I NearbyMediums: WifiLanConnectivityInfo is not changed, skip notify.
+06-12 18:24:03.897  1094  1094 E WifiHAL : wifi_get_usable_channels: Error -3 waiting for response.
+06-12 18:24:03.898  1739  2448 E WifiChipHidlImpl: getUsableChannels failed with status: {.code = ERROR_NOT_SUPPORTED, .description = }
+06-12 18:24:03.903  1739  2455 D ConnectivityService: NetReassign [no changes] [c 0] [a 3] [i 9]
+06-12 18:24:03.904 27174 23440 I NearbyMediums: (REDACTED) Querying wifi usable channels failed with exception
+06-12 18:24:03.904 27174 23440 I NearbyMediums: java.lang.UnsupportedOperationException
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3023)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at android.os.Parcel.createException(Parcel.java:2995)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:2978)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at android.os.Parcel.readException(Parcel.java:2920)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at android.net.wifi.IWifiManager$Stub$Proxy.getUsableChannels(IWifiManager.java:6718)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at android.net.wifi.WifiManager.getUsableChannels(WifiManager.java:12102)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at cfh$$ExternalSyntheticApiModelOutline0.m(D8$$SyntheticClass:61)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at doky.z(:com.google.android.gms@262232029@26.22.32 (190400-929405271):21)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at doky.v(:com.google.android.gms@262232029@26.22.32 (190400-929405271):16)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at doky.q(:com.google.android.gms@262232029@26.22.32 (190400-929405271):24)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at dpeb.run(:com.google.android.gms@262232029@26.22.32 (190400-929405271):9)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at bjwy.c(:com.google.android.gms@262232029@26.22.32 (190400-929405271):50)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at bjwy.run(:com.google.android.gms@262232029@26.22.32 (190400-929405271):66)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at bkcq.run(:com.google.android.gms@262232029@26.22.32 (190400-929405271):8)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at java.lang.Thread.run(Thread.java:1564)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: Caused by: android.os.RemoteException: Remote stack trace:
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at com.android.server.wifi.WifiServiceImpl$$ExternalSyntheticBUOutline5.m(R8$$SyntheticClass:0)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at com.android.server.wifi.WifiServiceImpl.getUsableChannels(WifiServiceImpl.java:8538)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at android.net.wifi.IWifiManager$Stub.onTransact(IWifiManager.java:3342)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at android.os.Binder.execTransactInternal(Binder.java:1280)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 	at android.os.Binder.execTransact(Binder.java:1244)
+06-12 18:24:03.904 27174 23440 I NearbyMediums: 
+06-12 18:24:03.905 27174 23440 I NearbyMediums: [DeviceCapabilities] Skip refreshing cached wifi channels because it is not supported (refreshCacheWifiChannelsRightAfterNetworkCallbackInvoked:true isWifiGetUsableChannelsSupported:false)
+06-12 18:24:03.907 27174 25040 I FrewleTileCacheManagerV: (REDACTED) Fetched %d AP models from cache
+06-12 18:24:03.910 27174 25040 I FrewleTileCacheManagerV: (REDACTED) Fetched %d AP models from cache
+06-12 18:24:04.378  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247218): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:04.381  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247219): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:04.388 27174 23440 I NearbySharing: Network state changed: NetworkState(isRestricted=false, isOnline=true, isCongested=false, isMetered=false, isWifiConnected=true)
+06-12 18:24:04.388  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247220): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:04.391  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247221): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:04.398  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247222): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:04.918 25052 25052 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+06-12 18:24:04.949   645   645 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+06-12 18:24:04.951 25052 25053 W AdrenoUtils: <ReadGpuID_from_sysfs:197>: Failed to open /sys/class/kgsl/kgsl-3d0/gpu_model
+06-12 18:24:04.952 25052 25053 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
+06-12 18:24:05.294 25057 25057 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+06-12 18:24:05.298 25057 25057 I AndroidRuntime: Using default boot image
+06-12 18:24:05.298 25057 25057 I AndroidRuntime: Leaving lock profiling enabled
+06-12 18:24:05.301 25057 25057 I app_process: Using CollectorTypeCC GC.
+06-12 18:24:05.371 25057 25057 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+06-12 18:24:05.378  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247402): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:05.384 25057 25057 D nativeloader: Load libicu_jni.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-12 18:24:05.384 25057 25057 D app_process: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+06-12 18:24:05.384 25057 25057 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt70l.dat
+06-12 18:24:05.385 25057 25057 D nativeloader: Load libjavacore.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-12 18:24:05.386 25057 25057 D nativeloader: Load libopenjdk.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-12 18:24:05.387 25057 25057 I app_process: Priority-to-niceness mapping: 19, 16, 13, 10, 0, -2, -4, -5, -6, -8
+06-12 18:24:05.385  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247403): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:05.388  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247404): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:05.395  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247405): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:05.401  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247406): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:05.410 25057 25057 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-12 18:24:05.411 25057 25057 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+06-12 18:24:05.417  1739  4802 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-12 18:24:05.418  4224 18858 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-12 18:24:05.419  1739  4802 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-12 18:24:05.420  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:24:05.421  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:24:05.421  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:24:05.421  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:24:05.421  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:24:05.421  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:24:05.421  4224 21801 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-12 18:24:05.422  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:24:05.423  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:24:05.423  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:24:05.423  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:24:05.423  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:24:05.423  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:24:05.425  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:24:05.425  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:24:05.425  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:24:05.426  1739  1739 D BatterySaverPolicy: accessibility changed to true, updating policy.
+06-12 18:24:05.426  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:24:05.426  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:24:05.426 28386 28386 I SafetyCenterAccessibilityListener: accessibility event occurred, safety center feature not enabled.
+06-12 18:24:05.429  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:24:05.430  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:24:05.431  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:24:05.431  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:24:05.431  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:24:05.432  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:24:05.432  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:24:05.432  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:24:05.433  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:24:05.433  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:24:05.433  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:24:05.433  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:24:05.434  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:24:05.435  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:24:05.435  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:24:05.435  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:24:05.435  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:24:05.435  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:24:05.435  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:24:05.438  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:24:05.440  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-12 18:24:05.440  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-12 18:24:05.440  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:05.440  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:05.440  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:24:05.441  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:05.441  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:05.441  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:24:05.441  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-12 18:24:05.441  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:24:05.442  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:24:05.445  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:24:05.446  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-12 18:24:05.446  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:05.446  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:05.446  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:24:05.467  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-12 18:24:05.468  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:05.468  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:05.468  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:24:05.468  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-12 18:24:05.866  1739  1966 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.DROPBOX_ENTRY_ADDED flg=0x10 (has extras) } to com.google.android.gms/.stats.service.DropBoxEntryAddedReceiver
+06-12 18:24:06.381  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247589): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:06.385  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247590): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:06.395  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247591): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:06.398  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247592): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:06.401  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247593): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:06.551 25057 25057 W libc    : Access denied finding property "qemu.sf.lcd_density"
+06-12 18:24:06.552 25057 25057 W libc    : Access denied finding property "qemu.sf.lcd_density"
+06-12 18:24:06.610 25057 25057 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@3ad24; boundsInParent: Rect(0, 0 - 0, 0); boundsInScreen: Rect(541, 1935 - 541, 1935); packageName: com.android.systemui; className: android.widget.LinearLayout; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; viewIdResName: com.android.systemui:id/ambient_indication_info_container; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+06-12 18:24:06.619 25057 25057 W AccessibilityNodeInfoDumper: Fetch time: 63ms
+06-12 18:24:06.624  1739  2948 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-12 18:24:06.625  4224 18858 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-12 18:24:06.627 25057 25057 D AndroidRuntime: Shutting down VM
+06-12 18:24:06.629  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:24:06.628  1739  1739 D BatterySaverPolicy: accessibility changed to false, updating policy.
+06-12 18:24:06.630  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:24:06.630  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:24:06.630  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:24:06.631  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:24:06.631  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:24:06.632  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:24:06.633  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:24:06.633  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:24:06.633  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:24:06.633  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:24:06.633  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:24:06.635  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:24:06.635  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:24:06.636  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:24:06.636  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:24:06.636  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:24:06.641  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:24:06.642  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:24:06.643  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-12 18:24:06.644  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:06.644  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:06.644  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:24:06.644  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-12 18:24:06.646  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:24:06.648  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-12 18:24:06.649  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:06.649  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:24:06.649  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:24:07.385  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247777): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:07.391  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247778): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:07.398  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247779): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:07.405  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247780): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:24:07.408  1072  1072 W socket_writer_q: type=1400 audit(0.0:242247781): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0

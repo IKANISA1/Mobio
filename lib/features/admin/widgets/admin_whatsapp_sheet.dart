@@ -3,6 +3,7 @@ import 'package:mobi_app/core/services/admin_service.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:mobi_app/features/admin/widgets/admin_dashboard_utils.dart';
 import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
@@ -172,7 +173,11 @@ class _AdminWhatsappSheetState extends State<AdminWhatsappSheet> {
   }
 
   Future<void> _handleSave() async {
-    if (_localNumber.trim().length < 6) {
+    final e164 = PhoneNumberNormalizer.normalizeForCountry(
+      phone: _localNumber,
+      countryCode: _countryCode,
+    );
+    if (!PhoneNumberNormalizer.isValidCanonical(e164)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Enter a valid WhatsApp number.')),
       );
@@ -181,8 +186,6 @@ class _AdminWhatsappSheetState extends State<AdminWhatsappSheet> {
 
     setState(() => _isSaving = true);
     try {
-      final e164 =
-          '$_countryCode${_localNumber.replaceFirst(RegExp(r'^0+'), '')}';
       await widget.onSave(
         phoneE164: e164,
         countryCode: _countryCode,

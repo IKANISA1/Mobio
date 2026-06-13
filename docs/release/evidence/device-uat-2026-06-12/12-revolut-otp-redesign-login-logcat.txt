@@ -1,0 +1,380 @@
+--------- beginning of system
+06-12 19:13:41.860  1739  4802 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=rw.mobi.app/.MainActivity} from uid 2000
+06-12 19:13:41.861  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 265464455; UID 10896; state: DISABLED
+06-12 19:13:41.861  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 265452344; UID 10896; state: DISABLED
+06-12 19:13:41.862  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 266124927; UID 10896; state: DISABLED
+06-12 19:13:41.862  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 265451093; UID 10896; state: DISABLED
+06-12 19:13:41.862  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 265456536; UID 10896; state: DISABLED
+06-12 19:13:41.862  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 255940284; UID 10896; state: DISABLED
+06-12 19:13:41.862  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 236283604; UID 10896; state: DISABLED
+06-12 19:13:41.862  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 263959004; UID 10896; state: DISABLED
+06-12 19:13:41.862  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 264304459; UID 10896; state: DISABLED
+06-12 19:13:41.863  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 264301586; UID 10896; state: DISABLED
+06-12 19:13:41.863  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 254631730; UID 10896; state: DISABLED
+06-12 19:13:41.863  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 273509367; UID 10896; state: DISABLED
+06-12 19:13:41.863  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 263259275; UID 10896; state: DISABLED
+06-12 19:13:41.870  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 194480991; UID 10896; state: ENABLED
+06-12 19:13:41.871  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 174042980; UID 10896; state: DISABLED
+06-12 19:13:41.874  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 184838306; UID 10896; state: DISABLED
+06-12 19:13:41.874  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 185004937; UID 10896; state: DISABLED
+06-12 19:13:41.874  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 181136395; UID 10896; state: DISABLED
+06-12 19:13:41.874  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 174042936; UID 10896; state: DISABLED
+06-12 19:13:41.876  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 197654537; UID 10896; state: ENABLED
+06-12 19:13:41.877  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 205907456; UID 10896; state: ENABLED
+--------- beginning of main
+06-12 19:13:41.884  2542  2639 W Parcel  : Expecting binder but got null!
+06-12 19:13:41.889  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10896; state: DISABLED
+06-12 19:13:41.889  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10896; state: DISABLED
+06-12 19:13:41.889  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10896; state: DISABLED
+06-12 19:13:41.889  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10896; state: ENABLED
+06-12 19:13:41.890  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10896; state: ENABLED
+06-12 19:13:41.894  1739  2878 D CoreBackPreview: Window{e5cd0a1 u0 Splash Screen rw.mobi.app}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@684b49e, mPriority=0}
+06-12 19:13:41.899  4291  9348 D ForegroundUtils: Foreground UID status:
+06-12 19:13:41.899  4291  9348 D ForegroundUtils: UID: 1002 is in foreground: true
+06-12 19:13:41.899  4291  9348 D ForegroundUtils: UID: 10109 is in foreground: false
+06-12 19:13:41.899  4291  9348 D ForegroundUtils: UID: 10164 is in foreground: true
+06-12 19:13:41.899  4291  9348 D ForegroundUtils: UID: 10238 is in foreground: true
+06-12 19:13:41.899  4291  9348 D ForegroundUtils: UID: 10243 is in foreground: true
+06-12 19:13:41.899  4291  9348 D ForegroundUtils: UID: 10250 is in foreground: false
+06-12 19:13:41.903  1055  1055 D Zygote  : Forked child process 732
+06-12 19:13:41.903  1739  1968 I ActivityManager: Start proc 732:rw.mobi.app/u0a896 for next-top-activity {rw.mobi.app/rw.mobi.app.MainActivity}
+06-12 19:13:41.906  2542  2639 E OpenGLRenderer: Unable to match the desired swap behavior.
+06-12 19:13:41.910   732   732 I rw.mobi.app: Using CollectorTypeCC GC.
+06-12 19:13:41.922   732   732 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-12 19:13:41.933  4291  9348 D ForegroundUtils: Foreground UID status:
+06-12 19:13:41.933  4291  9348 D ForegroundUtils: UID: 1002 is in foreground: true
+06-12 19:13:41.933  4291  9348 D ForegroundUtils: UID: 10109 is in foreground: false
+06-12 19:13:41.933  4291  9348 D ForegroundUtils: UID: 10164 is in foreground: true
+06-12 19:13:41.933  4291  9348 D ForegroundUtils: UID: 10238 is in foreground: true
+06-12 19:13:41.933  4291  9348 D ForegroundUtils: UID: 10243 is in foreground: true
+06-12 19:13:41.933  4291  9348 D ForegroundUtils: UID: 10250 is in foreground: false
+06-12 19:13:41.933  4291  9348 D ForegroundUtils: UID: 10896 is in foreground: true
+06-12 19:13:41.933   732   732 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10896; state: ENABLED
+06-12 19:13:41.935  1739  1964 D IntervalStats: Unable to parse usage stats packages: [1627, 1629]
+06-12 19:13:41.938  1739  1964 D IntervalStats: Unable to parse usage stats packages: [1627, 1631, 1632, 1634, 1637, 1638, 1639, 1640, 1641]
+06-12 19:13:41.940   732   732 D nativeloader: Configuring clns-4 for other apk /data/app/~~9g1_rx364BW0H5K2cKGlWQ==/rw.mobi.app-N2rqrEx2NYibx0xtPdnvpA==/base.apk. target_sdk_version=35, uses_libraries=, library_path=/data/app/~~9g1_rx364BW0H5K2cKGlWQ==/rw.mobi.app-N2rqrEx2NYibx0xtPdnvpA==/lib/arm64:/data/app/~~9g1_rx364BW0H5K2cKGlWQ==/rw.mobi.app-N2rqrEx2NYibx0xtPdnvpA==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/rw.mobi.app
+06-12 19:13:41.944  1739  1964 D IntervalStats: Unable to parse usage stats packages: [1632, 1635, 1641]
+06-12 19:13:41.948   732   732 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-12 19:13:41.948  1739  1964 D IntervalStats: Unable to parse usage stats packages: [1641, 1643, 1645, 1648, 1650, 1654, 1655, 1656, 1657, 1658, 1659, 1660, 1663, 1664]
+06-12 19:13:41.949   732   732 V GraphicsEnvironment: ANGLE Developer option for 'rw.mobi.app' set to: 'default'
+06-12 19:13:41.949   732   732 V GraphicsEnvironment: ANGLE GameManagerService for rw.mobi.app: false
+06-12 19:13:41.949   732   732 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+06-12 19:13:41.951   732   732 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+06-12 19:13:41.952   732   732 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+06-12 19:13:41.953  1739  1964 D IntervalStats: Unable to parse usage stats packages: [1666]
+06-12 19:13:41.955  1072  1072 W socket_writer_q: type=1400 audit(0.0:242798805): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:41.956  1739  1964 D IntervalStats: Unable to parse usage stats packages: [1657, 1668]
+06-12 19:13:41.956   732   732 D CompatibilityChangeReporter: Compat change id reported: 183155436; UID 10896; state: ENABLED
+06-12 19:13:41.960  1739  1964 D IntervalStats: Unable to parse usage stats packages: [1657, 1667, 1668, 1670]
+06-12 19:13:41.961   732   732 D FirebaseSessions: Dependency to CRASHLYTICS added.
+06-12 19:13:41.963   732   732 I FirebaseApp: Device unlocked: initializing all Firebase APIs for app [DEFAULT]
+06-12 19:13:41.958  1072  1072 W socket_writer_q: type=1400 audit(0.0:242798806): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:41.967   732   732 I FirebaseCrashlytics: Initializing Firebase Crashlytics 20.0.4 for rw.mobi.app
+06-12 19:13:41.965  1072  1072 W socket_writer_q: type=1400 audit(0.0:242798807): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:41.972  1072  1072 W socket_writer_q: type=1400 audit(0.0:242798808): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:41.979   732   732 D FirebaseSessions: Subscriber CRASHLYTICS registered.
+06-12 19:13:41.975  1072  1072 W socket_writer_q: type=1400 audit(0.0:242798809): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:41.990 15009 15009 I ceis    : onPause
+06-12 19:13:41.992 15009 15009 W duui    : measuring already stopped.
+06-12 19:13:42.002   732   732 D nativeloader: Load /data/app/~~9g1_rx364BW0H5K2cKGlWQ==/rw.mobi.app-N2rqrEx2NYibx0xtPdnvpA==/base.apk!/lib/arm64-v8a/libdatastore_shared_counter.so using class loader ns clns-4 (caller=/data/app/~~9g1_rx364BW0H5K2cKGlWQ==/rw.mobi.app-N2rqrEx2NYibx0xtPdnvpA==/base.apk!classes4.dex): ok
+06-12 19:13:42.007   732   787 W rw.mobi.app: ClassLoaderContext classpath size mismatch. expected=1, found=0 (DLC[];PCL[base.apk*1678796670]{PCL[/system/framework/org.apache.http.legacy.jar*1601893742]#PCL[/system/framework/com.android.location.provider.jar*989331189]#PCL[/system/framework/com.android.media.remotedisplay.jar*373201994]} | DLC[];PCL[])
+06-12 19:13:42.009   732   732 D FirebaseSessions: Initializing Firebase Sessions 3.0.4.
+06-12 19:13:42.009   732   732 I FirebaseInitProvider: FirebaseApp initialization successful
+06-12 19:13:42.009   732   732 D FLTFireContextHolder: received application context.
+06-12 19:13:42.015   732   787 I DynamiteModule: Considering local module com.google.android.gms.measurement.dynamite:155 and remote module com.google.android.gms.measurement.dynamite:194
+06-12 19:13:42.016   732   787 I DynamiteModule: Selected remote version of com.google.android.gms.measurement.dynamite, version >= 194
+06-12 19:13:42.016   732   787 V DynamiteModule: Dynamite loader version >= 2, using loadModule2NoCrashUtils
+06-12 19:13:42.027  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 161145287; UID 10896; state: DISABLED
+06-12 19:13:42.034   732   787 W System  : ClassLoader referenced unknown path: 
+06-12 19:13:42.035   732   787 D nativeloader: Configuring clns-5 for other apk . target_sdk_version=37, uses_libraries=, library_path=/data/app/~~dWLOOBlT_GUl5qxxDMIDDg==/com.google.android.gms-Jk64NwzBBq_JeCJR0N7saQ==/lib/arm64:/data/app/~~dWLOOBlT_GUl5qxxDMIDDg==/com.google.android.gms-Jk64NwzBBq_JeCJR0N7saQ==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+06-12 19:13:42.066   732   790 I FirebaseCrashlytics: Saved version control info
+06-12 19:13:42.068   732   808 D nativeloader: Load /data/app/~~9g1_rx364BW0H5K2cKGlWQ==/rw.mobi.app-N2rqrEx2NYibx0xtPdnvpA==/base.apk!/lib/arm64-v8a/libflutter.so using class loader ns clns-4 (caller=/data/app/~~9g1_rx364BW0H5K2cKGlWQ==/rw.mobi.app-N2rqrEx2NYibx0xtPdnvpA==/base.apk): ok
+06-12 19:13:42.078   732   790 D FirebaseSessions: Notified CRASHLYTICS of new session f48462d125f341209e2574845afe254b
+06-12 19:13:42.088   732   787 W rw.mobi.app: ClassLoaderContext classpath element checksum mismatch. expected=1678796670, found=3380000088 (DLC[];PCL[base.apk*1678796670]{PCL[/system/framework/org.apache.http.legacy.jar*1601893742]#PCL[/system/framework/com.android.location.provider.jar*989331189]#PCL[/system/framework/com.android.media.remotedisplay.jar*373201994]} | DLC[];PCL[/data/app/~~9g1_rx364BW0H5K2cKGlWQ==/rw.mobi.app-N2rqrEx2NYibx0xtPdnvpA==/base.apk*3380000088])
+06-12 19:13:42.128   732   810 D vulkan  : searching for layers in '/data/app/~~9g1_rx364BW0H5K2cKGlWQ==/rw.mobi.app-N2rqrEx2NYibx0xtPdnvpA==/lib/arm64'
+06-12 19:13:42.128   732   810 D vulkan  : searching for layers in '/data/app/~~9g1_rx364BW0H5K2cKGlWQ==/rw.mobi.app-N2rqrEx2NYibx0xtPdnvpA==/base.apk!/lib/arm64-v8a'
+06-12 19:13:42.134   732   810 I AdrenoVK-0: ===== BEGIN DUMP OF OVERRIDDEN SETTINGS =====
+06-12 19:13:42.134   732   810 I AdrenoVK-0: ===== END DUMP OF OVERRIDDEN SETTINGS =====
+06-12 19:13:42.135   732   810 I AdrenoVK-0: QUALCOMM build          : 85da404, I46ff5fc46f
+06-12 19:13:42.135   732   810 I AdrenoVK-0: Build Date              : 11/30/20
+06-12 19:13:42.135   732   810 I AdrenoVK-0: Shader Compiler Version : EV031.31.04.01
+06-12 19:13:42.135   732   810 I AdrenoVK-0: Local Branch            : promo490_3_Google
+06-12 19:13:42.135   732   810 I AdrenoVK-0: Remote Branch           : 
+06-12 19:13:42.135   732   810 I AdrenoVK-0: Remote Branch           : 
+06-12 19:13:42.135   732   810 I AdrenoVK-0: Reconstruct Branch      : 
+06-12 19:13:42.135   732   810 I AdrenoVK-0: Build Config            : S P 10.0.4 AArch64
+06-12 19:13:42.135   732   810 I AdrenoVK-0: Driver Path             : /vendor/lib64/hw/vulkan.adreno.so
+06-12 19:13:42.140   732   810 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+06-12 19:13:42.141   732   732 D com.llfbandit.app_links: Intent { flg=0x10000000 cmp=rw.mobi.app/.MainActivity }
+06-12 19:13:42.145   732   732 D FLTFireContextHolder: received application context.
+06-12 19:13:42.149   732   810 I AdrenoGLES-0: QUALCOMM build                   : 85da404, I46ff5fc46f
+06-12 19:13:42.149   732   810 I AdrenoGLES-0: Build Date                       : 11/30/20
+06-12 19:13:42.149   732   810 I AdrenoGLES-0: OpenGL ES Shader Compiler Version: EV031.31.04.01
+06-12 19:13:42.149   732   810 I AdrenoGLES-0: Local Branch                     : promo490_3_Google
+06-12 19:13:42.149   732   810 I AdrenoGLES-0: Remote Branch                    : 
+06-12 19:13:42.149   732   810 I AdrenoGLES-0: Remote Branch                    : 
+06-12 19:13:42.149   732   810 I AdrenoGLES-0: Reconstruct Branch               : 
+06-12 19:13:42.149   732   810 I AdrenoGLES-0: Build Config                     : S P 10.0.4 AArch64
+06-12 19:13:42.149   732   810 I AdrenoGLES-0: Driver Path                      : /vendor/lib64/egl/libGLESv2_adreno.so
+06-12 19:13:42.152   732   810 I AdrenoGLES-0: PFP: 0x016ee190, ME: 0x00000000
+06-12 19:13:42.154   732   810 W AdrenoUtils: <ReadGpuID_from_sysfs:197>: Failed to open /sys/class/kgsl/kgsl-3d0/gpu_model
+06-12 19:13:42.154   732   810 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
+06-12 19:13:42.162   732   810 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(104)] Using the Impeller rendering backend (OpenGLES).
+06-12 19:13:42.170 27174 30412 I PhenotypeResourceReader: unable to find any Phenotype resource metadata for rw.mobi.app
+06-12 19:13:42.173   732   732 D FirebaseSessions: App foregrounded on rw.mobi.app
+06-12 19:13:42.173   732   732 D FirebaseSessions: Session f48462d125f341209e2574845afe254b has not backgrounded yet
+06-12 19:13:42.173   732   732 D FirebaseSessions: No process data for rw.mobi.app
+06-12 19:13:42.176   732   732 D CompatibilityChangeReporter: Compat change id reported: 237531167; UID 10896; state: DISABLED
+06-12 19:13:42.177   732   789 D FirebaseSessions: Session efde251b904148678f91b354fa73f684 has not backgrounded yet
+06-12 19:13:42.177   732   789 D FirebaseSessions: No process data map
+06-12 19:13:42.177   732   789 D FirebaseSessions: No process data for rw.mobi.app
+06-12 19:13:42.181   732   801 W Parcel  : Expecting binder but got null!
+06-12 19:13:42.192   732   790 D FirebaseSessions: Notified CRASHLYTICS of new session 1a8a73db6c8f4361be6bd4fb87055de5
+06-12 19:13:42.194  1739  1775 D CoreBackPreview: Window{579505b u0 rw.mobi.app/rw.mobi.app.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@24f6fd3, mPriority=0}
+06-12 19:13:42.196   732   827 E rw.mobi.app: No package ID 6a found for ID 0x6a0b0013.
+06-12 19:13:42.196   732   827 I FA      : App measurement initialized, version: 170009
+06-12 19:13:42.196   732   827 I FA      : To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+06-12 19:13:42.196   732   827 I FA      : To enable faster debug mode event logging run:
+06-12 19:13:42.196   732   827 I FA      :   adb shell setprop debug.firebase.analytics.app rw.mobi.app
+06-12 19:13:42.202   702  2888 W ServiceManager: Permission failure: android.permission.ACCESS_SURFACE_FLINGER from uid=10896 pid=0
+06-12 19:13:42.202   702  2888 D PermissionCache: checking android.permission.ACCESS_SURFACE_FLINGER for uid=10896 => denied (807 us)
+06-12 19:13:42.202   702  2136 W ServiceManager: Permission failure: android.permission.ACCESS_SURFACE_FLINGER from uid=10896 pid=732
+06-12 19:13:42.202   702  2136 D PermissionCache: checking android.permission.ACCESS_SURFACE_FLINGER for uid=10896 => denied (710 us)
+06-12 19:13:42.202   702  2136 W ServiceManager: Permission failure: android.permission.ROTATE_SURFACE_FLINGER from uid=10896 pid=732
+06-12 19:13:42.202   702  2136 D PermissionCache: checking android.permission.ROTATE_SURFACE_FLINGER for uid=10896 => denied (99 us)
+06-12 19:13:42.202   702  2136 W ServiceManager: Permission failure: android.permission.INTERNAL_SYSTEM_WINDOW from uid=10896 pid=732
+06-12 19:13:42.203   702  2136 D PermissionCache: checking android.permission.INTERNAL_SYSTEM_WINDOW for uid=10896 => denied (93 us)
+06-12 19:13:42.206   702  2888 W ServiceManager: Permission failure: android.permission.ROTATE_SURFACE_FLINGER from uid=10896 pid=0
+06-12 19:13:42.206   702  2888 D PermissionCache: checking android.permission.ROTATE_SURFACE_FLINGER for uid=10896 => denied (3944 us)
+06-12 19:13:42.213   704   704 I SDM     : HWCDisplay::GetColorModeCount: Supported color mode count = 3
+06-12 19:13:42.213   732   801 E OpenGLRenderer: Unable to match the desired swap behavior.
+06-12 19:13:42.232 27062 27062 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-12 19:13:42.232 27062 27062 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-12 19:13:42.239   732   827 I FA      : Tag Manager is not found and thus will not be used
+06-12 19:13:42.534  1085  1180 I CHRE    : @ 2246036.712: [AR] inconsistent: 41.176471
+06-12 19:13:42.534  1085  1180 D CHRE    : @ 2246036.712: [ActivityPlatform] type 6, confidence 41
+06-12 19:13:42.562  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-12 19:13:42.570  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-12 19:13:42.958  1072  1072 W socket_writer_q: type=1400 audit(0.0:242798990): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:42.965  1072  1072 W socket_writer_q: type=1400 audit(0.0:242798991): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:42.972  1072  1072 W socket_writer_q: type=1400 audit(0.0:242798992): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:42.975  1072  1072 W socket_writer_q: type=1400 audit(0.0:242798993): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:42.982  1072  1072 W socket_writer_q: type=1400 audit(0.0:242798994): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:43.143   732   732 D FlutterGeolocator: Creating service.
+06-12 19:13:43.143   732   732 D FlutterGeolocator: Binding to location service.
+06-12 19:13:43.147   732   732 I Choreographer: Skipped 56 frames!  The application may be doing too much work on its main thread.
+06-12 19:13:43.148   732   732 D FlutterGeolocator: Flutter engine connected. Connected engine count 1
+06-12 19:13:43.164   732   774 W System  : Ignoring header X-Firebase-Locale because its value was null.
+06-12 19:13:43.179 27062   846 D AdvertisingIdClient: AdvertisingIdClient already created.
+06-12 19:13:43.179 27062   846 D AdvertisingIdClient: AdvertisingIdClient is not bounded. Starting to bind it...
+06-12 19:13:43.189 27062   846 D AdvertisingIdClient: AdvertisingIdClient is bounded
+06-12 19:13:43.190 27062   846 W AdvertisingIdSettings: Package rw.mobi.app failed Ad Id permission check. Apps that target Android SDK 33 or higher should declare com.google.android.gms.permission.AD_ID in the app manifest to access Ad Id.
+06-12 19:13:43.191 27062   846 I AdvertisingIdClient: shouldSendLog 2245962051
+06-12 19:13:43.191 27062   846 I AdvertisingIdClient: GetInfoInternal elapse 12ms
+06-12 19:13:43.195 27174 27174 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.common.telemetry.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+06-12 19:13:43.216 27174 31525 I NetworkScheduler: (REDACTED) Error inserting %s
+06-12 19:13:43.241 31503 31821 I Finsky  : [793] Package com.google.android.gms is verified.
+06-12 19:13:43.347 32208 32350 W CrashLoopRemedyLog: unable to delete remedy log, instaCrash: true
+06-12 19:13:43.349   732   792 D FirebaseSessions: Fetching settings from server.
+06-12 19:13:43.769   732   780 D FirebaseSessions: Fetched settings: {"settings_version":3,"cache_duration":189126,"features":{"collect_logged_exceptions":true,"collect_reports":true,"collect_analytics":false,"prompt_enabled":false,"push_enabled":false,"firebase_crashlytics_enabled":false,"collect_anrs":true,"collect_metric_kit":false,"collect_build_ids":true},"app":{"status":"activated","update_required":false,"report_upload_variant":2,"native_report_upload_variant":2},"fabric":{"org_id":"69c305cc13cff0428d3fedca","bundle_id":"rw.mobi.app"},"on_demand_upload_rate_per_minute":10,"on_demand_backoff_base":1.2,"on_demand_backoff_step_duration_seconds":60,"app_quality":{"sessions_enabled":true,"sampling_rate":1,"session_timeout_seconds":1800},"on_demand_thread_recording_suspension_enabled":true}
+06-12 19:13:43.773   732   788 D FirebaseSessions: Remote settings cache not expired. Using cached values.
+06-12 19:13:43.775   732   788 D FirebaseSessions: Session Event Type: SESSION_START
+06-12 19:13:43.776   732   788 D FirebaseSessions: Successfully logged Session Start event.
+06-12 19:13:43.781   732   791 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10896; state: ENABLED
+06-12 19:13:43.782  1739  1775 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10896; state: ENABLED
+06-12 19:13:43.782  1739  1775 D ConnectivityService: requestNetwork for uid/pid:1000/1739 asUid: 10896 activeRequest: null callbackRequest: 116694 [NetworkRequest [ REQUEST id=116695, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10896 RequestorUid: 1000 RequestorPkg: android UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|LOST|BLK
+06-12 19:13:43.786  1739  2448 D OemPaidWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116695, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10896 RequestorUid: 1000 RequestorPkg: android UnderlyingNetworks: Null] ]
+06-12 19:13:43.786  1739  2448 D MultiInternetWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116695, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10896 RequestorUid: 1000 RequestorPkg: android UnderlyingNetworks: Null] ]
+06-12 19:13:43.786  1739  2448 D WifiNetworkFactory: got request NetworkRequest [ REQUEST id=116695, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10896 RequestorUid: 1000 RequestorPkg: android UnderlyingNetworks: Null] ]
+06-12 19:13:43.786  1739  2448 D UntrustedWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116695, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10896 RequestorUid: 1000 RequestorPkg: android UnderlyingNetworks: Null] ]
+06-12 19:13:43.789  1739  2455 D ConnectivityService: NetReassign [116695 : null → 349] [c 0] [a 2] [i 5]
+06-12 19:13:43.880   732   780 W System  : Ignoring header If-None-Match because its value was null.
+06-12 19:13:43.965  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799183): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:43.968  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799184): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:43.975  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799185): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:43.982  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799186): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:43.985  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799187): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:44.310 27174 32584 I NetworkScheduler: (REDACTED) Error inserting %s
+06-12 19:13:44.718  2542  2542 D DLObserver: onReceive(); android.intent.action.BATTERY_CHANGED
+06-12 19:13:44.718  2542  2542 D DLObserver: plugged=2
+06-12 19:13:44.726  2542  2542 D PowerNotificationWarningsGoogleImpl: onReceive: android.intent.action.BATTERY_CHANGED
+06-12 19:13:44.726  2542  2542 D BatteryDefenderNotification: isPlugged: true | isOverheated: true | defenderEnabled: true | isCharged: false | isPluggedInDock: false
+06-12 19:13:44.727  2542  2542 D DLObserver: onReceive(); android.intent.action.BATTERY_CHANGED
+06-12 19:13:44.727  2542  2542 D DLObserver: plugged=2
+06-12 19:13:44.728  2542  2542 D PowerNotificationWarningsGoogleImpl: onReceive: android.intent.action.BATTERY_CHANGED
+06-12 19:13:44.728  2542  2542 D BatteryDefenderNotification: isPlugged: true | isOverheated: true | defenderEnabled: true | isCharged: false | isPluggedInDock: false
+06-12 19:13:44.728   645   645 I servicemanager: Found vendor.google.google_battery.IGoogleBattery/default in device VINTF manifest.
+06-12 19:13:44.729  2542  3720 D PowerUI : can't show warning due to - plugged: true status unknown: false
+06-12 19:13:44.729  2542  3654 D PowerUI : can't show warning due to - plugged: true status unknown: false
+06-12 19:13:44.730   645   645 I servicemanager: Found vendor.google.google_battery.IGoogleBattery/default in device VINTF manifest.
+06-12 19:13:44.735  2542  2654 D BatteryInfoBroadcast: onReceive: android.intent.action.BATTERY_CHANGED isPowerSaveMode: false remainingTimeMillis: 95546734
+06-12 19:13:44.740  2542  2654 D BatteryInfoBroadcast: onReceive: android.intent.action.BATTERY_CHANGED isPowerSaveMode: false remainingTimeMillis: 95546729
+06-12 19:13:44.968  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799379): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:44.975  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799380): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:44.982  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799381): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:44.985  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799382): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:44.988  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799383): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:45.057 27174 32584 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+06-12 19:13:45.058 27174 32584 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+06-12 19:13:45.063 27062 28538 I PlayGamesServices[GamesSyncAdapter]: Starting sync for 5a7daadc
+06-12 19:13:45.065 27062 21065 I PlayGamesServices[GamesSyncAdapter]: Starting sync for effb0749
+06-12 19:13:45.066  1739  5415 D CompatibilityChangeReporter: Compat change id reported: 201794303; UID 10164; state: ENABLED
+06-12 19:13:45.066 27062 21065 I PlayGamesServices[GamesSyncAdapter]: Sync duration for effb0749: 2
+06-12 19:13:45.069 27062 28538 I PlayGamesServices[GamesSyncAdapter]: Sync duration for 5a7daadc: 6
+06-12 19:13:45.073 27174 32584 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+06-12 19:13:45.079 27174 32584 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+06-12 19:13:45.097 27062  5957 W PlayGamesServices[UiUtils]: AppVersion: Cannot find the installed destination app.
+06-12 19:13:45.097 27062  5957 I GetServiceValidatorImpl: (REDACTED) onGetService() from Client SDK version [%s], Module version [%s], PGA version [%s], Account [%s], Calling package [%s], Game package [%s]
+06-12 19:13:45.099 27174 32584 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+06-12 19:13:45.099 27062  5957 I GetGamesServiceReqFacto: (REDACTED) Parsing request with ignored arguments. signInOptionsBundle [%s], isRetryingSignIn [%s], skipWelcomePopup [%s], requireGooglePlus [%s]
+06-12 19:13:45.101 27062 28538 I PlayGamesServices[GamesSyncAdapter]: Starting sync for 361ced4d
+06-12 19:13:45.102 27062 28538 I PlayGamesServices[GamesSyncAdapter]: Sync duration for 361ced4d: 1
+06-12 19:13:45.104 27062  5957 I GetGamesServiceReqFacto: Replacing request for `games` scope with `games_lite`
+06-12 19:13:45.108 27174   879 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+06-12 19:13:45.116 27062   881 I SignInPerformer-6: (REDACTED) Handling request [%s], isFirstPartyCaller [%s]
+06-12 19:13:45.121 27062   881 I SignInPerformer-6: Successfully brokered first-party unauthenticated GamesService [CONTEXT service_id=1 ]
+06-12 19:13:45.122 27062   881 I GetGamesServiceV2Op: (REDACTED) Successfully brokered GamesService for request %s
+06-12 19:13:45.127 27062  5957 W PlayGamesServices[UiUtils]: AppVersion: Cannot find the installed destination app.
+06-12 19:13:45.127 27062  5957 W PlayGamesServices[UiUtils]: AppVersionName: Cannot find the installed destination app.
+06-12 19:13:45.132 27062  5957 W PlayGamesServices[UiUtils]: AppVersion: Cannot find the installed destination app.
+06-12 19:13:45.132 27062  5957 W PlayGamesServices[UiUtils]: AppVersionName: Cannot find the installed destination app.
+06-12 19:13:45.134 27062  5957 W PlayGamesServices[UiUtils]: AppVersion: Cannot find the installed destination app.
+06-12 19:13:45.134 27062  5957 W PlayGamesServices[UiUtils]: AppVersionName: Cannot find the installed destination app.
+06-12 19:13:45.139 27062 27065 W gle.android.gms: Missing inline cache for int m26.abim.a(java.lang.Object)
+06-12 19:13:45.328   694   588 I keystore2: keystore2::watchdog: Watchdog thread idle -> terminating. Have a great day.
+06-12 19:13:45.581  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-12 19:13:45.587  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-12 19:13:45.701  1085  1180 D CHRE    : @ 2246039.878: [ActivityPlatform] type 6, confidence 41
+06-12 19:13:45.972  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799574): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:45.978  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799575): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:45.985  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799576): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:45.988  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799577): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:45.992  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799578): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:46.700 27174 31525 I NetworkScheduler: (REDACTED) Error inserting %s
+06-12 19:13:46.728  1739  4802 D ConnectivityService: requestNetwork for uid/pid:10896/732 activeRequest: null callbackRequest: 116696 [NetworkRequest [ REQUEST id=116697, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10896 RequestorUid: 10896 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|LOST|NC
+06-12 19:13:46.734  1739  2448 D OemPaidWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116697, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10896 RequestorUid: 10896 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]
+06-12 19:13:46.735  1739  2448 D MultiInternetWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116697, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10896 RequestorUid: 10896 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]
+06-12 19:13:46.736  1739  2448 D WifiNetworkFactory: got request NetworkRequest [ REQUEST id=116697, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10896 RequestorUid: 10896 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]
+06-12 19:13:46.736  1739  2448 D UntrustedWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116697, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10896 RequestorUid: 10896 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]
+06-12 19:13:46.740  1739  2455 D ConnectivityService: NetReassign [116697 : null → 349] [c 0] [a 2] [i 9]
+06-12 19:13:46.742   645   645 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+06-12 19:13:46.763 27174 32584 I NetworkScheduler: (REDACTED) Error inserting %s
+06-12 19:13:46.780   732   732 I FLTFireBGExecutor: Creating background FlutterEngine instance, with args: []
+06-12 19:13:46.785   732   732 D FLTFireContextHolder: received application context.
+06-12 19:13:46.788   732  1032 I AdrenoVK-0: QUALCOMM build          : 85da404, I46ff5fc46f
+06-12 19:13:46.788   732  1032 I AdrenoVK-0: Build Date              : 11/30/20
+06-12 19:13:46.788   732  1032 I AdrenoVK-0: Shader Compiler Version : EV031.31.04.01
+06-12 19:13:46.788   732  1032 I AdrenoVK-0: Local Branch            : promo490_3_Google
+06-12 19:13:46.788   732  1032 I AdrenoVK-0: Remote Branch           : 
+06-12 19:13:46.788   732  1032 I AdrenoVK-0: Remote Branch           : 
+06-12 19:13:46.788   732  1032 I AdrenoVK-0: Reconstruct Branch      : 
+06-12 19:13:46.788   732  1032 I AdrenoVK-0: Build Config            : S P 10.0.4 AArch64
+06-12 19:13:46.788   732  1032 I AdrenoVK-0: Driver Path             : /vendor/lib64/hw/vulkan.adreno.so
+06-12 19:13:46.791  1739  1937 I ActivityTaskManager: Displayed rw.mobi.app/.MainActivity: +4s927ms
+06-12 19:13:46.791  1739  1937 I ActivityTaskManager: Fully drawn rw.mobi.app/.MainActivity: +4s927ms
+06-12 19:13:46.808   732  1032 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+06-12 19:13:46.814   732   732 D FlutterGeolocator: Flutter engine connected. Connected engine count 2
+06-12 19:13:46.815   732   732 I FLTFireMsgService: FlutterFirebaseMessagingBackgroundService started!
+06-12 19:13:46.816  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 214016041; UID 10896; state: ENABLED
+06-12 19:13:46.818 11459 11459 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():2259 
+06-12 19:13:46.820 11459 11459 I Module  : DeviceLockedStatusModuleProvider$Module.updateDeviceLockedStatus():103 repeatCheckTimes = 0, locked = false
+06-12 19:13:46.820   732  1032 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(104)] Using the Impeller rendering backend (OpenGLES).
+06-12 19:13:46.821 11459 11459 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1446 onStartInput(EditorInfo{EditorInfo{packageName=rw.mobi.app, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+06-12 19:13:46.821 11459 11459 I AndroidIME: LatinIMEBase.updateInputViewCoverNavigation():322 Update input view padding, isNavbarOverInputWindow=true, bottom inset=132
+06-12 19:13:46.822 11459 11459 I Module  : DeviceLockedStatusModuleProvider$Module.updateDeviceLockedStatus():103 repeatCheckTimes = 1, locked = false
+06-12 19:13:46.834 15009 15009 I ceis    : onStop
+06-12 19:13:46.836  4291  9348 D ForegroundUtils: Foreground UID status:
+06-12 19:13:46.836  4291  9348 D ForegroundUtils: UID: 1002 is in foreground: true
+06-12 19:13:46.836  4291  9348 D ForegroundUtils: UID: 10109 is in foreground: false
+06-12 19:13:46.836  4291  9348 D ForegroundUtils: UID: 10164 is in foreground: true
+06-12 19:13:46.836  4291  9348 D ForegroundUtils: UID: 10238 is in foreground: false
+06-12 19:13:46.836  4291  9348 D ForegroundUtils: UID: 10243 is in foreground: true
+06-12 19:13:46.836  4291  9348 D ForegroundUtils: UID: 10250 is in foreground: false
+06-12 19:13:46.836  4291  9348 D ForegroundUtils: UID: 10896 is in foreground: true
+06-12 19:13:46.975  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799766): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:46.982  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799767): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:46.985  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799768): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:46.992  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799769): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:46.995  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799770): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:47.172  1739  5415 D CoreBackPreview: Window{e5cd0a1 u0 Splash Screen rw.mobi.app EXITING}: Setting back callback null
+06-12 19:13:47.173  1739  2882 W InputManager-JNI: Input channel object 'e5cd0a1 Splash Screen rw.mobi.app (client)' was disposed without first being removed with the input manager!
+06-12 19:13:47.431   732  1042 D ProfileInstaller: Installing profile for rw.mobi.app
+06-12 19:13:47.722 31503 31531 I Finsky  : [731] Stats for Executor: LightweightExecutor vzk@97d2d42[Running, pool size = 4, active threads = 0, queued tasks = 0, completed tasks = 327]
+06-12 19:13:47.724 31503 31531 I Finsky  : [731] Stats for Executor: BlockingExecutor vzk@1f98fbc[Running, pool size = 5, active threads = 0, queued tasks = 0, completed tasks = 50]
+06-12 19:13:47.739 31503 31531 I Finsky  : [731] Stats for Executor: bgExecutor vzk@7c606d[Running, pool size = 4, active threads = 0, queued tasks = 0, completed tasks = 579]
+06-12 19:13:47.978  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799955): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:47.985  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799956): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:47.992  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799957): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:47.995  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799958): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:48.002  1072  1072 W socket_writer_q: type=1400 audit(0.0:242799959): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:48.228 27174 27174 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.common.telemetry.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+06-12 19:13:48.496 31503 31531 I Finsky  : [731] Stats for Executor: GrpcBackgroundExecutor vzk@ba4d48c[Running, pool size = 3, active threads = 0, queued tasks = 0, completed tasks = 3]
+06-12 19:13:48.608  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-12 19:13:48.623  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-12 19:13:48.719 29736 29755 W chromium: [WARNING:net/cert/ev_root_ca_metadata.cc:118] Not implemented
+06-12 19:13:48.937  1085  1180 D CHRE    : @ 2246043.113: [ActivityPlatform] type 6, confidence 41
+06-12 19:13:48.985  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800142): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:48.992  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800143): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:48.995  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800144): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:49.002  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800145): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:49.008  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800146): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:49.763  1085  1180 D CHRE    : @ 2246043.936: InstantMotion
+06-12 19:13:49.763  1075  1086 D ContextHubHal: Got message from nanoapp: ID 0x476f6f676c001016
+06-12 19:13:49.763  1085  1180 D VSC     : @ 2246043.936: [Significant Motion] Stop motion_detect
+06-12 19:13:49.763  1085  1180 D VSC     : @ 2246043.937: [Significant Motion] Request accel, interval 20.0 ms, latency 3200.0 ms
+06-12 19:13:49.768  1085  1180 D ASH     : @ 2246043.945: SensorType 195 resampler quality 0
+06-12 19:13:49.773  1094  1094 I vendor.google.wifi_ext@1.0-service-vendor: Wifi: Setting SAR Scenario to 3
+06-12 19:13:49.775  2782  2782 D GRIL-S  : [3871]> UPDATE_DEVICE_STATE DeviceState: Usb:1, Wifi: 1, Wifi AP: 0, Earpiece: 0, Bluetooth: 1, Wireless charging: 0, Screen: 1, Camera: 0, 0, -, -, Motion: 1, Bluetooth tethering: 0, Voice: 0, Wifi 2.4G: 0, Radio: 1, Bluetooth connected: 0, Bluetooth media: 0, Wifi Band: 2, Wifi AP Band: 0, Wifi call: 0, mmWave: 0, mCellBackhaul: 0, mHallSensor: 0
+06-12 19:13:49.779  1071  1071 I hardware.google.bluetooth.sar@1.0-BluetoothSar: setBluetoothTxPowerCap: CAP 54
+06-12 19:13:49.779  1071  1071 D hardware.google.bluetooth.sar@1.0-BluetoothSar: buildBTSarVSCommand: CAP 54
+06-12 19:13:49.779  1071  1071 D vendor.qti.bluetooth@1.0-hci_queue: BT HCI command queue: sendDataToController:
+06-12 19:13:49.779  1071  1071 D vendor.qti.bluetooth@1.0-hci_queue: BT HCI command queue: sendDataToController: sending VS cmd, starting timer
+06-12 19:13:49.779  1071  1071 D vendor.qti.bluetooth@1.0-hci_queue: BT HCI command queue: timerStart: is_timer_created=1
+06-12 19:13:49.779  1071  1071 D vendor.qti.bluetooth@1.0-data_handler: SendBTDataWithCallback
+06-12 19:13:49.779  1071  1071 D vendor.qti.bluetooth@1.0-data_handler: isProtocolInitialized:
+06-12 19:13:49.779  1071  1071 I vendor.qti.bluetooth@1.0-data_handler: isProtocolInitialized: status:1
+06-12 19:13:49.779  2782  4139 D GRIL-S  : [3871]< UPDATE_DEVICE_STATE 
+06-12 19:13:49.780  4100  4138 I SconeBluetoothSarContro: No config
+06-12 19:13:49.784  1071  1071 D vendor.qti.bluetooth@1.0-hci_queue: BT HCI command queue: sendDataToController: Command is sent
+06-12 19:13:49.785 19533 19620 W bluetooth: packages/modules/Bluetooth/system/gd/hci/vendor_specific_event_manager.cc:86 on_vendor_specific_event: Unhandled vendor specific event of type 0xb4
+06-12 19:13:49.786  1071 19656 D vendor.qti.bluetooth@1.0-hci_queue: BT HCI command queue: HCI event received
+06-12 19:13:49.786  1071 19656 D vendor.qti.bluetooth@1.0-hci_queue: BT HCI command queue: timerStop: is_timer_created= 1
+06-12 19:13:49.786  1071 19656 D vendor.qti.bluetooth@1.0-hci_queue: BT HCI command queue: cmd_queue size:1
+06-12 19:13:49.858  1085  1180 D CHRE    : @ 2246044.034: MagGyroCal(0)=ON
+06-12 19:13:49.937  1085  1180 D ASH     : @ 2246044.113: SensorType 195 resampler quality 1
+06-12 19:13:49.937  1085  1180 D ASH     : @ 2246044.113: SensorType 195 resampler quality 1
+06-12 19:13:49.988  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800328): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:49.995  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800329): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:49.998  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800330): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:50.005  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800331): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:50.012  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800332): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:50.335  1445 28935 I adbd    : UsbFfs: connection terminated: read 4859 failed with error Cannot send after transport endpoint shutdown
+06-12 19:13:50.389  2643  2699 I Tethering: USB bcast connected:true configured:false rndis:false ncm:false
+06-12 19:13:50.396 32420 32420 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+06-12 19:13:50.405  2643  2699 I Tethering: USB bcast connected:true configured:true rndis:false ncm:false
+06-12 19:13:50.458  1085  1180 D VSC     : @ 2246044.635: [WO] Proposed rotation: 4, flat angle threshold: 65
+06-12 19:13:50.458  1085  1180 D VSC     : @ 2246044.635: [WO] orientation angle 322, orientation 4
+06-12 19:13:50.458  1085  1180 D VSC     : @ 2246044.636: [WO] Gyro angle integrated: 796.156799
+06-12 19:13:50.458  1085  1180 D VSC     : @ 2246044.636: [WO] rejected by isOrientationAngleAcceptable
+06-12 19:13:50.474  1445  1494 I adbd    : opening control endpoint /dev/usb-ffs/adb/ep0
+06-12 19:13:50.670 31718 31744 I Finsky:background: [730] Stats for Executor: bgExecutor vzk@a7229a[Running, pool size = 4, active threads = 0, queued tasks = 0, completed tasks = 53]
+06-12 19:13:50.702 31718 31744 I Finsky:background: [730] Stats for Executor: LightweightExecutor vzk@4d5443e[Running, pool size = 4, active threads = 0, queued tasks = 0, completed tasks = 34]
+06-12 19:13:50.719  1068  1068 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+06-12 19:13:50.786   645   645 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+06-12 19:13:50.792  1068  1106 W AdrenoUtils: <ReadGpuID_from_sysfs:197>: Failed to open /sys/class/kgsl/kgsl-3d0/gpu_model
+06-12 19:13:50.792  1068  1106 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
+06-12 19:13:50.832 31718 31744 I Finsky:background: [730] Stats for Executor: BlockingExecutor vzk@a5de2d1[Running, pool size = 1, active threads = 0, queued tasks = 0, completed tasks = 9]
+06-12 19:13:50.984  1088  1467 I libpixelusb: GADGET pulled up
+06-12 19:13:50.992  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800515): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:50.998  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800516): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:51.002  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800517): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:51.008  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800518): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:51.015  1072  1072 W socket_writer_q: type=1400 audit(0.0:242800519): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 19:13:51.032 27062 27062 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.facs.internal.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsInternalApiService }
+06-12 19:13:51.093 31689 31689 I EuiccGoogle: [2] EuiccServiceImpl.onDestroy: onDestroy: EuiccService on destroy.
+06-12 19:13:51.412  2643  2699 I Tethering: USB bcast connected:true configured:false rndis:false ncm:false
+06-12 19:13:51.423  2643  2699 I Tethering: USB bcast connected:true configured:true rndis:false ncm:false
+06-12 19:13:51.640  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-12 19:13:51.657  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-12 19:13:51.692  1445  1445 I adbd    : adbd_auth: loading keys from /data/misc/adb/adb_keys
+06-12 19:13:51.714  1739  7066 I AppSearchIcing: icing-search-engine.cc:2486: Persisting data to disk with mode 3

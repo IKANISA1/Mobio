@@ -10,6 +10,7 @@ class HomeHeader extends StatelessWidget {
   final int unreadCount;
   final bool isDriverOnline;
   final ValueChanged<bool>? onDriverOnlineToggle;
+  final VoidCallback? onNotifications;
 
   const HomeHeader({
     super.key,
@@ -17,6 +18,7 @@ class HomeHeader extends StatelessWidget {
     required this.unreadCount,
     this.isDriverOnline = false,
     this.onDriverOnlineToggle,
+    this.onNotifications,
   });
 
   @override
@@ -28,15 +30,13 @@ class HomeHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         MobiTopCommandBar(
-          showNotificationDot: unreadCount > 0,
-          actions: const [
+          showSearch: false,
+          actions: [
             MobiTopCommandBarAction(
-              icon: LucideIcons.barChart3,
-              label: 'Activity',
-            ),
-            MobiTopCommandBarAction(
-              icon: LucideIcons.calendarCheck,
-              label: 'Trips',
+              icon: LucideIcons.bell,
+              label: 'Notifications',
+              onTap: onNotifications,
+              showDot: unreadCount > 0,
             ),
           ],
         ),

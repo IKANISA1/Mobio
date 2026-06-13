@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Result of an OTP send or verify operation.
@@ -38,9 +39,20 @@ class OtpService {
 
   /// Send OTP to [phone] via WhatsApp Cloud.
   /// Phone must be in international format: "+250788123456".
-  static Future<OtpResult> sendOtp(String phone) async {
+  static Future<OtpResult> sendOtp({
+    required String phone,
+    required String countryCode,
+  }) async {
+    final normalizedPhone = PhoneNumberNormalizer.normalizeForCountry(
+      phone: phone,
+      countryCode: countryCode,
+    );
+
     try {
-      final response = await _dio.post('/send-otp', data: {'phone': phone});
+      final response = await _dio.post(
+        '/send-otp',
+        data: {'phone': normalizedPhone, 'countryCode': countryCode},
+      );
       final body = response.data as Map<String, dynamic>;
 
       if (body['success'] == true) {
@@ -71,11 +83,24 @@ class OtpService {
   }
 
   /// Verify OTP [code] for [phone]. On success, restores session in Supabase.
-  static Future<OtpResult> verifyOtp(String phone, String code) async {
+  static Future<OtpResult> verifyOtp({
+    required String phone,
+    required String code,
+    required String countryCode,
+  }) async {
+    final normalizedPhone = PhoneNumberNormalizer.normalizeForCountry(
+      phone: phone,
+      countryCode: countryCode,
+    );
+
     try {
       final response = await _dio.post(
         '/verify-otp',
-        data: {'phone': phone, 'code': code},
+        data: {
+          'phone': normalizedPhone,
+          'code': code,
+          'countryCode': countryCode,
+        },
       );
       final body = response.data as Map<String, dynamic>;
 

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
@@ -11,6 +13,7 @@ import 'package:mobi_app/features/bookings/models/schedule_trip_state.dart';
 import 'package:mobi_app/models/favorite_address.dart';
 import 'package:mobi_app/models/place.dart';
 import 'package:mobi_app/models/trip.dart';
+import 'package:mobi_app/models/vehicle_type_model.dart';
 
 class ScheduleTripArgs {
   const ScheduleTripArgs({this.mode, this.editingTripId});
@@ -52,6 +55,21 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   @override
   FutureOr<ScheduleTripState> build() async {
     final args = ref.watch(scheduleTripArgsProvider);
+
+    if (SupabaseConfig.isLocalUiPreview) {
+      final editingTrip = args.isEditMode ? AppConstants.mockTrips.first : null;
+      return editingTrip == null
+          ? ScheduleTripState(
+              vehicleTypes: VehicleTypeModel.fallbackTypes,
+              selectedRole: args.mode,
+              date: DateTime(2030, 6, 12),
+              time: const TimeOfDay(hour: 9, minute: 0),
+            )
+          : ScheduleTripState.fromTrip(
+              editingTrip,
+              vehicleTypes: VehicleTypeModel.fallbackTypes,
+            );
+    }
 
     final vt = await ref.read(vehicleTypeServiceProvider).getAll();
     final favorites = await _loadFavoriteAddresses();
@@ -350,6 +368,20 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
         validationMessage: null,
       ),
     );
+
+    if (SupabaseConfig.isLocalUiPreview) {
+      final trip = s.editingTrip ?? AppConstants.mockTrips.first;
+      state = AsyncValue.data(
+        s.copyWith(
+          createdTrip: trip,
+          editingTrip: s.isEditMode ? trip : null,
+          isSubmitting: false,
+          poolSuggestions: const [],
+          validationMessage: null,
+        ),
+      );
+      return trip;
+    }
 
     if (s.isEditMode) {
       try {

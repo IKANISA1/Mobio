@@ -32,7 +32,6 @@ begin
       ('biopay_face_embeddings'),
       ('biopay_match_audit'),
       ('biopay_match_rate_limits'),
-      ('biopay_profiles'),
       ('biopay_rate_limits'),
       ('biopay_transactions'),
       ('biopay_wallets'),

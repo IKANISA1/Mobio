@@ -1,0 +1,7 @@
+FrameLayout id=android:id/content bounds=[0,0][1080,2274]
+  FrameLayout flags=focusable bounds=[0,0][1080,2274]
+    Button desc="Back" flags=clickable,focusable bounds=[55,194][171,309]
+    View desc="Scan" flags=focusable bounds=[171,224][893,279]
+    View flags=clickable,focusable bounds=[55,433][1025,1403]
+    Button desc="Torch" flags=clickable,focusable bounds=[855,472][987,604]
+View id=android:id/navigationBarBackground bounds=[0,2274][1080,2340]

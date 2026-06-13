@@ -1,0 +1,189 @@
+--------- beginning of system
+06-13 00:35:24.588  1739  5418 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=rw.mobi.app/.MainActivity} from uid 2000
+--------- beginning of main
+06-13 00:35:24.595 21943 21943 D FirebaseSessions: App backgrounded on rw.mobi.app
+06-13 00:35:24.596 21943 21943 D com.llfbandit.app_links: Intent { flg=0x10000000 cmp=rw.mobi.app/.MainActivity }
+06-13 00:35:24.598 21943 21943 D FirebaseSessions: App foregrounded on rw.mobi.app
+06-13 00:35:24.623  3777  3777 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-13 00:35:24.623  3777  3777 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-13 00:35:24.639  3777 22036 D AdvertisingIdClient: AdvertisingIdClient already created.
+06-13 00:35:24.639  3777 22036 D AdvertisingIdClient: AdvertisingIdClient is not bounded. Starting to bind it...
+06-13 00:35:24.649  3777 22036 D AdvertisingIdClient: AdvertisingIdClient is bounded
+06-13 00:35:24.651  3777 22036 W AdvertisingIdSettings: Package rw.mobi.app failed Ad Id permission check. Apps that target Android SDK 33 or higher should declare com.google.android.gms.permission.AD_ID in the app manifest to access Ad Id.
+06-13 00:35:24.651  3777 22036 I AdvertisingIdClient: shouldSendLog 2263937936
+06-13 00:35:24.651  3777 22036 I AdvertisingIdClient: GetInfoInternal elapse 12ms
+06-13 00:35:25.120  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380375): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:25.124  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380376): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:25.130  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380377): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:25.134  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380378): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:25.140  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380379): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:25.374  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-13 00:35:25.388  4100  4138 D DeviceStateHelper: Wifi freq: 5785
+06-13 00:35:25.391  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-13 00:35:25.394  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-68
+06-13 00:35:25.395  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-68
+06-13 00:35:25.397  7449  7556 I BugleRcsEngine: Connected state: [1], networkType: [WIFI] [CONTEXT thread_id=751 ]
+06-13 00:35:25.397  3785  3886 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 00:35:25.398  3785  3886 W .gms.persistent: Large reply transaction of 1056768 bytes, interface descriptor , code 1
+06-13 00:35:25.398  7449  7581 I BugleRcsEngine: handleMessage processing message:[NOTIFY_UPTIME_IGNORE_STATE_CHANGED] with [non-null]:RcsEngineImpl reference [CONTEXT log_prefix="RcsEngineImpl[DUAL_REG]:[7ff84873-078a]>Handler" thread_id=759 ]
+06-13 00:35:25.404  1085  1180 D CHRE    : @ 2265339.580: Parsed nanoapp message from host: app ID 0x476f6f676c00100b, endpoint 0x97, msgType 112, payload size 14
+06-13 00:35:25.404  1085  1180 I CHRE    : @ 2265339.580: [NanoMinion] received MSG Type 0x70, Version 1, 10 bytes
+06-13 00:35:25.404  1085  1180 I CHRE    : @ 2265339.580: [AR] context-signal: has_bt=0, bt=0, has_wifi=1, wifi=1
+06-13 00:35:25.406  3785 20199 I NearbyMediums: Wifi changed new SSID: "FreeBeer"
+06-13 00:35:25.406  3785 20199 I NearbyMediums: WifiLanConnectivityInfo is not changed, skip notify.
+06-13 00:35:25.407  1739  2455 D ConnectivityService: NetReassign [no changes] [c 0] [a 4] [i 4]
+06-13 00:35:25.883 19741 20155 I hbox:interactor: oneway function results for code 2 on binder at 0xb400006e2a066770 will be dropped but finished with status UNKNOWN_TRANSACTION
+06-13 00:35:25.895  3785 20199 I NearbySharing: Network state changed: NetworkState(isRestricted=false, isOnline=true, isCongested=false, isMetered=false, isWifiConnected=true)
+06-13 00:35:26.120  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380561): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:26.124  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380562): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:26.130  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380563): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:26.137  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380564): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:26.140  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380565): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:26.996 22209 22209 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+06-13 00:35:27.025   645   645 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+06-13 00:35:27.027 22209 22210 W AdrenoUtils: <ReadGpuID_from_sysfs:197>: Failed to open /sys/class/kgsl/kgsl-3d0/gpu_model
+06-13 00:35:27.028 22209 22210 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
+06-13 00:35:27.127  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380747): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:27.130  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380748): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:27.137  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380749): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:27.144  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380750): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:27.147  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380751): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:27.549 22214 22214 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+06-13 00:35:27.564 22214 22214 I AndroidRuntime: Using default boot image
+06-13 00:35:27.564 22214 22214 I AndroidRuntime: Leaving lock profiling enabled
+06-13 00:35:27.568 22214 22214 I app_process: Using CollectorTypeCC GC.
+06-13 00:35:27.643 22214 22214 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+06-13 00:35:27.661 22214 22214 D nativeloader: Load libicu_jni.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-13 00:35:27.661 22214 22214 D app_process: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+06-13 00:35:27.661 22214 22214 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt70l.dat
+06-13 00:35:27.664 22214 22214 D nativeloader: Load libjavacore.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-13 00:35:27.665 22214 22214 D nativeloader: Load libopenjdk.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-13 00:35:27.666 22214 22214 I app_process: Priority-to-niceness mapping: 19, 16, 13, 10, 0, -2, -4, -5, -6, -8
+06-13 00:35:27.690 22214 22214 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-13 00:35:27.691 22214 22214 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+06-13 00:35:27.697  1739  2948 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-13 00:35:27.697  4224 21801 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-13 00:35:27.699  1739  2010 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-13 00:35:27.700  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 00:35:27.701  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 00:35:27.701  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 00:35:27.702  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 00:35:27.702  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 00:35:27.702  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 00:35:27.703  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 00:35:27.704  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 00:35:27.704  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 00:35:27.704  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 00:35:27.704  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 00:35:27.704  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 00:35:27.705  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 00:35:27.705  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 00:35:27.705  4224 21801 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-13 00:35:27.706  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 00:35:27.706  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 00:35:27.706  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 00:35:27.709  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 00:35:27.710 28386 28386 I SafetyCenterAccessibilityListener: accessibility event occurred, safety center feature not enabled.
+06-13 00:35:27.710  1739  1739 D BatterySaverPolicy: accessibility changed to true, updating policy.
+06-13 00:35:27.711  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 00:35:27.717  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 00:35:27.718  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 00:35:27.718  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-13 00:35:27.719  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-13 00:35:27.719  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 00:35:27.719  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 00:35:27.719  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 00:35:27.719  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 00:35:27.719  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 00:35:27.719  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 00:35:27.719  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 00:35:27.719  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-13 00:35:27.719  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-13 00:35:27.720  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 00:35:27.720  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 00:35:27.720  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 00:35:27.720  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-13 00:35:27.721  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 00:35:27.721  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 00:35:27.721  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 00:35:27.721  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 00:35:27.722  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 00:35:27.723  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 00:35:27.723  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 00:35:27.724  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 00:35:27.724  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 00:35:27.724  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 00:35:27.727  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 00:35:27.729  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 00:35:27.729  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-13 00:35:27.730  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 00:35:27.730  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 00:35:27.730  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-13 00:35:27.730  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-13 00:35:27.732  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 00:35:27.733  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-13 00:35:27.733  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 00:35:27.733  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 00:35:27.733  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-13 00:35:28.130  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380934): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:28.137  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380935): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:28.140  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380936): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:28.147  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380937): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:28.154  1072  1072 W socket_writer_q: type=1400 audit(0.0:246380938): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:28.407  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-13 00:35:28.418  4100  4138 D DeviceStateHelper: Wifi freq: 5785
+06-13 00:35:28.419  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-67
+06-13 00:35:28.419  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-67
+06-13 00:35:28.422  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-13 00:35:28.422  7449  7581 I BugleRcsEngine: handleMessage processing message:[NOTIFY_UPTIME_IGNORE_STATE_CHANGED] with [non-null]:RcsEngineImpl reference [CONTEXT log_prefix="RcsEngineImpl[DUAL_REG]:[7ff84873-078a]>Handler" thread_id=759 ]
+06-13 00:35:28.424  7449  7556 I BugleRcsEngine: Connected state: [1], networkType: [WIFI] [CONTEXT thread_id=751 ]
+06-13 00:35:28.425  3785  3886 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 00:35:28.425  3785  3886 W .gms.persistent: Large reply transaction of 1056768 bytes, interface descriptor , code 1
+06-13 00:35:28.428  1085  1180 D CHRE    : @ 2265342.603: Parsed nanoapp message from host: app ID 0x476f6f676c00100b, endpoint 0x97, msgType 112, payload size 14
+06-13 00:35:28.428  1085  1180 I CHRE    : @ 2265342.603: [NanoMinion] received MSG Type 0x70, Version 1, 10 bytes
+06-13 00:35:28.428  1085  1180 I CHRE    : @ 2265342.603: [AR] context-signal: has_bt=0, bt=0, has_wifi=1, wifi=1
+06-13 00:35:28.437  3785 20206 I NearbyMediums: Wifi changed new SSID: "FreeBeer"
+06-13 00:35:28.438  3785 20206 I NearbyMediums: WifiLanConnectivityInfo is not changed, skip notify.
+06-13 00:35:28.441  1739  2455 D ConnectivityService: NetReassign [no changes] [c 0] [a 4] [i 5]
+06-13 00:35:28.752 22214 22214 W libc    : Access denied finding property "qemu.sf.lcd_density"
+06-13 00:35:28.753 22214 22214 W libc    : Access denied finding property "qemu.sf.lcd_density"
+06-13 00:35:28.777 22214 22214 W AccessibilityNodeInfoDumper: Fetch time: 21ms
+06-13 00:35:28.780  1739  2010 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-13 00:35:28.781  4224 21801 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-13 00:35:28.782 22214 22214 D AndroidRuntime: Shutting down VM
+06-13 00:35:28.784  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 00:35:28.785  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 00:35:28.785  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 00:35:28.786  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 00:35:28.786  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 00:35:28.786  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 00:35:28.787  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 00:35:28.788  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 00:35:28.788  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 00:35:28.788  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 00:35:28.788  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 00:35:28.789  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 00:35:28.790  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 00:35:28.790  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 00:35:28.791  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 00:35:28.791  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 00:35:28.791  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 00:35:28.792  1739  1739 D BatterySaverPolicy: accessibility changed to false, updating policy.
+06-13 00:35:28.796  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 00:35:28.797  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-13 00:35:28.797  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 00:35:28.798  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 00:35:28.798  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 00:35:28.798  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-13 00:35:28.802  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 00:35:28.804  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-13 00:35:28.805  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 00:35:28.805  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 00:35:28.805  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-13 00:35:28.808  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-13 00:35:28.928  3785 20206 I NearbySharing: Network state changed: NetworkState(isRestricted=false, isOnline=true, isCongested=false, isMetered=false, isWifiConnected=true)
+06-13 00:35:29.137  1072  1072 W socket_writer_q: type=1400 audit(0.0:246381123): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:29.140  1072  1072 W socket_writer_q: type=1400 audit(0.0:246381124): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:29.147  1072  1072 W socket_writer_q: type=1400 audit(0.0:246381125): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:29.150  1072  1072 W socket_writer_q: type=1400 audit(0.0:246381126): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 00:35:29.157  1072  1072 W socket_writer_q: type=1400 audit(0.0:246381127): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0

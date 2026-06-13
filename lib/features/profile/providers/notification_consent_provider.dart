@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/models/notification_consent_settings.dart';
 
@@ -12,6 +13,15 @@ class NotificationConsentController
     extends AsyncNotifier<NotificationConsentSettings> {
   @override
   Future<NotificationConsentSettings> build() {
+    if (SupabaseConfig.isLocalUiPreview) {
+      return Future.value(
+        const NotificationConsentSettings(
+          promotionalInApp: true,
+          promotionalPush: false,
+        ),
+      );
+    }
+
     return ref.read(notificationConsentServiceProvider).getSettings();
   }
 
@@ -28,6 +38,8 @@ class NotificationConsentController
   Future<void> _save(NotificationConsentSettings settings) async {
     final previous = state;
     state = AsyncValue.data(settings);
+    if (SupabaseConfig.isLocalUiPreview) return;
+
     try {
       final saved = await ref
           .read(notificationConsentServiceProvider)

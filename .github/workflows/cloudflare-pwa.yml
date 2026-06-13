@@ -22,9 +22,16 @@ jobs:
 
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
-          flutter-version: '3.38.9'
+          flutter-version: '3.44.0'
           channel: stable
           cache: true
+
+      - name: Run admin PWA readiness contracts
+        run: >-
+          flutter test
+          test/release/admin_panel_production_readiness_contract_test.dart
+          test/release/scope_boundary_test.dart
+          test/release/mobile_readiness_contract_test.dart
 
       - name: Validate PWA deployment configuration
         env:
@@ -33,17 +40,17 @@ jobs:
           PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
           ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}
           CLOUDFLARE_PAGES_CLIENT_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_CLIENT_PROJECT_NAME }}
-          CLOUDFLARE_PAGES_ADMIN_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_ADMIN_PROJECT_NAME }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
+          PAGES_PROJECT_NAME="${CLOUDFLARE_PAGES_PROJECT_NAME:-${CLOUDFLARE_PAGES_CLIENT_PROJECT_NAME:-}}"
           test -n "$SUPABASE_URL"
           test -n "$SUPABASE_ANON_KEY"
           test -n "$PRIVACY_POLICY_URL"
           test -n "$ACCOUNT_DELETION_URL"
           test -n "$CLOUDFLARE_ACCOUNT_ID"
-          test -n "$CLOUDFLARE_PAGES_CLIENT_PROJECT_NAME"
-          test -n "$CLOUDFLARE_PAGES_ADMIN_PROJECT_NAME"
+          test -n "$PAGES_PROJECT_NAME"
           test -n "$CLOUDFLARE_API_TOKEN"
 
       - name: Verify Cloudflare API token
@@ -59,22 +66,15 @@ jobs:
           ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
         run: ./scripts/web/prepare_pwa_bundles.sh
 
-      - name: Deploy client PWA
-        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-          command: >-
-            pages deploy build/pwa/client
-            --project-name=${{ vars.CLOUDFLARE_PAGES_CLIENT_PROJECT_NAME }}
-            --branch=${{ inputs.branch }}
+      - name: Verify generated PWA bundles
+        run: ./scripts/web/verify_pwa_bundles.sh build/pwa
 
-      - name: Deploy admin PWA
+      - name: Deploy combined Pages site
         uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           command: >-
-            pages deploy build/pwa/admin
-            --project-name=${{ vars.CLOUDFLARE_PAGES_ADMIN_PROJECT_NAME }}
+            pages deploy build/pwa/site
+            --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME || vars.CLOUDFLARE_PAGES_CLIENT_PROJECT_NAME }}
             --branch=${{ inputs.branch }}

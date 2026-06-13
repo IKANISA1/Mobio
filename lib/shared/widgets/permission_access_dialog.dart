@@ -154,7 +154,7 @@ class PermissionAccessDialog extends StatelessWidget {
                     child: Text(
                       config.primaryButtonLabel,
                       style: AppTypography.labelMd.copyWith(
-                        color: cs.onPrimary,
+                        color: cs.onInverseSurface,
                       ),
                     ),
                   ),

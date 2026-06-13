@@ -57,8 +57,10 @@ class VehicleTypeModel {
   /// Resolve the Lucide icon from `iconName`.
   IconData get icon {
     switch (iconName) {
+      case 'bike':
+        return LucideIcons.bike;
       case 'zap':
-        return LucideIcons.zap;
+        return LucideIcons.bike;
       case 'car':
         return LucideIcons.car;
       case 'bus':
@@ -81,7 +83,7 @@ class VehicleTypeModel {
     VehicleTypeModel(
       id: 'moto',
       label: 'Moto Taxi',
-      iconName: 'zap',
+      iconName: 'bike',
       sortOrder: 1,
     ),
     VehicleTypeModel(id: 'cab', label: 'Cab', iconName: 'car', sortOrder: 2),

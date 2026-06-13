@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/country_service.dart';
+import 'package:mobi_app/core/theme/app_radii.dart';
+import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/models/country.dart';
+import 'package:mobi_app/shared/data/phone_country_codes.dart';
 
 /// WhatsApp phone input with country code picker.
 ///
@@ -35,7 +39,7 @@ class WhatsAppInput extends ConsumerStatefulWidget {
 class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
   CountryService get _countryService => ref.read(countryServiceProvider);
 
-  List<Country> _countries = Country.fallbackCountries;
+  List<PhoneCountryCode> _countries = globalPhoneCountryCodes;
   late final TextEditingController _controller;
 
   @override
@@ -67,7 +71,7 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
       final countries = await _countryService.getCountries();
       if (mounted && countries.isNotEmpty) {
         setState(() {
-          _countries = countries;
+          _countries = _mergeBusinessCountries(countries);
         });
       }
     } on Object catch (error, stackTrace) {
@@ -79,14 +83,34 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
     }
   }
 
-  Country get _selectedCountry {
+  PhoneCountryCode get _selectedCountry {
     final countries = _countries.isNotEmpty
         ? _countries
-        : Country.fallbackCountries;
+        : globalPhoneCountryCodes;
     return countries.firstWhere(
       (c) => c.dialingCode == widget.countryCode,
       orElse: () => countries.first,
     );
+  }
+
+  List<PhoneCountryCode> _mergeBusinessCountries(List<Country> countries) {
+    final byIsoCode = <String, PhoneCountryCode>{
+      for (final country in globalPhoneCountryCodes) country.isoCode: country,
+    };
+
+    for (final country in countries) {
+      final isoCode = country.id.toUpperCase();
+      byIsoCode[isoCode] = PhoneCountryCode(
+        isoCode: isoCode,
+        name: country.name,
+        flag: country.flag,
+        dialingCode: country.dialingCode,
+        phonePlaceholder: country.phonePlaceholder,
+      );
+    }
+
+    return byIsoCode.values.toList()
+      ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
   }
 
   @override
@@ -105,9 +129,13 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
         const SizedBox(height: 8),
         DecoratedBox(
           decoration: BoxDecoration(
-            color: ext.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: ext.clayCardShadow,
+            color: ext.surfaceContainerLowest.withValues(alpha: 0.94),
+            borderRadius: BorderRadius.circular(AppRadii.xxl),
+            border: Border.all(
+              color: ext.borderSubtle.withValues(
+                alpha: ext.surfacePanelBorderAlpha,
+              ),
+            ),
           ),
           child: Row(
             children: [
@@ -118,12 +146,17 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
                     : null,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 18,
+                    horizontal: AppSpacing.md,
+                    vertical: 16,
                   ),
                   decoration: BoxDecoration(
                     border: Border(
-                      right: BorderSide(color: ext.surfaceContainer, width: 1),
+                      right: BorderSide(
+                        color: ext.borderSubtle.withValues(
+                          alpha: ext.hairlineAlpha,
+                        ),
+                        width: 1,
+                      ),
                     ),
                   ),
                   child: Row(
@@ -151,6 +184,10 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
                   keyboardType: TextInputType.phone,
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.telephoneNumber],
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(15),
+                  ],
                   style: AppTypography.titleMd.copyWith(
                     fontSize: 20,
                     color: cs.onSurface,
@@ -159,12 +196,12 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
                     hintText: selected.phonePlaceholder,
                     hintStyle: AppTypography.titleMd.copyWith(
                       fontSize: 20,
-                      color: cs.onSurfaceVariant.withValues(alpha: 0.3),
+                      color: cs.onSurfaceVariant.withValues(alpha: 0.38),
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 18,
+                      horizontal: AppSpacing.md,
+                      vertical: 16,
                     ),
                   ),
                 ),
@@ -179,48 +216,91 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
   void _showCountryPicker(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final searchController = TextEditingController();
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: ext.surfaceContainerLow,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
       builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: _countries.map((country) {
-                return ListTile(
-                  leading: Text(
-                    country.flag,
-                    style: const TextStyle(fontSize: 24),
-                  ),
-                  title: Text(
-                    country.name,
-                    style: AppTypography.titleMd.copyWith(
-                      fontSize: 16,
-                      color: cs.onSurface,
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final query = searchController.text.trim().toLowerCase();
+            final filteredCountries = query.isEmpty
+                ? _countries
+                : _countries.where((country) {
+                    return country.name.toLowerCase().contains(query) ||
+                        country.isoCode.toLowerCase().contains(query) ||
+                        country.dialingCode.contains(query);
+                  }).toList();
+
+            return SafeArea(
+              child: SizedBox(
+                height: MediaQuery.sizeOf(context).height * 0.78,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+                      child: TextField(
+                        controller: searchController,
+                        autofocus: true,
+                        onChanged: (_) => setSheetState(() {}),
+                        textInputAction: TextInputAction.search,
+                        decoration: InputDecoration(
+                          hintText: 'Search country or code',
+                          prefixIcon: const Icon(Icons.search),
+                          filled: true,
+                          fillColor: ext.surfaceContainerLowest,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  trailing: Text(
-                    country.dialingCode,
-                    style: AppTypography.bodyMd.copyWith(
-                      color: cs.onSurfaceVariant,
+                    Expanded(
+                      child: ListView.builder(
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        itemCount: filteredCountries.length,
+                        itemBuilder: (context, index) {
+                          final country = filteredCountries[index];
+                          return ListTile(
+                            leading: Text(
+                              country.flag,
+                              style: const TextStyle(fontSize: 24),
+                            ),
+                            title: Text(
+                              country.name,
+                              style: AppTypography.titleMd.copyWith(
+                                fontSize: 16,
+                                color: cs.onSurface,
+                              ),
+                            ),
+                            trailing: Text(
+                              country.dialingCode,
+                              style: AppTypography.bodyMd.copyWith(
+                                color: cs.onSurfaceVariant,
+                              ),
+                            ),
+                            onTap: () {
+                              widget.onCountryCodeChanged(country.dialingCode);
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                  onTap: () {
-                    widget.onCountryCodeChanged(country.dialingCode);
-                    Navigator.pop(context);
-                  },
-                );
-              }).toList(),
-            ),
-          ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
-    );
+    ).whenComplete(searchController.dispose);
   }
 }

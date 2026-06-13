@@ -1,6 +1,6 @@
 /* ============================================================
    Mobio Landing Page — Design System (CSS)
-   Translated from design.md "Claymorphic Utility"
+   Translated from design.md "Revolut-reference MOBI shell"
    ============================================================ */
 
 /* --- Google Fonts --- */
@@ -8,48 +8,47 @@
 
 /* --- Design Tokens --- */
 :root {
-  /* Primary & Action (Green) */
-  --primary: #006D2F;
-  --primary-dim: #006028;
-  --primary-container: #005221;
-  --primary-fixed: #66FF8E;
-  --on-primary: #003915;
-  --inverse-primary: #5DFD8A;
+  /* Four MOBI brand nodes */
+  --primary: #8885F0;
+  --primary-dim: #6E6BE0;
+  --primary-container: #242155;
+  --primary-fixed: #E8E7FF;
+  --on-primary: #191547;
+  --inverse-primary: #C7C5FF;
 
-  /* Secondary (Blue-Gray) */
-  --secondary: #545F77;
-  --secondary-container: #353F56;
-  --on-secondary: #F9F8FF;
+  --secondary: #D38B96;
+  --secondary-container: #372028;
+  --on-secondary: #FFE6EA;
 
-  /* Tertiary (Admin Blue) */
-  --tertiary: #48617E;
-  --tertiary-container: #3C5572;
+  --tertiary: #3CD070;
+  --tertiary-container: #10351E;
+  --urgent: #FF5E43;
 
   /* Surface & Background (Dark) */
-  --background: #0C0F10;
-  --surface-dim: #0C0F10;
-  --surface-bright: #1A1C1E;
-  --surface-container-lowest: #080A0B;
-  --surface-container-low: #141618;
-  --surface-container: #1A1C1E;
-  --surface-container-high: #212426;
-  --surface-container-highest: #2B2E30;
-  --surface-variant: #2B2E30;
-  --on-surface: #F8F9FA;
-  --on-surface-variant: #ABB3B7;
+  --background: #02030A;
+  --surface-dim: #000105;
+  --surface-bright: #111338;
+  --surface-container-lowest: #070812;
+  --surface-container-low: #101120;
+  --surface-container: #151627;
+  --surface-container-high: #1D1F33;
+  --surface-container-highest: #272A42;
+  --surface-variant: #22243A;
+  --on-surface: #F7F7FF;
+  --on-surface-variant: #B9BBCD;
 
   /* Outline */
-  --outline: #586064;
-  --outline-variant: #44474A;
+  --outline: #5B5E78;
+  --outline-variant: #35374E;
 
   /* System Colors */
-  --error: #9F403D;
-  --success: #4CAF50;
-  --warning: #FF9800;
+  --error: var(--urgent);
+  --success: var(--tertiary);
+  --warning: #FFB84D;
 
   /* Brand Accents */
   --whatsapp-green: #25D366;
-  --scope-green: #00C853;
+  --scope-mint: var(--tertiary);
 
   /* Spacing (4px grid) */
   --sp-1: 4px;
@@ -74,7 +73,7 @@
   --shadow-clay-card: 0 1px 1px rgba(255,255,255,0.05), 0 -2px 4px rgba(0,0,0,0.20);
   --shadow-clay-button: 0 2px 4px rgba(255,255,255,0.05), 0 12px 32px rgba(0,0,0,0.40);
   --shadow-premium: 0 20px 25px -5px rgba(0,0,0,0.03), 0 10px 10px -5px rgba(0,0,0,0.02);
-  --shadow-hover: 0 20px 40px rgba(0,109,47,0.15);
+  --shadow-hover: 0 20px 40px rgba(136,133,240,0.18);
 
   /* Typography */
   --font-heading: 'Manrope', sans-serif;
@@ -133,7 +132,7 @@ img {
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 2px;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: var(--primary-fixed);
   margin-bottom: var(--sp-4);
@@ -144,7 +143,7 @@ img {
   font-size: clamp(28px, 5vw, 48px);
   font-weight: 800;
   line-height: 1.1;
-  letter-spacing: -1.5px;
+  letter-spacing: 0;
   color: var(--on-surface);
   margin-bottom: var(--sp-5);
 }
@@ -336,7 +335,7 @@ img {
   font-size: 22px;
   font-weight: 800;
   color: var(--on-surface);
-  letter-spacing: -0.5px;
+  letter-spacing: 0;
 }
 .nav-links {
   display: flex;
@@ -350,7 +349,7 @@ img {
   font-weight: 600;
   color: var(--on-surface-variant);
   transition: color var(--transition-fast);
-  letter-spacing: 0.3px;
+  letter-spacing: 0;
 }
 .nav-links a:hover {
   color: var(--on-surface);
@@ -482,9 +481,9 @@ img {
   border-radius: var(--radius-pill);
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0;
   width: fit-content;
-  border: 1px solid rgba(102,255,142,0.1);
+  border: 1px solid rgba(136,133,240,0.18);
 }
 .hero-badge svg {
   width: 14px;
@@ -495,11 +494,11 @@ img {
   font-size: clamp(40px, 7vw, 72px);
   font-weight: 800;
   line-height: 1.05;
-  letter-spacing: -3px;
+  letter-spacing: 0;
   color: var(--on-surface);
 }
 .hero-title .highlight {
-  background: linear-gradient(135deg, var(--primary-fixed), var(--scope-green));
+  background: linear-gradient(135deg, var(--primary-fixed), var(--scope-mint));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -606,7 +605,7 @@ img {
   font-family: var(--font-heading);
   font-size: 22px;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: 0;
 }
 .feature-card p {
   font-size: 15px;
@@ -645,25 +644,25 @@ img {
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
-  background: rgba(0,200,83,0.1);
-  color: var(--scope-green);
+  background: rgba(60,208,112,0.12);
+  color: var(--scope-mint);
   padding: var(--sp-2) var(--sp-4);
   border-radius: var(--radius-pill);
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0;
   width: fit-content;
-  border: 1px solid rgba(0,200,83,0.15);
+  border: 1px solid rgba(60,208,112,0.18);
 }
 .scope-panel-title {
   font-family: var(--font-heading);
   font-size: clamp(28px, 4vw, 44px);
   font-weight: 800;
   line-height: 1.1;
-  letter-spacing: -1.5px;
+  letter-spacing: 0;
 }
-.scope-panel-title .green {
-  color: var(--scope-green);
+.scope-panel-title .mint {
+  color: var(--scope-mint);
 }
 .scope-panel-desc {
   font-size: 17px;
@@ -687,14 +686,14 @@ img {
 .scope-panel-features li svg {
   width: 18px;
   height: 18px;
-  color: var(--scope-green);
+  color: var(--scope-mint);
   flex-shrink: 0;
 }
 .scope-panel-visual {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, rgba(0,200,83,0.05) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(60,208,112,0.08) 0%, transparent 100%);
   padding: var(--sp-10);
   position: relative;
 }
@@ -702,8 +701,8 @@ img {
   width: 200px;
   height: 200px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(0,200,83,0.15), rgba(0,109,47,0.1));
-  border: 2px solid rgba(0,200,83,0.2);
+  background: linear-gradient(135deg, rgba(60,208,112,0.18), rgba(136,133,240,0.12));
+  border: 2px solid rgba(60,208,112,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -713,7 +712,7 @@ img {
 .scope-panel-graphic svg {
   width: 80px;
   height: 80px;
-  color: var(--scope-green);
+  color: var(--scope-mint);
 }
 .scope-panel-graphic::before {
   content: '';
@@ -768,7 +767,7 @@ img {
   left: calc(16.67% + 32px);
   right: calc(16.67% + 32px);
   height: 2px;
-  background: linear-gradient(90deg, var(--primary) 0%, var(--scope-green) 100%);
+  background: linear-gradient(90deg, var(--primary) 0%, var(--scope-mint) 100%);
   opacity: 0.3;
 }
 .step-card {
@@ -798,7 +797,7 @@ img {
   font-size: 24px;
   font-weight: 800;
   color: var(--primary-fixed);
-  border: 2px solid rgba(102,255,142,0.15);
+  border: 2px solid rgba(136,133,240,0.18);
   position: relative;
   z-index: 1;
 }
@@ -806,7 +805,7 @@ img {
   font-family: var(--font-heading);
   font-size: 22px;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: 0;
 }
 .step-card p {
   font-size: 15px;
@@ -836,7 +835,7 @@ img {
   gap: var(--sp-6);
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(102,255,142,0.1);
+  border: 1px solid rgba(136,133,240,0.18);
 }
 .download-card::before {
   content: '';
@@ -845,7 +844,7 @@ img {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at 30% 30%, rgba(102,255,142,0.08) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 30%, rgba(136,133,240,0.1) 0%, transparent 50%);
   pointer-events: none;
 }
 .download-card .section-title {
@@ -952,7 +951,7 @@ img {
   font-family: var(--font-heading);
   font-size: clamp(28px, 5vw, 44px);
   font-weight: 800;
-  letter-spacing: -1.5px;
+  letter-spacing: 0;
   margin-bottom: var(--sp-2);
 }
 .legal-content .updated {
@@ -964,7 +963,7 @@ img {
   font-family: var(--font-heading);
   font-size: 22px;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: 0;
   margin-top: var(--sp-10);
   margin-bottom: var(--sp-4);
   color: var(--primary-fixed);

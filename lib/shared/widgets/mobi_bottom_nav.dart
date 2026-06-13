@@ -54,17 +54,19 @@ class MobiBottomNav extends StatelessWidget {
     );
   }
 
-  // 3-tab passenger nav: Home, Trips, Profile
+  // Passenger nav: Home, Trips, BioPay, Profile
   static const _passengerItems = [
     _NavItem(LucideIcons.compass, 'Home'),
     _NavItem(LucideIcons.calendarCheck, 'Trips'),
+    _NavItem(LucideIcons.scanFace, 'BioPay'),
     _NavItem(LucideIcons.user, 'Profile'),
   ];
 
-  // Admin nav: Dashboard, Users, Profile
+  // Admin nav mirrors shell branch count.
   static const _adminItems = [
     _NavItem(LucideIcons.layoutDashboard, 'Ops'),
     _NavItem(LucideIcons.users, 'Users'),
+    _NavItem(LucideIcons.scanFace, 'BioPay'),
     _NavItem(LucideIcons.user, 'Account'),
   ];
 }

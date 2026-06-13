@@ -67,6 +67,51 @@ require_evidence() {
   echo "PASS: $description ($evidence_path)"
 }
 
+require_play_service_account_decision() {
+  echo
+  echo "== Play service-account key decision =="
+
+  local rotation_ok=false
+  if [[ "${PLAY_SERVICE_ACCOUNT_ROTATED:-false}" == "true" ]]; then
+    local rotation_evidence="${PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE:-}"
+    if [[ -n "$rotation_evidence" &&
+      -f "$rotation_evidence" &&
+      "$rotation_evidence" != *.example.md ]]; then
+      echo "PASS: Play service-account key revoked/rotated in Google Cloud IAM ($rotation_evidence)"
+      rotation_ok=true
+    else
+      echo "FAIL: set PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE to an existing non-template evidence file." >&2
+      failures=$((failures + 1))
+      return
+    fi
+  fi
+
+  if [[ "$rotation_ok" == "true" ]]; then
+    return
+  fi
+
+  if [[ "${PLAY_SERVICE_ACCOUNT_RETAINED:-false}" != "true" ]]; then
+    echo "FAIL: set PLAY_SERVICE_ACCOUNT_ROTATED=true after rotation, or PLAY_SERVICE_ACCOUNT_RETAINED=true after owner-approved key retention." >&2
+    failures=$((failures + 1))
+    return
+  fi
+
+  local retention_evidence="${PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE:-}"
+  if [[ -z "$retention_evidence" || ! -f "$retention_evidence" ]]; then
+    echo "FAIL: set PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE to an existing owner-approval evidence file." >&2
+    failures=$((failures + 1))
+    return
+  fi
+
+  if [[ "$retention_evidence" == *.example.md ]]; then
+    echo "FAIL: PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE must not point to an example template." >&2
+    failures=$((failures + 1))
+    return
+  fi
+
+  echo "PASS: Play service-account key retained by owner decision ($retention_evidence)"
+}
+
 if [[ "${RUN_FLUTTER_GATE:-true}" == "true" ]]; then
   run_gate "Flutter analyze/test gate" ./scripts/ci/verify_flutter.sh
 elif [[ "$dry_run" == "true" ]]; then
@@ -92,10 +137,21 @@ run_gate \
     REQUIRE_IOS_NATIVE="$([[ "$release_target" == "android" ]] && echo false || echo true)" \
     ./scripts/ci/verify_release_config.sh
 
-require_evidence \
-  PLAY_SERVICE_ACCOUNT_ROTATED \
-  PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE \
-  "Play service-account key revoked/rotated in Google Cloud IAM"
+if [[ "${RUN_BIOPAY_GATE:-true}" == "true" ]]; then
+  run_gate \
+    "BioPay live readiness gate" \
+    env REQUIRE_BIOPAY_LIVE="${REQUIRE_BIOPAY_LIVE:-true}" \
+    ./scripts/qa/verify_biopay_live_readiness.sh
+elif [[ "$dry_run" == "true" ]]; then
+  echo
+  echo "== BioPay live readiness gate =="
+  echo "SKIP: dry-run only; this is not production evidence."
+else
+  echo "RUN_BIOPAY_GATE=false is only allowed with GO_NO_GO_DRY_RUN=true." >&2
+  exit 1
+fi
+
+require_play_service_account_decision
 require_evidence \
   PLAY_CONSOLE_UPLOAD_VALIDATED \
   PLAY_CONSOLE_UPLOAD_EVIDENCE \

@@ -41,9 +41,12 @@ class PushNotificationService {
   final _localNotifications = FlutterLocalNotificationsPlugin();
 
   StreamSubscription<RemoteMessage>? _foregroundSub;
+  StreamSubscription<RemoteMessage>? _openedSub;
   StreamSubscription<String>? _tokenRefreshSub;
 
   bool _initialized = false;
+  GlobalKey<NavigatorState>? _navigatorKey;
+  String? _pendingRoute;
 
   FirebaseMessaging get _messaging => FirebaseMessaging.instance;
 
@@ -99,6 +102,14 @@ class PushNotificationService {
     _foregroundSub = FirebaseMessaging.onMessage.listen(
       _handleForegroundMessage,
     );
+    _openedSub = FirebaseMessaging.onMessageOpenedApp.listen(
+      _handleOpenedMessage,
+    );
+
+    final initialMessage = await _messaging.getInitialMessage();
+    if (initialMessage != null) {
+      _handleOpenedMessage(initialMessage);
+    }
 
     // Listen for token refresh
     _tokenRefreshSub = _messaging.onTokenRefresh.listen(_onTokenRefresh);
@@ -136,7 +147,10 @@ class PushNotificationService {
 
   /// Key to the root navigator — must be set by the app before notifications
   /// can route via taps. Set once in `main.dart` after router is created.
-  GlobalKey<NavigatorState>? navigatorKey;
+  set navigatorKey(GlobalKey<NavigatorState>? key) {
+    _navigatorKey = key;
+    _flushPendingRoute();
+  }
 
   void _onNotificationTapped(NotificationResponse response) {
     final payload = response.payload;
@@ -146,45 +160,120 @@ class PushNotificationService {
 
     if (payload == null || payload.isEmpty) return;
 
-    final ctx = navigatorKey?.currentContext;
+    _openRoute(payload);
+  }
+
+  void _handleOpenedMessage(RemoteMessage message) {
+    final route = _routeFromMessage(message);
+    if (route == null) return;
+
+    if (kDebugMode) {
+      debugPrint('[push] Opened notification route: $route');
+    }
+
+    _openRoute(route);
+  }
+
+  String? _routeFromMessage(RemoteMessage message) {
+    final data = message.data;
+    return _safeRoute(
+      data['route'] as String? ??
+          data['notification_route'] as String? ??
+          data['click_action_route'] as String?,
+    );
+  }
+
+  String? _safeRoute(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return null;
+
+    final uri = Uri.tryParse(raw.trim());
+    if (uri == null || uri.hasScheme || uri.hasAuthority) return null;
+
+    final route = uri.toString();
+    if (!route.startsWith('/') || route.startsWith('//')) return null;
+
+    final path = uri.path;
+    const exactAllowed = {
+      '/',
+      '/bookings',
+      '/chat',
+      '/nearby',
+      '/notifications',
+      '/profile',
+      '/profile/setup',
+      '/schedule',
+      '/admin/audit',
+    };
+    if (exactAllowed.contains(path) ||
+        path.startsWith('/trip/') && path.length > '/trip/'.length) {
+      return route;
+    }
+
+    return '/notifications';
+  }
+
+  void _openRoute(String route) {
+    final safeRoute = _safeRoute(route);
+    if (safeRoute == null) return;
+
+    final ctx = _navigatorKey?.currentContext;
     if (ctx == null) {
+      _pendingRoute = safeRoute;
       if (kDebugMode) {
-        debugPrint('[push] No navigator context — cannot route');
+        debugPrint('[push] No navigator context — queued $safeRoute');
       }
       return;
     }
 
-    // Payload is a route path (e.g. /chat?peerId=...)
-    if (payload.startsWith('/')) {
-      GoRouter.of(ctx).push(payload);
+    try {
+      GoRouter.of(ctx).push(safeRoute);
+    } on Object catch (e) {
+      AppLogger.error('[push] Failed to open notification route: $e');
     }
+  }
+
+  void _flushPendingRoute() {
+    final route = _pendingRoute;
+    if (route == null) return;
+    if (_navigatorKey?.currentContext == null) return;
+
+    _pendingRoute = null;
+    _openRoute(route);
+  }
+
+  int _notificationId(RemoteMessage message) {
+    final raw = message.data['notification_id'] as String?;
+    if (raw == null || raw.isEmpty) {
+      return message.hashCode;
+    }
+
+    return raw.hashCode;
   }
 
   // ─── Foreground Message Handling ──────────────────────────────────────
 
   void _handleForegroundMessage(RemoteMessage message) {
-    final notification = message.notification;
-    if (notification == null) return;
-
     final data = message.data;
+    final notification = message.notification;
+    final title = notification?.title ?? data['title'] as String? ?? 'Mobio';
+    final body = notification?.body ?? data['body'] as String? ?? '';
     final notifType = data['type'] as String? ?? '';
 
     if (kDebugMode) {
       debugPrint(
-        '[push] Foreground: ${notification.title} — ${notification.body} '
+        '[push] Foreground: $title — $body '
         '(type: $notifType)',
       );
     }
 
     // Build a payload route for tap navigation
-    String? payload;
-    payload = data['route'] as String?;
+    final payload = _routeFromMessage(message) ?? '/notifications';
 
     // Show a local notification since FCM won't display in foreground
     _localNotifications.show(
-      id: notification.hashCode,
-      title: notification.title ?? 'Mobio',
-      body: notification.body ?? '',
+      id: _notificationId(message),
+      title: title,
+      body: body,
       notificationDetails: NotificationDetails(
         android: AndroidNotificationDetails(
           _androidChannel.id,
@@ -323,6 +412,8 @@ class PushNotificationService {
       'token': token,
       'platform': platform,
       'device_label': 'mobio-$platform',
+      'last_seen_at': DateTime.now().toUtc().toIso8601String(),
+      'revoked_at': null,
       'updated_at': DateTime.now().toUtc().toIso8601String(),
     }, onConflict: 'token');
   }
@@ -332,6 +423,8 @@ class PushNotificationService {
   void dispose() {
     _foregroundSub?.cancel();
     _foregroundSub = null;
+    _openedSub?.cancel();
+    _openedSub = null;
     _tokenRefreshSub?.cancel();
     _tokenRefreshSub = null;
     _initialized = false;

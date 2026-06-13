@@ -636,16 +636,10 @@ class _VehicleTypeRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Center(
-                child: Image.asset(
-                  vehicleType.localAssetPath,
-                  width: 34,
-                  height: 34,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, error, stackTrace) => Icon(
-                    vehicleType.icon,
-                    size: 22,
-                    color: cs.onSurfaceVariant,
-                  ),
+                child: Icon(
+                  vehicleType.icon,
+                  size: 22,
+                  color: cs.onSurfaceVariant,
                 ),
               ),
             ),

@@ -14,9 +14,12 @@ import {
   otpRateLimitBucketKey,
   requestSourceFingerprint,
 } from "../_shared/otp-security.ts";
-import { normalizePhone } from "../_shared/phone.ts";
+import { normalizePhoneWithCountry } from "../_shared/phone.ts";
 import { createAdminClient } from "../_shared/supabase.ts";
-import { sendWhatsappCloudOtp } from "../_shared/whatsapp-cloud.ts";
+import {
+  sendWhatsappCloudOtp,
+  whatsappCloudDeliveryErrorMetadata,
+} from "../_shared/whatsapp-cloud.ts";
 
 type AppLoginRole = "passenger" | "driver";
 
@@ -39,7 +42,11 @@ Deno.serve(async (req: Request) => {
 
   try {
     const body = await req.json();
-    phone = normalizePhone(body?.phone, "Valid WhatsApp number required");
+    phone = normalizePhoneWithCountry(
+      body?.phone,
+      body?.countryCode,
+      "Valid WhatsApp number required",
+    );
     requestedRole = normalizeRole(body?.role);
     const supabase = createAdminClient();
 
@@ -130,14 +137,15 @@ Deno.serve(async (req: Request) => {
     }
 
     const code = generateOtpCode();
-    const codeHash = await hashOtpCode(code);
+    const purpose = "app_login";
+    const codeHash = await hashOtpCode(code, { phone, purpose });
     const expiresAt = new Date(Date.now() + 5 * 60_000).toISOString();
 
     const { data: insertedOtp, error: insertError } = await supabase
       .from("otp_codes")
       .insert({
         phone,
-        purpose: "app_login",
+        purpose,
         code: "000000",
         code_hash: codeHash,
         expires_at: expiresAt,
@@ -165,11 +173,24 @@ Deno.serve(async (req: Request) => {
         reason: "WhatsApp Cloud OTP delivery failed.",
         metadata: {
           stage: "send_login_otp",
+          delivery_error: whatsappCloudDeliveryErrorMetadata(deliveryError),
         },
         request: req,
       });
 
       throw deliveryError;
+    }
+
+    const { error: invalidateError } = await supabase
+      .from("otp_codes")
+      .update({ verified: true })
+      .eq("phone", phone)
+      .eq("purpose", purpose)
+      .eq("verified", false)
+      .neq("id", insertedOtp.id);
+
+    if (invalidateError) {
+      throw invalidateError;
     }
 
     try {
@@ -204,6 +225,18 @@ Deno.serve(async (req: Request) => {
       error.message == "Valid WhatsApp number required"
     ) {
       return errorResponse(error.message, 400, undefined, req);
+    }
+
+    if (
+      error instanceof Error &&
+      error.name == "WhatsappCloudDeliveryError"
+    ) {
+      return errorResponse(
+        "WhatsApp delivery failed. Please try again in a moment.",
+        502,
+        undefined,
+        req,
+      );
     }
 
     console.error("send-login-otp error:", error);

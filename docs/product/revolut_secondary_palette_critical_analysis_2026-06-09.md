@@ -36,7 +36,10 @@ The target should not be a colorful app. The target should be a Revolut-referenc
 - No named disabled tokens. Disabled text, disabled controls, and inactive icons should not all rely on `onSurfaceVariant`.
 - No premium neutral ramp for "black chrome" versus "content cards" versus "raised glass".
 - Gradient stops are too few. Revolut-like screens need screen-specific dark gradients while still using the same brand nodes.
-- Some off-palette hard-coded colors remain: `Colors.green`, `Colors.orange`, `Colors.amber`, `#00C853`, `#2979FF`, `#FF9100`, `#651FFF`.
+- Earlier scans found generic hard-coded Flutter colors in feature code. Active
+  code should route those through `AppColors.success`, `AppColors.caution`,
+  `AppColors.info`, or the controlled primary token instead of adding new brand
+  colors.
 
 ## Palette Principles
 
@@ -196,12 +199,11 @@ Important: `#A45CFF` should only be a gradient stop, not a standard component co
 
 Replace:
 
-- `Colors.green` with `AppColors.success`
-- `Colors.orange` and `Colors.amber` with `AppColors.caution`
-- `#00C853` with `AppColors.success`
-- `#2979FF` with `AppColors.info`
-- `#FF9100` with `AppColors.caution`
-- `#651FFF` with a controlled gradient-only violet or `AppColors.primary`
+- generic green success constants with `AppColors.success`
+- generic orange or amber warning constants with `AppColors.caution`
+- generic blue info constants with `AppColors.info`
+- generic purple emphasis constants with a controlled gradient-only violet or
+  `AppColors.primary`
 
 ### P2: Interaction Feel
 

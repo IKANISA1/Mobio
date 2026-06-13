@@ -13,7 +13,7 @@ import {
   internalEmailForPhone,
   localPhoneNumber,
   normalizeCountryCode,
-  normalizePhone,
+  normalizePhoneWithCountry,
 } from "../_shared/phone.ts";
 import { createAdminClient, createAnonClient } from "../_shared/supabase.ts";
 
@@ -33,6 +33,8 @@ type ExistingProfileRow = {
   whatsapp?: string | null;
   whatsapp_e164?: string | null;
   country_code?: string | null;
+  momo_number?: string | null;
+  momo_pay_code?: string | null;
   avatar_url?: string | null;
   created_at?: string | null;
 };
@@ -63,7 +65,7 @@ async function findExistingProfile(
   phone: string,
 ): Promise<ExistingProfileRow | null> {
   const selectClause =
-    "id, name, display_name, phone, role, location, vehicle, category, is_driver, vehicle_type, whatsapp, whatsapp_e164, country_code, avatar_url, created_at";
+    "id, name, display_name, phone, role, location, vehicle, category, is_driver, vehicle_type, whatsapp, whatsapp_e164, country_code, momo_number, momo_pay_code, avatar_url, created_at";
 
   const { data: whatsappProfiles, error: whatsappError } = await supabase
     .from("profiles")
@@ -135,6 +137,8 @@ async function ensureAppUserSession(
     profileSeed?.country_code?.trim() ||
     inferCountryCode(normalizedPhone);
   const whatsapp = localPhoneNumber(normalizedPhone, countryCode);
+  const momoNumber = profileSeed?.momo_number?.trim() || whatsapp;
+  const momoPayCode = profileSeed?.momo_pay_code?.trim() || null;
   const password = `${crypto.randomUUID()}${crypto.randomUUID()}`;
   const fallbackEmail = internalEmailForPhone("whatsapp", normalizedPhone);
 
@@ -208,6 +212,8 @@ async function ensureAppUserSession(
     whatsapp,
     whatsapp_e164: normalizedPhone,
     whatsapp_verified_at: now,
+    momo_number: momoNumber,
+    momo_pay_code: momoPayCode,
     auth_provider: "whatsapp_cloud_otp",
     last_login_at: now,
     country_code: countryCode,
@@ -250,10 +256,15 @@ Deno.serve(async (req: Request) => {
 
   try {
     const body = await req.json();
-    phone = normalizePhone(body?.phone, "Phone and 6-digit code required");
+    phone = normalizePhoneWithCountry(
+      body?.phone,
+      body?.countryCode,
+      "Phone and 6-digit code required",
+    );
     const code = normalizeCode(body?.code);
     requestedRole = normalizeRole(body?.role);
     const countryCode = normalizeCountryCode(body?.countryCode);
+    const purpose = "app_login";
     const supabase = createAdminClient();
     const anonClient = createAnonClient();
 
@@ -261,7 +272,7 @@ Deno.serve(async (req: Request) => {
       .from("otp_codes")
       .select("id, code, code_hash, attempts, expires_at")
       .eq("phone", phone)
-      .eq("purpose", "app_login")
+      .eq("purpose", purpose)
       .eq("verified", false)
       .gte("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false })
@@ -314,14 +325,21 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    await supabase
+    const { error: attemptError } = await supabase
       .from("otp_codes")
       .update({ attempts: otpRecord.attempts + 1 })
       .eq("id", otpRecord.id);
 
-    const codeHash = otpRecord.code_hash ? await hashOtpCode(code) : null;
+    if (attemptError) {
+      throw attemptError;
+    }
+
+    const codeHash = otpRecord.code_hash
+      ? await hashOtpCode(code, { phone, purpose })
+      : null;
+    const legacyCodeHash = otpRecord.code_hash ? await hashOtpCode(code) : null;
     const isValidCode = otpRecord.code_hash
-      ? codeHash == otpRecord.code_hash
+      ? codeHash == otpRecord.code_hash || legacyCodeHash == otpRecord.code_hash
       : otpRecord.code == code;
 
     if (!isValidCode) {
@@ -361,10 +379,16 @@ Deno.serve(async (req: Request) => {
       countryCode,
     );
 
-    await supabase.from("otp_codes").update({ verified: true }).eq(
-      "id",
-      otpRecord.id,
-    );
+    const { error: verifyError } = await supabase
+      .from("otp_codes")
+      .update({ verified: true })
+      .eq("phone", phone)
+      .eq("purpose", purpose)
+      .eq("verified", false);
+
+    if (verifyError) {
+      throw verifyError;
+    }
 
     await tryRecordAppAuthAttempt({
       supabase,

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/services/admin/admin_broadcast_service.dart';
 import 'package:mobi_app/core/services/admin/admin_compliance_service.dart';
 import 'package:mobi_app/core/services/admin/admin_dashboard_service.dart';
@@ -7,7 +8,9 @@ import 'package:mobi_app/core/services/admin/admin_trip_service.dart';
 import 'package:mobi_app/core/services/admin/admin_user_service.dart';
 import 'package:mobi_app/core/services/admin_service.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
-import 'package:mobi_app/core/services/chat_ai_service.dart';
+import 'package:mobi_app/core/services/biopay_admin_service.dart';
+import 'package:mobi_app/core/services/biopay_face_service.dart';
+import 'package:mobi_app/core/services/biopay_ussd_service.dart';
 import 'package:mobi_app/core/services/chat_service.dart';
 import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
@@ -31,9 +34,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Centralized Dependency Injection container for all services
 
-final supabaseClientProvider = Provider<SupabaseClient>(
-  (ref) => Supabase.instance.client,
-);
+final supabaseClientProvider = Provider<SupabaseClient>((ref) {
+  if (!SupabaseConfig.isConfigured) {
+    throw StateError(
+      'Supabase client is unavailable because Supabase is not configured.',
+    );
+  }
+  return Supabase.instance.client;
+});
 
 final adminServiceProvider = Provider(
   (ref) => AdminService(
@@ -66,8 +74,27 @@ final adminComplianceServiceProvider = Provider(
   (ref) => AdminComplianceService(supabase: ref.read(supabaseClientProvider)),
 );
 final appPermissionServiceProvider = Provider((ref) => AppPermissionService());
-final chatAiServiceProvider = Provider(
-  (ref) => ChatAiService(supabase: ref.read(supabaseClientProvider)),
+final biopayUssdServiceProvider = Provider(
+  (ref) => BioPayUssdService(
+    supabase: SupabaseConfig.isConfigured
+        ? ref.read(supabaseClientProvider)
+        : null,
+  ),
+);
+final biopayAdminServiceProvider = Provider(
+  (ref) => BioPayAdminService(
+    supabase: SupabaseConfig.isConfigured
+        ? ref.read(supabaseClientProvider)
+        : null,
+    faceService: ref.read(biopayFaceServiceProvider),
+  ),
+);
+final biopayFaceServiceProvider = Provider(
+  (ref) => BioPayFaceService(
+    supabase: SupabaseConfig.isConfigured
+        ? ref.read(supabaseClientProvider)
+        : null,
+  ),
 );
 final chatServiceProvider = Provider(
   (ref) => ChatService(supabase: ref.read(supabaseClientProvider)),

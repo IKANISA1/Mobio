@@ -31,41 +31,6 @@ class NearbyDriver {
   }
 }
 
-class DriverDemandZone {
-  final String zoneId;
-  final String label;
-  final double latitude;
-  final double longitude;
-  final double probability;
-  final String reason;
-  final String source;
-  final String? startsAt;
-
-  const DriverDemandZone({
-    required this.zoneId,
-    required this.label,
-    required this.latitude,
-    required this.longitude,
-    required this.probability,
-    required this.reason,
-    required this.source,
-    this.startsAt,
-  });
-
-  factory DriverDemandZone.fromJson(Map<String, dynamic> json) {
-    return DriverDemandZone(
-      zoneId: json['zone_id'] as String? ?? '',
-      label: json['label'] as String? ?? '',
-      latitude: (json['latitude'] as num?)?.toDouble() ?? 0,
-      longitude: (json['longitude'] as num?)?.toDouble() ?? 0,
-      probability: (json['probability'] as num?)?.toDouble() ?? 0,
-      reason: json['reason'] as String? ?? '',
-      source: json['source'] as String? ?? '',
-      startsAt: json['starts_at'] as String?,
-    );
-  }
-}
-
 /// Service for driver location operations via Supabase.
 ///
 /// Handles:
@@ -208,37 +173,6 @@ class DriverLocationService {
     } on Object catch (e) {
       AppLogger.error('Error fetching discover summary: $e');
       return {'nearby_driver_count': 0, 'scheduled_trip_count': 0};
-    }
-  }
-
-  /// Returns demand zones drivers can use to find likely passenger pickup areas.
-  Future<List<DriverDemandZone>> getDemandZones({
-    double? latitude,
-    double? longitude,
-    double radiusKm = 25,
-    int limit = 20,
-  }) async {
-    try {
-      final rows = await _supabase.rpc(
-        'rpc_get_driver_demand_zones',
-        params: {
-          'p_user_lat': latitude,
-          'p_user_lng': longitude,
-          'p_radius_km': radiusKm,
-          'p_limit': limit,
-        },
-      );
-
-      return (rows as List<dynamic>)
-          .map(
-            (row) => DriverDemandZone.fromJson(
-              Map<String, dynamic>.from(row as Map),
-            ),
-          )
-          .toList();
-    } on Object catch (e) {
-      AppLogger.error('Error fetching driver demand zones: $e');
-      return [];
     }
   }
 

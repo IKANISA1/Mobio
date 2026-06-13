@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
@@ -28,6 +29,7 @@ Future<void> main() async {
     () async {
       final WidgetsBinding widgetsBinding =
           WidgetsFlutterBinding.ensureInitialized();
+      usePathUrlStrategy();
       FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
       // Disable runtime font fetching — fonts are pre-bundled in assets/google_fonts/
@@ -136,6 +138,15 @@ Future<void> main() async {
 class MobiMainApp extends ConsumerWidget {
   const MobiMainApp({super.key});
 
+  String get _appTitle {
+    final path = Uri.base.path.toLowerCase();
+    final host = Uri.base.host.toLowerCase();
+    if (host == 'mobioadmin.ikanisa.com' || path.startsWith('/admin')) {
+      return 'Mobio Admin';
+    }
+    return 'Mobio';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeProvider = ref.read(themeProviderProvider);
@@ -162,7 +173,7 @@ class MobiMainApp extends ConsumerWidget {
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: overlayStyle,
           child: MaterialApp.router(
-            title: 'Mobio',
+            title: _appTitle,
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,

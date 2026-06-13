@@ -3,6 +3,10 @@ const defaultAllowedOrigins = new Set([
   "http://127.0.0.1:3000",
   "http://localhost:5173",
   "http://127.0.0.1:5173",
+  "https://mobio.ikanisa.com",
+  "https://mobioadmin.ikanisa.com",
+  "https://mobioapp.ikanisa.com",
+  "https://mobio-1h0.pages.dev",
 ]);
 
 function configuredAllowedOrigins(): Set<string> {

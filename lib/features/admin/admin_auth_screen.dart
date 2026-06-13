@@ -8,6 +8,7 @@ import 'package:mobi_app/core/services/otp_service.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_confirm_dialog.dart';
@@ -55,11 +56,15 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
 
   bool get _isBusy => _sendingCode || _verifyingCode;
 
-  bool get _canSendCode => !_isBusy && _number.trim().length >= 6;
+  bool get _canSendCode =>
+      !_isBusy && PhoneNumberNormalizer.isValidCanonical(_fullPhone);
 
   bool get _canVerifyCode => !_isBusy && _otpController.text.trim().length == 6;
 
-  String get _fullPhone => '$_countryCode${_number.trim()}';
+  String get _fullPhone => PhoneNumberNormalizer.normalizeForCountry(
+    phone: _number,
+    countryCode: _countryCode,
+  );
 
   bool get _hasSupportWhatsapp => _supportWhatsapp.trim().isNotEmpty;
 
@@ -91,7 +96,10 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
       _attemptsRemaining = null;
     });
 
-    final result = await OtpService.sendOtp(_fullPhone);
+    final result = await OtpService.sendOtp(
+      phone: _fullPhone,
+      countryCode: _countryCode,
+    );
     if (!mounted) {
       return;
     }
@@ -135,7 +143,11 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
       _attemptsRemaining = null;
     });
 
-    final result = await OtpService.verifyOtp(_fullPhone, _otpController.text);
+    final result = await OtpService.verifyOtp(
+      phone: _fullPhone,
+      code: _otpController.text,
+      countryCode: _countryCode,
+    );
     if (!mounted) {
       return;
     }

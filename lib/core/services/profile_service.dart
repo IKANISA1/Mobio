@@ -64,19 +64,30 @@ class ProfileService {
   Future<void> updateProfileViaRpc({
     String? phone,
     String? whatsapp,
+    String? momoNumber,
+    String? momoPayCode,
     String? countryCode,
     String? vehicleType,
     String? vehicleNumberPlate,
+    String? busAgencyName,
+    int? busPassengerCapacity,
+    bool includeBusFields = false,
     String? avatarUrl,
   }) async {
     try {
       final payload = <String, dynamic>{};
       if (phone != null) payload['phone'] = phone;
       if (whatsapp != null) payload['whatsapp'] = whatsapp;
+      if (momoNumber != null) payload['momo_number'] = momoNumber;
+      if (momoPayCode != null) payload['momo_pay_code'] = momoPayCode;
       if (countryCode != null) payload['country_code'] = countryCode;
       if (vehicleType != null) payload['vehicle_type'] = vehicleType;
       if (vehicleNumberPlate != null) {
         payload['vehicle_number_plate'] = vehicleNumberPlate;
+      }
+      if (includeBusFields) {
+        payload['bus_agency_name'] = busAgencyName;
+        payload['bus_passenger_capacity'] = busPassengerCapacity;
       }
       if (avatarUrl != null) payload['avatar_url'] = avatarUrl;
 
@@ -91,17 +102,28 @@ class ProfileService {
 
   Future<void> saveProfileSettings({
     required String whatsapp,
+    required String momoNumber,
+    required String momoPayCode,
     required String countryCode,
     required bool isDriver,
     required String vehicleTypeId,
     required String vehicleNumberPlate,
+    String? busAgencyName,
+    int? busPassengerCapacity,
     required bool previousIsDriver,
   }) async {
+    final isBusDriver = isDriver && vehicleTypeId == 'bus';
+
     await updateProfileViaRpc(
       whatsapp: whatsapp,
+      momoNumber: momoNumber,
+      momoPayCode: momoPayCode,
       countryCode: countryCode,
       vehicleType: isDriver ? vehicleTypeId : null,
       vehicleNumberPlate: isDriver ? vehicleNumberPlate : null,
+      busAgencyName: isBusDriver ? busAgencyName : null,
+      busPassengerCapacity: isBusDriver ? busPassengerCapacity : null,
+      includeBusFields: true,
     );
 
     if (previousIsDriver != isDriver) {
@@ -109,6 +131,8 @@ class ProfileService {
         await enableDriverMode(
           vehicleType: vehicleTypeId,
           vehicleNumberPlate: vehicleNumberPlate,
+          busAgencyName: isBusDriver ? busAgencyName : null,
+          busPassengerCapacity: isBusDriver ? busPassengerCapacity : null,
         );
       } else {
         await disableDriverMode();
@@ -163,6 +187,8 @@ class ProfileService {
   Future<void> enableDriverMode({
     String vehicleType = 'cab',
     String? vehicleNumberPlate,
+    String? busAgencyName,
+    int? busPassengerCapacity,
   }) async {
     try {
       await _supabase.rpc(
@@ -170,6 +196,8 @@ class ProfileService {
         params: {
           'p_vehicle_type': vehicleType,
           'p_vehicle_number_plate': vehicleNumberPlate,
+          'p_bus_agency_name': busAgencyName,
+          'p_bus_passenger_capacity': busPassengerCapacity,
         },
       );
     } on Object catch (e) {

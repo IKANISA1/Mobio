@@ -44,6 +44,7 @@ void main() {
 
       expect(find.bySemanticsLabel('Home tab'), findsOneWidget);
       expect(find.bySemanticsLabel('Trips tab'), findsOneWidget);
+      expect(find.bySemanticsLabel('BioPay tab'), findsOneWidget);
       expect(find.bySemanticsLabel('Profile tab'), findsOneWidget);
       final tripsSemantics = tester.getSemantics(
         find.bySemanticsLabel('Trips tab'),
@@ -60,14 +61,19 @@ void main() {
         isTrue,
       );
 
-      for (final label in ['Home tab', 'Trips tab', 'Profile tab']) {
+      for (final label in [
+        'Home tab',
+        'Trips tab',
+        'BioPay tab',
+        'Profile tab',
+      ]) {
         final size = tester.getSize(find.bySemanticsLabel(label));
         expect(size.height, greaterThanOrEqualTo(48));
         expect(size.width, greaterThanOrEqualTo(48));
       }
 
       await tester.tap(find.bySemanticsLabel('Profile tab'));
-      expect(tappedIndex, 2);
+      expect(tappedIndex, 3);
       semantics.dispose();
     },
   );
@@ -88,6 +94,7 @@ void main() {
 
     expect(find.bySemanticsLabel('Ops tab'), findsOneWidget);
     expect(find.bySemanticsLabel('Users tab'), findsOneWidget);
+    expect(find.bySemanticsLabel('BioPay tab'), findsOneWidget);
     expect(find.bySemanticsLabel('Account tab'), findsOneWidget);
 
     await tester.tap(find.bySemanticsLabel('Users tab'));

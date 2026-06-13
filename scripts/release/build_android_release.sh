@@ -11,12 +11,40 @@ else
   FLUTTER_BIN="${FLUTTER_BIN:-flutter}"
 fi
 
-if [[ -z "${JAVA_HOME:-}" && -x /usr/libexec/java_home ]]; then
-  java_17_home="$(/usr/libexec/java_home -v 17 2>/dev/null || true)"
-  if [[ -n "$java_17_home" ]]; then
-    export JAVA_HOME="$java_17_home"
-    export PATH="$JAVA_HOME/bin:$PATH"
+java_major_version() {
+  java -version 2>&1 |
+    awk -F '"' '/version/ {
+      split($2, parts, ".")
+      if (parts[1] == "1") {
+        print parts[2]
+      } else {
+        print parts[1]
+      }
+      exit
+    }'
+}
+
+select_java_17() {
+  if [[ -x /usr/libexec/java_home ]]; then
+    /usr/libexec/java_home -v 17 2>/dev/null | tail -n 1
   fi
+}
+
+java_17_home=""
+current_java_major="$(java_major_version || true)"
+if [[ -z "${JAVA_HOME:-}" || -z "$current_java_major" || "$current_java_major" -gt 21 ]]; then
+  java_17_home="$(select_java_17 || true)"
+fi
+if [[ -n "$java_17_home" ]]; then
+  export JAVA_HOME="$java_17_home"
+  export PATH="$JAVA_HOME/bin:$PATH"
+  current_java_major="$(java_major_version || true)"
+fi
+if [[ -z "$current_java_major" || "$current_java_major" -gt 21 ]]; then
+  echo "Android release builds require Java 17-21. Current Java is:" >&2
+  java -version >&2
+  echo "Install Java 17 or set JAVA_HOME to a supported JDK." >&2
+  exit 1
 fi
 
 if [[ "${MOBI_DISABLE_GRADLE_DAEMON:-true}" == "true" ]]; then
@@ -92,6 +120,13 @@ target_platform_args=()
 if [[ -n "${ANDROID_TARGET_PLATFORMS:-}" ]]; then
   target_platform_args+=(--target-platform="$ANDROID_TARGET_PLATFORMS")
 fi
+version_args=()
+if [[ -n "${ANDROID_BUILD_NAME:-}" ]]; then
+  version_args+=(--build-name="$ANDROID_BUILD_NAME")
+fi
+if [[ -n "${ANDROID_BUILD_NUMBER:-}" ]]; then
+  version_args+=(--build-number="$ANDROID_BUILD_NUMBER")
+fi
 gradle_property_args=()
 if [[ -n "${ANDROID_RELEASE_SHRINK:-}" ]]; then
   gradle_property_args+=(--android-project-arg="mobi.release.shrink=$ANDROID_RELEASE_SHRINK")
@@ -104,6 +139,9 @@ case "$target" in
     build_cmd=("$FLUTTER_BIN" build appbundle --release --no-pub)
     if ((${#target_platform_args[@]})); then
       build_cmd+=("${target_platform_args[@]}")
+    fi
+    if ((${#version_args[@]})); then
+      build_cmd+=("${version_args[@]}")
     fi
     if ((${#gradle_property_args[@]})); then
       build_cmd+=("${gradle_property_args[@]}")
@@ -123,6 +161,9 @@ case "$target" in
     build_cmd=("$FLUTTER_BIN" build apk --release --no-pub)
     if ((${#target_platform_args[@]})); then
       build_cmd+=("${target_platform_args[@]}")
+    fi
+    if ((${#version_args[@]})); then
+      build_cmd+=("${version_args[@]}")
     fi
     if ((${#gradle_property_args[@]})); then
       build_cmd+=("${gradle_property_args[@]}")

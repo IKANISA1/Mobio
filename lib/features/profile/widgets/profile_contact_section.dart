@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/country.dart';
-import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
 
 class ProfileContactSection extends StatelessWidget {
   const ProfileContactSection({
@@ -26,12 +23,6 @@ class ProfileContactSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const MobiSectionHeader(
-          title: 'Contact',
-          caption: 'WhatsApp',
-          icon: LucideIcons.messageCircle,
-        ),
-        const SizedBox(height: AppSpacing.md),
         Row(
           children: [
             _buildCountryButton(context, cs, ext),

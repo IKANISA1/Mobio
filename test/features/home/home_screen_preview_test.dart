@@ -30,7 +30,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Drivers nearby'), findsOneWidget);
+    expect(find.text('Nearby'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 }

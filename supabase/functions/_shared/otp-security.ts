@@ -15,6 +15,11 @@ export type OtpRateLimitResult = {
   retryAfterSeconds: number;
 };
 
+export type OtpHashContext = {
+  phone: string;
+  purpose: string;
+};
+
 function toHex(bytes: Uint8Array): string {
   return Array.from(bytes)
     .map((value) => value.toString(16).padStart(2, "0"))
@@ -35,6 +40,14 @@ function rateLimitSecret(): string {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim() ||
     Deno.env.get("COOL_PROJECT_SUPABASE_SERVICE_ROLE_KEY")?.trim() ||
     "local-otp-rate-limit";
+}
+
+function otpHashSecret(): string {
+  return Deno.env.get("OTP_HASH_SECRET")?.trim() ||
+    Deno.env.get("OTP_RATE_LIMIT_SECRET")?.trim() ||
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim() ||
+    Deno.env.get("COOL_PROJECT_SUPABASE_SERVICE_ROLE_KEY")?.trim() ||
+    "local-otp-hash";
 }
 
 function headerValue(request: Request, name: string): string | null {
@@ -70,8 +83,19 @@ export function generateOtpCode(): string {
   return String(100000 + (values[0] % 900000));
 }
 
-export async function hashOtpCode(code: string): Promise<string> {
+export async function hashOtpCode(
+  code: string,
+  context?: OtpHashContext,
+): Promise<string> {
   const normalized = code.replace(/\D/g, "");
+  if (context) {
+    const phone = context.phone.trim();
+    const purpose = context.purpose.trim();
+
+    return await sha256Hex(
+      `${normalized}:${phone}:${purpose}:${otpHashSecret()}`,
+    );
+  }
 
   return await sha256Hex(normalized);
 }

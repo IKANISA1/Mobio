@@ -11,7 +11,8 @@ void main() {
           'android/app/src/main/AndroidManifest.xml',
         ).readAsStringSync();
 
-        expect(manifest, isNot(contains('android.permission.CAMERA')));
+        expect(manifest, contains('android.permission.CAMERA'));
+        expect(manifest, contains('android.permission.NFC'));
         expect(manifest, isNot(contains('android.permission.READ_SMS')));
         expect(manifest, isNot(contains('android.permission.RECEIVE_SMS')));
         expect(
@@ -33,11 +34,14 @@ void main() {
       },
     );
 
-    test('iOS plist does not declare inactive BioPay or route calculation', () {
+    test('iOS plist declares camera only for active BioPay scanning', () {
       final plist = File('ios/Runner/Info.plist').readAsStringSync();
 
-      expect(plist, isNot(contains('NSCameraUsageDescription')));
-      expect(plist, isNot(contains('BioPay')));
+      expect(plist, contains('NSCameraUsageDescription'));
+      expect(plist, contains('NFCReaderUsageDescription'));
+      expect(plist, contains('BioPay QR scanning'));
+      expect(plist, contains('AWS-backed face enrollment'));
+      expect(plist, contains('USSD dialer'));
       expect(plist, isNot(contains('face scan')));
       expect(plist, isNot(contains('scan BioPay faces')));
       expect(plist, isNot(contains('calculate routes')));
@@ -103,14 +107,21 @@ void main() {
         final loginScreen = File(
           'lib/features/auth/whatsapp_login_screen.dart',
         ).readAsStringSync();
+        final screenWrappers = File(
+          'lib/core/router/screen_wrappers.dart',
+        ).readAsStringSync();
 
-        expect(
-          loginScreen,
-          contains('Trip scheduling, chat, and profile data'),
-        );
+        expect(loginScreen, contains('WhatsApp login'));
+        expect(loginScreen, isNot(contains('Verified WhatsApp required')));
         expect(
           loginScreen,
           isNot(contains('chat, payments, and profile data')),
+        );
+        expect(screenWrappers, contains('BioPay USSD handoff'));
+        expect(screenWrappers, isNot(contains('Payment, ledger, BioPay')));
+        expect(
+          screenWrappers,
+          isNot(contains('BioPay, dispatch lifecycle, and trip settlement')),
         );
       },
     );
@@ -173,7 +184,7 @@ void main() {
       );
     });
 
-    test('legacy BioPay, payment, and ledger packages are not shipped', () {
+    test('BioPay is active but remains USSD and AWS bounded', () {
       final pubspec = File('pubspec.yaml').readAsStringSync();
       final proguard = File(
         'android/app/proguard-rules.pro',
@@ -181,9 +192,41 @@ void main() {
       final mainActivity = File(
         'android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt',
       ).readAsStringSync();
+      final scopeDoc = File(
+        'docs/product/biopay_ussd_aws_reactivation_scope_2026-06-12.md',
+      ).readAsStringSync();
+      final referenceMap = File(
+        'docs/product/biopay_reference_screen_gap_map_2026-06-12.md',
+      ).readAsStringSync();
+      final biopayService = File(
+        'lib/core/services/biopay_ussd_service.dart',
+      ).readAsStringSync();
+      final biopayAdminService = File(
+        'lib/core/services/biopay_admin_service.dart',
+      ).readAsStringSync();
+      final biopayFaceService = File(
+        'lib/core/services/biopay_face_service.dart',
+      ).readAsStringSync();
+      final profileScreen = File(
+        'lib/features/profile/profile_screen.dart',
+      ).readAsStringSync();
+      final screenWrappers = File(
+        'lib/core/router/screen_wrappers.dart',
+      ).readAsStringSync();
+      final biopayScreen = File(
+        'lib/features/biopay/biopay_screen.dart',
+      ).readAsStringSync();
+      final biopayModel = File(
+        'lib/features/biopay/models/biopay_ussd_payment.dart',
+      ).readAsStringSync();
+      final iosEntitlements = File(
+        'ios/Runner/Runner.entitlements',
+      ).readAsStringSync();
+      final liveReadinessScript = File(
+        'scripts/qa/verify_biopay_live_readiness.sh',
+      ).readAsStringSync();
 
       for (final path in const [
-        'lib/features/biopay',
         'lib/features/ledger',
         'lib/features/payments',
         'lib/core/services/biopay_service.dart',
@@ -195,15 +238,15 @@ void main() {
       ]) {
         expect(FileSystemEntity.typeSync(path), FileSystemEntityType.notFound);
       }
+      expect(
+        FileSystemEntity.typeSync('lib/features/biopay'),
+        isNot(FileSystemEntityType.notFound),
+      );
 
       for (final dependency in const [
         'mobi_payments',
-        'camera:',
         'google_mlkit_face_detection',
         'tflite_flutter',
-        'qr_flutter',
-        'mobile_scanner',
-        'flutter_nfc_kit',
         'local_auth',
         'flutter_secure_storage',
         'image_gallery_saver_plus',
@@ -217,7 +260,198 @@ void main() {
       expect(proguard, isNot(contains('tensorflow')));
       expect(proguard, isNot(contains('mlkit')));
       expect(proguard, isNot(contains('zxing')));
-      expect(proguard, isNot(contains('plugins.camera')));
+      expect(scopeDoc, contains('external-payment assistant'));
+      expect(scopeDoc, contains('FACE_PROVIDER=aws_rekognition'));
+      expect(scopeDoc, contains('USSD dialer'));
+      expect(
+        referenceMap,
+        contains('Reference repo: `/Volumes/PRO-G40/BioPay`'),
+      );
+      expect(referenceMap, contains('Confirm Match'));
+      expect(referenceMap, contains('hide the raw full USSD string'));
+      expect(referenceMap, contains('BioPay Ops'));
+      expect(referenceMap, contains('/admin/finance'));
+      expect(referenceMap, contains('RWF amount field'));
+      expect(
+        referenceMap,
+        contains(
+          'Face enrollment UI reference repo: `/Volumes/PRO-G40/MEMORIES`',
+        ),
+      );
+      expect(referenceMap, contains('Center`, `Turn`, `Hold'));
+      expect(
+        referenceMap,
+        contains('QR generation remains a payee/share surface'),
+      );
+      expect(referenceMap, contains('do not embed the raw USSD code'));
+      expect(scopeDoc, contains('QR generation is a payee/share surface'));
+      expect(scopeDoc, contains('must not embed the raw USSD code'));
+      expect(biopayService, contains("Uri.parse('tel:"));
+      expect(biopayService, contains('createPreviewRequest'));
+      expect(biopayService, contains('resolvePreviewToken'));
+      expect(biopayService, contains('createFaceMatchPaymentRequest'));
+      expect(biopayService, contains('rpc_create_biopay_face_match_request'));
+      expect(biopayService, contains('markUserPaid'));
+      expect(biopayService, contains('rpc_mark_biopay_ussd_user_paid'));
+      expect(biopayService, contains('recordDialerOpened'));
+      expect(biopayService, contains('rpc_record_biopay_ussd_dialer_opened'));
+      expect(biopayService, contains('listPaymentRequests'));
+      expect(biopayService, contains('rpc_list_biopay_ussd_requests'));
+      expect(biopayService, contains('confirmExternally'));
+      expect(biopayService, contains('rpc_confirm_biopay_ussd_external'));
+      expect(biopayService, isNot(contains('payment_intents')));
+      expect(biopayAdminService, contains('rpc_admin_biopay_summary'));
+      expect(biopayAdminService, contains('rpc_admin_biopay_list_payees'));
+      expect(biopayAdminService, contains('rpc_admin_biopay_system_status'));
+      expect(biopayAdminService, contains('rpc_admin_biopay_confirm_external'));
+      expect(biopayAdminService, contains('faceService.health'));
+      expect(biopayAdminService, contains('providerCollectionId'));
+      expect(biopayAdminService, isNot(contains('payment_intents')));
+      expect(biopayFaceService, contains('biopay-face-provider'));
+      expect(biopayFaceService, contains('create_liveness_session'));
+      expect(biopayFaceService, contains('enroll_face'));
+      expect(biopayFaceService, contains('match_face'));
+      expect(biopayFaceService, contains('liveness_required'));
+      expect(biopayFaceService, contains('enrollment_sample_count'));
+      expect(biopayFaceService, contains('enrollment_challenges'));
+      expect(biopayFaceService, contains('provider_liveness_not_required'));
+      expect(biopayFaceService, contains('provider_face_id'));
+      expect(biopayFaceService, contains('rpc_record_biopay_face_enrollment'));
+      expect(biopayFaceService, contains('provider_face_id'));
+      expect(biopayFaceService, contains('provider_collection_id'));
+      expect(biopayFaceService, contains('provider_collection_id'));
+      expect(biopayFaceService, contains('model_version'));
+      expect(biopayFaceService, contains('payment_boundary'));
+      expect(biopayFaceService, contains('enrollmentStatus'));
+      expect(biopayFaceService, contains("from('biopay_profiles')"));
+      expect(biopayFaceService, contains('provider_subject_id'));
+      expect(biopayFaceService, contains('Enroll AWS face identity'));
+      expect(biopayFaceService, contains('AWS face identity ready'));
+      expect(biopayFaceService, isNot(contains('google_mlkit')));
+      expect(biopayFaceService, isNot(contains('tflite')));
+      expect(profileScreen, contains('BioPay Face'));
+      expect(profileScreen, isNot(contains('Momo')));
+      expect(profileScreen, isNot(contains('Google')));
+      expect(screenWrappers, contains("context.push('/biopay/enroll')"));
+      expect(biopayScreen, contains('Dial USSD'));
+      expect(biopayScreen, contains('Generate QR Code'));
+      expect(biopayScreen, contains('Share QR Code'));
+      expect(
+        biopayScreen,
+        contains('ClipboardData(text: buildBioPayQrPayload(request))'),
+      );
+      expect(
+        File(
+          'test/features/biopay/biopay_payment_surfaces_test.dart',
+        ).readAsStringSync(),
+        contains("expect(find.text('Dial USSD'), findsNothing)"),
+      );
+      expect(biopayScreen, contains('Activate NFC'));
+      expect(biopayScreen, contains('Receive with NFC'));
+      expect(biopayScreen, isNot(contains('Tap to Pay')));
+      expect(biopayScreen, isNot(contains('Prepare tap tag')));
+      expect(biopayScreen, contains('Start Enrollment'));
+      expect(biopayScreen, contains('Capture center'));
+      expect(biopayScreen, contains('Capture turn'));
+      expect(biopayScreen, contains('Finish enrollment'));
+      expect(biopayScreen, contains('straight_1'));
+      expect(biopayScreen, contains('turn_pose'));
+      expect(biopayScreen, contains('straight_2'));
+      expect(biopayScreen, contains('Center, Turn, Hold'));
+      expect(biopayScreen, contains('_FittedCameraPreview'));
+      expect(biopayScreen, contains('_BioPayFaceOvalGuide'));
+      expect(biopayScreen, contains('_PoseCueStrip'));
+      expect(
+        biopayScreen,
+        contains('Camera permission is required to enroll your face'),
+      );
+      expect(biopayScreen, contains('Amount (RWF, optional)'));
+      expect(biopayScreen, contains('AMOUNT TO RECEIVE'));
+      expect(biopayScreen, contains('Number'));
+      expect(biopayScreen, contains('Code'));
+      expect(biopayScreen, isNot(contains('MoMo number / MoMo Pay code')));
+      expect(biopayScreen, isNot(contains('No QR request')));
+      expect(biopayScreen, contains('_amountMinorFromController'));
+      expect(biopayScreen, contains('_optionalAmountMinorFromController'));
+      expect(biopayScreen, contains('buildBioPayQrPayload'));
+      expect(biopayScreen, contains('bioPayTokenFromPayload'));
+      expect(biopayScreen, contains("'type': 'mobio_biopay_request'"));
+      expect(biopayScreen, contains('BioPayAdminConsoleScreen'));
+      expect(biopayScreen, contains('BioPay Ops'));
+      expect(biopayScreen, contains('Confirmations'));
+      expect(biopayScreen, isNot(contains("title: 'Activity'")));
+      expect(biopayScreen, isNot(contains('_BioPayAdminSection.activity')));
+      expect(
+        biopayScreen,
+        contains('AWS face identity and external USSD handoff'),
+      );
+      expect(biopayScreen, contains('Payee Directory'));
+      expect(biopayScreen, contains('System Status'));
+      expect(biopayScreen, contains('External USSD only'));
+      expect(biopayScreen, contains('admin_external_reference'));
+      expect(biopayScreen, contains('QrImageView'));
+      expect(biopayScreen, contains('MobileScanner'));
+      expect(biopayScreen, contains('BarcodeFormat.qrCode'));
+      expect(biopayScreen, contains('DetectionSpeed.noDuplicates'));
+      expect(biopayScreen, contains('autoZoom: true'));
+      expect(biopayScreen, contains('FlutterNfcKit'));
+      expect(biopayScreen, contains('writeNDEFRecords'));
+      expect(biopayScreen, contains('CameraController'));
+      expect(biopayScreen, contains('CameraPreview'));
+      expect(biopayScreen, contains('resolveRequest'));
+      expect(biopayScreen, contains('I finished USSD'));
+      expect(biopayScreen, contains('Waiting confirmation'));
+      expect(biopayScreen, contains("'Confirmation', value: 'External'"));
+      expect(biopayScreen, contains('Confirm external'));
+      expect(biopayScreen, isNot(contains('BioPayActivityScreen')));
+      expect(biopayScreen, isNot(contains('listPaymentRequests')));
+      expect(biopayScreen, isNot(contains('confirmExternally')));
+      expect(biopayScreen, isNot(contains('No BioPay activity')));
+      expect(biopayScreen, isNot(contains('View activity')));
+      expect(biopayScreen, contains('No enrolled BioPay face matched'));
+      expect(biopayScreen, contains('createFaceMatchPaymentRequest'));
+      expect(biopayScreen, contains('Start Face Scan'));
+      expect(biopayScreen, contains('Match face'));
+      expect(
+        biopayScreen,
+        contains('Camera permission is required to scan your face'),
+      );
+      expect(
+        biopayScreen,
+        isNot(contains('openedRequest = await ussdService.openUssdDialer')),
+      );
+      expect(biopayScreen, isNot(contains('Capture with AWS face match')));
+      expect(biopayScreen, isNot(contains('Preview scan')));
+      expect(
+        biopayScreen,
+        isNot(
+          contains("primaryLabel: _request == null\n          ? 'Scanning'"),
+        ),
+      );
+      expect(biopayScreen, isNot(contains('request.ussdCode')));
+      expect(biopayScreen, isNot(contains("'Pay'")));
+      expect(biopayModel, contains('required this.token'));
+      expect(biopayModel, contains("'token': token"));
+      expect(iosEntitlements, contains('com.apple.developer.nfc'));
+      expect(liveReadinessScript, contains('REQUIRE_BIOPAY_AWS_LIVE'));
+      expect(liveReadinessScript, contains('REQUIRE_BIOPAY_SUPABASE_LIVE'));
+      expect(liveReadinessScript, contains('REQUIRE_BIOPAY_DEVICE_LIVE'));
+      expect(liveReadinessScript, contains('REQUIRE_BIOPAY_LIVE'));
+      expect(liveReadinessScript, contains('require_aws_live=true'));
+      expect(liveReadinessScript, contains('require_supabase_live=true'));
+      expect(liveReadinessScript, contains('require_device_live=true'));
+      expect(liveReadinessScript, contains('BIOPAY_FACE_HEALTH_URL'));
+      expect(liveReadinessScript, contains('FACE_PROVIDER'));
+      expect(liveReadinessScript, contains('aws_rekognition'));
+      expect(liveReadinessScript, contains('AWS_REKOGNITION_COLLECTION_ID'));
+      expect(liveReadinessScript, contains('Deno edge tests'));
+      expect(liveReadinessScript, contains('Enrollment challenge metadata'));
+      expect(liveReadinessScript, contains('Enrollment sample metadata'));
+      expect(liveReadinessScript, contains('android.hardware.camera'));
+      expect(liveReadinessScript, contains('android.hardware.nfc'));
+      expect(liveReadinessScript, contains('android.intent.action.DIAL'));
+      expect(liveReadinessScript, contains('tel:*182%23'));
+      expect(liveReadinessScript, contains('Payment remains outside the app'));
     });
 
     test('Play Store text metadata matches marketplace scope', () {
@@ -415,9 +649,20 @@ void main() {
       );
       expect(goNoGoScript, contains('PLAY_SERVICE_ACCOUNT_ROTATED'));
       expect(goNoGoScript, contains('PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE'));
+      expect(goNoGoScript, contains('PLAY_SERVICE_ACCOUNT_RETAINED'));
+      expect(goNoGoScript, contains('PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE'));
       expect(goNoGoScript, contains('PLAY_CONSOLE_UPLOAD_VALIDATED'));
       expect(goNoGoScript, contains('PLAY_CONSOLE_UPLOAD_EVIDENCE'));
       expect(goNoGoScript, contains('require_evidence'));
+      expect(goNoGoScript, contains('require_play_service_account_decision'));
+      expect(goNoGoScript, contains('RUN_BIOPAY_GATE'));
+      expect(goNoGoScript, contains('BioPay live readiness gate'));
+      expect(goNoGoScript, contains('REQUIRE_BIOPAY_LIVE'));
+      expect(goNoGoScript, contains('REQUIRE_BIOPAY_LIVE:-true'));
+      expect(
+        goNoGoScript,
+        contains('scripts/qa/verify_biopay_live_readiness.sh'),
+      );
       expect(
         goNoGoScript,
         contains(r'set $evidence_name to an existing evidence file'),
@@ -427,6 +672,7 @@ void main() {
       expect(goNoGoScript, contains('dry-run mode cannot approve production'));
       expect(goNoGoScript, contains('RUN_ANDROID_SMOKE=false is only allowed'));
       expect(goNoGoScript, contains('RUN_FLUTTER_GATE=false is only allowed'));
+      expect(goNoGoScript, contains('RUN_BIOPAY_GATE=false is only allowed'));
       expect(goNoGoScript, contains('smoke_android_release.sh'));
       expect(goNoGoScript, contains('NO-GO'));
     });
@@ -437,9 +683,6 @@ void main() {
       ).readAsStringSync();
       final routeForm = File(
         'lib/features/bookings/widgets/trip_route_form.dart',
-      ).readAsStringSync();
-      final chatAi = File(
-        'lib/core/services/chat_ai_service.dart',
       ).readAsStringSync();
       final chatComposer = File(
         'lib/features/chat/widgets/chat_composer.dart',
@@ -483,42 +726,56 @@ void main() {
       expect(placesService, isNot(contains('compute_route')));
       expect(mapsGateway, contains('Route calculation is outside Mobio scope'));
       expect(mapsGateway, isNot(contains('directions/v2:computeRoutes')));
-      expect(routeForm, contains('route labels and optional coordinates only'));
-      expect(routeForm, contains('Fares and timing are agreed manually'));
-      expect(chatAi, contains('agree manually'));
-      expect(chatAi, isNot(contains('What price works')));
+      expect(
+        routeForm,
+        isNot(contains('route labels and optional coordinates only')),
+      );
+      expect(
+        routeForm,
+        isNot(contains('Fares and timing are agreed manually')),
+      );
+      expect(routeForm, isNot(contains('Save From')));
+      expect(routeForm, isNot(contains('Save To')));
+      expect(
+        File('lib/core/services/chat_ai_service.dart').existsSync(),
+        isFalse,
+      );
+      expect(
+        File('lib/features/chat/models/chat_ai_assist.dart').existsSync(),
+        isFalse,
+      );
       expect(chatComposer, contains('Message about fare'));
       expect(chatComposer, isNot(contains('Message about price')));
     });
 
-    test('backend assist and promo prompts stay inside manual fare scope', () {
-      final chatAssist = File(
-        'supabase/functions/chat-assist/index.ts',
-      ).readAsStringSync();
-      final promo = File(
-        'supabase/functions/generate-promo-content/index.ts',
-      ).readAsStringSync();
-      final driverCard = File(
-        'lib/shared/widgets/driver_card.dart',
-      ).readAsStringSync();
-      final nearbyScreen = File(
-        'lib/features/nearby/nearby_screen.dart',
-      ).readAsStringSync();
-      final sharedExports = File(
-        'packages/shared-types/lib/mobi_shared_types.dart',
-      ).readAsStringSync();
+    test(
+      'chat assist is removed and promo prompts stay inside manual fare scope',
+      () {
+        final promo = File(
+          'supabase/functions/generate-promo-content/index.ts',
+        ).readAsStringSync();
+        final driverCard = File(
+          'lib/shared/widgets/driver_card.dart',
+        ).readAsStringSync();
+        final nearbyScreen = File(
+          'lib/features/nearby/nearby_screen.dart',
+        ).readAsStringSync();
+        final sharedExports = File(
+          'packages/shared-types/lib/mobi_shared_types.dart',
+        ).readAsStringSync();
 
-      expect(chatAssist, contains('manually agreed fares'));
-      expect(chatAssist, contains('Do not suggest automatic fare quotes'));
-      expect(chatAssist, contains('What fare should we agree manually'));
-      expect(chatAssist, isNot(contains('What price works')));
-      expect(promo, isNot(contains('cashless payment')));
-      expect(promo, isNot(contains("scan the driver's face")));
-      expect(promo, contains("view the driver's profile"));
-      expect(driverCard, isNot(contains('trip.price')));
-      expect(nearbyScreen, contains('km away'));
-      expect(sharedExports, isNot(contains('ride_request.dart')));
-    });
+        expect(
+          File('supabase/functions/chat-assist/index.ts').existsSync(),
+          isFalse,
+        );
+        expect(promo, isNot(contains('cashless payment')));
+        expect(promo, isNot(contains("scan the driver's face")));
+        expect(promo, contains("view the driver's profile"));
+        expect(driverCard, isNot(contains('trip.price')));
+        expect(nearbyScreen, contains('km away'));
+        expect(sharedExports, isNot(contains('ride_request.dart')));
+      },
+    );
 
     test('historical docs defer to current limited marketplace scope', () {
       final schemaInventory = File(
@@ -526,6 +783,9 @@ void main() {
       ).readAsStringSync();
       final backendAudit = File(
         'supabase/docs/backend_security_audit_2026-05-01.md',
+      ).readAsStringSync();
+      final readinessPlan = File(
+        'docs/product/mobio_100_percent_mobile_readiness_goal_and_plan_2026-06-08.md',
       ).readAsStringSync();
 
       expect(schemaInventory, contains('Last updated: 2026-06-08'));
@@ -550,6 +810,20 @@ void main() {
       expect(backendAudit, contains('historical findings only'));
       expect(backendAudit, contains('docs/product/scope.md'));
       expect(backendAudit, contains('docs/release/go-no-go.md'));
+      expect(
+        readinessPlan,
+        contains('biopay_ussd_aws_reactivation_scope_2026-06-12.md'),
+      );
+      expect(
+        readinessPlan,
+        contains(
+          'BioPay remains limited to USSD handoff and AWS face identity',
+        ),
+      );
+      expect(
+        readinessPlan,
+        isNot(contains('revive payments, BioPay, ledgers')),
+      );
     });
 
     test('secret history purge has a non-destructive preflight', () {
@@ -578,6 +852,10 @@ void main() {
       expect(playChecklist, contains('PLAY_SERVICE_ACCOUNT_ROTATION_EVIDENCE'));
       expect(playChecklist, contains('PLAY_CONSOLE_UPLOAD_EVIDENCE'));
       expect(scriptsReadme, contains('preflight_secret_history_purge.sh'));
+      expect(
+        scriptsReadme,
+        contains('PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE'),
+      );
       expect(scriptsReadme, contains('docs/release/evidence'));
     });
   });

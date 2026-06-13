@@ -64,15 +64,17 @@ class SubscriptionPlanService {
     bool isActive = true,
   }) async {
     try {
-      await supabase.from('subscription_plans').upsert({
-        'vehicle_type_id': vehicleTypeId,
-        'country_id': countryId,
-        'interval_days': intervalDays,
-        'price': price,
-        'currency': currency,
-        'is_active': isActive,
-        'updated_at': DateTime.now().toIso8601String(),
-      }, onConflict: 'vehicle_type_id,country_id,interval_days');
+      await supabase.rpc(
+        'rpc_admin_upsert_subscription_plan',
+        params: {
+          'p_vehicle_type_id': vehicleTypeId,
+          'p_country_id': countryId,
+          'p_interval_days': intervalDays,
+          'p_price': price,
+          'p_currency': currency,
+          'p_is_active': isActive,
+        },
+      );
       invalidateCache();
     } on Object catch (e) {
       AppLogger.error('Error upserting subscription plan: $e');
@@ -83,13 +85,10 @@ class SubscriptionPlanService {
   /// Toggle active state.
   Future<void> toggleActive(String id, bool isActive) async {
     try {
-      await supabase
-          .from('subscription_plans')
-          .update({
-            'is_active': isActive,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', id);
+      await supabase.rpc(
+        'rpc_admin_set_subscription_plan_active',
+        params: {'p_plan_id': id, 'p_is_active': isActive},
+      );
       invalidateCache();
     } on Object catch (e) {
       AppLogger.error('Error toggling subscription plan: $e');
@@ -100,7 +99,10 @@ class SubscriptionPlanService {
   /// Admin delete.
   Future<void> delete(String id) async {
     try {
-      await supabase.from('subscription_plans').delete().eq('id', id);
+      await supabase.rpc(
+        'rpc_admin_delete_subscription_plan',
+        params: {'p_plan_id': id},
+      );
       invalidateCache();
     } on Object catch (e) {
       AppLogger.error('Error deleting subscription plan: $e');

@@ -36,6 +36,11 @@ void main() {
       expect(AppRoutes.scanQr, startsWith('/biopay'));
       expect(AppRoutes.faceScan, startsWith('/biopay'));
       expect(AppRoutes.faceEnroll, startsWith('/biopay'));
+      expect(AppRoutes.nfc, startsWith('/biopay'));
+    });
+
+    test('admin BioPay operations route uses existing admin finance slot', () {
+      expect(AppRoutes.adminFinance, '/admin/finance');
     });
   });
 }

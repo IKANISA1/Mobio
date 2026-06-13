@@ -2,8 +2,12 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
+import 'package:mobi_app/core/services/public_transport_service.dart';
 import 'package:mobi_app/features/profile/models/edit_profile_state.dart';
+import 'package:mobi_app/models/country.dart';
+import 'package:mobi_app/models/vehicle_type_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final editProfileProvider =
@@ -18,20 +22,42 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
   }
 
   Future<EditProfileState> _loadInitialData() async {
+    if (SupabaseConfig.isLocalUiPreview) {
+      return const EditProfileState(
+        countries: Country.fallbackCountries,
+        countryCode: '+250',
+        isLoading: false,
+        isDriver: true,
+        initialIsDriver: true,
+        vehicleTypeId: 'bus',
+        vehicleTypes: VehicleTypeModel.fallbackTypes,
+        transportAgencyNames: PublicTransportService.fallbackAgencyNames,
+        initialWhatsApp: '788 767 816',
+        initialMomoNumber: '0788767816',
+        initialMomoPayCode: '123456',
+        initialVehicleNumberPlate: 'RAB 204 T',
+        initialBusAgencyName: 'Volcano Express',
+        initialBusPassengerCapacity: '58',
+      );
+    }
+
     final countryService = ref.read(countryServiceProvider);
     final profileService = ref.read(profileServiceProvider);
     final vehicleTypeService = ref.read(vehicleTypeServiceProvider);
     final planService = ref.read(subscriptionPlanServiceProvider);
+    final publicTransportService = ref.read(publicTransportServiceProvider);
 
     final countries = await countryService.getCountries();
     final vehicleTypes = await vehicleTypeService.getAll();
     final plans = await planService.getAll();
+    final agencyNames = await publicTransportService.getAgencyNames();
 
     if (!SupabaseConfig.isConfigured ||
         Supabase.instance.client.auth.currentSession == null) {
       return EditProfileState(
         countries: countries,
         vehicleTypes: vehicleTypes,
+        transportAgencyNames: agencyNames,
         allPlans: plans,
         isLoading: false,
       );
@@ -50,8 +76,18 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
           : 'cab';
       final resolvedVehicleNumberPlate = (profile?.vehicleNumberPlate ?? '')
           .trim();
+      final resolvedBusAgencyName = (profile?.busAgencyName ?? '').trim();
+      final resolvedBusPassengerCapacity =
+          profile?.busPassengerCapacity?.toString() ?? '';
       final resolvedIsDriver = profile?.isDriver ?? (profile?.role == 'driver');
       final whatsAppValue = profile?.whatsapp ?? profile?.phone ?? '';
+      final resolvedMomoNumber =
+          _localRwandaMomoNumber(profile?.momoNumber ?? '') ??
+          _localRwandaMomoNumber(whatsAppValue) ??
+          '';
+      final resolvedMomoPayCode = (profile?.momoPayCode ?? '')
+          .replaceAll(RegExp(r'[^0-9]'), '')
+          .trim();
 
       return EditProfileState(
         countries: countries,
@@ -61,14 +97,20 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         initialIsDriver: resolvedIsDriver,
         vehicleTypeId: resolvedVehicleTypeId,
         vehicleTypes: vehicleTypes,
+        transportAgencyNames: agencyNames,
         allPlans: plans,
         initialWhatsApp: whatsAppValue.trim(),
+        initialMomoNumber: resolvedMomoNumber,
+        initialMomoPayCode: resolvedMomoPayCode,
         initialVehicleNumberPlate: resolvedVehicleNumberPlate,
+        initialBusAgencyName: resolvedBusAgencyName,
+        initialBusPassengerCapacity: resolvedBusPassengerCapacity,
       );
     } on Object {
       return EditProfileState(
         countries: countries,
         vehicleTypes: vehicleTypes,
+        transportAgencyNames: agencyNames,
         allPlans: plans,
         isLoading: false,
       );
@@ -97,27 +139,69 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
 
   Future<bool> saveProfile({
     required String whatsApp,
+    required String momoNumber,
+    required String momoPayCode,
     required String vehicleNumberPlate,
+    required String busAgencyName,
+    required String busPassengerCapacity,
   }) async {
     final s = state.value;
     if (s == null) return false;
-
-    final profileService = ref.read(profileServiceProvider);
 
     final normalizedPlate = vehicleNumberPlate
         .toUpperCase()
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
+    final normalizedMomoNumber =
+        _localRwandaMomoNumber(momoNumber) ??
+        _localRwandaMomoNumber(whatsApp) ??
+        '';
+    final normalizedMomoPayCode = momoPayCode
+        .replaceAll(RegExp(r'[^0-9]'), '')
+        .trim();
+    final isBusDriver = s.isDriver && s.vehicleTypeId == 'bus';
+    final normalizedBusAgencyName = busAgencyName
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+    final normalizedCapacityText = busPassengerCapacity.trim();
+    final parsedBusCapacity = int.tryParse(normalizedCapacityText);
+
+    if (s.isDriver && normalizedPlate.isEmpty) {
+      throw const ValidationException(
+        message: 'Enter the vehicle plate number.',
+      );
+    }
+
+    if (isBusDriver && normalizedBusAgencyName.isEmpty) {
+      throw const ValidationException(message: 'Enter the bus agency name.');
+    }
+
+    if (isBusDriver &&
+        (parsedBusCapacity == null ||
+            parsedBusCapacity < 1 ||
+            parsedBusCapacity > 120)) {
+      throw const ValidationException(
+        message: 'Enter a passenger capacity from 1 to 120.',
+      );
+    }
+
+    if (SupabaseConfig.isLocalUiPreview) return true;
+
+    final profileService = ref.read(profileServiceProvider);
 
     state = AsyncValue.data(s.copyWith(isSaving: true));
 
     try {
       await profileService.saveProfileSettings(
         whatsapp: whatsApp.trim(),
+        momoNumber: normalizedMomoNumber,
+        momoPayCode: normalizedMomoPayCode,
         countryCode: s.countryCode,
         isDriver: s.isDriver,
         vehicleTypeId: s.vehicleTypeId,
         vehicleNumberPlate: normalizedPlate,
+        busAgencyName: isBusDriver ? normalizedBusAgencyName : null,
+        busPassengerCapacity: isBusDriver ? parsedBusCapacity : null,
         previousIsDriver: s.initialIsDriver,
       );
       return true;
@@ -129,4 +213,19 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
       rethrow;
     }
   }
+}
+
+String? _localRwandaMomoNumber(String value) {
+  final digits = value.replaceAll(RegExp(r'[^0-9]'), '');
+  if (digits.isEmpty) return null;
+  if (digits.length == 12 && digits.startsWith('2507')) {
+    return '0${digits.substring(3)}';
+  }
+  if (digits.length == 9 && digits.startsWith('7')) {
+    return '0$digits';
+  }
+  if (digits.length == 10 && digits.startsWith('07')) {
+    return digits;
+  }
+  return digits;
 }

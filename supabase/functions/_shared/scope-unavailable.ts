@@ -6,7 +6,7 @@ export type ScopeUnavailableOptions = {
 };
 
 const currentScope =
-  "Mobio supports nearby discovery, profiles, scheduled trip posts, WhatsApp handoff, in-app chat, reports, and admin moderation only.";
+  "Mobio supports nearby discovery, profiles, scheduled trip posts, WhatsApp handoff, in-app chat, reports, admin moderation, and BioPay USSD dialer assistance.";
 
 export function scopeUnavailableResponse(
   request: Request,
@@ -33,7 +33,7 @@ export function scopeUnavailableResponse(
       code: "mobio_scope_unavailable",
       current_scope: currentScope,
       excluded:
-        "No in-app fare engine, payment settlement, BioPay, SMS ledger ingestion, refunds, earnings, dispatch lifecycle, or trip start/complete flow.",
+        "No in-app fare engine, in-app payment settlement, SMS ledger ingestion, refunds, earnings, dispatch lifecycle, or trip start/complete flow. BioPay remains USSD dialer assistance only.",
     },
     request,
   );

@@ -6,12 +6,13 @@ import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/vehicle_type.dart';
 import 'package:mobi_app/models/vehicle_type_model.dart';
+import 'package:mobi_app/shared/widgets/vehicle_type_icon.dart';
 
 /// Returns the icon for a [VehicleType] enum value.
 IconData getVehicleIcon(VehicleType type) {
   switch (type) {
     case VehicleType.moto:
-      return LucideIcons.zap;
+      return LucideIcons.bike;
     case VehicleType.cab:
       return LucideIcons.car;
     case VehicleType.bus:
@@ -31,7 +32,7 @@ IconData getVehicleIcon(VehicleType type) {
 IconData getVehicleIconFromId(String id) {
   switch (id) {
     case 'moto':
-      return LucideIcons.zap;
+      return LucideIcons.bike;
     case 'cab':
       return LucideIcons.car;
     case 'bus':
@@ -118,17 +119,10 @@ class _VehicleImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Try local asset (always bundled)
-    return Image.asset(
-      vehicleType.localAssetPath,
-      width: size,
-      height: size,
-      fit: BoxFit.contain,
-      errorBuilder: (_, e, s) => Icon(
-        vehicleType.icon,
-        size: size * 0.7,
-        color: Theme.of(context).colorScheme.onSurface,
-      ),
+    return VehicleTypeIcon(
+      vehicleType: vehicleType,
+      size: size * 0.78,
+      color: Theme.of(context).colorScheme.onSurface,
     );
   }
 }

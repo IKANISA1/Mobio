@@ -6,7 +6,6 @@ import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
-import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -20,7 +19,6 @@ import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
-import 'package:mobi_app/shared/widgets/mobi_top_command_bar.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -52,7 +50,6 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   String? _error;
   List<Trip> _myTrips = [];
   List<Trip> _nearbyTrips = [];
-  TripService get _tripService => ref.read(tripServiceProvider);
 
   @override
   void initState() {
@@ -102,9 +99,10 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
     }
 
     try {
+      final tripService = ref.read(tripServiceProvider);
       final results = await Future.wait([
-        _tripService.getMyTrips(),
-        _tripService.getNearbyTrips(),
+        tripService.getMyTrips(),
+        tripService.getNearbyTrips(),
       ]);
 
       if (mounted) {
@@ -198,20 +196,6 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                     sliver: SliverToBoxAdapter(
                       child: Column(
                         children: [
-                          MobiTopCommandBar(
-                            actions: [
-                              const MobiTopCommandBarAction(
-                                icon: LucideIcons.calendarDays,
-                                label: 'Calendar',
-                              ),
-                              MobiTopCommandBarAction(
-                                icon: LucideIcons.plus,
-                                label: 'Schedule',
-                                onTap: widget.onSchedule,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: AppSpacing.xl),
                           Text(
                             'Trips',
                             textAlign: TextAlign.center,
@@ -309,17 +293,9 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   }
 
   List<Widget> _buildLoadingSlivers() {
-    return ['TODAY', 'TOMORROW'].map((section) {
+    return List.generate(2, (_) {
       return SliverMainAxisGroup(
         slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.only(
-              left: AppSpacing.screenPadding,
-              right: AppSpacing.screenPadding,
-              bottom: AppSpacing.sm,
-            ),
-            sliver: SliverToBoxAdapter(child: _buildSectionLabel(section)),
-          ),
           SliverPadding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.screenPadding,
@@ -374,14 +350,6 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       return SliverMainAxisGroup(
         slivers: [
           SliverPadding(
-            padding: const EdgeInsets.only(
-              left: AppSpacing.screenPadding,
-              right: AppSpacing.screenPadding,
-              bottom: AppSpacing.sm,
-            ),
-            sliver: SliverToBoxAdapter(child: _buildSectionLabel(section)),
-          ),
-          SliverPadding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.screenPadding,
             ),
@@ -407,27 +375,6 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         ],
       );
     }).toList();
-  }
-
-  Widget _buildSectionLabel(String label) {
-    final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-
-    return MobiSurfacePanel(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
-      ),
-      borderRadius: AppRadii.pill,
-      color: ext.surfaceContainerLowest.withValues(
-        alpha: ext.surfacePanelAlpha,
-      ),
-      child: Text(switch (label) {
-        'TODAY' => 'Today',
-        'TOMORROW' => 'Tomorrow',
-        _ => 'Later',
-      }, style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant)),
-    );
   }
 
   Widget _buildTripCard(Trip trip) {
@@ -586,7 +533,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
 
     if (confirmed == true && trip.id != null) {
       try {
-        await _tripService.cancelTrip(trip.id!);
+        await ref.read(tripServiceProvider).cancelTrip(trip.id!);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

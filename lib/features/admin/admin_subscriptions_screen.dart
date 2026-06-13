@@ -678,17 +678,7 @@ class _PlanRow extends StatelessWidget {
           ),
           child: Center(
             child: vehicleType != null
-                ? Image.asset(
-                    vehicleType.localAssetPath,
-                    width: 28,
-                    height: 28,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => Icon(
-                      vehicleType.icon,
-                      size: 20,
-                      color: cs.onSurfaceVariant,
-                    ),
-                  )
+                ? Icon(vehicleType.icon, size: 20, color: cs.onSurfaceVariant)
                 : Icon(LucideIcons.car, size: 20, color: cs.onSurfaceVariant),
           ),
         ),

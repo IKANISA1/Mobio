@@ -15,6 +15,35 @@ export function normalizePhone(
   return `+${digits}`;
 }
 
+export function normalizePhoneWithCountry(
+  value: unknown,
+  countryCodeValue: unknown,
+  errorMessage = "Valid WhatsApp number required",
+): string {
+  if (typeof value != "string") {
+    throw new Error(errorMessage);
+  }
+
+  const trimmed = value.trim();
+  if (trimmed.startsWith("+") || trimmed.startsWith("00")) {
+    return normalizePhone(trimmed.replace(/^00/, "+"), errorMessage);
+  }
+
+  const countryCode = normalizeCountryCode(countryCodeValue);
+  if (!countryCode) {
+    return normalizePhone(trimmed, errorMessage);
+  }
+
+  const countryDigits = countryCode.replace(/\D/g, "");
+  const digits = trimmed.replace(/\D/g, "");
+  const nationalDigits =
+    (digits.startsWith(countryDigits)
+      ? digits.slice(countryDigits.length)
+      : digits).replace(/^0+/, "");
+
+  return normalizePhone(`+${countryDigits}${nationalDigits}`, errorMessage);
+}
+
 export function normalizeCountryCode(value: unknown): string | null {
   if (typeof value != "string") {
     return null;

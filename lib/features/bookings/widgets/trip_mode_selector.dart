@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
-import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
@@ -24,8 +23,6 @@ class TripModeSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const MobiSectionHeader(title: 'Mode', icon: LucideIcons.user),
-        const SizedBox(height: AppSpacing.md),
         MobiSurfacePanel(
           padding: const EdgeInsets.all(AppSpacing.sm),
           borderRadius: AppRadii.xxl,

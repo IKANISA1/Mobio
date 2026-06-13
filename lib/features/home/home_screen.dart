@@ -12,7 +12,6 @@ import 'package:mobi_app/core/services/notification_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
-import 'package:mobi_app/features/home/widgets/driver_demand_zones_panel.dart';
 import 'package:mobi_app/features/home/widgets/home_header.dart';
 import 'package:mobi_app/features/home/widgets/home_hero_card.dart';
 import 'package:mobi_app/features/home/widgets/scheduled_trip_card.dart';
@@ -30,7 +29,7 @@ import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 
-/// Home (Discover) screen matching transito design.
+/// Home (Discover) screen matching the MOBI Revolut-reference design.
 class HomeScreen extends ConsumerStatefulWidget {
   final String mode;
   final ValueChanged<String> onModeChanged;
@@ -38,6 +37,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final VoidCallback onViewNearby;
   final VoidCallback? onViewBookings;
   final VoidCallback? onSchedule;
+  final VoidCallback? onNotifications;
 
   const HomeScreen({
     super.key,
@@ -47,6 +47,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.onViewNearby,
     this.onViewBookings,
     this.onSchedule,
+    this.onNotifications,
   });
 
   @override
@@ -60,7 +61,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _isDriverOnline = false;
   int _nearbyCount = 0;
   int _unreadCount = 0;
-  List<DriverDemandZone> _demandZones = [];
   List<Trip> _nearbyPreview = [];
   List<Trip> _scheduledPreview = [];
   List<VehicleTypeModel> _vehicleTypes = [];
@@ -146,16 +146,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _hasError = false;
     });
     try {
-      final isDriver = widget.mode == 'driver';
       final nearbyFuture = _tripService.getNearbyTrips();
       final myTripsFuture = _tripService.getMyTrips();
-      final demandZonesFuture = isDriver
-          ? _fetchDemandZones()
-          : Future.value(<DriverDemandZone>[]);
 
       final nearby = await nearbyFuture;
       final myTrips = await myTripsFuture;
-      final demandZones = await demandZonesFuture;
 
       // Get scheduled trips (active/upcoming)
       final scheduled = myTrips
@@ -168,7 +163,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           _nearbyCount = nearby.length;
           _nearbyPreview = nearby.take(3).toList();
           _scheduledPreview = scheduled;
-          _demandZones = isDriver ? demandZones : [];
           _isLoading = false;
         });
       }
@@ -178,24 +172,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           _nearbyCount = 0;
           _nearbyPreview = [];
           _scheduledPreview = [];
-          _demandZones = [];
           _isLoading = false;
           _hasError = true;
         });
       }
     }
-  }
-
-  Future<List<DriverDemandZone>> _fetchDemandZones() async {
-    final position = await ref
-        .read(locationServiceProvider)
-        .getLastKnownOrCached();
-
-    return _driverLocationService.getDemandZones(
-      latitude: position?.latitude,
-      longitude: position?.longitude,
-      limit: 6,
-    );
   }
 
   Future<void> _loadVehicleTypes() async {
@@ -255,7 +236,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _nearbyCount = nearby.length;
       _nearbyPreview = nearby;
       _scheduledPreview = scheduled;
-      _demandZones = const [];
       _unreadCount = 1;
       _isLoading = false;
       _hasError = false;
@@ -306,6 +286,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         unreadCount: _unreadCount,
                         isDriverOnline: _isDriverOnline,
                         onDriverOnlineToggle: _toggleDriverOnline,
+                        onNotifications: widget.onNotifications,
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       MobiSurfacePanel(
@@ -333,8 +314,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       HomeHeroCard(
                             isDriver: isDriver,
                             nearbyCount: _nearbyCount,
-                            unreadCount: _unreadCount,
-                            scheduledCount: _scheduledPreview.length,
                             onTap: widget.onViewNearby,
                           )
                           .animate(delay: 100.ms)
@@ -369,19 +348,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ],
                   ).animate(delay: 200.ms).fade().slideY(begin: 0.1),
                 ),
-                if (isDriver) ...[
-                  const SizedBox(height: AppSpacing.xl),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.screenPadding,
-                    ),
-                    child: DriverDemandZonesPanel(
-                      zones: _demandZones,
-                      isLoading: _isLoading,
-                      onRefresh: _loadData,
-                    ).animate(delay: 250.ms).fade().slideY(begin: 0.08),
-                  ),
-                ],
                 const SizedBox(height: AppSpacing.xl),
                 Padding(
                   padding: const EdgeInsets.symmetric(

@@ -11,6 +11,7 @@ class AppNotification {
   final String? body;
   final Map<String, dynamic> metadata;
   final bool isRead;
+  final bool visibleInApp;
   final String createdAt;
 
   const AppNotification({
@@ -21,6 +22,7 @@ class AppNotification {
     this.body,
     this.metadata = const {},
     this.isRead = false,
+    this.visibleInApp = true,
     required this.createdAt,
   });
 
@@ -33,8 +35,18 @@ class AppNotification {
       body: json['body'] as String?,
       metadata: (json['metadata'] as Map<String, dynamic>?) ?? {},
       isRead: json['is_read'] as bool? ?? false,
+      visibleInApp: json['visible_in_app'] as bool? ?? true,
       createdAt: json['created_at'] as String? ?? '',
     );
+  }
+
+  String get route {
+    final value = metadata['route'];
+    if (value is String && value.startsWith('/') && !value.startsWith('//')) {
+      return value;
+    }
+
+    return '/notifications';
   }
 }
 
@@ -72,6 +84,7 @@ class NotificationService {
           .from('notifications')
           .select()
           .eq('user_id', userId)
+          .eq('visible_in_app', true)
           .order('created_at', ascending: false)
           .limit(limit);
 
@@ -93,6 +106,7 @@ class NotificationService {
           .select()
           .eq('user_id', userId)
           .eq('is_read', false)
+          .eq('visible_in_app', true)
           .order('created_at', ascending: false);
 
       return rows.map<AppNotification>(AppNotification.fromJson).toList();
@@ -113,6 +127,7 @@ class NotificationService {
           .select('id')
           .eq('user_id', userId)
           .eq('is_read', false)
+          .eq('visible_in_app', true)
           .count(CountOption.exact);
       return result.count;
     } on Object catch (e) {
@@ -147,7 +162,8 @@ class NotificationService {
           .from('notifications')
           .update({'is_read': true})
           .eq('user_id', userId)
-          .eq('is_read', false);
+          .eq('is_read', false)
+          .eq('visible_in_app', true);
     } on Object catch (e) {
       AppLogger.error('Error marking all notifications as read: $e');
     }
@@ -186,6 +202,9 @@ class NotificationService {
           callback: (payload) {
             try {
               final notification = AppNotification.fromJson(payload.newRecord);
+              if (!notification.visibleInApp) {
+                return;
+              }
               _notificationController.add(notification);
             } on Object catch (e) {
               AppLogger.error('Error parsing realtime notification: $e');

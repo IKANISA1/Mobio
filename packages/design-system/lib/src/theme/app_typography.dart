@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Typography scale matching transito design system.
-/// Headline/Display: Manrope 800, tight tracking
+/// Typography scale for the MOBI Revolut-reference shell.
+/// Headline/Display: Manrope 800, zero tracking
 /// Body/Label: Inter 400-700
 ///
 /// NOTE: Colors are NOT baked in — apply color at point-of-use via

@@ -9,6 +9,40 @@ class PublicTransportService {
 
   final SupabaseClient _supabase;
   static const _networkTimeout = Duration(seconds: 15);
+  static const fallbackAgencyNames = [
+    'Volcano Express',
+    'Ritco',
+    'Horizon Express',
+    'Trinity Express',
+    'Virunga Express',
+    'Kigali Bus Services',
+    'Royal Express',
+    'Stella Express',
+  ];
+
+  Future<List<String>> getAgencyNames({bool includeInactive = false}) async {
+    try {
+      var query = _supabase.from('transport_agencies').select('name');
+      if (!includeInactive) {
+        query = query.eq('is_active', true);
+      }
+
+      final rows = await query.order('name').timeout(_networkTimeout);
+      final names =
+          (rows as List<dynamic>)
+              .map((row) => (row as Map<String, dynamic>)['name']?.toString())
+              .whereType<String>()
+              .map((name) => name.replaceAll(RegExp(r'\s+'), ' ').trim())
+              .where((name) => name.isNotEmpty)
+              .toSet()
+              .toList()
+            ..sort();
+
+      return names.isEmpty ? fallbackAgencyNames : names;
+    } on Object {
+      return fallbackAgencyNames;
+    }
+  }
 
   Future<List<PublicTransportSchedule>> searchSchedules({
     String? originSearch,

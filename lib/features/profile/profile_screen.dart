@@ -1,29 +1,29 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
-import 'package:mobi_app/core/services/profile_service.dart';
+import 'package:mobi_app/core/services/biopay_face_service.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_feature_tile.dart';
-import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
-import 'package:mobi_app/shared/widgets/mobi_top_command_bar.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// Profile screen matching transito ProfileScreen.
+/// Profile screen matching the MOBI Revolut-reference profile grammar.
 class ProfileScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final ValueChanged<bool> onDarkModeChanged;
   final VoidCallback onEditProfile;
+  final VoidCallback? onBioPayEnroll;
 
   final VoidCallback onAdminGateway;
   final VoidCallback? onExitAdmin;
@@ -33,6 +33,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
     required this.isDarkMode,
     required this.onDarkModeChanged,
     required this.onEditProfile,
+    this.onBioPayEnroll,
 
     required this.onAdminGateway,
     this.onExitAdmin,
@@ -45,10 +46,9 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   bool _isLoading = true;
   String? _error;
-  ProfileService get _profileService => ref.read(profileServiceProvider);
+  BioPayEnrollmentStatus _bioPayEnrollment = const BioPayEnrollmentStatus();
 
   String _userCode = '482013';
-  int _memberSince = 2024;
 
   @override
   void initState() {
@@ -66,9 +66,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         if (mounted) setState(() => _isLoading = false);
         return;
       }
-      final profile = await _profileService.getMyProfile();
+      final profileService = ref.read(profileServiceProvider);
+      final profile = await profileService.getMyProfile();
+      final bioPayEnrollment = await ref
+          .read(biopayFaceServiceProvider)
+          .enrollmentStatus();
       if (profile != null && mounted) {
-        final year = await _profileService.getMemberSinceYear();
         setState(() {
           final memberId = profile.memberId;
           if (memberId != null && memberId.isNotEmpty) {
@@ -82,8 +85,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             final hash = rawId.hashCode.abs();
             _userCode = (hash % 1000000).toString().padLeft(6, '0');
           }
-          _memberSince = year ?? 2024;
+          _bioPayEnrollment = bioPayEnrollment;
         });
+      } else if (mounted) {
+        setState(() => _bioPayEnrollment = bioPayEnrollment);
       }
     } on Object catch (e, st) {
       log('Error loading profile: $e', stackTrace: st);
@@ -91,6 +96,65 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Future<void> _launchExternalUri(
+    Uri uri,
+    String failureMessage, {
+    Uri? fallback,
+  }) async {
+    final messenger = ScaffoldMessenger.of(context);
+    Future<bool> launch(Uri target) {
+      return launchUrl(target, mode: LaunchMode.externalApplication);
+    }
+
+    try {
+      if (await launch(uri)) return;
+      if (fallback != null && await launch(fallback)) return;
+    } on Object catch (_) {
+      if (fallback != null) {
+        try {
+          if (await launch(fallback)) return;
+        } on Object catch (_) {}
+      }
+    }
+
+    if (!mounted) return;
+    messenger.showSnackBar(SnackBar(content: Text(failureMessage)));
+  }
+
+  Future<void> _openSupport() {
+    final uri = Uri.https(
+      'wa.me',
+      '/${SupabaseConfig.supportWhatsAppNumber}',
+      const {'text': 'Hello Mobio support'},
+    );
+    return _launchExternalUri(uri, 'Could not open WhatsApp support.');
+  }
+
+  Future<void> _openShareApp() {
+    final playStoreUri = Uri.parse(SupabaseConfig.playStoreUrl);
+    final isAppleStorePlatform =
+        defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS;
+
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      return _launchExternalUri(
+        Uri.parse('market://details?id=rw.mobi.app'),
+        'Could not open app store.',
+        fallback: playStoreUri,
+      );
+    }
+
+    if (isAppleStorePlatform) {
+      return _launchExternalUri(
+        Uri.parse(SupabaseConfig.appStoreUrl),
+        'Could not open app store.',
+        fallback: playStoreUri,
+      );
+    }
+
+    return _launchExternalUri(playStoreUri, 'Could not open app store.');
   }
 
   @override
@@ -181,22 +245,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         child: Column(
           children:
               [
-                    MobiTopCommandBar(
-                      searchHint: 'Search settings',
-                      actions: [
-                        MobiTopCommandBarAction(
-                          icon: LucideIcons.userCog,
-                          label: 'Edit profile',
-                          onTap: widget.onEditProfile,
-                        ),
-                        MobiTopCommandBarAction(
-                          icon: LucideIcons.shield,
-                          label: 'Security',
-                          onTap: widget.onAdminGateway,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.sectionGap),
                     Column(
                       children: [
                         Container(
@@ -222,40 +270,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         Text(
-                          'MOBI $_userCode',
+                          _userCode,
                           textAlign: TextAlign.center,
                           style: AppTypography.displayLg.copyWith(
                             color: Colors.white,
                             fontSize: 38,
                             height: 1.05,
                           ),
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          '@mobi$_userCode',
-                          textAlign: TextAlign.center,
-                          style: AppTypography.bodyLg.copyWith(
-                            color: Colors.white.withValues(alpha: 0.72),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        Wrap(
-                          spacing: AppSpacing.xs,
-                          runSpacing: AppSpacing.xs,
-                          alignment: WrapAlignment.center,
-                          children: [
-                            MobiStatusBadge(
-                              label: 'Since $_memberSince',
-                              icon: LucideIcons.calendarDays,
-                              tone: MobiStatusBadgeTone.brand,
-                            ),
-                            const MobiStatusBadge(
-                              label: 'Secure',
-                              icon: LucideIcons.shieldCheck,
-                              tone: MobiStatusBadgeTone.positive,
-                            ),
-                          ],
                         ),
                       ],
                     ),
@@ -266,6 +287,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       icon: LucideIcons.user,
                       label: 'Edit Profile',
                       onTap: widget.onEditProfile,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    MobiFeatureTile(
+                      onTap: widget.onBioPayEnroll,
+                      icon: LucideIcons.scanFace,
+                      title: 'BioPay Face',
+                      compact: true,
+                      badge: _ProfileStatusPill(
+                        label: _bioPayEnrollment.label,
+                        accent: _bioPayEnrollment.isEnrolled
+                            ? ext.aqua
+                            : cs.primary,
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
 
@@ -309,70 +343,52 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                       ),
                     ),
-                    if (SupabaseConfig.hasPrivacyPolicyUrl) ...[
-                      const SizedBox(height: AppSpacing.sm),
-                      MobiFeatureTile(
-                        onTap: () async {
-                          final uri = Uri.tryParse(
-                            SupabaseConfig.privacyPolicyUrl,
-                          );
-                          if (uri != null) {
-                            final messenger = ScaffoldMessenger.of(context);
-                            try {
-                              await launchUrl(
-                                uri,
-                                mode: LaunchMode.externalApplication,
-                              );
-                            } on Object catch (_) {
-                              if (mounted) {
-                                messenger.showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Could not open privacy policy.',
-                                    ),
-                                  ),
-                                );
-                              }
-                            }
-                          }
-                        },
-                        icon: LucideIcons.shield,
-                        title: 'Privacy Policy',
-                        compact: true,
+                    const SizedBox(height: AppSpacing.sm),
+                    MobiFeatureTile(
+                      onTap: _openSupport,
+                      icon: LucideIcons.messageCircle,
+                      title: 'Support',
+                      compact: true,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    MobiFeatureTile(
+                      onTap: _openShareApp,
+                      icon: LucideIcons.share2,
+                      title: 'Share App',
+                      compact: true,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    MobiFeatureTile(
+                      onTap: () => _launchExternalUri(
+                        Uri.parse(SupabaseConfig.privacyPolicyUrl),
+                        'Could not open privacy policy.',
                       ),
-                    ],
-                    if (SupabaseConfig.hasAccountDeletionUrl) ...[
-                      const SizedBox(height: AppSpacing.sm),
-                      MobiFeatureTile(
-                        onTap: () async {
-                          final uri = Uri.tryParse(
-                            SupabaseConfig.accountDeletionUrl,
-                          );
-                          if (uri != null) {
-                            final messenger = ScaffoldMessenger.of(context);
-                            try {
-                              await launchUrl(
-                                uri,
-                                mode: LaunchMode.externalApplication,
-                              );
-                            } on Object catch (_) {
-                              if (mounted) {
-                                messenger.showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Could not open account deletion.',
-                                    ),
-                                  ),
-                                );
-                              }
-                            }
-                          }
-                        },
-                        icon: LucideIcons.userX,
-                        title: 'Delete Account',
-                        compact: true,
+                      icon: LucideIcons.shield,
+                      title: 'Privacy Policy',
+                      compact: true,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    MobiFeatureTile(
+                      onTap: () => _launchExternalUri(
+                        Uri.parse(SupabaseConfig.termsAndConditionsUrl),
+                        'Could not open terms and conditions.',
                       ),
-                    ],
+                      icon: LucideIcons.fileText,
+                      title: 'Terms and Conditions',
+                      compact: true,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    MobiFeatureTile(
+                      onTap: () => _launchExternalUri(
+                        Uri.parse(SupabaseConfig.accountDeletionUrl),
+                        'Could not open account deletion.',
+                      ),
+                      icon: LucideIcons.userX,
+                      title: 'Delete Account',
+                      accent: cs.error,
+                      accentBackground: cs.error.withValues(alpha: 0.12),
+                      compact: true,
+                    ),
                     if (widget.onExitAdmin != null) ...[
                       const SizedBox(height: AppSpacing.sm),
                       MobiFeatureTile(
@@ -431,6 +447,36 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       icon: icon,
       title: label,
       compact: true,
+    );
+  }
+}
+
+class _ProfileStatusPill extends StatelessWidget {
+  const _ProfileStatusPill({required this.label, required this.accent});
+
+  final String label;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      constraints: const BoxConstraints(minWidth: 52),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        textAlign: TextAlign.center,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: AppTypography.labelSm.copyWith(
+          color: cs.onSurface,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
     );
   }
 }

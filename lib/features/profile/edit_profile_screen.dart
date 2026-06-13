@@ -11,6 +11,7 @@ import 'package:mobi_app/features/profile/models/edit_profile_state.dart';
 import 'package:mobi_app/features/profile/providers/edit_profile_provider.dart';
 import 'package:mobi_app/features/profile/widgets/profile_contact_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_driver_section.dart';
+import 'package:mobi_app/features/profile/widgets/profile_momo_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_notification_consent_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_subscription_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_vehicle_section.dart';
@@ -36,19 +37,32 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late final TextEditingController _whatsAppController;
+  late final TextEditingController _momoNumberController;
+  late final TextEditingController _momoPayCodeController;
   late final TextEditingController _vehiclePlateController;
+  late final TextEditingController _busAgencyController;
+  late final TextEditingController _busCapacityController;
+  bool _didHydrateControllers = false;
 
   @override
   void initState() {
     super.initState();
     _whatsAppController = TextEditingController();
+    _momoNumberController = TextEditingController();
+    _momoPayCodeController = TextEditingController();
     _vehiclePlateController = TextEditingController();
+    _busAgencyController = TextEditingController();
+    _busCapacityController = TextEditingController();
   }
 
   @override
   void dispose() {
     _whatsAppController.dispose();
+    _momoNumberController.dispose();
+    _momoPayCodeController.dispose();
     _vehiclePlateController.dispose();
+    _busAgencyController.dispose();
+    _busCapacityController.dispose();
     super.dispose();
   }
 
@@ -66,7 +80,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     try {
       final success = await controller.saveProfile(
         whatsApp: _whatsAppController.text,
+        momoNumber: _momoNumberController.text,
+        momoPayCode: _momoPayCodeController.text,
         vehicleNumberPlate: _vehiclePlateController.text,
+        busAgencyName: _busAgencyController.text,
+        busPassengerCapacity: _busCapacityController.text,
       );
       if (success) {
         _showSnackBar(
@@ -83,6 +101,18 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         isError: true,
       );
     }
+  }
+
+  void _hydrateControllers(EditProfileState state) {
+    if (_didHydrateControllers) return;
+
+    _whatsAppController.text = state.initialWhatsApp;
+    _momoNumberController.text = state.initialMomoNumber;
+    _momoPayCodeController.text = state.initialMomoPayCode;
+    _vehiclePlateController.text = state.initialVehicleNumberPlate;
+    _busAgencyController.text = state.initialBusAgencyName;
+    _busCapacityController.text = state.initialBusPassengerCapacity;
+    _didHydrateControllers = true;
   }
 
   void _showCountryPicker(
@@ -152,8 +182,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         final stateValue = next.value;
         if (prev == null ||
             (prev is AsyncData<EditProfileState> && prev.value.isLoading)) {
-          _whatsAppController.text = stateValue.initialWhatsApp;
-          _vehiclePlateController.text = stateValue.initialVehicleNumberPlate;
+          _hydrateControllers(stateValue);
         }
       }
     });
@@ -194,6 +223,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     EditProfileState state,
     EditProfileController controller,
   ) {
+    _hydrateControllers(state);
+
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.screenPadding,
@@ -219,15 +250,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         height: 1.08,
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      'Identity, contact, and driver settings',
-                      textAlign: TextAlign.center,
-                      style: AppTypography.bodyLg.copyWith(
-                        color: Colors.white.withValues(alpha: 0.74),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -240,6 +262,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 whatsAppController: _whatsAppController,
                 selectedCountry: state.selectedCountry,
                 onCountryTap: () => _showCountryPicker(state, controller),
+              ),
+              const SizedBox(height: AppSpacing.xl),
+              ProfileMomoSection(
+                momoNumberController: _momoNumberController,
+                momoPayCodeController: _momoPayCodeController,
               ),
               const SizedBox(height: AppSpacing.xl),
               const ProfileNotificationConsentSection(),
@@ -255,6 +282,9 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   selectedVehicleId: state.vehicleTypeId,
                   onVehicleTypeChanged: controller.setVehicleTypeId,
                   plateController: _vehiclePlateController,
+                  busAgencyController: _busAgencyController,
+                  busCapacityController: _busCapacityController,
+                  transportAgencyNames: state.transportAgencyNames,
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 ProfileSubscriptionSection(

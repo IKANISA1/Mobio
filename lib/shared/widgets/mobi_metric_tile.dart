@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 
 class MobiMetricTile extends StatelessWidget {
@@ -24,7 +23,6 @@ class MobiMetricTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final resolvedAccent = accent ?? cs.primary;
 
     return ClayCard(
@@ -61,7 +59,8 @@ class MobiMetricTile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppTypography.bodySm.copyWith(
-              color: ext.surfaceBright.withValues(alpha: 0.72),
+              color: cs.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],

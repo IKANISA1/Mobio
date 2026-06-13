@@ -30,6 +30,10 @@
 	<string>Mobio uses your location to show nearby drivers and passengers and prepare Google Maps handoff.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Mobio uses your location to show nearby drivers and passengers and prepare Google Maps handoff.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Mobio uses the camera for BioPay QR scanning and AWS-backed face enrollment or identity check.</string>
+	<key>NFCReaderUsageDescription</key>
+	<string>Mobio uses NFC to read or write BioPay request tokens before opening the phone USSD dialer.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

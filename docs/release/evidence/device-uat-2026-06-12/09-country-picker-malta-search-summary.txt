@@ -1,0 +1,7 @@
+FrameLayout id=android:id/content bounds=[0,0][1080,2274]
+  FrameLayout flags=focusable bounds=[0,0][1080,2274]
+    View desc="No internet connection" flags=focusable bounds=[0,0][1080,2274]
+      View desc="Scrim" flags=clickable,focusable bounds=[0,0][1080,500]
+      EditText text="Malta" flags=clickable,focusable bounds=[55,544][1025,696]
+      Button desc="🇲🇹 Malta +356" flags=clickable,focusable bounds=[0,729][1080,927]
+View id=android:id/navigationBarBackground bounds=[0,2274][1080,2340]

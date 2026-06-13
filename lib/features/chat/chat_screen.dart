@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
-import 'package:mobi_app/core/services/chat_ai_service.dart';
 import 'package:mobi_app/core/services/chat_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
@@ -21,6 +21,7 @@ import 'package:mobi_app/features/chat/widgets/chat_moderation_sheet.dart';
 import 'package:mobi_app/features/chat/widgets/conversation_list.dart';
 import 'package:mobi_app/features/chat/widgets/trip_context_card.dart';
 import 'package:mobi_app/models/trip.dart';
+import 'package:mobi_app/models/vehicle_type.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_confirm_dialog.dart';
@@ -52,8 +53,6 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
   ProfileService get _profileService => ref.read(profileServiceProvider);
 
-  ChatAiService get _chatAiService => ref.read(chatAiServiceProvider);
-
   final _composerController = TextEditingController();
   final _composerFocusNode = FocusNode();
   final _scrollController = ScrollController();
@@ -66,13 +65,11 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   String? _error;
   bool _isLoading = true;
   bool _isSending = false;
-  bool _isGeneratingSuggestions = false;
-  bool _isAutocompleting = false;
   bool _isPeerBlocked = false;
   bool _isModerating = false;
   int _lastRenderedMessageCount = 0;
-  List<String> _replySuggestions = const [];
   List<ChatConversation> _tripConversations = const [];
+  List<ChatMessageModel> _localPreviewMessages = const [];
 
   @override
   void initState() {
@@ -110,6 +107,11 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       _isLoading = true;
       _error = null;
     });
+
+    if (SupabaseConfig.isLocalUiPreview) {
+      _loadLocalPreviewChat();
+      return;
+    }
 
     try {
       final currentUserId = _chatService.currentUserId;
@@ -170,6 +172,78 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     }
   }
 
+  void _loadLocalPreviewChat() {
+    final now = DateTime(2026, 6, 11, 9, 30);
+    const trip = Trip(
+      id: 't1',
+      authorId: 'u2',
+      authorName: 'Driver',
+      origin: 'Kigali Heights',
+      destination: 'Airport',
+      departureDate: '2026-06-11',
+      departureTime: '09:40',
+      date: '2026-06-11',
+      time: '09:40',
+      role: 'driver',
+      whatsapp: '250700000000',
+      seats: 3,
+      price: '0.4 km',
+      isActive: true,
+      status: 'approved',
+      vehicleType: VehicleType.cab,
+      originLat: -1.9503,
+      originLng: 29.8839,
+    );
+    const currentUserId = 'u1';
+    const peerId = 'u2';
+    final conversation = ChatConversation(
+      id: 'preview-conversation',
+      tripId: 't1',
+      participantLowId: currentUserId,
+      participantHighId: peerId,
+      createdBy: currentUserId,
+      contextType: 'trip',
+      status: 'active',
+      lastMessagePreview: 'I can meet at the main entrance.',
+      lastMessageAt: now.subtract(const Duration(minutes: 4)),
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _currentUserId = currentUserId;
+      _selectedConversationId = conversation.id;
+      _conversation = conversation;
+      _trip = trip;
+      _profileCache[peerId] = const {
+        'display_name': 'Driver',
+        'name': 'Driver',
+      };
+      _localPreviewMessages = [
+        ChatMessageModel(
+          id: 'preview-message-1',
+          conversationId: conversation.id,
+          senderId: peerId,
+          messageType: 'text',
+          body: 'I am nearby and can take this trip.',
+          createdAt: now.subtract(const Duration(minutes: 7)),
+        ),
+        ChatMessageModel(
+          id: 'preview-message-2',
+          conversationId: conversation.id,
+          senderId: currentUserId,
+          messageType: 'text',
+          body: 'Great. I can meet at the main entrance.',
+          createdAt: now.subtract(const Duration(minutes: 4)),
+        ),
+      ];
+      _isLoading = false;
+      _error = null;
+    });
+  }
+
   Future<void> _loadTripConversations({bool showLoader = true}) async {
     if (showLoader && mounted) {
       setState(() => _isLoading = true);
@@ -194,9 +268,6 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
         _tripConversations = conversations;
         _selectedConversationId = null;
         _conversation = null;
-        _replySuggestions = const [];
-        _isGeneratingSuggestions = false;
-        _isAutocompleting = false;
         _isLoading = false;
         _error = null;
       });
@@ -251,16 +322,10 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       _trip = trip;
       _profileCache[peerId] = peerProfile;
       _isPeerBlocked = isPeerBlocked;
-      _replySuggestions = const [];
-      _isGeneratingSuggestions = false;
-      _isAutocompleting = false;
       _isLoading = false;
     });
 
     _composerController.clear();
-    if (!isPeerBlocked) {
-      unawaited(_requestReplySuggestions());
-    }
   }
 
   Future<Map<String, dynamic>?> _loadPeerProfile(String peerId) async {
@@ -272,15 +337,6 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     final profileMap = profile?.toJson();
     _profileCache[peerId] = profileMap;
     return profileMap;
-  }
-
-  void _applyComposerText(String text) {
-    final normalizedText = text.trim();
-    _composerController.value = TextEditingValue(
-      text: normalizedText,
-      selection: TextSelection.collapsed(offset: normalizedText.length),
-    );
-    _composerFocusNode.requestFocus();
   }
 
   Future<void> _sendMessage() async {
@@ -299,6 +355,24 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       return;
     }
 
+    if (SupabaseConfig.isLocalUiPreview) {
+      setState(() {
+        _localPreviewMessages = [
+          ..._localPreviewMessages,
+          ChatMessageModel(
+            id: 'preview-message-${_localPreviewMessages.length + 1}',
+            conversationId: conversation.id,
+            senderId: _currentUserId,
+            messageType: 'text',
+            body: text,
+            createdAt: DateTime.now(),
+          ),
+        ];
+      });
+      _composerController.clear();
+      return;
+    }
+
     setState(() => _isSending = true);
 
     try {
@@ -310,13 +384,8 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       _composerController.clear();
 
       if (mounted) {
-        setState(() {
-          _isSending = false;
-          _replySuggestions = const [];
-        });
+        setState(() => _isSending = false);
       }
-
-      unawaited(_requestReplySuggestions());
     } on Object catch (error) {
       if (!mounted) {
         return;
@@ -329,112 +398,6 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
             userMessageForError(
               error,
               fallback: 'Failed to send message. Please try again.',
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
-  Future<void> _requestReplySuggestions() async {
-    final conversation = _conversation;
-    final currentUserId = _currentUserId;
-    if (conversation == null ||
-        currentUserId == null ||
-        _isPeerBlocked ||
-        _isGeneratingSuggestions) {
-      return;
-    }
-
-    final conversationId = conversation.id;
-    setState(() => _isGeneratingSuggestions = true);
-
-    try {
-      final peerProfile = _profileCache[conversation.peerIdFor(currentUserId)];
-      final messages = await _chatService.getRecentMessages(conversationId);
-      final assist = await _chatAiService.suggestReplies(
-        conversation: conversation,
-        messages: messages,
-        currentUserId: currentUserId,
-        peerProfile: peerProfile,
-        trip: _trip,
-      );
-
-      if (!mounted || _conversation?.id != conversationId) {
-        return;
-      }
-
-      setState(() {
-        _replySuggestions = assist.suggestions;
-        _isGeneratingSuggestions = false;
-      });
-    } on Object catch (error) {
-      if (!mounted || _conversation?.id != conversationId) {
-        return;
-      }
-
-      setState(() => _isGeneratingSuggestions = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            userMessageForError(
-              error,
-              fallback: 'Unable to load suggestions right now.',
-            ),
-          ),
-        ),
-      );
-    }
-  }
-
-  Future<void> _autocompleteDraft() async {
-    final conversation = _conversation;
-    final currentUserId = _currentUserId;
-    final draftText = _composerController.text.trim();
-    if (conversation == null ||
-        currentUserId == null ||
-        draftText.isEmpty ||
-        _isPeerBlocked ||
-        _isAutocompleting) {
-      return;
-    }
-
-    final conversationId = conversation.id;
-    setState(() => _isAutocompleting = true);
-
-    try {
-      final peerProfile = _profileCache[conversation.peerIdFor(currentUserId)];
-      final messages = await _chatService.getRecentMessages(conversationId);
-      final assist = await _chatAiService.autocompleteDraft(
-        conversation: conversation,
-        messages: messages,
-        currentUserId: currentUserId,
-        draftText: draftText,
-        peerProfile: peerProfile,
-        trip: _trip,
-      );
-
-      if (!mounted || _conversation?.id != conversationId) {
-        return;
-      }
-
-      if (assist.completion.isNotEmpty) {
-        _applyComposerText(assist.completion);
-      }
-
-      setState(() => _isAutocompleting = false);
-    } on Object catch (error) {
-      if (!mounted || _conversation?.id != conversationId) {
-        return;
-      }
-
-      setState(() => _isAutocompleting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            userMessageForError(
-              error,
-              fallback: 'Unable to complete the draft right now.',
             ),
           ),
         ),
@@ -526,6 +489,11 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       return;
     }
 
+    if (SupabaseConfig.isLocalUiPreview) {
+      _showSnackBar('Report preview recorded.');
+      return;
+    }
+
     final draft = await showChatReportSheet(context);
     if (draft == null) {
       return;
@@ -558,6 +526,12 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   Future<void> _toggleBlockPeer() async {
     final peerId = _activePeerId;
     if (peerId == null || _isModerating) {
+      return;
+    }
+
+    if (SupabaseConfig.isLocalUiPreview) {
+      setState(() => _isPeerBlocked = !_isPeerBlocked);
+      _showSnackBar(_isPeerBlocked ? 'User blocked.' : 'User unblocked.');
       return;
     }
 
@@ -598,10 +572,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     setState(() => _isModerating = true);
     try {
       await _chatService.blockUser(peerId: peerId, reason: 'Blocked from chat');
-      setState(() {
-        _isPeerBlocked = true;
-        _replySuggestions = const [];
-      });
+      setState(() => _isPeerBlocked = true);
       _showSnackBar('User blocked.');
     } on Object catch (error) {
       _showSnackBar(
@@ -728,6 +699,10 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     if (conversation == null) {
       return const SizedBox.shrink();
     }
+    final isLocalPreview = SupabaseConfig.isLocalUiPreview;
+    final messagesStream = isLocalPreview
+        ? Stream<List<ChatMessageModel>>.value(_localPreviewMessages)
+        : _chatService.streamMessages(conversation.id);
 
     return Column(
       children: [
@@ -739,11 +714,11 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
         ),
         Expanded(
           child: StreamBuilder<List<ChatMessageModel>>(
-            stream: _chatService.streamMessages(conversation.id),
+            stream: messagesStream,
             builder: (context, snapshot) {
               final messages = snapshot.data ?? const <ChatMessageModel>[];
               _maybeScrollToBottom(messages.length);
-              if (messages.isNotEmpty) {
+              if (!isLocalPreview && messages.isNotEmpty) {
                 _chatService.markConversationRead(conversation.id);
               }
 
@@ -773,13 +748,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
           ChatComposer(
             controller: _composerController,
             focusNode: _composerFocusNode,
-            isGeneratingSuggestions: _isGeneratingSuggestions,
-            isAutocompleting: _isAutocompleting,
             isSending: _isSending,
-            replySuggestions: _replySuggestions,
-            onRequestReplySuggestions: _requestReplySuggestions,
-            onAutocompleteDraft: _autocompleteDraft,
-            onApplySuggestion: _applyComposerText,
             onSendMessage: _sendMessage,
           ),
       ],

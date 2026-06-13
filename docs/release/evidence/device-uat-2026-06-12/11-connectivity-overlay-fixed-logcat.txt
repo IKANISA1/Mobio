@@ -1,0 +1,1073 @@
+--------- beginning of system
+06-12 18:40:49.851  1739  5415 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=rw.mobi.app/.MainActivity} from uid 2000
+06-12 18:40:49.859  1739  5415 D CompatibilityChangeReporter: Compat change id reported: 184838306; UID 10895; state: DISABLED
+06-12 18:40:49.859  1739  5415 D CompatibilityChangeReporter: Compat change id reported: 185004937; UID 10895; state: DISABLED
+--------- beginning of main
+06-12 18:40:49.870  2542  2639 W Parcel  : Expecting binder but got null!
+06-12 18:40:49.870  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10895; state: DISABLED
+06-12 18:40:49.870  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10895; state: DISABLED
+06-12 18:40:49.870  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10895; state: DISABLED
+06-12 18:40:49.870  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10895; state: ENABLED
+06-12 18:40:49.870  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10895; state: ENABLED
+06-12 18:40:49.876  4291  9348 D ForegroundUtils: Foreground UID status:
+06-12 18:40:49.876  4291  9348 D ForegroundUtils: UID: 1002 is in foreground: true
+06-12 18:40:49.876  4291  9348 D ForegroundUtils: UID: 10164 is in foreground: true
+06-12 18:40:49.876  4291  9348 D ForegroundUtils: UID: 10238 is in foreground: true
+06-12 18:40:49.876  4291  9348 D ForegroundUtils: UID: 10243 is in foreground: true
+06-12 18:40:49.876  4291  9348 D ForegroundUtils: UID: 10250 is in foreground: false
+06-12 18:40:49.877  1739  5415 D CoreBackPreview: Window{f57b5fa u0 Splash Screen rw.mobi.app}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@e821e08, mPriority=0}
+06-12 18:40:49.879  1055  1055 D Zygote  : Forked child process 26230
+06-12 18:40:49.879  1739  1968 I ActivityManager: Start proc 26230:rw.mobi.app/u0a895 for next-top-activity {rw.mobi.app/rw.mobi.app.MainActivity}
+06-12 18:40:49.885 26230 26230 I rw.mobi.app: Using CollectorTypeCC GC.
+06-12 18:40:49.892 26230 26230 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-12 18:40:49.893  2542  2639 E OpenGLRenderer: Unable to match the desired swap behavior.
+06-12 18:40:49.899 26230 26230 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10895; state: ENABLED
+06-12 18:40:49.900  4291  9348 D ForegroundUtils: Foreground UID status:
+06-12 18:40:49.900  4291  9348 D ForegroundUtils: UID: 1002 is in foreground: true
+06-12 18:40:49.900  4291  9348 D ForegroundUtils: UID: 10164 is in foreground: true
+06-12 18:40:49.900  4291  9348 D ForegroundUtils: UID: 10238 is in foreground: true
+06-12 18:40:49.900  4291  9348 D ForegroundUtils: UID: 10243 is in foreground: true
+06-12 18:40:49.900  4291  9348 D ForegroundUtils: UID: 10250 is in foreground: false
+06-12 18:40:49.900  4291  9348 D ForegroundUtils: UID: 10895 is in foreground: true
+06-12 18:40:49.918 26230 26230 I rw.mobi.app: Failed to add image file: Failed to find OatDexFile for DexFile /data/app/~~J3gQj0Ig_u8wNPchQR5Fwg==/rw.mobi.app-Op0Hrqt9MiA-adHM4cI-qg==/base.apk (canonical path /data/app/~~J3gQj0Ig_u8wNPchQR5Fwg==/rw.mobi.app-Op0Hrqt9MiA-adHM4cI-qg==/base.apk) in OatFile /data/app/~~t7AoS9TmtzXCEtzN7kofxg==/rw.mobi.app-M349h-i5QLeNp7Q8esww6Q==/oat/arm64/base.odex
+06-12 18:40:49.919 26230 26230 D nativeloader: Configuring clns-4 for other apk /data/app/~~t7AoS9TmtzXCEtzN7kofxg==/rw.mobi.app-M349h-i5QLeNp7Q8esww6Q==/base.apk. target_sdk_version=35, uses_libraries=, library_path=/data/app/~~t7AoS9TmtzXCEtzN7kofxg==/rw.mobi.app-M349h-i5QLeNp7Q8esww6Q==/lib/arm64:/data/app/~~t7AoS9TmtzXCEtzN7kofxg==/rw.mobi.app-M349h-i5QLeNp7Q8esww6Q==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/rw.mobi.app
+06-12 18:40:49.924 26230 26230 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-12 18:40:49.925 26230 26230 V GraphicsEnvironment: ANGLE Developer option for 'rw.mobi.app' set to: 'default'
+06-12 18:40:49.925 26230 26230 V GraphicsEnvironment: ANGLE GameManagerService for rw.mobi.app: false
+06-12 18:40:49.926 26230 26230 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+06-12 18:40:49.927 26230 26230 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+06-12 18:40:49.927 26230 26230 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+06-12 18:40:49.932 26230 26230 D CompatibilityChangeReporter: Compat change id reported: 183155436; UID 10895; state: ENABLED
+06-12 18:40:49.937 26230 26230 D FirebaseSessions: Dependency to CRASHLYTICS added.
+06-12 18:40:49.938 26230 26230 I FirebaseApp: Device unlocked: initializing all Firebase APIs for app [DEFAULT]
+06-12 18:40:49.942 26230 26230 I FirebaseCrashlytics: Initializing Firebase Crashlytics 20.0.4 for rw.mobi.app
+06-12 18:40:49.941  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433214): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:49.948  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433215): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:49.952 26230 26230 D FirebaseSessions: Subscriber CRASHLYTICS registered.
+06-12 18:40:49.951  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433216): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:49.958  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433217): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:49.968 15009 15009 I ceis    : onPause
+06-12 18:40:49.965  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433218): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:49.971 26230 26230 D nativeloader: Load /data/app/~~t7AoS9TmtzXCEtzN7kofxg==/rw.mobi.app-M349h-i5QLeNp7Q8esww6Q==/base.apk!/lib/arm64-v8a/libdatastore_shared_counter.so using class loader ns clns-4 (caller=/data/app/~~t7AoS9TmtzXCEtzN7kofxg==/rw.mobi.app-M349h-i5QLeNp7Q8esww6Q==/base.apk!classes4.dex): ok
+06-12 18:40:49.974 26230 26230 D FirebaseSessions: Initializing Firebase Sessions 3.0.4.
+06-12 18:40:49.974 26230 26230 I FirebaseInitProvider: FirebaseApp initialization successful
+06-12 18:40:49.975 26230 26230 D FLTFireContextHolder: received application context.
+06-12 18:40:49.988 15009 15009 W duui    : measuring already stopped.
+06-12 18:40:49.990 26230 26261 I FirebaseCrashlytics: Saved version control info
+06-12 18:40:49.992 26230 26257 W rw.mobi.app: ClassLoaderContext classpath size mismatch. expected=1, found=0 (DLC[];PCL[base.apk*1678796670]{PCL[/system/framework/org.apache.http.legacy.jar*1601893742]#PCL[/system/framework/com.android.location.provider.jar*989331189]#PCL[/system/framework/com.android.media.remotedisplay.jar*373201994]} | DLC[];PCL[])
+06-12 18:40:49.995 26230 26257 I DynamiteModule: Considering local module com.google.android.gms.measurement.dynamite:155 and remote module com.google.android.gms.measurement.dynamite:194
+06-12 18:40:49.995 26230 26257 I DynamiteModule: Selected remote version of com.google.android.gms.measurement.dynamite, version >= 194
+06-12 18:40:49.995 26230 26257 V DynamiteModule: Dynamite loader version >= 2, using loadModule2NoCrashUtils
+06-12 18:40:50.001  1739  4478 D CompatibilityChangeReporter: Compat change id reported: 161145287; UID 10895; state: DISABLED
+06-12 18:40:50.007 26230 26261 D FirebaseSessions: Notified CRASHLYTICS of new session 7c3b0a4c86d640c391deb841aec832b3
+06-12 18:40:50.012 26230 26257 W System  : ClassLoader referenced unknown path: 
+06-12 18:40:50.012 26230 26277 D nativeloader: Load /data/app/~~t7AoS9TmtzXCEtzN7kofxg==/rw.mobi.app-M349h-i5QLeNp7Q8esww6Q==/base.apk!/lib/arm64-v8a/libflutter.so using class loader ns clns-4 (caller=/data/app/~~t7AoS9TmtzXCEtzN7kofxg==/rw.mobi.app-M349h-i5QLeNp7Q8esww6Q==/base.apk): ok
+06-12 18:40:50.012 26230 26257 D nativeloader: Configuring clns-5 for other apk . target_sdk_version=37, uses_libraries=, library_path=/data/app/~~dWLOOBlT_GUl5qxxDMIDDg==/com.google.android.gms-Jk64NwzBBq_JeCJR0N7saQ==/lib/arm64:/data/app/~~dWLOOBlT_GUl5qxxDMIDDg==/com.google.android.gms-Jk64NwzBBq_JeCJR0N7saQ==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+06-12 18:40:50.030 26230 26257 W rw.mobi.app: ClassLoaderContext classpath element checksum mismatch. expected=1678796670, found=3380000088 (DLC[];PCL[base.apk*1678796670]{PCL[/system/framework/org.apache.http.legacy.jar*1601893742]#PCL[/system/framework/com.android.location.provider.jar*989331189]#PCL[/system/framework/com.android.media.remotedisplay.jar*373201994]} | DLC[];PCL[/data/app/~~t7AoS9TmtzXCEtzN7kofxg==/rw.mobi.app-M349h-i5QLeNp7Q8esww6Q==/base.apk*3380000088])
+06-12 18:40:50.044 26230 26281 D vulkan  : searching for layers in '/data/app/~~t7AoS9TmtzXCEtzN7kofxg==/rw.mobi.app-M349h-i5QLeNp7Q8esww6Q==/lib/arm64'
+06-12 18:40:50.044 26230 26281 D vulkan  : searching for layers in '/data/app/~~t7AoS9TmtzXCEtzN7kofxg==/rw.mobi.app-M349h-i5QLeNp7Q8esww6Q==/base.apk!/lib/arm64-v8a'
+06-12 18:40:50.050 26230 26281 I AdrenoVK-0: ===== BEGIN DUMP OF OVERRIDDEN SETTINGS =====
+06-12 18:40:50.050 26230 26281 I AdrenoVK-0: ===== END DUMP OF OVERRIDDEN SETTINGS =====
+06-12 18:40:50.050 26230 26281 I AdrenoVK-0: QUALCOMM build          : 85da404, I46ff5fc46f
+06-12 18:40:50.050 26230 26281 I AdrenoVK-0: Build Date              : 11/30/20
+06-12 18:40:50.050 26230 26281 I AdrenoVK-0: Shader Compiler Version : EV031.31.04.01
+06-12 18:40:50.050 26230 26281 I AdrenoVK-0: Local Branch            : promo490_3_Google
+06-12 18:40:50.050 26230 26281 I AdrenoVK-0: Remote Branch           : 
+06-12 18:40:50.050 26230 26281 I AdrenoVK-0: Remote Branch           : 
+06-12 18:40:50.050 26230 26281 I AdrenoVK-0: Reconstruct Branch      : 
+06-12 18:40:50.050 26230 26281 I AdrenoVK-0: Build Config            : S P 10.0.4 AArch64
+06-12 18:40:50.050 26230 26281 I AdrenoVK-0: Driver Path             : /vendor/lib64/hw/vulkan.adreno.so
+06-12 18:40:50.057 26230 26281 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+06-12 18:40:50.063  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-12 18:40:50.068  2759  3438 D QCNEJ/WlanStaInfoRelay: Received action: android.net.wifi.RSSI_CHANGED
+06-12 18:40:50.070 26230 26281 I AdrenoGLES-0: QUALCOMM build                   : 85da404, I46ff5fc46f
+06-12 18:40:50.070 26230 26281 I AdrenoGLES-0: Build Date                       : 11/30/20
+06-12 18:40:50.070 26230 26281 I AdrenoGLES-0: OpenGL ES Shader Compiler Version: EV031.31.04.01
+06-12 18:40:50.070 26230 26281 I AdrenoGLES-0: Local Branch                     : promo490_3_Google
+06-12 18:40:50.070 26230 26281 I AdrenoGLES-0: Remote Branch                    : 
+06-12 18:40:50.070 26230 26281 I AdrenoGLES-0: Remote Branch                    : 
+06-12 18:40:50.070 26230 26281 I AdrenoGLES-0: Reconstruct Branch               : 
+06-12 18:40:50.070 26230 26281 I AdrenoGLES-0: Build Config                     : S P 10.0.4 AArch64
+06-12 18:40:50.070 26230 26281 I AdrenoGLES-0: Driver Path                      : /vendor/lib64/egl/libGLESv2_adreno.so
+06-12 18:40:50.071  4100  4138 D DeviceStateHelper: Wifi freq: 5785
+06-12 18:40:50.072  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-68
+06-12 18:40:50.073  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-68
+06-12 18:40:50.075 26230 26281 I AdrenoGLES-0: PFP: 0x016ee190, ME: 0x00000000
+06-12 18:40:50.075  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-12 18:40:50.077 26230 26281 W AdrenoUtils: <ReadGpuID_from_sysfs:197>: Failed to open /sys/class/kgsl/kgsl-3d0/gpu_model
+06-12 18:40:50.077 26230 26281 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
+06-12 18:40:50.083  7449  7581 I BugleRcsEngine: handleMessage processing message:[NOTIFY_UPTIME_IGNORE_STATE_CHANGED] with [non-null]:RcsEngineImpl reference [CONTEXT log_prefix="RcsEngineImpl[DUAL_REG]:[7ff84873-078a]>Handler" thread_id=759 ]
+06-12 18:40:50.083 26230 26281 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(104)] Using the Impeller rendering backend (OpenGLES).
+06-12 18:40:50.086 27174 29215 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-12 18:40:50.086 27174 29215 W .gms.persistent: Large reply transaction of 1056768 bytes, interface descriptor , code 1
+06-12 18:40:50.087  7449  7556 I BugleRcsEngine: Connected state: [1], networkType: [WIFI] [CONTEXT thread_id=751 ]
+06-12 18:40:50.090  1085  1180 D CHRE    : @ 2244064.268: Parsed nanoapp message from host: app ID 0x476f6f676c00100b, endpoint 0x91, msgType 112, payload size 14
+06-12 18:40:50.090  1085  1180 I CHRE    : @ 2244064.268: [NanoMinion] received MSG Type 0x70, Version 1, 10 bytes
+06-12 18:40:50.090  1085  1180 I CHRE    : @ 2244064.268: [AR] context-signal: has_bt=0, bt=0, has_wifi=1, wifi=1
+06-12 18:40:50.092 27174 25759 I NearbyMediums: Wifi changed new SSID: "FreeBeer"
+06-12 18:40:50.092 27174 25759 I NearbyMediums: WifiLanConnectivityInfo is not changed, skip notify.
+06-12 18:40:50.095  1739  2455 D ConnectivityService: NetReassign [no changes] [c 0] [a 3] [i 3]
+06-12 18:40:50.106 27174 25759 I PhenotypeResourceReader: unable to find any Phenotype resource metadata for rw.mobi.app
+06-12 18:40:50.112 26230 26295 E rw.mobi.app: No package ID 6a found for ID 0x6a0b0013.
+06-12 18:40:50.113 26230 26295 I FA      : App measurement initialized, version: 170009
+06-12 18:40:50.113 26230 26295 I FA      : To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+06-12 18:40:50.113 26230 26295 I FA      : To enable faster debug mode event logging run:
+06-12 18:40:50.113 26230 26295 I FA      :   adb shell setprop debug.firebase.analytics.app rw.mobi.app
+06-12 18:40:50.114 26230 26230 D com.llfbandit.app_links: Intent { flg=0x10000000 cmp=rw.mobi.app/.MainActivity }
+06-12 18:40:50.117 26230 26230 D FLTFireContextHolder: received application context.
+06-12 18:40:50.131 27062 27062 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-12 18:40:50.131 27062 27062 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-12 18:40:50.146 26230 26230 D FirebaseSessions: App foregrounded on rw.mobi.app
+06-12 18:40:50.146 26230 26230 D FirebaseSessions: Process rw.mobi.app is stale
+06-12 18:40:50.147 26230 26295 I FA      : Tag Manager is not found and thus will not be used
+06-12 18:40:50.149 26230 26230 D CompatibilityChangeReporter: Compat change id reported: 237531167; UID 10895; state: DISABLED
+06-12 18:40:50.152 26230 26261 D FirebaseSessions: Cold app start detected
+06-12 18:40:50.152 26230 26261 D FirebaseSessions: Process rw.mobi.app is stale
+06-12 18:40:50.153 26230 26274 W Parcel  : Expecting binder but got null!
+06-12 18:40:50.158  1739  5432 D CoreBackPreview: Window{a2043ae u0 rw.mobi.app/rw.mobi.app.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@3ea84dc, mPriority=0}
+06-12 18:40:50.164 26230 26260 D FirebaseSessions: Session Event Type: SESSION_START
+06-12 18:40:50.164 26230 26260 D FirebaseSessions: Successfully logged Session Start event.
+06-12 18:40:50.167 26230 26261 D FirebaseSessions: Notified CRASHLYTICS of new session 223241bf279a450b9b778b6ebc2c6282
+06-12 18:40:50.175   704   704 I SDM     : HWCDisplay::GetColorModeCount: Supported color mode count = 3
+06-12 18:40:50.176 26230 26274 E OpenGLRenderer: Unable to match the desired swap behavior.
+06-12 18:40:50.179 26230 26263 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10895; state: ENABLED
+06-12 18:40:50.180  1739  1775 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10895; state: ENABLED
+06-12 18:40:50.582 27174 25086 I NearbySharing: Network state changed: NetworkState(isRestricted=false, isOnline=true, isCongested=false, isMetered=false, isWifiConnected=true)
+06-12 18:40:50.948  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433405): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:50.951  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433406): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:50.958  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433407): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:50.965  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433408): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:50.968  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433409): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:50.992 26230 26230 D FlutterGeolocator: Creating service.
+06-12 18:40:50.992 26230 26230 D FlutterGeolocator: Binding to location service.
+06-12 18:40:50.994 26230 26230 I Choreographer: Skipped 49 frames!  The application may be doing too much work on its main thread.
+06-12 18:40:50.995 26230 26230 D FlutterGeolocator: Flutter engine connected. Connected engine count 1
+06-12 18:40:51.006 26230 26253 W System  : Ignoring header X-Firebase-Locale because its value was null.
+06-12 18:40:51.013 27062 26316 D AdvertisingIdClient: AdvertisingIdClient already created.
+06-12 18:40:51.013 27062 26316 D AdvertisingIdClient: AdvertisingIdClient is not bounded. Starting to bind it...
+06-12 18:40:51.016 27174 27174 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.common.telemetry.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+06-12 18:40:51.021 27062 26316 D AdvertisingIdClient: AdvertisingIdClient is bounded
+06-12 18:40:51.023 27062 26316 W AdvertisingIdSettings: Package rw.mobi.app failed Ad Id permission check. Apps that target Android SDK 33 or higher should declare com.google.android.gms.permission.AD_ID in the app manifest to access Ad Id.
+06-12 18:40:51.024 27062 26316 I AdvertisingIdClient: shouldSendLog 2242828550
+06-12 18:40:51.024 27062 26316 I AdvertisingIdClient: GetInfoInternal elapse 11ms
+06-12 18:40:51.029 27062 26316 W AdvertisingIdSettings: Package rw.mobi.app failed Ad Id permission check. Apps that target Android SDK 33 or higher should declare com.google.android.gms.permission.AD_ID in the app manifest to access Ad Id.
+06-12 18:40:51.031 27174 27174 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.presencemanager.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+06-12 18:40:51.032 27174 27174 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.presencemanager.service.INTERNAL_IDENTITY dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+06-12 18:40:51.781 20696 26191 I BugleDataModel: running action CountryCodeDetectorAction
+06-12 18:40:51.781 20696 20696 I BugleDataModel: ActionExecutorImpl: ACTION_EXECUTE_QUEUED_CountryCodeDetectorAction
+06-12 18:40:51.781 20696 26191 I BugleDataModel: ActionExecutorImpl: ACTION_BACKGROUND_QUEUED_CountryCodeDetectorAction
+06-12 18:40:51.781 20696 26191 I BugleDataModel: finished running action CountryCodeDetectorAction in 0 ms
+06-12 18:40:51.781 20696 20696 I BugleDataModel: ActionExecutorImpl: ACTION_EXECUTE_QUEUED_SelfParticipantsRefreshAction
+06-12 18:40:51.781 20696 26191 I BugleDataModel: running action SelfParticipantsRefreshAction
+06-12 18:40:51.781 20696 26191 I BugleDataModel: ActionExecutorImpl: ACTION_BACKGROUND_QUEUED_SelfParticipantsRefreshAction
+06-12 18:40:51.781 20696 26191 I BugleDataModel: finished running action SelfParticipantsRefreshAction in 0 ms
+06-12 18:40:51.786 20696 26185 I Bugle   : CountryCodeDetector: updateHomeCountry from SIM country. subscription{id:11}, detected country: RW
+06-12 18:40:51.786 20696 26185 I Bugle   : CountryCodeDetector: updateSmsNetworkCountry from default subscription network country. detected country: rw
+06-12 18:40:51.786 20696 26185 I BugleDataModel: ActionExecutorImpl: ACTION_RESPONSE_QUEUED_CountryCodeDetectorAction
+06-12 18:40:51.786 20696 26185 I BugleDataModel: ParticipantFullRefresh: Start participant refresh. refreshMode: SELF_ONLY
+06-12 18:40:51.789 20696 26185 I BugleDataModel: SubscriptionsTracker#refreshSelfParticipantList([11, 9]), with subIdToSimIdMap([])
+06-12 18:40:51.799  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:51.801 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-12 18:40:51.802 20696 26185 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country=RW [CONTEXT sub_id=11 ]
+06-12 18:40:51.804 20696 26185 I Bugle   : CountryCodeDetector: updateHomeCountry from SIM country. subscription{id:11}, detected country: RW
+06-12 18:40:51.804 20696 26185 I Bugle   : CountryCodeDetector: updateSmsNetworkCountry from default subscription network country. detected country: rw
+06-12 18:40:51.807  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:51.812 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-12 18:40:51.817  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:51.821  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:51.823 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=9 ]
+06-12 18:40:51.825  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:51.826  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:51.829 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=9 ]
+06-12 18:40:51.843  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:51.846 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-12 18:40:51.847 20696 26185 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country=RW [CONTEXT sub_id=11 ]
+06-12 18:40:51.855  1739  4478 D ConnectivityService: requestNetwork for uid/pid:10895/26230 activeRequest: null callbackRequest: 116195 [NetworkRequest [ REQUEST id=116196, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10895 RequestorUid: 10895 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|LOST|NC
+06-12 18:40:51.856  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:51.859  1739  2448 D OemPaidWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116196, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10895 RequestorUid: 10895 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]
+06-12 18:40:51.860  1739  2448 D MultiInternetWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116196, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10895 RequestorUid: 10895 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]
+06-12 18:40:51.861 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-12 18:40:51.862  1739  2448 D WifiNetworkFactory: got request NetworkRequest [ REQUEST id=116196, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10895 RequestorUid: 10895 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]
+06-12 18:40:51.862  1739  2448 D UntrustedWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116196, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10895 RequestorUid: 10895 RequestorPkg: rw.mobi.app UnderlyingNetworks: Null] ]
+06-12 18:40:51.866  1739  2455 D ConnectivityService: NetReassign [116196 : null → 348] [c 0] [a 2] [i 8]
+06-12 18:40:51.875   645   645 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+06-12 18:40:51.879 20696 26185 I BugleDataModel: SubscriptionsTracker bindToTrackingMap bound participants: [ParticipantId=1 subId=-1, ParticipantId=203 subId=2, ParticipantId=242 subId=3, ParticipantId=256 subId=4, ParticipantId=262 subId=5, ParticipantId=319 subId=6, ParticipantId=321 subId=7, ParticipantId=337 subId=8, ParticipantId=347 subId=9, ParticipantId=360 subId=10, ParticipantId=362 subId=11]
+06-12 18:40:51.880 20696 26185 I BugleDataModel: set orderedRowIdAndTokenPairs: [rowId=347 subId= 9 token=7fcbb511-8da7-4933-a894-214a3ac8b5d6, rowId=362 subId= 11 token=54f4df2c-3f66-46a3-abd5-ce9917c5c1e0, rowId=1 subId= -1 token=f82f1829-d297-44f2-afed-715bab9a7cad, rowId=360 subId= 10 token=7a3d76a5-7ea3-4016-957c-ba0c4a4e4b38, rowId=337 subId= 8 token=a75de66d-b585-402e-b882-2d8914968106, rowId=321 subId= 7 token=dcccb936-32b6-444b-8f63-963d8b6b8ce2, rowId=319 subId= 6 token=38cb627d-1e65-4ca9-bb0f-304ddb8e48eb, rowId=262 subId= 5 token=fee6b783-b828-452a-8f3e-89ff59a9d559, rowId=256 subId= 4 token=e019bd46-a01b-4628-902b-d4754b6b238a, rowId=242 subId= 3 token=293ede4e-f6ff-4344-be57-f6f624d25b13, rowId=203 subId= 2 token=b57bfdea-f3a6-4d0f-87a8-b06d4151e5fd]
+06-12 18:40:51.892  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:51.895  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:51.898 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=-1 ]
+06-12 18:40:51.905 26230 26230 I FLTFireBGExecutor: Creating background FlutterEngine instance, with args: []
+06-12 18:40:51.912  1739  1937 I ActivityTaskManager: Displayed rw.mobi.app/.MainActivity: +2s56ms
+06-12 18:40:51.912  1739  1937 I ActivityTaskManager: Fully drawn rw.mobi.app/.MainActivity: +2s56ms
+06-12 18:40:51.922 26230 26230 D FLTFireContextHolder: received application context.
+06-12 18:40:51.927 26230 26337 I AdrenoVK-0: QUALCOMM build          : 85da404, I46ff5fc46f
+06-12 18:40:51.927 26230 26337 I AdrenoVK-0: Build Date              : 11/30/20
+06-12 18:40:51.927 26230 26337 I AdrenoVK-0: Shader Compiler Version : EV031.31.04.01
+06-12 18:40:51.927 26230 26337 I AdrenoVK-0: Local Branch            : promo490_3_Google
+06-12 18:40:51.927 26230 26337 I AdrenoVK-0: Remote Branch           : 
+06-12 18:40:51.927 26230 26337 I AdrenoVK-0: Remote Branch           : 
+06-12 18:40:51.927 26230 26337 I AdrenoVK-0: Reconstruct Branch      : 
+06-12 18:40:51.927 26230 26337 I AdrenoVK-0: Build Config            : S P 10.0.4 AArch64
+06-12 18:40:51.927 26230 26337 I AdrenoVK-0: Driver Path             : /vendor/lib64/hw/vulkan.adreno.so
+06-12 18:40:51.935 26230 26337 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+06-12 18:40:51.935 20696 26190 I BugleSelfIdentity: Active SelfIdentities [SelfIdentity{id:362, subIds: [11]}, SelfIdentity{id:347, subIds: [9]}]
+06-12 18:40:51.949 26230 26230 D FlutterGeolocator: Flutter engine connected. Connected engine count 2
+06-12 18:40:51.949 26230 26230 I FLTFireMsgService: FlutterFirebaseMessagingBackgroundService started!
+06-12 18:40:51.951  1739  5432 D CompatibilityChangeReporter: Compat change id reported: 214016041; UID 10895; state: ENABLED
+06-12 18:40:51.951  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433597): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:51.962  4291  9348 D ForegroundUtils: Foreground UID status:
+06-12 18:40:51.962  4291  9348 D ForegroundUtils: UID: 1002 is in foreground: true
+06-12 18:40:51.962  4291  9348 D ForegroundUtils: UID: 10164 is in foreground: true
+06-12 18:40:51.962  4291  9348 D ForegroundUtils: UID: 10238 is in foreground: false
+06-12 18:40:51.962  4291  9348 D ForegroundUtils: UID: 10243 is in foreground: true
+06-12 18:40:51.962  4291  9348 D ForegroundUtils: UID: 10250 is in foreground: false
+06-12 18:40:51.962  4291  9348 D ForegroundUtils: UID: 10895 is in foreground: true
+06-12 18:40:51.962 15009 15009 I ceis    : onStop
+06-12 18:40:51.964 11459 11459 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():2259 
+06-12 18:40:51.967 26230 26337 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(104)] Using the Impeller rendering backend (OpenGLES).
+06-12 18:40:51.965  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433598): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:51.971  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433599): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:51.977 11459 11459 I Module  : DeviceLockedStatusModuleProvider$Module.updateDeviceLockedStatus():103 repeatCheckTimes = 0, locked = false
+06-12 18:40:51.978 11459 11459 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1446 onStartInput(EditorInfo{EditorInfo{packageName=rw.mobi.app, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+06-12 18:40:51.978 11459 11459 I AndroidIME: LatinIMEBase.updateInputViewCoverNavigation():322 Update input view padding, isNavbarOverInputWindow=true, bottom inset=132
+06-12 18:40:51.975  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433600): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:51.981 11459 11459 I Module  : DeviceLockedStatusModuleProvider$Module.updateDeviceLockedStatus():103 repeatCheckTimes = 1, locked = false
+06-12 18:40:51.981  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433601): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:52.016  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.020 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=2 ]
+06-12 18:40:52.023 20696 26185 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=2 ]
+06-12 18:40:52.108 20696 26185 I BugleDataModel: ParticipantRefresh: No update made to participant: 203
+06-12 18:40:52.109  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.112 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=3 ]
+06-12 18:40:52.114 20696 26185 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=3 ]
+06-12 18:40:52.200 20696 26185 I BugleDataModel: ParticipantRefresh: No update made to participant: 242
+06-12 18:40:52.203  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.206 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=4 ]
+06-12 18:40:52.208 20696 26185 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=4 ]
+06-12 18:40:52.272 15009 15013 W chbox:googleapp: Reducing the number of considered missed Gc histogram windows from 409 to 100
+06-12 18:40:52.286  1739  5432 D CoreBackPreview: Window{f57b5fa u0 Splash Screen rw.mobi.app EXITING}: Setting back callback null
+06-12 18:40:52.287  1739  5432 W InputManager-JNI: Input channel object 'f57b5fa Splash Screen rw.mobi.app (client)' was disposed without first being removed with the input manager!
+06-12 18:40:52.295 20696 26185 I BugleDataModel: ParticipantRefresh: No update made to participant: 256
+06-12 18:40:52.296  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.298 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=5 ]
+06-12 18:40:52.299 20696 26185 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=5 ]
+06-12 18:40:52.330 20696 26185 I BugleDataModel: ParticipantRefresh: No update made to participant: 262
+06-12 18:40:52.331  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.332 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=6 ]
+06-12 18:40:52.333 20696 26185 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=6 ]
+06-12 18:40:52.341  2542  2542 D DLObserver: onReceive(); android.intent.action.BATTERY_CHANGED
+06-12 18:40:52.341  2542  2542 D DLObserver: plugged=2
+06-12 18:40:52.344  2542  2542 D PowerNotificationWarningsGoogleImpl: onReceive: android.intent.action.BATTERY_CHANGED
+06-12 18:40:52.344  2542  2542 D BatteryDefenderNotification: isPlugged: true | isOverheated: true | defenderEnabled: true | isCharged: false | isPluggedInDock: false
+06-12 18:40:52.344   645   645 I servicemanager: Found vendor.google.google_battery.IGoogleBattery/default in device VINTF manifest.
+06-12 18:40:52.346  2542  3811 D PowerUI : can't show warning due to - plugged: true status unknown: false
+06-12 18:40:52.352  2542  2654 D BatteryInfoBroadcast: onReceive: android.intent.action.BATTERY_CHANGED isPowerSaveMode: false remainingTimeMillis: 97318795
+06-12 18:40:52.400 20696 26185 I BugleDataModel: ParticipantRefresh: No update made to participant: 319
+06-12 18:40:52.402  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.405 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=7 ]
+06-12 18:40:52.407 20696 26185 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=7 ]
+06-12 18:40:52.493 20696 26185 I BugleDataModel: ParticipantRefresh: No update made to participant: 321
+06-12 18:40:52.494  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.496 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=8 ]
+06-12 18:40:52.498 20696 26185 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=8 ]
+06-12 18:40:52.534 20696 26185 I BugleDataModel: ParticipantRefresh: No update made to participant: 337
+06-12 18:40:52.534  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.535  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.537 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=9 ]
+06-12 18:40:52.615 20696 26185 I BugleDataModel: ParticipantRefresh: No update made to participant: 347
+06-12 18:40:52.617  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.620 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=10 ]
+06-12 18:40:52.622 20696 26185 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=10 ]
+06-12 18:40:52.658 20696 26185 I BugleDataModel: ParticipantRefresh: No update made to participant: 360
+06-12 18:40:52.659  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.661 20696 26185 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-12 18:40:52.661 20696 26185 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country=RW [CONTEXT sub_id=11 ]
+06-12 18:40:52.729 20696 26185 I BugleDataModel: ParticipantRefresh: No update made to participant: 362
+06-12 18:40:52.730 20696 26185 I BugleDataModel: ParticipantFullRefresh: Number of participants refreshed: 11
+06-12 18:40:52.744 20696 26185 I BugleDataModel: ActionExecutorImpl: ACTION_RESPONSE_QUEUED_SelfParticipantsRefreshAction
+06-12 18:40:52.750  2816  3250 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.753 20696 20715 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-12 18:40:52.754 20696 20715 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country=RW [CONTEXT sub_id=11 ]
+06-12 18:40:52.758  2816  3250 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.760  2816  3250 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.763 20696 20715 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=9 ]
+06-12 18:40:52.765 20696 20715 I BugleSelfIdentity: Phone number for MyIdentity 54f4df2c-3f66-46a3-abd5-ce9917c5c1e0 does not change [CONTEXT sub_id=11 icc_id="redacted-pii[19-chars]" messaging_identity="redacted-pii[13-chars]" rcs_provisioning_id="redacted-pii[0-chars]" ]
+06-12 18:40:52.767 20696 20715 I BugleSelfIdentity: Phone number for MyIdentity 7fcbb511-8da7-4933-a894-214a3ac8b5d6 does not change [CONTEXT sub_id=9 icc_id="redacted-pii[20-chars]" rcs_provisioning_id="redacted-pii[0-chars]" ]
+06-12 18:40:52.777  2816  2851 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.778  2816  2847 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.780 20696 20775 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-12 18:40:52.781 20696 20775 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country=RW [CONTEXT sub_id=11 ]
+06-12 18:40:52.782 20696 20715 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-12 18:40:52.783 20696 20715 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country=RW [CONTEXT sub_id=11 ]
+06-12 18:40:52.785  2816  2847 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.787  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.788  2816  2847 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.789  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-12 18:40:52.791 20696 20775 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=9 ]
+06-12 18:40:52.792 20696 20715 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=9 ]
+06-12 18:40:52.793 20696 20775 I BugleSelfIdentity: Phone number for MyIdentity 54f4df2c-3f66-46a3-abd5-ce9917c5c1e0 does not change [CONTEXT sub_id=11 icc_id="redacted-pii[19-chars]" messaging_identity="redacted-pii[13-chars]" rcs_provisioning_id="redacted-pii[0-chars]" ]
+06-12 18:40:52.796 20696 20775 I BugleSelfIdentity: Phone number for MyIdentity 7fcbb511-8da7-4933-a894-214a3ac8b5d6 does not change [CONTEXT sub_id=9 icc_id="redacted-pii[20-chars]" rcs_provisioning_id="redacted-pii[0-chars]" ]
+06-12 18:40:52.798 20696 20715 I BugleSelfIdentity: Phone number for MyIdentity 54f4df2c-3f66-46a3-abd5-ce9917c5c1e0 does not change [CONTEXT sub_id=11 icc_id="redacted-pii[19-chars]" messaging_identity="redacted-pii[13-chars]" rcs_provisioning_id="redacted-pii[0-chars]" ]
+06-12 18:40:52.799 20696 20715 I BugleSelfIdentity: Phone number for MyIdentity 7fcbb511-8da7-4933-a894-214a3ac8b5d6 does not change [CONTEXT sub_id=9 icc_id="redacted-pii[20-chars]" rcs_provisioning_id="redacted-pii[0-chars]" ]
+06-12 18:40:52.958  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433783): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:52.958  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433784): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:52.965  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433785): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:52.971  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433786): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:52.978  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433787): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:53.090  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-12 18:40:53.118  2759  3438 D QCNEJ/WlanStaInfoRelay: Received action: android.net.wifi.RSSI_CHANGED
+06-12 18:40:53.123  4100  4138 D DeviceStateHelper: Wifi freq: 5785
+06-12 18:40:53.125  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-63
+06-12 18:40:53.125  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-63
+06-12 18:40:53.129  7449  7556 I BugleRcsEngine: Connected state: [1], networkType: [WIFI] [CONTEXT thread_id=751 ]
+06-12 18:40:53.129  7449  7581 I BugleRcsEngine: handleMessage processing message:[NOTIFY_UPTIME_IGNORE_STATE_CHANGED] with [non-null]:RcsEngineImpl reference [CONTEXT log_prefix="RcsEngineImpl[DUAL_REG]:[7ff84873-078a]>Handler" thread_id=759 ]
+06-12 18:40:53.129  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-12 18:40:53.134  1085  1180 D CHRE    : @ 2244067.310: Parsed nanoapp message from host: app ID 0x476f6f676c00100b, endpoint 0x91, msgType 112, payload size 14
+06-12 18:40:53.134  1085  1180 I CHRE    : @ 2244067.310: [NanoMinion] received MSG Type 0x70, Version 1, 10 bytes
+06-12 18:40:53.134  1085  1180 I CHRE    : @ 2244067.310: [AR] context-signal: has_bt=0, bt=0, has_wifi=1, wifi=1
+06-12 18:40:53.139 27174 28159 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-12 18:40:53.139 27174 28159 W .gms.persistent: Large reply transaction of 1056768 bytes, interface descriptor , code 1
+06-12 18:40:53.140 27174 25086 I NearbyMediums: Wifi changed new SSID: "FreeBeer"
+06-12 18:40:53.140 27174 25086 I NearbyMediums: WifiLanConnectivityInfo is not changed, skip notify.
+06-12 18:40:53.144  1739  2455 D ConnectivityService: NetReassign [no changes] [c 0] [a 4] [i 6]
+06-12 18:40:53.370  1739  5432 D ConnectivityService: Returning UNBLOCKED NetworkInfo to uid=10210
+06-12 18:40:53.375 22936 22936 W bfda    : Already started: bfda@ad92d26
+06-12 18:40:53.415 22936 26119 W baix    : Job(ItemListsService:stopItemList#0.275) Attempting to unregister unknown list: itemlist-ViewType(45)-4
+06-12 18:40:53.567 22936 22941 W ogle.android.gm: Reducing the number of considered missed Gc histogram windows from 178 to 100
+06-12 18:40:53.638 27174 25086 I NearbySharing: Network state changed: NetworkState(isRestricted=false, isOnline=true, isCongested=false, isMetered=false, isWifiConnected=true)
+06-12 18:40:53.961  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433970): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:53.965  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433971): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:53.971  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433972): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:53.975  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433973): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:53.981  1072  1072 W socket_writer_q: type=1400 audit(0.0:242433974): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:54.387 27174 26028 I NetworkScheduler: (REDACTED) Error inserting %s
+06-12 18:40:54.749 20696 26186 I BugleDataModel: running action GenericWorkerQueueAction
+06-12 18:40:54.749 20696 20696 I BugleDataModel: ActionExecutorImpl: ACTION_EXECUTE_QUEUED_GenericWorkerQueueAction
+06-12 18:40:54.749 20696 26186 I BugleDataModel: ActionExecutorImpl: ACTION_BACKGROUND_QUEUED_GenericWorkerQueueAction
+06-12 18:40:54.750 20696 26186 I BugleDataModel: finished running action GenericWorkerQueueAction in 0 ms
+06-12 18:40:54.758 20696 26190 I BugleJobs: GenericWorkerQueueAction: Bailing early, no work found, no failed work found
+06-12 18:40:54.758 20696 26190 I BugleDataModel: ActionExecutorImpl: ACTION_RESPONSE_QUEUED_GenericWorkerQueueAction
+06-12 18:40:54.965  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434158): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:54.971  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434159): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:54.978  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434160): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:54.985  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434161): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:54.988  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434162): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:55.343 27174 27174 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.clearcut.sampler.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentDirectBootAwareApiService }
+06-12 18:40:55.383 22936 22943 W System  : A resource failed to call close. 
+06-12 18:40:55.488  1739  1966 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10263; state: DISABLED
+06-12 18:40:55.488  1739  1966 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10263; state: DISABLED
+06-12 18:40:55.488  1739  1966 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10263; state: DISABLED
+06-12 18:40:55.489  1739  1966 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10263; state: ENABLED
+06-12 18:40:55.489  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10263; state: ENABLED
+06-12 18:40:55.496  1055  1055 D Zygote  : Forked child process 26370
+06-12 18:40:55.497  1739  1968 I ActivityManager: Start proc 26370:com.whatsapp/u0a263 for broadcast {com.whatsapp/com.whatsapp.alarmservice.AlarmBroadcastReceiver}
+06-12 18:40:55.504 26370 26370 I com.whatsapp: Using CollectorTypeCC GC.
+06-12 18:40:55.509 26370 26370 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-12 18:40:55.517  4291  9348 D ForegroundUtils: Foreground UID status:
+06-12 18:40:55.517 26370 26370 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10263; state: ENABLED
+06-12 18:40:55.517  4291  9348 D ForegroundUtils: UID: 1002 is in foreground: true
+06-12 18:40:55.517  4291  9348 D ForegroundUtils: UID: 10164 is in foreground: true
+06-12 18:40:55.517  4291  9348 D ForegroundUtils: UID: 10238 is in foreground: false
+06-12 18:40:55.517  4291  9348 D ForegroundUtils: UID: 10243 is in foreground: true
+06-12 18:40:55.517  4291  9348 D ForegroundUtils: UID: 10250 is in foreground: false
+06-12 18:40:55.517  4291  9348 D ForegroundUtils: UID: 10895 is in foreground: true
+06-12 18:40:55.533 26370 26370 D nativeloader: Configuring clns-4 for other apk /system/framework/org.apache.http.legacy.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/lib/arm64:/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk!/lib/arm64-v8a:/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/split_config.arm64_v8a.apk!/lib/arm64-v8a:/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/split_config.xxhdpi.apk!/lib/arm64-v8a:/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/split_i18n_en.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.whatsapp
+06-12 18:40:55.581 26230 26385 D ProfileInstaller: Installing profile for rw.mobi.app
+06-12 18:40:55.627 26370 26370 W com.whatsapp: Failed to find entry 'classes.dex': Entry not found
+06-12 18:40:55.629 26370 26370 W com.whatsapp: Failed to find entry 'classes.dex': Entry not found
+06-12 18:40:55.631 26370 26370 W com.whatsapp: Failed to find entry 'classes.dex': Entry not found
+06-12 18:40:55.632 26370 26370 D nativeloader: Configuring clns-5 for other apk /data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk:/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/split_config.arm64_v8a.apk:/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/split_config.xxhdpi.apk:/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/split_i18n_en.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/lib/arm64:/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk!/lib/arm64-v8a:/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/split_config.arm64_v8a.apk!/lib/arm64-v8a:/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/split_config.xxhdpi.apk!/lib/arm64-v8a:/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/split_i18n_en.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/
+06-12 18:40:55.659 26370 26370 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-12 18:40:55.664 26370 26370 V GraphicsEnvironment: ANGLE Developer option for 'com.whatsapp' set to: 'default'
+06-12 18:40:55.664 26370 26370 V GraphicsEnvironment: ANGLE GameManagerService for com.whatsapp: false
+06-12 18:40:55.665 26370 26370 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+06-12 18:40:55.669 26370 26370 D NetworkSecurityConfig: Using Network Security Config from resource (name removed) debugBuild: false
+06-12 18:40:55.673 26370 26370 D NetworkSecurityConfig: Using Network Security Config from resource (name removed) debugBuild: false
+06-12 18:40:55.726 26370 26370 D CompatibilityChangeReporter: Compat change id reported: 183155436; UID 10263; state: ENABLED
+06-12 18:40:55.732 26370 26370 I FirebaseApp: Device unlocked: initializing all Firebase APIs for app [DEFAULT]
+06-12 18:40:55.745 26370 26370 I FirebaseInitProvider: FirebaseApp initialization successful
+06-12 18:40:55.757 26370 26370 I ProcessNameUtil: getMyProcessName
+06-12 18:40:55.757 26370 26370 I ProcessNameUtil: isSecondaryProcess/process name: com.whatsapp/processing time: 1 ms
+06-12 18:40:55.851 26370 26370 W SoLoader: Initializing SoLoader: 0
+06-12 18:40:55.853 26370 26370 I SoLoader: Recording new base apk path: /data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk
+06-12 18:40:55.853 26370 26370 I SoLoader: Previously recorded 0 base apk paths.
+06-12 18:40:55.855 26370 26370 I SoLoader: Preparing SO source: DirectorySoSource[root = /vendor/lib64 flags = 2]
+06-12 18:40:55.855 26370 26370 I SoLoader: Preparing SO source: DirectorySoSource[root = /system_ext/lib64 flags = 2]
+06-12 18:40:55.855 26370 26370 I SoLoader: Preparing SO source: DirectorySoSource[root = /system/lib64 flags = 2]
+06-12 18:40:55.855 26370 26370 I SoLoader: Preparing SO source: DirectApkSoSource[root = [/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk!/lib/arm64-v8a, /data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/split_config.arm64_v8a.apk!/lib/arm64-v8a, /data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/split_config.xxhdpi.apk!/lib/arm64-v8a, /data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/split_i18n_en.apk!/lib/arm64-v8a]]
+06-12 18:40:55.878 27062 27065 W gle.android.gms: Missing inline cache for java.util.List dgls.b(java.lang.String, java.util.List, java.util.List, java.lang.Long, boolean)
+06-12 18:40:55.903 26370 26370 I SoLoader: Preparing SO source: ApplicationSoSource[DirectorySoSource[root = /data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/lib/arm64 flags = 0]]
+06-12 18:40:55.904 26370 26370 W SoLoader: SoLoader initialized: 8
+06-12 18:40:55.925 26370 26370 D nativeloader: Load /data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/split_config.arm64_v8a.apk!/lib/arm64-v8a/libsuperpack.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:55.937 26370 26370 W SoLoader: Loading wa_log on the main thread
+06-12 18:40:55.943 26370 26370 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libwa_log.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:55.944 26370 26370 W SoLoader: Loading essential on the main thread
+06-12 18:40:55.954 26370 26370 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libc++_shared.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:55.959 26370 26370 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libfbjni.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:55.962 26370 26370 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libfbsofterror.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:55.966 26370 26370 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libglog.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:55.971 26370 26370 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libfb.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:55.971 26370 26370 W SoLoader: Loading fb on the main thread
+06-12 18:40:55.968  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434352): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:55.972 26370 26370 I com.whatsapp: Thread[1,tid=26370,Native,Thread*=0xb400006f79e207b0,peer=0x72651068,"main"] recursive attempt to load library "/data/data/com.whatsapp/files/decompressed/libs.spo/libfb.so"
+06-12 18:40:55.971 26370 26370 W com.whatsapp: type=1400 audit(0.0:242434353): avc: granted { execute } for path="/data/data/com.whatsapp/files/decompressed/libs.spo/libessential.so" dev="dm-41" ino=617778 scontext=u:r:untrusted_app:s0:c7,c257,c512,c768 tcontext=u:object_r:app_data_file:s0:c7,c257,c512,c768 tclass=file app=com.facebook.katana
+06-12 18:40:55.971  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434354): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:55.977 26370 26370 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libessential.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:55.978 26370 26370 I essential-jni: JNI_OnLoad start
+06-12 18:40:55.978 26370 26370 I essential-jni: fbjni lambda running
+06-12 18:40:55.978 26370 26370 D SigquitBasedANRDetector: Registered
+06-12 18:40:55.978 26370 26370 I essential-jni: JNI_OnLoad lambda complete
+06-12 18:40:55.978  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434355): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:55.978 26370 26370 W com.whatsapp: type=1400 audit(0.0:242434356): avc: denied { execmod } for path="/apex/com.android.runtime/lib64/bionic/libc.so" dev="loop31" ino=38 scontext=u:r:untrusted_app:s0:c7,c257,c512,c768 tcontext=u:object_r:system_lib_file:s0 tclass=file permissive=0 app=com.facebook.katana
+06-12 18:40:55.992 26370 26370 D SigquitBasedANRDetector: Initialized
+06-12 18:40:56.007 22936 23084 I cn_CronetUrlRequestContext: destroyNativeStreamLocked android.net.http.internal.org.chromium.net.impl.CronetBidirectionalStream@9e10cf6
+06-12 18:40:56.011 26370 26370 I SigquitBasedANRDetector: Function PaletteWriteCrashThreadStacks hooked with result=0
+06-12 18:40:56.012 26370 26370 D SigquitBasedANRDetector: Detector started
+06-12 18:40:56.013 26370 26370 W SoLoader: Loading rtvip on the main thread
+06-12 18:40:56.015 26370 26370 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/librtvip.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.016 26370 26370 W SoLoader: Loading rtvip on the main thread
+06-12 18:40:56.017 26370 26370 I rtvip   : done
+06-12 18:40:56.017 26370 26370 W SoLoader: Loading vlc on the main thread
+06-12 18:40:56.020 26370 26370 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libvlc.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.020 26370 26370 W SoLoader: Loading native_utils on the main thread
+06-12 18:40:56.024 26370 26370 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libnative_utils.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.024 26370 26370 W SoLoader: Loading curve25519 on the main thread
+06-12 18:40:56.026 27174 27174 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.common.telemetry.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+06-12 18:40:56.031 26370 26370 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libcurve25519.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.115 26370 26397 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10263; state: ENABLED
+06-12 18:40:56.115  1739  3313 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10079; state: DISABLED
+06-12 18:40:56.115  1739  3313 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10079; state: DISABLED
+06-12 18:40:56.115  1739  3313 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10079; state: DISABLED
+06-12 18:40:56.115  1739  3313 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10079; state: ENABLED
+06-12 18:40:56.115  1739  1775 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10263; state: ENABLED
+06-12 18:40:56.116  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10079; state: ENABLED
+06-12 18:40:56.130  1055  1055 D Zygote  : Forked child process 26404
+06-12 18:40:56.130  1739  1968 I ActivityManager: Start proc 26404:com.whatsapp.w4b/u0a79 for broadcast {com.whatsapp.w4b/com.whatsapp.alarmservice.AlarmBroadcastReceiver}
+06-12 18:40:56.135  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-12 18:40:56.137 26404 26404 I om.whatsapp.w4b: Using CollectorTypeCC GC.
+06-12 18:40:56.144 26404 26404 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-12 18:40:56.144  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-12 18:40:56.147  1739  3313 D CompatibilityChangeReporter: Compat change id reported: 168419799; UID 10079; state: DISABLED
+06-12 18:40:56.148  1739  3313 D CompatibilityChangeReporter: Compat change id reported: 273564678; UID 10079; state: DISABLED
+06-12 18:40:56.150  4291  9348 D ForegroundUtils: Foreground UID status:
+06-12 18:40:56.150  4291  9348 D ForegroundUtils: UID: 1002 is in foreground: true
+06-12 18:40:56.150  4291  9348 D ForegroundUtils: UID: 10164 is in foreground: true
+06-12 18:40:56.150  4291  9348 D ForegroundUtils: UID: 10238 is in foreground: false
+06-12 18:40:56.150  4291  9348 D ForegroundUtils: UID: 10243 is in foreground: true
+06-12 18:40:56.150  4291  9348 D ForegroundUtils: UID: 10250 is in foreground: false
+06-12 18:40:56.150  4291  9348 D ForegroundUtils: UID: 10895 is in foreground: true
+06-12 18:40:56.156 26370 26401 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libar-bundle3.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.202 26370 26401 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libfortify.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.204 26404 26404 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10079; state: ENABLED
+06-12 18:40:56.235 26404 26404 D nativeloader: Configuring clns-4 for other apk /system/framework/org.apache.http.legacy.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/lib/arm64:/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk!/lib/arm64-v8a:/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/split_config.arm64_v8a.apk!/lib/arm64-v8a:/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/split_config.xxhdpi.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.whatsapp.w4b
+06-12 18:40:56.240 26370 26401 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libpytorch.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.261 26370 26401 W libc    : Access denied finding property "ro.mediatek.platform"
+06-12 18:40:56.261 26370 26401 W libc    : Access denied finding property "ro.chipname"
+06-12 18:40:56.261 26370 26401 W libc    : Access denied finding property "ro.hardware.chipname"
+06-12 18:40:56.279 26370 26401 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libexecutorch.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.284 26370 26401 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libpyspeech.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.293 26370 26401 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libsimplejni.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.296 26370 26401 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libgraphutil.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.298 26370 26401 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libgraphstorecerealutil.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.301 26370 26401 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libxplat_third-party_zstd__zstd.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.322 26370 26401 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libwhatsappmerged.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.339 26370 26401 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libar-bundle2.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.366 26370 26401 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libwhatsapp.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.369 26404 26404 W om.whatsapp.w4b: Failed to find entry 'classes.dex': Entry not found
+06-12 18:40:56.371 26404 26404 W om.whatsapp.w4b: Failed to find entry 'classes.dex': Entry not found
+06-12 18:40:56.373 26404 26404 D nativeloader: Configuring clns-5 for other apk /data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk:/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/split_config.arm64_v8a.apk:/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/split_config.xxhdpi.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/lib/arm64:/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk!/lib/arm64-v8a:/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/split_config.arm64_v8a.apk!/lib/arm64-v8a:/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/split_config.xxhdpi.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.whatsapp.w4b
+06-12 18:40:56.395 26404 26404 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-12 18:40:56.400 26370 26419 I WhatsAppJni: EnsureThreadAttached: attached current thread to JVM
+06-12 18:40:56.401 26404 26404 V GraphicsEnvironment: ANGLE Developer option for 'com.whatsapp.w4b' set to: 'default'
+06-12 18:40:56.402 26404 26404 V GraphicsEnvironment: ANGLE GameManagerService for com.whatsapp.w4b: false
+06-12 18:40:56.402 26404 26404 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+06-12 18:40:56.404 26404 26404 D NetworkSecurityConfig: Using Network Security Config from resource (name removed) debugBuild: false
+06-12 18:40:56.406 26404 26404 D NetworkSecurityConfig: Using Network Security Config from resource (name removed) debugBuild: false
+06-12 18:40:56.441 26404 26404 D CompatibilityChangeReporter: Compat change id reported: 183155436; UID 10079; state: ENABLED
+06-12 18:40:56.443 26404 26404 I FirebaseApp: Device unlocked: initializing all Firebase APIs for app [DEFAULT]
+06-12 18:40:56.444 26370 26421 I WhatsAppJni: EnsureThreadAttached: attached current thread to JVM
+06-12 18:40:56.452 26404 26404 I FirebaseInitProvider: FirebaseApp initialization successful
+06-12 18:40:56.468 26370 26422 I WhatsAppJni: EnsureThreadAttached: attached current thread to JVM
+06-12 18:40:56.622 26404 26404 W SoLoader: Initializing SoLoader: 0
+06-12 18:40:56.623 26404 26404 I SoLoader: Recording new base apk path: /data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk
+06-12 18:40:56.623 26404 26404 I SoLoader: Previously recorded 0 base apk paths.
+06-12 18:40:56.623 26404 26404 I SoLoader: Preparing SO source: DirectorySoSource[root = /vendor/lib64 flags = 2]
+06-12 18:40:56.623 26404 26404 I SoLoader: Preparing SO source: DirectorySoSource[root = /system_ext/lib64 flags = 2]
+06-12 18:40:56.623 26404 26404 I SoLoader: Preparing SO source: DirectorySoSource[root = /system/lib64 flags = 2]
+06-12 18:40:56.623 26404 26404 I SoLoader: Preparing SO source: DirectApkSoSource[root = [/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk!/lib/arm64-v8a, /data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/split_config.arm64_v8a.apk!/lib/arm64-v8a, /data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/split_config.xxhdpi.apk!/lib/arm64-v8a]]
+06-12 18:40:56.649  1739  1775 D ConnectivityService: requestNetwork for uid/pid:10263/26370 activeRequest: null callbackRequest: 116198 [NetworkRequest [ REQUEST id=116199, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10263 RequestorUid: 10263 RequestorPkg: com.whatsapp UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|LOST|UNAVAIL|BLK
+06-12 18:40:56.654  1739  2448 D OemPaidWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116199, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10263 RequestorUid: 10263 RequestorPkg: com.whatsapp UnderlyingNetworks: Null] ]
+06-12 18:40:56.654  1739  2448 D MultiInternetWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116199, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10263 RequestorUid: 10263 RequestorPkg: com.whatsapp UnderlyingNetworks: Null] ]
+06-12 18:40:56.655  1739  2448 D WifiNetworkFactory: got request NetworkRequest [ REQUEST id=116199, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10263 RequestorUid: 10263 RequestorPkg: com.whatsapp UnderlyingNetworks: Null] ]
+06-12 18:40:56.655  1739  2448 D UntrustedWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116199, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10263 RequestorUid: 10263 RequestorPkg: com.whatsapp UnderlyingNetworks: Null] ]
+06-12 18:40:56.657  1739  2455 D ConnectivityService: NetReassign [116199 : null → 348] [c 0] [a 2] [i 5]
+06-12 18:40:56.668 26370 26405 I PlayCore: UID: [10263]  PID: [26370] SplitInstallListenerRegistry : registerListener
+06-12 18:40:56.673  1739  3313 D CompatibilityChangeReporter: Compat change id reported: 161145287; UID 10263; state: DISABLED
+06-12 18:40:56.693 26370 26445 D CompatibilityChangeReporter: Compat change id reported: 160794467; UID 10263; state: ENABLED
+06-12 18:40:56.711 26370 26439 E msys    : E[ADNSUCTIMH WAJMNSRuntime]WAJContextInitMNSRuntime(446)=>[LogLevel:I] Secondary DNS resolver enabled
+06-12 18:40:56.712 26370 26439 E msys    : E[N WA]_WAJMNSStreamImplMNSTCPStreamCreate(361)=>[LogLevel:I] WAJMNSStream/impl/tcpStreamCreate/MNSStreamRaw/p=0xb400006e79ecce00
+06-12 18:40:56.712 26370 26439 E msys    : E[N WA]WAJMNSStreamImplCreate(421)=>[LogLevel:I] WAJMNSStream/impl/create/p=0xb400006e79ecce00 (mnsConn=0xb400006e49e686c0)
+06-12 18:40:56.721 26370 26439 E msys    : E[N WA]_WAJMNSStreamCreateMnsIpsFromIpAddressStrings(87)=>[LogLevel:I] no ip addresses provided, using DNS resolution
+06-12 18:40:56.721 26370 26439 E msys    : E[N WA]WAJMNSStreamImplConnect(450)=>[LogLevel:I] WAJMNSStream/impl/connect/p=0xb400006e79ecce00 (endpoint=g.whatsapp.net:5222)(ipAddressCount=0)
+06-12 18:40:56.721 26370 26439 E msys    : E[N WA]_WAJMNSStreamImplUpdateStreamState(230)=>[LogLevel:I] WAJMNSStream/impl/state-changed/p=0xb400006e79ecce00 (initial=>connecting)
+06-12 18:40:56.726 26404 26404 I SoLoader: Preparing SO source: ApplicationSoSource[DirectorySoSource[root = /data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/lib/arm64 flags = 0]]
+06-12 18:40:56.726 26404 26404 W SoLoader: SoLoader initialized: 8
+06-12 18:40:56.764 26404 26404 D nativeloader: Load /data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/split_config.arm64_v8a.apk!/lib/arm64-v8a/libsuperpack.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.778 26404 26404 W SoLoader: Loading wa_log on the main thread
+06-12 18:40:56.784 26370 26431 E com.whatsapp: No implementation found for void com.facebook.quicklog.QuickPerformanceLoggerNativeProvider.nativeUpdateQPLInstance() (tried Java_com_facebook_quicklog_QuickPerformanceLoggerNativeProvider_nativeUpdateQPLInstance and Java_com_facebook_quicklog_QuickPerformanceLoggerNativeProvider_nativeUpdateQPLInstance__) - is the library loaded, e.g. System.loadLibrary?
+06-12 18:40:56.785 26370 26455 E msys    : E[N WA]_WAJMNSStreamImplOnMNSReady(259)=>[LogLevel:I] WAJMNSStream/impl/callback/onMNSReady/p=0xb400006e79ecce00
+06-12 18:40:56.785 26370 26455 E msys    : E[N WA]_WAJMNSStreamImplCreateConnectionReport(194)=>[LogLevel:I] WAJMNSStream/impl/report port=5222, connectedIPVersion=4, resolvedIPAddressCount=2, dnsResolutionStartTimeMS=1845403372, dnsResolutionEndTimeMS=1845403388, dnsCacheHit=Yes, connectStartTimeMS=1845403388, connectEndTimeMS=1845403436, proxyConnectStartTimeMS=0, proxyConnectEndTimeMS=0
+06-12 18:40:56.785 26370 26455 E msys    : E[N WA]_WAJMNSStreamImplUpdateStreamState(230)=>[LogLevel:I] WAJMNSStream/impl/state-changed/p=0xb400006e79ecce00 (connecting=>connected)
+06-12 18:40:56.785 26370 26431 W QPLProvider: QuickPerformanceLoggerProvider failed to update native QPL instance, native library. This is expected during early app initialization
+06-12 18:40:56.787 26404 26404 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libwa_log.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.787 26404 26404 W SoLoader: Loading essential on the main thread
+06-12 18:40:56.798 26404 26404 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libc++_shared.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.801 26404 26404 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libfbjni.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.803 26404 26404 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libfbsofterror.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.805 26404 26404 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libglog.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.811 26370 26455 E msys    : E[N mns]_OnResolverSuccess(331)=>Cache refresh succeeded with system DNS resolver. IP count: 2
+06-12 18:40:56.812 26404 26404 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libfb.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.812 26404 26404 W SoLoader: Loading fb on the main thread
+06-12 18:40:56.813 26404 26404 I om.whatsapp.w4b: Thread[1,tid=26404,Native,Thread*=0xb400006f79e207b0,peer=0x72651068,"main"] recursive attempt to load library "/data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libfb.so"
+06-12 18:40:56.818 26404 26404 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libessential.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.818 26404 26404 I essential-jni: JNI_OnLoad start
+06-12 18:40:56.818 26404 26404 I essential-jni: fbjni lambda running
+06-12 18:40:56.818 26404 26404 D SigquitBasedANRDetector: Registered
+06-12 18:40:56.818 26404 26404 I essential-jni: JNI_OnLoad lambda complete
+06-12 18:40:56.842 26404 26404 D SigquitBasedANRDetector: Initialized
+06-12 18:40:56.856 26404 26404 I SigquitBasedANRDetector: Function PaletteWriteCrashThreadStacks hooked with result=0
+06-12 18:40:56.856 26404 26404 D SigquitBasedANRDetector: Detector started
+06-12 18:40:56.857 26404 26404 W SoLoader: Loading rtvip on the main thread
+06-12 18:40:56.860 26404 26404 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/librtvip.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.860 26404 26404 W SoLoader: Loading rtvip on the main thread
+06-12 18:40:56.861 26404 26404 I rtvip   : done
+06-12 18:40:56.862 26404 26404 W SoLoader: Loading vlc on the main thread
+06-12 18:40:56.864 26404 26404 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libvlc.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.864 26404 26404 W SoLoader: Loading native_utils on the main thread
+06-12 18:40:56.867 26404 26404 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libnative_utils.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.868 26404 26404 W SoLoader: Loading curve25519 on the main thread
+06-12 18:40:56.876 26404 26404 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libcurve25519.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.900 26370 26431 W SoLoader: SoLoader already initialized
+06-12 18:40:56.905 26404 26443 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libar-bundle3.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.910 26404 26443 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libfortify.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.930 26404 26443 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libpytorch.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.934 26404 26443 W libc    : Access denied finding property "ro.mediatek.platform"
+06-12 18:40:56.935 26404 26443 W libc    : Access denied finding property "ro.chipname"
+06-12 18:40:56.935 26404 26443 W libc    : Access denied finding property "ro.hardware.chipname"
+06-12 18:40:56.941 26370 26431 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libfbsocketthreadlocalscope.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.954 26404 26443 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libexecutorch.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.960 26404 26443 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libpyspeech.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.963 26404 26443 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libsimplejni.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.965 26404 26443 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libgraphutil.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.970 26404 26443 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libgraphstorecerealutil.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:56.971  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434583): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:56.975 26370 26370 W com.facebook.katana: type=1400 audit(0.0:242434584): avc: granted { execute } for comm=576861747341707020576F726B6572 path="/data/data/com.whatsapp/files/decompressed/libs.spo/libfb_sqlite_3500300.so" dev="dm-41" ino=623243 scontext=u:r:untrusted_app:s0:c7,c257,c512,c768 tcontext=u:object_r:app_data_file:s0:c7,c257,c512,c768 tclass=file app=com.facebook.katana
+06-12 18:40:56.975 26404 26404 W com.whatsapp.w4b: type=1400 audit(0.0:242434585): avc: granted { execute } for comm=486967682050726920576F726B6572 path="/data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libwhatsappmerged.so" dev="dm-41" ino=540999 scontext=u:r:untrusted_app:s0:c79,c256,c512,c768 tcontext=u:object_r:app_data_file:s0:c79,c256,c512,c768 tclass=file app=com.whatsapp.w4b
+06-12 18:40:56.978  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434586): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:56.980 26370 26431 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libfb_sqlite_3500300.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:56.981  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434587): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:56.990 24094 24154 E DialerTraceManagerImpl: com.google.apps.tiktok.tracing.TraceManagerImpl.handleTraceTimeout:372 Trace Application creation timed out after 1250273 ms. Complete trace: # ahzd@78e6cd6b
+06-12 18:40:56.990 24094 24154 E DialerTraceManagerImpl: ahzi: 
+06-12 18:40:56.990 24094 24154 E DialerTraceManagerImpl: 	at tk_trace.APP_LAUNCHED(Started After:1)
+06-12 18:40:56.990 24094 24154 E DialerTraceManagerImpl: 	at tk_trace.APP_LAUNCHED(Started After:0)
+06-12 18:40:56.990 24094 24154 E DialerTraceManagerImpl: 	at tk_trace.DialerStartup_executePostOnCreateTasks(Started After:0)
+06-12 18:40:56.990 24094 24154 E DialerTraceManagerImpl: 	at tk_trace.DialerBaseApplication_onCreate(Started After:0)
+06-12 18:40:56.990 24094 24154 E DialerTraceManagerImpl: 	at tk_trace.Application.onCreate(Started After:0)
+06-12 18:40:56.990 24094 24154 E DialerTraceManagerImpl: 	at tk_trace.Application creation(Started After:0)
+06-12 18:40:56.990 24094 24154 E DialerTraceManagerImpl: 	at tk_trace.Broadcast to com.android.dialer.voicemail.notification.receivers.MwiNotificationReceiver_Receiver android.telephony.action.SHOW_VOICEMAIL_NOTIFICATION(Started After:0)
+06-12 18:40:56.991 24094 24154 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: BROADCAST_RECEIVER, function parameters: [Broadcast to com.android.dialer.voicemail.notification.receivers.MwiNotificationReceiver_Receiver android.telephony.action.SHOW_VOICEMAIL_NOTIFICATION,2026-06-12 18:20:07.572], return value: <empty>
+06-12 18:40:56.994 26404 26443 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libwhatsappmerged.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:57.009 26404 26443 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libar-bundle2.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:57.025 26370 26431 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libffsingletonmerged.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:57.031 26404 26438 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10079; state: ENABLED
+06-12 18:40:57.032  1739  1775 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10079; state: ENABLED
+06-12 18:40:57.038 26404 26443 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libwhatsapp.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:57.061 26404 26483 I WhatsAppJni: EnsureThreadAttached: attached current thread to JVM
+06-12 18:40:57.063 27174 26080 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+06-12 18:40:57.064 27174 26080 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+06-12 18:40:57.066 26370 26431 W EndToEnd-Test: Cannot find E2E config file `/data/user/0/com.whatsapp/files/config.json`.
+06-12 18:40:57.066 27062 26174 I PlayGamesServices[GamesSyncAdapter]: Starting sync for 5a7daadc
+06-12 18:40:57.067  1739  5413 D CompatibilityChangeReporter: Compat change id reported: 201794303; UID 10164; state: ENABLED
+06-12 18:40:57.067 27062 26174 I PlayGamesServices[GamesSyncAdapter]: Sync duration for 5a7daadc: 1
+06-12 18:40:57.073 27062 23715 I PlayGamesServices[GamesSyncAdapter]: Starting sync for effb0749
+06-12 18:40:57.074 27174 26109 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+06-12 18:40:57.076 27062 23715 I PlayGamesServices[GamesSyncAdapter]: Sync duration for effb0749: 2
+06-12 18:40:57.078 26404 26484 I WhatsAppJni: EnsureThreadAttached: attached current thread to JVM
+06-12 18:40:57.079 26404 26485 I WhatsAppJni: EnsureThreadAttached: attached current thread to JVM
+06-12 18:40:57.096 27174 26109 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+06-12 18:40:57.097 22936 22943 W SQLiteConnectionPool: A SQLiteConnection object for database '/data/user/0/com.google.android.gm/databases/XX@YY' was leaked!  Please fix your application to end transactions in progress properly and to close the database when it is no longer needed.
+06-12 18:40:57.097 22936 22943 W System  : A resource failed to call SQLiteConnection.close. 
+06-12 18:40:57.098 22936 22943 W SQLiteConnectionPool: A SQLiteConnection object for database '/data/user/0/com.google.android.gm/databases/XX@YY' was leaked!  Please fix your application to end transactions in progress properly and to close the database when it is no longer needed.
+06-12 18:40:57.098 22936 22943 W System  : A resource failed to call SQLiteConnection.close. 
+06-12 18:40:57.098 22936 22943 W SQLiteConnectionPool: A SQLiteConnection object for database '/data/user/0/com.google.android.gm/databases/XX@YY' was leaked!  Please fix your application to end transactions in progress properly and to close the database when it is no longer needed.
+06-12 18:40:57.098 22936 22943 W System  : A resource failed to call SQLiteConnection.close. 
+06-12 18:40:57.098 27062  5957 W PlayGamesServices[UiUtils]: AppVersion: Cannot find the installed destination app.
+06-12 18:40:57.098 27062  5957 I GetServiceValidatorImpl: (REDACTED) onGetService() from Client SDK version [%s], Module version [%s], PGA version [%s], Account [%s], Calling package [%s], Game package [%s]
+06-12 18:40:57.098 22936 22943 W System  : A resource failed to call SQLiteConnectionPool.close. 
+06-12 18:40:57.099 27174 26109 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+06-12 18:40:57.099 27062  5957 I GetGamesServiceReqFacto: (REDACTED) Parsing request with ignored arguments. signInOptionsBundle [%s], isRetryingSignIn [%s], skipWelcomePopup [%s], requireGooglePlus [%s]
+06-12 18:40:57.100 27062  5957 I GetGamesServiceReqFacto: Replacing request for `games` scope with `games_lite`
+06-12 18:40:57.105 27062 26487 I SignInPerformer-5: (REDACTED) Handling request [%s], isFirstPartyCaller [%s]
+06-12 18:40:57.106 27062 26487 I SignInPerformer-5: Successfully brokered first-party unauthenticated GamesService [CONTEXT service_id=1 ]
+06-12 18:40:57.107 27062 26487 I GetGamesServiceV2Op: (REDACTED) Successfully brokered GamesService for request %s
+06-12 18:40:57.108 27062  5957 W PlayGamesServices[UiUtils]: AppVersion: Cannot find the installed destination app.
+06-12 18:40:57.109 27062  5957 W PlayGamesServices[UiUtils]: AppVersionName: Cannot find the installed destination app.
+06-12 18:40:57.111 27062  5957 W PlayGamesServices[UiUtils]: AppVersion: Cannot find the installed destination app.
+06-12 18:40:57.111 27062  5957 W PlayGamesServices[UiUtils]: AppVersionName: Cannot find the installed destination app.
+06-12 18:40:57.122 27062 26174 I PlayGamesServices[GamesSyncAdapter]: Starting sync for 361ced4d
+06-12 18:40:57.123 27062 26174 I PlayGamesServices[GamesSyncAdapter]: Sync duration for 361ced4d: 1
+06-12 18:40:57.124 27174 26080 I NetworkScheduler.Stats: (REDACTED) Task %s/%s started execution. cause:%s exec_start_elapsed_seconds: %s
+06-12 18:40:57.129 27174 26109 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+06-12 18:40:57.143 27174 26109 I NetworkScheduler.Stats: (REDACTED) Task %s/%s finished executing. cause:%s result: %s elapsed_millis: %s uptime_millis: %s exec_start_elapsed_seconds: %s
+06-12 18:40:57.152 27062  5957 W PlayGamesServices[UiUtils]: AppVersion: Cannot find the installed destination app.
+06-12 18:40:57.153 27062  5957 W PlayGamesServices[UiUtils]: AppVersionName: Cannot find the installed destination app.
+06-12 18:40:57.400 22936 22964 W ppe     : [Gmail] NotificationFactory: Posting notification for new thread as silent!
+06-12 18:40:57.404 26370 26471 E msys    : E[N mns:TigonMNS]_OnResolverSuccess(331)=>Cache refresh succeeded with system DNS resolver. IP count: 2
+06-12 18:40:57.542 22936 23084 I cn_CronetUrlRequestContext: destroyNativeStreamLocked android.net.http.internal.org.chromium.net.impl.CronetBidirectionalStream@650ddd2
+06-12 18:40:57.560 26370 26471 E msys    : E[N mns:TigonMNS]_OnResolverSuccess(331)=>Cache refresh succeeded with system DNS resolver. IP count: 2
+06-12 18:40:57.794  1739  1775 D CompatibilityChangeReporter: Compat change id reported: 171306433; UID 10263; state: ENABLED
+06-12 18:40:57.795  1739  1775 D CompatibilityChangeReporter: Compat change id reported: 226439802; UID 10263; state: DISABLED
+06-12 18:40:57.798  1739  3313 D CompatibilityChangeReporter: Compat change id reported: 218533173; UID 10263; state: ENABLED
+06-12 18:40:57.800  1739  3313 W ActivityManager: Background start not allowed: service Intent { act=com.whatsapp.messageservice.messaging.MessageService.START cmp=com.whatsapp/.messageservice.messaging.MessageService } to com.whatsapp/.messageservice.messaging.MessageService from pid=26370 uid=10263 pkg=com.whatsapp startFg?=false
+06-12 18:40:57.975  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434776): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:57.978  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434777): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:57.985  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434778): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:57.991  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434779): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:57.995  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434780): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:58.047 26370 26506 D WM-PackageManagerHelper: Skipping component enablement for androidx.work.impl.background.systemjob.SystemJobService
+06-12 18:40:58.047 26370 26506 D WM-Schedulers: Created SystemJobScheduler and enabled SystemJobService
+06-12 18:40:58.059 26370 26517 D WM-ForceStopRunnable: Is default app process = true
+06-12 18:40:58.060 26370 26517 D WM-ForceStopRunnable: Performing cleanup operations.
+06-12 18:40:58.099 26370 26517 D WM-SystemJobScheduler: Reconciling jobs
+06-12 18:40:58.162 26370 26517 D WM-ForceStopRunnable: Found unfinished work, scheduling it.
+06-12 18:40:58.202 26370 26517 D WM-SystemJobScheduler: Scheduling work ID 8575e598-1b99-4944-ae23-5e3ab7404bd3Job ID 40465
+06-12 18:40:58.207 26370 26517 D WM-SystemJobScheduler: Scheduling work ID d2cd2a6c-c50c-4527-9933-4fc29ed8e18aJob ID 40513
+06-12 18:40:58.210 26370 26517 D WM-SystemJobScheduler: Scheduling work ID 409bc415-b405-4e8c-b04a-f96040a44adcJob ID 40554
+06-12 18:40:58.257 26370 26526 D WM-SystemJobScheduler: Scheduling work ID 9ca435f0-251a-4f43-ad12-38011617ba7aJob ID 40555
+06-12 18:40:58.265 19741  2082 I etse    : (REDACTED) HDM. appOpsListener %s %s
+06-12 18:40:58.265 19741  2082 I etse    : (REDACTED) HDM. Ignoring irrelevant audio permission changes for package %s
+06-12 18:40:58.274 26370 26526 D WM-GreedyScheduler: Starting tracking for 9ca435f0-251a-4f43-ad12-38011617ba7a
+06-12 18:40:58.280 26370 26370 D WM-SystemJobService: onStartJob for WorkGenerationalId(workSpecId=9ca435f0-251a-4f43-ad12-38011617ba7a, generation=0)
+06-12 18:40:58.340 26370 26526 D WM-GreedyScheduler: Starting tracking for 9ca435f0-251a-4f43-ad12-38011617ba7a
+06-12 18:40:58.352 26370 26525 D WM-SystemJobScheduler: Scheduling work ID da32f654-45c0-4279-b326-66bf14fc5536Job ID 40556
+06-12 18:40:58.366 26521 26521 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+06-12 18:40:58.372 26370 26525 D WM-GreedyScheduler: Starting tracking for 9ca435f0-251a-4f43-ad12-38011617ba7a
+06-12 18:40:58.395 26370 26525 D WM-Processor: 1gq: processing WorkGenerationalId(workSpecId=9ca435f0-251a-4f43-ad12-38011617ba7a, generation=0)
+06-12 18:40:58.398   645   645 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+06-12 18:40:58.399 26521 26531 W AdrenoUtils: <ReadGpuID_from_sysfs:197>: Failed to open /sys/class/kgsl/kgsl-3d0/gpu_model
+06-12 18:40:58.399 26521 26531 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
+06-12 18:40:58.432 26370 26370 D WM-WorkerWrapper: Starting work for com.whatsapp.xmpp.messaging.XmppLifecycleWorker
+06-12 18:40:58.438 26370 26526 D WM-ConstraintTracker: 1gk: initial state = NetworkState(isConnected=true, isValidated=true, isMetered=false, isNotRoaming=true)
+06-12 18:40:58.438 26370 26526 D WM-NetworkStateTracker: Registering network callback
+06-12 18:40:58.451  1739  5413 D ConnectivityService: requestNetwork for uid/pid:10263/26370 activeRequest: null callbackRequest: 116200 [NetworkRequest [ REQUEST id=116201, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10263 RequestorUid: 10263 RequestorPkg: com.whatsapp UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|LOST|NC
+06-12 18:40:58.454 26370 26536 D WM-NetworkStateTracker: Network capabilities changed: [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&VALIDATED&NOT_ROAMING&FOREGROUND&NOT_CONGESTED&NOT_SUSPENDED&NOT_VCN_MANAGED LinkUpBandwidth>=2904Kbps LinkDnBandwidth>=43541Kbps TransportInfo: <SSID: <unknown ssid>, BSSID: 02:00:00:00:00:00, MAC: 02:00:00:00:00:00, IP: /192.168.1.120, Security type: 2, Supplicant state: COMPLETED, Wi-Fi standard: 11ac, RSSI: -63, Link speed: 780Mbps, Tx Link speed: 780Mbps, Max Supported Tx Link speed: 866Mbps, Rx Link speed: 585Mbps, Max Supported Rx Link speed: 866Mbps, Frequency: 5785MHz, Net ID: -1, Metered hint: false, score: 100, isUsable: true, CarrierMerged: false, SubscriptionId: -1, IsPrimary: -1, Trusted: true, Restricted: false, Ephemeral: false, OEM paid: false, OEM private: false, OSU AP: false, FQDN: <none>, Provider friendly name: <none>, Requesting package name: <none><none>MLO Information: , Is TID-To-Link negotiation supported by the AP: false, AP MLD Address: <none>, AP MLO Link Id: <none>, AP MLO Affiliated links: <none>, Vendor Data: <none>> SignalStrength: -63 UnderlyingNetworks: Null]
+06-12 18:40:58.454  1739  2448 D OemPaidWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116201, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10263 RequestorUid: 10263 RequestorPkg: com.whatsapp UnderlyingNetworks: Null] ]
+06-12 18:40:58.455  1739  2448 D MultiInternetWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116201, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10263 RequestorUid: 10263 RequestorPkg: com.whatsapp UnderlyingNetworks: Null] ]
+06-12 18:40:58.456  1739  2448 D WifiNetworkFactory: got request NetworkRequest [ REQUEST id=116201, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10263 RequestorUid: 10263 RequestorPkg: com.whatsapp UnderlyingNetworks: Null] ]
+06-12 18:40:58.456  1739  2448 D UntrustedWifiNetworkFactory: got request NetworkRequest [ REQUEST id=116201, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10263 RequestorUid: 10263 RequestorPkg: com.whatsapp UnderlyingNetworks: Null] ]
+06-12 18:40:58.458  1739  2455 D ConnectivityService: NetReassign [116201 : null → 348] [c 0] [a 2] [i 5]
+06-12 18:40:58.463 26370 26526 D WM-PackageManagerHelper: Skipping component enablement for androidx.work.impl.background.systemalarm.RescheduleReceiver
+06-12 18:40:58.465 26370 26526 D WM-GreedyScheduler: Constraints met: Scheduling work ID WorkGenerationalId(workSpecId=9ca435f0-251a-4f43-ad12-38011617ba7a, generation=0)
+06-12 18:40:58.466 26370 26517 D WM-Processor: Work WorkGenerationalId(workSpecId=9ca435f0-251a-4f43-ad12-38011617ba7a, generation=0) is already enqueued for processing
+06-12 18:40:58.691 22936 22941 W ogle.android.gm: Suspending all threads took: 6.534ms
+06-12 18:40:58.706 22936 22936 W ppe     : [Gmail] MailSyncAdapterService: MailSyncAdapterService is destroyed! [CONTEXT android_log_tag="MailSyncAdapterService" ]
+06-12 18:40:58.792 26540 26540 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+06-12 18:40:58.796 26540 26540 I AndroidRuntime: Using default boot image
+06-12 18:40:58.796 26540 26540 I AndroidRuntime: Leaving lock profiling enabled
+06-12 18:40:58.799  1739  3261 W Telecom : : registerPhoneAccount - attempt to set a group from a non-system caller.: TSI.rPA@R54
+06-12 18:40:58.800 26540 26540 I app_process: Using CollectorTypeCC GC.
+06-12 18:40:58.800  1739  3261 I Telecom : PhoneAccountRegistrar: Modify account: [ComponentInfo{com.whatsapp/com.whatsapp.calling.telecom.SelfManagedConnectionService}, ***, UserHandle{0}]: TSI.rPA@R54
+06-12 18:40:58.800  1739  3261 I Telecom : AppLabelProxy: package com.whatsapp: name is WhatsApp: TSI.rPA@R54
+06-12 18:40:58.809  1739  3261 I Telecom : CallsManager: handlePhoneAccountChanged: phoneAccount=[[X] PhoneAccount: ComponentInfo{com.whatsapp/com.whatsapp.calling.telecom.SelfManagedConnectionService}, ***, UserHandle{0} Capabilities: SelfManaged SuppVideo Video  Audio Routes: BESW Schemes: tel  Extras: Bundle[{android.telecom.extra.LOG_SELF_MANAGED_CALLS=false}] GroupId: ***]: TSI.rPA@R54
+06-12 18:40:58.873 26540 26540 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+06-12 18:40:58.899 26540 26540 D nativeloader: Load libicu_jni.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-12 18:40:58.899 26540 26540 D app_process: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+06-12 18:40:58.899 26540 26540 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt70l.dat
+06-12 18:40:58.901 26540 26540 D nativeloader: Load libjavacore.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-12 18:40:58.902 26540 26540 D nativeloader: Load libopenjdk.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-12 18:40:58.904 26540 26540 I app_process: Priority-to-niceness mapping: 19, 16, 13, 10, 0, -2, -4, -5, -6, -8
+06-12 18:40:58.929 26540 26540 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-12 18:40:58.930 26540 26540 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+06-12 18:40:58.937  1739  3261 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-12 18:40:58.940  4224  3946 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-12 18:40:58.940  1739  3261 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-12 18:40:58.943  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:40:58.944  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:40:58.944  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:40:58.945  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:40:58.948  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:40:58.948  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:40:58.949  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:40:58.949  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:40:58.949  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:40:58.949  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:40:58.950  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:40:58.950  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:40:58.950  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:40:58.950  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:40:58.956  4224 18858 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-12 18:40:58.957  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:40:58.958  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:40:58.958  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:40:58.959  1739  1739 D BatterySaverPolicy: accessibility changed to true, updating policy.
+06-12 18:40:58.959 28386 28386 I SafetyCenterAccessibilityListener: accessibility event occurred, safety center feature not enabled.
+06-12 18:40:58.961  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:40:58.962  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:40:58.963  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-12 18:40:58.964  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:40:58.964  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:40:58.965  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:40:58.965  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:40:58.965  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-12 18:40:58.966  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:40:58.966  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:40:58.966  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:40:58.966  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:40:58.967  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:40:58.967  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:40:58.968  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:40:58.968  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:40:58.968  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:40:58.969  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:40:58.969  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:40:58.970  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:40:58.970  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:40:58.970  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:40:58.970  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:40:58.970  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:40:58.973  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:40:58.975  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-12 18:40:58.976  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:40:58.976  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:40:58.976  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:40:58.978  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:40:58.979  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:40:58.980  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-12 18:40:58.980  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:40:58.980  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:40:58.980  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:40:58.981  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-12 18:40:58.982  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:40:58.983  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-12 18:40:58.984  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:40:58.984  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:40:58.984  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:40:58.981  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434966): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:58.985  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434967): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:58.991  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434968): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:58.998  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434969): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:59.001  1072  1072 W socket_writer_q: type=1400 audit(0.0:242434970): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:59.057  1739  1775 D CompatibilityChangeReporter: Compat change id reported: 161145287; UID 10079; state: DISABLED
+06-12 18:40:59.084 26370 26406 E QPLProvider: QuickPerformanceLogger instance replaced at runtime, this leads to data loss and incorrect telemetry. Initial QPL instance X.DN4@fd337b6, replacing by X.DN4@fd337b6
+06-12 18:40:59.084 26370 26406 E QPLProvider: java.lang.RuntimeException: QPL instance is replaced in runtime
+06-12 18:40:59.084 26370 26406 E QPLProvider: 	at X.1NL.A01(:77)
+06-12 18:40:59.084 26370 26406 E QPLProvider: 	at X.ASe.BPy(:23)
+06-12 18:40:59.084 26370 26406 E QPLProvider: 	at X.25N.A00(:34)
+06-12 18:40:59.084 26370 26406 E QPLProvider: 	at com.whatsapp.app.shell.AbstractAppShellDelegate.lambda$performAsyncInit$9(:73)
+06-12 18:40:59.084 26370 26406 E QPLProvider: 	at X.Lqk.run(:1610)
+06-12 18:40:59.084 26370 26406 E QPLProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-12 18:40:59.084 26370 26406 E QPLProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-12 18:40:59.084 26370 26406 E QPLProvider: 	at X.1mg.run(:1264)
+06-12 18:40:59.084 26370 26406 E QPLProvider: 	at java.lang.Thread.run(Thread.java:1564)
+06-12 18:40:59.086 26370 26406 E com.whatsapp: No implementation found for void com.facebook.quicklog.QuickPerformanceLoggerNativeProvider.nativeUpdateQPLInstance() (tried Java_com_facebook_quicklog_QuickPerformanceLoggerNativeProvider_nativeUpdateQPLInstance and Java_com_facebook_quicklog_QuickPerformanceLoggerNativeProvider_nativeUpdateQPLInstance__) - is the library loaded, e.g. System.loadLibrary?
+06-12 18:40:59.087 26370 26406 W QPLProvider: QuickPerformanceLoggerProvider failed to update native QPL instance, native library. This is expected during early app initialization
+06-12 18:40:59.150  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-12 18:40:59.155  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-12 18:40:59.163 26404 26482 D CompatibilityChangeReporter: Compat change id reported: 160794467; UID 10079; state: ENABLED
+06-12 18:40:59.174  1739  1775 D CompatibilityChangeReporter: Compat change id reported: 171306433; UID 10079; state: ENABLED
+06-12 18:40:59.174  1739  1775 D CompatibilityChangeReporter: Compat change id reported: 226439802; UID 10079; state: DISABLED
+06-12 18:40:59.175  1739  1775 D CompatibilityChangeReporter: Compat change id reported: 218533173; UID 10079; state: ENABLED
+06-12 18:40:59.178 26404 26479 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libdav1d.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:59.187 26404 26479 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libwzav1.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:59.195 26404 26482 D WM-PackageManagerHelper: Skipping component enablement for androidx.work.impl.background.systemjob.SystemJobService
+06-12 18:40:59.195 26404 26482 D WM-Schedulers: Created SystemJobScheduler and enabled SystemJobService
+06-12 18:40:59.198 26404 26560 D WM-ForceStopRunnable: Is default app process = true
+06-12 18:40:59.199 26404 26560 D WM-ForceStopRunnable: Performing cleanup operations.
+06-12 18:40:59.199 26404 26479 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libwzav1_v2.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:59.204 26404 26482 E WakeLockMetricsCollector: Unknown wakelock modified
+06-12 18:40:59.212 26404 26482 E WakeLockMetricsCollector: Unknown wakelock modified
+06-12 18:40:59.231 26404 26482 E msys    : E[ADNSUCTIMH WAJMNSRuntime]WAJContextInitMNSRuntime(446)=>[LogLevel:I] Secondary DNS resolver enabled
+06-12 18:40:59.250 26404 26568 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(35)=>[LogLevel:I] DNS Resolution Successful with 8 IPs, Persistent Cache Hit: 1, secondary resolver used: 0
+06-12 18:40:59.250 26404 26568 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 216.239.35.12
+06-12 18:40:59.250 26404 26568 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 216.239.35.8
+06-12 18:40:59.250 26404 26568 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 216.239.35.0
+06-12 18:40:59.250 26404 26568 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 216.239.35.4
+06-12 18:40:59.250 26404 26568 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 2001:4860:4806:4::
+06-12 18:40:59.250 26404 26568 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 2001:4860:4806:8::
+06-12 18:40:59.250 26404 26568 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 2001:4860:4806::
+06-12 18:40:59.250 26404 26568 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 2001:4860:4806:c::
+06-12 18:40:59.271 26404 26560 D WM-PackageManagerHelper: Skipping component enablement for androidx.work.impl.background.systemalarm.RescheduleReceiver
+06-12 18:40:59.284 26404 26479 D BluetoothHeadset: Binding service...
+06-12 18:40:59.303 26404 26568 E msys    : E[N mns]_OnResolverSuccess(331)=>Cache refresh succeeded with system DNS resolver. IP count: 8
+06-12 18:40:59.388 26404 26416 D BluetoothHeadset: Proxy object connected
+06-12 18:40:59.412 26404 26482 E WakeLockMetricsCollector: Unknown wakelock modified
+06-12 18:40:59.427 26370 26407 E WakeLockMetricsCollector: Unknown wakelock modified
+06-12 18:40:59.431 26370 26407 E WakeLockMetricsCollector: Unknown wakelock modified
+06-12 18:40:59.488 26370 26455 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(35)=>[LogLevel:I] DNS Resolution Successful with 8 IPs, Persistent Cache Hit: 1, secondary resolver used: 0
+06-12 18:40:59.488 26370 26455 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 2001:4860:4806:c::
+06-12 18:40:59.488 26370 26455 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 2001:4860:4806:4::
+06-12 18:40:59.488 26370 26455 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 2001:4860:4806:8::
+06-12 18:40:59.488 26370 26455 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 2001:4860:4806::
+06-12 18:40:59.488 26370 26455 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 216.239.35.0
+06-12 18:40:59.488 26370 26455 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 216.239.35.8
+06-12 18:40:59.488 26370 26455 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 216.239.35.4
+06-12 18:40:59.488 26370 26455 E msys    : E[ADNSUCTIMH WAJMNSDNSResolver]_MNSDNSResolutionSuccess(55)=>[LogLevel:I] Resolved IP Address: 216.239.35.12
+06-12 18:40:59.492 26370 26455 E msys    : E[N mns]_OnResolverSuccess(331)=>Cache refresh succeeded with system DNS resolver. IP count: 8
+06-12 18:40:59.493 26370 26406 D BluetoothHeadset: Binding service...
+06-12 18:40:59.595 26370 26474 D BluetoothHeadset: Proxy object connected
+06-12 18:40:59.611 26404 26492 E om.whatsapp.w4b: No implementation found for void com.facebook.quicklog.QuickPerformanceLoggerNativeProvider.nativeUpdateQPLInstance() (tried Java_com_facebook_quicklog_QuickPerformanceLoggerNativeProvider_nativeUpdateQPLInstance and Java_com_facebook_quicklog_QuickPerformanceLoggerNativeProvider_nativeUpdateQPLInstance__) - is the library loaded, e.g. System.loadLibrary?
+06-12 18:40:59.624 26404 26492 W QPLProvider: QuickPerformanceLoggerProvider failed to update native QPL instance, native library. This is expected during early app initialization
+06-12 18:40:59.669 26404 26492 W SoLoader: SoLoader already initialized
+06-12 18:40:59.680 26370 26406 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libdav1d.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:59.690 26404 26492 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libfbsocketthreadlocalscope.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:59.696 26370 26406 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libwzav1.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:59.709 26404 26492 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libfb_sqlite_3500300.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:59.717 26370 26406 D nativeloader: Load /data/data/com.whatsapp/files/decompressed/libs.spo/libwzav1_v2.so using class loader ns clns-5 (caller=/data/app/~~EwUm9irGgfmYJWIxEhwwtA==/com.whatsapp-nQLBAXSzwLuZd3hDrQAe4A==/base.apk): ok
+06-12 18:40:59.717  1739  1966 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10084; state: DISABLED
+06-12 18:40:59.717  1739  1966 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10084; state: DISABLED
+06-12 18:40:59.717  1739  1966 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10084; state: DISABLED
+06-12 18:40:59.717  1739  1966 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10084; state: ENABLED
+06-12 18:40:59.718  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10084; state: ENABLED
+06-12 18:40:59.724 26404 26492 D nativeloader: Load /data/data/com.whatsapp.w4b/files/decompressed/libs.spo/libffsingletonmerged.so using class loader ns clns-5 (caller=/data/app/~~ONVmNgfN6sEHmNwRbg_V0g==/com.whatsapp.w4b-OirCn5wgicvl4ykNTsV_5Q==/base.apk): ok
+06-12 18:40:59.727 26404 26492 W EndToEnd-Test: Cannot find E2E config file `/data/user/0/com.whatsapp.w4b/files/config.json`.
+06-12 18:40:59.739  1055  1055 D Zygote  : Forked child process 26584
+06-12 18:40:59.739  1739  1968 I ActivityManager: Start proc 26584:com.facebook.katana:fdidsync/u0a84 for broadcast {com.facebook.katana/com.facebook.fdidlite.FDIDSyncLiteReceiver}
+06-12 18:40:59.747 26584 26584 I katana:fdidsync: Using CollectorTypeCC GC.
+06-12 18:40:59.753 26584 26584 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-12 18:40:59.756  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 168419799; UID 10084; state: DISABLED
+06-12 18:40:59.756 26404 26479 E QPLProvider: QuickPerformanceLogger instance replaced at runtime, this leads to data loss and incorrect telemetry. Initial QPL instance X.In0@807ed4c, replacing by X.In0@807ed4c
+06-12 18:40:59.756 26404 26479 E QPLProvider: java.lang.RuntimeException: QPL instance is replaced in runtime
+06-12 18:40:59.756 26404 26479 E QPLProvider: 	at X.1N9.A01(:77)
+06-12 18:40:59.756 26404 26479 E QPLProvider: 	at X.AXj.Bb5(:23)
+06-12 18:40:59.756 26404 26479 E QPLProvider: 	at X.20F.A00(:34)
+06-12 18:40:59.756 26404 26479 E QPLProvider: 	at com.whatsapp.app.shell.AbstractAppShellDelegate.lambda$performAsyncInit$9(:73)
+06-12 18:40:59.756 26404 26479 E QPLProvider: 	at X.Cb6.run(:1573)
+06-12 18:40:59.756 26404 26479 E QPLProvider: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-12 18:40:59.756 26404 26479 E QPLProvider: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-12 18:40:59.756 26404 26479 E QPLProvider: 	at X.1ml.run(:1264)
+06-12 18:40:59.756 26404 26479 E QPLProvider: 	at java.lang.Thread.run(Thread.java:1564)
+06-12 18:40:59.756  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 273564678; UID 10084; state: DISABLED
+06-12 18:40:59.758  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 181136395; UID 10895; state: DISABLED
+06-12 18:40:59.758  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 174042936; UID 10895; state: DISABLED
+06-12 18:40:59.760  4291  9348 D ForegroundUtils: Foreground UID status:
+06-12 18:40:59.761  4291  9348 D ForegroundUtils: UID: 1002 is in foreground: true
+06-12 18:40:59.761  4291  9348 D ForegroundUtils: UID: 10164 is in foreground: true
+06-12 18:40:59.761  4291  9348 D ForegroundUtils: UID: 10238 is in foreground: false
+06-12 18:40:59.761  4291  9348 D ForegroundUtils: UID: 10243 is in foreground: true
+06-12 18:40:59.761  4291  9348 D ForegroundUtils: UID: 10250 is in foreground: false
+06-12 18:40:59.761  4291  9348 D ForegroundUtils: UID: 10895 is in foreground: true
+06-12 18:40:59.762 26584 26584 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10084; state: ENABLED
+06-12 18:40:59.765 26404 26479 E om.whatsapp.w4b: No implementation found for void com.facebook.quicklog.QuickPerformanceLoggerNativeProvider.nativeUpdateQPLInstance() (tried Java_com_facebook_quicklog_QuickPerformanceLoggerNativeProvider_nativeUpdateQPLInstance and Java_com_facebook_quicklog_QuickPerformanceLoggerNativeProvider_nativeUpdateQPLInstance__) - is the library loaded, e.g. System.loadLibrary?
+06-12 18:40:59.765 26404 26479 W QPLProvider: QuickPerformanceLoggerProvider failed to update native QPL instance, native library. This is expected during early app initialization
+06-12 18:40:59.788 26584 26584 D nativeloader: Configuring clns-4 for other apk /system/framework/org.apache.http.legacy.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/lib/arm64:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/base.apk!/lib/arm64-v8a:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_heliumcore.apk!/lib/arm64-v8a:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_heliumiab.apk!/lib/arm64-v8a:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_papaya.apk!/lib/arm64-v8a:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_papayaanalyticstorch.apk!/lib/arm64-v8a:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_papayatorch.apk!/lib/arm64-v8a:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_pytorc
+06-12 18:40:59.837  1739  4775 E ShortcutService: Invalid icon type in shortcut 162521629638715@lid. Bitmaps are not allowed in long-lived shortcuts. Use Resource icons, or Uri-based icons instead.
+06-12 18:40:59.950 26370 26449 E msys    : E[N WCIHTTPImplNetworkSession]WCIHTTPTaskImplCreateRegular(556)=>[I] http/task/regular/create/start
+06-12 18:40:59.950 26370 26449 E msys    : E[N WCIHTTPImplNetworkSession]WCIHTTPTaskImplCreateRegular(591)=>[I] http/task/regular/create/execute
+06-12 18:40:59.951 26370 26449 E msys    : E[N WCIHTTPImplNetworkSession]WCIHTTPTaskImplCreateRegular(614)=>[I] http/task/regular/create/success
+06-12 18:40:59.964 26370 26525 D WM-SystemJobScheduler: Scheduling work ID 8b416b7a-6787-4369-9907-c00c7f67ed59Job ID 40557
+06-12 18:40:59.969 26540 26540 W libc    : Access denied finding property "qemu.sf.lcd_density"
+06-12 18:40:59.969 26540 26540 W libc    : Access denied finding property "qemu.sf.lcd_density"
+06-12 18:40:59.976 26540 26540 W AccessibilityNodeInfoDumper: Fetch time: 4ms
+06-12 18:40:59.980  4224 18858 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-12 18:40:59.980  1739  4775 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-12 18:40:59.982  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:40:59.983  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:40:59.983  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:40:59.984  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:40:59.984  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:40:59.984  1739  1739 D BatterySaverPolicy: accessibility changed to false, updating policy.
+06-12 18:40:59.984  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:40:59.985  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:40:59.986  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:40:59.986  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:40:59.986 26540 26540 D AndroidRuntime: Shutting down VM
+06-12 18:40:59.986  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:40:59.986  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:40:59.987  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:40:59.988  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:40:59.988  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:40:59.988  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:40:59.989  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:40:59.989  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:40:59.985  1072  1072 W socket_writer_q: type=1400 audit(0.0:242435167): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:59.992  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:40:59.993  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:40:59.993  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-12 18:40:59.994  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:40:59.994  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:40:59.994  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:40:59.995  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-12 18:40:59.991  1072  1072 W socket_writer_q: type=1400 audit(0.0:242435168): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:40:59.996  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:40:59.998  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-12 18:40:59.998  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:40:59.998  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:40:59.998  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:40:59.998  1072  1072 W socket_writer_q: type=1400 audit(0.0:242435169): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:41:00.001  1072  1072 W socket_writer_q: type=1400 audit(0.0:242435170): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:41:00.008  1072  1072 W socket_writer_q: type=1400 audit(0.0:242435171): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-12 18:41:00.022 26584 26584 W katana:fdidsync: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.023 26584 26584 W katana:fdidsync: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.024 26584 26584 W katana:fdidsync: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.025 26584 26584 W katana:fdidsync: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.026 26584 26584 W katana:fdidsync: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.027 26584 26584 W katana:fdidsync: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.031 26584 26584 W katana:fdidsync: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.031 26584 26584 W katana:fdidsync: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.032 26584 26584 W katana:fdidsync: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.033 26584 26584 W katana:fdidsync: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.034 26584 26584 W katana:fdidsync: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.035 26584 26584 D nativeloader: Configuring clns-5 for other apk /data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/base.apk:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_heliumcore.apk:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_heliumiab.apk:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_papaya.apk:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_papayaanalyticstorch.apk:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_papayatorch.apk:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_pytorch.apk:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_s_papayaanalyticstorch_papayatorch.apk:/data/app/~~wxEeZ8I5alpx9fyqUqZW_w==/com.facebook.katana-j3gGVhwZ2zD8TTIjOcSLdw==/split_s_papayaanalyticstorch_papayatorch_torchedlooper.apk:/data/app/
+06-12 18:41:00.042 26370 26446 E com.whatsapp: hiddenapi: Accessing hidden method Lcom/android/org/conscrypt/OpenSSLSocketImpl;->setUseSessionTickets(Z)V (runtime_flags=CorePlatformApi, domain=core-platform, api=max-target-q,core-platform-api) from LX/DP1; (domain=app, TargetSdkVersion=36) using reflection: denied
+06-12 18:41:00.042 26370 26446 E com.whatsapp: hiddenapi: Accessing hidden method Lcom/android/org/conscrypt/AbstractConscryptSocket;->setUseSessionTickets(Z)V (runtime_flags=0, domain=core-platform, api=max-target-q) from LX/DP1; (domain=app, TargetSdkVersion=36) using reflection: denied
+06-12 18:41:00.048  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:41:00.049  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:41:00.049  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:41:00.049  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:41:00.050  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:41:00.050  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:41:00.050  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-12 18:41:00.051  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-12 18:41:00.051  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-12 18:41:00.051  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-12 18:41:00.051  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-12 18:41:00.051  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-12 18:41:00.054  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:41:00.055  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-12 18:41:00.056  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:41:00.056  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:41:00.056  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:41:00.058  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-12 18:41:00.059  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-12 18:41:00.060  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:41:00.060  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-12 18:41:00.060  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-12 18:41:00.103 26584 26584 W ReflectionClassLoader:  Successfully install ReflectionClassLoader as parent!
+06-12 18:41:00.128 26584 26584 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-12 18:41:00.132 26584 26584 V GraphicsEnvironment: ANGLE Developer option for 'com.facebook.katana' set to: 'default'
+06-12 18:41:00.132 26584 26584 V GraphicsEnvironment: ANGLE GameManagerService for com.facebook.katana: false
+06-12 18:41:00.132 26584 26584 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+06-12 18:41:00.134 26584 26584 D NetworkSecurityConfig: Using Network Security Config from resource (name removed) debugBuild: false
+06-12 18:41:00.138 26584 26584 D NetworkSecurityConfig: Using Network Security Config from resource (name removed) debugBuild: false
+06-12 18:41:00.144 26584 26584 W AppComponentFactory: Instantiating Application
+06-12 18:41:00.146 26584 26584 W InitStatus: Providers blocked (140312286)
+06-12 18:41:00.146 26584 26584 W InitStatus: Services blocked (49567935)
+06-12 18:41:00.147 26584 26584 W InitStatus: BroadcastReceivers blocked (130952076)
+06-12 18:41:00.173 26584 26601 W AppInitScheduler/fdidsync|Schedule: Schedule 389:ReliabilityInitConfigureErrorReportingOnProcess, deps=null (0 pending tasks, PriorityHint=VERY_HIGH, isCritical=true)
+06-12 18:41:00.174 26584 26601 W AppInitScheduler/fdidsync|Schedule:   Executing 389:ReliabilityInitConfigureErrorReportingOnProcess
+06-12 18:41:00.174 26584 26601 W AppInitScheduler/fdidsync|Schedule: Schedule 120:CreateApplicationImplForSecondaryMinimalProcess, deps=null (1 pending tasks, PriorityHint=CRITICAL_PATH, isCritical=true)
+06-12 18:41:00.174 26584 26601 W AppInitScheduler/fdidsync|Schedule:   Executing 120:CreateApplicationImplForSecondaryMinimalProcess
+06-12 18:41:00.174 26584 26601 W OnProcessInitInvoker: Ignored missing AppInit dependency: 160:FixArtDebugging
+06-12 18:41:00.179 26584 26604 W AppInitScheduler/fdidsync|Run: Running ReliabilityInitConfigureErrorReportingOnProcess [*], order=0, priorityHint=VERY_HIGH 
+06-12 18:41:00.179 26584 26605 W AppInitScheduler/fdidsync|Run: Running CreateApplicationImplForSecondaryMinimalProcess [*], order=1, priorityHint=CRITICAL_PATH 
+06-12 18:41:00.180 26584 26584 W AppComponentFactory: Instantiating BroadcastReceiver
+06-12 18:41:00.180 26584 26603 W AppInitScheduler/fdidsync|Run: DeadlockMonitor active...
+06-12 18:41:00.181 26584 26605 W InitStatus: Providers unblocked (140312286)
+06-12 18:41:00.181 26584 26605 W InitStatus: Services unblocked (49567935)
+06-12 18:41:00.181 26584 26605 W InitStatus: BroadcastReceivers unblocked (130952076)
+06-12 18:41:00.182 26584 26605 W AppInitScheduler/fdidsync|Schedule: Shutting down, all work scheduled.
+06-12 18:41:00.182 26584 26605 W AppInitScheduler/fdidsync|Schedule: java.lang.RuntimeException
+06-12 18:41:00.182 26584 26605 W AppInitScheduler/fdidsync|Schedule: 	at X.0kL.A04(:5)
+06-12 18:41:00.182 26584 26605 W AppInitScheduler/fdidsync|Schedule: 	at X.00e.A00(:24)
+06-12 18:41:00.182 26584 26605 W AppInitScheduler/fdidsync|Schedule: 	at X.0kP.CL6(:14)
+06-12 18:41:00.182 26584 26605 W AppInitScheduler/fdidsync|Schedule: 	at X.0k9.run(:288)
+06-12 18:41:00.182 26584 26605 W AppInitScheduler/fdidsync|Schedule: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-12 18:41:00.182 26584 26605 W AppInitScheduler/fdidsync|Schedule: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-12 18:41:00.182 26584 26605 W AppInitScheduler/fdidsync|Schedule: 	at X.0FY.run(:11)
+06-12 18:41:00.182 26584 26605 W AppInitScheduler/fdidsync|Schedule: 	at java.lang.Thread.run(Thread.java:1564)
+06-12 18:41:00.183 26584 26605 W AppInitScheduler/fdidsync|Schedule: Shut down called with 2 pending tasks
+06-12 18:41:00.183 26584 26605 W AppInitScheduler/fdidsync|Run:   Finished CreateApplicationImplForSecondaryMinimalProcess in 4ms
+06-12 18:41:00.183 26584 26584 W AppInitBroadcast: Received broadcast during app init: com.facebook.GET_PHONE_ID
+06-12 18:41:00.183 26584 26604 W lacrima : FbErrorReportingConfig.earlyInit
+06-12 18:41:00.188 26584 26584 E SlowAppComponent: 0ms: FacebookApplication instantiating…
+06-12 18:41:00.188 26584 26584 E SlowAppComponent: 11ms: FDIDLiteProvider instantiating…
+06-12 18:41:00.188 26584 26584 E SlowAppComponent: 21ms: AppInitReplayBroadcastReceiver instantiating…
+06-12 18:41:00.188 26584 26584 E SlowAppComponent: Main thread was blocked for 46ms in the foreground starting with FacebookApplication
+06-12 18:41:00.189  1739  5415 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10091; state: DISABLED
+06-12 18:41:00.189  1739  5415 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10091; state: DISABLED
+06-12 18:41:00.189  1739  5415 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10091; state: DISABLED
+06-12 18:41:00.189  1739  5415 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10091; state: ENABLED
+06-12 18:41:00.189  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10091; state: ENABLED
+06-12 18:41:00.191 26584 26604 W lacrima : LacrimaConfigBuilder.setUserIdActorId not called, using 0
+06-12 18:41:00.191 26584 26604 W lacrima : LacrimaConfigBuilder.setUserIdActingAccountId not called, using 0
+06-12 18:41:00.197  1055  1055 D Zygote  : Forked child process 26606
+06-12 18:41:00.198  1739  1968 I ActivityManager: Start proc 26606:com.instagram.android/u0a91 for broadcast {com.instagram.android/com.instagram.common.analytics.phoneid.InstagramPhoneIdRequestReceiver}
+06-12 18:41:00.206 26606 26606 I stagram.android: Using CollectorTypeCC GC.
+06-12 18:41:00.211 26606 26606 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-12 18:41:00.217  4291  9348 D ForegroundUtils: Foreground UID status:
+06-12 18:41:00.217  4291  9348 D ForegroundUtils: UID: 1002 is in foreground: true
+06-12 18:41:00.217  4291  9348 D ForegroundUtils: UID: 10164 is in foreground: true
+06-12 18:41:00.217  4291  9348 D ForegroundUtils: UID: 10238 is in foreground: false
+06-12 18:41:00.217  4291  9348 D ForegroundUtils: UID: 10243 is in foreground: true
+06-12 18:41:00.217  4291  9348 D ForegroundUtils: UID: 10250 is in foreground: false
+06-12 18:41:00.217  4291  9348 D ForegroundUtils: UID: 10895 is in foreground: true
+06-12 18:41:00.225 26606 26606 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10091; state: ENABLED
+06-12 18:41:00.258 26606 26606 D nativeloader: Configuring clns-4 for other apk /system/framework/org.apache.http.legacy.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/lib/arm64:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/base.apk!/lib/arm64-v8a:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/split_config.xxhdpi.apk!/lib/arm64-v8a:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/split_executorch.apk!/lib/arm64-v8a:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/split_heliumcore.apk!/lib/arm64-v8a:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/split_heliumiab.apk!/lib/arm64-v8a:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/split_pytorch.apk!/lib/arm64-v8a:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/spl
+06-12 18:41:00.280 26584 26604 W MemProcWatermarkReader: [AI] Failed to open zoneinfo file
+06-12 18:41:00.281 26584 26604 W lacrima : Start JavaAppDeathCrashDetector... X.0vo
+06-12 18:41:00.286 26584 26604 W lacrima : Sending pending reports
+06-12 18:41:00.287 26584 26604 W AppInitScheduler/fdidsync|Run:   Finished ReliabilityInitConfigureErrorReportingOnProcess in 108ms
+06-12 18:41:00.287 26584 26604 W AppInitScheduler/fdidsync|Schedule: Pending tasks reached zero, maybe shutting down…
+06-12 18:41:00.287 26584 26604 W AppInitScheduler/fdidsync|Run: All work finished.
+06-12 18:41:00.301 27174 27174 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.auth.aang.events.services.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+06-12 18:41:00.379  1739  3261 E ShortcutService: Invalid icon type in shortcut 162521629638715@lid. Bitmaps are not allowed in long-lived shortcuts. Use Resource icons, or Uri-based icons instead.
+06-12 18:41:00.506 27062 27062 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.onboardingconsent.api.ConsentManagerApiService.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsApiService }
+06-12 18:41:00.543 27062 27062 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.feedback.internal.IFeedbackService dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsBoundBrokerService }
+06-12 18:41:00.600  2542  2542 D DLObserver: onReceive(); android.intent.action.BATTERY_CHANGED
+06-12 18:41:00.600  2542  2542 D DLObserver: plugged=2
+06-12 18:41:00.601 26606 26606 W stagram.android: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.601  2542  2542 D PowerNotificationWarningsGoogleImpl: onReceive: android.intent.action.BATTERY_CHANGED
+06-12 18:41:00.602  2542  2542 D BatteryDefenderNotification: isPlugged: true | isOverheated: true | defenderEnabled: true | isCharged: false | isPluggedInDock: false
+06-12 18:41:00.603 26606 26606 W stagram.android: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.603  2542  3703 D PowerUI : can't show warning due to - plugged: true status unknown: false
+06-12 18:41:00.607   645   645 I servicemanager: Found vendor.google.google_battery.IGoogleBattery/default in device VINTF manifest.
+06-12 18:41:00.608 26606 26606 W stagram.android: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.609 26606 26606 W stagram.android: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.610 26606 26606 W stagram.android: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.611 26606 26606 W stagram.android: Failed to find entry 'classes.dex': Entry not found
+06-12 18:41:00.612 26606 26606 D nativeloader: Configuring clns-5 for other apk /data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/base.apk:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/split_config.xxhdpi.apk:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/split_executorch.apk:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/split_heliumcore.apk:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/split_heliumiab.apk:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/split_pytorch.apk:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/split_spm.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/lib/arm64:/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/base.apk!/lib/arm64-v8a:/data/app/~~ESZrmpx
+06-12 18:41:00.615  2542  2654 D BatteryInfoBroadcast: onReceive: android.intent.action.BATTERY_CHANGED isPowerSaveMode: false remainingTimeMillis: 97313812
+06-12 18:41:00.618   645   645 I servicemanager: Found vendor.google.google_battery.IGoogleBattery/default in device VINTF manifest.
+06-12 18:41:00.679 26606 26606 W PluginClassLoader: setOptPluginClassLoaderEnabled: true
+06-12 18:41:00.680 26606 26606 W AppComponentFactory: PluginClassLoaderOpt enabled
+06-12 18:41:00.687 19533 19620 E bluetooth: packages/modules/Bluetooth/system/gd/os/linux_generic/files.cc:202 FileCreatedTime: unable to read '/data/misc/bluetooth/logs/btsnooz_hci.log' file metadata, error: No such file or directory
+06-12 18:41:00.696 26606 26606 W AppComponentFactory: requestVanillaClassLoader : true
+06-12 18:41:00.709 26606 26606 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-12 18:41:00.712 26606 26606 V GraphicsEnvironment: ANGLE Developer option for 'com.instagram.android' set to: 'default'
+06-12 18:41:00.713 26606 26606 V GraphicsEnvironment: ANGLE GameManagerService for com.instagram.android: false
+06-12 18:41:00.713 26606 26606 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+06-12 18:41:00.716 26606 26606 D NetworkSecurityConfig: Using Network Security Config from resource fb_network_security_config debugBuild: false
+06-12 18:41:00.719 26606 26606 D NetworkSecurityConfig: Using Network Security Config from resource fb_network_security_config debugBuild: false
+06-12 18:41:00.779 26606 26639 W SoLoader: Initializing SoLoader: 2
+06-12 18:41:00.779 26606 26639 W SoLoader: context.getApplicationContext returned null, holding reference to original context.ApplicationSoSource fallbacks to: /data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/lib/arm64
+06-12 18:41:00.825 26606 26638 W CrashLoopRemedyLog: unable to delete remedy log, instaCrash: false
+06-12 18:41:00.826 26606 26638 W CrashLoopRemedyLog: unable to delete remedy log, instaCrash: true
+06-12 18:41:00.838 26606 26638 W lacrima : LacrimaConfigBuilder.setUserIdActorId not called, using 0
+06-12 18:41:00.838 26606 26638 W lacrima : LacrimaConfigBuilder.setUserIdActingAccountId not called, using 0
+06-12 18:41:00.856 26606 26638 W MemProcWatermarkReader: [AI] Failed to open zoneinfo file
+06-12 18:41:00.867 26606 26638 W lacrima : Start JavaAppDeathCrashDetector... X.0ii
+06-12 18:41:00.867 26370 26598 E msys    : E[N data-request]_HandleDataResponse(2111)=>Data request error for task 9AB940FA-DF33-4216-8265-ABE9571580BB (response type 1): java.io.IOException: [HTTP status=403] Error Content = {"error":{"message":"(#4) Exceeded rate limit","code":4,"type":"OAuthException","is_transient":true,"fbtrace_id":"AHo3t5DPQJmhUntahG8xegi"}}
+06-12 18:41:00.871 26606 26638 W lacrima : Sending pending reports
+06-12 18:41:00.873 26370 26449 E msys    : E[N WCIHTTPImplNetworkSession]WCIHTTPTaskImplCreateRegular(556)=>[I] http/task/regular/create/start
+06-12 18:41:00.873 26370 26449 E msys    : E[N WCIHTTPImplNetworkSession]WCIHTTPTaskImplCreateRegular(591)=>[I] http/task/regular/create/execute
+06-12 18:41:00.874 26370 26449 E msys    : E[N WCIHTTPImplNetworkSession]WCIHTTPTaskImplCreateRegular(614)=>[I] http/task/regular/create/success
+06-12 18:41:00.930 26606 26642 I AdrenoGLES-0: QUALCOMM build                   : 85da404, I46ff5fc46f
+06-12 18:41:00.930 26606 26642 I AdrenoGLES-0: Build Date                       : 11/30/20
+06-12 18:41:00.930 26606 26642 I AdrenoGLES-0: OpenGL ES Shader Compiler Version: EV031.31.04.01
+06-12 18:41:00.930 26606 26642 I AdrenoGLES-0: Local Branch                     : promo490_3_Google
+06-12 18:41:00.930 26606 26642 I AdrenoGLES-0: Remote Branch                    : 
+06-12 18:41:00.930 26606 26642 I AdrenoGLES-0: Remote Branch                    : 
+06-12 18:41:00.930 26606 26642 I AdrenoGLES-0: Reconstruct Branch               : 
+06-12 18:41:00.930 26606 26642 I AdrenoGLES-0: Build Config                     : S P 10.0.4 AArch64
+06-12 18:41:00.930 26606 26642 I AdrenoGLES-0: Driver Path                      : /vendor/lib64/egl/libGLESv2_adreno.so
+06-12 18:41:00.940 26606 26642 I AdrenoGLES-0: PFP: 0x016ee190, ME: 0x00000000
+06-12 18:41:00.944 26606 26642 W AdrenoUtils: <ReadGpuID_from_sysfs:197>: Failed to open /sys/class/kgsl/kgsl-3d0/gpu_model
+06-12 18:41:00.944 26606 26642 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
+06-12 18:41:00.950 26606 26642 E libEGL  : call to OpenGL ES API with no current context (logged once per thread)
+06-12 18:41:00.950 26606 26642 E libEGL  : call to OpenGL ES API with no current context (logged once per thread)
+06-12 18:41:00.950 26606 26642 E libEGL  : call to OpenGL ES API with no current context (logged once per thread)
+06-12 18:41:00.952 26606 26642 E libEGL  : call to OpenGL ES API with no current context (logged once per thread)
+06-12 18:41:00.970 26606 26639 W BackupSoSource: adding backup source from split: ExtractFromZipSoSource[/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/split_heliumcore.apk]
+06-12 18:41:00.970 26606 26639 W BackupSoSource: adding backup source from split: ExtractFromZipSoSource[/data/app/~~ESZrmpx_liRikiYCKraOtQ==/com.instagram.android-ZmoDfsCidNLDbYnSeuv7XQ==/split_heliumiab.apk]
+06-12 18:41:00.972 26606 26639 W SoLoader: SoLoader initialized: 2
+06-12 18:41:00.972 26606 26639 W FbSoLoader: Setting up native deps, useAssetManager=true

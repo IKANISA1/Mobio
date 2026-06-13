@@ -116,9 +116,9 @@ class AdminWorkspaceFrame extends StatelessWidget {
                                       title,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: AppTypography.headlineLg.copyWith(
+                                      style: AppTypography.titleLg.copyWith(
                                         color: Colors.white,
-                                        fontWeight: FontWeight.w800,
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
                                     if (showSubtitle) ...[
@@ -244,9 +244,9 @@ class AdminSectionHeader extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: AppTypography.titleLg.copyWith(
+                style: AppTypography.titleMd.copyWith(
                   color: Colors.white,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
               if (showSubtitle) ...[

@@ -25,7 +25,7 @@ export 'package:mobi_app/core/router/screen_wrappers.dart';
 // MobiShell — Bottom nav shell for StatefulShellRoute
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// Main app shell with 3-tab navigation: Discover / Trips / Profile.
+/// Main app shell with navigation: Discover / Trips / BioPay / Profile.
 /// Used as the [StatefulShellRoute] builder. Sub-screens push via
 /// the root navigator and appear over the bottom nav.
 class MobiShell extends ConsumerStatefulWidget {
@@ -215,12 +215,14 @@ class _MobiNavigationRail extends StatelessWidget {
   static const _passengerItems = [
     _RailItem(LucideIcons.compass, 'Home'),
     _RailItem(LucideIcons.calendarCheck, 'Trips'),
+    _RailItem(LucideIcons.scanFace, 'BioPay'),
     _RailItem(LucideIcons.user, 'Profile'),
   ];
 
   static const _adminItems = [
     _RailItem(LucideIcons.layoutDashboard, 'Ops'),
     _RailItem(LucideIcons.users, 'Users'),
+    _RailItem(LucideIcons.scanFace, 'BioPay'),
     _RailItem(LucideIcons.user, 'Account'),
   ];
 }

@@ -1,0 +1,509 @@
+--------- beginning of system
+06-13 01:09:24.014  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 161252188; UID 10898; state: DISABLED
+06-13 01:09:24.014  1739  3261 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=rw.mobi.app/.MainActivity} from uid 2000
+06-13 01:09:24.015  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 265464455; UID 10898; state: DISABLED
+06-13 01:09:24.016  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 265452344; UID 10898; state: DISABLED
+06-13 01:09:24.016  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 266124927; UID 10898; state: DISABLED
+06-13 01:09:24.016  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 265451093; UID 10898; state: DISABLED
+06-13 01:09:24.016  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 265456536; UID 10898; state: DISABLED
+06-13 01:09:24.016  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 255940284; UID 10898; state: DISABLED
+06-13 01:09:24.016  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 236283604; UID 10898; state: DISABLED
+06-13 01:09:24.016  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 263959004; UID 10898; state: DISABLED
+06-13 01:09:24.016  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 264304459; UID 10898; state: DISABLED
+06-13 01:09:24.017  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 264301586; UID 10898; state: DISABLED
+06-13 01:09:24.017  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 254631730; UID 10898; state: DISABLED
+06-13 01:09:24.017  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 273509367; UID 10898; state: DISABLED
+06-13 01:09:24.017  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 263259275; UID 10898; state: DISABLED
+06-13 01:09:24.017  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 194480991; UID 10898; state: ENABLED
+06-13 01:09:24.018  1739  3261 D CompatibilityChangeReporter: Compat change id reported: 174042980; UID 10898; state: DISABLED
+--------- beginning of main
+06-13 01:09:24.020 28705 28705 D com.llfbandit.app_links: Intent { flg=0x10000000 cmp=rw.mobi.app/.MainActivity }
+06-13 01:09:24.032 28705 28705 D FirebaseSessions: App foregrounded on rw.mobi.app
+06-13 01:09:24.046  1739  5437 W ProcessStats: Tracking association SourceState{a719d4a rw.mobi.app/10898 Top #3280170} whose proc state 1 is better than process ProcessState{188b4bb com.google.android.gms/10164 pkg=com.google.android.gms (sub)} proc state 4 (52 skipped)
+06-13 01:09:24.048  3777  3777 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-13 01:09:24.048  3777  3777 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-13 01:09:24.049  1739  4802 E ClipboardService: Denying clipboard access to rw.mobi.app, application is not in focus nor is it a system service for user 0
+06-13 01:09:24.076   704   746 I SDM     : HWCDisplay::GetColorModeCount: Supported color mode count = 3
+06-13 01:09:24.077 28705 28756 E OpenGLRenderer: Unable to match the desired swap behavior.
+06-13 01:09:24.235  2542  2542 D DLObserver: onReceive(); android.intent.action.BATTERY_CHANGED
+06-13 01:09:24.235  2542  2542 D DLObserver: plugged=2
+06-13 01:09:24.239  2542  2542 D PowerNotificationWarningsGoogleImpl: onReceive: android.intent.action.BATTERY_CHANGED
+06-13 01:09:24.239  2542  2542 D BatteryDefenderNotification: isPlugged: true | isOverheated: true | defenderEnabled: true | isCharged: false | isPluggedInDock: false
+06-13 01:09:24.241   645   645 I servicemanager: Found vendor.google.google_battery.IGoogleBattery/default in device VINTF manifest.
+06-13 01:09:24.241  2542  3798 D PowerUI : can't show warning due to - plugged: true status unknown: false
+06-13 01:09:24.259  2542  2654 D BatteryInfoBroadcast: onReceive: android.intent.action.BATTERY_CHANGED isPowerSaveMode: false remainingTimeMillis: 97276280
+06-13 01:09:24.301  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-13 01:09:24.320  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-13 01:09:24.537  1739  1940 W ActivityTaskManager: Activity top resumed state loss timeout for ActivityRecord{dfc7010 u0 rw.mobi.app/.MainActivity} t481}
+06-13 01:09:24.537  1739  1940 W ActivityTaskManager: Activity pause timeout for ActivityRecord{dfc7010 u0 rw.mobi.app/.MainActivity} t481}
+06-13 01:09:24.590  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758099): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:24.597  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758100): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:24.604  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758101): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:24.607  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758102): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:24.614  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758103): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:24.832  3777  3777 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.checkin.START pkg=com.google.android.gms }
+06-13 01:09:25.594  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758280): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:25.600  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758281): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:25.604  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758282): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:25.610  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758283): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:25.617  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758284): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:25.715  3777  3777 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.auth.service.START pkg=com.google.android.gms }
+06-13 01:09:26.597  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758466): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:26.600  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758467): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:26.607  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758468): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:26.614  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758469): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:26.620  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758470): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:26.758 28705 28705 D FirebaseSessions: App backgrounded on rw.mobi.app
+06-13 01:09:26.883   645   645 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+06-13 01:09:26.964  3777 28794 D AdvertisingIdClient: AdvertisingIdClient already created.
+06-13 01:09:26.966  3777 28794 W AdvertisingIdSettings: Package rw.mobi.app failed Ad Id permission check. Apps that target Android SDK 33 or higher should declare com.google.android.gms.permission.AD_ID in the app manifest to access Ad Id.
+06-13 01:09:26.967  3777 28794 I AdvertisingIdClient: shouldSendLog 2265950214
+06-13 01:09:26.967  3777 28794 I AdvertisingIdClient: GetInfoInternal elapse 2ms
+06-13 01:09:26.990  3785 29411 I NetworkScheduler: (REDACTED) Error inserting %s
+06-13 01:09:27.224 19533 19614 I bt_stack: [INFO:le_scanning_manager.cc(154)] Scan in shim layer stopped
+06-13 01:09:27.225 19533 19620 I bluetooth: packages/modules/Bluetooth/system/gd/hci/le_address_manager.cc:190 unregister_client: Client unregistered
+06-13 01:09:27.225 19533 19614 I bt_stack: [INFO:le_scanning_manager.cc(250)] SetScanParameters in shim layer
+06-13 01:09:27.225 19533 19614 I bt_stack: [INFO:le_scanning_manager.cc(154)] Scan in shim layer started
+06-13 01:09:27.225 19533 19620 I bluetooth: packages/modules/Bluetooth/system/gd/hci/le_address_manager.cc:194 unregister_client: Cancelled address rotation alarm
+06-13 01:09:27.228 19533 19620 I bluetooth: packages/modules/Bluetooth/system/gd/hci/le_scanning_manager.cc:659 stop_scan: Scanning already stopped, return!
+06-13 01:09:27.229 19533 19620 I bluetooth: packages/modules/Bluetooth/system/gd/hci/le_address_manager.cc:172 register_client: Scheduled address rotation for first client registered
+06-13 01:09:27.229 19533 19620 I bluetooth: packages/modules/Bluetooth/system/gd/hci/le_address_manager.cc:175 register_client: Client registered
+06-13 01:09:27.333  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-13 01:09:27.347  4100  4138 D DeviceStateHelper: Wifi freq: 5785
+06-13 01:09:27.348  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-68
+06-13 01:09:27.349  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-68
+06-13 01:09:27.349  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-13 01:09:27.358  7449  7581 I BugleRcsEngine: handleMessage processing message:[NOTIFY_UPTIME_IGNORE_STATE_CHANGED] with [non-null]:RcsEngineImpl reference [CONTEXT log_prefix="RcsEngineImpl[DUAL_REG]:[7ff84873-078a]>Handler" thread_id=759 ]
+06-13 01:09:27.358  7449  7556 I BugleRcsEngine: Connected state: [1], networkType: [WIFI] [CONTEXT thread_id=751 ]
+06-13 01:09:27.358  1085  1180 D CHRE    : @ 2267381.533: Parsed nanoapp message from host: app ID 0x476f6f676c00100b, endpoint 0x97, msgType 112, payload size 14
+06-13 01:09:27.358  1085  1180 I CHRE    : @ 2267381.534: [NanoMinion] received MSG Type 0x70, Version 1, 10 bytes
+06-13 01:09:27.358  1085  1180 I CHRE    : @ 2267381.534: [AR] context-signal: has_bt=0, bt=0, has_wifi=1, wifi=1
+06-13 01:09:27.360  3785  4023 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 01:09:27.360  3785  4023 W .gms.persistent: Large reply transaction of 1056768 bytes, interface descriptor , code 1
+06-13 01:09:27.364  2643 19465 E NetlinkUtils: receiveNetlinkAck, errmsg=NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{68}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-257985356} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{48}, nlmsg_type{28()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} }
+06-13 01:09:27.364  2643 19465 E IpNeighborMonitor: Error probing ip=fd6e:143d:db22:10::1%30: android.system.ErrnoException: NetlinkErrorMessage{ nlmsghdr{StructNlMsgHdr{ nlmsg_len{68}, nlmsg_type{2()}, nlmsg_flags{0()}, nlmsg_seq{1}, nlmsg_pid{-257985356} }}, nlmsgerr{StructNlMsgErr{ error{-2}, msg{StructNlMsgHdr{ nlmsg_len{48}, nlmsg_type{28()}, nlmsg_flags{261(NLM_F_REQUEST|NLM_F_ACK|NLM_F_ROOT)}, nlmsg_seq{1}, nlmsg_pid{0} }} }} } failed: ENOENT (No such file or directory)
+06-13 01:09:27.365  2643 19465 D IpClient/wlan0: interfaceLinkStateChanged: ifindex 30 up
+06-13 01:09:27.367  3785 28573 I NearbyMediums: Wifi changed new SSID: "FreeBeer"
+06-13 01:09:27.368  3785 28573 I NearbyMediums: WifiLanConnectivityInfo is not changed, skip notify.
+06-13 01:09:27.370  1739  2455 D ConnectivityService: NetReassign [no changes] [c 0] [a 8] [i 4]
+06-13 01:09:27.384  2643 19465 D IpClient/wlan0: interfaceLinkStateChanged: ifindex 30 up
+06-13 01:09:27.600  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758652): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:27.607  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758653): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:27.610  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758654): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:27.617  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758655): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:27.624  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758656): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:27.859  3785 28573 I NearbySharing: Network state changed: NetworkState(isRestricted=false, isOnline=true, isCongested=false, isMetered=false, isWifiConnected=true)
+06-13 01:09:28.607  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758839): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:28.610  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758840): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:28.617  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758841): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:28.624  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758842): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:28.627  1072  1072 W socket_writer_q: type=1400 audit(0.0:246758843): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:28.796 28705 28766 I FA      : Application backgrounded at: timestamp_millis: 1781305766792
+06-13 01:09:29.077  1739  2132 V DisplayPowerController[0]: Brightness [8.96886E-4] reason changing to: 'automatic [ dim ]', previous reason: 'automatic'.
+06-13 01:09:29.077  1739  2132 I DisplayPowerController[0]: BrightnessEvent: disp=0, physDisp=local:4630946475097398401, brt=8.96886E-4, initBrt=0.040896885, rcmdBrt=0.040896885, preBrt=NaN, lux=0.7, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=50, powerFactor=1.0, thrmMax=1.0, wasShortTermModelActive=false, flags=, reason=automatic [ dim ], autoBrightness=true
+06-13 01:09:29.412 29452 29452 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+06-13 01:09:29.442   645   645 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+06-13 01:09:29.444 29452 29454 W AdrenoUtils: <ReadGpuID_from_sysfs:197>: Failed to open /sys/class/kgsl/kgsl-3d0/gpu_model
+06-13 01:09:29.444 29452 29454 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
+06-13 01:09:29.505  1739  2132 I DisplayPowerController[0]: BrightnessEvent: disp=0, physDisp=local:4630946475097398401, brt=8.96886E-4, initBrt=8.96886E-4, rcmdBrt=0.040896885, preBrt=NaN, lux=0.7, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=50, powerFactor=1.0, thrmMax=1.0, wasShortTermModelActive=false, flags=, reason=automatic [ dim ], autoBrightness=true
+06-13 01:09:29.610  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759026): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:29.617  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759027): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:29.624  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759028): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:29.627  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759029): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:29.634  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759030): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:30.356  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-13 01:09:30.364  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-67
+06-13 01:09:30.364  4100 10571 I WifiSignalInfo: onCapabilitiesChanged: rssi:-67
+06-13 01:09:30.365  7449  7581 I BugleRcsEngine: handleMessage processing message:[NOTIFY_UPTIME_IGNORE_STATE_CHANGED] with [non-null]:RcsEngineImpl reference [CONTEXT log_prefix="RcsEngineImpl[DUAL_REG]:[7ff84873-078a]>Handler" thread_id=759 ]
+06-13 01:09:30.365  7449  7556 I BugleRcsEngine: Connected state: [1], networkType: [WIFI] [CONTEXT thread_id=751 ]
+06-13 01:09:30.365  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-13 01:09:30.366  4100  4138 D DeviceStateHelper: Wifi freq: 5785
+06-13 01:09:30.371  1085  1180 D CHRE    : @ 2267384.546: Parsed nanoapp message from host: app ID 0x476f6f676c00100b, endpoint 0x97, msgType 112, payload size 14
+06-13 01:09:30.371  1085  1180 I CHRE    : @ 2267384.546: [NanoMinion] received MSG Type 0x70, Version 1, 10 bytes
+06-13 01:09:30.371  1085  1180 I CHRE    : @ 2267384.546: [AR] context-signal: has_bt=0, bt=0, has_wifi=1, wifi=1
+06-13 01:09:30.373  3785  4201 I NullBinder: NullBinder for android.net.action.RECOMMEND_NETWORKS triggering remote TransactionTooLargeException due to Service without Chimera impl, calling uid: 1000, calling pid: 0
+06-13 01:09:30.373  3785  4201 W .gms.persistent: Large reply transaction of 1056768 bytes, interface descriptor , code 1
+06-13 01:09:30.379  1739  2455 D ConnectivityService: NetReassign [no changes] [c 0] [a 2] [i 1]
+06-13 01:09:30.381  3785 28573 I NearbyMediums: Wifi changed new SSID: "FreeBeer"
+06-13 01:09:30.381  3785 28573 I NearbyMediums: WifiLanConnectivityInfo is not changed, skip notify.
+06-13 01:09:30.617  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759212): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:30.624  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759213): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:30.627  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759214): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:30.634  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759215): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:30.640  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759216): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:30.868  3785 28573 I NearbySharing: Network state changed: NetworkState(isRestricted=false, isOnline=true, isCongested=false, isMetered=false, isWifiConnected=true)
+06-13 01:09:31.073  1739  2132 I PowerGroup: Powering off display group due to timeout (groupId= 0, uid= 1000, millisSinceLastUserActivity=10002, lastUserActivityEvent=other)...
+06-13 01:09:31.074  1739  2132 I PowerManagerService: Going to sleep due to timeout (uid 1000, screenOffTimeout=600000, activityTimeoutWM=10000, maxDimRatio=0.20000005, maxDimDur=7000)...
+06-13 01:09:31.078   704   746 I SDM     : HWCDisplay::GetColorModeCount: Supported color mode count = 3
+06-13 01:09:31.105  2542  2542 I vol.VolumeDialogImpl: mDialog.dismiss() reason: volume_controller from: com.android.systemui.volume.VolumeDialogImpl$7.onDismissRequested:2
+06-13 01:09:31.128  1739  2132 V DisplayPowerController[0]: Brightness [0.040896885] reason changing to: 'automatic', previous reason: 'automatic [ dim ]'.
+06-13 01:09:31.128  1739  2132 I DisplayPowerController[0]: BrightnessEvent: disp=0, physDisp=local:4630946475097398401, brt=0.040896885, initBrt=8.96886E-4, rcmdBrt=0.040896885, preBrt=NaN, lux=0.7, preLux=NaN, hbmMax=1.0, hbmMode=off, rbcStrength=50, powerFactor=1.0, thrmMax=1.0, wasShortTermModelActive=false, flags=, reason=automatic, autoBrightness=true
+06-13 01:09:31.328  3785 28575 I NearbyPresence: (REDACTED) %s verified [==] new request %s equals to the old request
+06-13 01:09:31.517 29466 29466 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+06-13 01:09:31.522 29466 29466 I AndroidRuntime: Using default boot image
+06-13 01:09:31.522 29466 29466 I AndroidRuntime: Leaving lock profiling enabled
+06-13 01:09:31.526 29466 29466 I app_process: Using CollectorTypeCC GC.
+06-13 01:09:31.577  1739  2132 I DisplayPowerController[0]: Blocking screen off
+06-13 01:09:31.577  1739  2132 I DisplayPowerController[0]: Unblocked screen off after 0 ms
+06-13 01:09:31.579  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.579  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.580  1085  1180 D VSC     : @ 2267385.756: [Device Orientation] Stop accel
+06-13 01:09:31.582  1085  1180 D VSC     : @ 2267385.758: [Device Orientation] Stop gyro
+06-13 01:09:31.584  1085  1085 I sensors-hal: [hal]activate_physical_sensor:256, android.sensor.proximity/82 en=0
+06-13 01:09:31.586  1085  1180 I ASH     : @ 2267385.761: tcs3701: Client count (type)cur/new: (3)1/0
+06-13 01:09:31.586  1085  1180 I ASH     : @ 2267385.761: tcs3701: Disabling sensor 3
+06-13 01:09:31.586  1085  1180 I ASH     : @ 2267385.761: tcs3701: Disabling PROX
+06-13 01:09:31.586  1053  1066 W statsd  : StatsPullerManager: Unknown tagId 10038
+06-13 01:09:31.586  1053  1066 E statsd  : Stats puller failed for tag: 10038 at 2267383366740671
+06-13 01:09:31.586  1053  1066 W statsd  : StatsPullerManager: Unknown tagId 10038
+06-13 01:09:31.586  1053  1066 E statsd  : Stats puller failed for tag: 10038 at 2267383366740671
+06-13 01:09:31.587  1085  1085 I sensors-hal: [hal]activate_physical_sensor:267, android.sensor.proximity/82 en=0 completed
+06-13 01:09:31.588  1085  1085 I sensors-hal: [hal]batch_physical_sensor:319, com.google.sensor.single_light/11111, period=200000000, max_latency=0
+06-13 01:09:31.588  1085  1085 I sensors-hal: [sensor]set_config:64, sample_period_ns is adjusted to 0 based on min/max delay_ns
+06-13 01:09:31.588  1085  1085 I sensors-hal: [hal]batch_physical_sensor:328, com.google.sensor.single_light/11111, period=200000000, max_latency=0 request completed
+06-13 01:09:31.589  1739  2132 V DisplayPowerController[0]: Brightness [0.0] reason changing to: 'screen_off', previous reason: 'automatic'.
+06-13 01:09:31.589  1739  2132 I DisplayPowerController[0]: BrightnessEvent: disp=0, physDisp=local:4630946475097398401, brt=0.0, initBrt=0.040896885, rcmdBrt=NaN, preBrt=NaN, lux=0.0, preLux=0.0, hbmMax=1.0, hbmMode=off, rbcStrength=50, powerFactor=1.0, thrmMax=1.0, wasShortTermModelActive=false, flags=, reason=screen_off, autoBrightness=true
+06-13 01:09:31.590  1739  2132 I DisplayPowerController[0]: BrightnessEvent: disp=0, physDisp=local:4630946475097398401, brt=0.0, initBrt=0.0, rcmdBrt=NaN, preBrt=NaN, lux=0.0, preLux=0.0, hbmMax=1.0, hbmMode=off, rbcStrength=50, powerFactor=1.0, thrmMax=1.0, wasShortTermModelActive=false, flags=, reason=screen_off, autoBrightness=true
+06-13 01:09:31.590  1739  1940 I DisplayDeviceRepository: Display device changed state: "Built-in Screen", OFF
+06-13 01:09:31.591   702   702 D SurfaceFlinger: Setting power mode 0 on display 4630946475097398401
+06-13 01:09:31.592  1739  1940 I InputManager-JNI: Viewport [0] to add: local:4630946475097398401, isActive: false
+06-13 01:09:31.593  1739  2430 I InputReader: Reconfiguring input devices, changes=DISPLAY_INFO | 
+06-13 01:09:31.593  1739  2430 I InputReader: Disabling fts (device 4) because the associated viewport is not active
+06-13 01:09:31.593  1739  2430 I InputReader: Device reconfigured: id=4, name='fts', size 1080x2340, orientation 0, mode 0, display id 0
+06-13 01:09:31.594  1739  1941 W SurfaceControl: Invalid layer stack -1
+06-13 01:09:31.594  1739  1941 I DisplayDevice: [0] Layerstack set to -1 for local:4630946475097398401
+06-13 01:09:31.595 19533 19614 I bt_stack: [INFO:le_scanning_manager.cc(154)] Scan in shim layer stopped
+06-13 01:09:31.595 19533 19620 I bluetooth: packages/modules/Bluetooth/system/gd/hci/le_address_manager.cc:190 unregister_client: Client unregistered
+06-13 01:09:31.595 19533 19620 I bluetooth: packages/modules/Bluetooth/system/gd/hci/le_address_manager.cc:194 unregister_client: Cancelled address rotation alarm
+06-13 01:09:31.597 19533 19614 I bt_stack: [INFO:le_scanning_manager.cc(250)] SetScanParameters in shim layer
+06-13 01:09:31.597  3785  3785 I NearbyDiscovery: (REDACTED) FastPairDisplayObserver: %s -> %s
+06-13 01:09:31.597 19533 19614 I bt_stack: [INFO:le_scanning_manager.cc(154)] Scan in shim layer started
+06-13 01:09:31.599  2782  2782 D GRIL-S  : [4111]> UPDATE_DEVICE_STATE DeviceState: Usb:1, Wifi: 1, Wifi AP: 0, Earpiece: 0, Bluetooth: 1, Wireless charging: 0, Screen: 0, Camera: 0, 0, -, -, Motion: 0, Bluetooth tethering: 0, Voice: 0, Wifi 2.4G: 0, Radio: 1, Bluetooth connected: 0, Bluetooth media: 0, Wifi Band: 2, Wifi AP Band: 0, Wifi call: 0, mmWave: 0, mCellBackhaul: 0, mHallSensor: 0
+06-13 01:09:31.599  3785  4105 I NearbyDiscovery: (REDACTED) ApFastPairScanner: isScreenOn=%s, isLocationEnabled=%s, disableLocationRequirement=%s, isDiscoveryScanningEnabled=%s, during24GhzWifiWarmingUpPeriod=%s
+06-13 01:09:31.600  3785  4105 D BluetoothAdapter: isLeEnabled(): ON
+06-13 01:09:31.600  3785  4105 I NearbyDiscovery: (REDACTED) ApFastPairScanner: eventType=%s, intReq=%s, scanning=%s, scanAllowed=%s, bleEnabled=%s, lockScanRate=%s, startScanningByLowPowerMode=%s
+06-13 01:09:31.601  3785  4105 I NearbyDiscovery: (REDACTED) ApFastPairScanner: Stopping scan, %s
+06-13 01:09:31.601  3785  4105 D BluetoothAdapter: isLeEnabled(): ON
+06-13 01:09:31.601  2782  4139 D GRIL-S  : [4111]< UPDATE_DEVICE_STATE 
+06-13 01:09:31.602   704   746 I SDM     : DisplayBase::SetDisplayState: Set state = 0, display 28-0, teardown = 0
+06-13 01:09:31.602  4100  4138 I SconeBluetoothSarContro: No config
+06-13 01:09:31.603 29466 29466 D nativeloader: InitDefaultPublicLibraries for_preload=1: libandroid.so:libaaudio.so:libamidi.so:libbinder_ndk.so:libc.so:libcamera2ndk.so:libdl.so:libEGL.so:libGLESv1_CM.so:libGLESv2.so:libGLESv3.so:libicu.so:libicui18n.so:libicuuc.so:libjnigraphics.so:liblog.so:libmediandk.so:libm.so:libnativehelper.so:libnativewindow.so:libOpenMAXAL.so:libOpenSLES.so:libRS.so:libstdc++.so:libsync.so:libvulkan.so:libwebviewchromium_plat_support.so:libz.so
+06-13 01:09:31.604 19533 19620 I bluetooth: packages/modules/Bluetooth/system/gd/hci/le_scanning_manager.cc:659 stop_scan: Scanning already stopped, return!
+06-13 01:09:31.604 19533 19620 I bluetooth: packages/modules/Bluetooth/system/gd/hci/le_address_manager.cc:172 register_client: Scheduled address rotation for first client registered
+06-13 01:09:31.604 19533 19620 I bluetooth: packages/modules/Bluetooth/system/gd/hci/le_address_manager.cc:175 register_client: Client registered
+06-13 01:09:31.605  6595  6595 I PkDeviceHelper: PkDeviceHelper.refreshDevices():87 refreshing devices
+06-13 01:09:31.611 19533 19543 D ActivityAttributionService: notifyActivityAttributionInfo UID=1002 packageName=com.google.android.bluetooth deviceAddress=no_active_device_address
+06-13 01:09:31.611 19533 19543 I bt_btif : packages/modules/Bluetooth/system/btif/src/bluetooth.cc:465 get_profile_interface: get_profile_interface: id = activity_attribution
+06-13 01:09:31.611 19533 19614 I bt_stack: [INFO:le_scanning_manager.cc(154)] Scan in shim layer stopped
+06-13 01:09:31.612 19533 19620 I bluetooth: packages/modules/Bluetooth/system/gd/hci/le_address_manager.cc:190 unregister_client: Client unregistered
+06-13 01:09:31.612 19533 19614 I bt_stack: [INFO:le_scanning_manager.cc(174)] ScanFilterParamSetup in shim layer
+06-13 01:09:31.612 19533 19620 I bluetooth: packages/modules/Bluetooth/system/gd/hci/le_address_manager.cc:194 unregister_client: Cancelled address rotation alarm
+06-13 01:09:31.612 19533 19614 I bt_stack: [INFO:le_scanning_manager.cc(174)] ScanFilterParamSetup in shim layer
+06-13 01:09:31.612 19533 19614 I bt_stack: [INFO:le_scanning_manager.cc(174)] ScanFilterParamSetup in shim layer
+06-13 01:09:31.614  1739  2010 D TelephonyManager: requestModemActivityInfo: Sending result to app: ModemActivityInfo{ mTimestamp=2267383390 mSleepTimeMs=958356408 mIdleTimeMs=73831190 mActivityStatsTechSpecificInfo=[{mRat=UNKNOWN,mFrequencyRange=UNKNOWN,mTxTimeMs[]=[71116, 144184, 1678820, 2282113, 19054978],mRxTimeMs=1211732778}]}
+06-13 01:09:31.615 19533 19543 I bt_stack: [INFO:le_scanning_manager.cc(148)] Unregister in shim layer, scanner_id:1
+06-13 01:09:31.616 29466 29466 D nativeloader: Load libicu_jni.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-13 01:09:31.617 29466 29466 D app_process: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+06-13 01:09:31.617 29466 29466 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt70l.dat
+06-13 01:09:31.618 29466 29466 D nativeloader: Load libjavacore.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-13 01:09:31.619 29466 29466 D nativeloader: Load libopenjdk.so using APEX ns com_android_art for caller /apex/com.android.art/javalib/core-oj.jar: ok
+06-13 01:09:31.620 29466 29466 I app_process: Priority-to-niceness mapping: 19, 16, 13, 10, 0, -2, -4, -5, -6, -8
+06-13 01:09:31.620  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759398): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:31.627  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759399): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:31.630  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759400): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:31.640  1085  1180 I ASH     : @ 2267385.815: touch gesture: received SNS_TBN_RELEASE_BUS_REQ_V01: kernel releasing bus
+06-13 01:09:31.637  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759401): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:31.645 29466 29466 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-13 01:09:31.640  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759402): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:31.645 29466 29466 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+06-13 01:09:31.653  1739  5437 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-13 01:09:31.653  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-13 01:09:31.654  4224 18858 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-13 01:09:31.654  1053  1066 W statsd  : StatsPullerManager: Unknown tagId 10038
+06-13 01:09:31.654  1053  1066 E statsd  : Stats puller failed for tag: 10038 at 2267383366740671
+06-13 01:09:31.656  1739  5437 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-13 01:09:31.661  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 01:09:31.662  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 01:09:31.662  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 01:09:31.662  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 01:09:31.662  4224 18858 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-13 01:09:31.662  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 01:09:31.662  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 01:09:31.663  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 01:09:31.665  1739  1739 D BatterySaverPolicy: accessibility changed to true, updating policy.
+06-13 01:09:31.665  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 01:09:31.665  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 01:09:31.665  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 01:09:31.665 28386 28386 I SafetyCenterAccessibilityListener: accessibility event occurred, safety center feature not enabled.
+06-13 01:09:31.666  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 01:09:31.666  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 01:09:31.667  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 01:09:31.667  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 01:09:31.667  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 01:09:31.667  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 01:09:31.667  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 01:09:31.670  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 01:09:31.671  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 01:09:31.672  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 01:09:31.672  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 01:09:31.673  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 01:09:31.674  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 01:09:31.674  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 01:09:31.674  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 01:09:31.675  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 01:09:31.675  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 01:09:31.675  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 01:09:31.676  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 01:09:31.676  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 01:09:31.677  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 01:09:31.677  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 01:09:31.677  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 01:09:31.678  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 01:09:31.678  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 01:09:31.678  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 01:09:31.681  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-13 01:09:31.681  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 01:09:31.682  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:31.682  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:31.682  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-13 01:09:31.682  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-13 01:09:31.682  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-13 01:09:31.683  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:31.683  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:31.683  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-13 01:09:31.684  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 01:09:31.685  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 01:09:31.687  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 01:09:31.688  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-13 01:09:31.689  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:31.689  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:31.689  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-13 01:09:31.701  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-13 01:09:31.702  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:31.702  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:31.702  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-13 01:09:31.702  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-13 01:09:31.774  1085  2566 I sensors-hal: [DPInfo]file_contents_parse:152, _status = 0, _refresh_rate = 0
+06-13 01:09:31.775  1085  2566 I sensors-hal: [ssc_utils]get_qmi_debug_flag:243, support_qmi_debug : false
+06-13 01:09:31.777   702   702 D SurfaceFlinger: Finished setting power mode 0 on display 4630946475097398401
+06-13 01:09:31.777  1739  2513 D SurfaceControl: Excessive delay in setPowerMode()
+06-13 01:09:31.778  1739  1940 I DisplayDeviceRepository: Display device changed state: "Built-in Screen", OFF
+06-13 01:09:31.781  1739  2132 I DisplayPowerController[0]: BrightnessEvent: disp=0, physDisp=local:4630946475097398401, brt=0.0, initBrt=0.0, rcmdBrt=NaN, preBrt=NaN, lux=0.0, preLux=0.0, hbmMax=1.0, hbmMode=off, rbcStrength=50, powerFactor=1.0, thrmMax=1.0, wasShortTermModelActive=false, flags=, reason=screen_off, autoBrightness=true
+06-13 01:09:31.782  1739  2132 I DreamManagerService: Entering dreamland.
+06-13 01:09:31.783  1739  2132 I PowerManagerService: Dozing...
+06-13 01:09:31.784  1085  1180 I ASH     : @ 2267385.957: tcs3701: display status: 0
+06-13 01:09:31.784  1085  1180 I ASH     : @ 2267385.957: tcs3701: display brightness: 30
+06-13 01:09:31.784  1085  1180 I ASH     : @ 2267385.957: tcs3701: display refresh_rate: 0
+06-13 01:09:31.784  1085  1180 I ASH     : @ 2267385.957: tcs3701: ALS trigger disabled!!
+06-13 01:09:31.784  1085  1180 I ASH     : @ 2267385.959: tcs3701: PROX trigger disabled!!
+06-13 01:09:31.786  1085  1180 I ASH     : @ 2267385.960: tcs3701: PERS: 10
+06-13 01:09:31.789  1739  1937 I DreamController: Starting dream: name=ComponentInfo{com.android.systemui/com.android.systemui.doze.DozeService}, isPreviewMode=false, canDoze=true, userId=0, reason='power manager request'
+06-13 01:09:31.791  2542  2542 I vol.VolumeDialogImpl: mDialog.dismiss() reason: volume_controller from: com.android.systemui.volume.VolumeDialogImpl$7.onDismissRequested:2
+06-13 01:09:31.803  2542  2542 D DLObserver: add listener: com.android.systemui.doze.DozeTriggers$DockEventListener@c973ead
+06-13 01:09:31.804  2542  2542 D CentralSurfaces: updateQsExpansionEnabled - QS Expand enabled: false
+06-13 01:09:31.805  2542  2542 D CentralSurfaces: updateQsExpansionEnabled - QS Expand enabled: false
+06-13 01:09:31.814  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.814  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.814  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.814  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.817  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.817  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.817  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.817  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.818  2542  2542 D DLObserver: add listener: com.android.systemui.doze.DozeDockHandler$DockEventListener@fa41153
+06-13 01:09:31.819  4224 18858 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-13 01:09:31.821  1085  1180 D VSC     : @ 2267385.997: [Device Pickup Sensor] Request proximity, interval 66.6 ms, latency 0.0 ms
+06-13 01:09:31.822  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 01:09:31.822  1739  2132 I DisplayPowerController[0]: BrightnessEvent: disp=0, physDisp=local:4630946475097398401, brt=0.0, initBrt=0.0, rcmdBrt=NaN, preBrt=NaN, lux=0.0, preLux=0.0, hbmMax=1.0, hbmMode=off, rbcStrength=50, powerFactor=1.0, thrmMax=1.0, wasShortTermModelActive=false, flags=, reason=screen_off, autoBrightness=true
+06-13 01:09:31.822  1085  1180 I ASH     : @ 2267385.997: tcs3701: Client count (type)cur/new: (3)0/1
+06-13 01:09:31.822  1085  1180 I ASH     : @ 2267385.997: tcs3701: Enabling sensor 3
+06-13 01:09:31.822  1085  1180 D VSC     : @ 2267385.997: [Device Pickup Sensor] Stop proximity
+06-13 01:09:31.823  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 01:09:31.823  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 01:09:31.823  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 01:09:31.823  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 01:09:31.824  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 01:09:31.824  1085  1180 D VSC     : @ 2267385.998: [Device Pickup Sensor] Request accel, interval 20.0 ms, latency 0.0 ms
+06-13 01:09:31.824  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 01:09:31.825  1085  1180 I ASH     : @ 2267385.998: tcs3701: PCFG1: 00
+06-13 01:09:31.825  1085  1180 I ASH     : @ 2267385.998: tcs3701: PCFG2: 04
+06-13 01:09:31.825  1085  1180 I ASH     : @ 2267385.999: tcs3701: PCFG4: 02
+06-13 01:09:31.825  2542  2542 D DLObserver: onDockEvent mDockState = 0
+06-13 01:09:31.825  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 01:09:31.825  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 01:09:31.825  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 01:09:31.825  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 01:09:31.826  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 01:09:31.826  1085  1180 I ASH     : @ 2267386.000: tcs3701: New TH: 150 0 500 0
+06-13 01:09:31.827  1085  1180 D ASH     : @ 2267386.002: SensorType 1 resampler quality 0
+06-13 01:09:31.827  1085  1180 I ASH     : @ 2267386.002: tcs3701: PROX trigger disabled!!
+06-13 01:09:31.827  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 01:09:31.827  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 01:09:31.827  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 01:09:31.827  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 01:09:31.827  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 01:09:31.830  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 01:09:31.831  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 01:09:31.832  1085  1180 D CHRE    : @ 2267386.003: Gyro(0)=Disabled
+06-13 01:09:31.832  1085  1180 I ASH     : @ 2267386.003: tcs3701: Client count (type)cur/new: (3)1/0
+06-13 01:09:31.832  1085  1180 I ASH     : @ 2267386.003: tcs3701: Disabling sensor 3
+06-13 01:09:31.832  1085  1180 I ASH     : @ 2267386.003: tcs3701: Disabling PROX
+06-13 01:09:31.832  1085  1180 I VSC     : @ 2267386.007: [single-tap-prox-gated] configuring sensor with interval: 1000000, latency: 0
+06-13 01:09:31.832  1085  1180 D VSC     : @ 2267386.007: [Proximity Gated Single Tap Gesture] Request proximity, interval 100.0 ms, latency 0.0 ms
+06-13 01:09:31.834  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 01:09:31.835  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-13 01:09:31.836  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:31.836  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:31.836  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-13 01:09:31.837  1085  1085 I sensors-hal: [hal]batch_physical_sensor:319, android.sensor.accelerometer/11, period=20000000, max_latency=0
+06-13 01:09:31.837  1085  1085 I sensors-hal: [sensor]set_config:64, sample_period_ns is adjusted to 20000000 based on min/max delay_ns
+06-13 01:09:31.837  1085  1085 I sensors-hal: [hal]batch_physical_sensor:328, android.sensor.accelerometer/11, period=20000000, max_latency=0 request completed
+06-13 01:09:31.837  1739  1739 I PowerManagerService: onFlip(): Face up.
+06-13 01:09:31.838  1085  1180 I ASH     : @ 2267386.009: tcs3701: Client count (type)cur/new: (3)0/1
+06-13 01:09:31.838  1085  1180 I ASH     : @ 2267386.009: tcs3701: Enabling sensor 3
+06-13 01:09:31.838  1085  1180 D VSC     : @ 2267386.009: [Proximity Gated Single Tap Gesture] Request touch_gesture, interval 18446744027136.0 ms, latency 0.0 ms
+06-13 01:09:31.840  1085  1180 I ASH     : @ 2267386.010: tcs3701: PCFG1: 00
+06-13 01:09:31.841  1085  1180 I ASH     : @ 2267386.010: tcs3701: PCFG2: 04
+06-13 01:09:31.841  1085  1180 I ASH     : @ 2267386.010: tcs3701: PCFG4: 02
+06-13 01:09:31.841  1085  1180 I ASH     : @ 2267386.012: tcs3701: New TH: 150 0 500 0
+06-13 01:09:31.841  1085  1180 I ASH     : @ 2267386.014: tcs3701: PROX trigger disabled!!
+06-13 01:09:31.843  2542  2542 W View    : requestLayout() improperly called by com.android.keyguard.CarrierText{3ad0849 V.ED..... ......ID 150,0-704,136 #7f0a037f app:id/keyguard_carrier_text} during layout: running second layout pass
+06-13 01:09:31.845   702   736 I BpBinder: onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+06-13 01:09:31.845  2542  2542 D DLObserver: onDockEvent mDockState = 0
+06-13 01:09:31.846  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.846  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.846  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.846  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.847  1070  2478 D audio_hw_primary: adev_set_parameters: enter: screen_state=off
+06-13 01:09:31.847  1070  2478 W sound_trigger_hw: sound_trigger_hw_call_back: Unknown event 17
+06-13 01:09:31.847  1070  2478 D a2dp_offload: end of a2dp setparam
+06-13 01:09:31.848  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.848  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.848  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.848  2542  2542 D CentralSurfaces: Received new disable state: enaihbcRso.qingr (unchanged)
+06-13 01:09:31.849  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-13 01:09:31.849  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:31.849  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:31.849  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-13 01:09:31.849  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-13 01:09:31.851  1085  1180 I ASH     : @ 2267386.027: touch gesture: [touch gesture] subscribed
+06-13 01:09:31.853  1085  1180 W ASH     : @ 2267386.028: touch gesture: no valid gesture detected
+06-13 01:09:31.854  1085  1180 W ASH     : @ 2267386.029: touch gesture: no valid gesture detected
+06-13 01:09:31.858  1085  1180 I ASH     : @ 2267386.034: tcs3701: PROX sample: FAR (001a), POFFSET: 005b, ORE: -1
+06-13 01:09:31.859  1085  1085 I sensors-hal: [hal]activate_physical_sensor:256, com.google.sensor.single_light/11111 en=0
+06-13 01:09:31.860  2542  2542 I vol.VolumeDialogImpl: mDialog.dismiss() reason: screen_off from: com.android.systemui.volume.VolumeDialogImpl$7.onScreenOff:3
+06-13 01:09:31.860  2542  2542 D vol.VolumeDialogImpl: dismissH: skipping dismiss because isAnimatingDismiss is true and showingStateInconsistent is false
+06-13 01:09:31.861  1085  1085 I sensors-hal: [hal]activate_physical_sensor:267, com.google.sensor.single_light/11111 en=0 completed
+06-13 01:09:31.862  1085  1180 I ASH     : @ 2267386.037: tcs3701: Client count (type)cur/new: (0)1/0
+06-13 01:09:31.862  1085  1180 I ASH     : @ 2267386.037: tcs3701: Disabling sensor 0
+06-13 01:09:31.879  4329  4329 E SUI_svcsock: svc_sock_send_message(suisvc): invalid remote socket suitch
+06-13 01:09:31.879  4329  4329 E SUI_svcsock: svc_sock_send_message(suisvc): invalid remote socket suilst
+06-13 01:09:31.884  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-13 01:09:31.886  4291  4291 D NfcService: MSG_APPLY_SCREEN_STATE 2
+06-13 01:09:31.886  1090 25112 D NfcNciHalWrapper: nfc_set_state 5->11
+06-13 01:09:31.893  4291  4291 W libnfc_nci: [WARNING:NativeNfcTag.cpp(879)] nativeNfcTag_doDisconnect: tag already deactivated
+06-13 01:09:31.918  3785  4105 I NearbyDiscovery: (REDACTED) FastPairHandler: Received action %s
+06-13 01:09:31.919  3785  4105 I NearbyDiscovery: (REDACTED) ApFastPairScanner: isScreenOn=%s, isLocationEnabled=%s, disableLocationRequirement=%s, isDiscoveryScanningEnabled=%s, during24GhzWifiWarmingUpPeriod=%s
+06-13 01:09:31.919  3785  4105 D BluetoothAdapter: isLeEnabled(): ON
+06-13 01:09:31.919  3785  4105 I NearbyDiscovery: (REDACTED) ApFastPairScanner: eventType=%s, intReq=%s, scanning=%s, scanAllowed=%s, bleEnabled=%s, lockScanRate=%s, startScanningByLowPowerMode=%s
+06-13 01:09:31.919  3785  4105 I NearbyDiscovery: FastPairController: onSystemStateChanged: skip due to flag disabled [CONTEXT service_id=265 ]
+06-13 01:09:31.924  6595 29481 I DeviceStatusMonitor: DeviceStatusMonitor.handleBroadcast():135 onReceive() : Action = android.intent.action.SCREEN_OFF
+06-13 01:09:31.924  6595 29481 I DeviceStatusMonitor: DeviceStatusMonitor.updateCountryInfo():151 updateCountryInfo(), notifyAnyway = false
+06-13 01:09:31.925  6595  6595 I InputBundle: InputBundle.switchToKeyboardDirectly():530 switchToKeyboardDirectly(): oiz[keyboardType=prime, payload=null]
+06-13 01:09:31.925  6595  6595 I InputBundle: InputBundle.switchToKeyboardDirectly():530 switchToKeyboardDirectly(): oiz[keyboardType=prime, payload=null]
+06-13 01:09:31.926  6595  6595 I InputBundle: InputBundle.switchToKeyboardDirectly():530 switchToKeyboardDirectly(): oiz[keyboardType=prime, payload=null]
+06-13 01:09:31.926  6595  6595 I InputBundle: InputBundle.switchToKeyboardDirectly():530 switchToKeyboardDirectly(): oiz[keyboardType=prime, payload=null]
+06-13 01:09:31.926  6595  6595 I InputBundle: InputBundle.switchToKeyboardDirectly():530 switchToKeyboardDirectly(): oiz[keyboardType=prime, payload=null]
+06-13 01:09:31.926  6595  6595 I InputBundle: InputBundle.switchToKeyboardDirectly():530 switchToKeyboardDirectly(): oiz[keyboardType=prime, payload=null]
+06-13 01:09:31.926  6595  6595 I VoiceImeUtils: VoiceImeUtils.sendStopVoiceEventToInputBundle():529 dispatching STOP_VOICE_IME [RD]
+06-13 01:09:31.926  6595  6595 I InputBundle: InputBundle.consumeEvent():1052 Skip consuming an event as imeStatus is INACTIVE
+06-13 01:09:31.963  6595  6595 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1457 module gbu is unavailable
+06-13 01:09:31.967  6595  6595 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1457 module ilz is unavailable
+06-13 01:09:31.968  6595  6595 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1457 module hoz is unavailable
+06-13 01:09:31.968  6595  6595 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1457 module osg is unavailable
+06-13 01:09:31.969  6595  6595 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1457 module IGifKeyboardExtension is unavailable
+06-13 01:09:31.969  6595  6595 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1457 module IStickerExtension is unavailable
+06-13 01:09:31.969  6595  6595 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1457 module ITranslateUiExtension is unavailable
+06-13 01:09:31.975  6595  6595 W NotificationCenter: NotificationCenter.unregisterListener():480 Listener enh@2fea7a7 was not registered for notification class onp
+06-13 01:09:31.976  6595  6595 W NotificationCenter: NotificationCenter.unregisterListener():480 Listener eoy@796b640 was not registered for notification class onp
+06-13 01:09:31.978  6595  6595 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1457 module epw is unavailable
+06-13 01:09:31.979  6595  6595 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1457 module IEmojiKitchenBrowseExtension is unavailable
+06-13 01:09:31.980  6595  6595 I EmojifyExtensionImpl: EmojifyExtensionImpl.onDestroy():611 Destroying Emojify extension fhx@4b42290.
+06-13 01:09:31.980  6595  6595 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1457 module fhi is unavailable
+06-13 01:09:31.981  6595  6595 I AbstractOpenableExtension: AbstractOpenableExtension.maybeDestroyExistingKeyboardGroupManager():536 Destroy existing keyboard group manager in fis
+06-13 01:09:31.982  6595  6595 I AbstractOpenableExtension: AbstractOpenableExtension$3.onSuccess():556 KeyboardGroupManager destroyed in fis.
+06-13 01:09:31.982  6595  6595 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1457 module IExpressionMomentExtension is unavailable
+06-13 01:09:31.986  6595  6595 I AbstractOpenableExtension: AbstractOpenableExtension.maybeDestroyExistingKeyboardGroupManager():536 Destroy existing keyboard group manager in idc
+06-13 01:09:31.986  6595  6595 I AbstractOpenableExtension: AbstractOpenableExtension$3.onSuccess():556 KeyboardGroupManager destroyed in idc.
+06-13 01:09:31.986  6595  6595 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1457 module FastAccessBarExtension is unavailable
+06-13 01:09:31.986  6595  6595 I ModuleManager: ModuleManager$ModuleInitListener.maybeUnloadModuleOnUnavailable():1457 module esz is unavailable
+06-13 01:09:31.987  6595  6595 W NotificationCenter: NotificationCenter$NotificationQueue.notifyPendingNotificationsOnExecutor():877 Heavy notify work detected on UI thread: [piv->osk, piv->osk, piv->osk, piv->osk, piv->osk, piv->osk, piv->osk, piv->osk, piv->osk, piv->osk, piv->osk, piv->osk, piv->osk, piv->osk, piv->osk, piv->osk, piv->osk, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe, oof->ooe] takes 49ms
+06-13 01:09:31.988  6595  6595 I DeviceLockTags: DeviceLockTags.notifyDeviceLockStatusChanged():108 notifyDeviceLockStatusChanged(): deviceLocked=true, blockPersonalData=false
+06-13 01:09:31.988  6595  6595 I Module  : DeviceLockedStatusModuleProvider$Module.updateDeviceLockedStatusInternal():127 repeatCheckTimes = 0, locked = true
+06-13 01:09:31.993  6595  6595 I HardKeyTracker: HardKeyTracker.unregisterKeySequence():259 Unregister key sequence phm{labelResId=2132020535, callback=ffb@b313f18, lastModifier=65536, keyCodes=[76], actions=[0]}
+06-13 01:09:31.994  6595  6595 I HardKeyTracker: HardKeyTracker.registerKeySequence():201 Register key sequence phm{labelResId=2132020535, callback=ffb@f4deef9, lastModifier=65536, keyCodes=[76], actions=[0]}
+06-13 01:09:31.994  6595  6595 W NotificationCenter: NotificationCenter$NotificationQueue.notifyPendingNotificationsOnExecutor():877 Heavy notify work detected on UI thread: [pjh->jes, pjh->gwc, pjh->npn, piu->osk, ldx->ldy] takes 68ms
+06-13 01:09:32.303  2782  2782 D GRIL-S  : [4112]> UPDATE_SCONE_INFO Mobility:3 Battery:2 Thermal:0 Screen:2
+06-13 01:09:32.305  2782  4139 D GRIL-S  : [4112]< UPDATE_SCONE_INFO 
+06-13 01:09:32.624  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759586): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:32.627  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759587): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:32.634  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759588): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:32.640  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759589): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:32.647  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759590): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:33.081  4291  5500 D ForegroundUtils: Foreground UID status:
+06-13 01:09:33.081  4291  5500 D ForegroundUtils: UID: 1002 is in foreground: true
+06-13 01:09:33.081  4291  5500 D ForegroundUtils: UID: 10109 is in foreground: false
+06-13 01:09:33.081  4291  5500 D ForegroundUtils: UID: 10155 is in foreground: true
+06-13 01:09:33.081  4291  5500 D ForegroundUtils: UID: 10164 is in foreground: true
+06-13 01:09:33.081  4291  5500 D ForegroundUtils: UID: 10238 is in foreground: false
+06-13 01:09:33.081  4291  5500 D ForegroundUtils: UID: 10243 is in foreground: false
+06-13 01:09:33.081  4291  5500 D ForegroundUtils: UID: 10250 is in foreground: false
+06-13 01:09:33.081  4291  5500 D ForegroundUtils: UID: 10898 is in foreground: false
+06-13 01:09:33.627  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759774): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:33.634  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759775): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:33.640  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759776): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:33.644  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759777): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:33.650  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759778): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:33.698 29466 29466 W libc    : Access denied finding property "qemu.sf.lcd_density"
+06-13 01:09:33.698 29466 29466 W libc    : Access denied finding property "qemu.sf.lcd_density"
+06-13 01:09:33.767 29466 29466 I AccessibilityNodeInfoDumper: Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@3ae0b; boundsInParent: Rect(0, 0 - 0, 0); boundsInScreen: Rect(546, 1970 - 546, 1970); packageName: com.android.systemui; className: android.widget.LinearLayout; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; viewIdResName: com.android.systemui:id/ambient_indication_info_container; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: false; visible: false; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+06-13 01:09:33.778 29466 29466 W AccessibilityNodeInfoDumper: Fetch time: 76ms
+06-13 01:09:33.782  1739  4775 W WindowMagnificationMgr: requestConnection duplicated request: connect=false, mConnectionState=DISCONNECTED
+06-13 01:09:33.783  4224 18858 I AiAiEcho: (REDACTED) Settings changed for uri: %s
+06-13 01:09:33.785 29466 29466 D AndroidRuntime: Shutting down VM
+06-13 01:09:33.789  1739  1739 D BatterySaverPolicy: accessibility changed to false, updating policy.
+06-13 01:09:33.789  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 01:09:33.790  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 01:09:33.790  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 01:09:33.791  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 01:09:33.791  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 01:09:33.791  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 01:09:33.792  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 01:09:33.793  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 01:09:33.793  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 01:09:33.793  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 01:09:33.793  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 01:09:33.793  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-13 01:09:33.794  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-13 01:09:33.794  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-13 01:09:33.794  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-13 01:09:33.795  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-13 01:09:33.795  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-13 01:09:33.801  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 01:09:33.802  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 01:09:33.802  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-13 01:09:33.803  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:33.803  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:33.803  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-13 01:09:33.803  2542  2542 D SsMediaDataProvider: Forwarding Smartspace updates []
+06-13 01:09:33.805  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-13 01:09:33.806  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-13 01:09:33.807  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:33.807  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-13 01:09:33.807  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-13 01:09:34.053  1739  1940 W ProcessStats: Tracking association SourceState{a719d4a rw.mobi.app/10898 Top #3280293} whose proc state 1 is better than process ProcessState{188b4bb com.google.android.gms/10164 pkg=com.google.android.gms (sub)} proc state 4 (266 skipped)
+06-13 01:09:34.630  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759961): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:34.634  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759962): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:34.640  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759963): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:34.644  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759964): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-13 01:09:34.650  1072  1072 W socket_writer_q: type=1400 audit(0.0:246759965): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0

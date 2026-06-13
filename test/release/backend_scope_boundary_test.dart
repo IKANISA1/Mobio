@@ -91,10 +91,177 @@ void main() {
         contains('out-of-scope country SMS sender column still exists'),
       );
       expect(assertions, contains('trip_requests'));
-      expect(assertions, contains('biopay_profiles'));
+      expect(assertions, contains('biopay_transactions'));
       expect(assertions, contains('payment_intents'));
       expect(assertions, contains('sms_raw_queue'));
     });
+
+    test('BioPay reactivation is USSD-only and AWS face bounded', () {
+      final migration = File(
+        'supabase/migrations/20260612133000_biopay_ussd_aws_reactivation.sql',
+      ).readAsStringSync();
+      final optionalAmountMigration = File(
+        'supabase/migrations/20260612143000_biopay_qr_optional_amount.sql',
+      ).readAsStringSync();
+      final profileMomoMigration = File(
+        'supabase/migrations/20260612204806_profile_momo_receiver_fields.sql',
+      ).readAsStringSync();
+      final faceProvider = File(
+        'supabase/functions/biopay-face-provider/index.ts',
+      ).readAsStringSync();
+
+      for (final table in const [
+        'biopay_profiles',
+        'biopay_payment_requests',
+        'biopay_ussd_attempts',
+        'biopay_face_sessions',
+        'biopay_audit_events',
+      ]) {
+        expect(migration, contains('create table if not exists public.$table'));
+        expect(
+          migration,
+          contains('alter table public.$table enable row level security'),
+        );
+      }
+
+      expect(migration, contains('fn_biopay_ussd_code'));
+      expect(migration, contains('rpc_create_biopay_ussd_request'));
+      expect(optionalAmountMigration, contains('Amount cannot be negative'));
+      expect(optionalAmountMigration, contains('amount_minor >= 0'));
+      expect(profileMomoMigration, contains('momo_number text'));
+      expect(profileMomoMigration, contains('momo_pay_code text'));
+      expect(profileMomoMigration, contains('fn_momo_local_number'));
+      expect(profileMomoMigration, contains('07XXXXXXXX'));
+      expect(profileMomoMigration, contains('rpc_create_biopay_ussd_request'));
+      expect(
+        profileMomoMigration,
+        contains('public.fn_momo_local_number(momo_number)'),
+      );
+      expect(
+        optionalAmountMigration,
+        contains(
+          "v_phone text := nullif(trim(coalesce(p_payee_phone, '')), '')",
+        ),
+      );
+      expect(
+        optionalAmountMigration,
+        contains(
+          'v_phone := coalesce(v_phone, nullif(trim(coalesce(p_payee_phone',
+        ),
+      );
+      expect(migration, contains('rpc_create_biopay_face_match_request'));
+      expect(migration, contains('rpc_resolve_biopay_ussd_request'));
+      expect(migration, contains('rpc_record_biopay_ussd_dialer_opened'));
+      expect(
+        migration,
+        contains(
+          'create or replace function public.rpc_record_biopay_ussd_dialer_opened(\n'
+          '  p_request_id uuid\n'
+          ') returns jsonb',
+        ),
+      );
+      expect(migration, contains('rpc_mark_biopay_ussd_user_paid'));
+      expect(migration, contains('rpc_list_biopay_ussd_requests'));
+      expect(migration, contains('rpc_confirm_biopay_ussd_external'));
+      expect(migration, contains('rpc_record_biopay_face_enrollment'));
+      expect(migration, contains('fn_biopay_require_admin'));
+      expect(migration, contains('rpc_admin_biopay_summary'));
+      expect(migration, contains('rpc_admin_biopay_list_payees'));
+      expect(migration, contains('rpc_admin_biopay_list_requests'));
+      expect(migration, contains('rpc_admin_biopay_system_status'));
+      expect(migration, contains('rpc_admin_biopay_confirm_external'));
+      expect(migration, contains("profile.role = 'admin'"));
+      expect(migration, contains('dialer_opened'));
+      expect(migration, contains('user_marked_paid'));
+      expect(
+        migration,
+        contains('BioPay request is not ready for USSD dialer handoff'),
+      );
+      expect(migration, contains('biopay.ussd.user_marked_paid'));
+      expect(migration, contains('biopay.ussd.externally_confirmed'));
+      expect(migration, contains('biopay.admin.externally_confirmed'));
+      expect(migration, contains('biopay.face_match.ussd_request.created'));
+      expect(
+        migration,
+        contains('bp.provider_subject_id = v_provider_face_id'),
+      );
+      expect(migration, contains('matched_payee_id'));
+      expect(migration, contains('payee_id = v_user_id'));
+      expect(migration, contains('confirmation_source = v_source'));
+      expect(
+        migration,
+        contains("'ussd_handoff_status', 'external_ussd_only'"),
+      );
+      expect(migration, contains('biopay.face.enrolled'));
+      expect(migration, contains('raw_asset_deleted_at'));
+      expect(migration, isNot(contains('biopay_wallets')));
+      expect(migration, isNot(contains('payment_intents')));
+      expect(migration, isNot(contains('sms_raw_queue')));
+      expect(faceProvider, contains('FACE_PROVIDER'));
+      expect(faceProvider, contains('AWS_REKOGNITION_COLLECTION_ID'));
+      expect(faceProvider, contains('aws_rekognition'));
+      expect(faceProvider, contains('provider_collection_id'));
+      expect(faceProvider, contains('model_version'));
+      expect(faceProvider, contains('CreateFaceLivenessSession'));
+      expect(faceProvider, contains('GetFaceLivenessSessionResults'));
+      expect(faceProvider, contains('IndexFaces'));
+      expect(faceProvider, contains('SearchFacesByImage'));
+      expect(faceProvider, contains('USSD dialer handoff only'));
+      expect(faceProvider, isNot(contains('google_mlkit')));
+      expect(faceProvider, isNot(contains('tflite')));
+    });
+
+    test(
+      'WhatsApp OTP functions invalidate stale codes and hash with context',
+      () {
+        final otpSecurity = File(
+          'supabase/functions/_shared/otp-security.ts',
+        ).readAsStringSync();
+        final sendLoginOtp = File(
+          'supabase/functions/send-login-otp/index.ts',
+        ).readAsStringSync();
+        final verifyLoginOtp = File(
+          'supabase/functions/verify-login-otp/index.ts',
+        ).readAsStringSync();
+        final sendAdminOtp = File(
+          'supabase/functions/send-otp/index.ts',
+        ).readAsStringSync();
+        final verifyAdminOtp = File(
+          'supabase/functions/verify-otp/index.ts',
+        ).readAsStringSync();
+
+        expect(otpSecurity, contains('OTP_HASH_SECRET'));
+        expect(otpSecurity, contains('context?: OtpHashContext'));
+        expect(sendLoginOtp, contains('const purpose = "app_login"'));
+        expect(
+          sendLoginOtp,
+          contains('await hashOtpCode(code, { phone, purpose })'),
+        );
+        expect(sendLoginOtp, contains('.neq("id", insertedOtp.id)'));
+        expect(sendAdminOtp, contains('const purpose = "admin_login"'));
+        expect(
+          sendAdminOtp,
+          contains('await hashOtpCode(code, { phone, purpose })'),
+        );
+        expect(sendAdminOtp, contains('.neq("id", insertedOtp.id)'));
+
+        for (final source in [verifyLoginOtp, verifyAdminOtp]) {
+          expect(source, contains('const { error: attemptError }'));
+          expect(source, contains('throw attemptError'));
+          expect(
+            source,
+            contains('await hashOtpCode(code, { phone, purpose })'),
+          );
+          expect(source, contains('const legacyCodeHash'));
+          expect(source, contains('const { error: verifyError }'));
+          expect(source, contains('.eq("phone", phone)'));
+          expect(source, contains('.eq("purpose", purpose)'));
+        }
+
+        expect(verifyLoginOtp, contains('momo_number: momoNumber'));
+        expect(verifyLoginOtp, contains('momo_pay_code: momoPayCode'));
+      },
+    );
 
     test(
       'shared unavailable response documents the approved product scope',

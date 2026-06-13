@@ -8,11 +8,13 @@ class MobiTopCommandBarAction {
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
+  final bool showDot;
 
   const MobiTopCommandBarAction({
     required this.icon,
     required this.label,
     this.onTap,
+    this.showDot = false,
   });
 }
 
@@ -21,6 +23,7 @@ class MobiTopCommandBar extends StatelessWidget {
   final VoidCallback? onSearchTap;
   final Widget? avatar;
   final bool showNotificationDot;
+  final bool showSearch;
   final List<MobiTopCommandBarAction> actions;
 
   const MobiTopCommandBar({
@@ -29,6 +32,7 @@ class MobiTopCommandBar extends StatelessWidget {
     this.onSearchTap,
     this.avatar,
     this.showNotificationDot = false,
+    this.showSearch = true,
     this.actions = const [
       MobiTopCommandBarAction(icon: LucideIcons.barChart3, label: 'Activity'),
       MobiTopCommandBarAction(icon: LucideIcons.creditCard, label: 'Account'),
@@ -84,58 +88,62 @@ class MobiTopCommandBar extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: Semantics(
-            button: true,
-            label: searchHint,
-            child: Material(
-              color: Colors.black.withValues(alpha: ext.blackChromeAlpha),
-              borderRadius: BorderRadius.circular(999),
-              child: InkWell(
-                onTap: onSearchTap,
+        if (showSearch) ...[
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Semantics(
+              button: true,
+              label: searchHint,
+              child: Material(
+                color: Colors.black.withValues(alpha: ext.blackChromeAlpha),
                 borderRadius: BorderRadius.circular(999),
-                splashColor: Colors.white.withValues(
-                  alpha: ext.pressedWhiteAlpha,
-                ),
-                child: Container(
-                  height: 52,
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(
-                      color: Colors.white.withValues(
-                        alpha: ext.surfacePanelBorderAlpha,
-                      ),
-                    ),
+                child: InkWell(
+                  onTap: onSearchTap,
+                  borderRadius: BorderRadius.circular(999),
+                  splashColor: Colors.white.withValues(
+                    alpha: ext.pressedWhiteAlpha,
                   ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        LucideIcons.search,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Flexible(
-                        child: Text(
-                          searchHint,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTypography.bodyLg.copyWith(
-                            color: Colors.white.withValues(alpha: 0.9),
-                            fontWeight: FontWeight.w500,
-                          ),
+                  child: Container(
+                    height: 52,
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: Colors.white.withValues(
+                          alpha: ext.surfacePanelBorderAlpha,
                         ),
                       ),
-                    ],
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          LucideIcons.search,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Flexible(
+                          child: Text(
+                            searchHint,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.bodyLg.copyWith(
+                              color: Colors.white.withValues(alpha: 0.9),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: AppSpacing.sm),
+        ],
+        if (showSearch || visibleActions.isNotEmpty)
+          const SizedBox(width: AppSpacing.sm),
+        if (!showSearch && visibleActions.isNotEmpty) const Spacer(),
         for (final action in visibleActions) ...[
           _CommandCircle(action: action),
           if (action != visibleActions.last) const SizedBox(width: 8),
@@ -154,33 +162,56 @@ class _CommandCircle extends StatelessWidget {
   Widget build(BuildContext context) {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
+    final cs = Theme.of(context).colorScheme;
+
     return Semantics(
       button: true,
       label: action.label,
       child: Tooltip(
         message: action.label,
-        child: SizedBox.square(
-          dimension: 52,
-          child: Material(
-            color: Colors.black.withValues(alpha: ext.blackChromeAlpha),
-            shape: CircleBorder(
-              side: BorderSide(
-                color: Colors.white.withValues(
-                  alpha: ext.surfacePanelBorderAlpha,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            SizedBox.square(
+              dimension: 52,
+              child: Material(
+                color: Colors.black.withValues(alpha: ext.blackChromeAlpha),
+                shape: CircleBorder(
+                  side: BorderSide(
+                    color: Colors.white.withValues(
+                      alpha: ext.surfacePanelBorderAlpha,
+                    ),
+                  ),
+                ),
+                child: InkWell(
+                  onTap: action.onTap,
+                  customBorder: const CircleBorder(),
+                  splashColor: Colors.white.withValues(
+                    alpha: ext.pressedWhiteAlpha,
+                  ),
+                  child: Center(
+                    child: Icon(action.icon, color: Colors.white, size: 23),
+                  ),
                 ),
               ),
             ),
-            child: InkWell(
-              onTap: action.onTap,
-              customBorder: const CircleBorder(),
-              splashColor: Colors.white.withValues(
-                alpha: ext.pressedWhiteAlpha,
+            if (action.showDot)
+              Positioned(
+                right: 2,
+                top: 0,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: cs.error,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: ext.backgroundGradientTop.withValues(alpha: 0.7),
+                      width: 2,
+                    ),
+                  ),
+                  child: const SizedBox.square(dimension: 11),
+                ),
               ),
-              child: Center(
-                child: Icon(action.icon, color: Colors.white, size: 23),
-              ),
-            ),
-          ),
+          ],
         ),
       ),
     );

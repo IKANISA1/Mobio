@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_enums.dart';
 import 'package:mobi_app/core/services/otp_service.dart';
+import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class WhatsAppLoginResult extends OtpResult {
@@ -40,19 +41,30 @@ class WhatsAppLoginService {
 
   Future<WhatsAppLoginResult> sendLoginOtp({
     required String phone,
+    required String countryCode,
     required AppRole role,
   }) async {
+    final normalizedPhone = normalizePhoneForCountry(
+      phone: phone,
+      countryCode: countryCode,
+    );
+
     try {
       final response = await _dio.post(
         '/send-login-otp',
-        data: {'phone': phone, 'role': _loginRoleValue(role)},
+        data: {
+          'phone': normalizedPhone,
+          'countryCode': countryCode,
+          'role': _loginRoleValue(role),
+        },
       );
       final body = _asBody(response.data);
 
       if (body['success'] == true) {
-        return const WhatsAppLoginResult(
+        return WhatsAppLoginResult(
           success: true,
-          message: 'OTP sent to your WhatsApp',
+          message: body['message'] as String? ?? 'OTP sent to your WhatsApp',
+          retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'),
         );
       }
 
@@ -82,11 +94,16 @@ class WhatsAppLoginService {
     required AppRole role,
     required String countryCode,
   }) async {
+    final normalizedPhone = normalizePhoneForCountry(
+      phone: phone,
+      countryCode: countryCode,
+    );
+
     try {
       final response = await _dio.post(
         '/verify-login-otp',
         data: {
-          'phone': phone,
+          'phone': normalizedPhone,
           'code': code,
           'role': _loginRoleValue(role),
           'countryCode': countryCode,
@@ -146,6 +163,17 @@ class WhatsAppLoginService {
   String _loginRoleValue(AppRole role) {
     return role == AppRole.driver ? 'driver' : 'passenger';
   }
+
+  static String normalizePhoneForCountry({
+    required String phone,
+    required String countryCode,
+  }) => PhoneNumberNormalizer.normalizeForCountry(
+    phone: phone,
+    countryCode: countryCode,
+  );
+
+  static bool isValidCanonicalPhone(String phone) =>
+      PhoneNumberNormalizer.isValidCanonical(phone);
 
   static Map<String, dynamic> _asBody(Object? data) {
     if (data is Map<String, dynamic>) return data;

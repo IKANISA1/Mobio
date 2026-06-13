@@ -11,10 +11,14 @@ class Profile {
     this.displayName,
     this.phone,
     this.whatsapp,
+    this.momoNumber,
+    this.momoPayCode,
     this.role = 'passenger',
     this.countryCode,
     this.vehicleType,
     this.vehicleNumberPlate,
+    this.busAgencyName,
+    this.busPassengerCapacity,
     this.isDriver = false,
     this.avatarUrl,
     this.createdAt,
@@ -26,10 +30,14 @@ class Profile {
   final String? displayName;
   final String? phone;
   final String? whatsapp;
+  final String? momoNumber;
+  final String? momoPayCode;
   final String role;
   final String? countryCode;
   final String? vehicleType;
   final String? vehicleNumberPlate;
+  final String? busAgencyName;
+  final int? busPassengerCapacity;
   final bool isDriver;
   final String? avatarUrl;
   final String? createdAt;
@@ -45,10 +53,14 @@ class Profile {
       displayName: json['display_name'] as String?,
       phone: json['phone'] as String?,
       whatsapp: json['whatsapp'] as String?,
+      momoNumber: json['momo_number'] as String?,
+      momoPayCode: json['momo_pay_code'] as String?,
       role: json['role'] as String? ?? 'passenger',
       countryCode: json['country_code'] as String?,
       vehicleType: json['vehicle_type'] as String?,
       vehicleNumberPlate: json['vehicle_number_plate'] as String?,
+      busAgencyName: json['bus_agency_name'] as String?,
+      busPassengerCapacity: (json['bus_passenger_capacity'] as num?)?.toInt(),
       isDriver: json['is_driver'] as bool? ?? false,
       avatarUrl: json['avatar_url'] as String?,
       createdAt: json['created_at'] as String?,
@@ -63,10 +75,14 @@ class Profile {
     'display_name': displayName,
     'phone': phone,
     'whatsapp': whatsapp,
+    'momo_number': momoNumber,
+    'momo_pay_code': momoPayCode,
     'role': role,
     'country_code': countryCode,
     'vehicle_type': vehicleType,
     'vehicle_number_plate': vehicleNumberPlate,
+    'bus_agency_name': busAgencyName,
+    'bus_passenger_capacity': busPassengerCapacity,
     'is_driver': isDriver,
     'avatar_url': avatarUrl,
     'created_at': createdAt,
