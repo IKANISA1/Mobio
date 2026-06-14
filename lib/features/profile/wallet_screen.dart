@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -57,6 +58,14 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
       });
     } on Object {
       if (!mounted) return;
+      if (SupabaseConfig.isLocalUiPreview) {
+        setState(() {
+          _summary = _previewWalletSummary;
+          _ledger = _previewLedgerEntries();
+          _isLoading = false;
+        });
+        return;
+      }
       setState(() {
         _error = 'Wallet is unavailable right now.';
         _isLoading = false;
@@ -66,9 +75,14 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
 
   Future<void> _shareInvite() async {
     try {
-      final referral = await ref
-          .read(referralServiceProvider)
-          .getOrCreateCode();
+      final referral = _summary?.shareUrl?.trim().isNotEmpty == true
+          ? ReferralCode(
+              id: 'current',
+              code: _summary?.referralCode ?? '',
+              shareUrl: _summary!.shareUrl!,
+              rewardTokens: 100,
+            )
+          : await ref.read(referralServiceProvider).getOrCreateCode();
       if (!mounted) return;
       await SharePlus.instance.share(
         ShareParams(
@@ -83,10 +97,21 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
   }
 
   Future<void> _copyInvite() async {
-    final referral = await ref.read(referralServiceProvider).getOrCreateCode();
-    await Clipboard.setData(ClipboardData(text: referral.shareUrl));
-    _showSnackBar('Invite link copied.');
-    await _load();
+    try {
+      final referral = _summary?.shareUrl?.trim().isNotEmpty == true
+          ? ReferralCode(
+              id: 'current',
+              code: _summary?.referralCode ?? '',
+              shareUrl: _summary!.shareUrl!,
+              rewardTokens: 100,
+            )
+          : await ref.read(referralServiceProvider).getOrCreateCode();
+      await Clipboard.setData(ClipboardData(text: referral.shareUrl));
+      _showSnackBar('Invite link copied.');
+      await _load();
+    } on Object catch (_) {
+      _showSnackBar('Unable to copy invite link.');
+    }
   }
 
   Future<void> _showTransferSheet() async {
@@ -364,6 +389,40 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
       ),
     );
   }
+}
+
+const _previewWalletSummary = WalletSummary(
+  profileId: 'preview-profile',
+  balanceTokens: 3200,
+  rwfEquivalent: 3200,
+  lifetimeEarnedTokens: 5200,
+  lifetimeSentTokens: 1400,
+  lifetimeReceivedTokens: 900,
+  successfulReferrals: 8,
+  referralCode: '482913',
+  shareUrl: 'https://mobio.ikanisa.com/invite/482913',
+);
+
+List<TokenLedgerEntry> _previewLedgerEntries() {
+  final now = DateTime.now();
+  return [
+    TokenLedgerEntry(
+      id: 'preview-earned',
+      direction: 'credit',
+      amountTokens: 100,
+      reason: 'successful invite',
+      note: 'Referral reward',
+      createdAt: now.subtract(const Duration(hours: 3)),
+    ),
+    TokenLedgerEntry(
+      id: 'preview-sent',
+      direction: 'debit',
+      amountTokens: 50,
+      reason: 'driver plus',
+      note: 'Daily access',
+      createdAt: now.subtract(const Duration(days: 1, hours: 2)),
+    ),
+  ];
 }
 
 class _WalletBalanceCard extends StatelessWidget {
