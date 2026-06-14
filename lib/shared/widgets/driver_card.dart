@@ -5,9 +5,11 @@ import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/trip.dart';
+import 'package:mobi_app/models/vehicle_type.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
+import 'package:mobi_app/shared/widgets/vehicle_type_icon.dart';
 
 /// Discovery card for a nearby driver/passenger listing.
 /// The active product scope allows profile browsing and communication only.
@@ -29,6 +31,9 @@ class DriverCard extends StatelessWidget {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final driverId = AppConstants.getDriverId(trip.authorId);
     final vType = trip.effectiveVehicleType;
+    final vehicleTypeId = vType == VehicleType.private_
+        ? 'private'
+        : vType.name;
     final icon = getVehicleIcon(vType);
     final distanceLabel = _distanceLabel(trip.description);
 
@@ -55,7 +60,13 @@ class DriverCard extends StatelessWidget {
                         colors: [cs.primary, cs.tertiary],
                       ),
                     ),
-                    child: Icon(icon, size: 24, color: Colors.white),
+                    child: Center(
+                      child: VehicleTypeIcon.fromId(
+                        vehicleTypeId: vehicleTypeId,
+                        size: 24,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(

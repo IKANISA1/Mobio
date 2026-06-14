@@ -118,6 +118,7 @@ void main() {
         'trike': VehicleType.trike,
         'truck': VehicleType.truck,
         'private': VehicleType.private_,
+        'rentals': VehicleType.rentals,
       };
 
       for (final entry in mapping.entries) {

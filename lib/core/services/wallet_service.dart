@@ -1,0 +1,46 @@
+import 'package:mobi_app/models/wallet.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+class WalletService {
+  const WalletService({required this.supabase});
+
+  final SupabaseClient supabase;
+  static const _timeout = Duration(seconds: 15);
+
+  Future<WalletSummary> getSummary() async {
+    final response = await supabase
+        .rpc<dynamic>('rpc_get_wallet_summary')
+        .timeout(_timeout);
+    return WalletSummary.fromJson(Map<String, dynamic>.from(response as Map));
+  }
+
+  Future<List<TokenLedgerEntry>> listLedger({int limit = 50}) async {
+    final response = await supabase
+        .rpc<dynamic>('rpc_list_token_ledger', params: {'p_limit': limit})
+        .timeout(_timeout);
+    final rows = response is List ? response : const [];
+    return rows
+        .whereType<Map<Object?, Object?>>()
+        .map((row) => TokenLedgerEntry.fromJson(Map<String, dynamic>.from(row)))
+        .toList();
+  }
+
+  Future<void> transferTokens({
+    required String receiverMemberId,
+    required int amountTokens,
+    String? note,
+  }) async {
+    await supabase
+        .rpc<dynamic>(
+          'rpc_transfer_tokens',
+          params: {
+            'p_receiver_member_id': receiverMemberId,
+            'p_amount_tokens': amountTokens,
+            'p_note': note,
+            'p_idempotency_key': DateTime.now().microsecondsSinceEpoch
+                .toString(),
+          },
+        )
+        .timeout(_timeout);
+  }
+}

@@ -72,6 +72,8 @@ class ProfileService {
     String? busAgencyName,
     int? busPassengerCapacity,
     bool includeBusFields = false,
+    String? rentalVehicleModel,
+    bool includeRentalFields = false,
     String? avatarUrl,
   }) async {
     try {
@@ -88,6 +90,9 @@ class ProfileService {
       if (includeBusFields) {
         payload['bus_agency_name'] = busAgencyName;
         payload['bus_passenger_capacity'] = busPassengerCapacity;
+      }
+      if (includeRentalFields) {
+        payload['rental_vehicle_model'] = rentalVehicleModel;
       }
       if (avatarUrl != null) payload['avatar_url'] = avatarUrl;
 
@@ -110,9 +115,11 @@ class ProfileService {
     required String vehicleNumberPlate,
     String? busAgencyName,
     int? busPassengerCapacity,
+    String? rentalVehicleModel,
     required bool previousIsDriver,
   }) async {
     final isBusDriver = isDriver && vehicleTypeId == 'bus';
+    final isRentalOwner = isDriver && vehicleTypeId == 'rentals';
 
     await updateProfileViaRpc(
       whatsapp: whatsapp,
@@ -124,6 +131,8 @@ class ProfileService {
       busAgencyName: isBusDriver ? busAgencyName : null,
       busPassengerCapacity: isBusDriver ? busPassengerCapacity : null,
       includeBusFields: true,
+      rentalVehicleModel: isRentalOwner ? rentalVehicleModel : null,
+      includeRentalFields: true,
     );
 
     if (previousIsDriver != isDriver) {
@@ -133,6 +142,7 @@ class ProfileService {
           vehicleNumberPlate: vehicleNumberPlate,
           busAgencyName: isBusDriver ? busAgencyName : null,
           busPassengerCapacity: isBusDriver ? busPassengerCapacity : null,
+          rentalVehicleModel: isRentalOwner ? rentalVehicleModel : null,
         );
       } else {
         await disableDriverMode();
@@ -189,6 +199,7 @@ class ProfileService {
     String? vehicleNumberPlate,
     String? busAgencyName,
     int? busPassengerCapacity,
+    String? rentalVehicleModel,
   }) async {
     try {
       await _supabase.rpc(
@@ -198,6 +209,7 @@ class ProfileService {
           'p_vehicle_number_plate': vehicleNumberPlate,
           'p_bus_agency_name': busAgencyName,
           'p_bus_passenger_capacity': busPassengerCapacity,
+          'p_rental_vehicle_model': rentalVehicleModel,
         },
       );
     } on Object catch (e) {

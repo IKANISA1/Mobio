@@ -14,6 +14,8 @@ import 'package:mobi_app/core/services/biopay_ussd_service.dart';
 import 'package:mobi_app/core/services/chat_service.dart';
 import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
+import 'package:mobi_app/core/services/driver_location_sharing_service.dart';
+import 'package:mobi_app/core/services/driver_plus_service.dart';
 import 'package:mobi_app/core/services/favorite_address_service.dart';
 import 'package:mobi_app/core/services/firebase_analytics_service.dart';
 import 'package:mobi_app/core/services/firebase_auth_service.dart';
@@ -25,9 +27,12 @@ import 'package:mobi_app/core/services/places_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
 import 'package:mobi_app/core/services/public_transport_service.dart';
 import 'package:mobi_app/core/services/push_notification_service.dart';
+import 'package:mobi_app/core/services/referral_attribution_service.dart';
+import 'package:mobi_app/core/services/referral_service.dart';
 import 'package:mobi_app/core/services/subscription_plan_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/core/services/vehicle_type_service.dart';
+import 'package:mobi_app/core/services/wallet_service.dart';
 import 'package:mobi_app/core/services/whatsapp_login_service.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -105,6 +110,16 @@ final countryServiceProvider = Provider(
 final driverLocationServiceProvider = Provider(
   (ref) => DriverLocationService(supabase: ref.read(supabaseClientProvider)),
 );
+final driverLocationSharingServiceProvider = Provider(
+  (ref) => DriverLocationSharingService(
+    locationService: ref.read(locationServiceProvider),
+    driverLocationService: ref.read(driverLocationServiceProvider),
+    profileService: ref.read(profileServiceProvider),
+  ),
+);
+final driverPlusServiceProvider = Provider(
+  (ref) => DriverPlusService(supabase: ref.read(supabaseClientProvider)),
+);
 final firebaseAnalyticsServiceProvider = Provider(
   (ref) => FirebaseAnalyticsService.instance,
 );
@@ -117,7 +132,11 @@ final firebaseRemoteConfigServiceProvider = Provider(
 final favoriteAddressServiceProvider = Provider(
   (ref) => FavoriteAddressService(supabase: ref.read(supabaseClientProvider)),
 );
-final locationServiceProvider = Provider((ref) => LocationService());
+final locationServiceProvider = Provider(
+  (ref) => LocationService(
+    permissionService: ref.read(appPermissionServiceProvider),
+  ),
+);
 final notificationServiceProvider = Provider(
   (ref) => NotificationService(supabase: ref.read(supabaseClientProvider)),
 );
@@ -137,6 +156,14 @@ final publicTransportServiceProvider = Provider(
 final pushNotificationServiceProvider = Provider(
   (ref) => PushNotificationService.instance,
 );
+final referralServiceProvider = Provider(
+  (ref) => ReferralService(supabase: ref.read(supabaseClientProvider)),
+);
+final referralAttributionServiceProvider = Provider(
+  (ref) => ReferralAttributionService(
+    referralService: ref.read(referralServiceProvider),
+  ),
+);
 final subscriptionPlanServiceProvider = Provider(
   (ref) => SubscriptionPlanService(supabase: ref.read(supabaseClientProvider)),
 );
@@ -145,5 +172,8 @@ final tripServiceProvider = Provider(
 );
 final vehicleTypeServiceProvider = Provider(
   (ref) => VehicleTypeService(supabase: ref.read(supabaseClientProvider)),
+);
+final walletServiceProvider = Provider(
+  (ref) => WalletService(supabase: ref.read(supabaseClientProvider)),
 );
 final whatsappLoginServiceProvider = Provider((ref) => WhatsAppLoginService());

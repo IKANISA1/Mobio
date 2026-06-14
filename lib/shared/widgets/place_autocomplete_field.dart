@@ -185,10 +185,11 @@ class _PlaceAutocompleteFieldState
             return ClayCard(
               padding: const EdgeInsets.all(24),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: 56,
-                    height: 56,
+                    width: 64,
+                    height: 64,
                     decoration: BoxDecoration(
                       color: widget.iconBg,
                       shape: BoxShape.circle,
@@ -205,33 +206,48 @@ class _PlaceAutocompleteFieldState
                   ),
                   const SizedBox(width: 24),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.label,
-                          style: AppTypography.labelSm.copyWith(
-                            color: cs.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        TextField(
-                          controller: controller,
-                          focusNode: focusNode,
-                          style: AppTypography.titleLg.copyWith(
-                            color: cs.onSurface,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: widget.placeholder,
-                            hintStyle: AppTypography.titleLg.copyWith(
-                              color: cs.onSurfaceVariant.withValues(alpha: 0.3),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 72),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.label,
+                            style: AppTypography.labelSm.copyWith(
+                              color: cs.onSurfaceVariant,
                             ),
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.zero,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 8),
+                          SizedBox(
+                            height: 46,
+                            child: TextField(
+                              controller: controller,
+                              focusNode: focusNode,
+                              textAlignVertical: TextAlignVertical.center,
+                              style: AppTypography.titleLg.copyWith(
+                                color: cs.onSurface,
+                                height: 1.12,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: widget.placeholder,
+                                hintStyle: AppTypography.titleLg.copyWith(
+                                  color: cs.onSurfaceVariant.withValues(
+                                    alpha: 0.38,
+                                  ),
+                                  height: 1.12,
+                                ),
+                                border: InputBorder.none,
+                                isDense: false,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 9,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   if (widget.trailing != null && !_showClear) widget.trailing!,

@@ -201,6 +201,14 @@ class _PreviewSubscriptionPlanService implements SubscriptionPlanService {
   Future<void> delete(String id) async {}
 
   @override
+  Future<SubscriptionOperationsSnapshot> getOperationsSnapshot({
+    int limit = 25,
+  }) async => const SubscriptionOperationsSnapshot(
+    paymentRequests: [],
+    smsReceipts: [],
+  );
+
+  @override
   void invalidateCache() {}
 }
 
@@ -258,7 +266,21 @@ class _PreviewTripService implements TripService {
   Future<List<Trip>> getMyTrips() async => _trips;
 
   @override
-  Future<List<Trip>> getNearbyTrips() async => _trips;
+  Future<List<Trip>> getNearbyTrips({String? role}) async {
+    final normalizedRole = role?.trim().toLowerCase();
+    if (normalizedRole == 'driver' || normalizedRole == 'passenger') {
+      return _trips.where((trip) => trip.role == normalizedRole).toList();
+    }
+    return _trips;
+  }
+
+  @override
+  Future<List<Trip>> getCounterpartScheduledTrips(String viewerMode) async {
+    final roleToView = viewerMode.trim().toLowerCase() == 'driver'
+        ? 'passenger'
+        : 'driver';
+    return getNearbyTrips(role: roleToView);
+  }
 
   @override
   Future<List<Trip>> getPoolSuggestions(

@@ -19,7 +19,8 @@ VALUES
   ('00000000-0000-0000-0000-000000000006', 'authenticated', 'authenticated', '+250702',       now(), '{"provider":"phone","providers":["phone"]}'::jsonb, '{}'::jsonb, now(), now()),
   ('00000000-0000-0000-0000-000000000007', 'authenticated', 'authenticated', '+250703',       now(), '{"provider":"phone","providers":["phone"]}'::jsonb, '{}'::jsonb, now(), now()),
   ('00000000-0000-0000-0000-000000000008', 'authenticated', 'authenticated', '+250704',       now(), '{"provider":"phone","providers":["phone"]}'::jsonb, '{}'::jsonb, now(), now()),
-  ('00000000-0000-0000-0000-000000000009', 'authenticated', 'authenticated', '+250795588248', now(), '{"provider":"phone","providers":["phone"]}'::jsonb, '{}'::jsonb, now(), now())
+  ('00000000-0000-0000-0000-000000000009', 'authenticated', 'authenticated', '+250795588248', now(), '{"provider":"phone","providers":["phone"]}'::jsonb, '{}'::jsonb, now(), now()),
+  ('00000000-0000-0000-0000-000000000010', 'authenticated', 'authenticated', '+250705',       now(), '{"provider":"phone","providers":["phone"]}'::jsonb, '{}'::jsonb, now(), now())
 ON CONFLICT (id) DO UPDATE SET
   phone = EXCLUDED.phone,
   phone_confirmed_at = EXCLUDED.phone_confirmed_at,
@@ -30,21 +31,23 @@ ON CONFLICT (id) DO UPDATE SET
 -- 1. Seed Profiles
 -- ---------------------------------------------------------------------------
 
-INSERT INTO profiles (id, name, display_name, phone, role, location, vehicle, category, is_driver, vehicle_type, vehicle_number_plate, whatsapp, member_since, is_online)
+INSERT INTO profiles (id, name, display_name, phone, role, location, vehicle, category, is_driver, vehicle_type, vehicle_number_plate, rental_vehicle_model, whatsapp, member_since, is_online)
 VALUES
-  ('00000000-0000-0000-0000-000000000001', 'Alex Rivera',       'Alex Rivera',       '+1 234',         'passenger', 'Downtown',        NULL,                   'Premium',   false, 'cab',     NULL,       '',            2024, false),
-  ('00000000-0000-0000-0000-000000000002', 'Sarah Chen',        'Sarah Chen',        '+1 567',         'driver',    NULL,               'Mercedes-Benz E-Class','Executive', true,  'cab',     'RAB 201 C','1234567890',  2024, true),
-  ('00000000-0000-0000-0000-000000000003', 'Marcus Thorne',     'Marcus Thorne',     '+1 890',         'passenger', 'Westside',         NULL,                   'Standard',  false, 'cab',     NULL,       '1234567891',  2024, false),
-  ('00000000-0000-0000-0000-000000000004', 'Economy Trike',     'Economy Trike',     '+250 700',       'driver',    'Eastside',         'Bajay RE',             'Economy',   true,  'trike',   'RAD 518 T','1234567892',  2023, false),
-  ('00000000-0000-0000-0000-000000000005', 'Marcus Thompson',   'Marcus Thompson',   '+250 701',       'driver',    'Downtown',         'Toyota Corolla',       'Standard',  true,  'cab',     'RAC 442 M','1234567893',  2024, true),
-  ('00000000-0000-0000-0000-000000000006', 'Elena Rodriguez',   'Elena Rodriguez',   '+250 702',       'driver',    'Plaza',            'Yamaha NMAX',          'Standard',  true,  'moto',    'RMB 220 K','1234567894',  2024, true),
-  ('00000000-0000-0000-0000-000000000007', 'Private Executive', 'Private Executive', '+250 703',       'driver',    'Northside',        'Audi A8',              'Executive', true,  'private', 'RPF 990 X','1234567895',  2024, false),
-  ('00000000-0000-0000-0000-000000000008', 'Heavy Truck',       'Heavy Truck',       '+250 704',       'driver',    'Industrial Zone',  'Scania R450',          'Cargo',     true,  'truck',   'RTK 771 H','1234567896',  2024, false),
-  ('00000000-0000-0000-0000-000000000009', 'Platform Admin',    'Platform Admin',    '+250795588248',  'admin',     NULL,               NULL,                   NULL,        false, 'cab',     NULL,       '',            2024, false)
+  ('00000000-0000-0000-0000-000000000001', 'Alex Rivera',       'Alex Rivera',       '+1 234',         'passenger', 'Downtown',        NULL,                   'Premium',   false, 'cab',     NULL,        NULL,  '',            2024, false),
+  ('00000000-0000-0000-0000-000000000002', 'Sarah Chen',        'Sarah Chen',        '+1 567',         'driver',    NULL,               'Mercedes-Benz E-Class','Executive', true,  'cab',     'RAB 201 C', NULL,  '1234567890',  2024, true),
+  ('00000000-0000-0000-0000-000000000003', 'Marcus Thorne',     'Marcus Thorne',     '+1 890',         'passenger', 'Westside',         NULL,                   'Standard',  false, 'cab',     NULL,        NULL,  '1234567891',  2024, false),
+  ('00000000-0000-0000-0000-000000000004', 'Economy Trike',     'Economy Trike',     '+250 700',       'driver',    'Eastside',         'Bajay RE',             'Economy',   true,  'trike',   'RAD 518 T', NULL,  '1234567892',  2023, false),
+  ('00000000-0000-0000-0000-000000000005', 'Marcus Thompson',   'Marcus Thompson',   '+250 701',       'driver',    'Downtown',         'Toyota Corolla',       'Standard',  true,  'cab',     'RAC 442 M', NULL,  '1234567893',  2024, true),
+  ('00000000-0000-0000-0000-000000000006', 'Elena Rodriguez',   'Elena Rodriguez',   '+250 702',       'driver',    'Plaza',            'Yamaha NMAX',          'Standard',  true,  'moto',    'RMB 220 K', NULL,  '1234567894',  2024, true),
+  ('00000000-0000-0000-0000-000000000007', 'Private Executive', 'Private Executive', '+250 703',       'driver',    'Northside',        'Audi A8',              'Executive', true,  'private', 'RPF 990 X', NULL,  '1234567895',  2024, false),
+  ('00000000-0000-0000-0000-000000000008', 'Heavy Truck',       'Heavy Truck',       '+250 704',       'driver',    'Industrial Zone',  'Scania R450',          'Cargo',     true,  'truck',   'RTK 771 H', NULL,  '1234567896',  2024, false),
+  ('00000000-0000-0000-0000-000000000009', 'Platform Admin',    'Platform Admin',    '+250795588248',  'admin',     NULL,               NULL,                   NULL,        false, 'cab',     NULL,        NULL,  '',            2024, false),
+  ('00000000-0000-0000-0000-000000000010', 'Rental Owner',      'Rental Owner',      '+250 705',       'driver',    'Kacyiru',          'Toyota RAV4',          'Rental',    true,  'rentals', 'RRA 405 R', 'SUV', '1234567897',  2024, true)
 ON CONFLICT (id) DO UPDATE SET
   display_name = EXCLUDED.display_name,
   member_since = EXCLUDED.member_since,
   vehicle_number_plate = EXCLUDED.vehicle_number_plate,
+  rental_vehicle_model = EXCLUDED.rental_vehicle_model,
   is_online = EXCLUDED.is_online;
 
 -- ---------------------------------------------------------------------------
@@ -59,7 +62,8 @@ VALUES
   ('10000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000007', 'Private Executive', 'Northside',       -1.9303, 29.8539, 'Audi A8 • Black',               NULL, NULL, '2026-03-25', '11:00 AM', '2026-03-25', '11:00 AM', 'driver', '1234567895', 4, '1.5 km', true, 'approved', 'private', '2024-04-01'),
   ('10000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000008', 'Heavy Truck',       'Industrial Zone', -1.9403, 29.8739, 'Scania R450 • Blue',            NULL, NULL, '2026-03-25', '12:00 PM', '2026-03-25', '12:00 PM', 'driver', '1234567896', 2, '2.5 km', true, 'approved', 'truck',   '2024-05-15'),
   ('10000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000005', 'Marcus Thompson',   'Downtown',        -1.9403, 29.8739, 'Airport',                       NULL, NULL, '2026-03-25', 'Now',      '2026-03-25', 'Now',      'driver', '1234567893', 4, '1.2 KM', true, 'approved', 'cab',     '2024-03-01'),
-  ('10000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-000000000006', 'Elena Rodriguez',   'Plaza',           -1.9503, 29.8839, 'Station',                       NULL, NULL, '2026-03-25', 'Now',      '2026-03-25', 'Now',      'driver', '1234567894', 1, '0.8 KM', true, 'approved', 'moto',    '2024-03-10')
+  ('10000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-000000000006', 'Elena Rodriguez',   'Plaza',           -1.9503, 29.8839, 'Station',                       NULL, NULL, '2026-03-25', 'Now',      '2026-03-25', 'Now',      'driver', '1234567894', 1, '0.8 KM', true, 'approved', 'moto',    '2024-03-10'),
+  ('10000000-0000-0000-0000-000000000008', '00000000-0000-0000-0000-000000000010', 'Rental Owner',      'Kacyiru',         -1.9323, 30.0839, 'Toyota RAV4 • Rental SUV',       NULL, NULL, '2026-03-25', 'Available','2026-03-25', 'Available','driver', '1234567897', 5, '1.8 km', true, 'approved', 'rentals', '2024-06-14')
 ON CONFLICT (id) DO NOTHING;
 
 -- ---------------------------------------------------------------------------

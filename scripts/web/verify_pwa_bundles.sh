@@ -8,6 +8,7 @@ output_root="${1:-build/pwa}"
 
 python3 - <<'PY' "$output_root"
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -33,6 +34,7 @@ def read_manifest(path: Path) -> dict[str, object]:
 require(site_dir.is_dir(), f"Missing combined Pages bundle directory: {site_dir}")
 for filename in (
     "index.html",
+    ".well-known/assetlinks.json",
     "__admin_shell",
     "admin-manifest.json",
     "flutter_bootstrap.js",
@@ -46,6 +48,8 @@ for filename in (
     require((site_dir / filename).is_file(), f"Missing {site_dir / filename}")
 
 admin_manifest = read_manifest(site_dir / "admin-manifest.json")
+assetlinks = read_manifest(site_dir / ".well-known/assetlinks.json")
+aasa_path = site_dir / ".well-known/apple-app-site-association"
 
 require(admin_manifest.get("name") == "Mobio Admin", "Admin manifest name mismatch")
 require(admin_manifest.get("short_name") == "MobioAdmin", "Admin manifest short_name mismatch")
@@ -54,6 +58,31 @@ require(
     admin_manifest.get("description") == "Mobio admin progressive web app.",
     "Admin manifest description mismatch",
 )
+
+require(isinstance(assetlinks, list) and assetlinks, "Asset links must be a non-empty array")
+assetlinks_target = assetlinks[0].get("target", {})
+require(assetlinks_target.get("namespace") == "android_app", "Asset links namespace mismatch")
+require(assetlinks_target.get("package_name") == "rw.mobi.app", "Asset links package mismatch")
+require(
+    "DA:9E:5E:AB:50:D0:85:05:BF:0B:78:7C:EA:B5:DB:5B:40:77:8E:BE:77:62:95:72:16:8A:72:37:D7:79:81:C0"
+    in assetlinks_target.get("sha256_cert_fingerprints", []),
+    "Asset links fingerprint missing",
+)
+
+apple_team_id = os.environ.get("APPLE_TEAM_ID", "").strip()
+if apple_team_id:
+    aasa = read_manifest(aasa_path)
+    expected_app_id = f"{apple_team_id}.rw.mobi.app"
+    details = aasa.get("applinks", {}).get("details", [])
+    app_ids = []
+    for detail in details:
+        if "appIDs" in detail and isinstance(detail["appIDs"], list):
+            app_ids.extend(detail["appIDs"])
+        if "appID" in detail:
+            app_ids.append(detail["appID"])
+    require(expected_app_id in app_ids, "AASA appID mismatch")
+elif not aasa_path.exists():
+    print("warning: APPLE_TEAM_ID not set; skipping AASA validation", file=sys.stderr)
 
 landing_index = read_text(site_dir / "index.html")
 admin_index = read_text(site_dir / "__admin_shell")
@@ -109,6 +138,7 @@ for expected in (
     "Referrer-Policy: strict-origin-when-cross-origin",
     "Cache-Control: no-store",
     "Cache-Control: public, max-age=31536000, immutable",
+    "/.well-known/apple-app-site-association",
 ):
     require(expected in headers, f"Combined headers missing {expected}")
 

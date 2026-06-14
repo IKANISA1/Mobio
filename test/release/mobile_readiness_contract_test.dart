@@ -12,6 +12,13 @@ void main() {
     late final String editProfileScreen;
     late final String nearbyScreen;
     late final String permissionDialog;
+    late final String permissionService;
+    late final String locationService;
+    late final String driverSharingService;
+    late final String androidManifest;
+    late final String iosInfoPlist;
+    late final String iosEntitlements;
+    late final String appleAppSiteAssociation;
     late final String chatScreen;
     late final String chatModerationSheet;
     late final String adminReports;
@@ -37,6 +44,25 @@ void main() {
       ).readAsStringSync();
       permissionDialog = File(
         'lib/shared/widgets/permission_access_dialog.dart',
+      ).readAsStringSync();
+      permissionService = File(
+        'lib/core/services/app_permission_service.dart',
+      ).readAsStringSync();
+      locationService = File(
+        'lib/core/services/location_service.dart',
+      ).readAsStringSync();
+      driverSharingService = File(
+        'lib/core/services/driver_location_sharing_service.dart',
+      ).readAsStringSync();
+      androidManifest = File(
+        'android/app/src/main/AndroidManifest.xml',
+      ).readAsStringSync();
+      iosInfoPlist = File('ios/Runner/Info.plist').readAsStringSync();
+      iosEntitlements = File(
+        'ios/Runner/Runner.entitlements',
+      ).readAsStringSync();
+      appleAppSiteAssociation = File(
+        'landing/.well-known/apple-app-site-association',
       ).readAsStringSync();
       chatScreen = File(
         'lib/features/chat/chat_screen.dart',
@@ -83,6 +109,37 @@ void main() {
       expect(scheduleScreen, contains('ensureLocationAccess'));
       expect(nearbyScreen, contains('_requestLocationAndReload'));
       expect(nearbyScreen, contains('PermissionAccessDialogConfig.location'));
+      expect(permissionDialog, contains('backgroundLocation'));
+      expect(
+        permissionDialog,
+        contains('even when the app is closed or not in use'),
+      );
+      expect(permissionService, contains('ensureBackgroundLocationAccess'));
+      expect(permissionService, contains('Permission.locationAlways'));
+      expect(locationService, contains('backgroundPositionStream'));
+      expect(locationService, contains('ForegroundNotificationConfig'));
+      expect(driverSharingService, contains('DriverLocationSharingService'));
+      expect(driverSharingService, contains('setDriverOnlineStatus(false)'));
+      expect(
+        androidManifest,
+        contains('android.permission.ACCESS_BACKGROUND_LOCATION'),
+      );
+      expect(
+        androidManifest,
+        contains('android.permission.FOREGROUND_SERVICE_LOCATION'),
+      );
+      expect(iosInfoPlist, contains('<string>location</string>'));
+      expect(
+        iosInfoPlist,
+        contains('NSLocationAlwaysAndWhenInUseUsageDescription'),
+      );
+      expect(
+        iosEntitlements,
+        contains('com.apple.developer.associated-domains'),
+      );
+      expect(iosEntitlements, contains('applinks:mobio.ikanisa.com'));
+      expect(appleAppSiteAssociation, contains('63STJ5N27W.rw.mobi.app'));
+      expect(appleAppSiteAssociation, contains('/invite/*'));
       expect(profileConsent, contains('_savePromotionalPush'));
       expect(
         profileConsent,

@@ -1,0 +1,3 @@
+profile /profile
+edit_profile /edit-profile
+chat /chat?peerId=preview-driver&tripId=preview-trip

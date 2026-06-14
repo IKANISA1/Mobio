@@ -114,6 +114,13 @@
       removeElementById("splash-branding");
       document.body.style.background = "transparent";
     }
+
+    window.addEventListener("flutter-first-frame", removeSplashFromWeb);
+    window.setTimeout(function () {
+      if (document.querySelector("flutter-view, flt-glass-pane")) {
+        removeSplashFromWeb();
+      }
+    }, 1200);
   </script>
 </head>
 <body>

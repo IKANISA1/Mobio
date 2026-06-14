@@ -52,6 +52,44 @@ final scheduleTripProvider =
     >(ScheduleTripController.new);
 
 class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
+  static const PlaceDetails _previewCurrentPickup = PlaceDetails(
+    placeId: 'current-location-preview',
+    formattedAddress: 'Kigali Heights, KG 7 Ave, Kigali',
+    latitude: -1.9536,
+    longitude: 30.0935,
+  );
+  static const List<FavoriteAddress> _previewFavoriteAddresses = [
+    FavoriteAddress(
+      id: 'preview-home',
+      profileId: 'preview-profile',
+      label: 'Home',
+      addressType: 'home',
+      formattedAddress: 'Kigali Heights, KG 7 Ave, Kigali',
+      latitude: -1.9536,
+      longitude: 30.0928,
+    ),
+    FavoriteAddress(
+      id: 'preview-work',
+      profileId: 'preview-profile',
+      label: 'Work',
+      addressType: 'work',
+      formattedAddress: 'Norrsken House Kigali',
+      latitude: -1.9544,
+      longitude: 30.0922,
+      sortOrder: 1,
+    ),
+    FavoriteAddress(
+      id: 'preview-airport',
+      profileId: 'preview-profile',
+      label: 'Airport',
+      addressType: 'other',
+      formattedAddress: 'Kigali International Airport',
+      latitude: -1.9686,
+      longitude: 30.1395,
+      sortOrder: 2,
+    ),
+  ];
+
   @override
   FutureOr<ScheduleTripState> build() async {
     final args = ref.watch(scheduleTripArgsProvider);
@@ -62,12 +100,17 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
           ? ScheduleTripState(
               vehicleTypes: VehicleTypeModel.fallbackTypes,
               selectedRole: args.mode,
+              originDetails: _previewCurrentPickup,
+              userLat: _previewCurrentPickup.latitude,
+              userLng: _previewCurrentPickup.longitude,
+              favoriteAddresses: _previewFavoriteAddresses,
               date: DateTime(2030, 6, 12),
               time: const TimeOfDay(hour: 9, minute: 0),
             )
           : ScheduleTripState.fromTrip(
               editingTrip,
               vehicleTypes: VehicleTypeModel.fallbackTypes,
+              favoriteAddresses: _previewFavoriteAddresses,
             );
     }
 
@@ -95,8 +138,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
       favoriteAddresses: favorites,
     );
 
-    // Bootstrap location in background
-    unawaited(_initLocation());
+    unawaited(_prefillCurrentPickupIfEmpty());
 
     return initialState;
   }
@@ -110,7 +152,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     }
   }
 
-  Future<void> _initLocation() async {
+  Future<void> _prefillCurrentPickupIfEmpty() async {
     try {
       final hasAccess = await AppPermissionService.instance.hasLocationAccess();
       if (!hasAccess) return;
@@ -123,10 +165,28 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
       if (position != null) {
         final currentState = state.value;
         if (currentState != null) {
+          final nextState = currentState.copyWith(
+            userLat: position.latitude,
+            userLng: position.longitude,
+          );
+          state = AsyncValue.data(nextState);
+        }
+
+        final afterPositionState = state.value;
+        if (afterPositionState?.originDetails != null) return;
+
+        final details = await ref
+            .read(placesServiceProvider)
+            .reverseGeocode(position.latitude, position.longitude);
+
+        final afterReverseGeocodeState = state.value;
+        if (details != null &&
+            afterReverseGeocodeState != null &&
+            afterReverseGeocodeState.originDetails == null) {
           state = AsyncValue.data(
-            currentState.copyWith(
-              userLat: position.latitude,
-              userLng: position.longitude,
+            afterReverseGeocodeState.copyWith(
+              originDetails: details,
+              validationMessage: null,
             ),
           );
         }

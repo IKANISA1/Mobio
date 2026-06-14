@@ -23,6 +23,8 @@ IconData getVehicleIcon(VehicleType type) {
       return LucideIcons.layoutGrid;
     case VehicleType.private_:
       return LucideIcons.shield;
+    case VehicleType.rentals:
+      return LucideIcons.keyRound;
   }
 }
 
@@ -44,6 +46,8 @@ IconData getVehicleIconFromId(String id) {
     case 'private':
     case 'private_':
       return LucideIcons.shield;
+    case 'rentals':
+      return LucideIcons.keyRound;
     default:
       return LucideIcons.car;
   }
@@ -74,6 +78,7 @@ class VehicleFilterChips extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
       child: Row(
         children: vehicleTypes.map((vt) {
           final isSelected = selectedId == vt.id;

@@ -19,6 +19,7 @@ class EditProfileState {
   final String initialVehicleNumberPlate;
   final String initialBusAgencyName;
   final String initialBusPassengerCapacity;
+  final String initialRentalVehicleModel;
 
   const EditProfileState({
     this.countries = const [],
@@ -37,6 +38,7 @@ class EditProfileState {
     this.initialVehicleNumberPlate = '',
     this.initialBusAgencyName = '',
     this.initialBusPassengerCapacity = '',
+    this.initialRentalVehicleModel = '',
   });
 
   EditProfileState copyWith({
@@ -56,6 +58,7 @@ class EditProfileState {
     String? initialVehicleNumberPlate,
     String? initialBusAgencyName,
     String? initialBusPassengerCapacity,
+    String? initialRentalVehicleModel,
   }) {
     return EditProfileState(
       countries: countries ?? this.countries,
@@ -76,6 +79,8 @@ class EditProfileState {
       initialBusAgencyName: initialBusAgencyName ?? this.initialBusAgencyName,
       initialBusPassengerCapacity:
           initialBusPassengerCapacity ?? this.initialBusPassengerCapacity,
+      initialRentalVehicleModel:
+          initialRentalVehicleModel ?? this.initialRentalVehicleModel,
     );
   }
 

@@ -1,0 +1,5 @@
+bookings /bookings
+schedule /schedule
+biopay /biopay
+profile /profile
+chat /chat?peerId=preview-driver&tripId=preview-trip

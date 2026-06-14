@@ -13,11 +13,14 @@ import 'package:mobi_app/core/router/app_router.dart';
 import 'package:mobi_app/core/services/firebase_analytics_service.dart';
 import 'package:mobi_app/core/services/firebase_bootstrap_service.dart';
 import 'package:mobi_app/core/services/push_notification_service.dart';
+import 'package:mobi_app/core/services/referral_attribution_service.dart';
+import 'package:mobi_app/core/services/referral_service.dart';
 import 'package:mobi_app/core/services/supabase_session_service.dart';
 import 'package:mobi_app/core/theme/app_theme.dart';
 import 'package:mobi_app/core/theme/theme_provider.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/core/utils/web_splash_cleanup.dart';
+import 'package:mobi_app/features/biopay/biopay_nfc_foreground_listener.dart';
 import 'package:mobi_app/l10n/app_localizations.dart';
 import 'package:mobi_app/providers/app_providers.dart';
 import 'package:mobi_app/shared/widgets/connectivity_overlay.dart';
@@ -78,6 +81,13 @@ Future<void> main() async {
           anonKey: SupabaseConfig.anonKey,
         );
         await SupabaseSessionService.ensureAnonymousSession();
+        unawaited(
+          ReferralAttributionService(
+            referralService: ReferralService(
+              supabase: Supabase.instance.client,
+            ),
+          ).initialize(),
+        );
       }
 
       // Initialize push notifications (after Firebase + Supabase)
@@ -119,8 +129,12 @@ Future<void> main() async {
         ),
       );
 
-      FlutterNativeSplash.remove();
       removeWebSplashFallback();
+      try {
+        FlutterNativeSplash.remove();
+      } finally {
+        removeWebSplashFallback();
+      }
     },
     (error, stack) {
       AppLogger.error('UncaughtZoneError: $error\n$stack');
@@ -185,7 +199,9 @@ class MobiMainApp extends ConsumerWidget {
             supportedLocales: AppLocalizations.supportedLocales,
             builder: (context, child) {
               return ConnectivityOverlay(
-                child: child ?? const SizedBox.shrink(),
+                child: BioPayNfcForegroundListener(
+                  child: child ?? const SizedBox.shrink(),
+                ),
               );
             },
           ),

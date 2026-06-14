@@ -7,7 +7,7 @@ import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
-import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
+import 'package:mobi_app/shared/widgets/vehicle_type_icon.dart';
 
 class ScheduledTripCard extends StatelessWidget {
   final Trip trip;
@@ -17,7 +17,6 @@ class ScheduledTripCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final icon = getVehicleIconFromId(trip.vehicleTypeStr);
 
     return ClayCard(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -35,7 +34,13 @@ class ScheduledTripCard extends StatelessWidget {
                   colors: [cs.primary, cs.secondary],
                 ),
               ),
-              child: Icon(icon, size: 25, color: Colors.white),
+              child: Center(
+                child: VehicleTypeIcon.fromId(
+                  vehicleTypeId: trip.vehicleTypeStr,
+                  size: 25,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
           const SizedBox(width: AppSpacing.md),

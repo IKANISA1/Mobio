@@ -10,6 +10,8 @@ void main() {
         'supabase/migrations/20260612100000_bus_driver_profile_onboarding.sql';
     const driverVehicleMigrationPath =
         'supabase/migrations/20260612203130_driver_vehicle_records.sql';
+    const rentalsVehicleMigrationPath =
+        'supabase/migrations/20260614153000_rentals_vehicle_type_onboarding.sql';
     const editProfileProviderPath =
         'lib/features/profile/providers/edit_profile_provider.dart';
 
@@ -126,6 +128,34 @@ void main() {
       expect(migration, contains('public.rpc_enable_driver_mode'));
       expect(migration, contains('public.rpc_disable_driver_mode'));
       expect(migration, contains('set\n    is_active = false'));
+    });
+
+    test('adds rentals vehicle type and onboarding rental model contract', () {
+      final migration = File(rentalsVehicleMigrationPath).readAsStringSync();
+
+      expect(
+        migration,
+        contains(
+          "alter type public.vehicle_type_enum add value if not exists 'rentals'",
+        ),
+      );
+      expect(migration, contains("values ('rentals', 'Rentals'"));
+      expect(migration, contains('rental_vehicle_model text'));
+      expect(migration, contains('profiles_rental_vehicle_model_check'));
+      expect(migration, contains('vehicles_rental_vehicle_model_check'));
+      for (final model in ['SUV', 'Sedan', 'Truck', 'Van', 'Bus']) {
+        expect(migration, contains("'$model'"));
+      }
+      expect(migration, contains('p_rental_vehicle_model text default null'));
+      expect(migration, contains('RENTAL_VEHICLE_MODEL_REQUIRED'));
+      expect(
+        migration,
+        contains('Rental owners must choose SUV, Sedan, Truck, Van, or Bus.'),
+      );
+      expect(
+        migration,
+        contains("values ('rentals', false, 0, 0, 0, true, true)"),
+      );
     });
 
     test('requires a vehicle plate before saving a driver profile', () {

@@ -24,7 +24,7 @@ class TripContextCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'TRIP CONTEXT',
+            'TRIP',
             style: AppTypography.labelSm.copyWith(color: cs.onSurfaceVariant),
           ),
           const SizedBox(height: 10),

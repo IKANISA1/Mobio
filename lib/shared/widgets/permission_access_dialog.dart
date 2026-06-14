@@ -33,6 +33,16 @@ class PermissionAccessDialogConfig {
     );
   }
 
+  factory PermissionAccessDialogConfig.backgroundLocation() {
+    return const PermissionAccessDialogConfig(
+      title: 'LIVE LOCATION SHARING',
+      message:
+          'This app collects location data to enable driver live sharing even when the app is closed or not in use. Mobio uses it only while you are online as a driver.',
+      icon: LucideIcons.radio,
+      primaryButtonLabel: 'ENABLE LIVE SHARING',
+    );
+  }
+
   factory PermissionAccessDialogConfig.notifications() {
     return const PermissionAccessDialogConfig(
       title: 'NOTIFICATION ACCESS',

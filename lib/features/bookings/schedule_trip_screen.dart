@@ -48,6 +48,7 @@ class ScheduleTripScreen extends ConsumerStatefulWidget {
 class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   late final TextEditingController _noteController;
   String? _noteSyncedTripId;
+  bool _didRequestInitialPickupLocation = false;
 
   bool get _isEditMode => widget.editingTripId?.isNotEmpty == true;
 
@@ -225,6 +226,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
     EdgeInsets mediaPadding,
   ) {
     _syncNoteController(state);
+    _requestInitialPickupLocationIfNeeded(state, controller);
     final title = state.isEditMode ? 'Edit trip' : 'Schedule';
 
     return SoftGradient(
@@ -375,6 +377,29 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
 
     _noteSyncedTripId = tripId;
     _noteController.text = trip?.note ?? '';
+  }
+
+  void _requestInitialPickupLocationIfNeeded(
+    ScheduleTripState state,
+    ScheduleTripController controller,
+  ) {
+    if (_didRequestInitialPickupLocation ||
+        state.isEditMode ||
+        state.originDetails != null ||
+        state.isLoadingLocation) {
+      return;
+    }
+
+    _didRequestInitialPickupLocation = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final permissionService = ref.read(appPermissionServiceProvider);
+      final hasAccess = await permissionService.hasLocationAccess();
+      if (hasAccess) {
+        return;
+      }
+      await _handleCurrentLocation(controller);
+    });
   }
 }
 

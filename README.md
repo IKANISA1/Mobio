@@ -154,6 +154,16 @@ fare-distance basis, and dispatch-grade routing are out of context for this app.
 They must not be introduced into Mobio documentation, code, schema, release
 gates, API enablement, or store copy.
 
+## Location Permission Scope
+
+Mobio uses foreground location for nearby discovery and pickup autofill.
+Driver live sharing is a separate driver-only flow: when a driver explicitly
+turns online, the app shows a prominent live-location disclosure, requests
+background/always location, starts an OS-visible background location stream, and
+publishes fresh coordinates to `driver_locations`. The app must not use
+background location for passenger discovery, analytics, advertising, route
+history, fare distance, or hidden tracking.
+
 ### Google/Firebase Release Evidence Gates
 
 Production go/no-go uses non-secret evidence files for Google/Firebase

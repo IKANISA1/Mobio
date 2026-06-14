@@ -38,6 +38,7 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         initialVehicleNumberPlate: 'RAB 204 T',
         initialBusAgencyName: 'Volcano Express',
         initialBusPassengerCapacity: '58',
+        initialRentalVehicleModel: 'SUV',
       );
     }
 
@@ -79,6 +80,8 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
       final resolvedBusAgencyName = (profile?.busAgencyName ?? '').trim();
       final resolvedBusPassengerCapacity =
           profile?.busPassengerCapacity?.toString() ?? '';
+      final resolvedRentalVehicleModel = (profile?.rentalVehicleModel ?? '')
+          .trim();
       final resolvedIsDriver = profile?.isDriver ?? (profile?.role == 'driver');
       final whatsAppValue = profile?.whatsapp ?? profile?.phone ?? '';
       final resolvedMomoNumber =
@@ -105,6 +108,7 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         initialVehicleNumberPlate: resolvedVehicleNumberPlate,
         initialBusAgencyName: resolvedBusAgencyName,
         initialBusPassengerCapacity: resolvedBusPassengerCapacity,
+        initialRentalVehicleModel: resolvedRentalVehicleModel,
       );
     } on Object {
       return EditProfileState(
@@ -144,6 +148,7 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
     required String vehicleNumberPlate,
     required String busAgencyName,
     required String busPassengerCapacity,
+    required String rentalVehicleModel,
   }) async {
     final s = state.value;
     if (s == null) return false;
@@ -160,11 +165,15 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         .replaceAll(RegExp(r'[^0-9]'), '')
         .trim();
     final isBusDriver = s.isDriver && s.vehicleTypeId == 'bus';
+    final isRentalOwner = s.isDriver && s.vehicleTypeId == 'rentals';
     final normalizedBusAgencyName = busAgencyName
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
     final normalizedCapacityText = busPassengerCapacity.trim();
     final parsedBusCapacity = int.tryParse(normalizedCapacityText);
+    final normalizedRentalVehicleModel = _normalizeRentalVehicleModel(
+      rentalVehicleModel,
+    );
 
     if (s.isDriver && normalizedPlate.isEmpty) {
       throw const ValidationException(
@@ -185,6 +194,12 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
       );
     }
 
+    if (isRentalOwner && normalizedRentalVehicleModel == null) {
+      throw const ValidationException(
+        message: 'Select the rental vehicle model.',
+      );
+    }
+
     if (SupabaseConfig.isLocalUiPreview) return true;
 
     final profileService = ref.read(profileServiceProvider);
@@ -202,6 +217,7 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         vehicleNumberPlate: normalizedPlate,
         busAgencyName: isBusDriver ? normalizedBusAgencyName : null,
         busPassengerCapacity: isBusDriver ? parsedBusCapacity : null,
+        rentalVehicleModel: isRentalOwner ? normalizedRentalVehicleModel : null,
         previousIsDriver: s.initialIsDriver,
       );
       return true;
@@ -213,6 +229,18 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
       rethrow;
     }
   }
+}
+
+String? _normalizeRentalVehicleModel(String value) {
+  final normalized = value.replaceAll(RegExp(r'\s+'), ' ').trim();
+  if (normalized.isEmpty) return null;
+  const allowed = {'SUV', 'Sedan', 'Truck', 'Van', 'Bus'};
+  for (final option in allowed) {
+    if (option.toLowerCase() == normalized.toLowerCase()) {
+      return option;
+    }
+  }
+  return null;
 }
 
 String? _localRwandaMomoNumber(String value) {

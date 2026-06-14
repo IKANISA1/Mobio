@@ -18,6 +18,7 @@ void main() {
       'vehicle_number_plate': 'RAA 123 B',
       'bus_agency_name': 'Volcano Express',
       'bus_passenger_capacity': 58,
+      'rental_vehicle_model': 'SUV',
       'is_driver': true,
       'avatar_url': null,
       'created_at': '2024-01-15T10:00:00Z',
@@ -40,6 +41,7 @@ void main() {
       expect(profile.vehicleNumberPlate, 'RAA 123 B');
       expect(profile.busAgencyName, 'Volcano Express');
       expect(profile.busPassengerCapacity, 58);
+      expect(profile.rentalVehicleModel, 'SUV');
       expect(profile.isDriver, isTrue);
       expect(profile.avatarUrl, isNull);
       expect(profile.createdAt, '2024-01-15T10:00:00Z');
@@ -79,6 +81,7 @@ void main() {
       expect(json['vehicle_type'], 'bus');
       expect(json['bus_agency_name'], 'Volcano Express');
       expect(json['bus_passenger_capacity'], 58);
+      expect(json['rental_vehicle_model'], 'SUV');
     });
 
     test('toString provides useful debug output', () {

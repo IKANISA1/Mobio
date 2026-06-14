@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobi_app/core/theme/app_theme.dart';
 import 'package:mobi_app/features/bookings/schedule_trip_screen.dart';
@@ -33,6 +34,24 @@ void main() {
     );
 
     expect(find.text('Schedule'), findsWidgets);
+    expect(find.text('Kigali Heights, KG 7 Ave, Kigali'), findsOneWidget);
+    expect(find.text('Departure location'), findsNothing);
+    expect(find.text('Drop off location'), findsOneWidget);
+    expect(find.text('Destination location'), findsNothing);
+    expect(find.text('Home'), findsWidgets);
+    expect(find.text('Work'), findsWidgets);
+    expect(find.text('Airport'), findsWidgets);
+    final pickupField = tester.widget<TextField>(find.byType(TextField).first);
+    expect(pickupField.controller?.text, 'Kigali Heights, KG 7 Ave, Kigali');
+    expect(
+      pickupField.decoration?.contentPadding,
+      const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+    );
+    final dropOffField = tester.widget<TextField>(find.byType(TextField).at(1));
+    expect(
+      dropOffField.decoration?.contentPadding,
+      const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+    );
     expect(find.textContaining('Supabase'), findsNothing);
     expect(tester.takeException(), isNull);
   });
@@ -46,12 +65,14 @@ void main() {
         isDarkMode: true,
         onDarkModeChanged: (_) {},
         onEditProfile: () {},
+        onNfcWriteCard: () {},
         onAdminGateway: () {},
       ),
     );
 
     expect(find.text('482013'), findsOneWidget);
     expect(find.text('BioPay Face'), findsOneWidget);
+    expect(find.text('Write NFC Card'), findsOneWidget);
     expect(find.text('Enroll AWS face identity'), findsNothing);
     expect(find.text('Set up'), findsOneWidget);
     expect(find.textContaining('Supabase'), findsNothing);
@@ -80,6 +101,13 @@ void main() {
     await pumpPreview(tester, TripChatScreen(onBack: () {}));
 
     expect(find.text('Driver'), findsOneWidget);
+    expect(find.text('Private'), findsNothing);
+    expect(find.text('TRIP CONTEXT'), findsNothing);
+    expect(find.text('TRIP'), findsOneWidget);
+    expect(find.text('In-app'), findsOneWidget);
+    expect(find.text('WhatsApp'), findsOneWidget);
+    expect(find.text('Call'), findsOneWidget);
+    expect(find.byType(SvgPicture), findsOneWidget);
     expect(find.textContaining('Supabase'), findsNothing);
     expect(tester.takeException(), isNull);
   });

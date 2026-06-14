@@ -9,8 +9,6 @@ void main() {
         'supabase/functions/biopay-api/index.ts',
         'supabase/functions/create-payment-intent/index.ts',
         'supabase/functions/verify-payment-status/index.ts',
-        'supabase/functions/parse-sms/index.ts',
-        'supabase/functions/reconcile-momo-sms/index.ts',
         'supabase/functions/admin-review-transaction/index.ts',
       ]) {
         final source = File(path).readAsStringSync();
@@ -23,6 +21,40 @@ void main() {
         expect(source, isNot(contains('.from("biopay_profiles")')));
       }
     });
+
+    test(
+      'MoMo SMS functions are scoped to driver subscription reconciliation',
+      () {
+        final parseSms = File(
+          'supabase/functions/parse-sms/index.ts',
+        ).readAsStringSync();
+        final reconcileMomoSms = File(
+          'supabase/functions/reconcile-momo-sms/index.ts',
+        ).readAsStringSync();
+        final sharedParser = File(
+          'supabase/functions/_shared/momo-sms.ts',
+        ).readAsStringSync();
+        final migration = File(
+          'supabase/migrations/20260614120000_wallet_referrals_driver_plus.sql',
+        ).readAsStringSync();
+
+        for (final source in [parseSms, reconcileMomoSms]) {
+          expect(source, contains('createAdminClient'));
+          expect(source, contains('rpc_ingest_driver_subscription_momo_sms'));
+          expect(source, isNot(contains('scopeUnavailableResponse')));
+          expect(source, isNot(contains('.from("sms_raw_queue")')));
+          expect(source, isNot(contains('.from("transactions")')));
+          expect(source, isNot(contains('.from("payment_intents")')));
+        }
+
+        expect(sharedParser, contains('MOMO_SMS_BRIDGE_SECRET'));
+        expect(sharedParser, contains('OPENAI_API_KEY_REQUIRED'));
+        expect(sharedParser, contains('https://api.openai.com/v1/responses'));
+        expect(migration, contains('driver_subscription_momo_sms_receipts'));
+        expect(migration, contains('ADMIN_OR_SERVICE_ROLE_REQUIRED'));
+        expect(migration, contains('ambiguous'));
+      },
+    );
 
     test('cleanup migration removes out-of-scope legacy schema objects', () {
       final migration = File(

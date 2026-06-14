@@ -58,7 +58,13 @@ class SupabaseSessionService {
   }
 
   /// Fully drops the current session and restores the app's anonymous baseline.
-  static Future<bool> signOutToAnonymous() async {
+  static Future<bool> signOutToAnonymous({
+    Future<void> Function()? beforeSignOut,
+  }) async {
+    if (beforeSignOut != null) {
+      await beforeSignOut();
+    }
+
     try {
       await _client.auth.signOut();
     } on Object catch (error, stackTrace) {

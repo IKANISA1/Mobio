@@ -165,6 +165,8 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
         return LucideIcons.layoutGrid;
       case 'private':
         return LucideIcons.shield;
+      case 'rentals':
+        return LucideIcons.keyRound;
       case 'cab':
       default:
         return LucideIcons.car;

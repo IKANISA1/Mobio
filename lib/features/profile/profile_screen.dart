@@ -23,7 +23,11 @@ class ProfileScreen extends ConsumerStatefulWidget {
   final bool isDarkMode;
   final ValueChanged<bool> onDarkModeChanged;
   final VoidCallback onEditProfile;
+  final VoidCallback? onWallet;
+  final VoidCallback? onInviteAndEarn;
+  final VoidCallback? onMobioPlus;
   final VoidCallback? onBioPayEnroll;
+  final VoidCallback? onNfcWriteCard;
 
   final VoidCallback onAdminGateway;
   final VoidCallback? onExitAdmin;
@@ -33,7 +37,11 @@ class ProfileScreen extends ConsumerStatefulWidget {
     required this.isDarkMode,
     required this.onDarkModeChanged,
     required this.onEditProfile,
+    this.onWallet,
+    this.onInviteAndEarn,
+    this.onMobioPlus,
     this.onBioPayEnroll,
+    this.onNfcWriteCard,
 
     required this.onAdminGateway,
     this.onExitAdmin,
@@ -282,23 +290,78 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     const SizedBox(height: AppSpacing.sectionGap),
 
-                    _buildSettingsCard(
-                      context: context,
-                      icon: LucideIcons.user,
-                      label: 'Edit Profile',
-                      onTap: widget.onEditProfile,
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    MobiFeatureTile(
-                      onTap: widget.onBioPayEnroll,
-                      icon: LucideIcons.scanFace,
-                      title: 'BioPay Face',
-                      compact: true,
-                      badge: _ProfileStatusPill(
-                        label: _bioPayEnrollment.label,
-                        accent: _bioPayEnrollment.isEnrolled
-                            ? ext.aqua
-                            : cs.primary,
+                    ClayCard(
+                      padding: EdgeInsets.zero,
+                      child: Column(
+                        children: [
+                          _ProfileActionRow(
+                            onTap: widget.onEditProfile,
+                            icon: LucideIcons.user,
+                            title: 'Edit Profile',
+                          ),
+                          Divider(
+                            height: 1,
+                            thickness: 1,
+                            indent: 72,
+                            endIndent: 20,
+                            color: Colors.white.withValues(
+                              alpha: ext.cardBorderAlpha,
+                            ),
+                          ),
+                          _ProfileActionRow(
+                            onTap: widget.onWallet,
+                            icon: LucideIcons.wallet,
+                            title: 'Wallet',
+                          ),
+                          Divider(
+                            height: 1,
+                            thickness: 1,
+                            indent: 72,
+                            endIndent: 20,
+                            color: Colors.white.withValues(
+                              alpha: ext.cardBorderAlpha,
+                            ),
+                          ),
+                          _ProfileActionRow(
+                            onTap: widget.onMobioPlus,
+                            icon: LucideIcons.badgeCheck,
+                            title: 'Mobio Plus',
+                          ),
+                          Divider(
+                            height: 1,
+                            thickness: 1,
+                            indent: 72,
+                            endIndent: 20,
+                            color: Colors.white.withValues(
+                              alpha: ext.cardBorderAlpha,
+                            ),
+                          ),
+                          _ProfileActionRow(
+                            onTap: widget.onBioPayEnroll,
+                            icon: LucideIcons.scanFace,
+                            title: 'BioPay Face',
+                            badge: _ProfileStatusPill(
+                              label: _bioPayEnrollment.label,
+                              accent: _bioPayEnrollment.isEnrolled
+                                  ? ext.aqua
+                                  : cs.primary,
+                            ),
+                          ),
+                          Divider(
+                            height: 1,
+                            thickness: 1,
+                            indent: 72,
+                            endIndent: 20,
+                            color: Colors.white.withValues(
+                              alpha: ext.cardBorderAlpha,
+                            ),
+                          ),
+                          _ProfileActionRow(
+                            onTap: widget.onNfcWriteCard,
+                            icon: LucideIcons.nfc,
+                            title: 'Write NFC Card',
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
@@ -352,9 +415,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     MobiFeatureTile(
-                      onTap: _openShareApp,
+                      onTap: widget.onInviteAndEarn ?? _openShareApp,
                       icon: LucideIcons.share2,
-                      title: 'Share App',
+                      title: 'Invite and Earn',
                       compact: true,
                     ),
                     const SizedBox(height: AppSpacing.sm),
@@ -435,18 +498,73 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       ),
     );
   }
+}
 
-  Widget _buildSettingsCard({
-    required BuildContext context,
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return MobiFeatureTile(
-      onTap: onTap,
-      icon: icon,
-      title: label,
-      compact: true,
+class _ProfileActionRow extends StatelessWidget {
+  const _ProfileActionRow({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    this.badge,
+  });
+
+  final IconData icon;
+  final String title;
+  final VoidCallback? onTap;
+  final Widget? badge;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: cs.primary.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 18, color: Colors.white),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.bodySm.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              if (badge != null) ...[
+                const SizedBox(width: AppSpacing.xs),
+                badge!,
+              ],
+              if (onTap != null) ...[
+                const SizedBox(width: AppSpacing.xs),
+                Icon(
+                  LucideIcons.chevronRight,
+                  size: 16,
+                  color: cs.onSurfaceVariant,
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

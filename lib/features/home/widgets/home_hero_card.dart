@@ -18,7 +18,7 @@ class HomeHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: isDriver ? 'Nearby passengers' : 'Nearby drivers',
+      label: isDriver ? 'Passenger scheduled requests' : 'Nearby drivers',
       child: GestureDetector(
         onTap: onTap,
         child: Padding(
@@ -27,7 +27,7 @@ class HomeHeroCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                isDriver ? 'Passengers' : 'Drivers',
+                isDriver ? 'Requests' : 'Drivers',
                 textAlign: TextAlign.center,
                 style: AppTypography.displayLg.copyWith(
                   color: Colors.white,

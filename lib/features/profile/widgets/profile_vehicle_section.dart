@@ -18,6 +18,7 @@ class ProfileVehicleSection extends StatelessWidget {
     required this.plateController,
     required this.busAgencyController,
     required this.busCapacityController,
+    required this.rentalModelController,
     required this.transportAgencyNames,
   });
 
@@ -27,7 +28,16 @@ class ProfileVehicleSection extends StatelessWidget {
   final TextEditingController plateController;
   final TextEditingController busAgencyController;
   final TextEditingController busCapacityController;
+  final TextEditingController rentalModelController;
   final List<String> transportAgencyNames;
+
+  static const List<String> rentalModelOptions = [
+    'SUV',
+    'Sedan',
+    'Truck',
+    'Van',
+    'Bus',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +59,10 @@ class ProfileVehicleSection extends StatelessWidget {
         if (selectedVehicleId == 'bus') ...[
           const SizedBox(height: AppSpacing.lg),
           _buildBusDetailsCard(context, cs, ext),
+        ],
+        if (selectedVehicleId == 'rentals') ...[
+          const SizedBox(height: AppSpacing.lg),
+          _buildRentalDetailsCard(context, cs, ext),
         ],
       ],
     );
@@ -240,6 +254,77 @@ class ProfileVehicleSection extends StatelessWidget {
                 ),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRentalDetailsCard(
+    BuildContext context,
+    ColorScheme cs,
+    MobiThemeExtension ext,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: ext.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: ext.borderSubtle.withValues(alpha: ext.cardBorderAlpha),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Rental model',
+            style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          ValueListenableBuilder<TextEditingValue>(
+            valueListenable: rentalModelController,
+            builder: (context, value, _) {
+              final selected = value.text.trim();
+              return Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                children: rentalModelOptions.map((model) {
+                  final isSelected =
+                      model.toLowerCase() == selected.toLowerCase();
+                  return _TappableSelector(
+                    onTap: () => rentalModelController.text = model,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? cs.primaryContainer
+                            : ext.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: isSelected
+                              ? cs.primary.withValues(alpha: 0.45)
+                              : ext.borderSubtle.withValues(
+                                  alpha: ext.cardBorderAlpha,
+                                ),
+                        ),
+                      ),
+                      child: Text(
+                        model,
+                        style: AppTypography.labelMd.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: isSelected ? cs.primary : cs.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              );
+            },
           ),
         ],
       ),

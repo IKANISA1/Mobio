@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobi_app/core/auth/admin_session_guard.dart';
 import 'package:mobi_app/core/constants/app_enums.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/supabase_session_service.dart';
 import 'package:mobi_app/core/utils/navigation_utils.dart';
 import 'package:mobi_app/features/admin/admin_auth_screen.dart';
@@ -91,7 +92,11 @@ class ProfileScreenWrapper extends ConsumerWidget {
         isDarkMode: themeProvider.isDark,
         onDarkModeChanged: themeProvider.setDarkMode,
         onEditProfile: () => context.push('/edit-profile'),
+        onWallet: () => context.push('/wallet'),
+        onInviteAndEarn: () => context.push('/wallet'),
+        onMobioPlus: () => context.push('/mobio-plus'),
         onBioPayEnroll: () => context.push('/biopay/enroll'),
+        onNfcWriteCard: () => context.push('/biopay/nfc/write-card'),
         onAdminGateway: () => context.push('/admin-auth'),
         onExitAdmin: role.isAdmin ? handleExitAdmin : null,
       ),
@@ -102,7 +107,9 @@ class ProfileScreenWrapper extends ConsumerWidget {
 Future<void> _exitAdminSession(BuildContext context, WidgetRef ref) async {
   AdminSessionGuard.revoke();
   ref.read(roleProvider.notifier).set(AppRole.passenger);
-  await SupabaseSessionService.signOutToAnonymous();
+  await SupabaseSessionService.signOutToAnonymous(
+    beforeSignOut: () => ref.read(driverLocationSharingServiceProvider).stop(),
+  );
   if (!context.mounted) {
     return;
   }
@@ -141,6 +148,9 @@ class WhatsAppLoginScreenWrapper extends ConsumerWidget {
         ref
             .read(modeProvider.notifier)
             .set(role.isDriver ? AppMode.driver : AppMode.passenger);
+        unawaited(
+          ref.read(referralAttributionServiceProvider).completePendingSignup(),
+        );
         context.go(_safeAppRedirectTarget(redirectTo));
       },
       initialRole: ref.watch(modeProvider).isDriver

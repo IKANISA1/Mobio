@@ -78,7 +78,7 @@ class TripRouteForm extends StatelessWidget {
         PlaceAutocompleteField(
           label: 'From',
           initialValue: originDetails?.formattedAddress ?? '',
-          placeholder: 'Departure location',
+          placeholder: 'Pick up location',
           onPlaceSelected: onOriginSelected,
           userLat: userLat,
           userLng: userLng,
@@ -95,6 +95,13 @@ class TripRouteForm extends StatelessWidget {
           ),
         ),
         if (showErrors && originDetails == null) const _RequiredLabel(),
+        if (favoriteAddresses.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.sm),
+          _FavoriteAddressChips(
+            favoriteAddresses: favoriteAddresses,
+            onSelected: onFavoriteOriginSelected,
+          ),
+        ],
       ],
     );
   }
@@ -106,7 +113,7 @@ class TripRouteForm extends StatelessWidget {
         PlaceAutocompleteField(
           label: 'To',
           initialValue: destDetails?.formattedAddress ?? '',
-          placeholder: 'Destination location',
+          placeholder: 'Drop off location',
           onPlaceSelected: onDestSelected,
           userLat: userLat,
           userLng: userLng,
@@ -119,6 +126,13 @@ class TripRouteForm extends StatelessWidget {
           icon: LucideIcons.flag,
         ),
         if (showErrors && destDetails == null) const _RequiredLabel(),
+        if (favoriteAddresses.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.sm),
+          _FavoriteAddressChips(
+            favoriteAddresses: favoriteAddresses,
+            onSelected: onFavoriteDestSelected,
+          ),
+        ],
       ],
     );
   }
@@ -142,6 +156,69 @@ class TripRouteForm extends StatelessWidget {
       );
     }
     return const SizedBox.shrink();
+  }
+}
+
+class _FavoriteAddressChips extends StatelessWidget {
+  const _FavoriteAddressChips({
+    required this.favoriteAddresses,
+    required this.onSelected,
+  });
+
+  final List<FavoriteAddress> favoriteAddresses;
+  final ValueChanged<FavoriteAddress> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final addresses = favoriteAddresses
+        .where((address) => address.isActive && address.label.trim().isNotEmpty)
+        .toList(growable: false);
+    if (addresses.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          for (final address in addresses) ...[
+            ActionChip(
+              avatar: Icon(_iconFor(address.addressType), size: 16),
+              label: Text(
+                address.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              labelStyle: AppTypography.labelMd.copyWith(
+                color: cs.onSurface,
+                fontWeight: FontWeight.w700,
+              ),
+              backgroundColor: cs.surfaceContainerHighest.withValues(
+                alpha: 0.52,
+              ),
+              side: BorderSide(
+                color: cs.outlineVariant.withValues(alpha: 0.28),
+              ),
+              shape: const StadiumBorder(),
+              onPressed: () => onSelected(address),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+          ],
+        ],
+      ),
+    );
+  }
+
+  IconData _iconFor(String addressType) {
+    return switch (addressType.trim().toLowerCase()) {
+      'home' => LucideIcons.home,
+      'work' => LucideIcons.briefcase,
+      'school' => LucideIcons.graduationCap,
+      'airport' => LucideIcons.plane,
+      _ => LucideIcons.mapPin,
+    };
   }
 }
 

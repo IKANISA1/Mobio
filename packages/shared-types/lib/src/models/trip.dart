@@ -137,6 +137,8 @@ abstract class Trip with _$Trip {
         return VehicleType.truck;
       case 'private':
         return VehicleType.private_;
+      case 'rentals':
+        return VehicleType.rentals;
       case 'cab':
       default:
         return VehicleType.cab;

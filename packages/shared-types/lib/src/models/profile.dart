@@ -19,6 +19,7 @@ class Profile {
     this.vehicleNumberPlate,
     this.busAgencyName,
     this.busPassengerCapacity,
+    this.rentalVehicleModel,
     this.isDriver = false,
     this.avatarUrl,
     this.createdAt,
@@ -38,6 +39,7 @@ class Profile {
   final String? vehicleNumberPlate;
   final String? busAgencyName;
   final int? busPassengerCapacity;
+  final String? rentalVehicleModel;
   final bool isDriver;
   final String? avatarUrl;
   final String? createdAt;
@@ -61,6 +63,7 @@ class Profile {
       vehicleNumberPlate: json['vehicle_number_plate'] as String?,
       busAgencyName: json['bus_agency_name'] as String?,
       busPassengerCapacity: (json['bus_passenger_capacity'] as num?)?.toInt(),
+      rentalVehicleModel: json['rental_vehicle_model'] as String?,
       isDriver: json['is_driver'] as bool? ?? false,
       avatarUrl: json['avatar_url'] as String?,
       createdAt: json['created_at'] as String?,
@@ -83,6 +86,7 @@ class Profile {
     'vehicle_number_plate': vehicleNumberPlate,
     'bus_agency_name': busAgencyName,
     'bus_passenger_capacity': busPassengerCapacity,
+    'rental_vehicle_model': rentalVehicleModel,
     'is_driver': isDriver,
     'avatar_url': avatarUrl,
     'created_at': createdAt,

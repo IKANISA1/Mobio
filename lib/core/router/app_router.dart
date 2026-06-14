@@ -5,24 +5,50 @@ import 'package:go_router/go_router.dart';
 import 'package:mobi_app/app.dart';
 import 'package:mobi_app/core/auth/admin_session_guard.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/router/app_page_transitions.dart';
+import 'package:mobi_app/core/router/deferred_route_loader.dart';
 import 'package:mobi_app/core/services/firebase_analytics_service.dart';
 import 'package:mobi_app/core/services/push_notification_service.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/core/utils/navigation_utils.dart';
-
-import 'package:mobi_app/features/admin/admin_audit_log_screen.dart';
-import 'package:mobi_app/features/admin/admin_broadcasts_screen.dart';
+import 'package:mobi_app/features/admin/admin_audit_log_screen.dart'
+    deferred as admin_audit_log_route;
+import 'package:mobi_app/features/admin/admin_broadcasts_screen.dart'
+    deferred as admin_broadcasts_route;
 import 'package:mobi_app/features/admin/admin_dashboard_screen.dart';
-import 'package:mobi_app/features/admin/admin_operational_health_screen.dart';
-import 'package:mobi_app/features/admin/admin_reports_screen.dart';
-import 'package:mobi_app/features/admin/admin_subscriptions_screen.dart';
-import 'package:mobi_app/features/admin/admin_trips_screen.dart';
+import 'package:mobi_app/features/admin/admin_operational_health_screen.dart'
+    deferred as admin_health_route;
+import 'package:mobi_app/features/admin/admin_reports_screen.dart'
+    deferred as admin_reports_route;
+import 'package:mobi_app/features/admin/admin_subscriptions_screen.dart'
+    deferred as admin_subscriptions_route;
+import 'package:mobi_app/features/admin/admin_trips_screen.dart'
+    deferred as admin_trips_route;
 import 'package:mobi_app/features/admin/admin_users_screen.dart';
-import 'package:mobi_app/features/admin/admin_vehicle_types_screen.dart';
-import 'package:mobi_app/features/biopay/biopay_screen.dart';
-import 'package:mobi_app/features/bookings/trip_details_screen.dart';
-import 'package:mobi_app/features/chat/chat_screen.dart';
-import 'package:mobi_app/features/profile/edit_profile_screen.dart';
+import 'package:mobi_app/features/admin/admin_vehicle_types_screen.dart'
+    deferred as admin_vehicle_types_route;
+import 'package:mobi_app/features/biopay/biopay_admin_console_screen.dart'
+    deferred as biopay_admin_route;
+import 'package:mobi_app/features/biopay/biopay_face_enroll_screen.dart'
+    deferred as biopay_face_enroll_route;
+import 'package:mobi_app/features/biopay/biopay_face_scan_screen.dart'
+    deferred as biopay_face_scan_route;
+import 'package:mobi_app/features/biopay/biopay_home_screen.dart';
+import 'package:mobi_app/features/biopay/biopay_nfc_screen.dart'
+    deferred as biopay_nfc_route;
+import 'package:mobi_app/features/biopay/biopay_nfc_write_card_screen.dart'
+    deferred as biopay_nfc_write_card_route;
+import 'package:mobi_app/features/biopay/biopay_qr_screen.dart'
+    deferred as biopay_qr_route;
+import 'package:mobi_app/features/biopay/biopay_scan_screen.dart'
+    deferred as biopay_scan_route;
+import 'package:mobi_app/features/bookings/trip_details_screen.dart'
+    deferred as trip_details_route;
+import 'package:mobi_app/features/chat/chat_screen.dart' deferred as chat_route;
+import 'package:mobi_app/features/profile/driver_plus_screen.dart';
+import 'package:mobi_app/features/profile/edit_profile_screen.dart'
+    deferred as edit_profile_route;
+import 'package:mobi_app/features/profile/wallet_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Route name constants for type-safe navigation.
@@ -39,6 +65,8 @@ abstract class AppRoutes {
   static const String tripEdit = '/trip/:id/edit';
   static const String chat = '/chat';
   static const String editProfile = '/edit-profile';
+  static const String wallet = '/wallet';
+  static const String mobioPlus = '/mobio-plus';
   static const String profileSetup = '/profile/setup';
   static const String adminAuth = '/admin-auth';
   static const String adminDashboard = '/admin';
@@ -59,8 +87,17 @@ abstract class AppRoutes {
   static const String faceScan = '/biopay/face-scan';
   static const String faceEnroll = '/biopay/enroll';
   static const String nfc = '/biopay/nfc';
+  static const String nfcWriteCard = '/biopay/nfc/write-card';
 
   static const String configError = '/config-error';
+}
+
+void _safePopToProfile(BuildContext context) {
+  if (Navigator.of(context).canPop()) {
+    Navigator.of(context).pop();
+  } else {
+    context.go(AppRoutes.profile);
+  }
 }
 
 /// Admin route guard — validates role before allowing admin UI.
@@ -234,13 +271,17 @@ GoRouter createRouter() {
       GoRoute(
         path: '/config-error',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const ConfigErrorScreen(),
+        pageBuilder: (context, state) =>
+            mobiRoutePage(state, const ConfigErrorScreen()),
       ),
       GoRoute(
         path: '/login',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => WhatsAppLoginScreenWrapper(
-          redirectTo: state.uri.queryParameters['redirect'],
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          WhatsAppLoginScreenWrapper(
+            redirectTo: state.uri.queryParameters['redirect'],
+          ),
         ),
       ),
 
@@ -290,7 +331,11 @@ GoRouter createRouter() {
               ),
               GoRoute(
                 path: '/admin/biopay',
-                builder: (context, state) => const BioPayAdminConsoleScreen(),
+                builder: (context, state) => DeferredRouteLoader(
+                  loadLibrary: biopay_admin_route.loadLibrary,
+                  builder: (context) =>
+                      biopay_admin_route.BioPayAdminConsoleScreen(),
+                ),
               ),
               GoRoute(
                 path: '/admin/finance',
@@ -318,147 +363,299 @@ GoRouter createRouter() {
       GoRoute(
         path: '/nearby',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const NearbyScreenWrapper(),
+        pageBuilder: (context, state) =>
+            mobiRoutePage(state, const NearbyScreenWrapper()),
       ),
       GoRoute(
         path: '/notifications',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const NotificationsScreenWrapper(),
+        pageBuilder: (context, state) =>
+            mobiRoutePage(state, const NotificationsScreenWrapper()),
       ),
       GoRoute(
         path: '/ledger',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            ScopeUnavailableScreen(onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          ScopeUnavailableScreen(onBack: () => safePop(context)),
+        ),
       ),
       GoRoute(
         path: '/schedule',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const ScheduleTripScreenWrapper(),
+        pageBuilder: (context, state) =>
+            mobiRoutePage(state, const ScheduleTripScreenWrapper()),
       ),
       GoRoute(
         path: '/trip/:id/edit',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final tripId = state.pathParameters['id']!;
-          return EditTripScreenWrapper(
-            tripId: tripId,
-            onBack: () => safePop(context),
+          return mobiRoutePage(
+            state,
+            EditTripScreenWrapper(
+              tripId: tripId,
+              onBack: () => safePop(context),
+            ),
           );
         },
       ),
       GoRoute(
         path: '/trip/:id',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final tripId = state.pathParameters['id']!;
-          return TripDetailsScreen(
-            tripId: tripId,
-            onBack: () => safePop(context),
+          return mobiRoutePage(
+            state,
+            DeferredRouteLoader(
+              loadLibrary: trip_details_route.loadLibrary,
+              builder: (context) => trip_details_route.TripDetailsScreen(
+                tripId: tripId,
+                onBack: () => safePop(context),
+              ),
+            ),
           );
         },
       ),
       GoRoute(
         path: '/chat',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => TripChatScreen(
-          tripId: state.uri.queryParameters['tripId'],
-          peerId: state.uri.queryParameters['peerId'],
-          conversationId: state.uri.queryParameters['conversationId'],
-          onBack: () => safePop(context),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: chat_route.loadLibrary,
+            builder: (context) => chat_route.TripChatScreen(
+              tripId: state.uri.queryParameters['tripId'],
+              peerId: state.uri.queryParameters['peerId'],
+              conversationId: state.uri.queryParameters['conversationId'],
+              onBack: () => safePop(context),
+            ),
+          ),
         ),
       ),
       GoRoute(
         path: '/edit-profile',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            EditProfileScreen(onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: edit_profile_route.loadLibrary,
+            builder: (context) => edit_profile_route.EditProfileScreen(
+              onBack: () => safePop(context),
+            ),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/wallet',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          WalletScreen(onBack: () => _safePopToProfile(context)),
+        ),
+      ),
+      GoRoute(
+        path: '/mobio-plus',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DriverPlusScreen(onBack: () => _safePopToProfile(context)),
+        ),
       ),
       GoRoute(
         path: '/profile/setup',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            EditProfileScreen(isFirstRun: true, onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: edit_profile_route.loadLibrary,
+            builder: (context) => edit_profile_route.EditProfileScreen(
+              isFirstRun: true,
+              onBack: () => safePop(context),
+            ),
+          ),
+        ),
       ),
       GoRoute(
         path: '/admin-auth',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const AdminAuthScreenWrapper(),
+        pageBuilder: (context, state) =>
+            mobiRoutePage(state, const AdminAuthScreenWrapper()),
       ),
       GoRoute(
         path: '/admin/vehicle-types',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            AdminVehicleTypesScreen(onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: admin_vehicle_types_route.loadLibrary,
+            builder: (context) =>
+                admin_vehicle_types_route.AdminVehicleTypesScreen(
+                  onBack: () => safePop(context),
+                ),
+          ),
+        ),
       ),
       GoRoute(
         path: '/admin/subscriptions',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            AdminSubscriptionsScreen(onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: admin_subscriptions_route.loadLibrary,
+            builder: (context) =>
+                admin_subscriptions_route.AdminSubscriptionsScreen(
+                  onBack: () => safePop(context),
+                ),
+          ),
+        ),
       ),
       GoRoute(
         path: '/admin/trips',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            AdminTripsScreen(onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: admin_trips_route.loadLibrary,
+            builder: (context) => admin_trips_route.AdminTripsScreen(
+              onBack: () => safePop(context),
+            ),
+          ),
+        ),
       ),
       GoRoute(
         path: '/admin/reports',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            AdminReportsScreen(onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: admin_reports_route.loadLibrary,
+            builder: (context) => admin_reports_route.AdminReportsScreen(
+              onBack: () => safePop(context),
+            ),
+          ),
+        ),
       ),
       GoRoute(
         path: '/admin/health',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            AdminOperationalHealthScreen(onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: admin_health_route.loadLibrary,
+            builder: (context) =>
+                admin_health_route.AdminOperationalHealthScreen(
+                  onBack: () => safePop(context),
+                ),
+          ),
+        ),
       ),
       GoRoute(
         path: '/admin/audit',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => AdminAuditLogScreen(
-          onBack: () => safePop(context),
-          initialSearch: state.uri.queryParameters['search'],
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: admin_audit_log_route.loadLibrary,
+            builder: (context) => admin_audit_log_route.AdminAuditLogScreen(
+              onBack: () => safePop(context),
+              initialSearch: state.uri.queryParameters['search'],
+            ),
+          ),
         ),
       ),
       GoRoute(
         path: '/admin/broadcasts',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            AdminBroadcastsScreen(onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: admin_broadcasts_route.loadLibrary,
+            builder: (context) => admin_broadcasts_route.AdminBroadcastsScreen(
+              onBack: () => safePop(context),
+            ),
+          ),
+        ),
       ),
 
       GoRoute(
         path: '/biopay/qr',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            BioPayQrScreen(onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: biopay_qr_route.loadLibrary,
+            builder: (context) =>
+                biopay_qr_route.BioPayQrScreen(onBack: () => safePop(context)),
+          ),
+        ),
       ),
       GoRoute(
         path: '/biopay/scan',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            BioPayScanScreen(onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: biopay_scan_route.loadLibrary,
+            builder: (context) => biopay_scan_route.BioPayScanScreen(
+              onBack: () => safePop(context),
+            ),
+          ),
+        ),
       ),
       GoRoute(
         path: '/biopay/face-scan',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            BioPayFaceScanScreen(onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: biopay_face_scan_route.loadLibrary,
+            builder: (context) => biopay_face_scan_route.BioPayFaceScanScreen(
+              onBack: () => safePop(context),
+            ),
+          ),
+        ),
       ),
       GoRoute(
         path: '/biopay/enroll',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            BioPayFaceEnrollScreen(onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: biopay_face_enroll_route.loadLibrary,
+            builder: (context) =>
+                biopay_face_enroll_route.BioPayFaceEnrollScreen(
+                  onBack: () => safePop(context),
+                ),
+          ),
+        ),
       ),
       GoRoute(
         path: '/biopay/nfc',
         parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) =>
-            BioPayNfcScreen(onBack: () => safePop(context)),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: biopay_nfc_route.loadLibrary,
+            builder: (context) => biopay_nfc_route.BioPayNfcScreen(
+              onBack: () => safePop(context),
+            ),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/biopay/nfc/write-card',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: biopay_nfc_write_card_route.loadLibrary,
+            builder: (context) =>
+                biopay_nfc_write_card_route.BioPayNfcWriteCardScreen(
+                  onBack: () => safePop(context),
+                ),
+          ),
+        ),
       ),
     ],
   );

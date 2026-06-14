@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
@@ -9,10 +11,12 @@ import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/chat_service.dart';
+import 'package:mobi_app/core/services/driver_plus_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:mobi_app/features/chat/models/chat_conversation.dart';
 import 'package:mobi_app/features/chat/models/chat_message.dart';
 import 'package:mobi_app/features/chat/widgets/chat_composer.dart';
@@ -22,11 +26,13 @@ import 'package:mobi_app/features/chat/widgets/conversation_list.dart';
 import 'package:mobi_app/features/chat/widgets/trip_context_card.dart';
 import 'package:mobi_app/models/trip.dart';
 import 'package:mobi_app/models/vehicle_type.dart';
+import 'package:mobi_app/models/wallet.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_confirm_dialog.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TripChatScreen extends ConsumerStatefulWidget {
   const TripChatScreen({
@@ -53,6 +59,9 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
   ProfileService get _profileService => ref.read(profileServiceProvider);
 
+  DriverPlusService get _driverPlusService =>
+      ref.read(driverPlusServiceProvider);
+
   final _composerController = TextEditingController();
   final _composerFocusNode = FocusNode();
   final _scrollController = ScrollController();
@@ -67,6 +76,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   bool _isSending = false;
   bool _isPeerBlocked = false;
   bool _isModerating = false;
+  DriverPlusStatus? _tripDriverPlusStatus;
   int _lastRenderedMessageCount = 0;
   List<ChatConversation> _tripConversations = const [];
   List<ChatMessageModel> _localPreviewMessages = const [];
@@ -92,6 +102,29 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
   bool get _showConversationList =>
       _isTripAuthor && _selectedConversationId == null && widget.peerId == null;
+
+  bool get _currentUserIsLockedDriver =>
+      _tripDriverPlusStatus != null &&
+      _currentUserIsDriverParticipant &&
+      (_tripDriverPlusStatus?.upgradeRequired ?? false);
+
+  bool get _currentUserIsDriverParticipant {
+    final trip = _trip;
+    final currentUserId = _currentUserId;
+    if (trip == null || currentUserId == null) {
+      return false;
+    }
+    return (trip.role == 'driver' && trip.authorId == currentUserId) ||
+        (trip.role == 'passenger' && trip.authorId != currentUserId);
+  }
+
+  bool get _peerDriverWhatsappLocked =>
+      _trip?.role == 'driver' &&
+      _trip?.authorId != _currentUserId &&
+      !(_tripDriverPlusStatus?.canShowWhatsapp ?? true);
+
+  bool get _externalDriverContactLocked =>
+      _peerDriverWhatsappLocked || _currentUserIsLockedDriver;
 
   String? get _activePeerId {
     final conversation = _conversation;
@@ -220,6 +253,8 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       _profileCache[peerId] = const {
         'display_name': 'Driver',
         'name': 'Driver',
+        'phone': '+250700000000',
+        'whatsapp': '+250700000000',
       };
       _localPreviewMessages = [
         ChatMessageModel(
@@ -309,6 +344,10 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
             ? null
             : await _tripService.getTripById(conversation.tripId!));
     final isPeerBlocked = await _chatService.isPeerBlocked(peerId);
+    final gatedDriverId = _plusGatedDriverIdForTrip(trip, currentUserId);
+    final driverPlusStatus = gatedDriverId == null
+        ? null
+        : await _driverPlusService.getStatus(driverId: gatedDriverId);
 
     await _chatService.markConversationRead(conversation.id);
 
@@ -320,12 +359,26 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       _conversation = conversation;
       _selectedConversationId = conversation.id;
       _trip = trip;
+      _tripDriverPlusStatus = driverPlusStatus;
       _profileCache[peerId] = peerProfile;
       _isPeerBlocked = isPeerBlocked;
       _isLoading = false;
     });
 
     _composerController.clear();
+  }
+
+  String? _plusGatedDriverIdForTrip(Trip? trip, String currentUserId) {
+    if (trip == null) {
+      return null;
+    }
+    if (trip.role == 'driver') {
+      return trip.authorId;
+    }
+    if (trip.role == 'passenger' && trip.authorId != currentUserId) {
+      return currentUserId;
+    }
+    return null;
   }
 
   Future<Map<String, dynamic>?> _loadPeerProfile(String peerId) async {
@@ -347,6 +400,11 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
     if (_isPeerBlocked) {
       _showSnackBar('Messaging is unavailable for this conversation.');
+      return;
+    }
+
+    if (_currentUserIsLockedDriver) {
+      _showSnackBar('Upgrade to Mobio Plus to respond to passenger requests.');
       return;
     }
 
@@ -466,6 +524,89 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     }
 
     return _showConversationList ? 'Trip inbox' : null;
+  }
+
+  Map<String, dynamic>? get _activePeerProfile {
+    final peerId = _activePeerId;
+    return peerId == null ? null : _profileCache[peerId];
+  }
+
+  String? _contactNumber({required bool preferWhatsapp}) {
+    final profile = _activePeerProfile;
+    final whatsapp = (profile?['whatsapp'] as String?)?.trim() ?? '';
+    final phone = (profile?['phone'] as String?)?.trim() ?? '';
+    final tripWhatsapp = _trip?.whatsapp.trim() ?? '';
+    final raw = preferWhatsapp
+        ? (whatsapp.isNotEmpty
+              ? whatsapp
+              : phone.isNotEmpty
+              ? phone
+              : tripWhatsapp)
+        : (phone.isNotEmpty
+              ? phone
+              : whatsapp.isNotEmpty
+              ? whatsapp
+              : tripWhatsapp);
+    if (raw.isEmpty) return null;
+    final normalized = PhoneNumberNormalizer.normalizeForCountry(
+      phone: raw,
+      countryCode: '+250',
+    );
+    return PhoneNumberNormalizer.isValidCanonical(normalized)
+        ? normalized
+        : null;
+  }
+
+  String _externalMessageDraft() {
+    final trip = _trip;
+    if (trip == null) return 'Hi, I am contacting you from Mobio.';
+    return 'Hi, I am contacting you from Mobio about ${trip.origin} to ${trip.destination}.';
+  }
+
+  void _focusInAppChat() {
+    _composerFocusNode.requestFocus();
+  }
+
+  Future<void> _openWhatsappChat() async {
+    if (_externalDriverContactLocked) {
+      _showSnackBar('WhatsApp is available with Mobio Plus.');
+      return;
+    }
+
+    final phone = _contactNumber(preferWhatsapp: true);
+    if (phone == null) {
+      _showSnackBar('No WhatsApp number is available for this driver.');
+      return;
+    }
+
+    final uri = Uri.https('wa.me', '/${phone.replaceAll(RegExp(r'\D'), '')}', {
+      'text': _externalMessageDraft(),
+    });
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched) {
+      _showSnackBar('Unable to open WhatsApp right now.');
+    }
+  }
+
+  Future<void> _openPhoneCall() async {
+    if (_externalDriverContactLocked) {
+      _showSnackBar('External contact is available with Mobio Plus.');
+      return;
+    }
+
+    final phone = _contactNumber(preferWhatsapp: false);
+    if (phone == null) {
+      _showSnackBar('No phone number is available for this driver.');
+      return;
+    }
+
+    final launched = await launchUrl(
+      Uri(scheme: 'tel', path: phone),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!launched) {
+      _showSnackBar('Unable to open the phone dialer right now.');
+    }
   }
 
   String _timeLabel(DateTime? dateTime) {
@@ -595,26 +736,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: cs.primaryContainer,
-            borderRadius: BorderRadius.circular(999),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(LucideIcons.shieldCheck, size: 14, color: cs.primary),
-              const SizedBox(width: 6),
-              Text(
-                'Private',
-                style: AppTypography.labelSm.copyWith(color: cs.primary),
-              ),
-            ],
-          ),
-        ),
         if (canModerate) ...[
-          const SizedBox(width: 8),
           PopupMenuButton<String>(
             tooltip: 'Conversation options',
             enabled: !_isModerating,
@@ -744,20 +866,178 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
         ),
         if (_isPeerBlocked)
           const _ChatBlockedNotice()
-        else
+        else if (_currentUserIsLockedDriver)
+          _ChatBlockedNotice(
+            icon: LucideIcons.badgeCheck,
+            message:
+                'Upgrade to Mobio Plus to read passenger messages and respond.',
+            actionLabel: 'Upgrade',
+            onAction: () => context.push('/mobio-plus'),
+          )
+        else ...[
+          _ChatContactActions(
+            onInAppChat: _focusInAppChat,
+            onWhatsapp: _openWhatsappChat,
+            onCall: _openPhoneCall,
+            whatsappEnabled:
+                !_externalDriverContactLocked &&
+                _contactNumber(preferWhatsapp: true) != null,
+            callEnabled:
+                !_externalDriverContactLocked &&
+                _contactNumber(preferWhatsapp: false) != null,
+          ),
           ChatComposer(
             controller: _composerController,
             focusNode: _composerFocusNode,
             isSending: _isSending,
             onSendMessage: _sendMessage,
           ),
+        ],
       ],
     );
   }
 }
 
+class _ChatContactActions extends StatelessWidget {
+  const _ChatContactActions({
+    required this.onInAppChat,
+    required this.onWhatsapp,
+    required this.onCall,
+    required this.whatsappEnabled,
+    required this.callEnabled,
+  });
+
+  final VoidCallback onInAppChat;
+  final VoidCallback onWhatsapp;
+  final VoidCallback onCall;
+  final bool whatsappEnabled;
+  final bool callEnabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: _ChatContactAction(
+              icon: LucideIcons.messageCircle,
+              label: 'In-app',
+              onTap: onInAppChat,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _ChatContactAction(
+              svgAsset: 'assets/icons/whatsapp.svg',
+              label: 'WhatsApp',
+              onTap: whatsappEnabled ? onWhatsapp : null,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _ChatContactAction(
+              icon: LucideIcons.phoneCall,
+              label: 'Call',
+              onTap: callEnabled ? onCall : null,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChatContactAction extends StatelessWidget {
+  const _ChatContactAction({
+    this.icon,
+    this.svgAsset,
+    required this.label,
+    required this.onTap,
+  }) : assert(icon != null || svgAsset != null);
+
+  final IconData? icon;
+  final String? svgAsset;
+  final String label;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final enabled = onTap != null;
+    return Semantics(
+      button: true,
+      enabled: enabled,
+      label: label,
+      child: Tooltip(
+        message: label,
+        child: Opacity(
+          opacity: enabled ? 1 : 0.48,
+          child: Material(
+            color: ext.surfaceContainerLowest.withValues(alpha: 0.88),
+            borderRadius: BorderRadius.circular(999),
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(999),
+              child: Container(
+                height: 44,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: ext.cardBorderAlpha),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (svgAsset != null)
+                      SvgPicture.asset(
+                        svgAsset!,
+                        width: 18,
+                        height: 18,
+                        semanticsLabel: label,
+                      )
+                    else
+                      Icon(icon, size: 17, color: cs.primary),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.labelMd.copyWith(
+                          color: cs.onSurface,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _ChatBlockedNotice extends StatelessWidget {
-  const _ChatBlockedNotice();
+  const _ChatBlockedNotice({
+    this.icon = LucideIcons.ban,
+    this.message =
+        'Messaging is unavailable because one of you has blocked the other.',
+    this.actionLabel,
+    this.onAction,
+  });
+
+  final IconData icon;
+  final String message;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
@@ -770,14 +1050,18 @@ class _ChatBlockedNotice extends StatelessWidget {
           padding: const EdgeInsets.all(18),
           child: Row(
             children: [
-              Icon(LucideIcons.ban, color: cs.error),
+              Icon(icon, color: cs.error),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Messaging is unavailable because one of you has blocked the other.',
+                  message,
                   style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
                 ),
               ),
+              if (actionLabel != null && onAction != null) ...[
+                const SizedBox(width: 12),
+                TextButton(onPressed: onAction, child: Text(actionLabel!)),
+              ],
             ],
           ),
         ),

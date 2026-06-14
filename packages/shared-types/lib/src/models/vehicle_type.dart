@@ -4,7 +4,8 @@ enum VehicleType {
   bus,
   trike,
   truck,
-  private_;
+  private_,
+  rentals;
 
   /// Converts a string value (from DB/JSON) to VehicleType enum.
   static VehicleType fromString(String value) {
@@ -22,6 +23,8 @@ enum VehicleType {
       case 'private':
       case 'private_':
         return VehicleType.private_;
+      case 'rentals':
+        return VehicleType.rentals;
       default:
         return VehicleType.cab;
     }
@@ -41,6 +44,8 @@ enum VehicleType {
         return 'Truck';
       case VehicleType.private_:
         return 'Private';
+      case VehicleType.rentals:
+        return 'Rentals';
     }
   }
 
@@ -58,6 +63,8 @@ enum VehicleType {
         return 'TRUCK';
       case VehicleType.private_:
         return 'PRIVATE';
+      case VehicleType.rentals:
+        return 'RENTALS';
     }
   }
 }

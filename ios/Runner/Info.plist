@@ -27,9 +27,11 @@
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
 		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-		<string>Mobio uses your location to show nearby drivers and passengers and prepare Google Maps handoff.</string>
+		<string>Mobio uses background location only when a driver turns on live sharing, so nearby passengers can see the driver while the app is closed or not in use.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>Mobio uses background location only when a driver turns on live sharing, so nearby passengers can see the driver while the app is closed or not in use.</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>Mobio uses your location to show nearby drivers and passengers and prepare Google Maps handoff.</string>
+		<string>Mobio uses your location while the app is open to show nearby drivers and passengers and prepare Google Maps handoff.</string>
 		<key>NSCameraUsageDescription</key>
 		<string>Mobio uses the camera for BioPay QR scanning and AWS-backed face enrollment or identity check.</string>
 		<key>NFCReaderUsageDescription</key>
@@ -59,6 +61,7 @@
 		<true/>
 		<key>UIBackgroundModes</key>
 		<array>
+			<string>location</string>
 			<string>remote-notification</string>
 		</array>
 		<key>UILaunchStoryboardName</key>

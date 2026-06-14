@@ -8,6 +8,7 @@ import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
+import 'package:mobi_app/core/services/location_service.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
 import 'package:mobi_app/core/services/trip_service.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
@@ -26,6 +27,7 @@ import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
+import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 
@@ -54,7 +56,8 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with WidgetsBindingObserver {
   String _vehicleId = 'cab';
   bool _isLoading = true;
   bool _hasError = false;
@@ -64,10 +67,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<Trip> _nearbyPreview = [];
   List<Trip> _scheduledPreview = [];
   List<VehicleTypeModel> _vehicleTypes = [];
-  DriverLocationService get _driverLocationService =>
-      ref.read(driverLocationServiceProvider);
 
   TripService get _tripService => ref.read(tripServiceProvider);
+
+  LocationService get _locationService => ref.read(locationServiceProvider);
+
+  DriverLocationService get _driverLocationService =>
+      ref.read(driverLocationServiceProvider);
 
   NotificationService get _notificationService =>
       ref.read(notificationServiceProvider);
@@ -77,11 +83,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     if (SupabaseConfig.isLocalUiPreview) {
       _loadLocalPreviewData();
       return;
     }
 
+    _isDriverOnline = ref.read(driverLocationSharingServiceProvider).isSharing;
     _loadVehicleTypes();
     _loadData();
     _loadUnreadCount();
@@ -92,6 +100,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void didUpdateWidget(covariant HomeScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.mode != widget.mode) {
+      if (oldWidget.mode == 'driver' && widget.mode != 'driver') {
+        unawaited(_disableDriverSharing());
+      }
       if (SupabaseConfig.isLocalUiPreview) {
         _loadLocalPreviewData();
       } else {
@@ -102,10 +113,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _notifSub?.cancel();
     // Do NOT dispose _notificationService — it is a shared singleton
     // managed by MobiShell via Riverpod.
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached) {
+      unawaited(_disableDriverSharing(showMessage: false));
+    }
   }
 
   /// Listens for realtime notifications and updates the unread badge.
@@ -146,23 +165,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       _hasError = false;
     });
     try {
-      final nearbyFuture = _tripService.getNearbyTrips();
+      final isDriver = widget.mode == 'driver';
       final myTripsFuture = _tripService.getMyTrips();
+      final scheduledFuture = _tripService.getCounterpartScheduledTrips(
+        widget.mode,
+      );
+      final onlineDriversFuture = isDriver
+          ? Future<List<Trip>>.value(const [])
+          : _loadOnlineDriverTrips();
 
-      final nearby = await nearbyFuture;
       final myTrips = await myTripsFuture;
+      final scheduled = await scheduledFuture;
+      final onlineDrivers = await onlineDriversFuture;
 
-      // Get scheduled trips (active/upcoming)
-      final scheduled = myTrips
+      final ownScheduled = myTrips
           .where((t) => t.status == 'active' || t.status == null)
           .take(3)
           .toList();
+      final nearby = isDriver ? scheduled : onlineDrivers;
+      final scheduledPreview = isDriver
+          ? ownScheduled
+          : scheduled.take(3).toList();
 
       if (mounted) {
         setState(() {
           _nearbyCount = nearby.length;
           _nearbyPreview = nearby.take(3).toList();
-          _scheduledPreview = scheduled;
+          _scheduledPreview = scheduledPreview;
           _isLoading = false;
         });
       }
@@ -177,6 +206,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         });
       }
     }
+  }
+
+  Future<List<Trip>> _loadOnlineDriverTrips() async {
+    final hasAccess = await ref
+        .read(appPermissionServiceProvider)
+        .hasLocationAccess();
+    if (!hasAccess) {
+      return const [];
+    }
+
+    final position =
+        await _locationService.getLastKnownOrCached() ??
+        await _locationService.getCurrentPosition();
+    if (position == null) {
+      return const [];
+    }
+
+    final drivers = await _driverLocationService.findNearbyDrivers(
+      latitude: position.latitude,
+      longitude: position.longitude,
+      vehicleType: _vehicleId == 'all' ? null : _vehicleId,
+      limit: 20,
+    );
+
+    return drivers.map(_tripForNearbyDriver).toList(growable: false);
+  }
+
+  Trip _tripForNearbyDriver(NearbyDriver driver) {
+    return Trip(
+      authorId: driver.driverId,
+      authorName: driver.memberId,
+      origin: 'Nearby',
+      destination: '',
+      departureDate: '',
+      departureTime: '',
+      role: 'driver',
+      vehicleTypeStr: driver.vehicleTypeId,
+      originLat: driver.latitude,
+      originLng: driver.longitude,
+      description: '${driver.distanceKm.toStringAsFixed(1)} km away',
+      status: 'active',
+    );
   }
 
   Future<void> _loadVehicleTypes() async {
@@ -200,13 +271,77 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  void _toggleDriverOnline(bool value) {
-    setState(() => _isDriverOnline = value);
+  Future<void> _toggleDriverOnline(bool value) async {
     if (SupabaseConfig.isLocalUiPreview) {
+      setState(() => _isDriverOnline = value);
       return;
     }
 
-    _driverLocationService.setDriverOnlineStatus(value);
+    if (!value) {
+      await _disableDriverSharing();
+      return;
+    }
+
+    final action = await PermissionAccessDialog.show(
+      context,
+      config: PermissionAccessDialogConfig.backgroundLocation(),
+    );
+    if (!mounted || action != PermissionAccessDialogAction.grantAccess) {
+      return;
+    }
+
+    final granted = await ref
+        .read(appPermissionServiceProvider)
+        .ensureBackgroundLocationAccess();
+    if (!mounted) {
+      return;
+    }
+    if (!granted) {
+      _showSnackBar('Live location sharing was not enabled.', isError: true);
+      setState(() => _isDriverOnline = false);
+      return;
+    }
+
+    final started = await ref
+        .read(driverLocationSharingServiceProvider)
+        .start();
+    if (!mounted) {
+      return;
+    }
+    setState(() => _isDriverOnline = started);
+    if (!started) {
+      _showSnackBar(
+        'A fresh location is required to go online.',
+        isError: true,
+      );
+      return;
+    }
+    _showSnackBar('Live driver location sharing is on.');
+  }
+
+  Future<void> _disableDriverSharing({bool showMessage = true}) async {
+    if (SupabaseConfig.isLocalUiPreview) {
+      if (mounted) setState(() => _isDriverOnline = false);
+      return;
+    }
+
+    await ref.read(driverLocationSharingServiceProvider).stop();
+    if (mounted) {
+      setState(() => _isDriverOnline = false);
+      if (showMessage) {
+        _showSnackBar('Live driver location sharing is off.');
+      }
+    }
+  }
+
+  void _showSnackBar(String message, {bool isError = false}) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Theme.of(context).colorScheme.error : null,
+      ),
+    );
   }
 
   void _loadLocalPreviewData() {
@@ -221,7 +356,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         .toList();
     final scheduled = trips
         .where(
-          (trip) => isDriver ? trip.role == 'driver' : trip.role == 'passenger',
+          (trip) => isDriver ? trip.role == 'driver' : trip.role == 'driver',
         )
         .where((trip) => trip.status == 'active' || trip.status == 'approved')
         .take(3)
@@ -257,6 +392,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final cs = Theme.of(context).colorScheme;
     final mediaPadding = MediaQuery.paddingOf(context);
     final isDriver = widget.mode == 'driver';
+    final discoverAction = isDriver
+        ? (widget.onViewBookings ?? widget.onViewNearby)
+        : widget.onViewNearby;
 
     return SoftGradient(
       child: SafeArea(
@@ -285,7 +423,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         isDriver: isDriver,
                         unreadCount: _unreadCount,
                         isDriverOnline: _isDriverOnline,
-                        onDriverOnlineToggle: _toggleDriverOnline,
+                        onDriverOnlineToggle: (value) =>
+                            unawaited(_toggleDriverOnline(value)),
                         onNotifications: widget.onNotifications,
                       ),
                       const SizedBox(height: AppSpacing.lg),
@@ -314,7 +453,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       HomeHeroCard(
                             isDriver: isDriver,
                             nearbyCount: _nearbyCount,
-                            onTap: widget.onViewNearby,
+                            onTap: discoverAction,
                           )
                           .animate(delay: 100.ms)
                           .fade()
@@ -328,10 +467,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: MobiActionRow(
                     items: [
                       MobiActionItem(
-                        icon: LucideIcons.mapPin,
-                        label: 'Nearby',
+                        icon: isDriver
+                            ? LucideIcons.calendarSearch
+                            : LucideIcons.mapPin,
+                        label: isDriver ? 'Requests' : 'Nearby',
                         accent: Theme.of(context).colorScheme.primary,
-                        onTap: widget.onViewNearby,
+                        onTap: discoverAction,
                       ),
                       MobiActionItem(
                         icon: LucideIcons.calendarCheck,
@@ -372,11 +513,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     horizontal: AppSpacing.screenPadding,
                   ),
                   child: MobiSectionHeader(
-                    title: 'Nearby',
-                    caption: _nearbyCount > 0 ? '$_nearbyCount live' : 'Live',
-                    icon: LucideIcons.mapPin,
+                    title: isDriver ? 'Passenger requests' : 'Nearby',
+                    caption: _nearbyCount > 0
+                        ? isDriver
+                              ? '$_nearbyCount scheduled'
+                              : '$_nearbyCount live'
+                        : isDriver
+                        ? 'Scheduled'
+                        : 'Live',
+                    icon: isDriver
+                        ? LucideIcons.calendarSearch
+                        : LucideIcons.mapPin,
                     actionLabel: 'All',
-                    onAction: widget.onViewNearby,
+                    onAction: discoverAction,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -420,9 +569,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         )
                       : AiEmptyState(
                           title: isDriver
-                              ? 'No passengers nearby'
+                              ? 'No passenger scheduled trips'
                               : 'No drivers nearby',
-                          icon: LucideIcons.mapPin,
+                          icon: isDriver
+                              ? LucideIcons.calendarSearch
+                              : LucideIcons.mapPin,
                           height: 200,
                         ),
                 ),

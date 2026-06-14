@@ -12,6 +12,7 @@ import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/models/trip.dart';
+import 'package:mobi_app/models/vehicle_type.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
@@ -21,7 +22,7 @@ import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
-import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
+import 'package:mobi_app/shared/widgets/vehicle_type_icon.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Bookings screen with live data from TripService.
@@ -59,6 +60,14 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
     _loadTrips();
   }
 
+  @override
+  void didUpdateWidget(covariant BookingsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.mode != widget.mode) {
+      _loadTrips();
+    }
+  }
+
   Future<void> _loadTrips() async {
     setState(() {
       _isLoading = true;
@@ -68,15 +77,17 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
 
     if (SupabaseConfig.isLocalUiPreview) {
       final trips = AppConstants.mockTrips;
+      final myRole = widget.mode == 'driver' ? 'driver' : 'passenger';
+      final nearbyRole = widget.mode == 'driver' ? 'passenger' : 'driver';
       if (mounted) {
         setState(() {
           _myTrips = trips
-              .where((trip) => trip.role == 'passenger')
+              .where((trip) => trip.role == myRole)
               .take(3)
               .map((trip) => trip.copyWith(status: 'active'))
               .toList();
           _nearbyTrips = trips
-              .where((trip) => trip.role == 'driver')
+              .where((trip) => trip.role == nearbyRole)
               .take(4)
               .map((trip) => trip.copyWith(status: 'active'))
               .toList();
@@ -106,7 +117,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       final tripService = ref.read(tripServiceProvider);
       final results = await Future.wait([
         tripService.getMyTrips(),
-        tripService.getNearbyTrips(),
+        tripService.getCounterpartScheduledTrips(widget.mode),
       ]);
 
       if (mounted) {
@@ -208,17 +219,6 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                               color: Colors.white,
                               fontSize: 42,
                               height: 1.05,
-                            ),
-                          ),
-                          const SizedBox(height: AppSpacing.xs),
-                          Text(
-                            _currentTrips.isEmpty
-                                ? 'Plan, track, and manage rides'
-                                : '${_currentTrips.length} active records',
-                            textAlign: TextAlign.center,
-                            style: AppTypography.bodyLg.copyWith(
-                              color: Colors.white.withValues(alpha: 0.76),
-                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           const SizedBox(height: AppSpacing.lg),
@@ -404,6 +404,9 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         ? trip.departureTime
         : trip.time;
     final vType = trip.effectiveVehicleType;
+    final vehicleTypeId = vType == VehicleType.private_
+        ? 'private'
+        : vType.name;
     final nearbyLabel = trip.authorId.length >= 6
         ? trip.authorId.substring(0, 6).toUpperCase()
         : AppConstants.getDriverId(trip.authorId);
@@ -443,10 +446,12 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                         ],
                       ),
                     ),
-                    child: Icon(
-                      getVehicleIcon(vType),
-                      size: 26,
-                      color: Colors.white,
+                    child: Center(
+                      child: VehicleTypeIcon.fromId(
+                        vehicleTypeId: vehicleTypeId,
+                        size: 26,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),

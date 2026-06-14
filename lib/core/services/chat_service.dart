@@ -197,22 +197,19 @@ class ChatService {
 
   Future<List<ChatMessageModel>> getRecentMessages(
     String conversationId, {
-    int limit = 12,
+    int limit = 100,
   }) async {
     try {
       final rows = await _supabase
-          .from('chat_messages')
-          .select()
-          .eq('conversation_id', conversationId)
-          .order('created_at', ascending: false)
-          .limit(limit)
+          .rpc<dynamic>(
+            'rpc_list_chat_messages',
+            params: {'p_conversation_id': conversationId, 'p_limit': limit},
+          )
           .timeout(_queryTimeout);
 
       return (rows as List<dynamic>)
           .whereType<Map<String, dynamic>>()
           .map(ChatMessageModel.fromJson)
-          .toList()
-          .reversed
           .toList();
     } on AppException {
       rethrow;
@@ -226,14 +223,12 @@ class ChatService {
   }
 
   Stream<List<ChatMessageModel>> streamMessages(String conversationId) {
-    return _supabase
-        .from('chat_messages')
-        .stream(primaryKey: ['id'])
-        .eq('conversation_id', conversationId)
-        .order('created_at', ascending: true)
-        .map(
-          (rows) => rows.map(ChatMessageModel.fromJson).toList(growable: false),
-        );
+    return (() async* {
+      yield await getRecentMessages(conversationId);
+      await for (final _ in Stream<void>.periodic(const Duration(seconds: 3))) {
+        yield await getRecentMessages(conversationId);
+      }
+    })();
   }
 
   /// Minimum interval between message sends (prevents spam / double-tap).
@@ -244,7 +239,7 @@ class ChatService {
     required String conversationId,
     required String body,
   }) async {
-    final userId = _requireUserId();
+    _requireUserId();
     final trimmed = body.trim();
     if (trimmed.isEmpty) {
       return;
@@ -261,13 +256,10 @@ class ChatService {
 
     try {
       await _supabase
-          .from('chat_messages')
-          .insert({
-            'conversation_id': conversationId,
-            'sender_id': userId,
-            'message_type': 'text',
-            'body': trimmed,
-          })
+          .rpc<dynamic>(
+            'rpc_send_chat_message',
+            params: {'p_conversation_id': conversationId, 'p_body': trimmed},
+          )
           .timeout(_queryTimeout);
     } on AppException {
       _lastSendTime = previousSendTime;

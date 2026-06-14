@@ -10,12 +10,14 @@ void main() {
       'Truck',
       'Trike',
       'Others',
+      'Rentals',
     ]);
   });
 
   test('ordered normalizes remote vehicle type rows to canonical order', () {
     final unordered = [
       const VehicleTypeModel(id: 'private', label: 'Others', sortOrder: 1),
+      const VehicleTypeModel(id: 'rentals', label: 'Rentals', sortOrder: 1),
       const VehicleTypeModel(id: 'truck', label: 'Truck', sortOrder: 2),
       const VehicleTypeModel(id: 'trike', label: 'Trike', sortOrder: 3),
       const VehicleTypeModel(id: 'bus', label: 'Bus', sortOrder: 4),
@@ -30,6 +32,7 @@ void main() {
       'Truck',
       'Trike',
       'Others',
+      'Rentals',
     ]);
   });
 }

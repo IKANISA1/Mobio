@@ -1,0 +1,83 @@
+      mIsInterruptive=true
+      effectiveNotificationChannel=NotificationChannel{mId='silent_notifications_6', mName=Silent notifications, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=null, mLights=false, mLightColor=0, mVibration=null, mUserLockedFields=0, mFgServiceShown=true, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false}
+      mAdjustments=[]
+      shortcut=120363399636035967@g.us found valid? true
+    NotificationRecord(0x0f12a94e: pkg=com.momobio.app user=UserHandle{0} id=31045 tag=null importance=2 key=0|com.momobio.app|31045|null|10904: Notification(channel=mo_mobio_sms_bridge_active shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x62 color=0x00000000 vis=PRIVATE))
+      uid=10904 userId=0
+      opPkg=com.momobio.app
+      icon=Icon(typ=RESOURCE pkg=com.momobio.app id=0x0108007c)
+      flags=0x62
+      originalFlags=0x42
+      pri=0
+      key=0|com.momobio.app|31045|null|10904
+      seen=false
+      groupKey=0|com.momobio.app|31045|null|10904
+      notification=
+            fullscreenIntent=null
+            contentIntent=PendingIntent{adc0a6f: PendingIntentRecord{61fbd80 com.momobio.app startActivity (allowlist: 564749b:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+            deleteIntent=null
+            number=0
+            groupAlertBehavior=0
+            when=1781474892394
+            tickerText=null
+            contentView=null
+            bigContentView=null
+            headsUpContentView=null
+            color=0x00000000
+            timeout=unknown
+            extras={
+                android.title=String (Mo Mobio is active)
+                android.reduced.images=Boolean (true)
+                android.text=String (No new SMS; queued 0)
+                android.appInfo=ApplicationInfo (ApplicationInfo{bb8737c com.momobio.app})
+                android.showWhen=Boolean (false)
+            }
+      publicNotification=
+            None
+      stats=SingleNotificationStats{posttimeElapsedMs=2436513153, posttimeToFirstClickMs=-1, posttimeToDismissMs=-1, airtimeCount=0, airtimeMs=0, currentAirtimeStartElapsedMs=-1, airtimeExpandedMs=0, posttimeToFirstVisibleExpansionMs=-1, currentAirtimeExpandedStartElapsedMs=-1, requestedImportance=3, naturalImportance=2, isNoisy=true}
+      mContactAffinity=0.0
+      mRecentlyIntrusive=false
+      mPackagePriority=0
+--
+      mColorized=false
+      mAllowBubble=false
+      isBubble=false
+      mIsInterruptive=true
+      effectiveNotificationChannel=NotificationChannel{mId='mo_mobio_sms_bridge_active', mName=Mo Mobio active bridge, mDescription=hasDescription , mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibration=null, mUserLockedFields=0, mFgServiceShown=true, mVibrationEnabled=false, mShowBadge=false, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false}
+      mAdjustments=[]
+      shortcut=null found valid? false
+    NotificationRecord(0x0ea12405: pkg=com.google.android.apps.youtube.music user=UserHandle{0} id=0 tag=MUSIC_LISTENING_REVIEW::c7ac1c4e-024c-4760-852f-77b5c37ab36c importance=2 key=0|com.google.android.apps.youtube.music|0|MUSIC_LISTENING_REVIEW::c7ac1c4e-024c-4760-852f-77b5c37ab36c|10197: Notification(channel=5 shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x18 color=0xffff0033 groupKey=1518185180::SUMMARY::13187942377545082170 actions=1 vis=PRIVATE))
+      uid=10197 userId=0
+      opPkg=com.google.android.apps.youtube.music
+      icon=Icon(typ=RESOURCE pkg=com.google.android.apps.youtube.music id=0x7f08057e)
+      flags=0x18
+      originalFlags=0x18
+--
+        NotificationChannel{mId='DEFAULT_CHANNEL', mName=Progress, mDescription=, mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibration=null, mUserLockedFields=0, mFgServiceShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false}
+      AppSettings: com.verizon.mips.services (10150) importance=DEFAULT userSet=true
+        NotificationChannel{mId='WIFI_Calling', mName=WIFI_Calling, mDescription=hasDescription , mImportance=3, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibration=null, mUserLockedFields=0, mFgServiceShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=-1000, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false}
+      AppSettings: net.skyscanner.android.main (10302) importance=DEFAULT userSet=true
+      AppSettings: com.momobio.app (10904) importance=DEFAULT userSet=false
+        NotificationChannel{mId='mo_mobio_sms_bridge_active', mName=Mo Mobio active bridge, mDescription=hasDescription , mImportance=2, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibration=null, mUserLockedFields=0, mFgServiceShown=true, mVibrationEnabled=false, mShowBadge=false, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=2, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false}
+      AppSettings: com.discoveryscreen (10320) importance=DEFAULT userSet=true
+        NotificationChannel{mId='default', mName=Push Notifications, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=0, mVibration=null, mUserLockedFields=0, mFgServiceShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='null', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=-1000, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false}
+      AppSettings: com.popularapp.periodcalendar (10421) importance=DEFAULT userSet=true
+        NotificationChannel{mId='1', mName=Period starts, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=-16711936, mVibration=null, mUserLockedFields=0, mFgServiceShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.popularapp.periodcalendar.CHANNEL_GROUP_PERIOD', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false}
+        NotificationChannel{mId='32', mName=Period ends, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=-16711936, mVibration=null, mUserLockedFields=0, mFgServiceShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.popularapp.periodcalendar.CHANNEL_GROUP_PERIOD', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false}
+        NotificationChannel{mId='64', mName=Period input reminder, mDescription=, mImportance=4, mBypassDnd=false, mLockscreenVisibility=-1000, mSound=content://settings/system/notification_sound, mLights=false, mLightColor=-16711936, mVibration=null, mUserLockedFields=0, mFgServiceShown=false, mVibrationEnabled=false, mShowBadge=true, mDeleted=false, mDeletedTimeMs=-1, mGroup='com.popularapp.periodcalendar.CHANNEL_GROUP_PERIOD', mAudioAttributes=AudioAttributes: usage=USAGE_NOTIFICATION content=CONTENT_TYPE_SONIFICATION flags=0x800 tags= bundle=null, mBlockableSystem=false, mAllowBubbles=-1, mImportanceLockedDefaultApp=false, mOriginalImp=4, mParent=null, mConversationId=null, mDemoted=false, mImportantConvo=false}
+        NotificationChannelGroup{mId='com.popularapp.periodcalendar.CHANNEL_GROUP_PERIOD', mName=Period & Ovulation, mDescription=, mBlocked=false, mChannels=[], mUserLockedFields=0}
+      AppSettings: com.google.android.apps.subscriptions.red (10261) importance=DEFAULT userSet=true
+--
+      note_importance_: [0, 0, 0, 4, 0, 0]
+      numUndecorateRVs=0
+    }
+    AggregatedStats{
+      key='com.momobio.app',
+      numEnqueuedByApp=1,
+      numPostedByApp=1,
+      numUpdatedByApp=0,
+      numRemovedByApp=0,
+      numPeopleCacheHit=1,
+      numWithStaredPeople=0,
+      numWithValidPeople=0,
+      numPeopleCacheMiss=0,

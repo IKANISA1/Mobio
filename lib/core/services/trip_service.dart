@@ -22,6 +22,15 @@ class TripService {
   /// Network timeout for data-fetching operations.
   static const _networkTimeout = Duration(seconds: 15);
 
+  static const _publicTripSelect =
+      'id, author_id, author_name, origin, origin_lat, origin_lng, '
+      'destination, dest_lat, dest_lng, departure_date, departure_time, '
+      'date, time, role, seats, price, note, description, is_active, status, '
+      'vehicle_type, is_recurring, recurring_days, starts_at, '
+      'recurrence_end_date, recurrence_skip_dates, origin_place_id, '
+      'destination_place_id, client_request_id, cancelled_at, created_at, '
+      'updated_at';
+
   TripService({SupabaseClient? supabase})
     : _supabase = supabase ?? Supabase.instance.client;
 
@@ -33,6 +42,11 @@ class TripService {
       throw AuthException(message: message);
     }
     return userId;
+  }
+
+  Trip _publicTripFromJson(Map<String, dynamic> row) {
+    final safeRow = Map<String, dynamic>.from(row)..['whatsapp'] = '';
+    return Trip.fromJson(safeRow);
   }
 
   // ---------------------------------------------------------------------------
@@ -126,12 +140,12 @@ class TripService {
     try {
       final row = await _supabase
           .from('trips')
-          .select()
+          .select(_publicTripSelect)
           .eq('id', tripId)
           .maybeSingle();
 
       if (row == null) return null;
-      return Trip.fromJson(row);
+      return _publicTripFromJson(row);
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
@@ -176,22 +190,32 @@ class TripService {
     }
   }
 
-  /// Fetches active trips from *other* users (nearby/discover feed).
+  /// Fetches active scheduled trips from *other* users.
+  ///
+  /// Use [role] to enforce the product privacy split:
+  /// - passengers discover driver scheduled trips
+  /// - drivers discover passenger scheduled trips
+  ///
+  /// Passenger live availability is intentionally not modelled here.
   /// Excludes trips with departure dates in the past.
-  Future<List<Trip>> getNearbyTrips() async {
+  Future<List<Trip>> getNearbyTrips({String? role}) async {
     final userId = _currentUserId;
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final normalizedRole = role?.trim().toLowerCase();
 
     try {
       var query = _supabase
           .from('trips')
-          .select()
+          .select(_publicTripSelect)
           .or('status.eq.active,status.eq.approved')
           .eq('is_active', true)
           .or('departure_date.gte.$today,recurrence_end_date.gte.$today');
 
       if (userId != null) {
         query = query.neq('author_id', userId);
+      }
+      if (normalizedRole == 'driver' || normalizedRole == 'passenger') {
+        query = query.eq('role', normalizedRole!);
       }
 
       final rows = await query
@@ -201,7 +225,7 @@ class TripService {
           .timeout(_networkTimeout);
 
       return expandTripsForScheduleWindow(
-        rows.map<Trip>(Trip.fromJson),
+        rows.map<Trip>(_publicTripFromJson),
         DateTime.now(),
         limit: 50,
       );
@@ -214,6 +238,13 @@ class TripService {
         'Error fetching nearby trips',
       );
     }
+  }
+
+  Future<List<Trip>> getCounterpartScheduledTrips(String viewerMode) {
+    final roleToView = viewerMode.trim().toLowerCase() == 'driver'
+        ? 'passenger'
+        : 'driver';
+    return getNearbyTrips(role: roleToView);
   }
 
   /// Returns server-ranked pool or driver/passenger suggestions for a trip.
@@ -231,6 +262,7 @@ class TripService {
         json['id'] = json.remove('trip_id');
         json['status'] ??= 'active';
         json['is_active'] ??= true;
+        json['whatsapp'] = '';
         return Trip.fromJson(json);
       }).toList();
     } on AppException {

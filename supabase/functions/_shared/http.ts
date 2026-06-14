@@ -43,7 +43,7 @@ function buildCorsHeaders(
       }
       : {}),
     "Access-Control-Allow-Headers":
-      "authorization, x-client-info, apikey, content-type, x-cron-secret, x-firebase-appcheck",
+      "authorization, x-client-info, apikey, content-type, x-cron-secret, x-firebase-appcheck, x-mobi-sms-secret, x-sms-bridge-secret",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     ...extraHeaders,
   };

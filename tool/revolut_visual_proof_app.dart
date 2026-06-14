@@ -113,6 +113,7 @@ class _VisualProofHostState extends State<_VisualProofHost> {
     'biopay_face_scan',
     'biopay_face_enroll',
     'biopay_nfc',
+    'biopay_nfc_write',
     'admin_auth',
     'admin_dashboard',
     'admin_users',
@@ -295,6 +296,7 @@ Widget _screenFor(String screen) {
     'biopay_face_scan' => BioPayFaceScanScreen(onBack: () {}),
     'biopay_face_enroll' => BioPayFaceEnrollScreen(onBack: () {}),
     'biopay_nfc' => BioPayNfcScreen(onBack: () {}),
+    'biopay_nfc_write' => BioPayNfcWriteCardScreen(onBack: () {}),
     'admin_auth' ||
     'login_large_text' => AdminAuthScreen(onBack: () {}, onSuccess: () {}),
     'admin_dashboard' => const AdminDashboardScreen(),

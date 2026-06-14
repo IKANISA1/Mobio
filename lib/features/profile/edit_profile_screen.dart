@@ -11,6 +11,7 @@ import 'package:mobi_app/features/profile/models/edit_profile_state.dart';
 import 'package:mobi_app/features/profile/providers/edit_profile_provider.dart';
 import 'package:mobi_app/features/profile/widgets/profile_contact_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_driver_section.dart';
+import 'package:mobi_app/features/profile/widgets/profile_favorite_addresses_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_momo_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_notification_consent_section.dart';
 import 'package:mobi_app/features/profile/widgets/profile_subscription_section.dart';
@@ -43,6 +44,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late final TextEditingController _vehiclePlateController;
   late final TextEditingController _busAgencyController;
   late final TextEditingController _busCapacityController;
+  late final TextEditingController _rentalModelController;
   bool _didHydrateControllers = false;
 
   @override
@@ -54,6 +56,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _vehiclePlateController = TextEditingController();
     _busAgencyController = TextEditingController();
     _busCapacityController = TextEditingController();
+    _rentalModelController = TextEditingController();
   }
 
   @override
@@ -64,6 +67,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _vehiclePlateController.dispose();
     _busAgencyController.dispose();
     _busCapacityController.dispose();
+    _rentalModelController.dispose();
     super.dispose();
   }
 
@@ -86,6 +90,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         vehicleNumberPlate: _vehiclePlateController.text,
         busAgencyName: _busAgencyController.text,
         busPassengerCapacity: _busCapacityController.text,
+        rentalVehicleModel: _rentalModelController.text,
       );
       if (success) {
         _showSnackBar(
@@ -113,6 +118,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _vehiclePlateController.text = state.initialVehicleNumberPlate;
     _busAgencyController.text = state.initialBusAgencyName;
     _busCapacityController.text = state.initialBusPassengerCapacity;
+    _rentalModelController.text = state.initialRentalVehicleModel;
     _didHydrateControllers = true;
   }
 
@@ -258,6 +264,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 momoPayCodeController: _momoPayCodeController,
               ),
               const SizedBox(height: AppSpacing.xl),
+              const ProfileFavoriteAddressesSection(),
+              const SizedBox(height: AppSpacing.xl),
               const ProfileNotificationConsentSection(),
               const SizedBox(height: AppSpacing.xl),
               ProfileDriverSection(
@@ -273,6 +281,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   plateController: _vehiclePlateController,
                   busAgencyController: _busAgencyController,
                   busCapacityController: _busCapacityController,
+                  rentalModelController: _rentalModelController,
                   transportAgencyNames: state.transportAgencyNames,
                 ),
                 const SizedBox(height: AppSpacing.lg),

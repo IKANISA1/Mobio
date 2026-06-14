@@ -221,9 +221,21 @@ void main() {
       final screenWrappers = File(
         'lib/core/router/screen_wrappers.dart',
       ).readAsStringSync();
-      final biopayScreen = File(
-        'lib/features/biopay/biopay_screen.dart',
+      final biopayNfcScreen = File(
+        'lib/features/biopay/biopay_nfc_screen.dart',
       ).readAsStringSync();
+      final biopayScreen = [
+        'lib/features/biopay/biopay_screen.dart',
+        'lib/features/biopay/biopay_admin_console_screen.dart',
+        'lib/features/biopay/biopay_face_enroll_screen.dart',
+        'lib/features/biopay/biopay_face_scan_screen.dart',
+        'lib/features/biopay/biopay_flow_shared.dart',
+        'lib/features/biopay/biopay_home_screen.dart',
+        'lib/features/biopay/biopay_nfc_screen.dart',
+        'lib/features/biopay/biopay_nfc_write_card_screen.dart',
+        'lib/features/biopay/biopay_qr_screen.dart',
+        'lib/features/biopay/biopay_scan_screen.dart',
+      ].map((path) => File(path).readAsStringSync()).join('\n');
       final biopayModel = File(
         'lib/features/biopay/models/biopay_ussd_payment.dart',
       ).readAsStringSync();
@@ -338,15 +350,23 @@ void main() {
       expect(biopayFaceService, isNot(contains('google_mlkit')));
       expect(biopayFaceService, isNot(contains('tflite')));
       expect(profileScreen, contains('BioPay Face'));
+      expect(profileScreen, contains('Write NFC Card'));
       expect(profileScreen, isNot(contains('Momo')));
       expect(profileScreen, isNot(contains('Google')));
       expect(screenWrappers, contains("context.push('/biopay/enroll')"));
+      expect(
+        screenWrappers,
+        contains("context.push('/biopay/nfc/write-card')"),
+      );
+      expect(biopayNfcScreen, isNot(contains('Write NFC Card')));
       expect(biopayScreen, contains('Dial USSD'));
       expect(biopayScreen, contains('Generate QR Code'));
-      expect(biopayScreen, contains('Share QR Code'));
+      expect(biopayScreen, contains("'Save'"));
+      expect(biopayScreen, contains("'Share'"));
+      expect(biopayScreen, isNot(contains('Share QR Code')));
       expect(
         biopayScreen,
-        contains('ClipboardData(text: buildBioPayQrPayload(request))'),
+        isNot(contains('ClipboardData(text: buildBioPayQrPayload(request))')),
       );
       expect(
         File(
@@ -355,10 +375,11 @@ void main() {
         contains("expect(find.text('Dial USSD'), findsNothing)"),
       );
       expect(biopayScreen, contains('Activate NFC'));
-      expect(biopayScreen, contains('Receive with NFC'));
+      expect(biopayScreen, isNot(contains('Receive with NFC')));
       expect(biopayScreen, isNot(contains('Tap to Pay')));
       expect(biopayScreen, isNot(contains('Prepare tap tag')));
       expect(biopayScreen, contains('Start Enrollment'));
+      expect(biopayScreen, isNot(contains('AWS liveness session')));
       expect(biopayScreen, contains('Capture center'));
       expect(biopayScreen, contains('Capture turn'));
       expect(biopayScreen, contains('Finish enrollment'));
@@ -366,22 +387,22 @@ void main() {
       expect(biopayScreen, contains('turn_pose'));
       expect(biopayScreen, contains('straight_2'));
       expect(biopayScreen, contains('_FittedCameraPreview'));
-      expect(biopayScreen, contains('_BioPayFaceOvalGuide'));
-      expect(biopayScreen, contains('_PoseCueStrip'));
+      expect(biopayScreen, contains('BioPayFaceOvalGuide'));
+      expect(biopayScreen, contains('BioPayPoseCueStrip'));
       expect(
         biopayScreen,
         contains('Camera permission is required to enroll your face'),
       );
       expect(biopayScreen, isNot(contains('Amount (RWF, optional)')));
       expect(biopayScreen, contains('AMOUNT'));
-      expect(biopayScreen, contains('_BioPayReceiveAmountField'));
+      expect(biopayScreen, contains('BioPayReceiveAmountField'));
       expect(biopayScreen, contains('GroupedWholeNumberTextInputFormatter'));
       expect(biopayScreen, contains('Number'));
       expect(biopayScreen, contains('Code'));
       expect(biopayScreen, isNot(contains('MoMo number / MoMo Pay code')));
       expect(biopayScreen, isNot(contains('No QR request')));
-      expect(biopayScreen, contains('_amountMinorFromController'));
-      expect(biopayScreen, contains('_optionalAmountMinorFromController'));
+      expect(biopayScreen, contains('amountMinorFromController'));
+      expect(biopayScreen, contains('optionalAmountMinorFromController'));
       expect(biopayScreen, contains('buildBioPayQrPayload'));
       expect(biopayScreen, contains('bioPayTokenFromPayload'));
       expect(biopayScreen, contains("'type': 'mobio_biopay_request'"));

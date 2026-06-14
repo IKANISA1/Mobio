@@ -1,0 +1,204 @@
+Activity Resolver Table:
+  Non-Data Actions:
+      android.intent.action.MAIN:
+        7b25c6c com.momobio.app/.MainActivity filter 6a27235
+          Action: "android.intent.action.MAIN"
+          Category: "android.intent.category.LAUNCHER"
+
+Receiver Resolver Table:
+  Non-Data Actions:
+      androidx.profileinstaller.action.SAVE_PROFILE:
+        d0d9522 com.momobio.app/androidx.profileinstaller.ProfileInstallReceiver filter cbd90e9
+          Action: "androidx.profileinstaller.action.SAVE_PROFILE"
+      androidx.profileinstaller.action.INSTALL_PROFILE:
+        d0d9522 com.momobio.app/androidx.profileinstaller.ProfileInstallReceiver filter c850bb3
+          Action: "androidx.profileinstaller.action.INSTALL_PROFILE"
+      androidx.profileinstaller.action.SKIP_FILE:
+        d0d9522 com.momobio.app/androidx.profileinstaller.ProfileInstallReceiver filter da8b570
+          Action: "androidx.profileinstaller.action.SKIP_FILE"
+      androidx.profileinstaller.action.BENCHMARK_OPERATION:
+        d0d9522 com.momobio.app/androidx.profileinstaller.ProfileInstallReceiver filter c13e16e
+          Action: "androidx.profileinstaller.action.BENCHMARK_OPERATION"
+      android.intent.action.BOOT_COMPLETED:
+        79ed358 com.momobio.app/.BridgeBootReceiver filter 114fcb1
+          Action: "android.intent.action.BOOT_COMPLETED"
+          Action: "android.intent.action.MY_PACKAGE_REPLACED"
+        cd3b596 com.momobio.app/androidx.work.impl.background.systemalarm.RescheduleReceiver filter f7c3517
+          Action: "android.intent.action.BOOT_COMPLETED"
+      android.provider.Telephony.SMS_RECEIVED:
+        bf4f6ca com.momobio.app/.SmsReceiver filter 4bad03b
+          Action: "android.provider.Telephony.SMS_RECEIVED"
+          mPriority=900, mOrder=0, mHasStaticPartialTypes=false, mHasDynamicPartialTypes=false
+      androidx.work.diagnostics.REQUEST_DIAGNOSTICS:
+        6d9cd04 com.momobio.app/androidx.work.impl.diagnostics.DiagnosticsReceiver filter c4bb2ed
+          Action: "androidx.work.diagnostics.REQUEST_DIAGNOSTICS"
+      android.intent.action.MY_PACKAGE_REPLACED:
+        79ed358 com.momobio.app/.BridgeBootReceiver filter 114fcb1
+          Action: "android.intent.action.BOOT_COMPLETED"
+          Action: "android.intent.action.MY_PACKAGE_REPLACED"
+
+Domain verification status:
+
+Permissions:
+  Permission [com.momobio.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION] (64adad3):
+    sourcePackage=com.momobio.app
+    uid=10904 gids=[] type=0 prot=signature
+    perm=PermissionInfo{ebda610 com.momobio.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION}
+
+Registered ContentProviders:
+  com.momobio.app/androidx.startup.InitializationProvider:
+    Provider{fb8c509 com.momobio.app/androidx.startup.InitializationProvider}
+
+ContentProvider Authorities:
+  [com.momobio.app.androidx-startup]:
+    Provider{fb8c509 com.momobio.app/androidx.startup.InitializationProvider}
+      applicationInfo=ApplicationInfo{baad30e com.momobio.app}
+
+Key Set Manager:
+  [com.momobio.app]
+      Signing KeySets: 588
+
+Packages:
+  Package [com.momobio.app] (14016aa):
+    userId=10904
+    pkg=Package{ede512f com.momobio.app}
+    codePath=/data/app/~~fWacFZKeaKXOBPQTNOumbw==/com.momobio.app-Qs78UO5PlVU7bw-8tckqrA==
+    resourcePath=/data/app/~~fWacFZKeaKXOBPQTNOumbw==/com.momobio.app-Qs78UO5PlVU7bw-8tckqrA==
+    legacyNativeLibraryDir=/data/app/~~fWacFZKeaKXOBPQTNOumbw==/com.momobio.app-Qs78UO5PlVU7bw-8tckqrA==/lib
+    extractNativeLibs=false
+    primaryCpuAbi=null
+    secondaryCpuAbi=null
+    cpuAbiOverride=null
+    versionCode=1 minSdk=26 targetSdk=35
+    minExtensionVersions=[]
+    versionName=1.0.0
+    usesNonSdkApi=false
+    splits=[base]
+    apkSigningVersion=4
+    flags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    privateFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION ALLOW_AUDIO_PLAYBACK_CAPTURE PARTIALLY_DIRECT_BOOT_AWARE PRIVATE_FLAG_ALLOW_NATIVE_HEAP_POINTER_TAGGING ]
+    forceQueryable=false
+    dataDir=/data/user/0/com.momobio.app
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    timeStamp=2026-06-15 00:08:08
+    lastUpdateTime=2026-06-15 00:08:08
+    packageSource=0
+    signatures=PackageSignatures{e63a3ac version:4, signatures:[b6f23fee], past signatures:[]}
+    installPermissionsFixed=true
+    pkgFlags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    declared permissions:
+      com.momobio.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION: prot=signature, INSTALLED
+    requested permissions:
+      android.permission.INTERNET
+      android.permission.ACCESS_NETWORK_STATE
+      android.permission.FOREGROUND_SERVICE
+      android.permission.FOREGROUND_SERVICE_SPECIAL_USE
+      android.permission.POST_NOTIFICATIONS
+      android.permission.RECEIVE_BOOT_COMPLETED
+      android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+      android.permission.RECEIVE_SMS
+      android.permission.READ_SMS
+      android.permission.WAKE_LOCK
+      com.momobio.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+    install permissions:
+      com.momobio.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION: granted=true
+      android.permission.FOREGROUND_SERVICE: granted=true
+      android.permission.RECEIVE_BOOT_COMPLETED: granted=true
+      android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: granted=true
+      android.permission.INTERNET: granted=true
+      android.permission.ACCESS_NETWORK_STATE: granted=true
+      android.permission.WAKE_LOCK: granted=true
+    User 0: ceDataInode=716065 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+      installReason=0
+      firstInstallTime=2026-06-14 21:45:17
+      uninstallReason=0
+      overlay paths:
+        /product/overlay/NavigationBarModeGestural/NavigationBarModeGesturalOverlay.apk
+        /data/resource-cache/com.android.systemui-neutral-F1f7.frro
+        /data/resource-cache/com.android.systemui-accent-FKOA.frro
+      legacy overlay paths:
+        /product/overlay/NavigationBarModeGestural/NavigationBarModeGesturalOverlay.apk
+      gids=[3003]
+      runtime permissions:
+        android.permission.READ_SMS: granted=true, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED|RESTRICTION_INSTALLER_EXEMPT]
+        android.permission.POST_NOTIFICATIONS: granted=true, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+        android.permission.RECEIVE_SMS: granted=true, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED|RESTRICTION_INSTALLER_EXEMPT]
+      enabledComponents:
+        androidx.work.impl.background.systemalarm.RescheduleReceiver
+        androidx.work.impl.background.systemjob.SystemJobService
+
+Queries:
+  system apps queryable: false
+  queries via forceQueryable:
+  queries via package name:
+  queries via component:
+    com.syz.mprint:
+      com.momobio.app
+    com.whatsapp.w4b:
+      com.momobio.app
+    com.facebook.katana:
+      com.momobio.app
+    com.instagram.android:
+      com.momobio.app
+    com.google.android.settings.intelligence:
+      com.momobio.app
+    com.google.android.as:
+      com.momobio.app
+    com.google.android.apps.diagnosticstool:
+      com.momobio.app
+    com.whatsapp:
+      com.momobio.app
+    com.digicel.selfcare.mobile:
+      com.momobio.app
+    com.fcbMobileBanking:
+      com.momobio.app
+    com.peacock.flashlight:
+      com.momobio.app
+    com.united.mobile.android:
+      com.momobio.app
+    com.camerasideas.instashot:
+      com.momobio.app
+    com.ml.mobile.mymerrill:
+      com.momobio.app
+    com.xe.currency:
+      com.momobio.app
+    translate.speech.text.translation.voicetranslator:
+      com.momobio.app
+    com.airbnb.android:
+      com.momobio.app
+  queryable via interaction:
+    User 0:
+      [com.google.SSRestartDetector,com.android.server.telecom,com.android.localtransport,android,com.android.dynsystem,com.android.settings,com.android.wallpaperbackup,com.android.location.fused,com.android.providers.settings,com.android.keychain,com.android.inputdevices]:
+        com.momobio.app
+      [com.google.RilConfigService,com.android.stk,com.android.service.ims.presence,com.android.providers.telephony,com.qualcomm.qcrilmsgtunnel,com.qualcomm.qti.uceShimService,com.android.service.ims,com.android.phone,com.android.sdm.plugins.sprintdm,com.android.mms.service,com.qti.qualcomm.datastatusnotification,com.android.ons]:
+        com.momobio.app
+      com.google.android.inputmethod.latin:
+        com.momobio.app
+      com.android.systemui:
+        com.momobio.app
+      com.momobio.app:
+        [com.google.SSRestartDetector,com.android.server.telecom,com.android.localtransport,android,com.android.dynsystem,com.android.settings,com.android.wallpaperbackup,com.android.location.fused,com.android.providers.settings,com.android.keychain,com.android.inputdevices]
+  queryable via uses-library:
+
+Dexopt state:
+  [com.momobio.app]
+    path: /data/app/~~fWacFZKeaKXOBPQTNOumbw==/com.momobio.app-Qs78UO5PlVU7bw-8tckqrA==/base.apk
+      arm64: [status=run-from-apk] [reason=unknown]
+  BgDexopt state:
+    enabled:true
+    mDexOptThread:null
+    mDexOptCancellingThread:null
+    mFinishedPostBootUpdate:true
+    mLastExecutionStatus:1
+    mLastExecutionStartTimeMs:2187404543
+    mLastExecutionDurationIncludingSleepMs:43423
+    mLastExecutionStartUptimeMs:1788739406
+    mLastExecutionDurationMs:43423
+    now:2436521119
+    mLastCancelledPackages:com.linkedin.android
+    mFailedPackageNamesPrimary:
+    mFailedPackageNamesSecondary:
+
+Compiler stats:
+  [com.momobio.app]
+    (No recorded stats)

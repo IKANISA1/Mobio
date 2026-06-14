@@ -68,6 +68,7 @@ class ChatMessageBubble extends StatelessWidget {
     final alignment = isMine
         ? CrossAxisAlignment.end
         : CrossAxisAlignment.start;
+    final redacted = message.metadata['redacted'] == true;
 
     return Column(
           crossAxisAlignment: alignment,
@@ -76,7 +77,9 @@ class ChatMessageBubble extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 320),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
-                color: bubbleColor,
+                color: redacted
+                    ? cs.surfaceContainerHighest.withValues(alpha: 0.86)
+                    : bubbleColor,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(22),
                   topRight: const Radius.circular(22),
@@ -91,10 +94,27 @@ class ChatMessageBubble extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Text(
-                message.body,
-                style: AppTypography.bodyMd.copyWith(color: foreground),
-              ),
+              child: redacted
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(LucideIcons.lock, size: 16, color: cs.primary),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            message.body,
+                            style: AppTypography.bodyMd.copyWith(
+                              color: cs.onSurfaceVariant,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  : Text(
+                      message.body,
+                      style: AppTypography.bodyMd.copyWith(color: foreground),
+                    ),
             ),
             const SizedBox(height: 4),
             Padding(

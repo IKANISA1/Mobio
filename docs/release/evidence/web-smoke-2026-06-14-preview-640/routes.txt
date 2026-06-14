@@ -1,0 +1,4 @@
+root /
+bookings /bookings
+schedule /schedule
+biopay /biopay

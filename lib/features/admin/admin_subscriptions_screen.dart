@@ -43,6 +43,8 @@ class _AdminSubscriptionsScreenState
   bool _isLoading = true;
   String? _error;
   List<SubscriptionPlanModel> _plans = [];
+  List<SubscriptionPaymentRequestOpsRow> _paymentRequests = [];
+  List<MomoSmsReceiptOpsRow> _smsReceipts = [];
   List<VehicleTypeModel> _vehicleTypes = [];
   List<Country> _countries = [];
   String _countryFilter = 'all';
@@ -77,12 +79,16 @@ class _AdminSubscriptionsScreenState
         _subService.getAll(forceRefresh: true),
         _vehicleService.getAll(includeInactive: true),
         _countryService.getCountries(),
+        _subService.getOperationsSnapshot(),
       ]);
       if (mounted) {
+        final ops = results[3] as SubscriptionOperationsSnapshot;
         setState(() {
           _plans = results[0] as List<SubscriptionPlanModel>;
           _vehicleTypes = results[1] as List<VehicleTypeModel>;
           _countries = results[2] as List<Country>;
+          _paymentRequests = ops.paymentRequests;
+          _smsReceipts = ops.smsReceipts;
           _isLoading = false;
         });
       }
@@ -557,6 +563,13 @@ class _AdminSubscriptionsScreenState
                       ],
                     ),
                   ),
+                if (!_isLoading && _error == null) ...[
+                  const SizedBox(height: AppSpacing.lg),
+                  _SubscriptionOperationsPanel(
+                    paymentRequests: _paymentRequests,
+                    smsReceipts: _smsReceipts,
+                  ),
+                ],
               ],
             ),
           ),
@@ -636,6 +649,296 @@ class _AdminSubscriptionsScreenState
   }
 
   int _boolRank(bool value) => value ? 1 : 0;
+}
+
+class _SubscriptionOperationsPanel extends StatelessWidget {
+  const _SubscriptionOperationsPanel({
+    required this.paymentRequests,
+    required this.smsReceipts,
+  });
+
+  final List<SubscriptionPaymentRequestOpsRow> paymentRequests;
+  final List<MomoSmsReceiptOpsRow> smsReceipts;
+
+  @override
+  Widget build(BuildContext context) {
+    final pending = paymentRequests
+        .where(
+          (row) => row.status == 'pending' || row.status == 'dialer_opened',
+        )
+        .length;
+    final matched = smsReceipts.where((row) => row.status == 'matched').length;
+    final review = smsReceipts
+        .where((row) => row.status == 'ambiguous' || row.status == 'unmatched')
+        .length;
+
+    return AdminPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const AdminSectionHeader(
+            title: 'Payments',
+            subtitle: 'MoMo SMS allocation and token payments',
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Wrap(
+            spacing: AppSpacing.md,
+            runSpacing: AppSpacing.md,
+            children: [
+              _OpsMetric(
+                label: 'Pending',
+                value: '$pending',
+                icon: LucideIcons.clock,
+                tone: MobiStatusBadgeTone.warning,
+              ),
+              _OpsMetric(
+                label: 'Matched SMS',
+                value: '$matched',
+                icon: LucideIcons.badgeCheck,
+                tone: MobiStatusBadgeTone.positive,
+              ),
+              _OpsMetric(
+                label: 'Review',
+                value: '$review',
+                icon: LucideIcons.alertTriangle,
+                tone: MobiStatusBadgeTone.danger,
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth >= 920;
+              final requests = _OpsList(
+                title: 'Subscription requests',
+                emptyMessage: 'No subscription requests yet.',
+                children: [
+                  for (final row in paymentRequests.take(8))
+                    _PaymentRequestTile(row: row),
+                ],
+              );
+              final receipts = _OpsList(
+                title: 'MoMo SMS receipts',
+                emptyMessage: 'No MoMo SMS receipts yet.',
+                children: [
+                  for (final row in smsReceipts.take(8))
+                    _SmsReceiptTile(row: row),
+                ],
+              );
+
+              if (!isWide) {
+                return Column(
+                  children: [
+                    requests,
+                    const SizedBox(height: AppSpacing.md),
+                    receipts,
+                  ],
+                );
+              }
+
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: requests),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(child: receipts),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OpsMetric extends StatelessWidget {
+  const _OpsMetric({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.tone,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+  final MobiStatusBadgeTone tone;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 180,
+      child: AdminMetricCard(
+        label: label,
+        value: value,
+        hint: 'latest 25',
+        icon: icon,
+        tone: tone,
+      ),
+    );
+  }
+}
+
+class _OpsList extends StatelessWidget {
+  const _OpsList({
+    required this.title,
+    required this.emptyMessage,
+    required this.children,
+  });
+
+  final String title;
+  final String emptyMessage;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: ext.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.45)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+            child: AdminTableLabel(label: title),
+          ),
+          Divider(height: 1, color: cs.outlineVariant.withValues(alpha: 0.35)),
+          if (children.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                emptyMessage,
+                style: AppTypography.bodySm.copyWith(
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
+            )
+          else
+            ...children,
+        ],
+      ),
+    );
+  }
+}
+
+class _PaymentRequestTile extends StatelessWidget {
+  const _PaymentRequestTile({required this.row});
+
+  final SubscriptionPaymentRequestOpsRow row;
+
+  @override
+  Widget build(BuildContext context) {
+    return _OpsTile(
+      title: row.referenceCode,
+      subtitle:
+          '${row.vehicleTypeId} · ${row.paymentMethod == 'tokens' ? 'Tokens' : 'MoMo USSD'}',
+      amount: '${row.amountRwf} ${row.currency}',
+      status: row.status,
+      detail: row.providerTransactionRef ?? row.confirmationSource,
+    );
+  }
+}
+
+class _SmsReceiptTile extends StatelessWidget {
+  const _SmsReceiptTile({required this.row});
+
+  final MomoSmsReceiptOpsRow row;
+
+  @override
+  Widget build(BuildContext context) {
+    return _OpsTile(
+      title: row.referenceCode ?? row.providerTransactionRef ?? row.id,
+      subtitle: row.sender ?? 'MoMo SMS',
+      amount: row.amountRwf == null ? 'Amount unknown' : '${row.amountRwf} RWF',
+      status: row.status,
+      detail: row.matchedPaymentRequestId,
+    );
+  }
+}
+
+class _OpsTile extends StatelessWidget {
+  const _OpsTile({
+    required this.title,
+    required this.subtitle,
+    required this.amount,
+    required this.status,
+    this.detail,
+  });
+
+  final String title;
+  final String subtitle;
+  final String amount;
+  final String status;
+  final String? detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.titleMd.copyWith(color: cs.onSurface),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  detail == null || detail!.isEmpty
+                      ? subtitle
+                      : '$subtitle · ${_shortId(detail!)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.bodySm.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                amount,
+                style: AppTypography.labelMd.copyWith(color: cs.onSurface),
+              ),
+              const SizedBox(height: 4),
+              MobiStatusBadge(label: status, tone: _statusTone(status)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  static String _shortId(String value) {
+    if (value.length <= 10) return value;
+    return value.substring(0, 10);
+  }
+
+  static MobiStatusBadgeTone _statusTone(String status) {
+    return switch (status) {
+      'confirmed' || 'matched' => MobiStatusBadgeTone.positive,
+      'pending' || 'dialer_opened' => MobiStatusBadgeTone.warning,
+      'ambiguous' || 'unmatched' || 'failed' => MobiStatusBadgeTone.danger,
+      _ => MobiStatusBadgeTone.info,
+    };
+  }
 }
 
 class _PlanRow extends StatelessWidget {

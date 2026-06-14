@@ -12,9 +12,11 @@ void main() {
     final plateController = TextEditingController();
     final agencyController = TextEditingController();
     final capacityController = TextEditingController();
+    final rentalModelController = TextEditingController();
     addTearDown(plateController.dispose);
     addTearDown(agencyController.dispose);
     addTearDown(capacityController.dispose);
+    addTearDown(rentalModelController.dispose);
 
     Future<void> pump(String selectedVehicleId) async {
       await tester.pumpWidget(
@@ -29,6 +31,7 @@ void main() {
                 plateController: plateController,
                 busAgencyController: agencyController,
                 busCapacityController: capacityController,
+                rentalModelController: rentalModelController,
                 transportAgencyNames:
                     PublicTransportService.fallbackAgencyNames,
               ),
@@ -52,5 +55,11 @@ void main() {
       find.widgetWithText(TextField, 'Passenger capacity'),
       findsOneWidget,
     );
+
+    await pump('rentals');
+    expect(find.text('Rental model'), findsOneWidget);
+    for (final model in ProfileVehicleSection.rentalModelOptions) {
+      expect(find.text(model), findsWidgets);
+    }
   });
 }

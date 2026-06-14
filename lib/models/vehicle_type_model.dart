@@ -62,6 +62,7 @@ class VehicleTypeModel {
     'trike': 5,
     'private': 6,
     'private_': 6,
+    'rentals': 7,
   };
 
   int get displayRank => _displayRank[id] ?? (1000 + sortOrder);
@@ -99,6 +100,8 @@ class VehicleTypeModel {
         return LucideIcons.shield;
       case 'package':
         return LucideIcons.package;
+      case 'key-round':
+        return LucideIcons.keyRound;
       default:
         return LucideIcons.car;
     }
@@ -131,6 +134,12 @@ class VehicleTypeModel {
       label: 'Others',
       iconName: 'package',
       sortOrder: 6,
+    ),
+    VehicleTypeModel(
+      id: 'rentals',
+      label: 'Rentals',
+      iconName: 'key-round',
+      sortOrder: 7,
     ),
   ];
 
