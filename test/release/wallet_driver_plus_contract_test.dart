@@ -17,6 +17,8 @@ void main() {
       'supabase/migrations/20260614172000_driver_subscription_start_idempotency.sql';
   const momoOpenAiTransactionsMigrationPath =
       'supabase/migrations/20260614221500_driver_subscription_momo_openai_transactions.sql';
+  const productionReadinessMigrationPath =
+      'supabase/migrations/20260615103000_wallet_subscription_production_readiness.sql';
   const chatScreenPath = 'lib/features/chat/chat_screen.dart';
   const referralAttributionServicePath =
       'lib/core/services/referral_attribution_service.dart';
@@ -29,7 +31,13 @@ void main() {
       referralAttributionServicePath,
     ).readAsStringSync();
     final walletScreen = File(walletScreenPath).readAsStringSync();
+    final walletService = File(
+      'lib/core/services/wallet_service.dart',
+    ).readAsStringSync();
     final appRouter = File(appRouterPath).readAsStringSync();
+    final productionReadinessSql = File(
+      productionReadinessMigrationPath,
+    ).readAsStringSync();
 
     expect(sql, contains('create table if not exists public.token_wallets'));
     expect(
@@ -37,6 +45,18 @@ void main() {
       contains('create table if not exists public.token_ledger_entries'),
     );
     expect(sql, contains('rpc_transfer_tokens'));
+    expect(
+      productionReadinessSql,
+      contains('rpc_lookup_wallet_transfer_recipient'),
+    );
+    expect(
+      productionReadinessSql,
+      contains('rpc_admin_reverse_wallet_transfer'),
+    );
+    expect(productionReadinessSql, contains('wallet_transfer_reversal'));
+    expect(productionReadinessSql, contains('install_confidence'));
+    expect(productionReadinessSql, contains('reward_confidence'));
+    expect(productionReadinessSql, contains('manual_review_recommended'));
     expect(sql, contains('rpc_complete_referral_signup'));
     expect(sql, contains('Successful Mobio app share'));
     expect(sql, contains('100'));
@@ -64,6 +84,15 @@ void main() {
     expect(walletScreen, isNot(contains("'\${referral.shareUrl}?ref=")));
     expect(walletScreen, contains("RegExp(r'^\\d{6}\$')"));
     expect(walletScreen, contains('FilteringTextInputFormatter.digitsOnly'));
+    expect(walletScreen, contains('_confirmAndTransferTokens'));
+    expect(walletScreen, contains('Confirm transfer'));
+    expect(walletScreen, contains('Transfer sent'));
+    expect(walletScreen, contains('SharedPreferences.getInstance'));
+    expect(walletService, contains('idempotencyKey'));
+    expect(
+      walletService,
+      isNot(contains('DateTime.now().microsecondsSinceEpoch')),
+    );
     expect(walletScreen, contains('Invite and earn'));
     expect(walletScreen, contains('Share invite'));
     expect(walletScreen, contains('Copy link'));
@@ -88,6 +117,18 @@ void main() {
     final driverPlusService = File(
       'lib/core/services/driver_plus_service.dart',
     ).readAsStringSync();
+    final driverPlusScreen = File(
+      'lib/features/profile/driver_plus_screen.dart',
+    ).readAsStringSync();
+    final adminSubscriptionsScreen = File(
+      'lib/features/admin/admin_subscriptions_screen.dart',
+    ).readAsStringSync();
+    final subscriptionPlanService = File(
+      'lib/core/services/subscription_plan_service.dart',
+    ).readAsStringSync();
+    final productionReadinessSql = File(
+      productionReadinessMigrationPath,
+    ).readAsStringSync();
 
     expect(sql, contains("payment_method in ('tokens', 'momo_ussd')"));
     expect(sql, contains("'12345'"));
@@ -104,9 +145,26 @@ void main() {
     );
     expect(idempotencySql, contains('p_client_request_id'));
     expect(driverPlusService, contains('p_client_request_id'));
+    expect(driverPlusService, contains(r'tel:$encoded'));
+    expect(driverPlusScreen, contains('SharedPreferences.getInstance'));
+    expect(driverPlusScreen, contains('_subscriptionKeyScope'));
+    expect(driverPlusScreen, contains('DRIVER_PROFILE_REQUIRED'));
+    expect(driverPlusScreen, contains('SUBSCRIPTION_PLAN_NOT_FOUND'));
     expect(sql, contains('rpc_confirm_driver_subscription_payment'));
     expect(sql, contains('rpc_ingest_driver_subscription_momo_sms'));
     expect(sql, contains('driver_subscription_momo_sms_receipts'));
+    expect(
+      productionReadinessSql,
+      contains('rpc_admin_expire_driver_subscription_payment_requests'),
+    );
+    expect(
+      productionReadinessSql,
+      contains('rpc_admin_confirm_momo_sms_receipt'),
+    );
+    expect(subscriptionPlanService, contains('expireStalePaymentRequests'));
+    expect(subscriptionPlanService, contains('confirmMomoSmsReceipt'));
+    expect(adminSubscriptionsScreen, contains('Expire stale'));
+    expect(adminSubscriptionsScreen, contains('Confirm match'));
     expect(
       momoOpenAiTransactionsSql,
       contains('driver_subscription_momo_transactions'),
@@ -139,6 +197,15 @@ void main() {
     expect(sql, contains("current_setting('request.jwt.claims', true)"));
     expect(compatSql, contains("current_setting('request.jwt.claims', true)"));
     expect(sql.toLowerCase(), isNot(contains('stripe')));
+
+    expect(driverPlusScreen, contains('walletBalanceTokens'));
+    expect(driverPlusScreen, contains('walletBalanceTokens >= tokenCost'));
+    expect(driverPlusScreen, contains('Pay with MoMo'));
+    expect(driverPlusScreen, isNot(contains('MoMo USSD')));
+    expect(
+      driverPlusScreen,
+      isNot(contains('Upgrade to read passenger messages')),
+    );
   });
 
   test('plus rules protect driver chat access server-side', () {

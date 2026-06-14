@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +19,7 @@ import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DriverPlusScreen extends ConsumerStatefulWidget {
   const DriverPlusScreen({super.key, required this.onBack});
@@ -95,18 +98,33 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
     String paymentMethod,
   ) async {
     setState(() => _isBusy = true);
+    final keyScope = _subscriptionKeyScope(
+      planId: plan.id,
+      paymentMethod: paymentMethod,
+    );
     try {
-      final clientRequestId =
-          'driver-plus-${plan.id}-$paymentMethod-${DateTime.now().microsecondsSinceEpoch}';
       final request = await ref
           .read(driverPlusServiceProvider)
           .startSubscription(
             planId: plan.id,
             paymentMethod: paymentMethod,
-            clientRequestId: clientRequestId,
+            clientRequestId: await _pendingOperationKey(
+              scope: keyScope,
+              prefix: 'driver-plus',
+            ),
           );
 
+      if (request.status == 'expired' ||
+          request.status == 'cancelled' ||
+          request.status == 'failed') {
+        await _clearPendingOperationKey(keyScope);
+        _showSnackBar(_requestStatusMessage(request.status));
+        await _load();
+        return;
+      }
+
       if (paymentMethod == 'tokens') {
+        await _clearPendingOperationKey(keyScope);
         _showSnackBar('Mobio Plus activated with tokens.');
         await _load();
         return;
@@ -145,10 +163,56 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
     if (value.contains('INSUFFICIENT_TOKENS')) {
       return 'You do not have enough tokens for this plan.';
     }
+    if (value.contains('DRIVER_PROFILE_REQUIRED')) {
+      return 'Mobio Plus is only available after your driver profile is active.';
+    }
+    if (value.contains('SUBSCRIPTION_PLAN_NOT_FOUND')) {
+      return 'This plan is no longer available. Refresh plans and try again.';
+    }
+    if (value.contains('INVALID_PAYMENT_METHOD')) {
+      return 'Choose tokens or Pay with MoMo for this subscription.';
+    }
     if (value.contains('PLAN_VEHICLE_TYPE_MISMATCH')) {
       return 'Choose a plan matching your vehicle type.';
     }
     return 'Unable to start subscription payment.';
+  }
+
+  String _requestStatusMessage(String status) {
+    return switch (status) {
+      'expired' => 'That MoMo payment request expired. Start a new payment.',
+      'cancelled' => 'That payment request was cancelled. Start a new payment.',
+      'failed' => 'That payment request failed. Start a new payment.',
+      _ => 'Unable to continue this payment request.',
+    };
+  }
+
+  String _subscriptionKeyScope({
+    required String planId,
+    required String paymentMethod,
+  }) {
+    return 'driver-plus:$planId:$paymentMethod';
+  }
+
+  Future<String> _pendingOperationKey({
+    required String scope,
+    required String prefix,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final prefKey = 'mobio.pending.$scope';
+    final existing = prefs.getString(prefKey);
+    if (existing != null && existing.isNotEmpty) return existing;
+
+    final key =
+        '$prefix-${DateTime.now().microsecondsSinceEpoch}-'
+        '${Random.secure().nextInt(1 << 32).toRadixString(36)}';
+    await prefs.setString(prefKey, key);
+    return key;
+  }
+
+  Future<void> _clearPendingOperationKey(String scope) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('mobio.pending.$scope');
   }
 
   void _showSnackBar(String message) {

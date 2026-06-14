@@ -237,6 +237,36 @@ class _AdminSubscriptionsScreenState
     }
   }
 
+  Future<void> _expireStalePaymentRequests() async {
+    const actionId = 'expire-stale-payment-requests';
+    setState(() => _busyId = actionId);
+    try {
+      final count = await _subService.expireStalePaymentRequests();
+      await _load();
+      if (mounted) _showSnackBar('$count stale payment request(s) expired.');
+    } on Object catch (error) {
+      if (mounted) _showSnackBar('Error: $error', isError: true);
+    } finally {
+      if (mounted && _busyId == actionId) setState(() => _busyId = null);
+    }
+  }
+
+  Future<void> _confirmMomoReceipt(MomoSmsReceiptOpsRow row) async {
+    setState(() => _busyId = row.id);
+    try {
+      await _subService.confirmMomoSmsReceipt(
+        receiptId: row.id,
+        reviewNote: 'Confirmed from subscriptions admin review',
+      );
+      await _load();
+      if (mounted) _showSnackBar('MoMo receipt matched and confirmed.');
+    } on Object catch (error) {
+      if (mounted) _showSnackBar('Error: $error', isError: true);
+    } finally {
+      if (mounted && _busyId == row.id) setState(() => _busyId = null);
+    }
+  }
+
   void _showSnackBar(String message, {bool isError = false}) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -568,6 +598,9 @@ class _AdminSubscriptionsScreenState
                   _SubscriptionOperationsPanel(
                     paymentRequests: _paymentRequests,
                     smsReceipts: _smsReceipts,
+                    busyId: _busyId,
+                    onExpireStaleRequests: _expireStalePaymentRequests,
+                    onConfirmReceipt: _confirmMomoReceipt,
                   ),
                 ],
               ],
@@ -655,10 +688,16 @@ class _SubscriptionOperationsPanel extends StatelessWidget {
   const _SubscriptionOperationsPanel({
     required this.paymentRequests,
     required this.smsReceipts,
+    required this.busyId,
+    required this.onExpireStaleRequests,
+    required this.onConfirmReceipt,
   });
 
   final List<SubscriptionPaymentRequestOpsRow> paymentRequests;
   final List<MomoSmsReceiptOpsRow> smsReceipts;
+  final String? busyId;
+  final VoidCallback onExpireStaleRequests;
+  final ValueChanged<MomoSmsReceiptOpsRow> onConfirmReceipt;
 
   @override
   Widget build(BuildContext context) {
@@ -676,9 +715,22 @@ class _SubscriptionOperationsPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AdminSectionHeader(
-            title: 'Payments',
-            subtitle: 'MoMo SMS allocation and token payments',
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Expanded(
+                child: AdminSectionHeader(
+                  title: 'Payments',
+                  subtitle: 'MoMo SMS allocation and token payments',
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              MobiButton(
+                variant: MobiButtonVariant.ghost,
+                onPressed: busyId == null ? onExpireStaleRequests : null,
+                child: const Text('Expire stale'),
+              ),
+            ],
           ),
           const SizedBox(height: AppSpacing.md),
           Wrap(
@@ -722,7 +774,11 @@ class _SubscriptionOperationsPanel extends StatelessWidget {
                 emptyMessage: 'No MoMo SMS receipts yet.',
                 children: [
                   for (final row in smsReceipts.take(8))
-                    _SmsReceiptTile(row: row),
+                    _SmsReceiptTile(
+                      row: row,
+                      isBusy: busyId == row.id,
+                      onConfirm: () => onConfirmReceipt(row),
+                    ),
                 ],
               );
 
@@ -838,7 +894,7 @@ class _PaymentRequestTile extends StatelessWidget {
     return _OpsTile(
       title: row.referenceCode,
       subtitle:
-          '${row.vehicleTypeId} · ${row.paymentMethod == 'tokens' ? 'Tokens' : 'MoMo USSD'}',
+          '${row.vehicleTypeId} · ${row.paymentMethod == 'tokens' ? 'Tokens' : 'Pay with MoMo'}',
       amount: '${row.amountRwf} ${row.currency}',
       status: row.status,
       detail: row.providerTransactionRef ?? row.confirmationSource,
@@ -847,18 +903,33 @@ class _PaymentRequestTile extends StatelessWidget {
 }
 
 class _SmsReceiptTile extends StatelessWidget {
-  const _SmsReceiptTile({required this.row});
+  const _SmsReceiptTile({
+    required this.row,
+    required this.isBusy,
+    required this.onConfirm,
+  });
 
   final MomoSmsReceiptOpsRow row;
+  final bool isBusy;
+  final VoidCallback onConfirm;
 
   @override
   Widget build(BuildContext context) {
+    final canConfirm =
+        (row.status == 'ambiguous' || row.status == 'unmatched') &&
+        (row.referenceCode?.trim().isNotEmpty ?? false);
     return _OpsTile(
       title: row.referenceCode ?? row.providerTransactionRef ?? row.id,
       subtitle: row.sender ?? 'MoMo SMS',
       amount: row.amountRwf == null ? 'Amount unknown' : '${row.amountRwf} RWF',
       status: row.status,
       detail: row.matchedPaymentRequestId,
+      action: canConfirm
+          ? TextButton(
+              onPressed: isBusy ? null : onConfirm,
+              child: Text(isBusy ? 'Confirming' : 'Confirm match'),
+            )
+          : null,
     );
   }
 }
@@ -870,6 +941,7 @@ class _OpsTile extends StatelessWidget {
     required this.amount,
     required this.status,
     this.detail,
+    this.action,
   });
 
   final String title;
@@ -877,6 +949,7 @@ class _OpsTile extends StatelessWidget {
   final String amount;
   final String status;
   final String? detail;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -919,6 +992,7 @@ class _OpsTile extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               MobiStatusBadge(label: status, tone: _statusTone(status)),
+              if (action != null) ...[const SizedBox(height: 4), action!],
             ],
           ),
         ],
@@ -935,7 +1009,10 @@ class _OpsTile extends StatelessWidget {
     return switch (status) {
       'confirmed' || 'matched' => MobiStatusBadgeTone.positive,
       'pending' || 'dialer_opened' => MobiStatusBadgeTone.warning,
-      'ambiguous' || 'unmatched' || 'failed' => MobiStatusBadgeTone.danger,
+      'ambiguous' ||
+      'unmatched' ||
+      'failed' ||
+      'expired' => MobiStatusBadgeTone.danger,
       _ => MobiStatusBadgeTone.info,
     };
   }

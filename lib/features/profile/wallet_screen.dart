@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +18,7 @@ import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WalletScreen extends ConsumerStatefulWidget {
   const WalletScreen({super.key, required this.onBack});
@@ -243,7 +246,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                               return;
                             }
                             Navigator.of(context).pop();
-                            _transferTokens(
+                            _confirmAndTransferTokens(
                               receiverMemberId: memberId,
                               amountTokens: amount,
                               note: noteController.text.trim(),
@@ -267,27 +270,184 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     noteController.dispose();
   }
 
-  Future<void> _transferTokens({
+  Future<void> _confirmAndTransferTokens({
     required String receiverMemberId,
     required int amountTokens,
     String? note,
   }) async {
     setState(() => _isBusy = true);
+    final normalizedNote = note?.trim() ?? '';
+    late final WalletTransferRecipient recipient;
     try {
-      await ref
+      recipient = await ref
+          .read(walletServiceProvider)
+          .lookupTransferRecipient(receiverMemberId: receiverMemberId);
+    } on Object catch (error) {
+      _showSnackBar(_transferError(error));
+      if (mounted) setState(() => _isBusy = false);
+      return;
+    }
+
+    if (!mounted) return;
+    setState(() => _isBusy = false);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm transfer'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Send ${_format.format(amountTokens)} tokens to'),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              recipient.displayName,
+              style: AppTypography.titleMd.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text('Member ID ${recipient.memberId}'),
+            if (normalizedNote.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Text('Note: $normalizedNote'),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Send'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final keyScope = _transferKeyScope(
+      receiverMemberId: receiverMemberId,
+      amountTokens: amountTokens,
+      note: normalizedNote,
+    );
+
+    setState(() => _isBusy = true);
+    try {
+      final receipt = await ref
           .read(walletServiceProvider)
           .transferTokens(
             receiverMemberId: receiverMemberId,
             amountTokens: amountTokens,
-            note: note,
+            idempotencyKey: await _pendingOperationKey(
+              scope: keyScope,
+              prefix: 'wallet-transfer',
+            ),
+            note: normalizedNote,
           );
-      _showSnackBar('Tokens transferred.');
+      await _clearPendingOperationKey(keyScope);
       await _load();
-    } on Object catch (_) {
-      _showSnackBar('Unable to transfer tokens.');
+      if (!mounted) return;
+      await _showTransferReceipt(
+        receipt: receipt,
+        recipient: recipient,
+        amountTokens: amountTokens,
+      );
+    } on Object catch (error) {
+      _showSnackBar(_transferError(error));
     } finally {
       if (mounted) setState(() => _isBusy = false);
     }
+  }
+
+  Future<void> _showTransferReceipt({
+    required WalletTransferReceipt receipt,
+    required WalletTransferRecipient recipient,
+    required int amountTokens,
+  }) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Transfer sent'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('${_format.format(amountTokens)} tokens'),
+            const SizedBox(height: AppSpacing.sm),
+            Text('${recipient.displayName} · ${recipient.memberId}'),
+            const SizedBox(height: AppSpacing.sm),
+            Text('Receipt ${_shortId(receipt.transferId)}'),
+          ],
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Done'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _transferError(Object error) {
+    final value = error.toString();
+    if (value.contains('RECEIVER_NOT_FOUND')) {
+      return 'No wallet was found for that 6-digit member ID.';
+    }
+    if (value.contains('SELF_TRANSFER_NOT_ALLOWED')) {
+      return 'You cannot transfer tokens to your own wallet.';
+    }
+    if (value.contains('INSUFFICIENT_TOKENS')) {
+      return 'Your wallet does not have enough tokens for this transfer.';
+    }
+    if (value.contains('INVALID_TOKEN_AMOUNT')) {
+      return 'Enter a token amount greater than zero.';
+    }
+    if (value.contains('INVALID_MEMBER_ID')) {
+      return 'Enter a valid 6-digit member ID.';
+    }
+    return 'Unable to transfer tokens. You can retry without being charged twice.';
+  }
+
+  String _transferKeyScope({
+    required String receiverMemberId,
+    required int amountTokens,
+    required String note,
+  }) {
+    return 'wallet-transfer:$receiverMemberId:$amountTokens:$note';
+  }
+
+  Future<String> _pendingOperationKey({
+    required String scope,
+    required String prefix,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final prefKey = 'mobio.pending.$scope';
+    final existing = prefs.getString(prefKey);
+    if (existing != null && existing.isNotEmpty) return existing;
+
+    final key =
+        '$prefix-${DateTime.now().microsecondsSinceEpoch}-'
+        '${Random.secure().nextInt(1 << 32).toRadixString(36)}';
+    await prefs.setString(prefKey, key);
+    return key;
+  }
+
+  Future<void> _clearPendingOperationKey(String scope) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('mobio.pending.$scope');
+  }
+
+  static String _shortId(String value) {
+    if (value.length <= 10) return value;
+    return value.substring(0, 10);
   }
 
   void _showSnackBar(String message) {

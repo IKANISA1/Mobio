@@ -83,6 +83,36 @@ class SubscriptionPlanService {
     }
   }
 
+  Future<int> expireStalePaymentRequests() async {
+    try {
+      final response = await supabase
+          .rpc<dynamic>('rpc_admin_expire_driver_subscription_payment_requests')
+          .timeout(_networkTimeout);
+      final row = Map<String, dynamic>.from(response as Map);
+      return (row['expired_count'] as num?)?.toInt() ?? 0;
+    } on Object catch (e) {
+      AppLogger.error('Error expiring subscription payment requests: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> confirmMomoSmsReceipt({
+    required String receiptId,
+    String? reviewNote,
+  }) async {
+    try {
+      await supabase
+          .rpc<dynamic>(
+            'rpc_admin_confirm_momo_sms_receipt',
+            params: {'p_receipt_id': receiptId, 'p_review_note': reviewNote},
+          )
+          .timeout(_networkTimeout);
+    } on Object catch (e) {
+      AppLogger.error('Error confirming MoMo SMS receipt: $e');
+      rethrow;
+    }
+  }
+
   /// Get plans strictly for a matched vehicle and country.
   Future<List<SubscriptionPlanModel>> getAvailablePlans(
     String vehicleTypeId,

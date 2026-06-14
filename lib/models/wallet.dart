@@ -69,6 +69,46 @@ class TokenLedgerEntry {
   }
 }
 
+class WalletTransferRecipient {
+  const WalletTransferRecipient({
+    required this.memberId,
+    required this.displayName,
+  });
+
+  final String memberId;
+  final String displayName;
+
+  factory WalletTransferRecipient.fromJson(Map<String, dynamic> json) {
+    return WalletTransferRecipient(
+      memberId: json['member_id'] as String? ?? '',
+      displayName: json['display_name'] as String? ?? 'Mobio member',
+    );
+  }
+}
+
+class WalletTransferReceipt {
+  const WalletTransferReceipt({
+    required this.transferId,
+    required this.status,
+    this.senderLedgerEntryId,
+    this.receiverLedgerEntryId,
+  });
+
+  final String transferId;
+  final String status;
+  final String? senderLedgerEntryId;
+  final String? receiverLedgerEntryId;
+
+  factory WalletTransferReceipt.fromJson(Map<String, dynamic> json) {
+    return WalletTransferReceipt(
+      transferId: json['transfer_id'] as String? ?? '',
+      status: json['status'] as String? ?? 'completed',
+      senderLedgerEntryId: json['sender_ledger_entry_id'] as String?,
+      receiverLedgerEntryId: json['receiver_ledger_entry_id'] as String?,
+    );
+  }
+}
+
 class ReferralCode {
   const ReferralCode({
     required this.id,

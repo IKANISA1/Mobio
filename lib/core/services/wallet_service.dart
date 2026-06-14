@@ -25,22 +25,39 @@ class WalletService {
         .toList();
   }
 
-  Future<void> transferTokens({
+  Future<WalletTransferRecipient> lookupTransferRecipient({
+    required String receiverMemberId,
+  }) async {
+    final response = await supabase
+        .rpc<dynamic>(
+          'rpc_lookup_wallet_transfer_recipient',
+          params: {'p_receiver_member_id': receiverMemberId},
+        )
+        .timeout(_timeout);
+    return WalletTransferRecipient.fromJson(
+      Map<String, dynamic>.from(response as Map),
+    );
+  }
+
+  Future<WalletTransferReceipt> transferTokens({
     required String receiverMemberId,
     required int amountTokens,
+    required String idempotencyKey,
     String? note,
   }) async {
-    await supabase
+    final response = await supabase
         .rpc<dynamic>(
           'rpc_transfer_tokens',
           params: {
             'p_receiver_member_id': receiverMemberId,
             'p_amount_tokens': amountTokens,
             'p_note': note,
-            'p_idempotency_key': DateTime.now().microsecondsSinceEpoch
-                .toString(),
+            'p_idempotency_key': idempotencyKey,
           },
         )
         .timeout(_timeout);
+    return WalletTransferReceipt.fromJson(
+      Map<String, dynamic>.from(response as Map),
+    );
   }
 }
