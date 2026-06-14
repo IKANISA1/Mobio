@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -72,6 +73,16 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
       });
     } on Object catch (_) {
       if (!mounted) return;
+      if (SupabaseConfig.isLocalUiPreview) {
+        setState(() {
+          _profile = _previewDriverProfile;
+          _status = _previewDriverPlusStatus;
+          _plans = _previewDriverPlusPlans;
+          _wallet = _previewDriverPlusWallet;
+          _isLoading = false;
+        });
+        return;
+      }
       setState(() {
         _error = 'Mobio Plus is unavailable right now.';
         _isLoading = false;
@@ -204,6 +215,7 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
                             child: _PlanCard(
                               plan: plan,
                               format: _format,
+                              walletBalanceTokens: _wallet!.balanceTokens,
                               isBusy: _isBusy,
                               onPayTokens: () => _startPayment(plan, 'tokens'),
                               onPayMomo: () => _startPayment(plan, 'momo_ussd'),
@@ -231,6 +243,60 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
     );
   }
 }
+
+const _previewDriverProfile = Profile(
+  id: 'preview-driver',
+  displayName: 'Mobio Driver',
+  role: 'driver',
+  vehicleType: 'cab',
+  isDriver: true,
+);
+
+const _previewDriverPlusStatus = DriverPlusStatus(
+  driverId: 'preview-driver',
+  vehicleTypeId: 'cab',
+  requiresPlus: true,
+  isFreeForever: false,
+  hasActiveSubscription: false,
+  canReceiveNewRequest: true,
+  canReply: false,
+  canReadMessages: false,
+  canShowWhatsapp: false,
+  upgradeRequired: true,
+  usedToday: 1,
+  usedTotal: 4,
+  remainingToday: 0,
+  remainingTotal: 0,
+);
+
+const _previewDriverPlusWallet = WalletSummary(
+  profileId: 'preview-driver',
+  balanceTokens: 500,
+  rwfEquivalent: 500,
+  lifetimeEarnedTokens: 1800,
+  lifetimeSentTokens: 900,
+  lifetimeReceivedTokens: 600,
+  successfulReferrals: 3,
+  referralCode: '482913',
+  shareUrl: 'https://mobio.ikanisa.com/invite/482913',
+);
+
+const _previewDriverPlusPlans = [
+  SubscriptionPlanModel(
+    id: 'preview-plus-daily',
+    vehicleTypeId: 'cab',
+    countryId: 'RW',
+    intervalDays: 1,
+    price: 1000,
+  ),
+  SubscriptionPlanModel(
+    id: 'preview-plus-monthly',
+    vehicleTypeId: 'cab',
+    countryId: 'RW',
+    intervalDays: 30,
+    price: 15000,
+  ),
+];
 
 class _PlusStatusCard extends StatelessWidget {
   const _PlusStatusCard({
@@ -281,7 +347,7 @@ class _PlusStatusCard extends StatelessWidget {
                 ? 'Bus drivers use Mobio free forever.'
                 : status.hasActiveSubscription
                 ? 'Mobio Plus is active.'
-                : 'Upgrade to read passenger messages, reply, and activate WhatsApp contact.',
+                : 'Mobio Plus required.',
             style: AppTypography.bodyMd.copyWith(color: cs.onSurfaceVariant),
           ),
           const SizedBox(height: AppSpacing.md),
@@ -309,6 +375,7 @@ class _PlanCard extends StatelessWidget {
   const _PlanCard({
     required this.plan,
     required this.format,
+    required this.walletBalanceTokens,
     required this.isBusy,
     required this.onPayTokens,
     required this.onPayMomo,
@@ -316,6 +383,7 @@ class _PlanCard extends StatelessWidget {
 
   final SubscriptionPlanModel plan;
   final NumberFormat format;
+  final int walletBalanceTokens;
   final bool isBusy;
   final VoidCallback onPayTokens;
   final VoidCallback onPayMomo;
@@ -323,6 +391,8 @@ class _PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final tokenCost = plan.price.round();
+    final canPayTokens = walletBalanceTokens >= tokenCost;
     return ClayCard(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -355,7 +425,7 @@ class _PlanCard extends StatelessWidget {
             children: [
               Expanded(
                 child: MobiButton(
-                  onPressed: isBusy ? null : onPayTokens,
+                  onPressed: isBusy || !canPayTokens ? null : onPayTokens,
                   child: const Text('Pay tokens'),
                 ),
               ),
@@ -364,7 +434,7 @@ class _PlanCard extends StatelessWidget {
                 child: MobiButton(
                   variant: MobiButtonVariant.ghost,
                   onPressed: isBusy ? null : onPayMomo,
-                  child: const Text('MoMo USSD'),
+                  child: const Text('Pay with MoMo'),
                 ),
               ),
             ],
