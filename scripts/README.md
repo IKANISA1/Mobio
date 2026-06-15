@@ -15,17 +15,31 @@ Useful release commands:
 - `scripts/release/build_android_release.sh apk`
 - `scripts/release/smoke_android_release.sh`
 - `scripts/qa/capture_android_uat_state.sh`
+- `scripts/qa/verify_mobio_feature_readiness.sh`
 - `scripts/qa/verify_biopay_live_readiness.sh`
 - `scripts/release/go_no_go_check.sh`
 - `scripts/qa/scan_secrets.sh`
 - `scripts/qa/check_secret_history.sh`
 - `scripts/qa/preflight_secret_history_purge.sh`
 
-BioPay recovery proof:
+Mobio integrated feature proof:
+
+- `scripts/qa/verify_mobio_feature_readiness.sh` is the Mobio-wide feature
+  readiness wrapper used by the final go/no-go gate. It covers shell/scope,
+  privacy/discoverability, wallet/tokens/subscriptions/Mobio Plus, scheduling,
+  public transport, admin, reports/blocks, notifications, and BioPay as one
+  feature inside the Mobio app.
+- Set `RUN_MOBIO_CONTRACT_TESTS=false` only for local debugging when the broader
+  Flutter gate already proved contract tests in the same run.
+- Set `RUN_MOBIO_BIOPAY_FEATURE_GATE=false` only for local debugging when the
+  BioPay feature gate was already proved in the same run.
+
+BioPay feature proof:
 
 - `scripts/qa/verify_biopay_live_readiness.sh` runs static repo checks for the
   restored BioPay QR, NFC, face enrollment, face scan, admin Ops, and USSD-only
-  payment boundary. It writes evidence under `docs/release/evidence`.
+  payment boundary as one feature of Mobio. It writes evidence under
+  `docs/release/evidence`.
 - Set `REQUIRE_BIOPAY_AWS_LIVE=true` to require AWS Rekognition provider env:
   `FACE_PROVIDER=aws_rekognition`, `AWS_REGION`, `AWS_ACCESS_KEY_ID`,
   `AWS_SECRET_ACCESS_KEY`, and `AWS_REKOGNITION_COLLECTION_ID`.
@@ -35,8 +49,9 @@ BioPay recovery proof:
   device to prove installed camera/NFC permissions and tel: USSD dialer
   capability.
 - Set `REQUIRE_BIOPAY_LIVE=true` to require all three live proofs together.
-  `scripts/release/go_no_go_check.sh` enables this strict BioPay mode by
-  default unless `RUN_BIOPAY_GATE=false` is used in dry-run mode.
+  `scripts/release/go_no_go_check.sh` enables this strict mode through the
+  Mobio integrated feature gate by default unless
+  `RUN_MOBIO_FEATURE_GATE=false` is used in dry-run mode.
 
 Final go/no-go requires external Play and Google/Firebase evidence paths:
 

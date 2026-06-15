@@ -140,17 +140,18 @@ if [[ "$release_target" != "android" ]]; then
     "iOS Crashlytics dSYM upload validated"
 fi
 
-if [[ "${RUN_BIOPAY_GATE:-true}" == "true" ]]; then
+mobio_feature_gate="${RUN_MOBIO_FEATURE_GATE:-${RUN_BIOPAY_GATE:-true}}"
+if [[ "$mobio_feature_gate" == "true" ]]; then
   run_gate \
-    "BioPay live readiness gate" \
+    "Mobio integrated feature readiness gates" \
     env REQUIRE_BIOPAY_LIVE="${REQUIRE_BIOPAY_LIVE:-true}" \
-    ./scripts/qa/verify_biopay_live_readiness.sh
+    ./scripts/qa/verify_mobio_feature_readiness.sh
 elif [[ "$dry_run" == "true" ]]; then
   echo
-  echo "== BioPay live readiness gate =="
+  echo "== Mobio integrated feature readiness gates =="
   echo "SKIP: dry-run only; this is not production evidence."
 else
-  echo "RUN_BIOPAY_GATE=false is only allowed with GO_NO_GO_DRY_RUN=true." >&2
+  echo "RUN_MOBIO_FEATURE_GATE=false is only allowed with GO_NO_GO_DRY_RUN=true." >&2
   exit 1
 fi
 

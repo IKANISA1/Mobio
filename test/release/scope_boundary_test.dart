@@ -683,13 +683,16 @@ void main() {
       expect(goNoGoScript, contains('PLAY_CONSOLE_UPLOAD_EVIDENCE'));
       expect(goNoGoScript, contains('require_evidence'));
       expect(goNoGoScript, contains('require_play_service_account_decision'));
-      expect(goNoGoScript, contains('RUN_BIOPAY_GATE'));
-      expect(goNoGoScript, contains('BioPay live readiness gate'));
+      expect(goNoGoScript, contains('RUN_MOBIO_FEATURE_GATE'));
+      expect(
+        goNoGoScript,
+        contains('Mobio integrated feature readiness gates'),
+      );
       expect(goNoGoScript, contains('REQUIRE_BIOPAY_LIVE'));
       expect(goNoGoScript, contains('REQUIRE_BIOPAY_LIVE:-true'));
       expect(
         goNoGoScript,
-        contains('scripts/qa/verify_biopay_live_readiness.sh'),
+        contains('scripts/qa/verify_mobio_feature_readiness.sh'),
       );
       expect(
         goNoGoScript,
@@ -700,7 +703,10 @@ void main() {
       expect(goNoGoScript, contains('dry-run mode cannot approve production'));
       expect(goNoGoScript, contains('RUN_ANDROID_SMOKE=false is only allowed'));
       expect(goNoGoScript, contains('RUN_FLUTTER_GATE=false is only allowed'));
-      expect(goNoGoScript, contains('RUN_BIOPAY_GATE=false is only allowed'));
+      expect(
+        goNoGoScript,
+        contains('RUN_MOBIO_FEATURE_GATE=false is only allowed'),
+      );
       expect(goNoGoScript, contains('smoke_android_release.sh'));
       expect(goNoGoScript, contains('NO-GO'));
     });
