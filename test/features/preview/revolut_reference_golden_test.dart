@@ -599,6 +599,15 @@ class _PreviewSubscriptionPlanService implements SubscriptionPlanService {
   );
 
   @override
+  Future<int> expireStalePaymentRequests() async => 0;
+
+  @override
+  Future<void> confirmMomoSmsReceipt({
+    required String receiptId,
+    String? reviewNote,
+  }) async {}
+
+  @override
   void invalidateCache() {}
 }
 
