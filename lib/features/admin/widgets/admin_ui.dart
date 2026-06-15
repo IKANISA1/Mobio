@@ -915,21 +915,37 @@ class _AdminWorkspaceTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: _tabs.keys.map((tab) {
-          final config = _tabs[tab]!;
-          return Padding(
-            padding: const EdgeInsets.only(right: AppSpacing.sm),
-            child: AdminFilterChip(
-              label: config.label,
-              icon: config.icon,
-              isSelected: tab == currentTab,
-              onTap: () => context.go(config.route),
-            ),
-          );
-        }).toList(),
+    return ShaderMask(
+      blendMode: BlendMode.dstIn,
+      shaderCallback: (bounds) => const LinearGradient(
+        colors: [
+          Colors.transparent,
+          Colors.white,
+          Colors.white,
+          Colors.transparent,
+        ],
+        stops: [0, 0.035, 0.965, 1],
+      ).createShader(bounds),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+          child: Row(
+            children: _tabs.keys.map((tab) {
+              final config = _tabs[tab]!;
+              return Padding(
+                padding: const EdgeInsets.only(right: AppSpacing.sm),
+                child: AdminFilterChip(
+                  label: config.label,
+                  icon: config.icon,
+                  isSelected: tab == currentTab,
+                  onTap: () => context.go(config.route),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
       ),
     );
   }

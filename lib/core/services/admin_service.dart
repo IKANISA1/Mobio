@@ -67,11 +67,13 @@ class AdminService {
   Future<List<AdminTripListItem>> listTrips({
     String? status,
     String? role,
+    String? search,
     int limit = 50,
     int offset = 0,
   }) => _tripService.listTrips(
     status: status,
     role: role,
+    search: search,
     limit: limit,
     offset: offset,
   );

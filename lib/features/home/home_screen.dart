@@ -26,7 +26,6 @@ import 'package:mobi_app/shared/widgets/mobi_action_row.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
-import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
 import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
@@ -422,24 +421,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                       HomeHeader(
                         isDriver: isDriver,
                         unreadCount: _unreadCount,
+                        onModeChanged: widget.onModeChanged,
                         isDriverOnline: _isDriverOnline,
                         onDriverOnlineToggle: (value) =>
                             unawaited(_toggleDriverOnline(value)),
                         onNotifications: widget.onNotifications,
-                      ),
-                      const SizedBox(height: AppSpacing.lg),
-                      MobiSurfacePanel(
-                        padding: const EdgeInsets.all(AppSpacing.xs),
-                        borderRadius: AppRadii.pill,
-                        child: MobiToggle(
-                          labels: isDriver
-                              ? const ['Ride', 'Drive']
-                              : const ['Passenger', 'Driver'],
-                          selectedIndex: isDriver ? 1 : 0,
-                          onChanged: (i) => widget.onModeChanged(
-                            i == 0 ? 'passenger' : 'driver',
-                          ),
-                        ),
                       ),
                     ],
                   ).animate().fade(duration: 400.ms).slideY(begin: -0.1),

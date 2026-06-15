@@ -1,0 +1,5 @@
+  rw.mobi.app:
+    ID: 141b014e-0daa-4e64-8c46-12f79aeca8d2
+    Signatures: [DA:9E:5E:AB:50:D0:85:05:BF:0B:78:7C:EA:B5:DB:5B:40:77:8E:BE:77:62:95:72:16:8A:72:37:D7:79:81:C0]
+    Domain verification state:
+      mobio.ikanisa.com: verified

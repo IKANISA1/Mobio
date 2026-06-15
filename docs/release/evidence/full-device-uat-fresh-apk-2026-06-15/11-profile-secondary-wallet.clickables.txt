@@ -1,0 +1,15 @@
+clickable=False bounds=[66,191][198,323] text='' desc='Back' class=android.widget.Button
+clickable=False bounds=[231,217][422,297] text='' desc='Wallet' class=android.view.View
+clickable=True bounds=[882,191][1014,323] text='' desc='Refresh' class=android.widget.Button
+clickable=False bounds=[66,367][1014,1115] text='' desc='0 tokens\n0 RWF\n0 successful invites\nEarned\n0\nSent\n0\nReceived\n0' class=android.view.View
+clickable=True bounds=[66,1159][360,1431] text='' desc='' class=android.widget.Button
+clickable=True bounds=[66,1159][360,1431] text='' desc='Send' class=android.view.View
+clickable=True bounds=[393,1159][687,1431] text='' desc='' class=android.widget.Button
+clickable=True bounds=[393,1159][687,1431] text='' desc='Share' class=android.view.View
+clickable=True bounds=[720,1159][1014,1431] text='' desc='' class=android.widget.Button
+clickable=True bounds=[720,1159][1014,1431] text='' desc='Copy' class=android.view.View
+clickable=False bounds=[66,1475][1014,2061] text='' desc='Invite and earn\n0 rewarded invites\nCreate invite code' class=android.view.View
+clickable=True bounds=[118,1882][524,2009] text='' desc='Share invite' class=android.widget.Button
+clickable=True bounds=[557,1882][962,2009] text='' desc='Copy link' class=android.widget.Button
+clickable=False bounds=[66,2116][1014,2171] text='' desc='Activity' class=android.view.View
+clickable=False bounds=[66,2204][1014,2274] text='' desc='No wallet activity yet.' class=android.view.View

@@ -1,0 +1,26 @@
+176-      android.permission.INTERNET
+177-      android.permission.ACCESS_NETWORK_STATE
+178:      android.permission.ACCESS_FINE_LOCATION
+179:      android.permission.ACCESS_COARSE_LOCATION
+180-      android.permission.ACCESS_BACKGROUND_LOCATION
+181:      android.permission.CAMERA
+182:      android.permission.NFC
+183:      android.permission.POST_NOTIFICATIONS
+184-      android.permission.FOREGROUND_SERVICE
+185-      android.permission.FOREGROUND_SERVICE_LOCATION
+--
+195-      rw.mobi.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION: granted=true
+196-      com.google.android.providers.gsf.permission.READ_GSERVICES: granted=true
+197:      android.permission.NFC: granted=true
+198-      android.permission.FOREGROUND_SERVICE: granted=true
+199-      android.permission.INTERNET: granted=true
+--
+212-        /product/overlay/NavigationBarModeGestural/NavigationBarModeGesturalOverlay.apk
+213-      gids=[3003]
+214:      runtime permissions:
+215:        android.permission.POST_NOTIFICATIONS: granted=true, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+216:        android.permission.ACCESS_FINE_LOCATION: granted=true, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+217:        android.permission.ACCESS_COARSE_LOCATION: granted=true, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+218:        android.permission.CAMERA: granted=true, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+219-        android.permission.ACCESS_BACKGROUND_LOCATION: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED|RESTRICTION_INSTALLER_EXEMPT]
+220-

@@ -1,0 +1,2 @@
+138:  mCurrentFocus=Window{1c8b31f u0 rw.mobi.app/rw.mobi.app.MainActivity}
+139:  mFocusedApp=ActivityRecord{4e517e2 u0 rw.mobi.app/.MainActivity} t724}

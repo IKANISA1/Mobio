@@ -22,6 +22,7 @@ class MobiTopCommandBar extends StatelessWidget {
   final String searchHint;
   final VoidCallback? onSearchTap;
   final Widget? avatar;
+  final Widget? centerControl;
   final bool showNotificationDot;
   final bool showSearch;
   final List<MobiTopCommandBarAction> actions;
@@ -31,6 +32,7 @@ class MobiTopCommandBar extends StatelessWidget {
     this.searchHint = 'Search',
     this.onSearchTap,
     this.avatar,
+    this.centerControl,
     this.showNotificationDot = false,
     this.showSearch = true,
     this.actions = const [
@@ -140,10 +142,14 @@ class MobiTopCommandBar extends StatelessWidget {
               ),
             ),
           ),
-        ],
-        if (showSearch || visibleActions.isNotEmpty)
+        ] else if (centerControl != null) ...[
           const SizedBox(width: AppSpacing.sm),
-        if (!showSearch && visibleActions.isNotEmpty) const Spacer(),
+          Expanded(child: centerControl!),
+        ],
+        if (showSearch || centerControl != null || visibleActions.isNotEmpty)
+          const SizedBox(width: AppSpacing.sm),
+        if (!showSearch && centerControl == null && visibleActions.isNotEmpty)
+          const Spacer(),
         for (final action in visibleActions) ...[
           _CommandCircle(action: action),
           if (action != visibleActions.last) const SizedBox(width: 8),

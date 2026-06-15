@@ -1,0 +1,19 @@
+clickable=False bounds=[363,719][717,829] text='' desc='006031' class=android.view.View
+clickable=True bounds=[69,920][1011,1118] text='' desc='Edit Profile' class=android.view.View
+clickable=True bounds=[69,1121][1011,1319] text='' desc='Wallet' class=android.view.View
+clickable=True bounds=[69,1321][1011,1519] text='' desc='Mobio Plus' class=android.view.View
+clickable=True bounds=[69,1522][1011,1720] text='' desc='BioPay Face\nSet up' class=android.view.View
+clickable=True bounds=[69,1723][1011,1921] text='' desc='Write NFC Card' class=android.view.View
+clickable=False bounds=[66,1957][1014,2160] text='' desc='Dark Mode' class=android.widget.Switch
+clickable=True bounds=[66,1957][1014,2160] text='' desc='' class=android.widget.Button
+clickable=True bounds=[66,1957][1014,2160] text='' desc='Theme' class=android.view.View
+clickable=True bounds=[66,2193][1014,2274] text='' desc='' class=android.widget.Button
+clickable=True bounds=[66,2193][1014,2274] text='' desc='Support' class=android.view.View
+clickable=True bounds=[77,2065][309,2219] text='' desc='Home tab, Switch tab' class=android.widget.Button
+clickable=True bounds=[77,2065][309,2219] text='' desc='Home' class=android.view.View
+clickable=True bounds=[309,2065][540,2219] text='' desc='Trips tab, Switch tab' class=android.widget.Button
+clickable=True bounds=[309,2065][540,2219] text='' desc='Trips' class=android.view.View
+clickable=True bounds=[540,2065][772,2219] text='' desc='BioPay tab, Switch tab' class=android.widget.Button
+clickable=True bounds=[540,2065][772,2219] text='' desc='BioPay' class=android.view.View
+clickable=True bounds=[771,2065][1003,2219] text='' desc='Profile tab, Current tab' class=android.widget.Button
+clickable=True bounds=[771,2065][1003,2219] text='' desc='Profile' class=android.view.View

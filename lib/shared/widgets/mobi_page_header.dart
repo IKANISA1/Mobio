@@ -69,6 +69,7 @@ class MobiPageHeader extends StatelessWidget {
                         style: AppTypography.headlineLg.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w800,
+                          decoration: TextDecoration.none,
                         ),
                       ),
                     ),

@@ -17,6 +17,7 @@ Useful release commands:
 - `scripts/qa/capture_android_uat_state.sh`
 - `scripts/qa/verify_mobio_feature_readiness.sh`
 - `scripts/qa/verify_biopay_live_readiness.sh`
+- `scripts/qa/verify_biopay_nfc_card_uat.sh`
 - `scripts/release/go_no_go_check.sh`
 - `scripts/qa/scan_secrets.sh`
 - `scripts/qa/check_secret_history.sh`
@@ -52,6 +53,14 @@ BioPay feature proof:
   `scripts/release/go_no_go_check.sh` enables this strict mode through the
   Mobio integrated feature gate by default unless
   `RUN_MOBIO_FEATURE_GATE=false` is used in dry-run mode.
+- `scripts/qa/verify_biopay_nfc_card_uat.sh` captures the NFC-card-specific
+  Android evidence: installed app filters, domain verification, NFC service
+  state, HTTPS/custom NFC payload resolution, and USSD dialer handoff. Set
+  `NFC_UAT_MANUAL_SECONDS=90` or higher to capture a timed physical card
+  write/read/optional-lock session with logcat, window state, and screenshot.
+  Add `NFC_UAT_REQUIRE_MANUAL=1` when a physical card must be treated as a
+  hard gate; the script then requires a Mobio-started manual phase, tag
+  detection, write verification, final dialer handoff, and no fatal app errors.
 
 Final go/no-go requires external Play and Google/Firebase evidence paths:
 

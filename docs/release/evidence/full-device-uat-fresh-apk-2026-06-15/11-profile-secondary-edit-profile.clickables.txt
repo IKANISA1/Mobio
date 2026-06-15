@@ -1,0 +1,16 @@
+clickable=False bounds=[66,191][198,323] text='' desc='Back' class=android.widget.Button
+clickable=False bounds=[231,217][427,297] text='' desc='Profile' class=android.view.View
+clickable=False bounds=[295,389][785,496] text='' desc='Edit profile' class=android.view.View
+clickable=False bounds=[118,637][181,708] text='' desc='🇷🇼' class=android.view.View
+clickable=False bounds=[203,645][308,700] text='' desc='+250' class=android.view.View
+clickable=False bounds=[393,590][1014,755] text='' desc='788767816, Authenticated WhatsApp number' class=android.view.View
+clickable=False bounds=[393,590][1014,755] text='788767816' desc='' class=android.view.View
+clickable=False bounds=[198,844][340,907] text='' desc='MoMo' class=android.view.View
+clickable=True bounds=[118,1022][962,1165] text='0788767816' desc='' class=android.widget.EditText
+clickable=True bounds=[118,1209][962,1352] text='' desc='' class=android.widget.EditText
+clickable=False bounds=[198,1504][628,1567] text='' desc='Favorite addresses' class=android.view.View
+clickable=True bounds=[814,1470][1014,1602] text='' desc='Add' class=android.widget.Button
+clickable=False bounds=[121,1701][959,1822] text='' desc='Save Home, Work, Airport, school, or any pickup spot for fast scheduling.' class=android.view.View
+clickable=False bounds=[198,1943][493,2006] text='' desc='Notifications' class=android.view.View
+clickable=False bounds=[198,2012][462,2061] text='' desc='Promo consent' class=android.view.View
+clickable=True bounds=[66,2105][1014,2274] text='' desc='Promotional in-app notifications' class=android.widget.Switch

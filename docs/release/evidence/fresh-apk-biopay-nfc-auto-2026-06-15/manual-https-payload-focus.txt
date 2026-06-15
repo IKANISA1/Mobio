@@ -1,0 +1,1 @@
+  mCurrentFocus=Window{8d5d7be u0 rw.mobi.app/rw.mobi.app.MainActivity}

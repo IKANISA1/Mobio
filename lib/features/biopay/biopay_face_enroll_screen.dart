@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/features/biopay/biopay_flow_shared.dart';
+import 'package:mobi_app/shared/widgets/mobi_button.dart';
 
 class BioPayFaceEnrollScreen extends ConsumerStatefulWidget {
   const BioPayFaceEnrollScreen({super.key, required this.onBack});
@@ -178,27 +179,34 @@ class _BioPayFaceEnrollScreenState
     final capturedCount = _enrolled
         ? _enrollmentChallenges.length
         : _capturedFrames.length;
-    final primaryLabel = readyForCapture
+    final primaryLabel = _enrolled
+        ? 'Done'
+        : readyForCapture
         ? currentChallenge.action
         : 'Start Enrollment';
+    final primaryAction = _enrolled
+        ? widget.onBack
+        : readyForCapture
+        ? _captureEnroll
+        : _start;
 
     return BioPayFlowScreen(
       title: 'Face enroll',
-      primaryLabel: primaryLabel,
+      primaryLabel: '',
       isPrimaryLoading: _busy,
       onBack: widget.onBack,
-      onPrimary: _enrolled ? null : (readyForCapture ? _captureEnroll : _start),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BioPayFaceEnrollmentStatusPanel(
-            title: _enrolled ? 'Saved' : currentChallenge.title,
-            body: _enrolled
-                ? 'AWS face identity ready.'
-                : currentChallenge.body,
-            capturedCount: capturedCount,
-            totalSteps: _enrollmentChallenges.length,
-            sessionReady: _sessionId != null,
+          MobiButton(
+            onPressed: _busy ? null : primaryAction,
+            isLoading: _busy,
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: 19,
+            ),
+            child: Text(primaryLabel),
           ),
           const SizedBox(height: AppSpacing.lg),
           if (readyForCapture)
@@ -211,7 +219,7 @@ class _BioPayFaceEnrollScreenState
             )
           else
             BioPayFaceEnrollmentStandby(iconColor: cs.primary),
-          const SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: AppSpacing.md),
           BioPayPoseCueStrip(
             capturedCount: capturedCount,
             totalSteps: _enrollmentChallenges.length,

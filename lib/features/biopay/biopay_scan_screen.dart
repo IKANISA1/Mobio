@@ -22,6 +22,30 @@ class _BioPayScanScreenState extends ConsumerState<BioPayScanScreen> {
   String? _error;
 
   Future<void> _resolve(String token) async {
+    final ussdCode = bioPayUssdCodeFromPayload(token);
+    if (ussdCode.isNotEmpty) {
+      if (_resolving) return;
+      setState(() {
+        _resolving = true;
+        _error = null;
+      });
+      try {
+        final opened = await ref
+            .read(biopayUssdServiceProvider)
+            .launchUssdCode(ussdCode);
+        if (!mounted) return;
+        if (!opened) {
+          setState(() => _error = 'USSD dialer unavailable.');
+        }
+      } on Object {
+        if (!mounted) return;
+        setState(() => _error = 'USSD dialer unavailable.');
+      } finally {
+        if (mounted) setState(() => _resolving = false);
+      }
+      return;
+    }
+
     final resolvedToken = bioPayTokenFromPayload(token);
     if (_resolving || resolvedToken.isEmpty) return;
     setState(() {

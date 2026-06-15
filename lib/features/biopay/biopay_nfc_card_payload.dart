@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
@@ -6,6 +7,8 @@ import 'package:ndef/ndef.dart' as ndef;
 
 const bioPayNfcCardMimeType = 'application/vnd.rw.mobi.biopay.nfc';
 const bioPayNfcAppPackage = 'rw.mobi.app';
+const bioPayNfcAppLinkHost = 'mobio.ikanisa.com';
+const bioPayNfcAppLinkPath = '/biopay/nfc';
 
 enum BioPayNfcReceiverType { momoNumber, momoPayCode }
 
@@ -41,6 +44,17 @@ class BioPayNfcCardPayload {
     };
   }
 
+  String get canonicalReceiver {
+    final digits = receiver.replaceAll(RegExp(r'\D'), '');
+    if (receiverType == BioPayNfcReceiverType.momoPayCode) return digits;
+    return _displayMomoNumber(digits);
+  }
+
+  bool semanticallyMatches(BioPayNfcCardPayload other) {
+    return receiverType == other.receiverType &&
+        canonicalReceiver == other.canonicalReceiver;
+  }
+
   Uri get ussdTelUri {
     final encoded = ussdCode.replaceAll('#', Uri.encodeComponent('#'));
     return Uri.parse('tel:$encoded');
@@ -51,6 +65,19 @@ class BioPayNfcCardPayload {
       scheme: 'mobio',
       host: 'biopay',
       path: '/nfc',
+      queryParameters: {
+        'type': receiverTypeWireName,
+        'receiver': receiver,
+        if (label != null && label!.trim().isNotEmpty) 'label': label!.trim(),
+      },
+    ).toString();
+  }
+
+  String get appLink {
+    return Uri(
+      scheme: 'https',
+      host: bioPayNfcAppLinkHost,
+      path: bioPayNfcAppLinkPath,
       queryParameters: {
         'type': receiverTypeWireName,
         'receiver': receiver,
@@ -125,6 +152,21 @@ class BioPayNfcCardPayload {
       );
     }
 
+    if ((uri.scheme == 'https' || uri.scheme == 'http') &&
+        uri.host == bioPayNfcAppLinkHost &&
+        uri.path == bioPayNfcAppLinkPath) {
+      final receiverType = _receiverTypeFromWireName(
+        uri.queryParameters['type'],
+      );
+      final receiver = uri.queryParameters['receiver']?.trim() ?? '';
+      if (receiverType == null || receiver.isEmpty) return null;
+      return BioPayNfcCardPayload(
+        receiverType: receiverType,
+        receiver: receiver,
+        label: uri.queryParameters['label']?.trim(),
+      );
+    }
+
     if (uri.scheme == 'tel') {
       return fromUssdCode(Uri.decodeComponent(uri.toString().substring(4)));
     }
@@ -170,16 +212,59 @@ String normalizeBioPayNfcReceiver(
   return _displayMomoNumber(normalized);
 }
 
-List<ndef.NDEFRecord> buildBioPayNfcCardRecords(BioPayNfcCardPayload payload) {
+List<ndef.NDEFRecord> buildBioPayNfcCardRecords(
+  BioPayNfcCardPayload payload, {
+  bool includeStructuredPayload = true,
+  bool includeAndroidAppRecord = true,
+}) {
   return [
-    ndef.UriRecord.fromString(payload.deepLink),
-    ndef.TextRecord(language: 'en', text: payload.toJsonString()),
-    ndef.AARRecord(packageName: bioPayNfcAppPackage),
+    ndef.UriRecord.fromString(payload.appLink),
+    if (includeStructuredPayload)
+      ndef.MimeRecord(
+        decodedType: bioPayNfcCardMimeType,
+        payload: Uint8List.fromList(utf8.encode(payload.toJsonString())),
+      ),
+    if (includeAndroidAppRecord)
+      ndef.AARRecord(packageName: bioPayNfcAppPackage),
   ];
 }
 
-Future<BioPayNfcCardPayload?> readBioPayNfcCardPayloadFromActiveTag() async {
-  final records = await FlutterNfcKit.readNDEFRecords();
+List<ndef.NDEFRecord> buildBioPayNfcCardRecordsForCapacity(
+  BioPayNfcCardPayload payload, {
+  int? capacity,
+}) {
+  final candidates = [
+    buildBioPayNfcCardRecords(payload),
+    buildBioPayNfcCardRecords(payload, includeStructuredPayload: false),
+    buildBioPayNfcCardRecords(
+      payload,
+      includeStructuredPayload: false,
+      includeAndroidAppRecord: false,
+    ),
+  ];
+
+  if (capacity == null || capacity <= 0) {
+    return candidates[1];
+  }
+
+  for (final records in candidates) {
+    if (ndef.encodeNdefMessage(records).length <= capacity) {
+      return records;
+    }
+  }
+  return candidates.last;
+}
+
+Future<BioPayNfcCardPayload?> readBioPayNfcCardPayloadFromActiveTag({
+  bool? cached,
+}) async {
+  final records = await FlutterNfcKit.readNDEFRecords(cached: cached);
+  return bioPayNfcCardPayloadFromRecords(records);
+}
+
+BioPayNfcCardPayload? bioPayNfcCardPayloadFromRecords(
+  Iterable<ndef.NDEFRecord> records,
+) {
   for (final record in records) {
     final payload = _payloadFromRecord(record);
     if (payload != null) return payload;

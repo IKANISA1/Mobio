@@ -1,0 +1,23 @@
+clickable=True bounds=[871,180][1014,323] text='' desc='Notifications' class=android.widget.Button
+clickable=True bounds=[113,425][540,549] text='' desc='Passenger\nPassenger' class=android.widget.Button
+clickable=True bounds=[540,428][967,546] text='' desc='Driver\nDriver' class=android.widget.Button
+clickable=True bounds=[66,661][1014,1074] text='' desc='Nearby drivers\nDrivers\n0' class=android.widget.Button
+clickable=True bounds=[66,1140][349,1385] text='' desc='Nearby\nNearby' class=android.widget.Button
+clickable=True bounds=[382,1140][665,1385] text='' desc='Schedule\nSchedule' class=android.widget.Button
+clickable=True bounds=[698,1140][1014,1385] text='' desc='Trips\nTrips' class=android.widget.Button
+clickable=True bounds=[121,1484][447,1606] text='' desc='Moto Taxi vehicle filter\nMoto Taxi' class=android.widget.Button
+clickable=True bounds=[469,1484][696,1606] text='' desc='Bus vehicle filter\nBus' class=android.widget.Button
+clickable=True bounds=[718,1484][950,1606] text='' desc='Cab vehicle filter\nCab' class=android.widget.Button
+clickable=True bounds=[972,1484][981,1606] text='' desc='Truck vehicle filter\nTruck' class=android.widget.Button
+clickable=False bounds=[198,1734][360,1798] text='' desc='Nearby' class=android.view.View
+clickable=False bounds=[198,1803][270,1853] text='' desc='Live' class=android.view.View
+clickable=True bounds=[838,1727][1014,1859] text='' desc='All' class=android.widget.Button
+clickable=False bounds=[66,1903][1014,2274] text='' desc='No drivers nearby\nNo drivers nearby' class=android.view.View
+clickable=True bounds=[77,2065][309,2219] text='' desc='Home tab, Current tab' class=android.widget.Button
+clickable=True bounds=[77,2065][309,2219] text='' desc='Home' class=android.view.View
+clickable=True bounds=[309,2065][540,2219] text='' desc='Trips tab, Switch tab' class=android.widget.Button
+clickable=True bounds=[309,2065][540,2219] text='' desc='Trips' class=android.view.View
+clickable=True bounds=[540,2065][772,2219] text='' desc='BioPay tab, Switch tab' class=android.widget.Button
+clickable=True bounds=[540,2065][772,2219] text='' desc='BioPay' class=android.view.View
+clickable=True bounds=[771,2065][1003,2219] text='' desc='Profile tab, Switch tab' class=android.widget.Button
+clickable=True bounds=[771,2065][1003,2219] text='' desc='Profile' class=android.view.View

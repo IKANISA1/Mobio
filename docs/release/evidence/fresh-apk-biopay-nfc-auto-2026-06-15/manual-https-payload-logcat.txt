@@ -1,0 +1,1155 @@
+--------- beginning of main
+06-15 14:45:57.907  8146  8172 I DialerDarpaEnabledFn: com.android.dialer.darpa.impl.DarpaEnabledFn.isEnabled:24 unsupported SDK [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:57.912  8146  8146 I DialerMainActivityPeer: com.android.dialer.main.impl.MainActivityPeer.onCreate:96 onCreate
+06-15 14:45:57.913  8146  8146 I DialerRevertedFlagsDetector: com.android.dialer.compat.directboot.RevertedFlagsDetector.interacted:84 direct boot is not causing flags to use default values
+06-15 14:45:57.914  8146  8170 I DialerDialerCarAppServiceStateUpdater: com.android.dialer.androidauto.impl.carservice.DialerCarAppServiceStateUpdater$updateCarAppServiceState$1.invokeSuspend:57 CarAppService enabled state: desiredValue: false, protoStoreValue: false
+06-15 14:45:57.914  8146  8170 I DialerDialerCarAppServiceStateUpdater: com.android.dialer.androidauto.impl.carservice.DialerCarAppServiceStateUpdater$updateCarAppServiceState$1.invokeSuspend:70 Skipping CarAppService PackageManager state update
+06-15 14:45:57.928  8146  8146 I DialerSharpieEnabledFn: com.android.dialer.sharpie.enabledfn.SharpieEnabledFn.isEnabled:35 disabled by flag [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:57.932  8146  8146 I DialerMainFragmentPeer: com.android.dialer.main.impl.ui.MainFragmentPeer.onCreate:283 enter
+06-15 14:45:57.932  8146  8146 I DialerMainFragmentPeer: com.android.dialer.main.impl.ui.MainFragmentPeer.onCreate:284 savedInstanceState non-null: false
+06-15 14:45:57.933  8146  8146 I DialerRttSettingsEnabledFn: com.android.dialer.rtt.settings.impl.RttSettingsEnabledFn.isEnabled:32 qpr2 build or higher, enabling [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:57.935  8146  8146 D EmbeddingBackend: No supported embedding extension found
+06-15 14:45:57.935  8146  8146 I DialerActivityEmbedding: com.android.dialer.largescreensupport.activityembedding.ActivityEmbedding.listenSplitInfoChangeOnStateResumed:133 split is not supported
+06-15 14:45:57.935  8146  8146 I DialerCallLogFragmentDataService: com.android.dialer.calllog.dataservice.CallLogFragmentDataService.loadInitialUiModel:41 loadInitialUiModel
+06-15 14:45:57.936  8146  8146 I DialerCallLogFragmentDataService: com.android.dialer.calllog.dataservice.CallLogFragmentDataService.loadInitialUiModel:48 initialUiModel set and stared loading
+06-15 14:45:57.936  8146  8146 I DialerPostCallFragmentPeer: com.android.dialer.postcall.impl.ui.PostCallFragmentPeer.create:108 PostCall fragment created
+06-15 14:45:57.936  8146  8170 I DialerCallLogFragmentDataService: com.android.dialer.calllog.dataservice.CallLogFragmentDataService.loadMinimalUiModel:108 loading data to be used on startup
+06-15 14:45:57.936  8146  8170 I DialerCallLogFragmentDataService: com.android.dialer.calllog.dataservice.CallLogFragmentDataService.loadUiModelWithProducer:132 loadUiModel
+06-15 14:45:57.937  8146  8170 I DialerCoalescedRowsDao: com.android.dialer.calllog.coalescer.CoalescedRowsDao.loadForAllCallsInConversationHistory:150 loadForAllCallsInConversationHistory
+06-15 14:45:57.938  8146  8146 I DialerMainFragmentIntentListener: com.android.dialer.main.impl.service.MainFragmentIntentListener.handleIntent:32 enter
+06-15 14:45:57.938  8146  8170 I DialerMainActivityRetainedStateController: com.android.dialer.main.impl.service.MainActivityRetainedStateController.shouldBypassDefaultDialerCheck:197 shouldBypassDefaultDialerCheck called
+06-15 14:45:57.938  8146  8146 I DialerMainFragmentDataService: com.android.dialer.main.impl.service.MainFragmentDataService.selectTab:162 selected tab 5
+06-15 14:45:57.939  8146  8146 I DialerSearchDialIntentListener: com.android.dialer.main.impl.ui.searchcontainer.SearchDialIntentListener.handleIntent:41 set dialpad input string from the intent
+06-15 14:45:57.939  8146  8167 I DialerSingletonScopedExternalsLogging: com.google.android.dialershared.externals.logging.SingletonScopedExternalsLogging.recordCallMethodInvocation:75 event: TELEPHONY_IS_EMERGENCY_NUMBER, function parameters: [false], return value: Default
+06-15 14:45:57.939  8146  8146 I DialerActivityEmbedding: com.android.dialer.largescreensupport.activityembedding.ActivityEmbedding.init:71 isSplitSupported: false
+06-15 14:45:57.939  8146  8146 I DialerInternalSemanticEventLogger: com.android.dialer.cui.impl.InternalSemanticEventLogger.handleEvent:141 CUI event: MAIN_ACTIVITY_ON_CREATE_WITH_DIAL_INTENT; uniqueCallId: null
+06-15 14:45:57.942 25286 25286 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.onboardingconsent.api.ConsentManagerApiService.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsApiService }
+06-15 14:45:57.943  8146  8146 I DialerSystemBars: com.android.dialer.theme.systembars.SystemBars.setLayoutEdgeToEdge:176 enter
+06-15 14:45:57.943  8146  8146 I DialerPrimesLoggerHolder: com.google.android.libraries.performance.primes.metrics.jank.FrameMetricServiceImpl.stopAsFuture:213 Measurement not found: Tidepods.Voice.AddCallButtonController.addCallClicked
+06-15 14:45:57.945  8146  8146 I DialerWindowLayoutProviderImpl: com.android.dialer.windowlayout.impl.WindowLayoutProviderImpl.updateWindowLayout:72 enter
+06-15 14:45:57.946  8146  8146 I DialerWindowLayoutProviderImpl: com.android.dialer.windowlayout.impl.WindowLayoutProviderImpl.updateWindowLayout:82 windowLayout set to # woy@837e38
+06-15 14:45:57.947 25286 25997 I ConsentManagerApiServic: (REDACTED) ConsentManagerApiService onGetService success %s
+06-15 14:45:57.955  8146  8146 D CompatibilityChangeReporter: Compat change id reported: 210923482; UID 10179; state: ENABLED
+06-15 14:45:57.964  8146  8186 I DialerCoalescedRowsDao: com.android.dialer.calllog.coalescer.CoalescedRowsDao.loadForAllCallsInConversationHistory:169 Finished loading coalesced rows for conversation history.
+06-15 14:45:57.965  8146  8185 I DialerBeeslyEnabledFn: com.android.dialer.beesly.enabledfn.BeeslyEnabledFn.isBeeslyV2Enabled:53 beesly V2 disabled by flag [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:57.966  8146  8185 I DialerFermatEnabledFn: com.android.dialer.fermat.enabledfn.FermatEnabledFn.shouldBindCallLogModules:26 unsupported SDK [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:57.973 25286 25286 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.notifications.capping.api.NotificationsCappingApiService.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsApiService }
+06-15 14:45:57.973 25286 25286 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.notifications.capping.api.NotificationsCappingApiService.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.GmsApiService }
+06-15 14:45:57.974  8146  8146 I DialerMainFragmentPeer: com.android.dialer.main.impl.ui.MainFragmentPeer.setUpNavigation:522 enter
+06-15 14:45:57.974  8146  8146 I DialerMainFragmentPeer: com.android.dialer.main.impl.ui.MainFragmentPeer.setUpNavigationBarView:528 enter
+06-15 14:45:57.974  8146  8146 I DialerMainFragmentPeer: com.android.dialer.main.impl.ui.MainFragmentPeer.onCreateView:349 SearchBarFragment does not exist, creating a new one and committing
+06-15 14:45:57.979  8146  8185 I DialerCallingNetworksImpl: com.android.dialer.callingnetworks.impl.CallingNetworksImpl.getCallingNetworksAvailabilitySync:137 enable HD plus icon flag is disabled [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:57.979  8146  8185 I DialerPhoneAccountInfoFetcher: com.android.dialer.phoneaccount.PhoneAccountInfoFetcher.getPhoneAccountInfo:152 Updating PhoneAccountInfo cache for phone account handle 'ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 11, UserHandle{0}':
+06-15 14:45:57.979  8146  8185 I DialerPhoneAccountInfoFetcher: Redacted-14-chars
+06-15 14:45:57.983  8146  8185 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:57.983  8146  8185 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:57.988  8146  8146 I ContentCaptureHelper: Setting logging level to OFF
+06-15 14:45:57.988  8146  8188 I DialerDefaultDialerImpl: com.android.dialer.defaultdialer.impl.DefaultDialerImpl.isDefaultDialer:40 enter
+06-15 14:45:57.989  8146  8185 I DialerFermatFeatureResolver: com.android.dialer.fermat.enabledfn.FermatFeatureResolver.isCallNotesEnabled:64 [Call Notes] unsupported SDK [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:57.989  8146  8185 I DialerFermatFeatureResolver: com.android.dialer.fermat.enabledfn.FermatFeatureResolver.isCallRecordingEnabled:42 [Call Recording] unsupported SDK [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:57.989  8146  8185 I DialerFermatFeatureResolver: com.android.dialer.fermat.enabledfn.FermatFeatureResolver.getFermatEnabledFeature:100 Fermat not supported. [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:57.990  8146  8146 I DialerMainActivityPeer: com.android.dialer.main.impl.MainActivityPeer.onResume:222 registered GrowthKit and HaTS callbacks
+06-15 14:45:57.990  8146  8146 I DialerMainFragmentPeer: com.android.dialer.main.impl.ui.MainFragmentPeer.onResume:386 enter
+06-15 14:45:57.990  8146  8185 I DialerPhoneAccountInfoFetcher: com.android.dialer.phoneaccount.PhoneAccountInfoFetcher.getPhoneAccountInfo:133 PhoneAccount was not found for handle:'ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 8, UserHandle{0}'
+06-15 14:45:57.991  8146  8186 I DialerRttConfigurationLoaderImpl: com.android.dialer.rtt.settings.impl.configuration.RttConfigurationLoaderImpl.load:73 Load RTT configuration without optimizing
+06-15 14:45:57.992  8146  8180 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.updateSmartDialDatabase:783 forceUpdate
+06-15 14:45:57.992  8146  8183 I DialerDialerGlobalContentObservers: com.android.dialer.globalcontentobserver.DialerGlobalContentObservers.registerAll:53 registering SuggestContactsGlobalContentObserver
+06-15 14:45:57.994  8146  8174 I DialerDefaultDialerImpl: com.android.dialer.defaultdialer.impl.DefaultDialerImpl.isDefaultDialer:40 enter
+06-15 14:45:57.997  8146  8183 I DialerDialerGlobalContentObservers: com.android.dialer.globalcontentobserver.DialerGlobalContentObservers.registerAll:66 SuggestContactsGlobalContentObserver registered
+06-15 14:45:57.997  8146  8183 I DialerDialerGlobalContentObservers: com.android.dialer.globalcontentobserver.DialerGlobalContentObservers.registerAll:53 registering SystemBlockedNumberGlobalContentObserver
+06-15 14:45:57.997  8146  8146 D CompatibilityChangeReporter: Compat change id reported: 237531167; UID 10179; state: DISABLED
+06-15 14:45:57.998 25286 25286 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.auth.service.START pkg=com.google.android.gms }
+06-15 14:45:57.998 25286 25286 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.auth.service.START pkg=com.google.android.gms }
+06-15 14:45:58.000  8146  8183 I DialerDialerGlobalContentObservers: com.android.dialer.globalcontentobserver.DialerGlobalContentObservers.registerAll:66 SystemBlockedNumberGlobalContentObserver registered
+06-15 14:45:58.001  8146  8184 W DialerPostCallDao: com.android.dialer.postcall.impl.storage.PostCallDao.isPostCall:94 received null call disconnect time, returning false [CONTEXT disable_client_error_logging=true ]
+06-15 14:45:58.001  8146  8183 I DialerDialerGlobalContentObservers: com.android.dialer.globalcontentobserver.DialerGlobalContentObservers.registerAll:53 registering SystemCallLogGlobalContentObserver
+06-15 14:45:58.002  8146  8180 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.updateSmartDialDatabase:798 last updated at 0
+06-15 14:45:58.003  8146  8183 I DialerDialerGlobalContentObservers: com.android.dialer.globalcontentobserver.DialerGlobalContentObservers.registerAll:66 SystemCallLogGlobalContentObserver registered
+06-15 14:45:58.003  8146  8183 I DialerAnnotatedCallLogRefreshStarterImpl: com.android.dialer.calllog.refresh.impl.AnnotatedCallLogRefreshStarterImpl.refreshWithoutDirtyCheck:63 refreshWithoutDirtyCheck
+06-15 14:45:58.003  8146  8172 I DialerAnnotatedCallLogRefreshRequestRegulator: com.android.dialer.calllog.refresh.impl.AnnotatedCallLogRefreshRequestRegulator.throttleInternalSequentially:125 throttle sequentially
+06-15 14:45:58.003  8146  8172 I DialerAnnotatedCallLogRefreshRequestRegulator: com.android.dialer.calllog.refresh.impl.AnnotatedCallLogRefreshRequestRegulator.throttleInternalSequentially:180 Refreshing without dirty check
+06-15 14:45:58.004  8146  8172 I DialerRefreshAnnotatedCallLogWorker: com.android.dialer.calllog.refresh.impl.RefreshAnnotatedCallLogWorker.refresh:150 submitting serialized refresh request
+06-15 14:45:58.004  8146  8172 I DialerRefreshAnnotatedCallLogWorker: com.android.dialer.calllog.refresh.impl.RefreshAnnotatedCallLogWorker.rebuildIfNecessary:174 isDirty: true
+06-15 14:45:58.004  8146  8172 I DialerAtlasEnabledFn: com.android.incallui.atlas.ui.impl.AtlasEnabledFn.isEnabled:38 atlas disabled [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.004  8146  8177 W Parcel  : Expecting binder but got null!
+06-15 14:45:58.004  8146  8172 I DialerDobbyEnabledFn: com.android.dialer.dobby.enabledfn.DobbyEnabledFn.isEnabled:23 disabled by flag [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.004  8146  8172 I DialerFidesEnabledFn: com.android.dialer.fides.impl.FidesEnabledFn.isEnabled:27 disabled by flag [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.004  8146  8172 I DialerXatuEnabledFn: com.android.dialer.xatu.impl.XatuEnabledFn.isEnabled:44 disabled by directbootflag [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.005  8146  8188 I DialerRttDeviceCompatibility: com.android.dialer.rtt.settings.impl.configuration.RttDeviceCompatibility.isIgnoreRttModeFlagSet:72 RTT carrier config ignore_rtt_mode_setting_bool is enabled.
+06-15 14:45:58.011  8146  8172 I DialerB2cEnrichedCallingEnabledFn: com.android.dialer.b2cenrichedcalling.enabledfn.B2cEnrichedCallingEnabledFn.isEnabled:24 unsupported SDK [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.012  8146  8170 I DialerRefreshAnnotatedCallLogWorker: com.android.dialer.calllog.refresh.impl.RefreshAnnotatedCallLogWorker.fillAndTime:293 filling SystemCallLogDataSource
+06-15 14:45:58.014  8146  8183 I DialerHaloEnabledFn: com.android.dialer.calllog.halo.impl.enabledfn.HaloEnabledFn.isEnabled:28 disabled by major sdk [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.015  8146  8146 I DialerMainActivityStartupMonitor: com.android.dialer.startup.mainactivitystartup.MainActivityStartupMonitor.onApplicationCreated$lambda$0:32 mainActivityCreated: true
+06-15 14:45:58.016  8146  8146 I DialerFlags: com.android.dialer.phenotype.Flags.registerDialerMendelConfigPackage:147 phenotype register status: true
+06-15 14:45:58.016  8146  8188 I DialerRttDeviceCompatibility: com.android.dialer.rtt.settings.impl.configuration.RttDeviceCompatibility.isIgnoreRttModeFlagSet:72 RTT carrier config ignore_rtt_mode_setting_bool is enabled.
+06-15 14:45:58.016  8146  8188 I DialerRttDeviceCompatibility: com.android.dialer.rtt.settings.impl.configuration.RttDeviceCompatibility.isDeviceSupported:54 [RTT] isDeviceSupported: false
+06-15 14:45:58.016  8146  8172 I DialerRttConfigurationLoaderImpl: com.android.dialer.rtt.settings.impl.configuration.RttConfigurationLoaderImpl.internalLoad:91 Is device supported for RTT: false
+06-15 14:45:58.018 13532 14209 I euth    : (REDACTED) HDM. appOpsListener %s %s
+06-15 14:45:58.019 13532 14209 I euth    : (REDACTED) HDM. Ignoring irrelevant audio permission changes for package %s
+06-15 14:45:58.021  8146  8146 I DialerMainFragmentPeer: com.android.dialer.main.impl.ui.MainFragmentPeer$subscriptionCallbacks$1.onNewData:160 enter
+06-15 14:45:58.021  8146  8146 I DialerMainFragmentPeer: com.android.dialer.main.impl.ui.MainFragmentPeer.showMainScreen:739 showing main screen for selectedTab 5
+06-15 14:45:58.021  8146  8146 I DialerDialpadMainScreenFeatureProvider: com.android.dialer.main.impl.ui.searchcontainer.DialpadMainScreenFeatureProvider.createScreen:29 creating dialpad fragment
+06-15 14:45:58.021  8146  8146 I DialerNewSearchEnabledFn: com.android.dialer.search.NewSearchEnabledFn.isEnabled:22 new search enabled: false [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.022  8146  8146 I DialerMainFragmentPeer: com.android.dialer.main.impl.ui.MainFragmentPeer.showOrAdd:1225 add fragment dialpad_fragment
+06-15 14:45:58.023  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.onCreate:107 enter
+06-15 14:45:58.023  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.onCreateView:142 enter
+06-15 14:45:58.025  5844  6578 V GH.ProjStateSvc: No binder to the car, notifying not projecting
+06-15 14:45:58.028  8146  8146 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:58.028  8146  8146 I DialerPreCallDialpadFragmentPeer: com.android.dialer.dialpadview.ui.PreCallDialpadFragmentPeer.onAttach:281 enter
+06-15 14:45:58.028  8146  8146 I DialerPreCallDialpadFragmentPeer: com.android.dialer.dialpadview.ui.PreCallDialpadFragmentPeer.onCreate:287 enter
+06-15 14:45:58.029  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.onViewCreated:178 enter
+06-15 14:45:58.029  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.onViewCreated:187 onViewCreated
+06-15 14:45:58.031  8146  8146 D CompatibilityChangeReporter: Compat change id reported: 171228096; UID 10179; state: ENABLED
+06-15 14:45:58.040  8146  8146 I DialerDefaultProcessValidator: com.google.apps.tiktok.contrib.work.impl.DefaultProcessValidator.validateAsynchronouslyAndMaybeCrash:68 Validating WorkManager process
+06-15 14:45:58.041  8146  8146 D WM-PackageManagerHelper: Skipping component enablement for androidx.work.impl.background.systemjob.SystemJobService
+06-15 14:45:58.041  8146  8146 D WM-Schedulers: Created SystemJobScheduler and enabled SystemJobService
+06-15 14:45:58.047  8146  8168 I DialerDefaultProcessValidator: com.google.apps.tiktok.contrib.work.impl.DefaultProcessValidator.validateInternal:99 Processes: NONE, true, com.google.android.dialer, com.google.android.dialer
+06-15 14:45:58.047  8146  8168 D WM-ForceStopRunnable: The default process name was not specified.
+06-15 14:45:58.048  8146  8168 D WM-ForceStopRunnable: Performing cleanup operations.
+06-15 14:45:58.051  8941  8941 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.common.telemetry.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+06-15 14:45:58.057  8146  8146 I DialerWifiCallingIconsEnabledFn: com.android.dialer.wificallingicons.impl.enabledfn.WifiCallingIconsEnabledFn.isEnabled:84 2 unsupported SIM present in device, feature disabled. [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.058  8146  8146 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:58.059  8146  8146 I DialerSupportUiListener: com.android.dialer.common.concurrent.SupportUiListener.create:83 creating new SupportUiListener for SearchFragment.suggestedContactsQueryLoading
+06-15 14:45:58.059  8146  8146 I DialerSupportUiListener: com.android.dialer.common.concurrent.SupportUiListener.create:83 creating new SupportUiListener for SearchFragment.enhancedSearchLoading
+06-15 14:45:58.059  8146  8146 I DialerSupportUiListener: com.android.dialer.common.concurrent.SupportUiListener.create:83 creating new SupportUiListener for SearchFragment.wifiCallingIconsConfigForNonDefaultCp2Loading
+06-15 14:45:58.059  8146  8146 I DialerSupportUiListener: com.android.dialer.common.concurrent.SupportUiListener.create:83 creating new SupportUiListener for SearchFragment.businessMessagingInfoLoading
+06-15 14:45:58.059  8146  8146 I DialerSupportUiListener: com.android.dialer.common.concurrent.SupportUiListener.create:83 creating new SupportUiListener for SearchFragment.timeKeeperDetailsLoading
+06-15 14:45:58.059  8146  8146 I DialerSearchFragment: com.android.dialer.searchfragment.list.SearchFragment.onCreateLoader:423 loading cursor: 2
+--------- beginning of system
+06-15 14:45:58.060  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 168419799; UID 10475; state: DISABLED
+06-15 14:45:58.060  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 273564678; UID 10475; state: DISABLED
+06-15 14:45:58.061  8146  8146 I DialerPreCallDialpadFragmentPeer: com.android.dialer.dialpadview.ui.PreCallDialpadFragmentPeer.onCreateView:306 enter
+06-15 14:45:58.093  8146  8168 D WM-SystemJobScheduler: Reconciling jobs
+06-15 14:45:58.105  8146  8183 I DialerSystemCallLogDataSource: com.android.dialer.calllog.datasources.systemcalllog.SystemCallLogDataSource.fillFromSystemCallLog:205 found 999 entries
+06-15 14:45:58.107  8146  8183 I DialerSystemCallLogDataSource: com.android.dialer.calllog.datasources.systemcalllog.SystemCallLogDataSource.fillFromSystemCallLog:296 found 0 call log entries to remove
+06-15 14:45:58.110  8146  8168 D CompatibilityChangeReporter: Compat change id reported: 160794467; UID 10179; state: ENABLED
+06-15 14:45:58.111  8146  8168 D WM-ForceStopRunnable: Application was force-stopped, rescheduling.
+06-15 14:45:58.111  8146  8172 I DialerRefreshAnnotatedCallLogWorker: com.android.dialer.calllog.refresh.impl.RefreshAnnotatedCallLogWorker.fillAndTime:293 filling CallLogChangeBroadcaster
+06-15 14:45:58.113  8146  8170 I DialerBeeslyEnabledFn: com.android.dialer.beesly.enabledfn.BeeslyEnabledFn.isEnabled:35 disabled by flag [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.113  8146  8170 I DialerBeeslyEnabledFn: com.android.dialer.beesly.enabledfn.BeeslyEnabledFn.supportActions:62 disabled by beesly feature [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.114  8146  8170 I DialerRefreshAnnotatedCallLogWorker: com.android.dialer.calllog.refresh.impl.RefreshAnnotatedCallLogWorker.fillAndTime:293 filling PhoneLookupDataSource
+06-15 14:45:58.121  8146  8168 D WM-SystemJobScheduler: Scheduling work ID 5dc64055-cfcd-41aa-8bcd-131fe3682b86Job ID 25304
+06-15 14:45:58.124  8146  8168 D WM-SystemJobScheduler: Scheduling work ID f3ab7c8d-7031-4e58-9c4c-77acd9147c1eJob ID 25297
+06-15 14:45:58.124  8146  8146 I DialerLegacyCountryDetector: com.android.dialer.location.LegacyCountryDetector.getCurrentCountryIso:98 returning Redacted-2-chars
+06-15 14:45:58.126  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.onStart:231 enter
+06-15 14:45:58.127  8146  8168 D WM-SystemJobScheduler: Scheduling work ID 0e6de5eb-e373-4602-a97b-e885895a477eJob ID 25292
+06-15 14:45:58.127  8146  8146 I DialerPreCallDialpadFragmentPeer: com.android.dialer.dialpadview.ui.PreCallDialpadFragmentPeer.onStart:351 enter
+06-15 14:45:58.129  8146  8146 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:58.130  8146  8168 D WM-SystemJobScheduler: Scheduling work ID adf10736-9285-4d56-a7a2-22b341758328Job ID 25305
+06-15 14:45:58.132  8146  8168 D WM-SystemJobScheduler: Scheduling work ID 3e1f2ffb-4522-454c-84fb-8f9237797a0eJob ID 25285
+06-15 14:45:58.132  8146  8146 I DialerMainFragmentPeer: com.android.dialer.main.impl.ui.MainFragmentPeer.updateMenuInFragment:1113 updating search menu in the SearchBarFragment
+06-15 14:45:58.134  8146  8168 D WM-SystemJobScheduler: Scheduling work ID 496b2704-a4f6-4eb8-ad59-9d9dc0f7a93eJob ID 25291
+06-15 14:45:58.136  8146  8168 D WM-SystemJobScheduler: Scheduling work ID b741d6ea-2b4b-40da-9a0c-befc9f656266Job ID 25293
+06-15 14:45:58.140  8146  8168 D WM-SystemJobScheduler: Scheduling work ID 90c6474f-10ee-4c8b-bf58-4a638e9a0bc8Job ID 25294
+06-15 14:45:58.142  1739  4802 D CoreBackPreview: Window{2ca768d u0 com.google.android.dialer/com.android.dialer.main.impl.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@73f5bee, mPriority=-1}
+06-15 14:45:58.142  1739  4802 D CoreBackPreview: Window{2ca768d u0 com.google.android.dialer/com.android.dialer.main.impl.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@c10d88f, mPriority=0}
+06-15 14:45:58.143  8146  8173 I DialerLegacyCountryDetector: com.android.dialer.location.LegacyCountryDetector.getCurrentCountryIso:98 returning Redacted-2-chars
+06-15 14:45:58.146  8146  8168 D WM-SystemJobScheduler: Scheduling work ID 832ce037-fd99-4397-a406-3d3af929007dJob ID 25416
+06-15 14:45:58.148  8146  8168 D WM-SystemJobScheduler: Scheduling work ID 672942ab-1267-4c07-9eca-ebf353df56f7Job ID 25311
+06-15 14:45:58.150  8146  8168 D WM-SystemJobScheduler: Scheduling work ID 4044147c-5cc7-4bfe-a8ec-061fd72482a1Job ID 25400
+06-15 14:45:58.152  8146  8168 D WM-SystemJobScheduler: Scheduling work ID 001bece0-1ed8-4b14-94e4-11fd78b3797cJob ID 25307
+06-15 14:45:58.152  8146  8173 I DialerSystemBlockedNumberPhoneLookupContributor: com.android.dialer.phonelookup.blockednumber.SystemBlockedNumberPhoneLookupContributor.getMostRecentInfo:106 getMostRecentInfo
+06-15 14:45:58.156  8146  8168 D WM-SystemJobScheduler: Scheduling work ID b8324c24-f8b9-42a3-a5f1-3bda6d52013dJob ID 25401
+06-15 14:45:58.158  8146  8168 D WM-SystemJobScheduler: Scheduling work ID c1d71571-5201-449e-b494-647950cd862bJob ID 25405
+06-15 14:45:58.160  8146  8168 D WM-SystemJobScheduler: Scheduling work ID f47ccb8f-4de5-4e14-bd98-dc7d7975cd35Job ID 25410
+06-15 14:45:58.162  8146  8168 D WM-SystemJobScheduler: Scheduling work ID 79f68e78-3fdc-4980-82b4-81d351cf795bJob ID 25417
+06-15 14:45:58.164  8146  8168 D WM-SystemJobScheduler: Scheduling work ID 7487c349-2071-437b-94b0-86ac100a8ac8Job ID 25418
+06-15 14:45:58.168  8146  8180 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.updateSmartDialDatabase:806 Finished removing deleted and corrupted contacts.
+06-15 14:45:58.170  8146  8168 D WM-SystemJobScheduler: Scheduling work ID daef8cb1-18ca-4785-b441-cf2af5ee401aJob ID 25413
+06-15 14:45:58.175  8146  8185 I DialerFixedDialingNumberPhoneLookupContributor: com.android.dialer.fixeddialingnumber.impl.phonelookup.FixedDialingNumberPhoneLookupContributor.getFdnListFromUri:245 empty cursor
+06-15 14:45:58.180  8146  8168 D WM-SystemJobScheduler: Scheduling work ID 2312f7bf-a3a5-40ff-b1f4-3d4cd97fd145Job ID 25414
+06-15 14:45:58.182  8146  8168 D WM-SystemJobScheduler: Scheduling work ID f7748ba1-9404-404a-8467-1d9105173311Job ID 25415
+06-15 14:45:58.184  8146  8168 D WM-GreedyScheduler: Ignoring {WorkSpec: 0e6de5eb-e373-4602-a97b-e885895a477e}. Requires device idle.
+06-15 14:45:58.184  8146  8168 D WM-GreedyScheduler: Ignoring {WorkSpec: adf10736-9285-4d56-a7a2-22b341758328}. Requires device idle.
+06-15 14:45:58.184  8146  8168 D WM-GreedyScheduler: Ignoring {WorkSpec: 3e1f2ffb-4522-454c-84fb-8f9237797a0e}. Requires device idle.
+06-15 14:45:58.184  8146  8168 D WM-GreedyScheduler: Ignoring {WorkSpec: 496b2704-a4f6-4eb8-ad59-9d9dc0f7a93e}. Requires device idle.
+06-15 14:45:58.184  8146  8168 D WM-GreedyScheduler: Ignoring {WorkSpec: b741d6ea-2b4b-40da-9a0c-befc9f656266}. Requires device idle.
+06-15 14:45:58.184  8146  8168 D WM-GreedyScheduler: Ignoring {WorkSpec: 90c6474f-10ee-4c8b-bf58-4a638e9a0bc8}. Requires device idle.
+06-15 14:45:58.191  7826  7826 E BLASTBufferQueue: [VRI[MainActivity]#0](f:0,a:1) Applying pending transactions on dtor 1
+06-15 14:45:58.192  8146  8168 D WM-PackageManagerHelper: Skipping component enablement for androidx.work.impl.background.systemalarm.RescheduleReceiver
+06-15 14:45:58.195  1111  1451 D AudioFlinger: Client defaulted notificationFrames to 240 for frameCount 960
+06-15 14:45:58.199  1111  1451 D AF::TrackHandle: OpPlayAudio: track:98 usage:3 not muted
+06-15 14:45:58.200  8146  8186 I DialerFixedDialingNumberPhoneLookupContributor: com.android.dialer.fixeddialingnumber.impl.phonelookup.FixedDialingNumberPhoneLookupContributor.getFdnListFromUri:245 empty cursor
+06-15 14:45:58.201  8146  8183 I DialerLegacyCountryDetector: com.android.dialer.location.LegacyCountryDetector.getCurrentCountryIso:98 returning Redacted-2-chars
+06-15 14:45:58.202  8146  8170 I AudioTrack: createTrack_l(1): AUDIO_OUTPUT_FLAG_FAST successful; frameCount 960 -> 960
+06-15 14:45:58.205  8146  8177 I AdrenoGLES-0: QUALCOMM build                   : 85da404, I46ff5fc46f
+06-15 14:45:58.205  8146  8177 I AdrenoGLES-0: Build Date                       : 11/30/20
+06-15 14:45:58.205  8146  8177 I AdrenoGLES-0: OpenGL ES Shader Compiler Version: EV031.31.04.01
+06-15 14:45:58.205  8146  8177 I AdrenoGLES-0: Local Branch                     : promo490_3_Google
+06-15 14:45:58.205  8146  8177 I AdrenoGLES-0: Remote Branch                    : 
+06-15 14:45:58.205  8146  8177 I AdrenoGLES-0: Remote Branch                    : 
+06-15 14:45:58.205  8146  8177 I AdrenoGLES-0: Reconstruct Branch               : 
+06-15 14:45:58.205  8146  8177 I AdrenoGLES-0: Build Config                     : S P 10.0.4 AArch64
+06-15 14:45:58.205  8146  8177 I AdrenoGLES-0: Driver Path                      : /vendor/lib64/egl/libGLESv2_adreno.so
+06-15 14:45:58.207  8146  8170 I DialerPreCallDialpadToneController: com.android.dialer.dialpadview.controller.PreCallDialpadToneController.init:87 Time for ToneGenerator creation: 78
+06-15 14:45:58.210  8146  8183 I DialerSpamDatabaseUtils: com.android.dialer.spam.inapp.SpamDatabaseUtils.getUserSpamListStatus:528 empty cursor returned
+06-15 14:45:58.218  8146  8177 I AdrenoGLES-0: PFP: 0x016ee190, ME: 0x00000000
+06-15 14:45:58.225  8146  8177 W AdrenoUtils: <ReadGpuID_from_sysfs:197>: Failed to open /sys/class/kgsl/kgsl-3d0/gpu_model
+06-15 14:45:58.225  8146  8177 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
+06-15 14:45:58.231   704   747 I SDM     : HWCDisplay::GetColorModeCount: Supported color mode count = 3
+06-15 14:45:58.232  8146  8177 E OpenGLRenderer: Unable to match the desired swap behavior.
+06-15 14:45:58.241   645   645 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by android.widget.LinearLayout{819bd96 V.E...... ......ID 22,22-1058,200} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by android.widget.LinearLayout{2bd9d17 V.E...... ......ID 0,0-1080,825} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by android.widget.LinearLayout{7631504 V.E...... ......ID 22,222-1058,401} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by android.widget.LinearLayout{aaf5aed V.E...... ......ID 22,423-1058,602} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by android.widget.LinearLayout{aac1d22 V.E...... ......ID 22,624-1058,803} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.libraries.communications.ux.views.dialpad.DialpadKey{674f3b3 VFE...CL. ......ID 0,0-330,178 #7f0b0534 app:id/one} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by android.widget.LinearLayout{17e7d70 V.E...... ......I. 0,0-0,0} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by android.support.v7.widget.AppCompatImageView{1b3b8e9 V.ED..... ......ID 0,0-0,0 #7f0b029d app:id/dialpad_key_icon} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{912e96e V.ED..... ......ID 0,0-0,49 #7f0b029f app:id/dialpad_key_number} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{941180f V.ED..... ......ID 0,49-0,98 #7f0b029e app:id/dialpad_key_letters} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{a6009c V.ED..... ......ID 0,0-0,49 #7f0b029f app:id/dialpad_key_number} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{f85faa5 V.ED..... ......ID 0,49-0,98 #7f0b029e app:id/dialpad_key_letters} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{f082e7a V.ED..... ......ID 0,0-0,49 #7f0b029f app:id/dialpad_key_number} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{101262b V.ED..... ......ID 0,49-0,98 #7f0b029e app:id/dialpad_key_letters} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{7608a88 V.ED..... ......ID 0,0-0,49 #7f0b029f app:id/dialpad_key_number} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{b809c21 V.ED..... ......ID 0,49-0,98 #7f0b029e app:id/dialpad_key_letters} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{7dab846 V.ED..... ......ID 0,0-0,49 #7f0b029f app:id/dialpad_key_number} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{869fa07 V.ED..... ......ID 0,49-0,98 #7f0b029e app:id/dialpad_key_letters} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{7b7c734 V.ED..... ......ID 0,0-0,49 #7f0b029f app:id/dialpad_key_number} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{e29d95d V.ED..... ......ID 0,49-0,98 #7f0b029e app:id/dialpad_key_letters} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{2fa12d2 V.ED..... ......ID 0,0-0,49 #7f0b029f app:id/dialpad_key_number} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{6a22fa3 V.ED..... ......ID 0,49-0,98 #7f0b029e app:id/dialpad_key_letters} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{8a422a0 V.ED..... ......ID 0,0-0,49 #7f0b029f app:id/dialpad_key_number} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{82fae59 V.ED..... ......ID 0,49-0,98 #7f0b029e app:id/dialpad_key_letters} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{5428a1e V.ED..... ......ID 0,0-0,49 #7f0b029f app:id/dialpad_key_number} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{49e22ff V.ED..... ......ID 0,49-0,98 #7f0b029e app:id/dialpad_key_letters} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{638c8cc V.ED..... ......ID 0,0-0,49 #7f0b029f app:id/dialpad_key_number} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{d23d715 V.ED..... ......ID 0,49-0,98 #7f0b029e app:id/dialpad_key_letters} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{3092a2a V.ED..... ......ID 0,0-0,49 #7f0b029f app:id/dialpad_key_number} during layout: running second layout pass
+06-15 14:45:58.251  8146  8146 W View    : requestLayout() improperly called by com.google.android.material.textview.MaterialTextView{c3bf01b V.ED..... ......ID 0,49-0,98 #7f0b029e app:id/dialpad_key_letters} during layout: running second layout pass
+06-15 14:45:58.269  8146  8170 I DialerRefreshAnnotatedCallLogWorker: com.android.dialer.calllog.refresh.impl.RefreshAnnotatedCallLogWorker.fillAndTime:293 filling VoicemailDataSource
+06-15 14:45:58.269  8146  8170 I DialerRefreshAnnotatedCallLogWorker: com.android.dialer.calllog.refresh.impl.RefreshAnnotatedCallLogWorker.fillAndTime:293 filling SpamCallDataSource
+06-15 14:45:58.269  8146  8170 I DialerSpamCallDataSource: com.android.dialer.spam.calllog.SpamCallDataSource.fill:77 fill
+06-15 14:45:58.269  8146  8170 I DialerSpamCallDataSource: com.android.dialer.spam.calllog.SpamCallDataSource.handleInserts:83 handleInserts
+06-15 14:45:58.270  8146  8170 I DialerRefreshAnnotatedCallLogWorker: com.android.dialer.calllog.refresh.impl.RefreshAnnotatedCallLogWorker.fillAndTime:293 filling CallingNetworksDataSource
+06-15 14:45:58.272  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.272  8146  8146 D CompatibilityChangeReporter: Compat change id reported: 163400105; UID 10179; state: ENABLED
+06-15 14:45:58.273  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.273  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.273  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.273  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.273  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.273  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.273  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.273  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.273  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.273  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.273  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.273  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.274  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.274  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.275  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.275  8146  8146 W TextView: onProvideContentCaptureStructure(): calling assumeLayout()
+06-15 14:45:58.276  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.updateFromNewIntent:303 enter
+06-15 14:45:58.276  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.updateSearchFragment:314 enter
+06-15 14:45:58.276  8146  8146 I DialerTimeKeeperEnabledFn: com.android.dialer.timekeeper.impl.TimeKeeperEnabledFn.isEnabled:29 disabled by flag [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.278  8146  8146 I DialerCallUtil: com.android.dialer.util.call.CallUtil.isVideoEnabled:142 isVideoEnabled: false
+06-15 14:45:58.278  8146  8146 I DialerSearchFragment: com.android.dialer.searchfragment.list.SearchFragment.getActions:1010 isRegularSearch: false, isImsVideoEnabled: false, isDialableNumber: true, showingBusinessMessagingSuggest: false
+06-15 14:45:58.278  8146  8146 I DialerBusinessMessagingSuggestEnabledFn: com.android.dialer.businessvoice.businessmessagingsuggest.impl.BusinessMessagingSuggestEnabledFn.isEnabled:29 disabled by flag [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.278  8146  8146 I DialerCp2DefaultDirectoryContactRetrieverImpl: com.android.dialer.searchfragment.contactretriever.impl.Cp2DefaultDirectoryContactRetrieverImpl.smartDialQuery:182 smartdial searching for Redacted-11-chars
+06-15 14:45:58.279  8146  8146 I DialerSearchFragment: com.android.dialer.searchfragment.list.SearchFragment.onCreateLoader:423 loading cursor: 4
+06-15 14:45:58.280  8146  8146 I DialerSearchFragment: com.android.dialer.searchfragment.list.SearchFragment.onCreateLoader:423 loading cursor: 3
+06-15 14:45:58.280  8146  8146 I DialerPreCallDialpadFragmentPeer: com.android.dialer.dialpadview.ui.PreCallDialpadFragmentPeer.updateDigitsNewIntent:460 enter
+06-15 14:45:58.284  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.updateSearchFragment:314 enter
+06-15 14:45:58.285  8146  8146 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:58.286  8146  8146 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:58.287  8146  8146 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:58.287  8146  8146 I DialerRttPreCallDialpadIntegration: com.android.dialer.rtt.settings.impl.precalldialpad.RttPreCallDialpadIntegration.load:95 enter
+06-15 14:45:58.288  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.onViewCreated$lambda$0:209 postOnUiThread
+06-15 14:45:58.288  8146  8186 I DialerRefreshAnnotatedCallLogWorker: com.android.dialer.calllog.refresh.impl.RefreshAnnotatedCallLogWorker.fillAndTime:293 filling CallRecordingDataSource
+06-15 14:45:58.290  8146  8184 I DialerRttConfigurationLoaderImpl: com.android.dialer.rtt.settings.impl.configuration.RttConfigurationLoaderImpl.load:73 Load RTT configuration without optimizing
+06-15 14:45:58.290  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.update:288 enter
+06-15 14:45:58.290  8146  8186 I DialerCallRecordingDataSource: com.android.dialer.callrecording.impl.calllog.CallRecordingDataSource.fill:81 enter
+06-15 14:45:58.290  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.update:291 skipping update since intent already processed
+06-15 14:45:58.290  8146  8186 I DialerCallRecordingDataSource: com.android.dialer.callrecording.impl.calllog.CallRecordingDataSource.handleInsertsAndUpdatesFromAnnotatedCallLog:96 enter
+06-15 14:45:58.290  8146  8146 I DialerSearchFragment: com.android.dialer.searchfragment.list.SearchFragment.onLoadFinished:445 Loader finished: trr{5411624 id=2}
+06-15 14:45:58.291  8146  8146 I DialerSearchFragment: com.android.dialer.searchfragment.list.SearchFragment.onCreateLoader:423 loading cursor: 3
+06-15 14:45:58.291  8146  8146 W DialerPrimesLoggerHolder: com.google.android.libraries.performance.primes.metrics.jank.FrameMetricServiceImpl.start:170 measurement already started: MeasurementKey{rawStringEventName=null, noPiiEventName=ContactSearch.ExtendedDirectories.Jank, isActivity=false}
+06-15 14:45:58.293  8146  8186 I DialerCallRecordingDataSourceStatusService: com.android.dialer.callrecording.impl.calllog.CallRecordingDataSourceStatusService.getTimestampOfLastSyncedCallRecordingInfoMillis:104 lastSyncedCallRecordingInfoTimestamp 0
+06-15 14:45:58.293  8146  8183 I DialerCallRecordingDataSource: com.android.dialer.callrecording.impl.calllog.CallRecordingDataSource.getAnnotatedCallLogIdsToCallRecordingInfoMap:280 lastSyncedCallRecordingInfoTimestamp 0
+06-15 14:45:58.293  8146  8167 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.getLooseMatchesWhereClaus:1113 Apply substring search and name initial search
+06-15 14:45:58.294  8146  8167 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.getLooseMatches:994 Received 0 entries from the Smart Dial Table
+06-15 14:45:58.294  8146  8167 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.getLooseMatches:1045 Display 0 contacts on the search result page
+06-15 14:45:58.308  1739  1937 I ActivityTaskManager: Displayed com.google.android.dialer/com.android.dialer.main.impl.MainActivity: +720ms
+06-15 14:45:58.312  8146  8184 I DialerCallRecordingDataSource: com.android.dialer.callrecording.impl.calllog.CallRecordingDataSource.handleDeletesFromAnnotatedCallLog:124 enter
+06-15 14:45:58.312  8146  8184 I DialerCallRecordingDataSource: com.android.dialer.callrecording.impl.calllog.CallRecordingDataSource.addDeleteUpdatesFromCallRecordingInitiatedDeletes:172 enter
+06-15 14:45:58.313  8146  8184 I DialerRefreshAnnotatedCallLogWorker: com.android.dialer.calllog.refresh.impl.RefreshAnnotatedCallLogWorker.rebuild:233 applying mutations
+06-15 14:45:58.313  8146  8184 I DialerCallRecordingDataSource: com.android.dialer.callrecording.impl.calllog.CallRecordingDataSource.onSuccessfulFill:211 enter
+06-15 14:45:58.313  8941 12927 I FontLog : (REDACTED) Received query %s, URI %s
+06-15 14:45:58.313  8146  8184 I DialerConversationHistoryCoalescer: com.android.dialer.calllog.coalescer.ConversationHistoryCoalescer.coalesce:81 coalescing conversation history
+06-15 14:45:58.313  8941 12927 I FontLog : (REDACTED) Query [%s] resolved to %s
+06-15 14:45:58.320  8146  8188 I DialerRttDeviceCompatibility: com.android.dialer.rtt.settings.impl.configuration.RttDeviceCompatibility.isIgnoreRttModeFlagSet:72 RTT carrier config ignore_rtt_mode_setting_bool is enabled.
+06-15 14:45:58.322  8941 12927 I FontLog : (REDACTED) Font PFD returned from cache for %s
+06-15 14:45:58.322  8941 12927 I FontLog : (REDACTED) Fetch %s end status %s
+06-15 14:45:58.323  8146  8184 I DialerExpressoEnabledFn: com.android.dialer.expresso.enablefn.ExpressoEnabledFn.isEnabled:28 disabled by flag [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.327  8941  9376 I FontLog : (REDACTED) Pulling font file for id = %d, cache size = %d
+06-15 14:45:58.329  8146  8146 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:58.331  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.onResume:236 enter
+06-15 14:45:58.331  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.onResume:237 isHidden = false
+06-15 14:45:58.332  8146  8146 I DialerSupportUiListener: com.android.dialer.common.concurrent.SupportUiListener.create:83 creating new SupportUiListener for SearchFragment.rttConfigurationLoading
+06-15 14:45:58.332  8146  8184 I DialerFrequentsSuggestContacts: com.android.dialer.suggestcontacts.impl.FrequentsSuggestContacts.retrieveSortedNumberScoresFromDatabase:500 empty database: false
+06-15 14:45:58.332  8146  8146 I DialerCp2DefaultDirectoryContactRetrieverImpl: com.android.dialer.searchfragment.contactretriever.impl.Cp2DefaultDirectoryContactRetrieverImpl.smartDialQuery:182 smartdial searching for Redacted-11-chars
+06-15 14:45:58.333  8146  8146 I DialerPreCallDialpadFragmentPeer: com.android.dialer.dialpadview.ui.PreCallDialpadFragmentPeer.onResume:362 enter
+06-15 14:45:58.333  8146  8146 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:58.334  8146  8146 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:58.334  8146  8188 I DialerRttDeviceCompatibility: com.android.dialer.rtt.settings.impl.configuration.RttDeviceCompatibility.isIgnoreRttModeFlagSet:72 RTT carrier config ignore_rtt_mode_setting_bool is enabled.
+06-15 14:45:58.334  8146  8146 I DialerRttPreCallDialpadIntegration: com.android.dialer.rtt.settings.impl.precalldialpad.RttPreCallDialpadIntegration.load:95 enter
+06-15 14:45:58.334  8146  8188 I DialerRttDeviceCompatibility: com.android.dialer.rtt.settings.impl.configuration.RttDeviceCompatibility.isDeviceSupported:54 [RTT] isDeviceSupported: false
+06-15 14:45:58.334  8146  8173 I DialerRttConfigurationLoaderImpl: com.android.dialer.rtt.settings.impl.configuration.RttConfigurationLoaderImpl.internalLoad:91 Is device supported for RTT: false
+06-15 14:45:58.334  8146  8184 I DialerRttConfigurationLoaderImpl: com.android.dialer.rtt.settings.impl.configuration.RttConfigurationLoaderImpl.load:73 Load RTT configuration without optimizing
+06-15 14:45:58.338  8146  8186 I DialerFrequentsSuggestContacts: com.android.dialer.suggestcontacts.impl.FrequentsSuggestContacts.retrieveSortedNumberScoresFromDatabase:500 empty database: false
+06-15 14:45:58.338  8146  8173 I DialerRttConfigurationLoaderImpl: com.android.dialer.rtt.settings.impl.configuration.RttConfigurationLoaderImpl.load:73 Load RTT configuration without optimizing
+06-15 14:45:58.338  8146  8146 I DialerInternalSemanticEventLogger: com.android.dialer.cui.impl.InternalSemanticEventLogger.handleEvent:141 CUI event: PRE_CALL_DIALPAD_RENDERED_AFTER_CREATED; uniqueCallId: null
+06-15 14:45:58.341  1739  5427 D CompatibilityChangeReporter: Compat change id reported: 214016041; UID 10179; state: ENABLED
+06-15 14:45:58.343  6595  6595 I GoogleInputMethodService: GoogleInputMethodService.onFinishInputView():1661 onFinishInputView(false)
+06-15 14:45:58.343  8146  8176 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.getLooseMatchesWhereClaus:1113 Apply substring search and name initial search
+06-15 14:45:58.344  6595  6595 W SupplementaryKeyboardsWrapper: SupplementaryKeyboardsWrapper.deactivateKeyboard():162 keyboard composing_text_consumer is not activated before!
+06-15 14:45:58.344  6595  6595 I GlobeKeyExtension: GlobeKeyExtension.onDeactivate():154 
+06-15 14:45:58.345  6595  6595 W TooltipLifecycleManager: TooltipLifecycleManager.dismissTooltips():153 Tooltip with id spell_check_add_to_dictionary not found in tooltipManager.
+06-15 14:45:58.346  6595  6595 I VoiceInputManagerWrapper: VoiceInputManagerWrapper.shutdown():135 shutdown() : SHUTDOWN_UNIVERSAL_EXTENSION_ON_DEACTIVATE [RD]
+06-15 14:45:58.346  6595  6595 I UniversalDictationUiProvider: UniversalDictationUiProvider.onDeactivate():69 onDeactivate() [UD]
+06-15 14:45:58.347  8146  8146 I DialerAndroidAutoStatusLookupImpl: com.android.dialer.androidautostatuslookup.impl.AndroidAutoStatusLookupImpl.awaitCallbackWithTimeout:133 liveData timeout exception.
+06-15 14:45:58.351 25286 25997 I PeopleGalProvider: Gal Phone filter started.
+06-15 14:45:58.353  8146  8173 I DialerAndroidAutoStatusLookupImpl: com.android.dialer.androidautostatuslookup.impl.AndroidAutoStatusLookupImpl.isAndroidAutoConnected:97 Android Auto connected in 0 mode [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.353  8146  8186 I DialerAndroidAutoCuiMetadataPopulator: com.android.dialer.androidauto.logging.cuimetadata.AndroidAutoCuiMetadataPopulator.populate:23 androidAutoConnectionStatus: ANDROID_AUTO_NOT_CONNECTED_IN_PROJECTION_MODE [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.353  8146  8173 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:54 Impression: CUI_INFRA_CUI_EVENT_LOGGED
+06-15 14:45:58.354  8146  8176 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.getLooseMatches:994 Received 0 entries from the Smart Dial Table
+06-15 14:45:58.354  8146  8184 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:47 Impression: MAIN_OPEN_WITH_DIALPAD
+06-15 14:45:58.354  8146  8176 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.getLooseMatches:1045 Display 0 contacts on the search result page
+06-15 14:45:58.356  8146  8186 I DialerWindowLayoutCuiMetadataPopulator: com.android.dialer.logging.metadatacontributor.cuimetadata.WindowLayoutCuiMetadataPopulator.populate:25 windowLayout: # anhu@837e38 [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.356  8146  8186 I DialerSessionCuiMetadataPopulator: com.android.dialer.logging.session.cuimetadata.SessionCuiMetadataPopulator.populate:19 sessionId: 74ab14d7-5f1b-4d59-9392-164ac6cdb5e4
+06-15 14:45:58.357  8146  8173 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:54 Impression: CUI_INFRA_ENDED_CUI
+06-15 14:45:58.357  8146  8184 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:54 Impression: REVERTED_FLAGS_DETECTOR_FRESH
+06-15 14:45:58.358  8146  8172 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:47 Impression: APP_LAUNCHED_IN_LIGHT
+06-15 14:45:58.358  8146  8184 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:54 Impression: CALL_SCREEN_INIT_AT_STARTUP
+06-15 14:45:58.359  6595  6912 E BufferQueueProducer: [SurfaceView[InputMethod]#36(BLAST Consumer)36](id:19c300000024,api:0,p:-1,c:6595) disconnect: not connected (req=1)
+06-15 14:45:58.359  6595  6912 W libEGL  : EGLNativeWindowType 0xb400006f89ed1d60 disconnect failed
+06-15 14:45:58.360  8146  8172 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:47 Impression: APP_LAUNCHED
+06-15 14:45:58.361  8146  8186 I DialerTiktokTracingCuiMetadataPopulator: com.android.dialer.logging.tracing.cuimetadata.TiktokTracingCuiMetadataPopulator.populate:17 positiveTraceId: 775044141250007329
+06-15 14:45:58.362  8146  8146 I DialerInternalSemanticEventLogger: com.android.dialer.cui.impl.InternalSemanticEventLogger.handleEvent:141 CUI event: DIALPAD_RENDERED_FROM_NEW_PRE_CALL_DIAL_INTENT; uniqueCallId: null
+06-15 14:45:58.362  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.onViewCreated$lambda$0$1:211 view drawn
+06-15 14:45:58.362  8146  8146 I DialerInternalSemanticEventLogger: com.android.dialer.cui.impl.InternalSemanticEventLogger.handleEvent:141 CUI event: DIALPAD_TAB_RENDERED_AFTER_CREATED; uniqueCallId: null
+06-15 14:45:58.362  8146  8146 I DialerPrimesMetrics: com.android.dialer.metrics.primes.PrimesMetrics.reportOnAppInteractiveIfNotHidden:161 startupType: Search, fragment: rru{90918ef} (325813cc-9c18-4236-9ee0-60b2b79bdcfb id=0x7f0b0787 tag=dialpad_fragment)
+06-15 14:45:58.362  8146  8207 I DialerRttDeviceCompatibility: com.android.dialer.rtt.settings.impl.configuration.RttDeviceCompatibility.isIgnoreRttModeFlagSet:72 RTT carrier config ignore_rtt_mode_setting_bool is enabled.
+06-15 14:45:58.362  8146  8173 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:54 Impression: SMART_DIAL_FORCED_UPDATE
+06-15 14:45:58.363  1739  1937 I ActivityTaskManager: Fully drawn com.google.android.dialer/com.android.dialer.main.impl.MainActivity: +803ms
+06-15 14:45:58.366  6595  6595 I PrimesLoggerHolder: FrameMetricServiceImpl.stopAsFuture():213 Measurement not found: OnConfigurationChanged
+06-15 14:45:58.367  6595  6595 W TooltipLifecycleManager: TooltipLifecycleManager.dismissTooltips():153 Tooltip with id undo_access_point_promotion_banner not found in tooltipManager.
+06-15 14:45:58.371  1739  2881 D CoreBackPreview: Window{8d5d7be u0 rw.mobi.app/rw.mobi.app.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@ae42d5f, mPriority=0}
+06-15 14:45:58.377  8146  8146 I DialerSearchFragment: com.android.dialer.searchfragment.list.SearchFragment.onLoadFinished:445 Loader finished: tqt{af8550b id=4}
+06-15 14:45:58.378  6595  6595 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():2259 
+06-15 14:45:58.379  6595  6595 I Module  : DeviceLockedStatusModuleProvider$Module.updateDeviceLockedStatusInternal():127 repeatCheckTimes = 0, locked = false
+06-15 14:45:58.379  6595  6595 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1446 onStartInput(EditorInfo{EditorInfo{packageName=com.google.android.dialer, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+06-15 14:45:58.381  6595  6595 I AndroidIME: LatinIMEBase.updateInputViewCoverNavigation():321 Update input view padding, isNavbarOverInputWindow=true, bottom inset=132
+06-15 14:45:58.381  8146  8172 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:54 Impression: CUI_INFRA_STARTED_CUI
+06-15 14:45:58.381  6595  6595 I HardKeyTracker: HardKeyTracker.registerKeySequence():201 Register key sequence phm{labelResId=0, callback=cqg@1751bdc, lastModifier=0, keyCodes=[57, 57], actions=[1, 0]}
+06-15 14:45:58.381  6595  6595 I HardKeyTracker: HardKeyTracker.registerKeySequence():201 Register key sequence phm{labelResId=0, callback=cqg@58214e5, lastModifier=0, keyCodes=[58, 58], actions=[1, 0]}
+06-15 14:45:58.382  8146  8186 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:54 Impression: CUI_INFRA_CUI_EVENT_LOGGED
+06-15 14:45:58.384  8146  8172 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:54 Impression: CUI_INFRA_CUI_EVENT_LOGGED
+06-15 14:45:58.385  8146  8186 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:54 Impression: CUI_INFRA_ENDED_CUI
+06-15 14:45:58.388  6595  6595 I Module  : DeviceLockedStatusModuleProvider$Module.updateDeviceLockedStatusInternal():127 repeatCheckTimes = 1, locked = false
+06-15 14:45:58.391  8146  8146 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:58.393  8146  8146 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:58.395  8146  8173 I DialerSessionCuiMetadataPopulator: com.android.dialer.logging.session.cuimetadata.SessionCuiMetadataPopulator.populate:19 sessionId: 74ab14d7-5f1b-4d59-9392-164ac6cdb5e4
+06-15 14:45:58.395  8146  8173 I DialerTiktokTracingCuiMetadataPopulator: com.android.dialer.logging.tracing.cuimetadata.TiktokTracingCuiMetadataPopulator.populate:17 positiveTraceId: 0
+06-15 14:45:58.403  8146  8170 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.407  8146  8146 I DialerInternalSemanticEventLogger: com.android.dialer.cui.impl.InternalSemanticEventLogger.handleEvent:141 CUI event: PRE_CALL_DIALPAD_SHOWN; uniqueCallId: null
+06-15 14:45:58.407  8146  8188 I DialerRttDeviceCompatibility: com.android.dialer.rtt.settings.impl.configuration.RttDeviceCompatibility.isIgnoreRttModeFlagSet:72 RTT carrier config ignore_rtt_mode_setting_bool is enabled.
+06-15 14:45:58.411 11429 11494 I CommonClearcutLogger: [6600:924][11494] Logging impression 15001
+06-15 14:45:58.412 11429 11489 I CommonClearcutLogger: [6600:930][11489] Logging impression 15002
+06-15 14:45:58.413  8146  8170 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:54 Impression: CUI_INFRA_CUI_REMOVED_FROM_TRACKER
+06-15 14:45:58.414  6595  6595 I KeyboardModeUtils: KeyboardModeUtils.getKeyboardBottomOffset():435 inch: 0.000000 ydpi: 443.552002 adjustKeyboardBottomByDisplaySize: false currentDensityDpi: 440 defaultDensityDpi: 440 keyboardBottomToScreenPx: 0 keyboardBottomToNavBarPx: -132 navBarHeight: 132
+06-15 14:45:58.415  8146  8207 I DialerRttDeviceCompatibility: com.android.dialer.rtt.settings.impl.configuration.RttDeviceCompatibility.isIgnoreRttModeFlagSet:72 RTT carrier config ignore_rtt_mode_setting_bool is enabled.
+06-15 14:45:58.415  8146  8207 I DialerRttDeviceCompatibility: com.android.dialer.rtt.settings.impl.configuration.RttDeviceCompatibility.isDeviceSupported:54 [RTT] isDeviceSupported: false
+06-15 14:45:58.415  8146  8170 I DialerRttConfigurationLoaderImpl: com.android.dialer.rtt.settings.impl.configuration.RttConfigurationLoaderImpl.internalLoad:91 Is device supported for RTT: false
+06-15 14:45:58.418 11429 11494 I TY_com.google.android.libraries.communications.conference.service.impl.logging.CommonClearcutL[6600:942][11494] Logging impression 15001
+06-15 14:45:58.420  8146  8188 I DialerRttDeviceCompatibility: com.android.dialer.rtt.settings.impl.configuration.RttDeviceCompatibility.isIgnoreRttModeFlagSet:72 RTT carrier config ignore_rtt_mode_setting_bool is enabled.
+06-15 14:45:58.420  8146  8188 I DialerRttDeviceCompatibility: com.android.dialer.rtt.settings.impl.configuration.RttDeviceCompatibility.isDeviceSupported:54 [RTT] isDeviceSupported: false
+06-15 14:45:58.421 11429 11489 I TY_com.google.android.libraries.communications.conference.service.impl.logging.CommonClearcutL[6600:943][11489] Logging impression 15002
+06-15 14:45:58.422  8146  8185 I DialerRttConfigurationLoaderImpl: com.android.dialer.rtt.settings.impl.configuration.RttConfigurationLoaderImpl.internalLoad:91 Is device supported for RTT: false
+06-15 14:45:58.422  6595  6595 I BaseKeyboardSizeHelper: BaseKeyboardSizeHelper.calculateMaxKeyboardBodyHeight():73 leave 267 height for app when ime window height:2072, header height:121 and isFullscreenMode:false, so the max keyboard body height is:1684
+06-15 14:45:58.423  8146  8184 I DialerCp2DefaultDirectoryContactRetrieverImpl: com.android.dialer.searchfragment.contactretriever.impl.Cp2DefaultDirectoryContactRetrieverImpl.smartDialQuery:195 smart dial query found 0 results
+06-15 14:45:58.423  6595  6595 I BaseKeyboardSizeHelper: BaseKeyboardSizeHelper.calculateMaxKeyboardBodyHeight():73 leave 267 height for app when ime window height:2072, header height:121 and isFullscreenMode:false, so the max keyboard body height is:1684
+06-15 14:45:58.423  6595  6595 I AndroidIME: KeyboardViewManager.updateKeyboardBottomFrame():519 Set bottomFrameHeight = 27 while holderPaddingBottom = 27; navigationHeight = 132
+06-15 14:45:58.428  8146  8173 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.430  8146  8173 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.434 11429 11489 I CommonClearcutLogger: [6600:958][11489] Logging impression 15005
+06-15 14:45:58.434  8146  8184 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.434 11429 11489 I TY_com.google.android.libraries.communications.conference.service.impl.logging.CommonClearcutL[6600:958][11489] Logging impression 15005
+06-15 14:45:58.439  8146  8173 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.444  8146  8173 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.446  8146  8146 I DialerSearchFragment: com.android.dialer.searchfragment.list.SearchFragment.setA11yPaneTitle:1243 Setting accessibility pane title to null
+06-15 14:45:58.449  8146  8146 I DialerCountryCodeProviderImpl: com.android.dialer.assisteddialing.availability.CountryCodeProviderImpl.<init>:55 Using country codes: {CA, ES, GB, IN, JP, US}
+06-15 14:45:58.451  8146  8173 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.455  8146  8170 I DialerCoalescedRowsDao: com.android.dialer.calllog.coalescer.CoalescedRowsDao.saveToFileForAllCallsInConversationHistory:95 saveToFileForAllCallsInConversationHistory
+06-15 14:45:58.456  8146  8170 I DialerCoalescedRowsUpdatedNotifier: com.android.dialer.calllog.coalescer.CoalescedRowsUpdatedNotifier.notifyForConversationHistory:49 notifyForConversationHistory
+06-15 14:45:58.456  8146  8170 I DialerConversationHistoryCoalescer: com.android.dialer.calllog.coalescer.ConversationHistoryCoalescer.coalesce:92 coalesced rows updated
+06-15 14:45:58.457  8146  8183 I DialerSystemCallLogUpdater: com.android.dialer.calllog.refresh.impl.SystemCallLogUpdater.getCallTypeUpdates:203 There are no system call log mutations
+06-15 14:45:58.457  8146  8183 I DialerSystemCallLogUpdater: com.android.dialer.calllog.refresh.impl.SystemCallLogUpdater.updateSystemCallLog:227 empty operations list, will not do anything [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.457  8146  8184 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:47 Impression: ANNOTATED_CALL_LOG_FORCE_REFRESH_NO_CHANGES_NEEDED
+06-15 14:45:58.457 11429 11494 I CommonClearcutLogger: [6600:982][11494] Logging impression 15006
+06-15 14:45:58.458 11429 11494 I TY_com.google.android.libraries.communications.conference.service.impl.logging.CommonClearcutL[6600:982][11494] Logging impression 15006
+06-15 14:45:58.458  6595  6595 I KeyboardModeUtils: KeyboardModeUtils.getKeyboardBottomOffset():435 inch: 0.000000 ydpi: 443.552002 adjustKeyboardBottomByDisplaySize: false currentDensityDpi: 440 defaultDensityDpi: 440 keyboardBottomToScreenPx: 0 keyboardBottomToNavBarPx: -132 navBarHeight: 132
+06-15 14:45:58.459  6595  6595 I BaseKeyboardSizeHelper: BaseKeyboardSizeHelper.calculateMaxKeyboardBodyHeight():73 leave 267 height for app when ime window height:2072, header height:121 and isFullscreenMode:false, so the max keyboard body height is:1684
+06-15 14:45:58.459  6595  6595 I BaseKeyboardSizeHelper: BaseKeyboardSizeHelper.calculateMaxKeyboardBodyHeight():73 leave 267 height for app when ime window height:2072, header height:121 and isFullscreenMode:false, so the max keyboard body height is:1684
+06-15 14:45:58.459  6595  6595 I AndroidIME: KeyboardViewManager.updateKeyboardBottomFrame():519 Set bottomFrameHeight = 27 while holderPaddingBottom = 27; navigationHeight = 132
+06-15 14:45:58.460  8146  8170 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.462  8146  8170 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.463 11429 11489 I CommonClearcutLogger: [6600:987][11489] Logging impression 15008
+06-15 14:45:58.463 11429 11489 I TY_com.google.android.libraries.communications.conference.service.impl.logging.CommonClearcutL[6600:987][11489] Logging impression 15008
+06-15 14:45:58.471  4291  5500 D ForegroundUtils: Foreground UID status:
+06-15 14:45:58.471  4291  5500 D ForegroundUtils: UID: 1002 is in foreground: true
+06-15 14:45:58.471  4291  5500 D ForegroundUtils: UID: 1027 is in foreground: true
+06-15 14:45:58.471  4291  5500 D ForegroundUtils: UID: 10109 is in foreground: false
+06-15 14:45:58.471  4291  5500 D ForegroundUtils: UID: 10155 is in foreground: true
+06-15 14:45:58.471  4291  5500 D ForegroundUtils: UID: 10161 is in foreground: true
+06-15 14:45:58.471  4291  5500 D ForegroundUtils: UID: 10164 is in foreground: true
+06-15 14:45:58.472  4291  5500 D ForegroundUtils: UID: 10179 is in foreground: true
+06-15 14:45:58.472  4291  5500 D ForegroundUtils: UID: 10198 is in foreground: false
+06-15 14:45:58.472  4291  5500 D ForegroundUtils: UID: 10238 is in foreground: false
+06-15 14:45:58.472  4291  5500 D ForegroundUtils: UID: 10243 is in foreground: true
+06-15 14:45:58.472  4291  5500 D ForegroundUtils: UID: 10250 is in foreground: false
+06-15 14:45:58.472  4291  5500 D ForegroundUtils: UID: 10319 is in foreground: true
+06-15 14:45:58.472  4291  5500 D ForegroundUtils: UID: 10903 is in foreground: false
+06-15 14:45:58.472  4291  5500 D ForegroundUtils: UID: 10904 is in foreground: false
+06-15 14:45:58.472  4291  5500 D ForegroundUtils: UID: 10906 is in foreground: false
+06-15 14:45:58.473  8146  8173 I DialerCoalescedRowsDao: com.android.dialer.calllog.coalescer.CoalescedRowsDao.saveToFileForAllCallsInConversationHistory:116 Finished saving coalesced rows for conversation history.
+06-15 14:45:58.476  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 168419799; UID 10906; state: DISABLED
+06-15 14:45:58.476  1739  1739 D CompatibilityChangeReporter: Compat change id reported: 273564678; UID 10906; state: DISABLED
+06-15 14:45:58.480  8146  8170 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.485  8146  8170 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.490  8146  8170 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.499  8146  8170 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.502 11429 11494 I PropagatedFutureUtil: [6601:026][11494] [DONE] Async refresh of user cache
+06-15 14:45:58.502 11429 11489 I PropagatedFutureUtil: [6601:026][11489] [DONE] Async refresh of user cache
+06-15 14:45:58.503 11429 11477 I PropagatedFutureUtil: [6601:027][11477] [DONE] Async refresh of user cache
+06-15 14:45:58.503 11429 11477 I TY_com.google.android.libraries.communications.conference.service.common.PropagatedFutureUtil:[6601:027][11477] [DONE] Async refresh of user cache
+06-15 14:45:58.503 11429 11489 I TY_com.google.android.libraries.communications.conference.service.common.PropagatedFutureUtil:[6601:027][11489] [DONE] Async refresh of user cache
+06-15 14:45:58.503 11429 11494 I TY_com.google.android.libraries.communications.conference.service.common.PropagatedFutureUtil:[6601:027][11494] [DONE] Async refresh of user cache
+06-15 14:45:58.509 11429 11491 I CommonClearcutLogger: [6601:033][11491] Logging impression 14419
+06-15 14:45:58.509 11429 11491 I TY_com.google.android.libraries.communications.conference.service.impl.logging.CommonClearcutL[6601:033][11491] Logging impression 14419
+06-15 14:45:58.512 11429 11489 I PropagatedFutureUtil: [6601:036][11489] [DONE] Async refresh of user cache
+06-15 14:45:58.512 11429 11489 I TY_com.google.android.libraries.communications.conference.service.common.PropagatedFutureUtil:[6601:036][11489] [DONE] Async refresh of user cache
+06-15 14:45:58.513  8146  8170 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.513  7826  7855 I TRuntime.CctTransportBackend: Making request to: https://firebaselogging-pa.googleapis.com/v1/firelog/legacy/batchlog
+06-15 14:45:58.513 11429 11489 I CommonClearcutLogger: [6601:037][11489] Logging impression 15009
+06-15 14:45:58.513 11429 11489 I TY_com.google.android.libraries.communications.conference.service.impl.logging.CommonClearcutL[6601:037][11489] Logging impression 15009
+06-15 14:45:58.515  8146  8170 I DialerMeetCallControllerImpl: com.android.dialer.duo.impl.MeetCallControllerImpl.getDuoKitAvailability:336 DuoKit availability changed. Prev: 0, Current: 3
+06-15 14:45:58.515  8146  8185 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:54 Impression: MEET_AVAILABLE
+06-15 14:45:58.518  8146  8185 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.524  8941  9118 I .gms.persistent: oneway function results for code 1 on binder at 0xb400006e29ec9730 will be dropped but finished with status UNKNOWN_TRANSACTION and reply parcel size 80
+06-15 14:45:58.528  8146  8185 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:45:58.555  1739  4844 W InputManager-JNI: Input channel object '91dd940 Splash Screen com.google.android.dialer (client)' was disposed without first being removed with the input manager!
+06-15 14:45:58.616  2828  2828 V InlineSuggestionRenderService: Releasing inline suggestion view host
+06-15 14:45:58.620  1739  4844 W WindowManager: Failed looking up window session=Session{c435825 2828:u0a10251} callers=com.android.server.wm.WindowManagerService.windowForClientLocked:6050 com.android.server.wm.WindowManagerService.removeWindow:2076 com.android.server.wm.Session.remove:230 
+06-15 14:45:58.620  1739  4844 W InputManager-JNI: Input channel object 'Embedded{-InputMethod} (client)' was disposed without first being removed with the input manager!
+06-15 14:45:58.622  2828  2828 V InlineSuggestionRenderService: Removed the inline suggestion from the cache, current size=0
+06-15 14:45:58.630 25286 29140 W Conscrypt: Could not set socket write timeout: java.net.SocketException: Socket closed
+06-15 14:45:58.630 25286 29140 W Conscrypt: 	at com.google.android.gms.org.conscrypt.Platform.setSocketWriteTimeout(:com.google.android.gms@262263029@26.22.63 (190400-930887546):204)
+06-15 14:45:58.630 25286 29140 W Conscrypt: 	at com.google.android.gms.org.conscrypt.ConscryptFileDescriptorSocket.setSoWriteTimeout(:com.google.android.gms@262263029@26.22.63 (190400-930887546):4)
+06-15 14:45:58.665  8146  8175 I DialerVoicemailStatusDataMigration: com.android.dialer.voicemailstatus.dataservice.impl.VoicemailStatusDataMigration.shouldMigrate:51 already migrated
+06-15 14:45:58.670  8146  8175 I DialerVvmCarrierIdentifierImpl: com.android.dialer.voicemail.service.impl.carriermapping.VvmCarrierIdentifierImpl.getVvmCarrierNameBlocking:101 Looking up carrier name for phone account handle: 8901050098376020008F [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.671  8146  8175 I DialerVvmCarrierIdentifierImpl: com.android.dialer.voicemail.service.impl.carriermapping.VvmCarrierIdentifierImpl.getVvmCarrierName:173 Carrier with ID 1682 for PhoneAccountHandle ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 8901050098376020008F, UserHandle{0} not found in support list [CONTEXT enable_persistent_logger=true ]
+06-15 14:45:58.672  8146  8175 I DialerRestVoicemailEnabledFn: com.android.dialer.voicemail.service.impl.vvmclients.rest.RestVoicemailEnabledFn.isEnabled:87 device does not support REST [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.700  8146  8175 I DialerVvmServiceProviderImpl: com.android.dialer.voicemail.service.impl.VvmServiceProviderImpl.logVvmServiceUnavailable:217 VvmService unavailable! VvmCarrierService exists?: false, VvmConfiguration exists?: false, VvmAccountState exists?: false [CONTEXT enable_persistent_logger=true ratelimit_period="1 MINUTES" ]
+06-15 14:45:58.701  8146  8175 I DialerVoicemailStatusQuery: com.android.dialer.voicemailstatus.dataservice.impl.VoicemailStatusQuery.isStatusActive:329 carrier not supported
+06-15 14:45:58.701  8146  8175 W Settings: Setting airplane_mode_on has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+06-15 14:45:58.707  8146  8175 I DialerVvmCarrierIdentifierImpl: com.android.dialer.voicemail.service.impl.carriermapping.VvmCarrierIdentifierImpl.getVvmCarrierName:173 Carrier with ID 1682 for PhoneAccountHandle ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 89148000002319607039, UserHandle{0} not found in support list [CONTEXT enable_persistent_logger=true ]
+06-15 14:45:58.728  8146  8175 I DialerVoicemailStatusQuery: com.android.dialer.voicemailstatus.dataservice.impl.VoicemailStatusQuery.isStatusActive:329 carrier not supported
+06-15 14:45:58.728  8146  8175 W Settings: Setting airplane_mode_on has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+06-15 14:45:58.731  8146  8175 I DialerVvmCarrierIdentifierImpl: com.android.dialer.voicemail.service.impl.carriermapping.VvmCarrierIdentifierImpl.getVvmCarrierName:173 Carrier with ID 1682 for PhoneAccountHandle ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 8935601202109121107F, UserHandle{0} not found in support list [CONTEXT enable_persistent_logger=true ]
+06-15 14:45:58.748  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303172): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:58.752  8146  8175 I DialerVoicemailStatusQuery: com.android.dialer.voicemailstatus.dataservice.impl.VoicemailStatusQuery.isStatusActive:329 carrier not supported
+06-15 14:45:58.752  8146  8175 W Settings: Setting airplane_mode_on has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+06-15 14:45:58.754  8146  8175 I DialerVvmCarrierIdentifierImpl: com.android.dialer.voicemail.service.impl.carriermapping.VvmCarrierIdentifierImpl.getVvmCarrierName:173 Carrier with ID 1682 for PhoneAccountHandle ComponentInfo{com.android.phone/com.android.services.telephony.TelephonyConnectionService}, 89148000008548753668, UserHandle{0} not found in support list [CONTEXT enable_persistent_logger=true ]
+06-15 14:45:58.751  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303173): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:58.758  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303174): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:58.761  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303175): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:58.768  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303176): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:58.773  8146  8175 I DialerVoicemailStatusQuery: com.android.dialer.voicemailstatus.dataservice.impl.VoicemailStatusQuery.isStatusActive:329 carrier not supported
+06-15 14:45:58.774  8146  8175 W Settings: Setting airplane_mode_on has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+06-15 14:45:58.796  8146  8175 I DialerVoicemailStatusQuery: com.android.dialer.voicemailstatus.dataservice.impl.VoicemailStatusQuery.isStatusActive:329 carrier not supported
+06-15 14:45:58.796  8146  8175 W Settings: Setting airplane_mode_on has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+06-15 14:45:58.820  8146  8175 I DialerVoicemailStatusQuery: com.android.dialer.voicemailstatus.dataservice.impl.VoicemailStatusQuery.isStatusActive:329 carrier not supported
+06-15 14:45:58.820  8146  8175 W Settings: Setting airplane_mode_on has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+06-15 14:45:58.843  8146  8175 I DialerVoicemailStatusQuery: com.android.dialer.voicemailstatus.dataservice.impl.VoicemailStatusQuery.isStatusActive:329 carrier not supported
+06-15 14:45:58.843  8146  8175 W Settings: Setting airplane_mode_on has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+06-15 14:45:58.866  8146  8175 I DialerVoicemailStatusQuery: com.android.dialer.voicemailstatus.dataservice.impl.VoicemailStatusQuery.isStatusActive:329 carrier not supported
+06-15 14:45:58.866  8146  8175 W Settings: Setting airplane_mode_on has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+06-15 14:45:58.907 25286 29140 W Conscrypt: Could not set socket write timeout: java.net.SocketException: Socket closed
+06-15 14:45:58.907 25286 29140 W Conscrypt: 	at com.google.android.gms.org.conscrypt.Platform.setSocketWriteTimeout(:com.google.android.gms@262263029@26.22.63 (190400-930887546):204)
+06-15 14:45:58.907 25286 29140 W Conscrypt: 	at com.google.android.gms.org.conscrypt.ConscryptFileDescriptorSocket.setSoWriteTimeout(:com.google.android.gms@262263029@26.22.63 (190400-930887546):4)
+06-15 14:45:58.919  8146  8146 I DialerVoicemailTabRetainedState: com.android.dialer.voicemail.tab.impl.mainscreenintegration.VoicemailTabRetainedState$getVoicemailTabState$2$1$1$1$2$1.invokeSuspend:117 previousState = VoicemailTabState(tabAvailable=false, unreadVoicemailCount=0, showSearchBar=true)
+06-15 14:45:58.919  8146  8146 I DialerVoicemailTabRetainedState: com.android.dialer.voicemail.tab.impl.mainscreenintegration.VoicemailTabRetainedState$getVoicemailTabState$2$1$1$1$2$1.invokeSuspend:118 currentState = VoicemailTabState(tabAvailable=false, unreadVoicemailCount=0, showSearchBar=true)
+06-15 14:45:58.949  6595  6595 W TooltipLifecycleManager: TooltipLifecycleManager.dismissTooltips():153 Tooltip with id undo_access_point_promotion_banner not found in tooltipManager.
+06-15 14:45:59.046  8146  8180 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.updateSmartDialDatabase:866 Finished building the smart dial table.
+06-15 14:45:59.047  8146  8180 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.updateSmartDialDatabase:888 Finished querying the smart dial table for contact names.
+06-15 14:45:59.048  8146  8180 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.updateSmartDialDatabase:943 Finished recreating index.
+06-15 14:45:59.052  8146  8180 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.updateSmartDialDatabase:949 Finished updating index stats.
+06-15 14:45:59.052  8146  8180 I DialerDialerDatabaseHelper: com.android.dialer.database.DialerDatabaseHelper.updateSmartDialDatabase:955 broadcasting smart dial update
+06-15 14:45:59.269  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-15 14:45:59.284  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-15 14:45:59.422   702  2136 I BpBinder: onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+06-15 14:45:59.438 13987 14072 E OpenGLRenderer: Unable to match the desired swap behavior.
+06-15 14:45:59.449  2850  4426 E OpenGLRenderer: Unable to match the desired swap behavior.
+06-15 14:45:59.460 25286 25997 I PeopleGalProvider: Method 3 completed.
+06-15 14:45:59.460 25286 25997 I PeopleGalProvider: Method 3 finished successfully.
+06-15 14:45:59.462  1739  2881 W ActivityTaskManager: takeTaskSnapshot: taskId=687 not found or not visible
+06-15 14:45:59.463  1739  2881 I InputDispatcher: Channel [Gesture Monitor] swipe-up (server) is stealing touch from [2ca768d com.google.android.dialer/com.android.dialer.main.impl.MainActivity (server), [Gesture Monitor] edge-swipe (server)]
+06-15 14:45:59.464  2850  2850 I LatencyTracker: ACTION_TOGGLE_RECENTS latency=56
+06-15 14:45:59.473  2542  2542 I vol.VolumeDialogImpl: mDialog.dismiss() reason: volume_controller from: com.android.systemui.volume.VolumeDialogImpl$7.onDismissRequested:2
+06-15 14:45:59.478  1739  5427 W ActivityTaskManager: takeTaskSnapshot: taskId=687 not found or not visible
+06-15 14:45:59.488 25286 25997 I PeopleGalProvider: Gal Phone filter started.
+06-15 14:45:59.495  1739  1940 V WindowManager: Unknown focus tokens, dropping reportFocusChanged
+06-15 14:45:59.606  7826  7893 I FA      : Application backgrounded at: timestamp_millis: 1781527557605
+06-15 14:45:59.751  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303362): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:59.758  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303363): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:59.766  1739  1937 I LatencyTracker: ACTION_START_RECENTS_ANIMATION latency=63
+06-15 14:45:59.761  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303364): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:59.771  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303365): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:59.771  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303366): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:59.965 25286 25997 I PeopleGalProvider: Method 3 completed.
+06-15 14:45:59.965 25286 25997 I PeopleGalProvider: Method 3 finished successfully.
+06-15 14:45:59.972  1739  4844 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10217; state: DISABLED
+06-15 14:45:59.972  1739  4844 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10217; state: DISABLED
+06-15 14:45:59.972  1739  4844 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10217; state: ENABLED
+06-15 14:45:59.972  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10217; state: ENABLED
+06-15 14:45:59.979  1055  1055 D Zygote  : Forked child process 8228
+06-15 14:45:59.980  1739  1968 I ActivityManager: Start proc 8228:com.google.android.contacts/u0a217 for content provider {com.google.android.contacts/com.google.android.apps.contacts.sdn.provider.SdnProvider}
+06-15 14:45:59.989  8228  8228 I ndroid.contacts: Using CollectorTypeCC GC.
+06-15 14:45:59.994  1445  1495 I adbd    : jdwp connection from 8228
+06-15 14:45:59.995  8228  8228 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-15 14:46:00.001  1739  1774 D CompatibilityChangeReporter: Compat change id reported: 168419799; UID 10217; state: DISABLED
+06-15 14:46:00.001  1739  1774 D CompatibilityChangeReporter: Compat change id reported: 273564678; UID 10217; state: DISABLED
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: Foreground UID status:
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 1002 is in foreground: true
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 1027 is in foreground: true
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 10109 is in foreground: false
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 10155 is in foreground: true
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 10161 is in foreground: true
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 10164 is in foreground: true
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 10179 is in foreground: true
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 10198 is in foreground: false
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 10238 is in foreground: false
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 10243 is in foreground: true
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 10250 is in foreground: false
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 10319 is in foreground: true
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 10903 is in foreground: false
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 10904 is in foreground: false
+06-15 14:46:00.004  4291  5500 D ForegroundUtils: UID: 10906 is in foreground: false
+06-15 14:46:00.006  8228  8228 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10217; state: ENABLED
+06-15 14:46:00.037  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-15 14:46:00.038  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-15 14:46:00.038  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-15 14:46:00.038  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-15 14:46:00.039  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-15 14:46:00.039  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-15 14:46:00.039  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-15 14:46:00.040  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-15 14:46:00.040  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-15 14:46:00.040  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-15 14:46:00.041  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-15 14:46:00.041  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-15 14:46:00.045  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-15 14:46:00.051  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-15 14:46:00.052  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-15 14:46:00.052  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-15 14:46:00.052  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-15 14:46:00.052  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-15 14:46:00.063  2850  2850 I AiAiSuggestUi: Clearing suggestions.
+06-15 14:46:00.063  2850  2850 I AiAiSuggestUi: Requesting to show indicators
+06-15 14:46:00.063  2850  2850 I AiAiSuggestUi: Fetching contents, isPrimaryTask = true
+06-15 14:46:00.066  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-15 14:46:00.067  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-15 14:46:00.067  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-15 14:46:00.067  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-15 14:46:00.069  1085  1085 I sensors-hal: [hal]batch_physical_sensor:319, android.sensor.accelerometer/11, period=200000000, max_latency=0
+06-15 14:46:00.069  1085  1085 I sensors-hal: [sensor]set_config:64, sample_period_ns is adjusted to 200000000 based on min/max delay_ns
+06-15 14:46:00.069  1085  1085 I sensors-hal: [hal]batch_physical_sensor:328, android.sensor.accelerometer/11, period=200000000, max_latency=0 request completed
+06-15 14:46:00.071  1085  1085 I sensors-hal: [hal]flush_physical_sensor:360, android.sensor.accelerometer/11
+06-15 14:46:00.072  1085  1085 I sensors-hal: [hal]flush_physical_sensor:366, android.sensor.accelerometer/11 completed
+06-15 14:46:00.072  1085 14944 I sensors-hal: [ssc_sensor]ssc_conn_resp_cb:685, resp_value = 0
+06-15 14:46:00.072  1085 14944 I sensors-hal: [ssc_sensor]ssc_conn_resp_cb:685, resp_value = 0
+06-15 14:46:00.087  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-15 14:46:00.088  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-15 14:46:00.088  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-15 14:46:00.089  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-15 14:46:00.089  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-15 14:46:00.090  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-15 14:46:00.090  4224  4410 I AiAiEcho: (REDACTED) Predicting[%d]: %s
+06-15 14:46:00.091  4224  4410 I AiAiEcho: (REDACTED) EchoTargets: %s
+06-15 14:46:00.091  4224  4410 I AiAiEcho: Filtered by AiAi flag check: %s
+06-15 14:46:00.094  4224  4410 I AiAiEcho: (REDACTED) Ranked targets strategy: %s, count: %d, ranking metadata: %s
+06-15 14:46:00.094  4224  4410 I AiAiEcho: (REDACTED) #weatherTwiddler: Weather removes SubtitleSupplementalItem in surface: %s
+06-15 14:46:00.094  4224  4410 I AiAiEcho: #remoteViewsTwiddler: feature disabled.
+06-15 14:46:00.100  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-15 14:46:00.103  2542  2542 D SsBaseTemplateCard: No text view can be set up
+06-15 14:46:00.104  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-15 14:46:00.104  2542  2542 D SsBaseTemplateCard: Passed-in item info is null
+06-15 14:46:00.104  2542  2542 I SsBaseTemplateCard: Secondary card pane is null
+06-15 14:46:00.105  4224  4410 I AiAiEcho: (REDACTED) #postPredictionTargets: Sending updates to UISurface %s with targets# %s (types=[%s])
+06-15 14:46:00.106  2850  2850 D SsBaseTemplateCard: No text view can be set up
+06-15 14:46:00.106  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-15 14:46:00.106  2850  2850 D SsBaseTemplateCard: Passed-in item info is null
+06-15 14:46:00.106  2850  2850 I SsBaseTemplateCard: Secondary card pane is null
+06-15 14:46:00.135  8228  8228 W ndroid.contacts: Failed to find entry 'classes.dex': Entry not found
+06-15 14:46:00.137  8228  8228 W ndroid.contacts: Failed to find entry 'classes.dex': Entry not found
+06-15 14:46:00.139  8228  8228 W ndroid.contacts: Failed to find entry 'classes.dex': Entry not found
+06-15 14:46:00.140  8228  8228 D nativeloader: Configuring clns-4 for other apk /data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/base.apk:/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/split_config.arm64_v8a.apk:/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/split_config.en.apk:/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/split_config.xxhdpi.apk. target_sdk_version=37, uses_libraries=, library_path=/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/lib/arm64:/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/base.apk!/lib/arm64-v8a:/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/split_config.arm64_v8a.apk!/lib/arm64-v8a:/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/split_config.en.apk!/lib/arm64-v8a:/data/app/~~RSzDS3A0x2SEM
+06-15 14:46:00.157  8228  8228 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-15 14:46:00.158  2850  2875 I AiAiSuggestUi: Fetched content back in callback
+06-15 14:46:00.158  2850  2850 I AiAiSuggestUi: Display indicators
+06-15 14:46:00.165  8228  8228 V GraphicsEnvironment: ANGLE Developer option for 'com.google.android.contacts' set to: 'default'
+06-15 14:46:00.165  8228  8228 V GraphicsEnvironment: ANGLE GameManagerService for com.google.android.contacts: false
+06-15 14:46:00.165  8228  8228 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+06-15 14:46:00.170  8228  8228 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+06-15 14:46:00.171  8228  8228 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+06-15 14:46:00.189  8228  8228 I SdnProvider: onCreate
+06-15 14:46:00.189  8228  8228 I YourInfoProvider: YourInfoProvider onCreate
+06-15 14:46:00.189  8228  8228 I OtherContactsProvider: onCreate started
+06-15 14:46:00.189  8228  8228 I OtherContactsProvider: onCreate finished
+06-15 14:46:00.199  8228  8228 D CompatibilityChangeReporter: Compat change id reported: 183155436; UID 10217; state: ENABLED
+06-15 14:46:00.204  1739  5416 D CompatibilityChangeReporter: Compat change id reported: 161145287; UID 10217; state: DISABLED
+06-15 14:46:00.204  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:46:00.208 25286 25286 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.people.contactssync.service.START pkg=com.google.android.gms }
+06-15 14:46:00.208 25286 25286 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.people.contactssync.service.START pkg=com.google.android.gms }
+06-15 14:46:00.213  8228  8249 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10217; state: ENABLED
+06-15 14:46:00.222  1739  4844 D CompatibilityChangeReporter: Compat change id reported: 183407956; UID 10217; state: ENABLED
+06-15 14:46:00.226  8228  8256 I SingleContactWidgetApiI: Refreshing widgets: []
+06-15 14:46:00.227 25286 25997 I PeopleChimeraService: onService. callbacks = cxzl@b6fe5a4, request = com.google.android.gms.common.internal.GetServiceRequest@774ef0d
+06-15 14:46:00.228  8228  8258 I SingleContactWidgetApiI: Refreshing widgets: []
+06-15 14:46:00.228  1739  4844 I Telecom : PhoneAccountRegistrar: getSimCallManager: SimCallManager for subId 11 queried, returning: null
+06-15 14:46:00.235  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:46:00.239  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:46:00.250  8228  8262 D nativeloader: Load /data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/split_config.arm64_v8a.apk!/lib/arm64-v8a/libdatastore_shared_counter.so using class loader ns clns-4 (caller=/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/base.apk): ok
+06-15 14:46:00.250  1739  5416 I Telecom : PhoneAccountRegistrar: getSimCallManager: SimCallManager for subId 11 queried, returning: null
+06-15 14:46:00.254 25286 25295 I PeopleChimeraService: onService. callbacks = cxzl@eadeec2, request = com.google.android.gms.common.internal.GetServiceRequest@ad9f4d3
+06-15 14:46:00.254  1739  4844 I Telecom : PhoneAccountRegistrar: getSimCallManager: SimCallManager for subId 9 queried, returning: null
+06-15 14:46:00.257 25286 25295 I PeopleChimeraService: onService. callbacks = cxzl@597b810, request = com.google.android.gms.common.internal.GetServiceRequest@80e6f09
+06-15 14:46:00.260 25286 25997 I PeopleChimeraService: onService. callbacks = cxzl@df0350e, request = com.google.android.gms.common.internal.GetServiceRequest@6450b2f
+06-15 14:46:00.263 25286 25997 I PeopleChimeraService: onService. callbacks = cxzl@a28453c, request = com.google.android.gms.common.internal.GetServiceRequest@a5f2c5
+06-15 14:46:00.274  8228  8251 D CompatibilityChangeReporter: Compat change id reported: 210923482; UID 10217; state: ENABLED
+06-15 14:46:00.281  8228  8249 D CompatibilityChangeReporter: Compat change id reported: 160794467; UID 10217; state: ENABLED
+06-15 14:46:00.296  8228  8238 W DynamiteModule: Local module descriptor class for com.google.android.gms.googlecertificates not found.
+06-15 14:46:00.300  1739  5427 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10217; state: ENABLED
+06-15 14:46:00.307  8228  8238 W ndroid.contacts: ClassLoaderContext classpath size mismatch. expected=1, found=0 (DLC[];PCL[base.apk*781738098]{PCL[/system/framework/org.apache.http.legacy.jar*1601893742]#PCL[/system/framework/com.android.location.provider.jar*989331189]#PCL[/system/framework/com.android.media.remotedisplay.jar*373201994]} | DLC[];PCL[])
+06-15 14:46:00.323  8228  8238 W System  : ClassLoader referenced unknown path: 
+06-15 14:46:00.323  8228  8238 D nativeloader: Configuring clns-5 for other apk . target_sdk_version=37, uses_libraries=, library_path=/data/app/~~wNtZ1CYwEqoWvZ1-OV-aXQ==/com.google.android.gms-TmWo9WlpjocYOuhs3fxXTw==/lib/arm64:/data/app/~~wNtZ1CYwEqoWvZ1-OV-aXQ==/com.google.android.gms-TmWo9WlpjocYOuhs3fxXTw==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+06-15 14:46:00.340  8228  8238 W ndroid.contacts: ClassLoaderContext classpath element checksum mismatch. expected=781738098, found=1238968658 (DLC[];PCL[base.apk*781738098]{PCL[/system/framework/org.apache.http.legacy.jar*1601893742]#PCL[/system/framework/com.android.location.provider.jar*989331189]#PCL[/system/framework/com.android.media.remotedisplay.jar*373201994]} | DLC[];PCL[/data/app/~~RSzDS3A0x2SEMPSG8ll2Ig==/com.google.android.contacts-txep_ZbRtraV75Kjw3WeZw==/base.apk*1238968658])
+06-15 14:46:00.363  1739  5427 E AppOps  : Bad call made by uid 10217. Package "com.google.android.gms" does not belong to uid 10217.
+06-15 14:46:00.369  1739  5416 E AppOps  : Bad call made by uid 10217. Package "com.google.android.gms" does not belong to uid 10217.
+06-15 14:46:00.370  1739  5416 D CompatibilityChangeReporter: Compat change id reported: 201794303; UID 10217; state: ENABLED
+06-15 14:46:00.372  1739  5427 E AppOps  : Bad call made by uid 10217. Package "com.google.android.gms" does not belong to uid 10217.
+06-15 14:46:00.374  8228  8238 I OtherContactsProvider: Calling package com.google.android.dialer isGoogleSigned:true and is whitelisted:false
+06-15 14:46:00.381  8228  8238 I OtherContactsProvider: Calling package com.google.android.dialer isGoogleSigned:true and is whitelisted:false
+06-15 14:46:00.383  8228  8238 I OtherContactsProvider: Calling package com.google.android.dialer isGoogleSigned:true and is whitelisted:false
+06-15 14:46:00.384  8146  8146 I DialerSearchFragment: com.android.dialer.searchfragment.list.SearchFragment.onLoadFinished:445 Loader finished: tro{3059e31 id=3}
+06-15 14:46:00.394  8228  8249 I AccountLoadingWorker: Emitting initial loaded accounts
+06-15 14:46:00.478  8146  8156 W System  : A resource failed to call AbstractCursor.close. 
+06-15 14:46:00.478  8146  8156 W System  : A resource failed to call CursorWrapperInner.close. 
+06-15 14:46:00.571  8146  8146 I DialerPreCallDialpadFragmentPeer: com.android.dialer.dialpadview.ui.PreCallDialpadFragmentPeer.onPause:408 enter
+06-15 14:46:00.572  8146  8146 I DialerInternalSemanticEventLogger: com.android.dialer.cui.impl.InternalSemanticEventLogger.handleEvent:141 CUI event: MAIN_ACTIVITY_ON_PAUSE; uniqueCallId: null
+06-15 14:46:00.572  2850  2908 D QuickstepModelDelegate: notifyAppTargetEvent action=1 launchLocation=task-switcher
+06-15 14:46:00.573  8146  8173 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:54 Impression: CUI_INFRA_CUI_EVENT_LOGGED
+06-15 14:46:00.573  8146  8146 I DialerMainActivityPeer: com.android.dialer.main.impl.MainActivityPeer.onPause:255 unregistered GrowthKit and HaTS callbacks [CONTEXT ratelimit_period="1 MINUTES" ]
+06-15 14:46:00.577  1739  2881 I ActivityManager: updateOomAdj start time is before than pendingPid added, don't delete it
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: Foreground UID status:
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 1002 is in foreground: true
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 1027 is in foreground: true
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 10109 is in foreground: false
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 10155 is in foreground: true
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 10161 is in foreground: true
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 10164 is in foreground: true
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 10179 is in foreground: true
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 10198 is in foreground: false
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 10238 is in foreground: true
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 10243 is in foreground: true
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 10250 is in foreground: false
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 10319 is in foreground: true
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 10903 is in foreground: false
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 10904 is in foreground: false
+06-15 14:46:00.579  4291  5500 D ForegroundUtils: UID: 10906 is in foreground: false
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: Foreground UID status:
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 1002 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 1027 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10109 is in foreground: false
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10155 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10161 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10164 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10179 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10198 is in foreground: false
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10238 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10243 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10250 is in foreground: false
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10319 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10903 is in foreground: false
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10904 is in foreground: false
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10906 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: Foreground UID status:
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 1002 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 1027 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10109 is in foreground: false
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10155 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10161 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10164 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10179 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10198 is in foreground: false
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10238 is in foreground: false
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10243 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10250 is in foreground: false
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10319 is in foreground: true
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10903 is in foreground: false
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10904 is in foreground: false
+06-15 14:46:00.582  4291  5500 D ForegroundUtils: UID: 10906 is in foreground: true
+06-15 14:46:00.587  7826  7826 D FirebaseSessions: App foregrounded on rw.mobi.app
+06-15 14:46:00.589  4291  5500 D NfcService: Disabling default Beam behavior
+06-15 14:46:00.589  1739  1775 W AutofillManagerServiceImpl: getFillEventHistory() called by UID 10175, but service UID is 10164
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: Foreground UID status:
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 1002 is in foreground: true
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 1027 is in foreground: true
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 10109 is in foreground: false
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 10155 is in foreground: true
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 10161 is in foreground: true
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 10164 is in foreground: true
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 10179 is in foreground: false
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 10198 is in foreground: false
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 10238 is in foreground: false
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 10243 is in foreground: true
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 10250 is in foreground: false
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 10319 is in foreground: true
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 10903 is in foreground: false
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 10904 is in foreground: false
+06-15 14:46:00.591  4291  5500 D ForegroundUtils: UID: 10906 is in foreground: true
+06-15 14:46:00.597  1739  1940 V WindowManager: Unknown focus tokens, dropping reportFocusChanged
+06-15 14:46:00.600  8146  8173 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:46:00.600  4291  5500 E NfcService: Reader mode Binder was never registered.
+06-15 14:46:00.600  4291  5500 D NfcService: Discovery configuration equal, not updating.
+06-15 14:46:00.608  7826  7869 E OpenGLRenderer: Unable to match the desired swap behavior.
+06-15 14:46:00.612  1739  1940 V WindowManager: Unknown focus tokens, dropping reportFocusChanged
+06-15 14:46:00.687  1739  1775 W ActivityTaskManager: takeTaskSnapshot: taskId=687 not found or not visible
+06-15 14:46:00.755  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303543): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:00.761  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303544): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:00.765  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303545): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:00.771  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303546): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:00.775  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303547): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:00.848  4224  4537 W AiAiEcho: Logging to Simple Storage failed.
+06-15 14:46:00.848  4224  4537 W AiAiEcho: java.util.concurrent.CancellationException
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at xvu.d(PG:8)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at xvu.get(PG:1)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at a.n(PG:2)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at sdh.cb(PG:10)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at twz.run(PG:24)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at tyh.a(PG:3)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at txj.run(PG:21)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at tyi.run(PG:5)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:348)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at hbl.run(PG:185)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.lang.Thread.run(Thread.java:1564)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: Caused by: xpq: Parent job is Cancelled; job=xps{Cancelled}@ee7bef6
+06-15 14:46:00.848  4224  4537 W AiAiEcho: Caused by: android.database.sqlite.SQLiteException: no such column: "ttlBaseMillis" (code 1 SQLITE_ERROR): , while compiling: ALTER TABLE `PersistedPeopleSuggestLabels`
+06-15 14:46:00.848  4224  4537 W AiAiEcho:             RENAME COLUMN `ttlBaseMillis` TO `createdMillis`;
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteConnection.nativePrepareStatement(Native Method)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteConnection.acquirePreparedStatement(SQLiteConnection.java:1068)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteConnection.prepare(SQLiteConnection.java:673)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteSession.prepare(SQLiteSession.java:590)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteProgram.<init>(SQLiteProgram.java:62)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteStatement.<init>(SQLiteStatement.java:34)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteDatabase.executeSql(SQLiteDatabase.java:2086)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteDatabase.execSQL(SQLiteDatabase.java:2008)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at brt.h(PG:3)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at gca.a(PG:3)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at brj.b(PG:153)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at brx.onUpgrade(PG:15)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java:416)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java:316)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at brx.c(PG:1)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at brx.b(PG:95)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at brz.a(PG:5)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at gdv.b(PG:139)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at gdv.a(PG:13)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at xkg.P(PG:15)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at wzt.Z(PG:54)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at gdz.b(PG:38)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at xhq.g(PG:14)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at kotlinx.coroutines.DispatchedTask.run(PG:114)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at tyh.a(PG:3)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at txj.run(PG:21)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at tyi.run(PG:5)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:348)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at hbl.run(PG:185)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	at java.lang.Thread.run(Thread.java:1564)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 	Suppressed: android.database.sqlite.SQLiteException: no such column: "ttlBaseMillis" (code 1 SQLITE_ERROR): , while compiling: ALTER TABLE `PersistedPeopleSuggestLabels`
+06-15 14:46:00.848  4224  4537 W AiAiEcho:             RENAME COLUMN `ttlBaseMillis` TO `createdMillis`;
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.nativePrepareStatement(Native Method)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.acquirePreparedStatement(SQLiteConnection.java:1068)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.prepare(SQLiteConnection.java:673)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteSession.prepare(SQLiteSession.java:590)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteProgram.<init>(SQLiteProgram.java:62)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteStatement.<init>(SQLiteStatement.java:34)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteDatabase.executeSql(SQLiteDatabase.java:2086)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteDatabase.execSQL(SQLiteDatabase.java:2008)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at brt.h(PG:3)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at gca.a(PG:3)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at brj.b(PG:153)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at brx.onUpgrade(PG:15)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java:416)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java:316)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at brx.c(PG:1)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at brx.b(PG:95)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at brz.a(PG:5)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at bqc.s(PG:5)
+06-15 14:46:00.848  4224  4537 W AiAiEcho: 		at bqc.l(PG:1)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at bqc.v(PG:9)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at aes.h(PG:6)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at gic.call(PG:8)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at bpk.b(PG:8)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at xhq.g(PG:14)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at kotlinx.coroutines.DispatchedTask.run(PG:114)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		... 1 more
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 	Suppressed: android.database.sqlite.SQLiteException: no such column: "ttlBaseMillis" (code 1 SQLITE_ERROR): , while compiling: ALTER TABLE `PersistedPeopleSuggestLabels`
+06-15 14:46:00.849  4224  4537 W AiAiEcho:             RENAME COLUMN `ttlBaseMillis` TO `createdMillis`;
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.nativePrepareStatement(Native Method)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.acquirePreparedStatement(SQLiteConnection.java:1068)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.prepare(SQLiteConnection.java:673)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteSession.prepare(SQLiteSession.java:590)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteProgram.<init>(SQLiteProgram.java:62)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteStatement.<init>(SQLiteStatement.java:34)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteDatabase.executeSql(SQLiteDatabase.java:2086)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteDatabase.execSQL(SQLiteDatabase.java:2008)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at brt.h(PG:3)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at gca.a(PG:3)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at brj.b(PG:153)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at brx.onUpgrade(PG:15)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java:416)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java:316)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at brx.c(PG:1)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at brx.b(PG:95)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at brz.a(PG:5)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at bqc.s(PG:5)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at bqc.l(PG:1)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at bqc.v(PG:9)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at aes.h(PG:6)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at gip.call(PG:8)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at bpk.b(PG:8)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at xhq.g(PG:14)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at kotlinx.coroutines.DispatchedTask.run(PG:114)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-15 14:46:00.849  4224  4537 W AiAiEcho: 		... 1 more
+06-15 14:46:00.850  4224  4537 W AiAiEcho: Logging to Simple Storage failed.
+06-15 14:46:00.850  4224  4537 W AiAiEcho: java.util.concurrent.CancellationException
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at xvu.d(PG:8)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at xvu.get(PG:1)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at a.n(PG:2)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at sdh.cb(PG:10)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at twz.run(PG:24)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at tyh.a(PG:3)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at txj.run(PG:21)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at tyi.run(PG:5)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:348)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at hbl.run(PG:185)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.lang.Thread.run(Thread.java:1564)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: Caused by: xpq: Parent job is Cancelled; job=xps{Cancelled}@ee7bef6
+06-15 14:46:00.850  4224  4537 W AiAiEcho: Caused by: android.database.sqlite.SQLiteException: no such column: "ttlBaseMillis" (code 1 SQLITE_ERROR): , while compiling: ALTER TABLE `PersistedPeopleSuggestLabels`
+06-15 14:46:00.850  4224  4537 W AiAiEcho:             RENAME COLUMN `ttlBaseMillis` TO `createdMillis`;
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteConnection.nativePrepareStatement(Native Method)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteConnection.acquirePreparedStatement(SQLiteConnection.java:1068)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteConnection.prepare(SQLiteConnection.java:673)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteSession.prepare(SQLiteSession.java:590)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteProgram.<init>(SQLiteProgram.java:62)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteStatement.<init>(SQLiteStatement.java:34)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteDatabase.executeSql(SQLiteDatabase.java:2086)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteDatabase.execSQL(SQLiteDatabase.java:2008)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at brt.h(PG:3)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at gca.a(PG:3)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at brj.b(PG:153)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at brx.onUpgrade(PG:15)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java:416)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java:316)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at brx.c(PG:1)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at brx.b(PG:95)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at brz.a(PG:5)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at gdv.b(PG:139)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at gdv.a(PG:13)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at xkg.P(PG:15)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at wzt.Z(PG:54)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at gdz.b(PG:38)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at xhq.g(PG:14)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at kotlinx.coroutines.DispatchedTask.run(PG:114)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at tyh.a(PG:3)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at txj.run(PG:21)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at tyi.run(PG:5)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:348)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at hbl.run(PG:185)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	at java.lang.Thread.run(Thread.java:1564)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	Suppressed: android.database.sqlite.SQLiteException: no such column: "ttlBaseMillis" (code 1 SQLITE_ERROR): , while compiling: ALTER TABLE `PersistedPeopleSuggestLabels`
+06-15 14:46:00.850  4224  4537 W AiAiEcho:             RENAME COLUMN `ttlBaseMillis` TO `createdMillis`;
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.nativePrepareStatement(Native Method)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.acquirePreparedStatement(SQLiteConnection.java:1068)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.prepare(SQLiteConnection.java:673)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteSession.prepare(SQLiteSession.java:590)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteProgram.<init>(SQLiteProgram.java:62)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteStatement.<init>(SQLiteStatement.java:34)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteDatabase.executeSql(SQLiteDatabase.java:2086)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteDatabase.execSQL(SQLiteDatabase.java:2008)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at brt.h(PG:3)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at gca.a(PG:3)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at brj.b(PG:153)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at brx.onUpgrade(PG:15)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java:416)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java:316)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at brx.c(PG:1)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at brx.b(PG:95)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at brz.a(PG:5)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at bqc.s(PG:5)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at bqc.l(PG:1)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at bqc.v(PG:9)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at aes.h(PG:6)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at gic.call(PG:8)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at bpk.b(PG:8)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at xhq.g(PG:14)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at kotlinx.coroutines.DispatchedTask.run(PG:114)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		... 1 more
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 	Suppressed: android.database.sqlite.SQLiteException: no such column: "ttlBaseMillis" (code 1 SQLITE_ERROR): , while compiling: ALTER TABLE `PersistedPeopleSuggestLabels`
+06-15 14:46:00.850  4224  4537 W AiAiEcho:             RENAME COLUMN `ttlBaseMillis` TO `createdMillis`;
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.nativePrepareStatement(Native Method)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.acquirePreparedStatement(SQLiteConnection.java:1068)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.prepare(SQLiteConnection.java:673)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteSession.prepare(SQLiteSession.java:590)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteProgram.<init>(SQLiteProgram.java:62)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteStatement.<init>(SQLiteStatement.java:34)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteDatabase.executeSql(SQLiteDatabase.java:2086)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteDatabase.execSQL(SQLiteDatabase.java:2008)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at brt.h(PG:3)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at gca.a(PG:3)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at brj.b(PG:153)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at brx.onUpgrade(PG:15)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java:416)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java:316)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at brx.c(PG:1)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at brx.b(PG:95)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at brz.a(PG:5)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at bqc.s(PG:5)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at bqc.l(PG:1)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at bqc.v(PG:9)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at aes.h(PG:6)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at gip.call(PG:8)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at bpk.b(PG:8)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at xhq.g(PG:14)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at kotlinx.coroutines.DispatchedTask.run(PG:114)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-15 14:46:00.850  4224  4537 W AiAiEcho: 		... 1 more
+06-15 14:46:00.852  4224  4537 W AiAiEcho: Logging to Simple Storage failed.
+06-15 14:46:00.852  4224  4537 W AiAiEcho: java.util.concurrent.CancellationException
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at xvu.d(PG:8)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at xvu.get(PG:1)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at a.n(PG:2)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at sdh.cb(PG:10)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at twz.run(PG:24)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at tyh.a(PG:3)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at txj.run(PG:21)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at tyi.run(PG:5)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:348)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at hbl.run(PG:185)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.lang.Thread.run(Thread.java:1564)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: Caused by: xpq: Parent job is Cancelled; job=xps{Cancelled}@ee7bef6
+06-15 14:46:00.852  4224  4537 W AiAiEcho: Caused by: android.database.sqlite.SQLiteException: no such column: "ttlBaseMillis" (code 1 SQLITE_ERROR): , while compiling: ALTER TABLE `PersistedPeopleSuggestLabels`
+06-15 14:46:00.852  4224  4537 W AiAiEcho:             RENAME COLUMN `ttlBaseMillis` TO `createdMillis`;
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteConnection.nativePrepareStatement(Native Method)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteConnection.acquirePreparedStatement(SQLiteConnection.java:1068)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteConnection.prepare(SQLiteConnection.java:673)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteSession.prepare(SQLiteSession.java:590)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteProgram.<init>(SQLiteProgram.java:62)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteStatement.<init>(SQLiteStatement.java:34)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteDatabase.executeSql(SQLiteDatabase.java:2086)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteDatabase.execSQL(SQLiteDatabase.java:2008)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at brt.h(PG:3)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at gca.a(PG:3)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at brj.b(PG:153)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at brx.onUpgrade(PG:15)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java:416)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java:316)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at brx.c(PG:1)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at brx.b(PG:95)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at brz.a(PG:5)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at gdv.b(PG:139)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at gdv.a(PG:13)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at xkg.P(PG:15)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at wzt.Z(PG:54)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at gdz.b(PG:38)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at xhq.g(PG:14)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at kotlinx.coroutines.DispatchedTask.run(PG:114)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at tyh.a(PG:3)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at txj.run(PG:21)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at tyi.run(PG:5)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:520)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.util.concurrent.FutureTask.run(FutureTask.java:317)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:348)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at hbl.run(PG:185)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	at java.lang.Thread.run(Thread.java:1564)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	Suppressed: android.database.sqlite.SQLiteException: no such column: "ttlBaseMillis" (code 1 SQLITE_ERROR): , while compiling: ALTER TABLE `PersistedPeopleSuggestLabels`
+06-15 14:46:00.852  4224  4537 W AiAiEcho:             RENAME COLUMN `ttlBaseMillis` TO `createdMillis`;
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.nativePrepareStatement(Native Method)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.acquirePreparedStatement(SQLiteConnection.java:1068)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.prepare(SQLiteConnection.java:673)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteSession.prepare(SQLiteSession.java:590)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteProgram.<init>(SQLiteProgram.java:62)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteStatement.<init>(SQLiteStatement.java:34)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteDatabase.executeSql(SQLiteDatabase.java:2086)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteDatabase.execSQL(SQLiteDatabase.java:2008)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at brt.h(PG:3)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at gca.a(PG:3)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at brj.b(PG:153)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at brx.onUpgrade(PG:15)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java:416)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java:316)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at brx.c(PG:1)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at brx.b(PG:95)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at brz.a(PG:5)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at bqc.s(PG:5)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at bqc.l(PG:1)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at bqc.v(PG:9)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at aes.h(PG:6)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at gic.call(PG:8)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at bpk.b(PG:8)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at xhq.g(PG:14)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at kotlinx.coroutines.DispatchedTask.run(PG:114)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		... 1 more
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 	Suppressed: android.database.sqlite.SQLiteException: no such column: "ttlBaseMillis" (code 1 SQLITE_ERROR): , while compiling: ALTER TABLE `PersistedPeopleSuggestLabels`
+06-15 14:46:00.852  4224  4537 W AiAiEcho:             RENAME COLUMN `ttlBaseMillis` TO `createdMillis`;
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.nativePrepareStatement(Native Method)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.acquirePreparedStatement(SQLiteConnection.java:1068)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteConnection.prepare(SQLiteConnection.java:673)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteSession.prepare(SQLiteSession.java:590)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteProgram.<init>(SQLiteProgram.java:62)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteStatement.<init>(SQLiteStatement.java:34)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteDatabase.executeSql(SQLiteDatabase.java:2086)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteDatabase.execSQL(SQLiteDatabase.java:2008)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at brt.h(PG:3)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at gca.a(PG:3)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at brj.b(PG:153)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at brx.onUpgrade(PG:15)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteOpenHelper.getDatabaseLocked(SQLiteOpenHelper.java:416)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at android.database.sqlite.SQLiteOpenHelper.getWritableDatabase(SQLiteOpenHelper.java:316)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at brx.c(PG:1)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at brx.b(PG:95)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at brz.a(PG:5)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at bqc.s(PG:5)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at bqc.l(PG:1)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at bqc.v(PG:9)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at aes.h(PG:6)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at gip.call(PG:8)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at bpk.b(PG:8)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at xhq.g(PG:14)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at kotlinx.coroutines.DispatchedTask.run(PG:114)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1154)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:652)
+06-15 14:46:00.852  4224  4537 W AiAiEcho: 		... 1 more
+06-15 14:46:00.968  1739  2881 D CoreBackPreview: Window{2ca768d u0 com.google.android.dialer/com.android.dialer.main.impl.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@a439ba7, mPriority=-1}
+06-15 14:46:00.970  8146  8146 I DialerPreCallDialpadFragmentPeer: com.android.dialer.dialpadview.ui.PreCallDialpadFragmentPeer.onStop:414 enter
+06-15 14:46:00.970  8146  8146 I DialerDialpadSearchFragmentPeer: com.android.dialer.main.impl.ui.searchcontainer.DialpadSearchFragmentPeer.onStop:248 enter
+06-15 14:46:00.970  8146  8146 I DialerInternalSemanticEventLogger: com.android.dialer.cui.impl.InternalSemanticEventLogger.handleEvent:141 CUI event: DIALPAD_FRAGMENT_STOPPED; uniqueCallId: null
+06-15 14:46:00.971  8146  8146 I DialerMainFragmentPeer: com.android.dialer.main.impl.ui.MainFragmentPeer.onStop:416 enter
+06-15 14:46:00.976  1085  1085 I sensors-hal: [hal]batch_physical_sensor:319, android.sensor.accelerometer/11, period=200000000, max_latency=2000000000
+06-15 14:46:00.976  1085  1085 I sensors-hal: [sensor]set_config:64, sample_period_ns is adjusted to 200000000 based on min/max delay_ns
+06-15 14:46:00.976  1085  1085 I sensors-hal: [hal]batch_physical_sensor:328, android.sensor.accelerometer/11, period=200000000, max_latency=2000000000 request completed
+06-15 14:46:00.977  1085 14944 I sensors-hal: [ssc_sensor]ssc_conn_resp_cb:685, resp_value = 0
+06-15 14:46:00.977  2850  2850 I AiAiSuggestUi: Clearing suggestions.
+06-15 14:46:00.978  2850  2850 I AiAiSuggestUi: Clearing suggestions.
+06-15 14:46:00.978  8146  8173 I DialerLogcatLoggingBindings: com.android.dialer.logging.logcat.LogcatLoggingBindings.logImpression:54 Impression: MAIN_ACTIVITY_ON_STOP
+06-15 14:46:00.980  2850  4526 D OneSearchSuggestProvider: Shut down the binder channel
+06-15 14:46:00.982  1739  1940 V WindowManager: Unknown focus tokens, dropping reportFocusChanged
+06-15 14:46:00.984  1739  5427 W ActivityTaskManager: takeTaskSnapshot: taskId=687 not found or not visible
+06-15 14:46:00.990  7826  7855 I TRuntime.CctTransportBackend: Status Code: 200
+06-15 14:46:00.990  6595  6595 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():2259 
+06-15 14:46:00.992  6595  6595 I Module  : DeviceLockedStatusModuleProvider$Module.updateDeviceLockedStatusInternal():127 repeatCheckTimes = 0, locked = false
+06-15 14:46:00.993  6595  6595 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1446 onStartInput(EditorInfo{EditorInfo{packageName=rw.mobi.app, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=-1, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+06-15 14:46:00.994  6595  6595 I AndroidIME: LatinIMEBase.updateInputViewCoverNavigation():321 Update input view padding, isNavbarOverInputWindow=true, bottom inset=132
+06-15 14:46:00.995  6595  6595 I Module  : DeviceLockedStatusModuleProvider$Module.updateDeviceLockedStatusInternal():127 repeatCheckTimes = 1, locked = false
+06-15 14:46:00.996  8146  8146 I DialerMainActivityPeer: com.android.dialer.main.impl.MainActivityPeer.onSaveInstanceState:267 onSaveInstanceState enter
+06-15 14:46:00.998  1739  1964 W UsageStatsService: Unexpected activity event reported! (com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity event : 23 instanceId : 35526889)
+06-15 14:46:00.999  8146  8184 I DialerLoggingConsentCheckerImpl: com.google.android.callingshared.logging.consent.impl.LoggingConsentCheckerImpl.getConsent:72 timer stop with success, timer present: false
+06-15 14:46:01.058  8146  8201 V ClearcutMetricXmitter: Transmission is done.
+06-15 14:46:01.059  8146  8201 V ClearcutMetricXmitter: Transmission is done.
+06-15 14:46:01.061  8146  8201 V ClearcutMetricXmitter: Transmission is done.
+06-15 14:46:01.062  8146  8201 V ClearcutMetricXmitter: Transmission is done.
+06-15 14:46:01.063  8146  8201 V ClearcutMetricXmitter: Transmission is done.
+06-15 14:46:01.064  8146  8201 V ClearcutMetricXmitter: Transmission is done.
+06-15 14:46:01.279  1739  4478 W InputManager-JNI: Input channel object '535cff4 SnapshotStartingWindow for taskId=688 (client)' was disposed without first being removed with the input manager!
+06-15 14:46:01.588 13532 14209 I euth    : (REDACTED) HDM. appOpsListener %s %s
+06-15 14:46:01.589 13532 14209 I euth    : (REDACTED) HDM. Ignoring irrelevant audio permission changes for package %s
+06-15 14:46:01.761  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303733): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:01.768  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303734): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:01.771  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303735): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:01.778  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303736): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:01.785  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303737): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:02.299  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-15 14:46:02.320  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-15 14:46:02.768  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303922): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:02.768  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303923): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:02.775  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303924): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:02.781  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303925): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:02.788  1072  1072 W socket_writer_q: type=1400 audit(0.0:287303926): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:03.121  8941  8941 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.common.telemetry.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+06-15 14:46:03.768  1072  1072 W socket_writer_q: type=1400 audit(0.0:287304109): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:03.775  1072  1072 W socket_writer_q: type=1400 audit(0.0:287304110): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:03.778  1072  1072 W socket_writer_q: type=1400 audit(0.0:287304111): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:03.785  1072  1072 W socket_writer_q: type=1400 audit(0.0:287304112): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:03.788  1072  1072 W socket_writer_q: type=1400 audit(0.0:287304113): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:04.775  1072  1072 W socket_writer_q: type=1400 audit(0.0:287304295): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:04.778  1072  1072 W socket_writer_q: type=1400 audit(0.0:287304296): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:04.781  1072  1072 W socket_writer_q: type=1400 audit(0.0:287304297): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:04.788  1072  1072 W socket_writer_q: type=1400 audit(0.0:287304298): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:04.795  1072  1072 W socket_writer_q: type=1400 audit(0.0:287304299): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:46:04.850 11347 11382 I PlayCommon: [882] Preparing logs for uploading
+06-15 14:46:04.852 11347 11382 W PlayCommon: [882] No account for auth token provided
+06-15 14:46:04.852 11347 11382 I PlayCommon: [882] Connecting to server: https://play.googleapis.com/play/log?format=raw&proto_v2=true
+06-15 14:46:05.335  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-15 14:46:05.351  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-15 14:46:05.462  2542  2542 D DLObserver: onReceive(); android.intent.action.BATTERY_CHANGED
+06-15 14:46:05.462  2542  2542 D DLObserver: plugged=2
+06-15 14:46:05.465  2542  2542 D PowerNotificationWarningsGoogleImpl: onReceive: android.intent.action.BATTERY_CHANGED
+06-15 14:46:05.466  2542  2542 D BatteryDefenderNotification: isPlugged: true | isOverheated: false | defenderEnabled: false | isCharged: false | isPluggedInDock: false
+06-15 14:46:05.466   645   645 I servicemanager: Found vendor.google.google_battery.IGoogleBattery/default in device VINTF manifest.
+06-15 14:46:05.468  2542  3703 D PowerUI : can't show warning due to - plugged: true status unknown: false
+06-15 14:46:05.468   645   645 I servicemanager: Found vendor.google.google_battery.IGoogleBattery/default in device VINTF manifest.
+06-15 14:46:05.480  2542  2654 D BatteryInfoBroadcast: onReceive: android.intent.action.BATTERY_CHANGED isPowerSaveMode: false remainingTimeMillis: 97312134
+06-15 14:46:05.586 13532 14209 I euth    : (REDACTED) HDM. appOpsListener %s %s
+06-15 14:46:05.587 13532 14209 I euth    : (REDACTED) HDM. Ignoring irrelevant audio permission changes for package %s

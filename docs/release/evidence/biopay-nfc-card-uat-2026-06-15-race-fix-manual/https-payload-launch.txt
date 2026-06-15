@@ -1,0 +1,7 @@
+Starting: Intent { act=android.intent.action.VIEW cat=[android.intent.category.BROWSABLE] dat=https://mobio.ikanisa.com/... pkg=rw.mobi.app }
+Status: ok
+LaunchState: COLD
+Activity: rw.mobi.app/.MainActivity
+TotalTime: 2617
+WaitTime: 2647
+Complete

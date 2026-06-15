@@ -18,7 +18,6 @@ import 'package:mobi_app/features/profile/widgets/profile_subscription_section.d
 import 'package:mobi_app/features/profile/widgets/profile_vehicle_section.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_async_state_view.dart';
-import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
@@ -84,7 +83,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   Future<void> _handleSave(EditProfileController controller) async {
     try {
       final success = await controller.saveProfile(
-        whatsApp: _whatsAppController.text,
         momoNumber: _momoNumberController.text,
         momoPayCode: _momoPayCodeController.text,
         vehicleNumberPlate: _vehiclePlateController.text,
@@ -120,50 +118,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _busCapacityController.text = state.initialBusPassengerCapacity;
     _rentalModelController.text = state.initialRentalVehicleModel;
     _didHydrateControllers = true;
-  }
-
-  void _showCountryPicker(
-    EditProfileState state,
-    EditProfileController controller,
-  ) {
-    MobiBottomSheet.show<void>(
-      context: context,
-      title: 'Country code',
-      builder: (context) {
-        return ListView.separated(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          itemCount: state.countries.length,
-          separatorBuilder: (context, index) => Divider(
-            height: 1,
-            color: Theme.of(
-              context,
-            ).colorScheme.outlineVariant.withValues(alpha: 0.1),
-          ),
-          itemBuilder: (context, index) {
-            final country = state.countries[index];
-            return ListTile(
-              leading: Text(country.flag, style: const TextStyle(fontSize: 22)),
-              title: Text(
-                country.name,
-                style: AppTypography.titleMd.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              trailing: Text(
-                country.dialingCode,
-                style: AppTypography.bodyMd.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-              onTap: () {
-                controller.setCountryCode(country.dialingCode);
-                Navigator.of(context).pop();
-              },
-            );
-          },
-        );
-      },
-    );
   }
 
   @override
@@ -256,7 +210,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ProfileContactSection(
                 whatsAppController: _whatsAppController,
                 selectedCountry: state.selectedCountry,
-                onCountryTap: () => _showCountryPicker(state, controller),
               ),
               const SizedBox(height: AppSpacing.xl),
               ProfileMomoSection(

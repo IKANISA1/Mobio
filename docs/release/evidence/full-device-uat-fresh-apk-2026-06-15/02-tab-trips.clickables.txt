@@ -1,0 +1,13 @@
+clickable=False bounds=[410,180][670,301] text='' desc='Trips' class=android.view.View
+clickable=True bounds=[113,403][540,527] text='' desc='Mine\nMine' class=android.widget.Button
+clickable=True bounds=[540,406][967,524] text='' desc='Nearby\nNearby' class=android.widget.Button
+clickable=True bounds=[66,661][1014,1376] text='' desc='No trips yet\nNo trips yet\nSchedule' class=android.view.View
+clickable=True bounds=[816,1790][992,1966] text='' desc='Schedule new trip' class=android.widget.Button
+clickable=True bounds=[77,2065][309,2219] text='' desc='Home tab, Switch tab' class=android.widget.Button
+clickable=True bounds=[77,2065][309,2219] text='' desc='Home' class=android.view.View
+clickable=True bounds=[309,2065][540,2219] text='' desc='Trips tab, Current tab' class=android.widget.Button
+clickable=True bounds=[309,2065][540,2219] text='' desc='Trips' class=android.view.View
+clickable=True bounds=[540,2065][772,2219] text='' desc='BioPay tab, Switch tab' class=android.widget.Button
+clickable=True bounds=[540,2065][772,2219] text='' desc='BioPay' class=android.view.View
+clickable=True bounds=[771,2065][1003,2219] text='' desc='Profile tab, Switch tab' class=android.widget.Button
+clickable=True bounds=[771,2065][1003,2219] text='' desc='Profile' class=android.view.View

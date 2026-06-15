@@ -1,0 +1,4 @@
+clickable=True bounds=[55,186][171,301] text='' desc='Back' class=android.widget.Button
+clickable=False bounds=[171,216][893,271] text='' desc='Scan' class=android.view.View
+clickable=True bounds=[55,417][1025,1387] text='' desc='' class=android.view.View
+clickable=True bounds=[855,455][987,587] text='' desc='Torch' class=android.widget.Button

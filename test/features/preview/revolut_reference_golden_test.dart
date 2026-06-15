@@ -753,6 +753,7 @@ class _PreviewAdminService implements AdminService {
   Future<List<AdminTripListItem>> listTrips({
     String? status,
     String? role,
+    String? search,
     int limit = 50,
     int offset = 0,
   }) async => const [

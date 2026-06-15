@@ -1,12 +1,12 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_theme.dart';
 import 'package:mobi_app/features/biopay/biopay_screen.dart';
 import 'package:mobi_app/features/biopay/biopay_style.dart';
 import 'package:mobi_app/features/biopay/models/biopay_ussd_payment.dart';
+import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../helpers/mobile_scanner_test_channel.dart';
@@ -35,6 +35,10 @@ void main() {
     final delegate =
         grid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
     expect(delegate.crossAxisCount, 2);
+    expect(find.text('Pay & Get Paid'), findsOneWidget);
+    expect(find.text('Instant & Secure'), findsOneWidget);
+    final secondary = tester.widget<Text>(find.text('Instant & Secure'));
+    expect(secondary.style?.color, AppColors.primaryFixedDim);
     expect(find.text('Face Scan'), findsOneWidget);
     expect(find.text('NFC Tap'), findsOneWidget);
     expect(find.text('Get QR'), findsOneWidget);
@@ -126,25 +130,25 @@ void main() {
     expect(find.text('+250788767816'), findsNothing);
   });
 
-  testWidgets(
-    'NFC surface keeps redundant header icon and write action removed',
-    (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          child: MaterialApp(
-            theme: AppTheme.darkTheme,
-            home: BioPayNfcScreen(onBack: () {}),
-          ),
+  testWidgets('Device NFC surface does not write physical NFC cards', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: BioPayNfcScreen(onBack: () {}),
         ),
-      );
+      ),
+    );
 
-      expect(find.text('NFC'), findsOneWidget);
-      expect(find.text('Activate NFC'), findsOneWidget);
-      expect(find.text('Write NFC Card'), findsNothing);
-      expect(find.text('Receive with NFC'), findsNothing);
-      expect(find.byType(BioPayIconBox), findsNothing);
-    },
-  );
+    expect(find.text('Device NFC'), findsOneWidget);
+    expect(find.text('Activate Device NFC'), findsOneWidget);
+    expect(find.text('Write NFC Card'), findsNothing);
+    expect(find.text('Write NFC'), findsNothing);
+    expect(find.text('Receive with NFC'), findsNothing);
+    expect(find.byType(BioPayIconBox), findsNothing);
+  });
 
   testWidgets('Write NFC combines receiver mode and input into one card', (
     tester,
@@ -158,7 +162,8 @@ void main() {
       ),
     );
 
-    expect(find.text('Write NFC'), findsOneWidget);
+    expect(find.text('Write NFC'), findsWidgets);
+    expect(find.text('Write & Lock NFC'), findsNothing);
     expect(find.text('MoMo Number'), findsOneWidget);
     expect(find.text('MoMo Pay'), findsOneWidget);
     expect(find.byType(TextField), findsOneWidget);
@@ -181,6 +186,9 @@ void main() {
   testWidgets('Face scan surface keeps redundant AWS helper label removed', (
     tester,
   ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
@@ -192,7 +200,8 @@ void main() {
 
     expect(find.text('Face scan'), findsOneWidget);
     expect(find.text('Start Face Scan'), findsOneWidget);
-    expect(find.text('AMOUNT'), findsOneWidget);
+    expect(tester.getRect(find.text('Start Face Scan')).bottom, lessThan(844));
+    expect(find.text('AMOUNT'), findsNothing);
     expect(find.text('Amount (RWF, optional)'), findsNothing);
     expect(find.text('AWS face match'), findsNothing);
     expect(find.text('Capture with AWS face match'), findsNothing);
@@ -213,6 +222,7 @@ void main() {
 
       expect(find.text('Face enroll'), findsOneWidget);
       expect(find.text('Start Enrollment'), findsOneWidget);
+      expect(find.byType(MobiButton), findsOneWidget);
       expect(find.text('AWS liveness session'), findsNothing);
       expect(find.byType(BioPayIconBox), findsNothing);
     },
@@ -237,37 +247,41 @@ void main() {
     expect(find.byType(BioPayIconBox), findsNothing);
   });
 
-  test('QR payload carries safe metadata and remains token-resolvable', () {
-    const request = BioPayUssdPaymentRequest(
-      id: 'request-1',
-      token: 'mobio-biopay-token-1',
-      channel: BioPayRequestChannel.qr,
-      providerCode: 'mtn_rw',
-      payeeLabel: 'BioPay merchant',
-      amountMinor: 250000,
-      currency: 'RWF',
-      reference: 'BP-1',
-      ussdCode: '*182*8*1*250788000000*2500#',
-      status: BioPayRequestStatus.readyToDial,
-    );
-    final qrPayload = buildBioPayQrPayload(request);
-    final payload = jsonDecode(qrPayload) as Map<String, dynamic>;
-    expect(payload['type'], 'mobio_biopay_request');
-    expect(payload['token'], 'mobio-biopay-token-1');
-    expect(payload['payee_label'], 'BioPay merchant');
-    expect(payload['amount_minor'], 250000);
-    expect(payload.containsKey('ussd_code'), isFalse);
-    expect(payload.values.join(' '), isNot(contains('*182')));
-    expect(bioPayTokenFromPayload(qrPayload), 'mobio-biopay-token-1');
-    expect(
-      bioPayTokenFromPayload('mobio-biopay-token-1'),
-      'mobio-biopay-token-1',
-    );
-    expect(
-      bioPayTokenFromPayload(
-        'https://mobi.rw/biopay?token=mobio-biopay-token-1',
-      ),
-      'mobio-biopay-token-1',
-    );
-  });
+  test(
+    'QR payload uses MoMo tel USSD format and token QR remains readable',
+    () {
+      const request = BioPayUssdPaymentRequest(
+        id: 'request-1',
+        token: 'mobio-biopay-token-1',
+        channel: BioPayRequestChannel.qr,
+        providerCode: 'mtn_rw',
+        payeeLabel: 'BioPay merchant',
+        amountMinor: 250000,
+        currency: 'RWF',
+        reference: 'BP-1',
+        ussdCode: '*182*8*1*250788000000*2500#',
+        status: BioPayRequestStatus.readyToDial,
+      );
+      final qrPayload = buildBioPayQrPayload(request);
+      expect(qrPayload, 'tel:*182*8*1*250788000000*2500%23');
+      expect(
+        bioPayUssdCodeFromPayload(qrPayload),
+        '*182*8*1*250788000000*2500#',
+      );
+      expect(
+        bioPayUssdCodeFromPayload('*182*8*1*250788000000*2500#'),
+        '*182*8*1*250788000000*2500#',
+      );
+      expect(
+        bioPayTokenFromPayload('mobio-biopay-token-1'),
+        'mobio-biopay-token-1',
+      );
+      expect(
+        bioPayTokenFromPayload(
+          'https://mobi.rw/biopay?token=mobio-biopay-token-1',
+        ),
+        'mobio-biopay-token-1',
+      );
+    },
+  );
 }

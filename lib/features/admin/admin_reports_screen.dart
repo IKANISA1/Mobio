@@ -35,6 +35,7 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
   String _searchQuery = '';
   int _page = 0;
   int _rowsPerPage = 25;
+  bool _hasNextPage = false;
   String? _busyId;
 
   @override
@@ -61,13 +62,15 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
       final reports = await _adminService.listUserReports(
         status: _statusFilter,
         search: _searchQuery,
-        limit: 100,
+        limit: _rowsPerPage + 1,
+        offset: _page * _rowsPerPage,
       );
       if (!mounted) return;
+      final hasNextPage = reports.length > _rowsPerPage;
       setState(() {
-        _reports = reports;
+        _reports = reports.take(_rowsPerPage).toList();
+        _hasNextPage = hasNextPage;
         _isLoading = false;
-        _page = 0;
       });
     } on Object catch (error) {
       if (!mounted) return;
@@ -342,12 +345,8 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
     );
   }
 
-  List<AdminUserReportItem> _pagedReports() {
-    if (_reports.isEmpty) return const [];
-    final start = (_page * _rowsPerPage).clamp(0, _reports.length).toInt();
-    final end = (start + _rowsPerPage).clamp(start, _reports.length).toInt();
-    return _reports.sublist(start, end);
-  }
+  int get _paginationTotal =>
+      _page * _rowsPerPage + _reports.length + (_hasNextPage ? 1 : 0);
 
   @override
   Widget build(BuildContext context) {
@@ -558,12 +557,11 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
   }
 
   Widget _buildReportList() {
-    final pageReports = _pagedReports();
     return AdminPanel(
       padding: EdgeInsets.zero,
       child: Column(
         children: [
-          for (final report in pageReports)
+          for (final report in _reports)
             _ReportTile(
               report: report,
               isBusy: _busyId == report.id,
@@ -587,14 +585,20 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
                     },
             ),
           AdminPaginationBar(
-            totalItems: _reports.length,
+            totalItems: _paginationTotal,
             page: _page,
             rowsPerPage: _rowsPerPage,
-            onPageChanged: (value) => setState(() => _page = value),
-            onRowsPerPageChanged: (value) => setState(() {
-              _rowsPerPage = value;
-              _page = 0;
-            }),
+            onPageChanged: (value) {
+              setState(() => _page = value);
+              _loadReports(silent: true);
+            },
+            onRowsPerPageChanged: (value) {
+              setState(() {
+                _rowsPerPage = value;
+                _page = 0;
+              });
+              _loadReports(silent: true);
+            },
           ),
         ],
       ),

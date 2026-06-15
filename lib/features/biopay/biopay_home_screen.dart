@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/features/biopay/biopay_style.dart';
+import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 
 class BioPayScreen extends StatelessWidget {
@@ -42,12 +44,23 @@ class BioPayScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: AppSpacing.xl),
                   Text(
-                    'Pay & Get Paid\nInstant & Secure',
+                    'Pay & Get Paid',
                     style: AppTypography.displayLg.copyWith(
                       color: Colors.white,
                       fontSize: 40,
-                      height: 1.02,
+                      height: 1,
                       fontWeight: FontWeight.w900,
+                      letterSpacing: 0,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    'Instant & Secure',
+                    style: AppTypography.headlineLg.copyWith(
+                      color: AppColors.primaryFixedDim,
+                      fontSize: 30,
+                      height: 1.05,
+                      fontWeight: FontWeight.w800,
                       letterSpacing: 0,
                     ),
                   ),
@@ -90,10 +103,119 @@ class BioPayScreen extends StatelessWidget {
                       ],
                     ),
                   ),
+                  const SizedBox(height: AppSpacing.md),
+                  const _BioPayContextPanel(),
                 ],
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _BioPayContextPanel extends StatelessWidget {
+  const _BioPayContextPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return MobiSurfacePanel(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      borderRadius: AppRadii.xl,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'BioPay identity',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              MobiStatusBadge(
+                label: 'Ready',
+                icon: LucideIcons.shieldCheck,
+                tone: MobiStatusBadgeTone.positive,
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            'Face, NFC, and QR stay available as fast payment handoffs.',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.bodySm.copyWith(color: cs.onSurfaceVariant),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          const Row(
+            children: [
+              Expanded(
+                child: _BioPaySignalPill(
+                  icon: LucideIcons.scanFace,
+                  label: 'Face',
+                ),
+              ),
+              SizedBox(width: AppSpacing.xs),
+              Expanded(
+                child: _BioPaySignalPill(icon: LucideIcons.nfc, label: 'NFC'),
+              ),
+              SizedBox(width: AppSpacing.xs),
+              Expanded(
+                child: _BioPaySignalPill(icon: LucideIcons.qrCode, label: 'QR'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BioPaySignalPill extends StatelessWidget {
+  const _BioPaySignalPill({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: bioPayDarkPanelAlt.withValues(alpha: 0.58),
+        borderRadius: BorderRadius.circular(AppRadii.pill),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: 9,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 14, color: Colors.white.withValues(alpha: 0.82)),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.labelSm.copyWith(
+                  color: Colors.white.withValues(alpha: 0.82),
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

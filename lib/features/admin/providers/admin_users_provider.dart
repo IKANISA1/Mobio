@@ -26,20 +26,26 @@ class AdminUsersController extends AsyncNotifier<AdminUsersState> {
   Future<AdminUsersState> _fetchUsers({
     String? roleFilter,
     String? searchQuery,
+    int? page,
+    int? rowsPerPage,
   }) async {
     final role = roleFilter ?? state.value?.roleFilter ?? 'all';
     final query = searchQuery ?? state.value?.searchQuery ?? '';
     final sortKey = state.value?.sortKey ?? 'online';
-    final rowsPerPage = state.value?.rowsPerPage ?? 25;
+    final safeRowsPerPage = rowsPerPage ?? state.value?.rowsPerPage ?? 25;
+    final safePage = page ?? state.value?.page ?? 0;
 
     try {
       final users = await _adminService.listUsers(
         role: role == 'all' ? null : role,
         search: query.trim().isEmpty ? null : query.trim(),
-        limit: 120,
+        limit: safeRowsPerPage + 1,
+        offset: safePage * safeRowsPerPage,
       );
 
-      final sortedUsers = [...users]..sort((a, b) => _sortUsers(a, b, sortKey));
+      final hasNextPage = users.length > safeRowsPerPage;
+      final sortedUsers = users.take(safeRowsPerPage).toList()
+        ..sort((a, b) => _sortUsers(a, b, sortKey));
       final currentSelectedIds = state.value?.selectedIds ?? <String>{};
 
       return AdminUsersState(
@@ -51,8 +57,9 @@ class AdminUsersController extends AsyncNotifier<AdminUsersState> {
         roleFilter: role,
         searchQuery: query,
         sortKey: sortKey,
-        page: 0,
-        rowsPerPage: rowsPerPage,
+        page: safePage,
+        rowsPerPage: safeRowsPerPage,
+        hasNextPage: hasNextPage,
       );
     } on Object catch (error) {
       return AdminUsersState(
@@ -61,7 +68,8 @@ class AdminUsersController extends AsyncNotifier<AdminUsersState> {
         roleFilter: role,
         searchQuery: query,
         sortKey: sortKey,
-        rowsPerPage: rowsPerPage,
+        page: safePage,
+        rowsPerPage: safeRowsPerPage,
       );
     }
   }
@@ -75,13 +83,17 @@ class AdminUsersController extends AsyncNotifier<AdminUsersState> {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 280), () async {
       state = const AsyncValue.loading();
-      state = await AsyncValue.guard(() => _fetchUsers(searchQuery: query));
+      state = await AsyncValue.guard(
+        () => _fetchUsers(searchQuery: query, page: 0),
+      );
     });
   }
 
   Future<void> onRoleFilterChanged(String role) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _fetchUsers(roleFilter: role));
+    state = await AsyncValue.guard(
+      () => _fetchUsers(roleFilter: role, page: 0),
+    );
   }
 
   void setSortKey(String sortKey) {
@@ -95,24 +107,22 @@ class AdminUsersController extends AsyncNotifier<AdminUsersState> {
     );
   }
 
-  void setPage(int page) {
+  Future<void> setPage(int page) async {
     final currentState = state.value;
     if (currentState == null) return;
 
-    final maxPage = currentState.users.isEmpty
-        ? 0
-        : ((currentState.users.length - 1) / currentState.rowsPerPage).floor();
-    state = AsyncValue.data(
-      currentState.copyWith(page: page.clamp(0, maxPage).toInt()),
-    );
+    final nextPage = page < 0 ? 0 : page;
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() => _fetchUsers(page: nextPage));
   }
 
-  void setRowsPerPage(int rowsPerPage) {
+  Future<void> setRowsPerPage(int rowsPerPage) async {
     final currentState = state.value;
     if (currentState == null || rowsPerPage <= 0) return;
 
-    state = AsyncValue.data(
-      currentState.copyWith(rowsPerPage: rowsPerPage, page: 0),
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(
+      () => _fetchUsers(rowsPerPage: rowsPerPage, page: 0),
     );
   }
 

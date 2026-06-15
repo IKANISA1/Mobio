@@ -12,6 +12,7 @@ class AdminUsersState {
   final String sortKey;
   final int page;
   final int rowsPerPage;
+  final bool hasNextPage;
 
   const AdminUsersState({
     this.users = const [],
@@ -25,6 +26,7 @@ class AdminUsersState {
     this.sortKey = 'online',
     this.page = 0,
     this.rowsPerPage = 25,
+    this.hasNextPage = false,
   });
 
   AdminUsersState copyWith({
@@ -39,6 +41,7 @@ class AdminUsersState {
     String? sortKey,
     int? page,
     int? rowsPerPage,
+    bool? hasNextPage,
   }) {
     return AdminUsersState(
       users: users ?? this.users,
@@ -52,6 +55,10 @@ class AdminUsersState {
       sortKey: sortKey ?? this.sortKey,
       page: page ?? this.page,
       rowsPerPage: rowsPerPage ?? this.rowsPerPage,
+      hasNextPage: hasNextPage ?? this.hasNextPage,
     );
   }
+
+  int get paginationTotal =>
+      page * rowsPerPage + users.length + (hasNextPage ? 1 : 0);
 }

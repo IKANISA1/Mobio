@@ -1,0 +1,1001 @@
+  JOB #u0a904/4: b316de4 com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+    u0a904 tag=*job*/com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService#4
+    Source: uid=u0a904 user=0 pkg=com.momobio.app
+    JobInfo:
+      Service: com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+      Priority: 300 [DEFAULT]
+      Requires: charging=false batteryNotLow=false deviceIdle=false
+      Extras: mParcelledData.dataSize=248
+      Network type: NetworkRequest [ NONE id=0, [ Capabilities: INTERNET&TRUSTED&VALIDATED&NOT_VCN_MANAGED Uid: 10904 UnderlyingNetworks: Null] ]
+      Minimum latency: +29s515ms
+      Backoff: policy=1 initial=+30s0ms
+      Has early constraint
+    Required constraints: TIMING_DELAY CONNECTIVITY [0x90000000]
+    Dynamic constraints:
+    Satisfied constraints: CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0x1b400000]
+    Unsatisfied constraints: TIMING_DELAY [0x80000000]
+    Constraint history:
+      -27s445ms = CONNECTIVITY [0x10000000]
+      -27s445ms = CONNECTIVITY BACKGROUND_NOT_RESTRICTED [0x10400000]
+      -27s445ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED [0x12400000]
+      -27s445ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED WITHIN_QUOTA [0x13400000]
+      -27s444ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0x1b400000]
+    Doze whitelisted: true
+    Uid: active
+    Tracking: CONNECTIVITY TIME QUOTA
+    Implicit constraints:
+      readyNotDozing: true
+      readyNotRestrictedInBg: true
+      readyComponentEnabled: true
+    Network: 429
+    Standby bucket: EXEMPTED
+    Enqueue time: -27s445ms
+    Run time: earliest=+2s70ms, latest=none, original latest=none
+    Restricted due to: none.
+    Ready: false (job=false user=true !restricted=true !pending=true !active=true !backingup=true comp=true)
+
+ConnectivityController:
+  Requested standby exceptions: 10079 (1 jobs) 10263 (1 jobs)
+  Available networks:
+    429: [ Transports: WIFI Capabilities: NOT_METERED&INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VPN&VALIDATED&NOT_ROAMING&FOREGROUND&NOT_CONGESTED&NOT_SUSPENDED&NOT_VCN_MANAGED LinkUpBandwidth>=2904Kbps LinkDnBandwidth>=43541Kbps TransportInfo: <SSID: <unknown ssid>, BSSID: 02:00:00:00:00:00, MAC: 02:00:00:00:00:00, IP: /192.168.1.120, Security type: 2, Supplicant state: COMPLETED, Wi-Fi standard: 11ac, RSSI: -56, Link speed: 780Mbps, Tx Link speed: 780Mbps, Max Supported Tx Link speed: 866Mbps, Rx Link speed: 702Mbps, Max Supported Rx Link speed: 866Mbps, Frequency: 5180MHz, Net ID: -1, Metered hint: false, score: 100, isUsable: true, CarrierMerged: false, SubscriptionId: -1, IsPrimary: 1, Trusted: true, Restricted: false, Ephemeral: false, OEM paid: false, OEM private: false, OSU AP: false, FQDN: <none>, Provider friendly name: <none>, Requesting package name: <none><none>MLO Information: , Is TID-To-Link negotiation supported by the AP: false, AP MLD Address: <none>, AP MLO Link Id: <none>, AP MLO Affiliated links: <none>, Vendor Data: <none>> SignalStrength: -56 AdminUids: [1000] SSID: "FreeBeer" UnderlyingNetworks: Null]
+    431: [ Transports: CELLULAR Capabilities: SUPL&NOT_RESTRICTED&TRUSTED&NOT_VPN&NOT_ROAMING&FOREGROUND&NOT_CONGESTED&NOT_SUSPENDED&NOT_VCN_MANAGED LinkUpBandwidth>=15000Kbps LinkDnBandwidth>=30000Kbps Specifier: <TelephonyNetworkSpecifier [mSubId = 11]> SubscriptionIds: {11} UnderlyingNetworks: Null]
+  
+  Subscription ID signal strengths:
+    11: 2
+  
+  Current default network callbacks:
+    UID: 1000; Network: 429 (blocked=REASON_NONE)
+    UID: 10021; Network: 429 (blocked=REASON_NONE)
+    UID: 10034; Network: 429 (blocked=REASON_NONE)
+    UID: 10037; Network: 429 (blocked=REASON_NONE)
+    UID: 10050; Network: 429 (blocked=REASON_NONE)
+    UID: 10061; Network: 429 (blocked=REASON_NONE)
+    UID: 10079; Network: 429 (blocked=REASON_NONE)
+    UID: 10084; Network: 429 (blocked=REASON_NONE)
+    UID: 10091; Network: 429 (blocked=REASON_NONE)
+    UID: 10149; Network: 429 (blocked=REASON_NONE)
+    UID: 10152; Network: 429 (blocked=REASON_APP_STANDBY)
+    UID: 10155; Network: 429 (blocked=REASON_NONE)
+    UID: 10158; Network: 429 (blocked=REASON_NONE)
+    UID: 10160; Network: 429 (blocked=REASON_NONE)
+    UID: 10161; Network: 429 (blocked=REASON_NONE)
+    UID: 10162; Network: 429 (blocked=REASON_NONE)
+    UID: 10163; Network: 429 (blocked=REASON_NONE)
+    UID: 10164; Network: 429 (blocked=REASON_NONE)
+    UID: 10170; Network: 429 (blocked=REASON_NONE)
+    UID: 10172; Network: 429 (blocked=REASON_NONE)
+    UID: 10175; Network: 429 (blocked=REASON_NONE)
+    UID: 10178; Network: 429 (blocked=REASON_NONE)
+    UID: 10179; Network: 429 (blocked=REASON_NONE)
+    UID: 10181; Network: 429 (blocked=REASON_NONE)
+    UID: 10183; Network: 429 (blocked=REASON_NONE)
+    UID: 10185; Network: 429 (blocked=REASON_NONE)
+    UID: 10186; Network: 429 (blocked=REASON_NONE)
+    UID: 10193; Network: 429 (blocked=REASON_NONE)
+    UID: 10197; Network: 429 (blocked=REASON_NONE)
+    UID: 10198; Network: 429 (blocked=REASON_NONE)
+    UID: 10200; Network: 429 (blocked=REASON_NONE)
+    UID: 10202; Network: 429 (blocked=REASON_NONE)
+    UID: 10203; Network: 429 (blocked=REASON_NONE)
+    UID: 10206; Network: 429 (blocked=REASON_NONE)
+    UID: 10209; Network: 429 (blocked=REASON_NONE)
+    UID: 10210; Network: 429 (blocked=REASON_NONE)
+    UID: 10214; Network: 429 (blocked=REASON_NONE)
+    UID: 10217; Network: 429 (blocked=REASON_NONE)
+    UID: 10220; Network: 429 (blocked=REASON_NONE)
+    UID: 10221; Network: 429 (blocked=REASON_NONE)
+    UID: 10222; Network: 429 (blocked=REASON_NONE)
+    UID: 10223; Network: 429 (blocked=REASON_NONE)
+    UID: 10227; Network: 429 (blocked=REASON_NONE)
+    UID: 10258; Network: 429 (blocked=REASON_NONE)
+    UID: 10259; Network: 429 (blocked=REASON_NONE)
+        com.momobio.app
+        com.android.localtransport
+        com.google.RilConfigService
+        com.android.proxyhandler
+        com.google.SSRestartDetector
+        com.android.sdm.plugins.dcmo
+        com.android.service.ims.presence
+        com.android.imsserviceentitlement
+        com.android.settings
+        com.google.android.wfcactivation
+        com.google.android.apps.scone
+        com.google.android.apps.turbo
+        com.google.android.tetheringentitlement
+        com.android.omadm.service
+        com.android.phone
+        com.android.shell
+        com.android.wallpaperbackup
+        com.google.android.apps.carrier.carrierwifi
+        com.android.emergency
+        com.android.location.fused
+        com.google.android.cellbroadcastreceiver
+        com.android.bluetooth
+        com.qualcomm.atfwd
+        com.android.providers.contacts
+        com.google.android.GoogleCamera
+    
+    Restricted packages:
+    Stats:
+      UID_FG_STATE_CHANGED: count=0, total=0.0ms, avg=0.000ms, max calls/s=0 max dur/s=0.0ms max time=0.0ms
+      UID_ACTIVE_STATE_CHANGED: count=19641, total=30879.0ms, avg=1.572ms, max calls/s=21 max dur/s=730.2ms max time=730.0ms
+      RUN_ANY_CHANGED: count=0, total=0.0ms, avg=0.000ms, max calls/s=0 max dur/s=0.0ms max time=0.0ms
+      ALL_UNEXEMPTED: count=0, total=0.0ms, avg=0.000ms, max calls/s=0 max dur/s=0.0ms max time=0.0ms
+      ALL_EXEMPTION_LIST_CHANGED: count=2, total=4.0ms, avg=1.997ms, max calls/s=1 max dur/s=2.5ms max time=2.5ms
+      TEMP_EXEMPTION_LIST_CHANGED: count=10024, total=21938.2ms, avg=2.189ms, max calls/s=11 max dur/s=268.6ms max time=265.9ms
+      EXEMPTED_BUCKET_CHANGED: count=6, total=5.5ms, avg=0.922ms, max calls/s=0 max dur/s=0.0ms max time=1.9ms
+      FORCE_ALL_CHANGED: count=0, total=0.0ms, avg=0.000ms, max calls/s=0 max dur/s=0.0ms max time=0.0ms
+      FORCE_APP_STANDBY_FEATURE_FLAG_CHANGED: count=0, total=0.0ms, avg=0.000ms, max calls/s=0 max dur/s=0.0ms max time=0.0ms
+      IS_UID_ACTIVE_CACHED: count=0, total=0.0ms, avg=0.000ms, max calls/s=0 max dur/s=0.0ms max time=0.0ms
+      IS_UID_ACTIVE_RAW: count=23738, total=1287.9ms, avg=0.054ms, max calls/s=34 max dur/s=9.0ms max time=7.8ms
+  
+  #u0a904/4 from u0a904 active, exempted: com.momobio.app [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a903/3107 from u0a903 active, exempted: com.molovelies.app [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a899/-275504748 from u0a899 idle: rw.mobi.app [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a722/555000166 from u0a722 idle: com.google.android.apps.dynamite [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a722/216934020 from u0a722 idle: com.google.android.apps.dynamite [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a722/555000179 from u0a722 idle: com.google.android.apps.dynamite [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a722/555000169 from u0a722 idle: com.google.android.apps.dynamite [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a722/555000180 from u0a722 idle: com.google.android.apps.dynamite [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a722/555000163 from u0a722 idle: com.google.android.apps.dynamite [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a722/555000178 from u0a722 idle: com.google.android.apps.dynamite [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a722/555000177 from u0a722 idle: com.google.android.apps.dynamite [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a722/1007999 from u0a722 idle: com.google.android.apps.dynamite [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a711/165 from u0a711 idle: com.airbnb.android [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a447/2563 from u0a447 idle: org.npr.android.news [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a447/1278158119 from u0a447 idle: org.npr.android.news [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a447/-592367158 from u0a447 idle: org.npr.android.news [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a407/789 from u0a407 idle: com.google.android.apps.security.securityhub [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a407/788 from u0a407 idle: com.google.android.apps.security.securityhub [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a405/3533 from u0a405 idle: com.google.android.odad [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a405/3538 from u0a405 idle: com.google.android.odad [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a400/369941447 from u0a400 idle: com.google.android.as.oss [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a400/532808520 from u0a400 idle: com.google.android.as.oss [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a400/412882778 from u0a400 idle: com.google.android.as.oss [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a344/1 from u0a344 idle: com.oasisfeng.greenify [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15184 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15177 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15194 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15149 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/11007999 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15150 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15197 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15199 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15146 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15185 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15096 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15109 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15072 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15174 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15147 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a319/15148 from u0a319 idle: com.google.android.apps.tachyon [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a311/8687 from u0a311 idle: com.google.android.apps.walletnfcrel [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a311/8692 from u0a311 idle: com.google.android.apps.walletnfcrel [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a311/8701 from u0a311 idle: com.google.android.apps.walletnfcrel [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a311/111007999 from u0a311 idle: com.google.android.apps.walletnfcrel [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a284/8 from u0a284 idle: com.google.android.apps.docs.editors.docs [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a284/1643 from u0a284 idle: com.google.android.apps.docs.editors.docs [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a284/1656 from u0a284 idle: com.google.android.apps.docs.editors.docs [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a284/1659 from u0a284 idle: com.google.android.apps.docs.editors.docs [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a284/1658 from u0a284 idle: com.google.android.apps.docs.editors.docs [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a281/46005 from u0a281 idle: com.digicel.selfcare.mobile [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a281/45697 from u0a281 idle: com.digicel.selfcare.mobile [RUN_ANY_IN_BACKGROUND allowed] RUNNABLE
+  #u0a904/4 from u0a904: com.momobio.app RUNNABLE WHITELISTED
+  #u0a903/3107 from u0a903: com.molovelies.app RUNNABLE WHITELISTED
+  #u0a899/-275504748 from u0a899: rw.mobi.app RUNNABLE
+  #u0a722/555000166 from u0a722: com.google.android.apps.dynamite RUNNABLE
+  #u0a722/216934020 from u0a722: com.google.android.apps.dynamite RUNNABLE
+  #u0a722/555000179 from u0a722: com.google.android.apps.dynamite RUNNABLE
+  #u0a722/555000169 from u0a722: com.google.android.apps.dynamite RUNNABLE
+  #u0a722/555000180 from u0a722: com.google.android.apps.dynamite RUNNABLE
+  #u0a722/555000163 from u0a722: com.google.android.apps.dynamite RUNNABLE
+  #u0a722/555000178 from u0a722: com.google.android.apps.dynamite RUNNABLE
+  #u0a722/555000177 from u0a722: com.google.android.apps.dynamite RUNNABLE
+  #u0a722/1007999 from u0a722: com.google.android.apps.dynamite RUNNABLE
+  #u0a711/165 from u0a711: com.airbnb.android RUNNABLE
+  #u0a447/2563 from u0a447: org.npr.android.news RUNNABLE ALLOWED_IN_DOZE
+  #u0a447/1278158119 from u0a447: org.npr.android.news RUNNABLE
+  #u0a447/-592367158 from u0a447: org.npr.android.news RUNNABLE
+  #u0a407/789 from u0a407: com.google.android.apps.security.securityhub RUNNABLE
+  #u0a407/788 from u0a407: com.google.android.apps.security.securityhub RUNNABLE
+  #u0a405/3533 from u0a405: com.google.android.odad RUNNABLE
+  #u0a405/3538 from u0a405: com.google.android.odad RUNNABLE
+  #u0a400/369941447 from u0a400: com.google.android.as.oss RUNNABLE
+  #u0a400/532808520 from u0a400: com.google.android.as.oss RUNNABLE
+  #u0a400/412882778 from u0a400: com.google.android.as.oss RUNNABLE
+  #u0a344/1 from u0a344: com.oasisfeng.greenify RUNNABLE
+  #u0a319/15184 from u0a319: com.google.android.apps.tachyon RUNNABLE
+  #u0a319/15177 from u0a319: com.google.android.apps.tachyon RUNNABLE
+  #u0a319/15194 from u0a319: com.google.android.apps.tachyon RUNNABLE
+  #u0a319/15149 from u0a319: com.google.android.apps.tachyon RUNNABLE ALLOWED_IN_DOZE
+  #u0a319/11007999 from u0a319: com.google.android.apps.tachyon RUNNABLE
+  #u0a319/15150 from u0a319: com.google.android.apps.tachyon RUNNABLE ALLOWED_IN_DOZE
+  #u0a319/15197 from u0a319: com.google.android.apps.tachyon RUNNABLE
+  #u0a319/15199 from u0a319: com.google.android.apps.tachyon RUNNABLE
+  #u0a319/15146 from u0a319: com.google.android.apps.tachyon RUNNABLE ALLOWED_IN_DOZE
+  #u0a319/15185 from u0a319: com.google.android.apps.tachyon RUNNABLE
+  #u0a319/15096 from u0a319: com.google.android.apps.tachyon RUNNABLE
+  #u0a319/15109 from u0a319: com.google.android.apps.tachyon RUNNABLE
+  #u0a319/15072 from u0a319: com.google.android.apps.tachyon RUNNABLE ALLOWED_IN_DOZE
+  #u0a319/15174 from u0a319: com.google.android.apps.tachyon RUNNABLE
+  #u0a319/15147 from u0a319: com.google.android.apps.tachyon RUNNABLE ALLOWED_IN_DOZE
+  #u0a319/15148 from u0a319: com.google.android.apps.tachyon RUNNABLE ALLOWED_IN_DOZE
+  #u0a311/8687 from u0a311: com.google.android.apps.walletnfcrel RUNNABLE
+  #u0a311/8692 from u0a311: com.google.android.apps.walletnfcrel RUNNABLE
+  #u0a311/8701 from u0a311: com.google.android.apps.walletnfcrel RUNNABLE
+  #u0a311/111007999 from u0a311: com.google.android.apps.walletnfcrel RUNNABLE
+  #u0a284/8 from u0a284: com.google.android.apps.docs.editors.docs RUNNABLE
+  #u0a284/1643 from u0a284: com.google.android.apps.docs.editors.docs RUNNABLE
+  #u0a284/1656 from u0a284: com.google.android.apps.docs.editors.docs RUNNABLE
+  #u0a284/1659 from u0a284: com.google.android.apps.docs.editors.docs RUNNABLE
+  #u0a284/1658 from u0a284: com.google.android.apps.docs.editors.docs RUNNABLE
+  #u0a281/46005 from u0a281: com.digicel.selfcare.mobile RUNNABLE
+  #u0a281/45697 from u0a281: com.digicel.selfcare.mobile RUNNABLE
+  #u0a281/46008 from u0a281: com.digicel.selfcare.mobile RUNNABLE
+  #u0a281/1000 from u0a281: com.digicel.selfcare.mobile RUNNABLE
+  #u0a281/45699 from u0a281: com.digicel.selfcare.mobile RUNNABLE
+  #u0a281/45868 from u0a281: com.digicel.selfcare.mobile RUNNABLE
+  #u0a281/45869 from u0a281: com.digicel.selfcare.mobile RUNNABLE
+  #u0a281/111 from u0a281: com.digicel.selfcare.mobile RUNNABLE
+  #u0a281/46010 from u0a281: com.digicel.selfcare.mobile RUNNABLE
+  #u0a280/-2147482842 from u0a280: com.linkedin.android RUNNABLE
+  #u0a280/-2147482830 from u0a280: com.linkedin.android RUNNABLE
+  #u0a280/-2147482829 from u0a280: com.linkedin.android RUNNABLE
+  #u0a280/-2147482836 from u0a280: com.linkedin.android RUNNABLE
+  #u0a280/-2147482843 from u0a280: com.linkedin.android RUNNABLE
+  #u0a280/-2147483108 from u0a280: com.linkedin.android RUNNABLE ALLOWED_IN_DOZE
+  #u0a280/-2147482868 from u0a280: com.linkedin.android RUNNABLE
+  #u0a280/-2147483647 from u0a280: com.linkedin.android RUNNABLE
+  #u0a263/40831 from u0a263: com.whatsapp RUNNABLE
+  #u0a263/40963 from u0a263: com.whatsapp RUNNABLE
+  #u0a263/40966 from u0a263: com.whatsapp RUNNABLE
+  #u0a263/40964 from u0a263: com.whatsapp RUNNABLE
+  #u0a263/40962 from u0a263: com.whatsapp RUNNABLE
+  #u0a263/40912 from u0a263: com.whatsapp RUNNABLE
+  #u0a263/40965 from u0a263: com.whatsapp RUNNABLE
+  #u0a260/111007999 from u0a260: com.google.android.apps.magazines RUNNABLE
+  #u0a260/546870 from u0a260: com.google.android.apps.magazines RUNNABLE
+  #u0a259/555013606 from u0a259: com.google.android.keep RUNNABLE
+  #u0a259/555013607 from u0a259: com.google.android.keep RUNNABLE
+  #u0a259/555013611 from u0a259: com.google.android.keep RUNNABLE
+  #u0a259/555013608 from u0a259: com.google.android.keep RUNNABLE ALLOWED_IN_DOZE
+  #u0a259/555013603 from u0a259: com.google.android.keep RUNNABLE
+  #u0a259/111007999 from u0a259: com.google.android.keep RUNNABLE
+  #u0a259/555013609 from u0a259: com.google.android.keep RUNNABLE
+  #u0a259/555013610 from u0a259: com.google.android.keep RUNNABLE ALLOWED_IN_DOZE
+  #u0a258/1000333 from u0a258: com.google.android.apps.chromecast.app RUNNABLE
+  #u0a258/1000330 from u0a258: com.google.android.apps.chromecast.app RUNNABLE
+  #u0a258/111007999 from u0a258: com.google.android.apps.chromecast.app RUNNABLE
+  #u0a258/1000329 from u0a258: com.google.android.apps.chromecast.app RUNNABLE
+  #u0a253/1493 from u0a253: com.google.android.providers.media.module RUNNABLE
+  #u0a253/1388 from u0a253: com.google.android.providers.media.module RUNNABLE
+  #u0a253/1569 from u0a253: com.google.android.providers.media.module RUNNABLE
+  #u0a253/1594 from u0a253: com.google.android.providers.media.module RUNNABLE
+  Timer<REG>{<0>com.momobio.app} NOT active, 0 running bg jobs
+  
+  Timer<REG>{<0>com.google.android.partnersetup} NOT active, 0 running bg jobs
+  
+    Saved events:
+  
+  Timer<REG>{<0>com.google.android.videos} NOT active, 0 running bg jobs
+  
+    Saved events:
+      2386029108 -> 2386629112 (600004), 5 bg jobs.
+  
+  Timer<REG>{<0>com.google.android.apps.photos} NOT active, 0 running bg jobs
+  
+    Saved events:
+      2437339243 -> 2437339256 (13), 1 bg jobs.
+      2437338278 -> 2437338313 (35), 1 bg jobs.
+      2437318409 -> 2437320765 (2356), 1 bg jobs.
+      2437291899 -> 2437291931 (32), 1 bg jobs.
+      2436694914 -> 2436694933 (19), 1 bg jobs.
+      2436693906 -> 2436693940 (34), 1 bg jobs.
+      2436690513 -> 2436690525 (12), 1 bg jobs.
+      2436689512 -> 2436689526 (14), 1 bg jobs.
+      2436688519 -> 2436688543 (24), 1 bg jobs.
+      2436659356 -> 2436659391 (35), 1 bg jobs.
+      2436658356 -> 2436658392 (36), 1 bg jobs.
+      2436630928 -> 2436630940 (12), 1 bg jobs.
+      2436621336 -> 2436621347 (11), 1 bg jobs.
+      2436620343 -> 2436620378 (35), 1 bg jobs.
+      2400952314 -> 2400953865 (1551), 3 bg jobs.
+      2383905097 -> 2383905102 (5), 1 bg jobs.
+      2383904260 -> 2383905090 (830), 1 bg jobs.
+  
+  Timer<REG>{<0>com.google.android.calendar} NOT active, 0 running bg jobs
+  
+    Saved events:
+      2402638481 -> 2402639955 (1474), 1 bg jobs.
+      2402637478 -> 2402638440 (962), 1 bg jobs.
+  
+  Timer<REG>{<0>org.npr.one} NOT active, 0 running bg jobs
+  
+    Saved events:
+      2418886626 -> 2419486644 (600018), 3 bg jobs.
+  
+  Timer<REG>{<0>com.facebook.katana} NOT active, 0 running bg jobs
+  
+    Saved events:
+      2392102915 -> 2392103113 (198), 1 bg jobs.
+      2389441351 -> 2389441558 (207), 1 bg jobs.
+      2385240702 -> 2385240909 (207), 1 bg jobs.
+  
+  Timer<REG>{<0>com.airbnb.android} NOT active, 0 running bg jobs
+  
+    Saved events:
+      2446018854 -> 2446020399 (1545), 1 bg jobs.
+  
+  Timer<REG>{<0>com.android.imsserviceentitlement} NOT active, 0 running bg jobs
+  
+    Saved events:
+  
+  Timer<REG>{<0>com.venmo} NOT active, 0 running bg jobs
+  
+    Saved events:
+  
+  Timer<REG>{<0>com.google.android.apps.translate} NOT active, 0 running bg jobs
+  
+    Saved events:
+      2461987773 -> 2461992663 (4890), 2 bg jobs.
+  
+  Timer<REG>{<0>com.linkedin.android} NOT active, 0 running bg jobs
+  
+    Saved events:
+      2430194594 -> 2430194985 (391), 1 bg jobs.
+      2430193725 -> 2430194325 (600), 4 bg jobs.
+      2430192075 -> 2430193217 (1142), 2 bg jobs.
+      2400952234 -> 2400953530 (1296), 2 bg jobs.
+      2385235341 -> 2385236994 (1653), 8 bg jobs.
+  
+  Timer<REG>{<0>com.android.settings} NOT active, 0 running bg jobs
+  
+  Timer<REG>{<0>com.google.android.wfcactivation} NOT active, 0 running bg jobs
+  
+    Saved events:
+  
+  Timer<REG>{<0>com.google.android.apps.healthdata} NOT active, 0 running bg jobs
+  
+    Saved events:
+  
+  Timer<REG>{<0>com.tdbank} NOT active, 0 running bg jobs
+  
+    Saved events:
+  
+  TopAppTimer{<0>com.momobio.app} started at 2470065758 (28448ms ago)
+    com.momobio.app.MainActivity
+  TopAppTimer{<0>com.google.android.apps.walletnfcrel} NOT active
+  TopAppTimer{<0>com.google.android.gms} NOT active
+  TopAppTimer{<0>com.google.android.packageinstaller} NOT active
+  TopAppTimer{<0>com.android.chrome} NOT active
+  TopAppTimer{<0>com.google.android.markup} NOT active
+  TopAppTimer{<0>com.ubercab.eats} NOT active
+  TopAppTimer{<0>com.google.android.apps.bard} NOT active
+  TopAppTimer{<0>translate.speech.text.translation.voicetranslator} NOT active
+  TopAppTimer{<0>com.google.android.accessibility.soundamplifier} NOT active
+  TopAppTimer{<0>com.apple.movetoios} NOT active
+  TopAppTimer{<0>com.peacock.flashlight} NOT active
+  TopAppTimer{<0>com.google.android.dialer} NOT active
+  TopAppTimer{<0>com.google.android.stardroid} NOT active
+  TopAppTimer{<0>com.google.android.permissioncontroller} NOT active
+  TopAppTimer{<0>org.chromium.webapk.a7114f462cff010e2_v2} NOT active
+  TopAppTimer{<0>com.molovelies.app} NOT active
+  TopAppTimer{<0>com.google.android.apps.tachyon} NOT active
+  TopAppTimer{<0>com.google.android.gm} NOT active
+  TopAppTimer{<0>com.instagram.android} NOT active
+  TopAppTimer{<0>android} NOT active
+  TopAppTimer{<0>com.android.vending} NOT active
+  TopAppTimer{<0>com.openai.chatgpt} NOT active
+  TopAppTimer{<0>com.google.android.apps.messaging} NOT active
+  TopAppTimer{<0>com.whatsapp} NOT active
+  TopAppTimer{<0>com.google.android.apps.docs.editors.docs} NOT active
+  TopAppTimer{<0>org.telegram.messenger} NOT active
+  TopAppTimer{<0>com.google.android.googlequicksearchbox} NOT active
+  TopAppTimer{<0>com.camerasideas.instashot} NOT active
+  TopAppTimer{<0>com.whatsapp.w4b} NOT active
+  
+  Cached execution stats:
+    <0>com.google.android.apps.subscriptions.red
+      ACTIVE: expirationTime=2170725908, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=2221, bgJobCountInWindow=2, executionTimeInMaxPeriod=7769, bgJobCountInMaxPeriod=5, sessionCountInWindow=1, inQuotaTime=0, rateLimitJobCountExpirationTime=2170777343, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2170780420, rateLimitSessionCountWindow=2
+      WORKING_SET: expirationTime=2170725908, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2170777343, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2170780420, rateLimitSessionCountWindow=2
+      FREQUENT: expirationTime=2170725908, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2170777343, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2170780420, rateLimitSessionCountWindow=2
+      RARE: expirationTime=2170725908, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2170777343, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2170780420, rateLimitSessionCountWindow=2
+      NEVER: expirationTime=2170725908, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2170777343, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2170780420, rateLimitSessionCountWindow=2
+      RESTRICTED: expirationTime=2257117343, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=10, sessionCountLimit=1, executionTimeInWindow=3178, bgJobCountInWindow=5, executionTimeInMaxPeriod=3178, bgJobCountInMaxPeriod=5, sessionCountInWindow=2, inQuotaTime=2257125908, rateLimitJobCountExpirationTime=2170777343, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2170780420, rateLimitSessionCountWindow=2
+      EXEMPTED: expirationTime=2170725908, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2170777343, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2170780420, rateLimitSessionCountWindow=2
+    <0>com.whatsapp.w4b
+      ACTIVE: expirationTime=2344801875, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=1489370, bgJobCountInMaxPeriod=110, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150730, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2336151825, rateLimitSessionCountWindow=2
+      WORKING_SET: expirationTime=2509887214, allowedTimePerPeriodMs=600000, windowSizeMs=7200000, jobCountLimit=120, sessionCountLimit=10, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150730, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2336151825, rateLimitSessionCountWindow=2
+      FREQUENT: expirationTime=2336094453, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150730, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2336151825, rateLimitSessionCountWindow=2
+      RARE: expirationTime=2336094453, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150730, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2336151825, rateLimitSessionCountWindow=2
+      NEVER: expirationTime=2336094453, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150730, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2336151825, rateLimitSessionCountWindow=2
+      RESTRICTED: expirationTime=2336094453, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150730, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2336151825, rateLimitSessionCountWindow=2
+      EXEMPTED: expirationTime=2336094453, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150730, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2336151825, rateLimitSessionCountWindow=2
+    <0>com.google.android.youtube
+      ACTIVE: expirationTime=2430194907, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=2017, bgJobCountInWindow=5, executionTimeInMaxPeriod=15284, bgJobCountInMaxPeriod=37, sessionCountInWindow=1, inQuotaTime=0, rateLimitJobCountExpirationTime=2430253699, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2430254907, rateLimitSessionCountWindow=1
+      WORKING_SET: expirationTime=2516593699, allowedTimePerPeriodMs=600000, windowSizeMs=7200000, jobCountLimit=120, sessionCountLimit=10, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=1208, bgJobCountInMaxPeriod=1, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2430253699, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2430254907, rateLimitSessionCountWindow=1
+      FREQUENT: expirationTime=2430194907, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2430253699, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2430254907, rateLimitSessionCountWindow=1
+      RARE: expirationTime=2430194907, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=48, sessionCountLimit=3, executionTimeInWindow=4093, bgJobCountInWindow=9, executionTimeInMaxPeriod=4093, bgJobCountInMaxPeriod=9, sessionCountInWindow=3, inQuotaTime=153659320, rateLimitJobCountExpirationTime=2430253699, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2430254907, rateLimitSessionCountWindow=1
+      NEVER: expirationTime=2430194907, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2430253699, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2430254907, rateLimitSessionCountWindow=1
+      RESTRICTED: expirationTime=2516593699, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=10, sessionCountLimit=1, executionTimeInWindow=1208, bgJobCountInWindow=1, executionTimeInMaxPeriod=1208, bgJobCountInMaxPeriod=1, sessionCountInWindow=1, inQuotaTime=2516594907, rateLimitJobCountExpirationTime=2430253699, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2430254907, rateLimitSessionCountWindow=1
+      EXEMPTED: expirationTime=2430194907, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2430253699, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2430254907, rateLimitSessionCountWindow=1
+    <0>com.oasisfeng.greenify
+      ACTIVE: expirationTime=2386030691, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2386089092, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2386090691, rateLimitSessionCountWindow=1
+      WORKING_SET: expirationTime=2386030691, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2386089092, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2386090691, rateLimitSessionCountWindow=1
+      FREQUENT: expirationTime=2386030691, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2386089092, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2386090691, rateLimitSessionCountWindow=1
+      RARE: expirationTime=2386030691, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2386089092, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2386090691, rateLimitSessionCountWindow=1
+      NEVER: expirationTime=2386030691, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2386089092, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2386090691, rateLimitSessionCountWindow=1
+      RESTRICTED: expirationTime=2472429092, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=10, sessionCountLimit=1, executionTimeInWindow=1599, bgJobCountInWindow=1, executionTimeInMaxPeriod=1599, bgJobCountInMaxPeriod=1, sessionCountInWindow=1, inQuotaTime=2472430691, rateLimitJobCountExpirationTime=2386089092, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2386090691, rateLimitSessionCountWindow=1
+      EXEMPTED: expirationTime=2386030691, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2386089092, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2386090691, rateLimitSessionCountWindow=1
+    <0>com.camerasideas.instashot
+      ACTIVE: expirationTime=2426635152, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=0, rateLimitJobCountWindow=0, rateLimitSessionCountExpirationTime=0, rateLimitSessionCountWindow=0
+    <0>com.google.android.googlequicksearchbox
+      ACTIVE: expirationTime=2506952293, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2333538042, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2333538184, rateLimitSessionCountWindow=2
+      WORKING_SET: expirationTime=2333495507, allowedTimePerPeriodMs=600000, windowSizeMs=7200000, jobCountLimit=120, sessionCountLimit=10, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2333538042, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2333538184, rateLimitSessionCountWindow=2
+      FREQUENT: expirationTime=2333495507, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2333538042, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2333538184, rateLimitSessionCountWindow=2
+      RARE: expirationTime=2333495507, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2333538042, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2333538184, rateLimitSessionCountWindow=2
+      NEVER: expirationTime=2333495507, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2333538042, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2333538184, rateLimitSessionCountWindow=2
+      RESTRICTED: expirationTime=2333495507, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2333538042, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2333538184, rateLimitSessionCountWindow=2
+      EXEMPTED: expirationTime=2333495507, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2333538042, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2333538184, rateLimitSessionCountWindow=2
+    <0>com.android.providers.calendar
+      EXEMPTED: expirationTime=2398137270, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=0, rateLimitJobCountWindow=0, rateLimitSessionCountExpirationTime=0, rateLimitSessionCountWindow=0
+    <0>org.telegram.messenger
+      ACTIVE: expirationTime=2425614968, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2240587945, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2240588490, rateLimitSessionCountWindow=1
+      WORKING_SET: expirationTime=2240528490, allowedTimePerPeriodMs=600000, windowSizeMs=7200000, jobCountLimit=120, sessionCountLimit=10, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2240587945, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2240588490, rateLimitSessionCountWindow=1
+      FREQUENT: expirationTime=2240528490, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2240587945, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2240588490, rateLimitSessionCountWindow=1
+      RARE: expirationTime=2471635345, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=48, sessionCountLimit=3, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2240587945, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2240588490, rateLimitSessionCountWindow=1
+      NEVER: expirationTime=2240528490, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2240587945, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2240588490, rateLimitSessionCountWindow=1
+      RESTRICTED: expirationTime=2421018320, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=10, sessionCountLimit=1, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2240587945, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2240588490, rateLimitSessionCountWindow=1
+      EXEMPTED: expirationTime=2240528490, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2240587945, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2240588490, rateLimitSessionCountWindow=1
+    <0>com.touchtype.swiftkey
+      ACTIVE: expirationTime=1073902, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=529, bgJobCountInWindow=1, executionTimeInMaxPeriod=529, bgJobCountInMaxPeriod=1, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1131543, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=1133902, rateLimitSessionCountWindow=1
+      WORKING_SET: expirationTime=1073902, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1131543, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=1133902, rateLimitSessionCountWindow=1
+      FREQUENT: expirationTime=1073902, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1131543, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=1133902, rateLimitSessionCountWindow=1
+      RARE: expirationTime=1073902, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1131543, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=1133902, rateLimitSessionCountWindow=1
+      NEVER: expirationTime=1073902, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1131543, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=1133902, rateLimitSessionCountWindow=1
+    <0>com.momobio.app
+      EXEMPTED: expirationTime=2523019573, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=0, rateLimitJobCountWindow=0, rateLimitSessionCountExpirationTime=0, rateLimitSessionCountWindow=0
+    <0>com.google.android.partnersetup
+      ACTIVE: expirationTime=2512648207, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150722, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2336150902, rateLimitSessionCountWindow=4
+      WORKING_SET: expirationTime=2336092474, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150722, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2336150902, rateLimitSessionCountWindow=4
+      FREQUENT: expirationTime=2336092474, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150722, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2336150902, rateLimitSessionCountWindow=4
+      RARE: expirationTime=2336092474, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150722, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2336150902, rateLimitSessionCountWindow=4
+      NEVER: expirationTime=2336092474, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150722, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2336150902, rateLimitSessionCountWindow=4
+      RESTRICTED: expirationTime=2336092474, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150722, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2336150902, rateLimitSessionCountWindow=4
+      EXEMPTED: expirationTime=2336092474, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2336150722, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2336150902, rateLimitSessionCountWindow=4
+    <0>com.google.android.videos
+      ACTIVE: expirationTime=2386629112, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=639, bgJobCountInWindow=5, executionTimeInMaxPeriod=2749, bgJobCountInMaxPeriod=7, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2386089108, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2386689112, rateLimitSessionCountWindow=1
+      WORKING_SET: expirationTime=2386629112, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2386089108, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2386689112, rateLimitSessionCountWindow=1
+      FREQUENT: expirationTime=2386629112, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2386089108, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2386689112, rateLimitSessionCountWindow=1
+      RARE: expirationTime=2386629112, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2386089108, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2386689112, rateLimitSessionCountWindow=1
+      NEVER: expirationTime=2386629112, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2386089108, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2386689112, rateLimitSessionCountWindow=1
+      RESTRICTED: expirationTime=2472429108, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=10, sessionCountLimit=1, executionTimeInWindow=600004, bgJobCountInWindow=5, executionTimeInMaxPeriod=600004, bgJobCountInMaxPeriod=5, sessionCountInWindow=1, inQuotaTime=2473029112, rateLimitJobCountExpirationTime=2386089108, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2386689112, rateLimitSessionCountWindow=1
+      EXEMPTED: expirationTime=2386629112, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2386089108, rateLimitJobCountWindow=5, rateLimitSessionCountExpirationTime=2386689112, rateLimitSessionCountWindow=1
+    <0>com.google.RilConfigService
+      EXEMPTED: expirationTime=2516592122, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=0, rateLimitJobCountWindow=0, rateLimitSessionCountExpirationTime=0, rateLimitSessionCountWindow=0
+    <0>com.google.android.apps.photos
+      ACTIVE: expirationTime=2470304260, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=5054, bgJobCountInMaxPeriod=19, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2437351899, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2437351931, rateLimitSessionCountWindow=4
+      WORKING_SET: expirationTime=2470304260, allowedTimePerPeriodMs=600000, windowSizeMs=7200000, jobCountLimit=120, sessionCountLimit=10, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=5054, bgJobCountInMaxPeriod=19, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2437351899, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2437351931, rateLimitSessionCountWindow=4
+      FREQUENT: expirationTime=2437339257, allowedTimePerPeriodMs=600000, windowSizeMs=28800000, jobCountLimit=200, sessionCountLimit=8, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2437351899, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2437351931, rateLimitSessionCountWindow=4
+      RARE: expirationTime=2437339257, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=48, sessionCountLimit=3, executionTimeInWindow=30951, bgJobCountInWindow=9, executionTimeInMaxPeriod=30951, bgJobCountInMaxPeriod=9, sessionCountInWindow=4, inQuotaTime=1621449479, rateLimitJobCountExpirationTime=2437351899, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2437351931, rateLimitSessionCountWindow=4
+      NEVER: expirationTime=2437339257, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2437351899, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2437351931, rateLimitSessionCountWindow=4
+      RESTRICTED: expirationTime=2470304260, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=10, sessionCountLimit=1, executionTimeInWindow=5054, bgJobCountInWindow=19, executionTimeInMaxPeriod=5054, bgJobCountInMaxPeriod=19, sessionCountInWindow=9, inQuotaTime=2523739256, rateLimitJobCountExpirationTime=2437351899, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2437351931, rateLimitSessionCountWindow=4
+      EXEMPTED: expirationTime=2437339257, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2437351899, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=2437351931, rateLimitSessionCountWindow=4
+    <0>com.google.android.calendar
+      ACTIVE: expirationTime=2402639955, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=20573, bgJobCountInMaxPeriod=33, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2402697478, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2402698440, rateLimitSessionCountWindow=2
+      WORKING_SET: expirationTime=2489037478, allowedTimePerPeriodMs=600000, windowSizeMs=7200000, jobCountLimit=120, sessionCountLimit=10, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=2436, bgJobCountInMaxPeriod=2, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2402697478, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2402698440, rateLimitSessionCountWindow=2
+      FREQUENT: expirationTime=2402639955, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2402697478, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2402698440, rateLimitSessionCountWindow=2
+      RARE: expirationTime=2402639955, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2402697478, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2402698440, rateLimitSessionCountWindow=2
+      NEVER: expirationTime=2402639955, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2402697478, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2402698440, rateLimitSessionCountWindow=2
+      RESTRICTED: expirationTime=2402639955, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2402697478, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2402698440, rateLimitSessionCountWindow=2
+      EXEMPTED: expirationTime=2402639955, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2402697478, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2402698440, rateLimitSessionCountWindow=2
+    <0>org.npr.one
+      ACTIVE: expirationTime=2419486644, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=2995, bgJobCountInWindow=3, executionTimeInMaxPeriod=1314426, bgJobCountInMaxPeriod=11, sessionCountInWindow=1, inQuotaTime=0, rateLimitJobCountExpirationTime=2418946626, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2419546644, rateLimitSessionCountWindow=1
+      WORKING_SET: expirationTime=2419486644, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2418946626, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2419546644, rateLimitSessionCountWindow=1
+      FREQUENT: expirationTime=2419486644, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2418946626, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2419546644, rateLimitSessionCountWindow=1
+      RARE: expirationTime=2419486644, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2418946626, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2419546644, rateLimitSessionCountWindow=1
+      NEVER: expirationTime=2419486644, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2418946626, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2419546644, rateLimitSessionCountWindow=1
+      RESTRICTED: expirationTime=2505286626, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=10, sessionCountLimit=1, executionTimeInWindow=600018, bgJobCountInWindow=3, executionTimeInMaxPeriod=600018, bgJobCountInMaxPeriod=3, sessionCountInWindow=1, inQuotaTime=2505886644, rateLimitJobCountExpirationTime=2418946626, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2419546644, rateLimitSessionCountWindow=1
+      EXEMPTED: expirationTime=2419486644, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2418946626, rateLimitJobCountWindow=3, rateLimitSessionCountExpirationTime=2419546644, rateLimitSessionCountWindow=1
+    <0>com.facebook.katana
+      ACTIVE: expirationTime=2392103113, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=40849, bgJobCountInMaxPeriod=23, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2392162915, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2392163113, rateLimitSessionCountWindow=1
+      WORKING_SET: expirationTime=2392103113, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2392162915, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2392163113, rateLimitSessionCountWindow=1
+      FREQUENT: expirationTime=2392103113, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2392162915, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2392163113, rateLimitSessionCountWindow=1
+      RARE: expirationTime=2471640702, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=48, sessionCountLimit=3, executionTimeInWindow=612, bgJobCountInWindow=3, executionTimeInMaxPeriod=612, bgJobCountInMaxPeriod=3, sessionCountInWindow=3, inQuotaTime=2471640909, rateLimitJobCountExpirationTime=2392162915, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2392163113, rateLimitSessionCountWindow=1
+      NEVER: expirationTime=2392103113, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2392162915, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2392163113, rateLimitSessionCountWindow=1
+      RESTRICTED: expirationTime=2392103113, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=10, sessionCountLimit=1, executionTimeInWindow=37344, bgJobCountInWindow=13, executionTimeInMaxPeriod=37344, bgJobCountInMaxPeriod=13, sessionCountInWindow=4, inQuotaTime=2273690494, rateLimitJobCountExpirationTime=2392162915, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2392163113, rateLimitSessionCountWindow=1
+      EXEMPTED: expirationTime=2392103113, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2392162915, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2392163113, rateLimitSessionCountWindow=1
+    <0>com.airbnb.android
+      ACTIVE: expirationTime=2446020399, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=652, bgJobCountInWindow=1, executionTimeInMaxPeriod=652, bgJobCountInMaxPeriod=1, sessionCountInWindow=1, inQuotaTime=0, rateLimitJobCountExpirationTime=2446078854, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2446080399, rateLimitSessionCountWindow=1
+      WORKING_SET: expirationTime=2446020399, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2446078854, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2446080399, rateLimitSessionCountWindow=1
+      FREQUENT: expirationTime=2446020399, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2446078854, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2446080399, rateLimitSessionCountWindow=1
+      RARE: expirationTime=2446020399, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2446078854, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2446080399, rateLimitSessionCountWindow=1
+      NEVER: expirationTime=2446020399, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2446078854, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2446080399, rateLimitSessionCountWindow=1
+      RESTRICTED: expirationTime=2532418854, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=10, sessionCountLimit=1, executionTimeInWindow=1545, bgJobCountInWindow=1, executionTimeInMaxPeriod=1545, bgJobCountInMaxPeriod=1, sessionCountInWindow=1, inQuotaTime=2532420399, rateLimitJobCountExpirationTime=2446078854, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2446080399, rateLimitSessionCountWindow=1
+      EXEMPTED: expirationTime=2446020399, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2446078854, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=2446080399, rateLimitSessionCountWindow=1
+    <0>com.android.imsserviceentitlement
+      ACTIVE: expirationTime=1651309882, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1651369438, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=1651369882, rateLimitSessionCountWindow=1
+      WORKING_SET: expirationTime=1651309882, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1651369438, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=1651369882, rateLimitSessionCountWindow=1
+      FREQUENT: expirationTime=1651309882, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1651369438, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=1651369882, rateLimitSessionCountWindow=1
+      RARE: expirationTime=1651309882, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1651369438, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=1651369882, rateLimitSessionCountWindow=1
+      NEVER: expirationTime=1651309882, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1651369438, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=1651369882, rateLimitSessionCountWindow=1
+      RESTRICTED: expirationTime=1651309882, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1651369438, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=1651369882, rateLimitSessionCountWindow=1
+      EXEMPTED: expirationTime=1651309882, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=59, bgJobCountInWindow=1, executionTimeInMaxPeriod=59, bgJobCountInMaxPeriod=1, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1651369438, rateLimitJobCountWindow=1, rateLimitSessionCountExpirationTime=1651369882, rateLimitSessionCountWindow=1
+    <0>com.venmo
+      ACTIVE: expirationTime=1125292, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=264, bgJobCountInWindow=2, executionTimeInMaxPeriod=264, bgJobCountInMaxPeriod=2, sessionCountInWindow=1, inQuotaTime=0, rateLimitJobCountExpirationTime=1150978, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=1151242, rateLimitSessionCountWindow=3
+      WORKING_SET: expirationTime=1125292, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1150978, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=1151242, rateLimitSessionCountWindow=3
+      FREQUENT: expirationTime=1125292, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1150978, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=1151242, rateLimitSessionCountWindow=3
+      RARE: expirationTime=1125292, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1150978, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=1151242, rateLimitSessionCountWindow=3
+      NEVER: expirationTime=1125292, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1150978, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=1151242, rateLimitSessionCountWindow=3
+      RESTRICTED: expirationTime=1125292, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=10, sessionCountLimit=1, executionTimeInWindow=310, bgJobCountInWindow=4, executionTimeInMaxPeriod=310, bgJobCountInMaxPeriod=4, sessionCountInWindow=1, inQuotaTime=87492053, rateLimitJobCountExpirationTime=1150978, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=1151242, rateLimitSessionCountWindow=3
+      EXEMPTED: expirationTime=1125292, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=1150978, rateLimitJobCountWindow=4, rateLimitSessionCountExpirationTime=1151242, rateLimitSessionCountWindow=3
+    <0>com.google.android.apps.translate
+      ACTIVE: expirationTime=2461992663, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=523, bgJobCountInWindow=2, executionTimeInMaxPeriod=1799, bgJobCountInMaxPeriod=4, sessionCountInWindow=1, inQuotaTime=0, rateLimitJobCountExpirationTime=2462047773, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2462052663, rateLimitSessionCountWindow=1
+      WORKING_SET: expirationTime=2461992663, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2462047773, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2462052663, rateLimitSessionCountWindow=1
+      FREQUENT: expirationTime=2461992663, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2462047773, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2462052663, rateLimitSessionCountWindow=1
+      RARE: expirationTime=2461992663, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2462047773, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2462052663, rateLimitSessionCountWindow=1
+      NEVER: expirationTime=2461992663, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2462047773, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2462052663, rateLimitSessionCountWindow=1
+      RESTRICTED: expirationTime=2548387773, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=10, sessionCountLimit=1, executionTimeInWindow=4890, bgJobCountInWindow=2, executionTimeInMaxPeriod=4890, bgJobCountInMaxPeriod=2, sessionCountInWindow=1, inQuotaTime=2548392663, rateLimitJobCountExpirationTime=2462047773, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2462052663, rateLimitSessionCountWindow=1
+      EXEMPTED: expirationTime=2461992663, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2462047773, rateLimitJobCountWindow=2, rateLimitSessionCountExpirationTime=2462052663, rateLimitSessionCountWindow=1
+    <0>com.linkedin.android
+      ACTIVE: expirationTime=2430194985, allowedTimePerPeriodMs=600000, windowSizeMs=600000, jobCountLimit=75, sessionCountLimit=75, executionTimeInWindow=1941, bgJobCountInWindow=5, executionTimeInMaxPeriod=49906, bgJobCountInMaxPeriod=142, sessionCountInWindow=2, inQuotaTime=0, rateLimitJobCountExpirationTime=2430252076, rateLimitJobCountWindow=7, rateLimitSessionCountExpirationTime=2430253217, rateLimitSessionCountWindow=3
+      WORKING_SET: expirationTime=2471635341, allowedTimePerPeriodMs=600000, windowSizeMs=7200000, jobCountLimit=120, sessionCountLimit=10, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=5082, bgJobCountInMaxPeriod=17, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2430252076, rateLimitJobCountWindow=7, rateLimitSessionCountExpirationTime=2430253217, rateLimitSessionCountWindow=3
+      FREQUENT: expirationTime=2430194985, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2430252076, rateLimitJobCountWindow=7, rateLimitSessionCountExpirationTime=2430253217, rateLimitSessionCountWindow=3
+      RARE: expirationTime=2430194985, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=48, sessionCountLimit=3, executionTimeInWindow=4846, bgJobCountInWindow=7, executionTimeInMaxPeriod=4846, bgJobCountInMaxPeriod=7, sessionCountInWindow=4, inQuotaTime=1218449114, rateLimitJobCountExpirationTime=2430252076, rateLimitJobCountWindow=7, rateLimitSessionCountExpirationTime=2430253217, rateLimitSessionCountWindow=3
+      NEVER: expirationTime=2430194985, allowedTimePerPeriodMs=0, windowSizeMs=0, jobCountLimit=0, sessionCountLimit=0, executionTimeInWindow=0, bgJobCountInWindow=0, executionTimeInMaxPeriod=0, bgJobCountInMaxPeriod=0, sessionCountInWindow=0, inQuotaTime=0, rateLimitJobCountExpirationTime=2430252076, rateLimitJobCountWindow=7, rateLimitSessionCountExpirationTime=2430253217, rateLimitSessionCountWindow=3
+      RESTRICTED: expirationTime=2430194985, allowedTimePerPeriodMs=600000, windowSizeMs=86400000, jobCountLimit=10, sessionCountLimit=1, executionTimeInWindow=12438, bgJobCountInWindow=34, executionTimeInMaxPeriod=12438, bgJobCountInMaxPeriod=34, sessionCountInWindow=12, inQuotaTime=2421998308, rateLimitJobCountExpirationTime=2430252076, rateLimitJobCountWindow=7, rateLimitSessionCountExpirationTime=2430253217, rateLimitSessionCountWindow=3
+    <0>com.momobio.app: ShrinkableDebits { debit tally: 0, bucket: 6 }
+    <0>com.google.android.partnersetup: ShrinkableDebits { debit tally: 0, bucket: 0 }
+    <0>com.ikanisa.fanafrika: ShrinkableDebits { debit tally: 0, bucket: 3 }
+    <0>com.google.android.videos: ShrinkableDebits { debit tally: 0, bucket: 5 }
+    <0>com.google.android.apps.nexuslauncher: ShrinkableDebits { debit tally: 0, bucket: 0 }
+    <0>com.google.RilConfigService: ShrinkableDebits { debit tally: 0, bucket: 6 }
+    <0>com.google.android.apps.photos: ShrinkableDebits { debit tally: 0, bucket: 5 }
+    <0>com.google.android.calendar: ShrinkableDebits { debit tally: 0, bucket: 1 }
+    <0>org.npr.one: ShrinkableDebits { debit tally: 0, bucket: 5 }
+    <0>com.facebook.katana: ShrinkableDebits { debit tally: 0, bucket: 3 }
+    <0>com.airbnb.android: ShrinkableDebits { debit tally: 0, bucket: 5 }
+    <0>com.android.imsserviceentitlement: ShrinkableDebits { debit tally: 0, bucket: 6 }
+    <0>com.google.android.apps.translate: ShrinkableDebits { debit tally: 0, bucket: 5 }
+    <0>com.linkedin.android: ShrinkableDebits { debit tally: 0, bucket: 1 }
+    <0>com.android.settings: ShrinkableDebits { debit tally: 0, bucket: 6 }
+    <0>com.google.android.apps.healthdata: ShrinkableDebits { debit tally: 0, bucket: 0 }
+    <0>com.tdbank: ShrinkableDebits { debit tally: 0, bucket: 5 }
+    <0>com.google.android.settings.intelligence: ShrinkableDebits { debit tally: 0, bucket: 1 }
+    <0>com.google.android.apps.scone: ShrinkableDebits { debit tally: 0, bucket: 6 }
+    <0>com.google.android.apps.turbo: ShrinkableDebits { debit tally: 0, bucket: 6 }
+    <0>com.google.android.apps.chromecast.app: ShrinkableDebits { debit tally: 0, bucket: 5 }
+    <0>rw.mobi.app: ShrinkableDebits { debit tally: 0, bucket: 0 }
+    <0>net.skyscanner.android.main: ShrinkableDebits { debit tally: 0, bucket: 5 }
+    <0>com.google.android.keep: ShrinkableDebits { debit tally: 0, bucket: 5 }
+    <0>com.google.android.odad: ShrinkableDebits { debit tally: 0, bucket: 1 }
+    <0>com.google.android.apps.work.clouddpc: ShrinkableDebits { debit tally: 0, bucket: 0 }
+    <0>com.google.android.apps.carrier.carrierwifi: ShrinkableDebits { debit tally: 0, bucket: 6 }
+    <0>com.android.systemui: ShrinkableDebits { debit tally: 0, bucket: 0 }
+    <0>com.google.android.apps.youtube.music: ShrinkableDebits { debit tally: 0, bucket: 5 }
+    <0>com.google.android.apps.magazines: ShrinkableDebits { debit tally: 0, bucket: 3 }
+    <0>com.google.android.apps.gcs: ShrinkableDebits { debit tally: 0, bucket: 0 }
+    <0>com.google.android.GoogleCamera: ShrinkableDebits { debit tally: 0, bucket: 6 }
+    <0>com.google.android.inputmethod.latin: ShrinkableDebits { debit tally: 0, bucket: 5 }
+    <0>com.rollo.shipmanager: ShrinkableDebits { debit tally: 0, bucket: 5 }
+  
+  In quota alarms:
+    <0>com.google.android.contacts: 2470306561
+    <0>com.oasisfeng.greenify: 2472430691
+    <0>com.google.android.apps.docs: 2496613933
+    <0>com.google.android.videos: 2473029112
+    <0>org.npr.android.news: 2511795316
+    <0>com.google.android.youtube: 2516594907
+    <0>com.airbnb.android: 2532420399
+    <0>com.google.android.apps.youtube.music: 2516593069
+    <0>org.npr.one: 2505886644
+    <0>com.google.android.apps.dynamite: 2548395919
+    <0>com.google.android.apps.nbu.files: 2532419406
+    <0>com.google.android.apps.chromecast.app: 2548390391
+    <0>com.google.android.keep: 2548395349
+    <0>com.google.android.apps.translate: 2548392663
+    <0>com.expedia.bookings: 2548399950
+    <0>com.google.android.apps.tips: 2548390830
+    <0>com.google.android.apps.photos: 2523739256
+    <0>com.google.android.inputmethod.latin: 2544135285
+
+ComponentController:
+  0-ComponentInfo{com.google.android.apps.safetyhub/com.google.android.libraries.notifications.entrypoints.scheduled.ScheduledTaskService}: ServiceInfo{9c72b7d com.google.android.libraries.notifications.entrypoints.scheduled.ScheduledTaskService}
+  0-ComponentInfo{com.android.vending/com.google.android.finsky.scheduler.process.backgroundimpl.PhoneskyJobServiceBackground}: ServiceInfo{8bbca72 com.google.android.finsky.scheduler.process.backgroundimpl.PhoneskyJobServiceBackground}
+  0-ComponentInfo{com.facebook.katana/com.facebook.analytics2.logger.legacy.uploader.LollipopUploadService}: ServiceInfo{5d01ec3 com.facebook.analytics2.logger.legacy.uploader.LollipopUploadService}
+  0-ComponentInfo{org.npr.android.news/androidx.work.impl.background.systemjob.SystemJobService}: ServiceInfo{ceb340 androidx.work.impl.background.systemjob.SystemJobService}
+  0-ComponentInfo{com.google.android.contacts/androidx.work.impl.background.systemjob.SystemJobService}: ServiceInfo{6200279 androidx.work.impl.background.systemjob.SystemJobService}
+  0-ComponentInfo{translate.speech.text.translation.voicetranslator/com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService}: ServiceInfo{ab1aba6 com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService}
+  0-ComponentInfo{com.popularapp.periodcalendar/com.popularapp.periodcalendar.service.CheckJobService}: ServiceInfo{856d9e7 com.popularapp.periodcalendar.service.CheckJobService}
+  0-ComponentInfo{com.google.android.partnersetup/com.google.android.partnersetup.ClientIdJobService}: ServiceInfo{3095994 com.google.android.partnersetup.ClientIdJobService}
+  0-ComponentInfo{com.google.android.partnersetup/com.google.android.partnersetup.AppHidingJobService}: ServiceInfo{be6c3d com.google.android.partnersetup.AppHidingJobService}
+  0-ComponentInfo{android/com.android.server.PruneInstantAppsJobService}: ServiceInfo{a3cdc32 com.android.server.PruneInstantAppsJobService}
+  0-ComponentInfo{org.npr.android.news/com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService}: ServiceInfo{ef81bbe com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService}
+  0-ComponentInfo{com.google.android.tts/androidx.work.impl.background.systemjob.SystemJobService}: ServiceInfo{b0be41f androidx.work.impl.background.systemjob.SystemJobService}
+  0-ComponentInfo{com.google.android.apps.walletnfcrel/androidx.work.impl.background.systemjob.SystemJobService}: ServiceInfo{28bc36c androidx.work.impl.background.systemjob.SystemJobService}
+  0-ComponentInfo{com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService}: ServiceInfo{2139e0f androidx.work.impl.background.systemjob.SystemJobService}
+  0-ComponentInfo{com.google.android.apps.turbo/com.google.android.libraries.smartbattery.appusage.library.InferAppBucketsJob}: ServiceInfo{ad8897e com.google.android.libraries.smartbattery.appusage.library.InferAppBucketsJob}
+  0-ComponentInfo{com.google.android.permissioncontroller/com.android.permissioncontroller.hibernation.HibernationJobService}: ServiceInfo{d8b1edf com.android.permissioncontroller.hibernation.HibernationJobService}
+  0-ComponentInfo{com.google.android.videos/androidx.work.impl.background.systemjob.SystemJobService}: ServiceInfo{c954d35 androidx.work.impl.background.systemjob.SystemJobService}
+  0-ComponentInfo{android/com.android.server.ZramWriteback}: ServiceInfo{99be5f5 com.android.server.ZramWriteback}
+  0-ComponentInfo{com.google.android.dialer/com.android.dialer.shortcuts.PeriodicJobService}: ServiceInfo{51635ca com.android.dialer.shortcuts.PeriodicJobService}
+  0-ComponentInfo{com.google.android.permissioncontroller/com.android.permissioncontroller.permission.service.PermissionEventCleanupJobService}: ServiceInfo{c2cc9fb com.android.permissioncontroller.permission.service.PermissionEventCleanupJobService}
+  0-ComponentInfo{com.digicel.selfcare.mobile/com.madme.mobile.sdk.service.LSJobService2}: ServiceInfo{314a33b com.madme.mobile.sdk.service.LSJobService2}
+  0-ComponentInfo{com.google.android.settings.intelligence/com.google.android.settings.intelligence.libs.instrumentation.snapshot.SnapshotJobService}: ServiceInfo{a91ec71 com.google.android.settings.intelligence.libs.instrumentation.snapshot.SnapshotJobService}
+  0-ComponentInfo{com.popularapp.periodcalendar/com.popularapp.periodcalendar.autocheck.AutoCheckService}: ServiceInfo{6924a56 com.popularapp.periodcalendar.autocheck.AutoCheckService}
+  0-ComponentInfo{android/com.android.server.appsearch.contactsindexer.ContactsIndexerMaintenanceService}: ServiceInfo{3740ad7 com.android.server.appsearch.contactsindexer.ContactsIndexerMaintenanceService}
+  0-ComponentInfo{com.android.vending/com.google.android.finsky.scheduler.process.mainimpl.PhoneskyJobServiceMain}: ServiceInfo{427aa58 com.google.android.finsky.scheduler.process.mainimpl.PhoneskyJobServiceMain}
+  0-ComponentInfo{com.google.android.apps.photos/androidx.work.impl.background.systemjob.SystemJobService}: ServiceInfo{2da87b1 androidx.work.impl.background.systemjob.SystemJobService}
+  0-ComponentInfo{com.google.android.calendar/androidx.work.impl.background.systemjob.SystemJobService}: ServiceInfo{49e496 androidx.work.impl.background.systemjob.SystemJobService}
+  0-ComponentInfo{com.google.android.configupdater/com.google.android.configupdater.MainJobService}: ServiceInfo{5847d73 com.google.android.configupdater.MainJobService}
+  0-ComponentInfo{com.google.android.wfcactivation/com.google.android.wfcactivation.fcm.FcmRegistrationService}: ServiceInfo{194a430 com.google.android.wfcactivation.fcm.FcmRegistrationService}
+  0-ComponentInfo{com.google.android.apps.turbo/com.google.android.libraries.smartbattery.appusage.library.AppStandbyEnabledChangedJob}: ServiceInfo{af84e2e com.google.android.libraries.smartbattery.appusage.library.AppStandbyEnabledChangedJob}
+  0-ComponentInfo{com.google.android.gm/com.google.android.libraries.notifications.entrypoints.scheduled.ScheduledTaskService}: ServiceInfo{5203817 com.google.android.libraries.notifications.entrypoints.scheduled.ScheduledTaskService}
+  0-ComponentInfo{android/com.android.server.camera.CameraStatsJobService}: ServiceInfo{7d7d35c com.android.server.camera.CameraStatsJobService}
+  0-ComponentInfo{com.android.imsserviceentitlement/com.android.imsserviceentitlement.ImsEntitlementPollingService}: ServiceInfo{8991404 com.android.imsserviceentitlement.ImsEntitlementPollingService}
+  0-ComponentInfo{com.google.android.apps.magazines/com.google.android.gms.analytics.AnalyticsJobService}: ServiceInfo{c5eeded com.google.android.gms.analytics.AnalyticsJobService}
+  0-ComponentInfo{com.google.android.apps.tips/com.google.android.apps.tips.notifications.SoftwareDropService}: ServiceInfo{e733665 com.google.android.apps.tips.notifications.SoftwareDropService}
+  10904: {com.momobio.app}
+
+Historical stats at 2026-06-15-08-21-36 (-1h6m26s332ms) over +30m0s13ms:
+  Max concurrency: 6 total, 1 foreground
+  
+  1000 / android:
+    1x pending 1x active 
+    1x successful_finish
+  u0a79 / com.whatsapp.w4b:
+    5x pending 3% 3x active 
+    5x successful_finish
+  u0a84 / com.facebook.katana:
+    4x pending 4x active 
+    1x unknown:-1, 3x successful_finish
+  u0a91 / com.instagram.android:
+    5x pending 3x active 
+    3x canceled, 2x successful_finish
+  u0a162 / com.google.android.apps.carrier.carrierwifi:
+    1x pending 1x active 
+    1x successful_finish
+  u0a170 / com.google.android.apps.turbo:
+    3x pending 3x active 
+    2x unknown:-1, 1x successful_finish
+  u0a172 / com.android.vending:
+    6x pending 1% 6x active 
+    6x successful_finish
+  u0a181 / com.google.android.googlequicksearchbox:
+    4x pending 3x active 
+    2x canceled, 2x successful_finish
+  u0a193 / com.android.chrome:
+    6x pending 6x active 
+    6x successful_finish
+  u0a198 / com.google.android.apps.messaging:
+    1x pending 1x active 
+    1x successful_finish
+  u0a200 / com.google.android.tts:
+    1x pending 1x active 
+    1x successful_finish
+  u0a210 / com.google.android.gm:
+    2x pending 2x active 
+    2x successful_finish
+  u0a220 / com.google.android.youtube:
+    1x pending 1x active 
+    1x successful_finish
+  u0a221 / com.google.android.apps.work.clouddpc:
+    2x pending 1x active 
+    2x successful_finish
+  u0a223 / com.google.android.apps.maps:
+    2x pending 1x active 
+    1x canceled, 1x successful_finish
+  u0a253 / com.google.android.providers.media.module:
+    1x pending 1x active 
+    1x successful_finish
+  u0a263 / com.whatsapp:
+    8x pending 2% 6x active 
+    8x successful_finish
+  u0a280 / com.linkedin.android:
+    2x pending 2x active 
+    5x successful_finish
+  u0a281 / com.digicel.selfcare.mobile:
+    54x pending 100% 0x active 
+    54x successful_finish
+  u0a400 / com.google.android.as.oss:
+    2x pending 2x active 
+    2x canceled
+  u0a899 / rw.mobi.app:
+    2x pending 2x active-top
+    2x successful_finish
+  u0a903 / com.molovelies.app:
+    2x pending 2x active 
+    2x successful_finish
+
+Historical stats at 2026-06-15-07-51-36 (-1h36m26s339ms) over +30m0s6ms:
+  Max concurrency: 6 total, 1 foreground
+  
+  1000 / android:
+    3x pending 3x active 
+    1x unknown:-1, 2x successful_finish
+  u0a84 / com.facebook.katana:
+    1x pending 1x active 
+    1x successful_finish
+  u0a91 / com.instagram.android:
+    3x pending 2x active 
+    2x canceled, 1x successful_finish
+  u0a145 / com.google.android.partnersetup:
+    4x pending 4x active 
+    4x successful_finish
+  u0a155 / com.google.android.settings.intelligence:
+    2x pending 2x active 
+    2x successful_finish
+  u0a161 / com.google.android.apps.wellbeing:
+  u0a904 / com.momobio.app:
+    4x pending 4x active-top
+    4x canceled
+
+  Job history:
+       -10m56s275ms   START: #u0a281/1000 com.digicel.selfcare.mobile/com.madme.mobile.sdk.service.LSJobService
+       -10m56s265ms    STOP: #u0a281/1001 com.digicel.selfcare.mobile/com.madme.mobile.sdk.service.LSJobService2 app called jobFinished
+       -10m52s158ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+       -10m52s132ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+        -9m59s424ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+        -9m59s404ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+        -9m32s940ms START-P: #u0a903/3107 com.molovelies.app/.KeepAliveJobService
+        -9m32s930ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+        -9m32s896ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+        -9m31s950ms  STOP-P: #u0a903/3107 com.molovelies.app/.KeepAliveJobService app called jobFinished
+        -8m48s489ms   START: #u0a145/4096 com.google.android.partnersetup/.InstalledAppJobService
+        -8m48s480ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+        -8m48s443ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+        -8m48s232ms   START: #u0a145/1 com.google.android.partnersetup/.PhenotypeJobService
+        -8m48s219ms    STOP: #u0a145/4096 com.google.android.partnersetup/.InstalledAppJobService canceled
+        -8m48s180ms    STOP: #u0a145/1 com.google.android.partnersetup/.PhenotypeJobService app called jobFinished
+        -8m48s072ms   START: #u0a145/2 com.google.android.partnersetup/.PhenotypeJobService
+        -8m48s036ms    STOP: #u0a145/2 com.google.android.partnersetup/.PhenotypeJobService app called jobFinished
+        -8m47s928ms   START: #u0a145/8192 com.google.android.partnersetup/.ClientIdJobService
+        -8m47s666ms    STOP: #u0a145/8192 com.google.android.partnersetup/.ClientIdJobService app called jobFinished
+        -7m56s068ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+        -7m56s035ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+        -7m03s566ms START-P: #1000/237039804 android/com.android.server.notification.NotificationHistoryJobService
+        -7m03s557ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+        -7m03s552ms  STOP-P: #1000/237039804 android/com.android.server.notification.NotificationHistoryJobService app called jobFinished
+        -7m03s523ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+        -6m44s462ms   START: #u0a281/1001 com.digicel.selfcare.mobile/com.madme.mobile.sdk.service.LSJobService2
+        -6m44s456ms    STOP: #u0a281/1000 com.digicel.selfcare.mobile/com.madme.mobile.sdk.service.LSJobService app called jobFinished
+        -6m26s300ms   START: #u0a193/116 com.android.chrome/org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService
+        -6m26s284ms    STOP: #u0a193/116 com.android.chrome/org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService app called jobFinished
+        -6m17s936ms   START: #u0a210/103153 gmail-ls/com.google/mwestby828@gmail.com:android
+        -6m17s923ms START-P: #u0a170/6 com.google.android.apps.turbo/.nudges.battery.PeriodicMaintenanceWindowService
+        -6m17s913ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+        -6m17s899ms  STOP-P: #u0a170/6 com.google.android.apps.turbo/.nudges.battery.PeriodicMaintenanceWindowService onStartJob returned false
+        -6m17s884ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+        -6m13s520ms    STOP: #u0a210/103153 gmail-ls/com.google/mwestby828@gmail.com:android app called jobFinished
+        -5m25s171ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+        -5m25s143ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+        -4m45s834ms   START: #u0a281/1000 com.digicel.selfcare.mobile/com.madme.mobile.sdk.service.LSJobService
+        -4m45s831ms    STOP: #u0a281/1001 com.digicel.selfcare.mobile/com.madme.mobile.sdk.service.LSJobService2 app called jobFinished
+        -4m32s431ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+        -4m32s413ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+        -4m08s568ms   START: #u0a400/369941447 com.google.android.as.oss/com.google.android.gms.learning.internal.training.InAppJobService
+        -4m08s562ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+        -4m08s555ms    STOP: #u0a400/369941447 com.google.android.as.oss/com.google.android.gms.learning.internal.training.InAppJobService onStartJob returned false
+        -4m08s537ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+        -3m15s819ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+        -3m15s798ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+        -3m00s549ms   START: #u0a281/1001 com.digicel.selfcare.mobile/com.madme.mobile.sdk.service.LSJobService2
+        -3m00s543ms    STOP: #u0a281/1000 com.digicel.selfcare.mobile/com.madme.mobile.sdk.service.LSJobService app called jobFinished
+        -2m23s085ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+        -2m23s059ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+        -1m30s346ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+        -1m30s317ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+        -1m26s310ms   START: #u0a193/116 com.android.chrome/org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService
+        -1m26s305ms    STOP: #u0a193/116 com.android.chrome/org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService app called jobFinished
+          -44s730ms   START: #u0a281/1000 com.digicel.selfcare.mobile/com.madme.mobile.sdk.service.LSJobService
+          -44s723ms    STOP: #u0a281/1001 com.digicel.selfcare.mobile/com.madme.mobile.sdk.service.LSJobService2 app called jobFinished
+          -37s605ms   START: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService
+          -37s581ms    STOP: #u0a281/111 com.digicel.selfcare.mobile/com.nspire.customerconnectsdk.service.jobservice.CCJobService app called jobFinished
+          -28s854ms   START: #u0a253/1965 com.google.android.providers.media.module/androidx.work.impl.background.systemjob.SystemJobService
+          -28s605ms   START: #u0a311/8698 com.google.android.apps.walletnfcrel/androidx.work.impl.background.systemjob.SystemJobService
+          -28s589ms START-P: #u0a79/100023 com.android.contacts/com.whatsapp.w4b/WhatsApp Business:android
+          -28s530ms   START: #u0a280/-2147482832 com.linkedin.android/androidx.work.impl.background.systemjob.SystemJobService
+          -28s488ms   START: #u0a280/-2147482831 com.linkedin.android/androidx.work.impl.background.systemjob.SystemJobService
+          -28s461ms   START: #u0a280/-2147482836 com.linkedin.android/androidx.work.impl.background.systemjob.SystemJobService
+          -28s341ms    STOP: #u0a280/-2147482832 com.linkedin.android/androidx.work.impl.background.systemjob.SystemJobService app called jobFinished
+          -28s170ms    STOP: #u0a253/1965 com.google.android.providers.media.module/androidx.work.impl.background.systemjob.SystemJobService app called jobFinished
+          -28s065ms   START: #u0a904/0 com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+          -28s039ms    STOP: #u0a904/0 com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService canceled
+          -28s013ms   START: #u0a904/1 com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+          -27s999ms    STOP: #u0a904/1 com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService canceled
+          -27s975ms   START: #u0a904/2 com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+          -27s965ms    STOP: #u0a904/2 com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService canceled
+          -27s923ms   START: #u0a904/3 com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+          -27s818ms    STOP: #u0a904/3 com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService canceled
+          -27s520ms    STOP: #u0a280/-2147482836 com.linkedin.android/androidx.work.impl.background.systemjob.SystemJobService app called jobFinished
+          -27s264ms    STOP: #u0a280/-2147482831 com.linkedin.android/androidx.work.impl.background.systemjob.SystemJobService app called jobFinished
+          -26s934ms   START: #u0a311/8698 com.google.android.apps.walletnfcrel/androidx.work.impl.background.systemjob.SystemJobService
+          -26s934ms    STOP: #u0a311/8698 com.google.android.apps.walletnfcrel/androidx.work.impl.background.systemjob.SystemJobService canceled
+          -26s908ms   START: #u0a311/8699 com.google.android.apps.walletnfcrel/androidx.work.impl.background.systemjob.SystemJobService
+          -26s855ms   START: #u0a311/8700 com.google.android.apps.walletnfcrel/androidx.work.impl.background.systemjob.SystemJobService
+          -26s796ms    STOP: #u0a311/8698 com.google.android.apps.walletnfcrel/androidx.work.impl.background.systemjob.SystemJobService app called jobFinished
+          -26s749ms   START: #u0a311/8701 com.google.android.apps.walletnfcrel/androidx.work.impl.background.systemjob.SystemJobService
+          -26s551ms    STOP: #u0a311/8701 com.google.android.apps.walletnfcrel/androidx.work.impl.background.systemjob.SystemJobService app called jobFinished
+          -26s528ms    STOP: #u0a311/8699 com.google.android.apps.walletnfcrel/androidx.work.impl.background.systemjob.SystemJobService app called jobFinished
+      df3fae2 #u0a904/3 com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+      u0a904 tag=*job*/com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService#3
+      Source: uid=u0a904 user=0 pkg=com.momobio.app
+      JobInfo:
+        Service: com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+        Priority: 400 [HIGH]
+        Flags: 2
+        Internal flags: 1 HAS_FOREGROUND_EXEMPTION
+        Requires: charging=false batteryNotLow=false deviceIdle=false
+        Extras: mParcelledData.dataSize=248
+        Network type: NetworkRequest [ NONE id=0, [ Capabilities: INTERNET&TRUSTED&VALIDATED&NOT_VCN_MANAGED Uid: 10904 UnderlyingNetworks: Null] ]
+        Backoff: policy=1 initial=+30s0ms
+      Required constraints: CONNECTIVITY [0x10000000]
+      Dynamic constraints:
+      Satisfied constraints: CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0x1b400000]
+      Unsatisfied constraints:
+      Constraint history:
+        -27s679ms = CONNECTIVITY [0x10000000]
+        -27s679ms = CONNECTIVITY BACKGROUND_NOT_RESTRICTED [0x10400000]
+        -27s679ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED [0x12400000]
+        -27s679ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED WITHIN_QUOTA [0x13400000]
+        -27s679ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0x1b400000]
+      Doze whitelisted: true
+      Uid: active
+      Implicit constraints:
+        readyNotDozing: true
+        readyNotRestrictedInBg: true
+        readyComponentEnabled: true
+      Network: 429
+      Standby bucket: EXEMPTED
+      Enqueue time: -27s679ms
+      Run time: earliest=none, latest=none, original latest=none
+  -27s707ms
+      8289a93 #u0a904/2 com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+      u0a904 tag=*job*/com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService#2
+      Source: uid=u0a904 user=0 pkg=com.momobio.app
+      JobInfo:
+        Service: com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+        Priority: 400 [HIGH]
+        Flags: 2
+        Internal flags: 1 HAS_FOREGROUND_EXEMPTION
+        Requires: charging=false batteryNotLow=false deviceIdle=false
+        Extras: mParcelledData.dataSize=248
+        Network type: NetworkRequest [ NONE id=0, [ Capabilities: INTERNET&TRUSTED&VALIDATED&NOT_VCN_MANAGED Uid: 10904 UnderlyingNetworks: Null] ]
+        Backoff: policy=1 initial=+30s0ms
+      Required constraints: CONNECTIVITY [0x10000000]
+      Dynamic constraints:
+      Satisfied constraints: CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0x1b400000]
+      Unsatisfied constraints:
+      Constraint history:
+        -27s727ms = CONNECTIVITY [0x10000000]
+        -27s727ms = CONNECTIVITY BACKGROUND_NOT_RESTRICTED [0x10400000]
+        -27s727ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED [0x12400000]
+        -27s727ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED WITHIN_QUOTA [0x13400000]
+        -27s727ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0x1b400000]
+      Doze whitelisted: true
+      Uid: active
+      Implicit constraints:
+        readyNotDozing: true
+        readyNotRestrictedInBg: true
+        readyComponentEnabled: true
+      Network: 429
+      Standby bucket: EXEMPTED
+      Enqueue time: -27s727ms
+      Run time: earliest=none, latest=none, original latest=none
+  -27s743ms
+      d2c4188 #u0a904/1 com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+      u0a904 tag=*job*/com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService#1
+      Source: uid=u0a904 user=0 pkg=com.momobio.app
+      JobInfo:
+        Service: com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+        Priority: 400 [HIGH]
+        Flags: 2
+        Internal flags: 1 HAS_FOREGROUND_EXEMPTION
+        Requires: charging=false batteryNotLow=false deviceIdle=false
+        Extras: mParcelledData.dataSize=248
+        Network type: NetworkRequest [ NONE id=0, [ Capabilities: INTERNET&TRUSTED&VALIDATED&NOT_VCN_MANAGED Uid: 10904 UnderlyingNetworks: Null] ]
+        Backoff: policy=1 initial=+30s0ms
+      Required constraints: CONNECTIVITY [0x10000000]
+      Dynamic constraints:
+      Satisfied constraints: CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0x1b400000]
+      Unsatisfied constraints:
+      Constraint history:
+        -27s767ms = CONNECTIVITY [0x10000000]
+        -27s767ms = CONNECTIVITY BACKGROUND_NOT_RESTRICTED [0x10400000]
+        -27s767ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED [0x12400000]
+        -27s767ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED WITHIN_QUOTA [0x13400000]
+        -27s767ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0x1b400000]
+      Doze whitelisted: true
+      Uid: active
+      Implicit constraints:
+      5a354c2 #u0a904/0 com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+      u0a904 tag=*job*/com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService#0
+      Source: uid=u0a904 user=0 pkg=com.momobio.app
+      JobInfo:
+        Service: com.momobio.app/androidx.work.impl.background.systemjob.SystemJobService
+        Priority: 400 [HIGH]
+        Flags: 2
+        Internal flags: 1 HAS_FOREGROUND_EXEMPTION
+        Requires: charging=false batteryNotLow=false deviceIdle=false
+        Extras: mParcelledData.dataSize=248
+        Network type: NetworkRequest [ NONE id=0, [ Capabilities: INTERNET&TRUSTED&VALIDATED&NOT_VCN_MANAGED Uid: 10904 UnderlyingNetworks: Null] ]
+        Backoff: policy=1 initial=+30s0ms
+      Required constraints: CONNECTIVITY [0x10000000]
+      Dynamic constraints:
+      Satisfied constraints: CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0x1b400000]
+      Unsatisfied constraints:
+      Constraint history:
+        -27s840ms = CONNECTIVITY [0x10000000]
+        -27s840ms = CONNECTIVITY BACKGROUND_NOT_RESTRICTED [0x10400000]
+        -27s840ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED [0x12400000]
+        -27s840ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED WITHIN_QUOTA [0x13400000]
+        -27s840ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0x1b400000]
+      Doze whitelisted: true
+      Uid: active
+      Implicit constraints:
+        readyNotDozing: true
+        readyNotRestrictedInBg: true
+        readyComponentEnabled: true
+      Network: 429
+      Standby bucket: EXEMPTED
+      Enqueue time: -27s840ms
+      Run time: earliest=none, latest=none, original latest=none
+  -27s913ms
+      afa1406 #u0a253/1965 com.google.android.providers.media.module/androidx.work.impl.background.systemjob.SystemJobService
+      u0a253 tag=*job*/com.google.android.providers.media.module/androidx.work.impl.background.systemjob.SystemJobService#1965
+      Source: uid=u0a253 user=0 pkg=com.google.android.providers.media.module
+      JobInfo:
+        Service: com.google.android.providers.media.module/androidx.work.impl.background.systemjob.SystemJobService
+        Priority: 400 [HIGH]
+        Flags: 2
+        Internal flags: 1 HAS_FOREGROUND_EXEMPTION
+        Requires: charging=false batteryNotLow=false deviceIdle=false
+        Extras: mParcelledData.dataSize=248
+        Backoff: policy=1 initial=+30s0ms
+      Required constraints:
+      Dynamic constraints:
+      Satisfied constraints: DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0xb400000]
+      Unsatisfied constraints:
+      Constraint history:
+        -28s616ms = BACKGROUND_NOT_RESTRICTED [0x400000]
+        -28s616ms = DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED [0x2400000]
+        -28s616ms = DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED WITHIN_QUOTA [0x3400000]
+        -28s616ms = DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0xb400000]
+      Uid: active
+      Implicit constraints:
+        readyNotDozing: true
+        readyNotRestrictedInBg: true
+        readyComponentEnabled: true
+      Standby bucket: ACTIVE
+      Enqueue time: -28s616ms
+      Run time: earliest=none, latest=none, original latest=none
+  -28s69ms
+      5a7a7f9 #u0a280/-2147482832 com.linkedin.android/androidx.work.impl.background.systemjob.SystemJobService
+      u0a280 tag=*job*/com.linkedin.android/androidx.work.impl.background.systemjob.SystemJobService#-2147482832
+      Source: uid=u0a280 user=0 pkg=com.linkedin.android
+      JobInfo:
+        Service: com.linkedin.android/androidx.work.impl.background.systemjob.SystemJobService
+        Priority: 300 [DEFAULT]
+        Requires: charging=false batteryNotLow=false deviceIdle=false
+        Extras: mParcelledData.dataSize=248
+        Network type: NetworkRequest [ NONE id=0, [ Capabilities: INTERNET&TRUSTED&VALIDATED&NOT_VCN_MANAGED Uid: 10280 UnderlyingNetworks: Null] ]
+        Minimum latency: +14m59s936ms
+        Backoff: policy=1 initial=+30s0ms
+        Has early constraint
+      Required constraints: TIMING_DELAY CONNECTIVITY [0x90000000]
+      Dynamic constraints:
+      Satisfied constraints: TIMING_DELAY CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0x9b400000]
+      Unsatisfied constraints:
+      Constraint history:
+        -26m37s939ms = CONNECTIVITY [0x10000000]
+        -26m37s939ms = CONNECTIVITY BACKGROUND_NOT_RESTRICTED [0x10400000]
+        -26m37s939ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED [0x12400000]
+        -26m37s939ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED WITHIN_QUOTA [0x13400000]
+        -26m37s939ms = CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0x1b400000]
+        -11m8s336ms = TIMING_DELAY CONNECTIVITY DEVICE_NOT_DOZING BACKGROUND_NOT_RESTRICTED TARE_WEALTH WITHIN_QUOTA [0x9b400000]
+      Implicit constraints:
+        readyNotDozing: true
+        readyNotRestrictedInBg: true
+        readyComponentEnabled: true
+      Network: 429
+      Standby bucket: WORKING_SET

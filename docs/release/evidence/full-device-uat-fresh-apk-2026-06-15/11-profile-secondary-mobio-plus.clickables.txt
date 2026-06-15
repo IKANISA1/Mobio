@@ -1,0 +1,10 @@
+clickable=False bounds=[66,191][198,323] text='' desc='Back' class=android.widget.Button
+clickable=False bounds=[231,217][561,297] text='' desc='Mobio Plus' class=android.view.View
+clickable=True bounds=[882,191][1014,323] text='' desc='Refresh' class=android.widget.Button
+clickable=False bounds=[66,367][1014,824] text='' desc='CAB\nUpgrade\nMobio Plus required.\n0 tokens\n1/30 free left' class=android.view.View
+clickable=False bounds=[66,879][1014,1308] text='' desc='Monthly\n15,000 RWF' class=android.view.View
+clickable=False bounds=[124,1057][524,1206] text='' desc='Pay with Tokens' class=android.widget.Button
+clickable=True bounds=[557,1057][956,1206] text='' desc='Pay with MoMo' class=android.widget.Button
+clickable=False bounds=[66,1308][1014,1737] text='' desc='Daily\n1,000 RWF' class=android.view.View
+clickable=False bounds=[124,1486][524,1635] text='' desc='Pay with Tokens' class=android.widget.Button
+clickable=True bounds=[557,1486][956,1635] text='' desc='Pay with MoMo' class=android.widget.Button

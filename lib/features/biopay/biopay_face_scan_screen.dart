@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/utils/money_formatting.dart';
 import 'package:mobi_app/features/biopay/biopay_flow_shared.dart';
 import 'package:mobi_app/features/biopay/models/biopay_ussd_payment.dart';
+import 'package:mobi_app/shared/widgets/mobi_button.dart';
 
 class BioPayFaceScanScreen extends ConsumerStatefulWidget {
   const BioPayFaceScanScreen({super.key, required this.onBack});
@@ -28,6 +30,7 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
   BioPayUssdPaymentRequest? _request;
   String? _matchLabel;
   String? _error;
+  bool _showEnrollFallback = false;
   bool _busy = false;
 
   @override
@@ -41,6 +44,7 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
     setState(() {
       _busy = true;
       _error = null;
+      _showEnrollFallback = false;
     });
     try {
       if (_camera?.value.isInitialized != true) {
@@ -63,6 +67,7 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
           _matchLabel =
               '${faceResult.status} ${(faceResult.confidence * 100).round()}%';
           _error = 'No enrolled BioPay face matched.';
+          _showEnrollFallback = true;
         });
         return;
       }
@@ -82,10 +87,14 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
         _request = request;
         _matchLabel =
             '${faceResult.status} ${(faceResult.confidence * 100).round()}%';
+        _showEnrollFallback = false;
       });
     } on Object catch (error) {
       if (!mounted) return;
-      setState(() => _error = _friendlyFaceScanMessage(error));
+      setState(() {
+        _error = _friendlyFaceScanMessage(error);
+        _showEnrollFallback = false;
+      });
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -129,15 +138,15 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
     if (cameras.isEmpty) {
       throw StateError('No camera is available on this device.');
     }
-    CameraDescription? front;
+    CameraDescription? back;
     for (final camera in cameras) {
-      if (camera.lensDirection == CameraLensDirection.front) {
-        front = camera;
+      if (camera.lensDirection == CameraLensDirection.back) {
+        back = camera;
         break;
       }
     }
     final controller = CameraController(
-      front ?? cameras.first,
+      back ?? cameras.first,
       ResolutionPreset.medium,
       enableAudio: false,
       imageFormatGroup: ImageFormatGroup.jpeg,
@@ -176,11 +185,12 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
 
     return BioPayFlowScreen(
       title: 'Face scan',
-      primaryLabel: primaryLabel,
+      primaryLabel: _request == null ? '' : primaryLabel,
       isPrimaryLoading: _busy,
       onBack: widget.onBack,
+      headerSpacing: 18,
       onPrimary: _request == null
-          ? _scanFace
+          ? null
           : canRunExternalAction(_request)
           ? _runExternalPaymentStep
           : null,
@@ -190,7 +200,21 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
           if (_request != null)
             BioPayResolvedPaymentPreview(request: _request!)
           else ...[
-            BioPayReceiveAmountField(controller: _amountController),
+            BioPayReceiveAmountField(
+              controller: _amountController,
+              showLabel: false,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            MobiButton(
+              onPressed: _busy ? null : _scanFace,
+              isLoading: _busy,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: 17,
+              ),
+              child: Text(primaryLabel),
+            ),
             const SizedBox(height: AppSpacing.md),
             if (readyForPreview)
               BioPayCameraFrame(
@@ -213,6 +237,14 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
           if (_error != null) ...[
             const SizedBox(height: AppSpacing.md),
             BioPayInlineError(message: _error!),
+          ],
+          if (_showEnrollFallback) ...[
+            const SizedBox(height: AppSpacing.md),
+            MobiButton(
+              variant: MobiButtonVariant.ghost,
+              onPressed: () => context.push('/biopay/enroll'),
+              child: const Text('Enroll BioPay face'),
+            ),
           ],
         ],
       ),

@@ -41,13 +41,56 @@ class AppNotification {
   }
 
   String get route {
-    final value = metadata['route'];
-    if (value is String && value.startsWith('/') && !value.startsWith('//')) {
-      return value;
-    }
-
-    return '/notifications';
+    return _activeNotificationRoute(metadata['route'], type);
   }
+}
+
+String _activeNotificationRoute(Object? raw, String type) {
+  final parsed = raw is String ? Uri.tryParse(raw.trim()) : null;
+  if (parsed != null &&
+      !parsed.hasScheme &&
+      !parsed.hasAuthority &&
+      parsed.path.startsWith('/') &&
+      !parsed.path.startsWith('//') &&
+      _isActiveNotificationPath(parsed.path)) {
+    return parsed.toString();
+  }
+
+  return switch (type) {
+    'chat_message' || 'chat_reply' => '/chat',
+    'public_transport_booking' ||
+    'public_transport_schedule_change' => '/bookings',
+    'trip_update' || 'trip_message' => '/bookings',
+    'wallet_credit' || 'wallet_debit' || 'referral_reward' => '/wallet',
+    'driver_plus' || 'driver_subscription' => '/mobio-plus',
+    'biopay' || 'biopay_request' || 'biopay_confirmation' => '/biopay',
+    _ => '/notifications',
+  };
+}
+
+bool _isActiveNotificationPath(String path) {
+  const exactActivePaths = {
+    '/',
+    '/bookings',
+    '/chat',
+    '/nearby',
+    '/notifications',
+    '/profile',
+    '/profile/setup',
+    '/schedule',
+    '/wallet',
+    '/mobio-plus',
+    '/biopay',
+    '/biopay/qr',
+    '/biopay/scan',
+    '/biopay/face-scan',
+    '/biopay/enroll',
+    '/biopay/nfc',
+    '/biopay/nfc/write-card',
+  };
+
+  return exactActivePaths.contains(path) ||
+      path.startsWith('/trip/') && path.length > '/trip/'.length;
 }
 
 /// Service for in-app notifications via Supabase.

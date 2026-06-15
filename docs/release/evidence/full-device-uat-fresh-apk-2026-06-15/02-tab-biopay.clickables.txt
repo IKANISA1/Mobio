@@ -1,0 +1,13 @@
+clickable=False bounds=[66,268][1014,494] text='' desc='Pay & Get Paid\nInstant & Secure' class=android.view.View
+clickable=True bounds=[99,593][524,978] text='' desc='Face Scan\nFace Scan' class=android.widget.Button
+clickable=True bounds=[557,593][981,978] text='' desc='NFC Tap\nNFC Tap' class=android.widget.Button
+clickable=True bounds=[99,1011][524,1397] text='' desc='Get QR\nGet QR' class=android.widget.Button
+clickable=True bounds=[557,1011][981,1397] text='' desc='Scan QR\nScan QR' class=android.widget.Button
+clickable=True bounds=[77,2065][309,2219] text='' desc='Home tab, Switch tab' class=android.widget.Button
+clickable=True bounds=[77,2065][309,2219] text='' desc='Home' class=android.view.View
+clickable=True bounds=[309,2065][540,2219] text='' desc='Trips tab, Switch tab' class=android.widget.Button
+clickable=True bounds=[309,2065][540,2219] text='' desc='Trips' class=android.view.View
+clickable=True bounds=[540,2065][772,2219] text='' desc='BioPay tab, Current tab' class=android.widget.Button
+clickable=True bounds=[540,2065][772,2219] text='' desc='BioPay' class=android.view.View
+clickable=True bounds=[771,2065][1003,2219] text='' desc='Profile tab, Switch tab' class=android.widget.Button
+clickable=True bounds=[771,2065][1003,2219] text='' desc='Profile' class=android.view.View

@@ -1,0 +1,7 @@
+== HTTPS NFC payload resolution ==
+priority=0 preferredOrder=0 match=0x508000 specificIndex=-1 isDefault=true
+rw.mobi.app/.MainActivity
+
+== Custom scheme NFC payload resolution ==
+priority=0 preferredOrder=0 match=0x508000 specificIndex=-1 isDefault=true
+rw.mobi.app/.MainActivity

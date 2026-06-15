@@ -1,8 +1,5 @@
 package com.momobio.app
 
-import android.content.ContentResolver
-import android.net.Uri
-import android.provider.Telephony
 import java.security.MessageDigest
 
 data class MomoSms(
@@ -24,26 +21,6 @@ data class MomoSms(
             return MomoSms(sender, body, receivedAt, messageHash)
         }
     }
-}
-
-fun readAllSms(
-    contentResolver: ContentResolver,
-): List<MomoSms> {
-    val uri = Uri.parse("content://sms/inbox")
-    val projection = arrayOf(Telephony.Sms.ADDRESS, Telephony.Sms.BODY, Telephony.Sms.DATE)
-    val rows = mutableListOf<MomoSms>()
-    contentResolver.query(uri, projection, null, null, "${Telephony.Sms.DATE} DESC")?.use { cursor ->
-        val senderIndex = cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS)
-        val bodyIndex = cursor.getColumnIndexOrThrow(Telephony.Sms.BODY)
-        val dateIndex = cursor.getColumnIndexOrThrow(Telephony.Sms.DATE)
-        while (cursor.moveToNext()) {
-            val sender = cursor.getString(senderIndex) ?: ""
-            val body = cursor.getString(bodyIndex) ?: ""
-            val receivedAt = cursor.getLong(dateIndex)
-            rows += MomoSms(sender = sender, body = body, receivedAtMillis = receivedAt)
-        }
-    }
-    return rows
 }
 
 private fun hash(sender: String, body: String, receivedAtMillis: Long): String {

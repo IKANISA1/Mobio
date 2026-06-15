@@ -8,6 +8,7 @@ class AdminTripService extends AdminBaseService {
   Future<List<AdminTripListItem>> listTrips({
     String? status,
     String? role,
+    String? search,
     int limit = 50,
     int offset = 0,
   }) async {
@@ -17,6 +18,7 @@ class AdminTripService extends AdminBaseService {
         params: {
           'p_status': status,
           'p_role': role,
+          'p_search': search?.trim().isEmpty == true ? null : search?.trim(),
           'p_limit': limit,
           'p_offset': offset,
         },

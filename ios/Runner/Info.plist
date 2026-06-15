@@ -18,6 +18,17 @@
 		<string>Mobio</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleURLName</key>
+				<string>rw.mobi.app</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>mobio</string>
+				</array>
+			</dict>
+		</array>
 		<key>CFBundleShortVersionString</key>
 		<string>$(FLUTTER_BUILD_NAME)</string>
 		<key>CFBundleSignature</key>
@@ -37,7 +48,11 @@
 		<key>NSPhotoLibraryAddUsageDescription</key>
 		<string>Mobio saves BioPay QR codes to Photos when you choose Save.</string>
 		<key>NFCReaderUsageDescription</key>
-		<string>Mobio uses NFC to read or write BioPay request tokens before opening the phone USSD dialer.</string>
+		<string>Mobio uses NFC to read BioPay physical cards and Android device NFC payment requests before opening the phone USSD dialer.</string>
+		<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+		<array>
+			<string>F04D4F42494F00</string>
+		</array>
 		<key>UIApplicationSceneManifest</key>
 		<dict>
 			<key>UIApplicationSupportsMultipleScenes</key>

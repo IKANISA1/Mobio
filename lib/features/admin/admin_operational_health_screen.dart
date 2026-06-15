@@ -37,6 +37,7 @@ class _AdminOperationalHealthScreenState
   String _sortKey = 'newest';
   int _page = 0;
   int _rowsPerPage = 25;
+  bool _hasNextPage = false;
 
   @override
   void initState() {
@@ -58,13 +59,19 @@ class _AdminOperationalHealthScreenState
 
     try {
       final events = await _adminService.listOperationalHealthEvents(
-        limit: 200,
+        status: _statusFilter == 'all' ? null : _statusFilter,
+        severity: _severityFilter == 'all' ? null : _severityFilter,
+        service: _serviceFilter == 'all' ? null : _serviceFilter,
+        search: _searchQuery,
+        limit: _rowsPerPage + 1,
+        offset: _page * _rowsPerPage,
       );
       if (!mounted) return;
+      final hasNextPage = events.length > _rowsPerPage;
       setState(() {
-        _events = events;
+        _events = events.take(_rowsPerPage).toList();
+        _hasNextPage = hasNextPage;
         _isLoading = false;
-        _page = 0;
       });
     } on Object catch (error) {
       if (!mounted) return;
@@ -132,10 +139,13 @@ class _AdminOperationalHealthScreenState
                             child: AdminSearchField(
                               controller: _searchController,
                               hintText: 'Search service, code, function',
-                              onChanged: (value) => setState(() {
-                                _searchQuery = value;
-                                _page = 0;
-                              }),
+                              onChanged: (value) {
+                                setState(() {
+                                  _searchQuery = value;
+                                  _page = 0;
+                                });
+                                _load();
+                              },
                             ),
                           );
                           final controls = Wrap(
@@ -322,14 +332,20 @@ class _AdminOperationalHealthScreenState
                             ],
                           ),
                         AdminPaginationBar(
-                          totalItems: visibleEvents.length,
+                          totalItems: _paginationTotal,
                           page: _page,
                           rowsPerPage: _rowsPerPage,
-                          onPageChanged: (page) => setState(() => _page = page),
-                          onRowsPerPageChanged: (rows) => setState(() {
-                            _rowsPerPage = rows;
-                            _page = 0;
-                          }),
+                          onPageChanged: (page) {
+                            setState(() => _page = page);
+                            _load();
+                          },
+                          onRowsPerPageChanged: (rows) {
+                            setState(() {
+                              _rowsPerPage = rows;
+                              _page = 0;
+                            });
+                            _load();
+                          },
                         ),
                       ],
                     ),
@@ -347,6 +363,7 @@ class _AdminOperationalHealthScreenState
       _statusFilter = value;
       _page = 0;
     });
+    _load();
   }
 
   void _setSeverityFilter(String value) {
@@ -354,6 +371,7 @@ class _AdminOperationalHealthScreenState
       _severityFilter = value;
       _page = 0;
     });
+    _load();
   }
 
   void _setServiceFilter(String value) {
@@ -361,6 +379,7 @@ class _AdminOperationalHealthScreenState
       _serviceFilter = value;
       _page = 0;
     });
+    _load();
   }
 
   List<AdminOperationalHealthEventItem> _visibleEvents() {
@@ -405,12 +424,11 @@ class _AdminOperationalHealthScreenState
   List<AdminOperationalHealthEventItem> _pagedEvents(
     List<AdminOperationalHealthEventItem> events,
   ) {
-    if (events.isEmpty) return const [];
-    final safeRowsPerPage = _rowsPerPage <= 0 ? 25 : _rowsPerPage;
-    final start = (_page * safeRowsPerPage).clamp(0, events.length).toInt();
-    final end = (start + safeRowsPerPage).clamp(0, events.length).toInt();
-    return events.sublist(start, end);
+    return events;
   }
+
+  int get _paginationTotal =>
+      _page * _rowsPerPage + _events.length + (_hasNextPage ? 1 : 0);
 
   int _dateValue(String? value) =>
       DateTime.tryParse(value ?? '')?.millisecondsSinceEpoch ?? 0;

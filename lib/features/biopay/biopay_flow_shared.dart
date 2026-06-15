@@ -7,6 +7,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -509,6 +510,7 @@ class BioPayFlowScreen extends StatelessWidget {
     required this.child,
     this.onPrimary,
     this.isPrimaryLoading = false,
+    this.headerSpacing = 42,
   });
 
   final String title;
@@ -517,6 +519,7 @@ class BioPayFlowScreen extends StatelessWidget {
   final Widget child;
   final VoidCallback? onPrimary;
   final bool isPrimaryLoading;
+  final double headerSpacing;
 
   @override
   Widget build(BuildContext context) {
@@ -551,7 +554,7 @@ class BioPayFlowScreen extends StatelessWidget {
                       const SizedBox(width: 48),
                     ],
                   ),
-                  const SizedBox(height: 42),
+                  SizedBox(height: headerSpacing),
                   child,
                   if (primaryLabel.isNotEmpty) ...[
                     const SizedBox(height: AppSpacing.xl),
@@ -666,14 +669,24 @@ String momoReceiverForRequest(String value, {required bool usesCode}) {
 }
 
 String buildBioPayQrPayload(BioPayUssdPaymentRequest request) {
-  return jsonEncode({
-    'type': 'mobio_biopay_request',
-    'token': request.token,
-    'payee_label': request.payeeLabel,
-    'amount_minor': request.amountMinor,
-    'currency': request.currency,
-    'reference': request.reference,
-  });
+  return bioPayUssdTelPayload(request.ussdCode);
+}
+
+String bioPayUssdTelPayload(String ussdCode) {
+  final encoded = ussdCode.trim().replaceAll('#', Uri.encodeComponent('#'));
+  return 'tel:$encoded';
+}
+
+String bioPayUssdCodeFromPayload(String? rawValue) {
+  final raw = rawValue?.trim();
+  if (raw == null || raw.isEmpty) return '';
+  if (raw.startsWith('*182') && raw.endsWith('#')) return raw;
+
+  final uri = Uri.tryParse(raw);
+  if (uri?.scheme.toLowerCase() != 'tel') return '';
+  final code = Uri.decodeComponent(uri!.path).trim();
+  if (!code.startsWith('*182') || !code.endsWith('#')) return '';
+  return code;
 }
 
 String bioPayTokenFromPayload(String? rawValue) {
@@ -901,11 +914,13 @@ class BioPayReceiveAmountField extends StatefulWidget {
   const BioPayReceiveAmountField({
     required this.controller,
     this.enabled = true,
+    this.showLabel = true,
     this.onChanged,
   });
 
   final TextEditingController controller;
   final bool enabled;
+  final bool showLabel;
   final ValueChanged<String>? onChanged;
 
   @override
@@ -953,16 +968,18 @@ class BioPayReceiveAmountFieldState extends State<BioPayReceiveAmountField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Divider(color: Colors.white.withValues(alpha: 0.12), height: 32),
-        Text(
-          'AMOUNT',
-          style: AppTypography.labelLg.copyWith(
-            color: Colors.white.withValues(alpha: 0.68),
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.8,
+        if (widget.showLabel) ...[
+          Divider(color: Colors.white.withValues(alpha: 0.12), height: 32),
+          Text(
+            'AMOUNT',
+            style: AppTypography.labelLg.copyWith(
+              color: Colors.white.withValues(alpha: 0.68),
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.8,
+            ),
           ),
-        ),
-        const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.md),
+        ],
         SizedBox(
           height: 88,
           child: Stack(
@@ -1113,19 +1130,55 @@ class BioPayQrPreview extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Center(
-                child: QrImageView(
-                  data: buildBioPayQrPayload(request),
-                  backgroundColor: Colors.white,
-                  eyeStyle: const QrEyeStyle(
-                    eyeShape: QrEyeShape.square,
-                    color: bioPayInk,
-                  ),
-                  dataModuleStyle: const QrDataModuleStyle(
-                    dataModuleShape: QrDataModuleShape.square,
-                    color: bioPayInk,
-                  ),
-                  padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final logoSize = constraints.maxWidth * 0.16;
+                    return Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        ShaderMask(
+                          shaderCallback: (rect) => const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppColors.primaryDim,
+                              AppColors.primary,
+                              AppColors.primaryDim,
+                            ],
+                          ).createShader(rect),
+                          blendMode: BlendMode.srcIn,
+                          child: QrImageView(
+                            data: buildBioPayQrPayload(request),
+                            backgroundColor: Colors.transparent,
+                            errorCorrectionLevel: QrErrorCorrectLevel.H,
+                            eyeStyle: const QrEyeStyle(
+                              eyeShape: QrEyeShape.square,
+                              color: Colors.white,
+                            ),
+                            dataModuleStyle: const QrDataModuleStyle(
+                              dataModuleShape: QrDataModuleShape.square,
+                              color: Colors.white,
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
+                        ),
+                        IgnorePointer(
+                          child: SizedBox.square(
+                            dimension: logoSize.clamp(40.0, 56.0),
+                            child: Opacity(
+                              opacity: 0.72,
+                              child: Image.asset(
+                                'icon/mobi_logo_transparent.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),

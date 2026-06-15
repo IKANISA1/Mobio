@@ -54,7 +54,6 @@ for (const marker of [
 
 for (const marker of [
   "android.permission.RECEIVE_SMS",
-  "android.permission.READ_SMS",
   "android.permission.INTERNET",
   "android.permission.FOREGROUND_SERVICE",
   "android.permission.FOREGROUND_SERVICE_SPECIAL_USE",
@@ -72,7 +71,6 @@ for (const marker of [
   "Status",
   "Enable SMS access",
   "syncAutomatically",
-  "readAllSms",
 ]) {
   if (!mainActivity.includes(marker)) failures.push(`minimal UI missing ${marker}`);
 }
@@ -121,9 +119,23 @@ for (const marker of [
 }
 
 for (const source of [receiver, smsReader]) {
-  for (const forbidden of ["isLikelyMomoSms"]) {
+  for (const forbidden of ["isLikelyMomoSms", "content://sms/inbox"]) {
     if (source.includes(forbidden)) {
       failures.push(`device must not filter SMS before upload; found ${forbidden}`);
+    }
+  }
+}
+
+for (const [name, source] of [
+  ["manifest", manifest],
+  ["main activity", mainActivity],
+  ["foreground service", read(`${sourceDir}/BridgeForegroundService.kt`)],
+  ["sync worker", read(`${sourceDir}/BridgeSyncWorker.kt`)],
+  ["SMS model", smsReader],
+]) {
+  for (const forbidden of ["READ_SMS", "readAllSms"]) {
+    if (source.includes(forbidden)) {
+      failures.push(`${name} must not use inbox backfill permission/API: ${forbidden}`);
     }
   }
 }

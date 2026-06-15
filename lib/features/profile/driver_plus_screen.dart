@@ -487,18 +487,30 @@ class _PlanCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           Row(
             children: [
-              Expanded(
-                child: MobiButton(
-                  onPressed: isBusy || !canPayTokens ? null : onPayTokens,
-                  child: const Text('Pay tokens'),
+              if (canPayTokens) ...[
+                Expanded(
+                  child: MobiButton(
+                    onPressed: isBusy ? null : onPayTokens,
+                    child: const Text(
+                      'Pay with Tokens',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
+                const SizedBox(width: AppSpacing.sm),
+              ],
               Expanded(
                 child: MobiButton(
                   variant: MobiButtonVariant.ghost,
                   onPressed: isBusy ? null : onPayMomo,
-                  child: const Text('Pay with MoMo'),
+                  child: const Text(
+                    'Pay with MoMo',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
+                  ),
                 ),
               ),
             ],

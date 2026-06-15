@@ -135,6 +135,13 @@ void main() {
         expect(inbox, contains('markAllAsRead'));
         expect(notificationService, contains(".eq('visible_in_app', true)"));
         expect(notificationService, contains('visibleInApp'));
+        expect(notificationService, contains('_activeNotificationRoute'));
+        expect(notificationService, contains('_isActiveNotificationPath'));
+        expect(notificationService, contains("'public_transport_booking'"));
+        expect(notificationService, contains("=> '/bookings'"));
+        expect(notificationService, contains("'chat_message'"));
+        expect(notificationService, contains("=> '/chat'"));
+        expect(notificationService, isNot(contains('return value;')));
       },
     );
   });

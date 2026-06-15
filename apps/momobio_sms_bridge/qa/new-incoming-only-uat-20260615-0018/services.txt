@@ -1,0 +1,19 @@
+ACTIVITY MANAGER SERVICES (dumpsys activity services)
+  User 0 active services:
+  * ServiceRecord{61a9e7f u0 com.momobio.app/.BridgeForegroundService}
+    intent={cmp=com.momobio.app/.BridgeForegroundService}
+    packageName=com.momobio.app
+    processName=com.momobio.app
+    baseDir=/data/app/~~GJG9jGyx04eniMxep9YSLQ==/com.momobio.app-tWtcC3YhN_V8sfr3d8RVZw==/base.apk
+    dataDir=/data/user/0/com.momobio.app
+    app=ProcessRecord{d8395f 9039:com.momobio.app/u0a904}
+    allowWhileInUsePermissionInFgs=true
+    recentCallingPackage=com.momobio.app
+    recentCallingUid=10904
+    allowStartForeground=PROC_STATE_TOP
+    startForegroundCount=1
+    infoAllowStartForeground=[callingPackage: com.momobio.app; callingUid: 10904; uidState: TOP ; intent: Intent { cmp=com.momobio.app/.BridgeForegroundService }; code:PROC_STATE_TOP; tempAllowListReason:<,reasonCode:SYSTEM_ALLOW_LISTED,duration:9223372036854775807,callingUid:-1>; targetSdkVersion:35; callerTargetSdkVersion:35; startForegroundCount:0; bindFromPackage:null]
+    isForeground=true foregroundId=31045 foregroundNoti=Notification(channel=mo_mobio_sms_bridge_active shortcut=null contentView=null vibrate=null sound=null defaults=0x0 flags=0x62 color=0x00000000 vis=PRIVATE)
+    createTime=-27s962ms startingBgTimeout=--
+    lastActivity=-27s955ms restartTime=-27s962ms createdFromFg=true
+    startRequested=true delayedStop=false stopIfKilled=false callStart=true lastStartId=2

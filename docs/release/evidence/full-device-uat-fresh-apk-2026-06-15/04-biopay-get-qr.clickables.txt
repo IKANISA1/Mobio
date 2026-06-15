@@ -1,0 +1,10 @@
+clickable=True bounds=[55,186][171,301] text='' desc='Back' class=android.widget.Button
+clickable=False bounds=[171,216][893,271] text='' desc='QR' class=android.view.View
+clickable=True bounds=[77,439][540,593] text='' desc='Number' class=android.view.View
+clickable=True bounds=[540,439][1003,593] text='' desc='Code' class=android.view.View
+clickable=True bounds=[77,595][1003,815] text='0788767816' desc='' class=android.widget.EditText
+clickable=False bounds=[55,969][1025,1022] text='' desc='AMOUNT' class=android.view.View
+clickable=True bounds=[55,1085][1025,1288] text='' desc='' class=android.widget.EditText
+clickable=False bounds=[360,1140][548,1233] text='' desc='RWF ' class=android.view.View
+clickable=False bounds=[548,1140][720,1233] text='' desc='0.00' class=android.view.View
+clickable=True bounds=[55,1418][1025,1583] text='' desc='Generate QR Code' class=android.widget.Button

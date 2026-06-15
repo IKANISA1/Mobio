@@ -39,6 +39,7 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
   String _sortKey = 'newest';
   int _page = 0;
   int _rowsPerPage = 25;
+  bool _hasNextPage = false;
   String? _busyId;
 
   @override
@@ -66,11 +67,15 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
       final trips = await _adminService.listTrips(
         status: _statusFilter,
         role: _roleFilter,
-        limit: 100, // Reasonable cap for live moderating
+        search: _searchQuery,
+        limit: _rowsPerPage + 1,
+        offset: _page * _rowsPerPage,
       );
       if (mounted) {
+        final hasNextPage = trips.length > _rowsPerPage;
         setState(() {
-          _trips = trips;
+          _trips = trips.take(_rowsPerPage).toList();
+          _hasNextPage = hasNextPage;
           _isLoading = false;
         });
       }
@@ -234,7 +239,7 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                     ),
                   )
                 else
-                  _buildFeedList(pageTrips, filteredTrips.length),
+                  _buildFeedList(pageTrips),
               ],
             ),
           ),
@@ -258,10 +263,13 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                 child: AdminSearchField(
                   controller: _searchController,
                   hintText: 'Search trips, members, routes',
-                  onChanged: (value) => setState(() {
-                    _searchQuery = value;
-                    _page = 0;
-                  }),
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value;
+                      _page = 0;
+                    });
+                    _loadTrips(silent: true);
+                  },
                 ),
               );
               final sort = AdminSortMenu(
@@ -405,7 +413,7 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
     );
   }
 
-  Widget _buildFeedList(List<AdminTripListItem> trips, int totalCount) {
+  Widget _buildFeedList(List<AdminTripListItem> trips) {
     return AdminPanel(
       padding: EdgeInsets.zero,
       child: Column(
@@ -463,14 +471,20 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
               ),
           ],
           AdminPaginationBar(
-            totalItems: totalCount,
+            totalItems: _paginationTotal,
             page: _page,
             rowsPerPage: _rowsPerPage,
-            onPageChanged: (page) => setState(() => _page = page),
-            onRowsPerPageChanged: (rowsPerPage) => setState(() {
-              _rowsPerPage = rowsPerPage;
-              _page = 0;
-            }),
+            onPageChanged: (page) {
+              setState(() => _page = page);
+              _loadTrips(silent: true);
+            },
+            onRowsPerPageChanged: (rowsPerPage) {
+              setState(() {
+                _rowsPerPage = rowsPerPage;
+                _page = 0;
+              });
+              _loadTrips(silent: true);
+            },
           ),
         ],
       ),
@@ -479,41 +493,29 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
 
   List<AdminTripListItem> _filteredTrips() {
     final query = _searchQuery.trim().toLowerCase();
-    final rows =
-        (query.isEmpty
-              ? [..._trips]
-              : _trips.where((trip) {
-                  final haystack = [
-                    trip.authorName,
-                    trip.memberId,
-                    trip.origin,
-                    trip.destination,
-                    trip.status,
-                    trip.role,
-                    trip.vehicleType,
-                  ].whereType<String>().join(' ').toLowerCase();
-                  return haystack.contains(query);
-                }).toList())
-          ..sort(_compareTrips);
-    final maxPage = rows.isEmpty
-        ? 0
-        : ((rows.length - 1) / _rowsPerPage).floor();
-    if (_page > maxPage) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && _page > maxPage) {
-          setState(() => _page = maxPage);
-        }
-      });
-    }
-    return rows;
+    final rows = query.isEmpty
+        ? [..._trips]
+        : _trips.where((trip) {
+            final haystack = [
+              trip.authorName,
+              trip.memberId,
+              trip.origin,
+              trip.destination,
+              trip.status,
+              trip.role,
+              trip.vehicleType,
+            ].whereType<String>().join(' ').toLowerCase();
+            return haystack.contains(query);
+          }).toList();
+    return rows..sort(_compareTrips);
   }
 
   List<AdminTripListItem> _pageTrips(List<AdminTripListItem> trips) {
-    final safeRowsPerPage = _rowsPerPage <= 0 ? 25 : _rowsPerPage;
-    final start = (_page * safeRowsPerPage).clamp(0, trips.length).toInt();
-    final end = (start + safeRowsPerPage).clamp(0, trips.length).toInt();
-    return trips.sublist(start, end);
+    return trips;
   }
+
+  int get _paginationTotal =>
+      _page * _rowsPerPage + _trips.length + (_hasNextPage ? 1 : 0);
 
   int _compareTrips(AdminTripListItem a, AdminTripListItem b) {
     switch (_sortKey) {

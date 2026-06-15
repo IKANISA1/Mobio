@@ -1,0 +1,7 @@
+Starting: Intent { act=android.intent.action.VIEW cat=[android.intent.category.BROWSABLE] dat=https://mobio.ikanisa.com/... pkg=rw.mobi.app }
+Status: ok
+LaunchState: COLD
+Activity: com.google.android.dialer/com.android.dialer.main.impl.MainActivity
+TotalTime: 3956
+WaitTime: 3958
+Complete

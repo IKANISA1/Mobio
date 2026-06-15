@@ -1,0 +1,315 @@
+--------- beginning of main
+06-15 14:45:19.731  7814  7814 W Monkey  : data="rw.mobi.app"
+06-15 14:45:19.731  7814  7814 W Monkey  : data="android.intent.category.LAUNCHER"
+--------- beginning of system
+06-15 14:45:19.757  1739  1966 W BroadcastQueue: Skipping deliver [background] BroadcastRecord{981f75a u-1 android.net.conn.CONNECTIVITY_CHANGE} to ReceiverList{f4fed8b 7814 (unknown name)/2000/u-1 remote:24ba67c}: process gone or crashing
+06-15 14:45:19.770  1739  5430 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=rw.mobi.app/.MainActivity} from uid 2000
+06-15 14:45:19.770  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 265464455; UID 10906; state: DISABLED
+06-15 14:45:19.770  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 265452344; UID 10906; state: DISABLED
+06-15 14:45:19.770  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 266124927; UID 10906; state: DISABLED
+06-15 14:45:19.771  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 265451093; UID 10906; state: DISABLED
+06-15 14:45:19.771  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 265456536; UID 10906; state: DISABLED
+06-15 14:45:19.771  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 255940284; UID 10906; state: DISABLED
+06-15 14:45:19.771  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 236283604; UID 10906; state: DISABLED
+06-15 14:45:19.771  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 263959004; UID 10906; state: DISABLED
+06-15 14:45:19.771  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 264304459; UID 10906; state: DISABLED
+06-15 14:45:19.771  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 264301586; UID 10906; state: DISABLED
+06-15 14:45:19.771  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 254631730; UID 10906; state: DISABLED
+06-15 14:45:19.771  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 273509367; UID 10906; state: DISABLED
+06-15 14:45:19.771  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 263259275; UID 10906; state: DISABLED
+06-15 14:45:19.772  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 194480991; UID 10906; state: ENABLED
+06-15 14:45:19.772  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 174042980; UID 10906; state: DISABLED
+06-15 14:45:19.773  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 184838306; UID 10906; state: DISABLED
+06-15 14:45:19.774  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 185004937; UID 10906; state: DISABLED
+06-15 14:45:19.774  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 181136395; UID 10906; state: DISABLED
+06-15 14:45:19.774  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 174042936; UID 10906; state: DISABLED
+06-15 14:45:19.774  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 197654537; UID 10906; state: ENABLED
+06-15 14:45:19.775  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 205907456; UID 10906; state: ENABLED
+06-15 14:45:19.777  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 194833441; UID 10906; state: ENABLED
+06-15 14:45:19.778  7814  7814 I Monkey  : Events injected: 1
+06-15 14:45:19.778  1739  1937 W Looper  : Drained
+06-15 14:45:19.781  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10906; state: DISABLED
+06-15 14:45:19.781  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10906; state: DISABLED
+06-15 14:45:19.781  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10906; state: DISABLED
+06-15 14:45:19.782  1739  1940 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10906; state: ENABLED
+06-15 14:45:19.782  2542  2639 W Parcel  : Expecting binder but got null!
+06-15 14:45:19.782  1739  1968 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10906; state: ENABLED
+06-15 14:45:19.789  1739  2882 D CoreBackPreview: Window{412e280 u0 Splash Screen rw.mobi.app}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@dbfcfe, mPriority=0}
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: Foreground UID status:
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: UID: 1002 is in foreground: true
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: UID: 1027 is in foreground: true
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: UID: 10109 is in foreground: false
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: UID: 10155 is in foreground: true
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: UID: 10161 is in foreground: true
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: UID: 10164 is in foreground: true
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: UID: 10198 is in foreground: false
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: UID: 10238 is in foreground: true
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: UID: 10243 is in foreground: true
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: UID: 10250 is in foreground: false
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: UID: 10319 is in foreground: true
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: UID: 10903 is in foreground: false
+06-15 14:45:19.790  4291  9348 D ForegroundUtils: UID: 10904 is in foreground: false
+06-15 14:45:19.795  7814  7814 I Monkey  : ## Network stats: elapsed time=22ms (0ms mobile, 0ms wifi, 22ms not connected)
+06-15 14:45:19.795  7814  7814 I app_process: System.exit called, status: 0
+06-15 14:45:19.795  7814  7814 I AndroidRuntime: VM exiting with result code 0.
+06-15 14:45:19.802  1055  1055 D Zygote  : Forked child process 7826
+06-15 14:45:19.803  1739  1968 I ActivityManager: Start proc 7826:rw.mobi.app/u0a906 for next-top-activity {rw.mobi.app/rw.mobi.app.MainActivity}
+06-15 14:45:19.809  2542  2639 E OpenGLRenderer: Unable to match the desired swap behavior.
+06-15 14:45:19.814  7826  7826 I rw.mobi.app: Using CollectorTypeCC GC.
+06-15 14:45:19.825  7826  7826 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+06-15 14:45:19.836  7826  7826 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10906; state: ENABLED
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: Foreground UID status:
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 1002 is in foreground: true
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 1027 is in foreground: true
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 10109 is in foreground: false
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 10155 is in foreground: true
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 10161 is in foreground: true
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 10164 is in foreground: true
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 10198 is in foreground: false
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 10238 is in foreground: true
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 10243 is in foreground: true
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 10250 is in foreground: false
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 10319 is in foreground: true
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 10903 is in foreground: false
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 10904 is in foreground: false
+06-15 14:45:19.836  4291  9348 D ForegroundUtils: UID: 10906 is in foreground: true
+06-15 14:45:19.840  7826  7826 D nativeloader: Configuring clns-4 for other apk /data/app/~~yugQkPfeTHhzAlxBQpc29w==/rw.mobi.app-neaoIi6l0tmB23L-lyvI_A==/base.apk. target_sdk_version=35, uses_libraries=, library_path=/data/app/~~yugQkPfeTHhzAlxBQpc29w==/rw.mobi.app-neaoIi6l0tmB23L-lyvI_A==/lib/arm64:/data/app/~~yugQkPfeTHhzAlxBQpc29w==/rw.mobi.app-neaoIi6l0tmB23L-lyvI_A==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/rw.mobi.app
+06-15 14:45:19.845  7826  7826 D nativeloader: Load libframework-connectivity-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity.jar: ok
+06-15 14:45:19.847  7826  7826 V GraphicsEnvironment: ANGLE Developer option for 'rw.mobi.app' set to: 'default'
+06-15 14:45:19.847  7826  7826 V GraphicsEnvironment: ANGLE GameManagerService for rw.mobi.app: false
+06-15 14:45:19.847  7826  7826 V GraphicsEnvironment: Updatable production driver is not supported on the device.
+06-15 14:45:19.848  7826  7826 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+06-15 14:45:19.849  7826  7826 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+06-15 14:45:19.853  7826  7826 D CompatibilityChangeReporter: Compat change id reported: 183155436; UID 10906; state: ENABLED
+06-15 14:45:19.857  7826  7826 D FirebaseSessions: Dependency to CRASHLYTICS added.
+06-15 14:45:19.859  7826  7826 I FirebaseApp: Device unlocked: initializing all Firebase APIs for app [DEFAULT]
+06-15 14:45:19.863  7826  7826 I FirebaseCrashlytics: Initializing Firebase Crashlytics 20.0.6 for rw.mobi.app
+06-15 14:45:19.873  7826  7826 D FirebaseSessions: Subscriber CRASHLYTICS registered.
+06-15 14:45:19.881 13987 13987 I cfbz    : onPause
+06-15 14:45:19.882  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 168419799; UID 10164; state: DISABLED
+06-15 14:45:19.882 13987 13987 W dvrg    : measuring already stopped.
+06-15 14:45:19.882  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 273564678; UID 10164; state: DISABLED
+06-15 14:45:19.884  1739  2882 W ActivityTaskManager: takeTaskSnapshot: taskId=687 not found or not visible
+06-15 14:45:19.896  7826  7826 D nativeloader: Load /data/app/~~yugQkPfeTHhzAlxBQpc29w==/rw.mobi.app-neaoIi6l0tmB23L-lyvI_A==/base.apk!/lib/arm64-v8a/libdatastore_shared_counter.so using class loader ns clns-4 (caller=/data/app/~~yugQkPfeTHhzAlxBQpc29w==/rw.mobi.app-neaoIi6l0tmB23L-lyvI_A==/base.apk!classes5.dex): ok
+06-15 14:45:19.902  7826  7826 D FirebaseSessions: Initializing Firebase Sessions 3.0.6.
+06-15 14:45:19.902  7826  7826 I FirebaseInitProvider: FirebaseApp initialization successful
+06-15 14:45:19.903  7826  7826 D FLTFireContextHolder: received application context.
+06-15 14:45:19.903  7826  7851 W rw.mobi.app: ClassLoaderContext classpath size mismatch. expected=1, found=0 (DLC[];PCL[base.apk*781738098]{PCL[/system/framework/org.apache.http.legacy.jar*1601893742]#PCL[/system/framework/com.android.location.provider.jar*989331189]#PCL[/system/framework/com.android.media.remotedisplay.jar*373201994]} | DLC[];PCL[])
+06-15 14:45:19.904  7826  7852 I FirebaseCrashlytics: Saved version control info
+06-15 14:45:19.906  7826  7851 I DynamiteModule: Considering local module com.google.android.gms.measurement.dynamite:185 and remote module com.google.android.gms.measurement.dynamite:194
+06-15 14:45:19.906  7826  7851 I DynamiteModule: Selected remote version of com.google.android.gms.measurement.dynamite, version >= 194
+06-15 14:45:19.907  7826  7851 V DynamiteModule: Dynamite loader version >= 2, using loadModule2NoCrashUtils
+06-15 14:45:19.910  1739  5430 D CompatibilityChangeReporter: Compat change id reported: 161145287; UID 10906; state: DISABLED
+06-15 14:45:19.916  7826  7851 W System  : ClassLoader referenced unknown path: 
+06-15 14:45:19.917  7826  7851 D nativeloader: Configuring clns-5 for other apk . target_sdk_version=37, uses_libraries=, library_path=/data/app/~~wNtZ1CYwEqoWvZ1-OV-aXQ==/com.google.android.gms-TmWo9WlpjocYOuhs3fxXTw==/lib/arm64:/data/app/~~wNtZ1CYwEqoWvZ1-OV-aXQ==/com.google.android.gms-TmWo9WlpjocYOuhs3fxXTw==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+06-15 14:45:19.927  7826  7858 D FirebaseSessions: Notified CRASHLYTICS of new session 78f326481e234fd3999d7bf1af17ba2a
+06-15 14:45:19.939  7826  7872 D nativeloader: Load /data/app/~~yugQkPfeTHhzAlxBQpc29w==/rw.mobi.app-neaoIi6l0tmB23L-lyvI_A==/base.apk!/lib/arm64-v8a/libflutter.so using class loader ns clns-4 (caller=/data/app/~~yugQkPfeTHhzAlxBQpc29w==/rw.mobi.app-neaoIi6l0tmB23L-lyvI_A==/base.apk!classes4.dex): ok
+06-15 14:45:19.941  7826  7851 W rw.mobi.app: ClassLoaderContext classpath element checksum mismatch. expected=781738098, found=3153950953 (DLC[];PCL[base.apk*781738098]{PCL[/system/framework/org.apache.http.legacy.jar*1601893742]#PCL[/system/framework/com.android.location.provider.jar*989331189]#PCL[/system/framework/com.android.media.remotedisplay.jar*373201994]} | DLC[];PCL[/data/app/~~yugQkPfeTHhzAlxBQpc29w==/rw.mobi.app-neaoIi6l0tmB23L-lyvI_A==/base.apk*3153950953])
+06-15 14:45:19.971  1739  2448 D WifiStaIfaceHidlImpl: getCachedScanData is not implemented by HIDL
+06-15 14:45:19.975  7826  7877 D vulkan  : searching for layers in '/data/app/~~yugQkPfeTHhzAlxBQpc29w==/rw.mobi.app-neaoIi6l0tmB23L-lyvI_A==/lib/arm64'
+06-15 14:45:19.975  7826  7877 D vulkan  : searching for layers in '/data/app/~~yugQkPfeTHhzAlxBQpc29w==/rw.mobi.app-neaoIi6l0tmB23L-lyvI_A==/base.apk!/lib/arm64-v8a'
+06-15 14:45:19.982  1739  2448 I HalDevMgr: bestIfaceCreationProposal is null, requestIface=STA, existingIface=[name=wlan0 type=STA]
+06-15 14:45:19.982  7826  7877 I AdrenoVK-0: ===== BEGIN DUMP OF OVERRIDDEN SETTINGS =====
+06-15 14:45:19.982  7826  7877 I AdrenoVK-0: ===== END DUMP OF OVERRIDDEN SETTINGS =====
+06-15 14:45:19.982  7826  7877 I AdrenoVK-0: QUALCOMM build          : 85da404, I46ff5fc46f
+06-15 14:45:19.982  7826  7877 I AdrenoVK-0: Build Date              : 11/30/20
+06-15 14:45:19.982  7826  7877 I AdrenoVK-0: Shader Compiler Version : EV031.31.04.01
+06-15 14:45:19.982  7826  7877 I AdrenoVK-0: Local Branch            : promo490_3_Google
+06-15 14:45:19.982  7826  7877 I AdrenoVK-0: Remote Branch           : 
+06-15 14:45:19.982  7826  7877 I AdrenoVK-0: Remote Branch           : 
+06-15 14:45:19.982  7826  7877 I AdrenoVK-0: Reconstruct Branch      : 
+06-15 14:45:19.982  7826  7877 I AdrenoVK-0: Build Config            : S P 10.0.4 AArch64
+06-15 14:45:19.982  7826  7877 I AdrenoVK-0: Driver Path             : /vendor/lib64/hw/vulkan.adreno.so
+06-15 14:45:19.989  7826  7877 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+06-15 14:45:19.995  7826  7877 I AdrenoGLES-0: QUALCOMM build                   : 85da404, I46ff5fc46f
+06-15 14:45:19.995  7826  7877 I AdrenoGLES-0: Build Date                       : 11/30/20
+06-15 14:45:19.995  7826  7877 I AdrenoGLES-0: OpenGL ES Shader Compiler Version: EV031.31.04.01
+06-15 14:45:19.995  7826  7877 I AdrenoGLES-0: Local Branch                     : promo490_3_Google
+06-15 14:45:19.995  7826  7877 I AdrenoGLES-0: Remote Branch                    : 
+06-15 14:45:19.995  7826  7877 I AdrenoGLES-0: Remote Branch                    : 
+06-15 14:45:19.995  7826  7877 I AdrenoGLES-0: Reconstruct Branch               : 
+06-15 14:45:19.996  7826  7877 I AdrenoGLES-0: Build Config                     : S P 10.0.4 AArch64
+06-15 14:45:19.996  7826  7877 I AdrenoGLES-0: Driver Path                      : /vendor/lib64/egl/libGLESv2_adreno.so
+06-15 14:45:19.999  7826  7877 I AdrenoGLES-0: PFP: 0x016ee190, ME: 0x00000000
+06-15 14:45:20.001  7826  7877 W AdrenoUtils: <ReadGpuID_from_sysfs:197>: Failed to open /sys/class/kgsl/kgsl-3d0/gpu_model
+06-15 14:45:20.001  7826  7877 W AdrenoUtils: <ReadGpuID:221>: Failed to read chip ID from gpu_model. Fallback to use the GSL path
+06-15 14:45:20.006  7826  7877 I flutter : [IMPORTANT:flutter/shell/platform/android/android_context_gl_impeller.cc(104)] Using the Impeller rendering backend (OpenGLES).
+06-15 14:45:20.015  8941   644 I PhenotypeResourceReader: unable to find any Phenotype resource metadata for rw.mobi.app
+06-15 14:45:20.024  7826  7893 E rw.mobi.app: No package ID 6a found for ID 0x6a0b0013.
+06-15 14:45:20.024  7826  7893 I FA      : App measurement initialized, version: 170009
+06-15 14:45:20.024  7826  7893 I FA      : To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+06-15 14:45:20.024  7826  7893 I FA      : To enable faster debug mode event logging run:
+06-15 14:45:20.024  7826  7893 I FA      :   adb shell setprop debug.firebase.analytics.app rw.mobi.app
+06-15 14:45:20.037 25286 25286 D BoundBrokerSvc: onBind: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-15 14:45:20.037 25286 25286 D BoundBrokerSvc: Loading bound service for intent: Intent { act=com.google.android.gms.measurement.START pkg=com.google.android.gms }
+06-15 14:45:20.088  7826  7826 D com.llfbandit.app_links: Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=rw.mobi.app/.MainActivity }
+06-15 14:45:20.104  7826  7826 D FLTFireContextHolder: received application context.
+06-15 14:45:20.143  7826  7826 D FirebaseSessions: App foregrounded on rw.mobi.app
+06-15 14:45:20.143  7826  7826 D FirebaseSessions: Session 78f326481e234fd3999d7bf1af17ba2a has not backgrounded yet
+06-15 14:45:20.143  7826  7826 D FirebaseSessions: No process data for rw.mobi.app
+06-15 14:45:20.146  7826  7826 D CompatibilityChangeReporter: Compat change id reported: 237531167; UID 10906; state: DISABLED
+06-15 14:45:20.147  7826  7893 I FA      : Tag Manager is not found and thus will not be used
+06-15 14:45:20.148  7826  7858 D FirebaseSessions: Session de20c7ecc6724700ad5f6aaaec50029f has not backgrounded yet
+06-15 14:45:20.148  7826  7858 D FirebaseSessions: No process data map
+06-15 14:45:20.148  7826  7858 D FirebaseSessions: No process data for rw.mobi.app
+06-15 14:45:20.152  7826  7869 W Parcel  : Expecting binder but got null!
+06-15 14:45:20.156  1739  5430 D CoreBackPreview: Window{8d5d7be u0 rw.mobi.app/rw.mobi.app.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@995df6c, mPriority=0}
+06-15 14:45:20.166   702   736 W ServiceManager: Permission failure: android.permission.ACCESS_SURFACE_FLINGER from uid=10906 pid=0
+06-15 14:45:20.166   702   736 D PermissionCache: checking android.permission.ACCESS_SURFACE_FLINGER for uid=10906 => denied (259 us)
+06-15 14:45:20.166   702   736 W ServiceManager: Permission failure: android.permission.ROTATE_SURFACE_FLINGER from uid=10906 pid=0
+06-15 14:45:20.166   702   736 D PermissionCache: checking android.permission.ROTATE_SURFACE_FLINGER for uid=10906 => denied (190 us)
+06-15 14:45:20.166   702   736 W ServiceManager: Permission failure: android.permission.INTERNAL_SYSTEM_WINDOW from uid=10906 pid=0
+06-15 14:45:20.166   702   736 D PermissionCache: checking android.permission.INTERNAL_SYSTEM_WINDOW for uid=10906 => denied (149 us)
+06-15 14:45:20.166   702  2136 W ServiceManager: Permission failure: android.permission.INTERNAL_SYSTEM_WINDOW from uid=10906 pid=7826
+06-15 14:45:20.166   702  2136 D PermissionCache: checking android.permission.INTERNAL_SYSTEM_WINDOW for uid=10906 => denied (191 us)
+06-15 14:45:20.179   704   747 I SDM     : HWCDisplay::GetColorModeCount: Supported color mode count = 3
+06-15 14:45:20.180  7826  7869 E OpenGLRenderer: Unable to match the desired swap behavior.
+06-15 14:45:20.180  7826  7858 D FirebaseSessions: Notified CRASHLYTICS of new session bd83b76c955d4bad907564ca034c5d61
+06-15 14:45:20.265 24182 24182 I BugleDataModel: ActionExecutorImpl: ACTION_EXECUTE_QUEUED_SelfParticipantsRefreshAction
+06-15 14:45:20.265 24182  7459 I BugleDataModel: running action SelfParticipantsRefreshAction
+06-15 14:45:20.266 24182  7459 I BugleDataModel: ActionExecutorImpl: ACTION_BACKGROUND_QUEUED_SelfParticipantsRefreshAction
+06-15 14:45:20.266 24182  7195 I BugleDataModel: ParticipantFullRefresh: Start participant refresh. refreshMode: SELF_ONLY
+06-15 14:45:20.266 24182  7459 I BugleDataModel: finished running action SelfParticipantsRefreshAction in 1 ms
+06-15 14:45:20.271 24182  7195 I BugleDataModel: SubscriptionsTracker#refreshSelfParticipantList([11, 9]), with subIdToSimIdMap([])
+06-15 14:45:20.301  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.303 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-15 14:45:20.305 24182  7195 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country=RW [CONTEXT sub_id=11 ]
+06-15 14:45:20.314 24182  7195 I Bugle   : CountryCodeDetector: updateHomeCountry from SIM country. subscription{id:11}, detected country: RW
+06-15 14:45:20.315 24182  7195 I Bugle   : CountryCodeDetector: updateSmsNetworkCountry from default subscription network country. detected country: rw
+06-15 14:45:20.327  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.330 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-15 14:45:20.343  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.345  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.349 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=9 ]
+06-15 14:45:20.354  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.357  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.361 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=9 ]
+06-15 14:45:20.370  2816  3134 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.372 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-15 14:45:20.373 24182  7195 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country=RW [CONTEXT sub_id=11 ]
+06-15 14:45:20.380  2816  3134 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.382 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-15 14:45:20.400 24182  7195 I BugleDataModel: SubscriptionsTracker bindToTrackingMap bound participants: [ParticipantId=1 subId=-1, ParticipantId=203 subId=2, ParticipantId=242 subId=3, ParticipantId=256 subId=4, ParticipantId=262 subId=5, ParticipantId=319 subId=6, ParticipantId=321 subId=7, ParticipantId=337 subId=8, ParticipantId=347 subId=9, ParticipantId=360 subId=10, ParticipantId=362 subId=11]
+06-15 14:45:20.401 24182  7195 I BugleDataModel: set orderedRowIdAndTokenPairs: [rowId=347 subId= 9 token=7fcbb511-8da7-4933-a894-214a3ac8b5d6, rowId=362 subId= 11 token=54f4df2c-3f66-46a3-abd5-ce9917c5c1e0, rowId=1 subId= -1 token=f82f1829-d297-44f2-afed-715bab9a7cad, rowId=360 subId= 10 token=7a3d76a5-7ea3-4016-957c-ba0c4a4e4b38, rowId=337 subId= 8 token=a75de66d-b585-402e-b882-2d8914968106, rowId=321 subId= 7 token=dcccb936-32b6-444b-8f63-963d8b6b8ce2, rowId=319 subId= 6 token=38cb627d-1e65-4ca9-bb0f-304ddb8e48eb, rowId=262 subId= 5 token=fee6b783-b828-452a-8f3e-89ff59a9d559, rowId=256 subId= 4 token=e019bd46-a01b-4628-902b-d4754b6b238a, rowId=242 subId= 3 token=293ede4e-f6ff-4344-be57-f6f624d25b13, rowId=203 subId= 2 token=b57bfdea-f3a6-4d0f-87a8-b06d4151e5fd]
+06-15 14:45:20.410  2816  3134 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.412  2816  3134 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.414 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=-1 ]
+06-15 14:45:20.441 24182  7459 I BugleSelfIdentity: Active SelfIdentities [SelfIdentity{id:362, subIds: [11]}, SelfIdentity{id:347, subIds: [9]}]
+06-15 14:45:20.518  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.522 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=2 ]
+06-15 14:45:20.524 24182  7195 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=2 ]
+06-15 14:45:20.560 24182 24182 I BugleDataModel: ActionExecutorImpl: ACTION_EXECUTE_QUEUED_CountryCodeDetectorAction
+06-15 14:45:20.561 24182  7457 I BugleDataModel: running action CountryCodeDetectorAction
+06-15 14:45:20.563 24182  7457 I BugleDataModel: ActionExecutorImpl: ACTION_BACKGROUND_QUEUED_CountryCodeDetectorAction
+06-15 14:45:20.564 24182  7457 I BugleDataModel: finished running action CountryCodeDetectorAction in 3 ms
+06-15 14:45:20.568  1072  1072 W socket_writer_q: type=1400 audit(0.0:287296018): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:20.571  1072  1072 W socket_writer_q: type=1400 audit(0.0:287296019): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:20.578  1072  1072 W socket_writer_q: type=1400 audit(0.0:287296020): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:20.584  1072  1072 W socket_writer_q: type=1400 audit(0.0:287296021): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:20.588  1072  1072 W socket_writer_q: type=1400 audit(0.0:287296022): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:20.615 24182  7195 I BugleDataModel: ParticipantRefresh: No update made to participant: 203
+06-15 14:45:20.617  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.621 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=3 ]
+06-15 14:45:20.623 24182  7195 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=3 ]
+06-15 14:45:20.714 24182  7195 I BugleDataModel: ParticipantRefresh: No update made to participant: 242
+06-15 14:45:20.716  7826  7854 D FirebaseSessions: Fetching settings from server.
+06-15 14:45:20.716  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.720 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=4 ]
+06-15 14:45:20.723 24182  7195 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=4 ]
+06-15 14:45:20.813 24182  7195 I BugleDataModel: ParticipantRefresh: No update made to participant: 256
+06-15 14:45:20.815  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.818 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=5 ]
+06-15 14:45:20.821 24182  7195 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=5 ]
+06-15 14:45:20.915 24182  7195 I BugleDataModel: ParticipantRefresh: No update made to participant: 262
+06-15 14:45:20.918  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:20.921 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=6 ]
+06-15 14:45:20.924 24182  7195 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=6 ]
+06-15 14:45:21.018 24182  7195 I BugleDataModel: ParticipantRefresh: No update made to participant: 319
+06-15 14:45:21.022  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.025 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=7 ]
+06-15 14:45:21.027 24182  7195 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=7 ]
+06-15 14:45:21.104  7826  7845 D FirebaseSessions: Fetched settings: {"settings_version":3,"cache_duration":185375,"features":{"collect_logged_exceptions":true,"collect_reports":true,"collect_analytics":false,"prompt_enabled":false,"push_enabled":false,"firebase_crashlytics_enabled":false,"collect_anrs":true,"collect_metric_kit":false,"collect_build_ids":true},"app":{"status":"activated","update_required":false,"report_upload_variant":2,"native_report_upload_variant":2},"fabric":{"org_id":"69c305cc13cff0428d3fedca","bundle_id":"rw.mobi.app"},"on_demand_upload_rate_per_minute":10,"on_demand_backoff_base":1.2,"on_demand_backoff_step_duration_seconds":60,"app_quality":{"sessions_enabled":true,"sampling_rate":1,"session_timeout_seconds":1800},"on_demand_thread_recording_suspension_enabled":true}
+06-15 14:45:21.110  7826  7853 D FirebaseSessions: Remote settings cache not expired. Using cached values.
+06-15 14:45:21.114  7826  7852 D FirebaseSessions: Session Event Type: SESSION_START
+06-15 14:45:21.114  7826  7852 D FirebaseSessions: Successfully logged Session Start event.
+06-15 14:45:21.114  7826  7826 D FlutterGeolocator: Creating service.
+06-15 14:45:21.115  7826  7826 D FlutterGeolocator: Binding to location service.
+06-15 14:45:21.117  7826  7826 I Choreographer: Skipped 56 frames!  The application may be doing too much work on its main thread.
+06-15 14:45:21.119 24182  7195 I BugleDataModel: ParticipantRefresh: No update made to participant: 321
+06-15 14:45:21.120  7826  7826 D FlutterGeolocator: Flutter engine connected. Connected engine count 1
+06-15 14:45:21.122  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.125  8941  9376 I FontLog : (REDACTED) Received query %s, URI %s
+06-15 14:45:21.125  8941  9376 I FontLog : (REDACTED) Query [%s] resolved to %s
+06-15 14:45:21.126 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=8 ]
+06-15 14:45:21.128 24182  7195 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=8 ]
+06-15 14:45:21.129  7826  7855 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10906; state: ENABLED
+06-15 14:45:21.129  8941  9376 I FontLog : (REDACTED) Fetch %s end status %s
+06-15 14:45:21.130  1739  4802 D CompatibilityChangeReporter: Compat change id reported: 194532703; UID 10906; state: ENABLED
+06-15 14:45:21.131  1739  4802 D ConnectivityService: requestNetwork for uid/pid:1000/1739 asUid: 10906 activeRequest: null callbackRequest: 137839 [NetworkRequest [ REQUEST id=137840, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10906 RequestorUid: 1000 RequestorPkg: android UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|LOST|BLK
+06-15 14:45:21.132  8941  9376 I FontLog : (REDACTED) Pulling font file for id = %d, cache size = %d
+06-15 14:45:21.136  8941  9376 I FontLog : (REDACTED) Pulling font file for id = %d, cache size = %d
+06-15 14:45:21.136  1739  2448 D OemPaidWifiNetworkFactory: got request NetworkRequest [ REQUEST id=137840, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10906 RequestorUid: 1000 RequestorPkg: android UnderlyingNetworks: Null] ]
+06-15 14:45:21.137  1739  2448 D MultiInternetWifiNetworkFactory: got request NetworkRequest [ REQUEST id=137840, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10906 RequestorUid: 1000 RequestorPkg: android UnderlyingNetworks: Null] ]
+06-15 14:45:21.139  7826  7845 W System  : Ignoring header X-Firebase-Locale because its value was null.
+06-15 14:45:21.139  1739  2448 D WifiNetworkFactory: got request NetworkRequest [ REQUEST id=137840, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10906 RequestorUid: 1000 RequestorPkg: android UnderlyingNetworks: Null] ]
+06-15 14:45:21.140  1739  2448 D UntrustedWifiNetworkFactory: got request NetworkRequest [ REQUEST id=137840, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 10906 RequestorUid: 1000 RequestorPkg: android UnderlyingNetworks: Null] ]
+06-15 14:45:21.143  1739  2455 D ConnectivityService: NetReassign [137840 : null → 445] [c 0] [a 2] [i 9]
+06-15 14:45:21.147 25286  7340 D AdvertisingIdClient: AdvertisingIdClient already created.
+06-15 14:45:21.147 25286  7340 D AdvertisingIdClient: AdvertisingIdClient is not bounded. Starting to bind it...
+06-15 14:45:21.160 25286  7340 D AdvertisingIdClient: AdvertisingIdClient is bounded
+06-15 14:45:21.165 25286  7340 W AdvertisingIdSettings: Package rw.mobi.app failed Ad Id permission check. Apps that target Android SDK 33 or higher should declare com.google.android.gms.permission.AD_ID in the app manifest to access Ad Id.
+06-15 14:45:21.168 25286  7340 I AdvertisingIdClient: shouldSendLog 2488789096
+06-15 14:45:21.168 25286  7340 I AdvertisingIdClient: GetInfoInternal elapse 22ms
+06-15 14:45:21.198 25286  7340 W AdvertisingIdSettings: Package rw.mobi.app failed Ad Id permission check. Apps that target Android SDK 33 or higher should declare com.google.android.gms.permission.AD_ID in the app manifest to access Ad Id.
+06-15 14:45:21.201  8941  8941 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.presencemanager.service.START dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+06-15 14:45:21.206  8941  8941 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.presencemanager.service.INTERNAL_IDENTITY dat=chimera-action:/... cmp=com.google.android.gms/.chimera.PersistentApiService }
+06-15 14:45:21.220 24182  7195 I BugleDataModel: ParticipantRefresh: No update made to participant: 337
+06-15 14:45:21.223  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.225  8941  7357 I NetworkScheduler: (REDACTED) Error inserting %s
+06-15 14:45:21.226  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.229 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=9 ]
+06-15 14:45:21.233 11347 11356 I Finsky  : [856] Package com.google.android.gms is verified.
+06-15 14:45:21.246 25286  7340 I FA-SVC  : Tag Manager is not found and thus will not be used
+06-15 14:45:21.325 24182  7195 I BugleDataModel: ParticipantRefresh: No update made to participant: 347
+06-15 14:45:21.326  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.329 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=10 ]
+06-15 14:45:21.331 24182  7195 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country= [CONTEXT sub_id=10 ]
+06-15 14:45:21.417 24182  7195 I BugleDataModel: ParticipantRefresh: No update made to participant: 360
+06-15 14:45:21.419  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.422 24182  7195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-15 14:45:21.423 24182  7195 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country=RW [CONTEXT sub_id=11 ]
+06-15 14:45:21.510 24182  7195 I BugleDataModel: ParticipantRefresh: No update made to participant: 362
+06-15 14:45:21.511 24182  7195 I BugleDataModel: ParticipantFullRefresh: Number of participants refreshed: 11
+06-15 14:45:21.525 24182  7195 I BugleDataModel: ActionExecutorImpl: ACTION_RESPONSE_QUEUED_SelfParticipantsRefreshAction
+06-15 14:45:21.528 24182  7195 I Bugle   : CountryCodeDetector: updateHomeCountry from SIM country. subscription{id:11}, detected country: RW
+06-15 14:45:21.529 24182  7195 I Bugle   : CountryCodeDetector: updateSmsNetworkCountry from default subscription network country. detected country: rw
+06-15 14:45:21.529  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.530 24182  7195 I BugleDataModel: ActionExecutorImpl: ACTION_RESPONSE_QUEUED_CountryCodeDetectorAction
+06-15 14:45:21.533 24182 24195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-15 14:45:21.535 24182 24195 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country=RW [CONTEXT sub_id=11 ]
+06-15 14:45:21.539  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.540  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.543 24182 24195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=9 ]
+06-15 14:45:21.546 24182 24195 I BugleSelfIdentity: Phone number for MyIdentity 54f4df2c-3f66-46a3-abd5-ce9917c5c1e0 does not change [CONTEXT sub_id=11 icc_id="redacted-pii[19-chars]" messaging_identity="redacted-pii[13-chars]" rcs_provisioning_id="redacted-pii[0-chars]" ]
+06-15 14:45:21.547 24182 24195 I BugleSelfIdentity: Phone number for MyIdentity 7fcbb511-8da7-4933-a894-214a3ac8b5d6 does not change [CONTEXT sub_id=9 icc_id="redacted-pii[20-chars]" rcs_provisioning_id="redacted-pii[0-chars]" ]
+06-15 14:45:21.554  2816  3134 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.556  2816  3125 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.557 24182 24195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-15 14:45:21.557 24182 24195 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country=RW [CONTEXT sub_id=11 ]
+06-15 14:45:21.559 24182 24196 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[13-chars] [CONTEXT sub_id=11 ]
+06-15 14:45:21.559 24182 24196 I Bugle   : SubscriptionUtils.getCanonicalForSelf: self=redacted-pii[13-chars], country=RW [CONTEXT sub_id=11 ]
+06-15 14:45:21.561  2816  3134 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.563  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.564  2816  3134 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.565  2816  3074 D TelephonyProvider: Using old permission behavior for telephony provider compat
+06-15 14:45:21.567 24182 24195 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=9 ]
+06-15 14:45:21.568 24182 24196 I Bugle   : getRawTelephonyPhoneNumber redacted-pii[0-chars] [CONTEXT sub_id=9 ]
+06-15 14:45:21.570 24182 24195 I BugleSelfIdentity: Phone number for MyIdentity 54f4df2c-3f66-46a3-abd5-ce9917c5c1e0 does not change [CONTEXT sub_id=11 icc_id="redacted-pii[19-chars]" messaging_identity="redacted-pii[13-chars]" rcs_provisioning_id="redacted-pii[0-chars]" ]
+06-15 14:45:21.571 24182 24195 I BugleSelfIdentity: Phone number for MyIdentity 7fcbb511-8da7-4933-a894-214a3ac8b5d6 does not change [CONTEXT sub_id=9 icc_id="redacted-pii[20-chars]" rcs_provisioning_id="redacted-pii[0-chars]" ]
+06-15 14:45:21.571  1072  1072 W socket_writer_q: type=1400 audit(0.0:287296206): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:21.574 24182 24196 I BugleSelfIdentity: Phone number for MyIdentity 54f4df2c-3f66-46a3-abd5-ce9917c5c1e0 does not change [CONTEXT sub_id=11 icc_id="redacted-pii[19-chars]" messaging_identity="redacted-pii[13-chars]" rcs_provisioning_id="redacted-pii[0-chars]" ]
+06-15 14:45:21.576 24182 24196 I BugleSelfIdentity: Phone number for MyIdentity 7fcbb511-8da7-4933-a894-214a3ac8b5d6 does not change [CONTEXT sub_id=9 icc_id="redacted-pii[20-chars]" rcs_provisioning_id="redacted-pii[0-chars]" ]
+06-15 14:45:21.578  1072  1072 W socket_writer_q: type=1400 audit(0.0:287296207): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:21.581  1072  1072 W socket_writer_q: type=1400 audit(0.0:287296208): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:21.588  1072  1072 W socket_writer_q: type=1400 audit(0.0:287296209): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0
+06-15 14:45:21.591  1072  1072 W socket_writer_q: type=1400 audit(0.0:287296210): avc: denied { write } for name="statsdw" dev="tmpfs" ino=31536 scontext=u:r:hal_camera_default:s0 tcontext=u:object_r:statsdw_socket:s0 tclass=sock_file permissive=0

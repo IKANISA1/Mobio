@@ -1,13 +1,11 @@
 package com.momobio.app
 
-import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -62,10 +60,6 @@ class BridgeForegroundService : Service() {
 
     private fun syncOnce(): UploadResult {
         val queue = SmsQueue(applicationContext)
-        if (hasReadSms()) {
-            queue.enqueue(readAllSms(contentResolver))
-        }
-
         val messages = queue.all()
         return UploadClient().upload(messages) { uploadedHashes ->
             queue.markUploaded(uploadedHashes)
@@ -115,9 +109,6 @@ class BridgeForegroundService : Service() {
         }
         manager.createNotificationChannel(channel)
     }
-
-    private fun hasReadSms(): Boolean =
-        checkSelfPermission(Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
 
     companion object {
         private const val notificationId = 31045

@@ -13,6 +13,12 @@ void main() {
 
         expect(manifest, contains('android.permission.CAMERA'));
         expect(manifest, contains('android.permission.NFC'));
+        expect(manifest, contains('android.hardware.nfc.hce'));
+        expect(manifest, contains('BioPayHostApduService'));
+        expect(manifest, contains('android.permission.BIND_NFC_SERVICE'));
+        expect(manifest, contains('android.nfc.action.NDEF_DISCOVERED'));
+        expect(manifest, contains('android.nfc.action.TECH_DISCOVERED'));
+        expect(manifest, contains('@xml/biopay_nfc_tech_filter'));
         expect(manifest, isNot(contains('android.permission.READ_SMS')));
         expect(manifest, isNot(contains('android.permission.RECEIVE_SMS')));
         expect(
@@ -31,6 +37,12 @@ void main() {
         expect(manifest, contains('tools:node="remove"'));
         expect(manifest, isNot(contains('SmsReceiver')));
         expect(manifest, isNot(contains('BootReceiver')));
+
+        final nfcTechFilter = File(
+          'android/app/src/main/res/xml/biopay_nfc_tech_filter.xml',
+        ).readAsStringSync();
+        expect(nfcTechFilter, contains('android.nfc.tech.Ndef'));
+        expect(nfcTechFilter, contains('android.nfc.tech.IsoDep'));
       },
     );
 
@@ -228,6 +240,21 @@ void main() {
       final biopayNfcScreen = File(
         'lib/features/biopay/biopay_nfc_screen.dart',
       ).readAsStringSync();
+      final biopayDeviceNfcService = File(
+        'lib/features/biopay/biopay_device_nfc_service.dart',
+      ).readAsStringSync();
+      final biopayNfcForegroundListener = File(
+        'lib/features/biopay/biopay_nfc_foreground_listener.dart',
+      ).readAsStringSync();
+      final biopayNfcService = File(
+        'lib/features/biopay/biopay_nfc_service.dart',
+      ).readAsStringSync();
+      final biopayNfcWriteCardScreen = File(
+        'lib/features/biopay/biopay_nfc_write_card_screen.dart',
+      ).readAsStringSync();
+      final androidHceService = File(
+        'android/app/src/main/kotlin/rw/mobi/app/BioPayHostApduService.kt',
+      ).readAsStringSync();
       final biopayQrExport = File(
         'lib/features/biopay/biopay_qr_export.dart',
       ).readAsStringSync();
@@ -245,6 +272,8 @@ void main() {
         'lib/features/biopay/biopay_flow_shared.dart',
         'lib/features/biopay/biopay_home_screen.dart',
         'lib/features/biopay/biopay_nfc_screen.dart',
+        'lib/features/biopay/biopay_nfc_foreground_listener.dart',
+        'lib/features/biopay/biopay_nfc_service.dart',
         'lib/features/biopay/biopay_nfc_write_card_screen.dart',
         'lib/features/biopay/biopay_qr_screen.dart',
         'lib/features/biopay/biopay_scan_screen.dart',
@@ -386,7 +415,33 @@ void main() {
         screenWrappers,
         contains("context.push('/biopay/nfc/write-card')"),
       );
+      expect(biopayNfcScreen, contains('BioPayDeviceNfcService'));
+      expect(biopayNfcScreen, contains('Activate Device NFC'));
+      expect(biopayNfcScreen, contains('_DeviceNfcListeningView'));
+      expect(biopayNfcScreen, contains('_NfcPulseRing'));
+      expect(biopayNfcScreen, contains('LucideIcons.nfc'));
+      expect(biopayNfcScreen, isNot(contains('Icons.nfc_rounded')));
+      expect(biopayNfcScreen, isNot(contains('Device NFC Active')));
+      expect(biopayNfcScreen, isNot(contains('writeNDEFRecords')));
       expect(biopayNfcScreen, isNot(contains('Write NFC Card')));
+      expect(biopayDeviceNfcService, contains('bioPayDeviceNfcAid'));
+      expect(biopayDeviceNfcService, contains('bioPayDeviceNfcSelectApdu'));
+      expect(androidHceService, contains('HostApduService'));
+      expect(androidHceService, contains('processCommandApdu'));
+      expect(
+        biopayNfcForegroundListener,
+        contains('rw.mobi.app/biopay_native_nfc_reader'),
+      );
+      expect(biopayNfcForegroundListener, contains('consumePendingPayload'));
+      expect(biopayNfcForegroundListener, contains('NFCTagType.iso7816'));
+      expect(
+        biopayNfcForegroundListener,
+        contains('bioPayDeviceNfcSelectApdu'),
+      );
+      expect(biopayNfcForegroundListener, contains('FlutterNfcKit'));
+      expect(biopayNfcService, contains('writeNDEFRecords'));
+      expect(biopayNfcWriteCardScreen, contains('BioPayNfcService'));
+      expect(biopayNfcWriteCardScreen, contains('writeCard'));
       expect(biopayScreen, contains('Dial USSD'));
       expect(biopayScreen, contains('Generate QR Code'));
       expect(biopayScreen, contains("'Save'"));
@@ -411,7 +466,7 @@ void main() {
         ).readAsStringSync(),
         contains("expect(find.text('Dial USSD'), findsNothing)"),
       );
-      expect(biopayScreen, contains('Activate NFC'));
+      expect(biopayScreen, contains('Activate Device NFC'));
       expect(biopayScreen, isNot(contains('Receive with NFC')));
       expect(biopayScreen, isNot(contains('Tap to Pay')));
       expect(biopayScreen, isNot(contains('Prepare tap tag')));
@@ -441,8 +496,11 @@ void main() {
       expect(biopayScreen, contains('amountMinorFromController'));
       expect(biopayScreen, contains('optionalAmountMinorFromController'));
       expect(biopayScreen, contains('buildBioPayQrPayload'));
+      expect(biopayScreen, contains('bioPayUssdTelPayload'));
+      expect(biopayScreen, contains('bioPayUssdCodeFromPayload'));
       expect(biopayScreen, contains('bioPayTokenFromPayload'));
-      expect(biopayScreen, contains("'type': 'mobio_biopay_request'"));
+      expect(biopayScreen, contains("return 'tel:\$encoded';"));
+      expect(biopayScreen, contains('QrErrorCorrectLevel.H'));
       expect(biopayScreen, contains('BioPayAdminConsoleScreen'));
       expect(biopayScreen, contains('BioPay Ops'));
       expect(biopayScreen, contains('Confirmations'));
@@ -457,6 +515,17 @@ void main() {
       expect(biopayScreen, contains('External USSD only'));
       expect(biopayScreen, contains('admin_external_reference'));
       expect(biopayScreen, contains('QrImageView'));
+      expect(biopayScreen, contains('AppColors.primaryDim'));
+      expect(biopayScreen, contains('AppColors.primary'));
+      expect(
+        biopayScreen,
+        isNot(contains('colors: [cs.primary, cs.secondary, bioPayBlue]')),
+      );
+      expect(biopayScreen, contains("'icon/mobi_logo_transparent.png'"));
+      expect(
+        biopayScreen,
+        isNot(contains("Text(\n                                  'm'")),
+      );
       expect(biopayScreen, contains('MobileScanner'));
       expect(biopayScreen, contains('BarcodeFormat.qrCode'));
       expect(biopayScreen, contains('DetectionSpeed.noDuplicates'));
@@ -495,11 +564,17 @@ void main() {
           contains("primaryLabel: _request == null\n          ? 'Scanning'"),
         ),
       );
-      expect(biopayScreen, isNot(contains('request.ussdCode')));
+      expect(biopayScreen, contains('request.ussdCode'));
+      expect(
+        biopayScreen,
+        contains("replaceAll('#', Uri.encodeComponent('#'))"),
+      );
       expect(biopayScreen, isNot(contains("'Pay'")));
       expect(biopayModel, contains('required this.token'));
       expect(biopayModel, contains("'token': token"));
       expect(iosEntitlements, contains('com.apple.developer.nfc'));
+      expect(iosEntitlements, contains('NDEF'));
+      expect(iosEntitlements, contains('TAG'));
       expect(liveReadinessScript, contains('REQUIRE_BIOPAY_AWS_LIVE'));
       expect(liveReadinessScript, contains('REQUIRE_BIOPAY_SUPABASE_LIVE'));
       expect(liveReadinessScript, contains('REQUIRE_BIOPAY_DEVICE_LIVE'));

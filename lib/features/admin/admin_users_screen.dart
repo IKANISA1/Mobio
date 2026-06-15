@@ -113,8 +113,6 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
   }
 
   Widget _buildContent(AdminUsersState state, AdminUsersController controller) {
-    final pageUsers = _pageUsers(state);
-
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: AdminLayoutTokens.pagePadding,
@@ -145,7 +143,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
         AdminUserMetrics(users: state.users, roleFilter: state.roleFilter),
         const SizedBox(height: AppSpacing.lg),
         _AdminUsersTableControls(
-          totalRows: state.users.length,
+          totalRows: state.paginationTotal,
           sortKey: state.sortKey,
           onSortChanged: controller.setSortKey,
         ),
@@ -184,19 +182,19 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
             child: Column(
               children: [
                 AdminUserTable(
-                  users: pageUsers,
+                  users: state.users,
                   selectedIds: state.selectedIds,
                   updatingUserId: state.updatingUserId,
                   onToggleSelection: controller.toggleSelection,
                   onToggleSelectAll: (selected) =>
                       controller.toggleSelectionFor(
-                        pageUsers.map((user) => user.id),
+                        state.users.map((user) => user.id),
                         selected,
                       ),
                   onUserTap: _showUserSheet,
                 ),
                 AdminPaginationBar(
-                  totalItems: state.users.length,
+                  totalItems: state.paginationTotal,
                   page: state.page,
                   rowsPerPage: state.rowsPerPage,
                   onPageChanged: controller.setPage,
@@ -207,15 +205,6 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
           ),
       ],
     );
-  }
-
-  List<AdminUserListItem> _pageUsers(AdminUsersState state) {
-    final rowsPerPage = state.rowsPerPage <= 0 ? 25 : state.rowsPerPage;
-    final start = (state.page * rowsPerPage)
-        .clamp(0, state.users.length)
-        .toInt();
-    final end = (start + rowsPerPage).clamp(0, state.users.length).toInt();
-    return state.users.sublist(start, end);
   }
 }
 

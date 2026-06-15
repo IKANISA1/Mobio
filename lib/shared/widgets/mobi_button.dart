@@ -74,6 +74,9 @@ class MobiButton extends StatelessWidget {
                           style: AppTypography.titleMd.copyWith(
                             color: colors.fg,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
                           child: child,
                         ),
                 ),

@@ -1,0 +1,300 @@
+Activity Resolver Table:
+  Schemes:
+      https:
+        6638197 rw.mobi.app/.MainActivity filter e2f136d
+          Action: "android.intent.action.VIEW"
+          Category: "android.intent.category.DEFAULT"
+          Category: "android.intent.category.BROWSABLE"
+          Scheme: "https"
+          Authority: "mobio.ikanisa.com": -1
+          Path: "PatternMatcher{PREFIX: /invite}"
+          AutoVerify=true
+        6638197 rw.mobi.app/.MainActivity filter 544aba2
+          Action: "android.intent.action.VIEW"
+          Category: "android.intent.category.DEFAULT"
+          Category: "android.intent.category.BROWSABLE"
+          Scheme: "https"
+          Authority: "mobio.ikanisa.com": -1
+          Path: "PatternMatcher{PREFIX: /biopay/nfc}"
+          AutoVerify=true
+        6638197 rw.mobi.app/.MainActivity filter cc9eff0
+          Action: "android.nfc.action.NDEF_DISCOVERED"
+          Category: "android.intent.category.DEFAULT"
+          Scheme: "https"
+          Authority: "mobio.ikanisa.com": -1
+          Path: "PatternMatcher{PREFIX: /biopay/nfc}"
+      mobio:
+        6638197 rw.mobi.app/.MainActivity filter bd4a033
+          Action: "android.intent.action.VIEW"
+          Category: "android.intent.category.DEFAULT"
+          Category: "android.intent.category.BROWSABLE"
+          Scheme: "mobio"
+          Authority: "biopay": -1
+          Path: "PatternMatcher{PREFIX: /nfc}"
+      genericidp:
+        cb67969 rw.mobi.app/com.google.firebase.auth.internal.GenericIdpActivity filter 2e5dfee
+          Action: "android.intent.action.VIEW"
+          Category: "android.intent.category.DEFAULT"
+          Category: "android.intent.category.BROWSABLE"
+          Scheme: "genericidp"
+          Authority: "firebase.auth": -1
+          Path: "PatternMatcher{LITERAL: /}"
+      recaptcha:
+        62f0c8f rw.mobi.app/com.google.firebase.auth.internal.RecaptchaActivity filter d761b1c
+          Action: "android.intent.action.VIEW"
+          Category: "android.intent.category.DEFAULT"
+          Category: "android.intent.category.BROWSABLE"
+          Scheme: "recaptcha"
+          Authority: "firebase.auth": -1
+          Path: "PatternMatcher{LITERAL: /}"
+
+  Non-Data Actions:
+      android.intent.action.MAIN:
+        6638197 rw.mobi.app/.MainActivity filter ba45f84
+          Action: "android.intent.action.MAIN"
+          Category: "android.intent.category.LAUNCHER"
+
+Receiver Resolver Table:
+  Non-Data Actions:
+      androidx.profileinstaller.action.SAVE_PROFILE:
+        d91fe87 rw.mobi.app/androidx.profileinstaller.ProfileInstallReceiver filter e134152
+          Action: "androidx.profileinstaller.action.SAVE_PROFILE"
+      EXTRA_CHOSEN_COMPONENT:
+        419e2ab rw.mobi.app/dev.fluttercommunity.plus.share.SharePlusPendingIntent filter d57cd08
+          Action: "EXTRA_CHOSEN_COMPONENT"
+      androidx.profileinstaller.action.INSTALL_PROFILE:
+        d91fe87 rw.mobi.app/androidx.profileinstaller.ProfileInstallReceiver filter 620b1b4
+          Action: "androidx.profileinstaller.action.INSTALL_PROFILE"
+      com.google.android.c2dm.intent.RECEIVE:
+        b344325 rw.mobi.app/io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingReceiver filter 5540cfa
+          Action: "com.google.android.c2dm.intent.RECEIVE"
+        b0aeca1 rw.mobi.app/com.google.firebase.iid.FirebaseInstanceIdReceiver filter d45fec6
+          Action: "com.google.android.c2dm.intent.RECEIVE"
+      androidx.profileinstaller.action.SKIP_FILE:
+        d91fe87 rw.mobi.app/androidx.profileinstaller.ProfileInstallReceiver filter 748b1dd
+          Action: "androidx.profileinstaller.action.SKIP_FILE"
+      androidx.profileinstaller.action.BENCHMARK_OPERATION:
+        d91fe87 rw.mobi.app/androidx.profileinstaller.ProfileInstallReceiver filter 385fc23
+          Action: "androidx.profileinstaller.action.BENCHMARK_OPERATION"
+
+Service Resolver Table:
+  Non-Data Actions:
+      com.google.firebase.MESSAGING_EVENT:
+        8f13520 rw.mobi.app/io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingService filter 3a38ed9
+          Action: "com.google.firebase.MESSAGING_EVENT"
+        700209e rw.mobi.app/com.google.firebase.messaging.FirebaseMessagingService filter d32377f
+          Action: "com.google.firebase.MESSAGING_EVENT"
+          mPriority=-500, mOrder=0, mHasStaticPartialTypes=false, mHasDynamicPartialTypes=false
+
+Domain verification status:
+  rw.mobi.app:
+    ID: 141b014e-0daa-4e64-8c46-12f79aeca8d2
+    Signatures: [DA:9E:5E:AB:50:D0:85:05:BF:0B:78:7C:EA:B5:DB:5B:40:77:8E:BE:77:62:95:72:16:8A:72:37:D7:79:81:C0]
+    Domain verification state:
+      mobio.ikanisa.com: verified
+    User all:
+      Verification link handling allowed: true
+      Selection state:
+        Disabled:
+          mobio.ikanisa.com
+
+Permissions:
+  Permission [rw.mobi.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION] (f2aa2d8):
+    sourcePackage=rw.mobi.app
+    uid=10906 gids=[] type=0 prot=signature
+    perm=PermissionInfo{85eacf6 rw.mobi.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION}
+
+Registered ContentProviders:
+  rw.mobi.app/com.google.mlkit.common.internal.MlKitInitProvider:
+    Provider{546c8f7 rw.mobi.app/com.google.mlkit.common.internal.MlKitInitProvider}
+  rw.mobi.app/com.google.firebase.provider.FirebaseInitProvider:
+    Provider{6690364 rw.mobi.app/com.google.firebase.provider.FirebaseInitProvider}
+  rw.mobi.app/androidx.startup.InitializationProvider:
+    Provider{d1719cd rw.mobi.app/androidx.startup.InitializationProvider}
+  rw.mobi.app/dev.fluttercommunity.plus.share.ShareFileProvider:
+    Provider{e40a282 rw.mobi.app/dev.fluttercommunity.plus.share.ShareFileProvider}
+  rw.mobi.app/io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingInitProvider:
+    Provider{594fd93 rw.mobi.app/io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingInitProvider}
+
+ContentProvider Authorities:
+  [rw.mobi.app.androidx-startup]:
+    Provider{d1719cd rw.mobi.app/androidx.startup.InitializationProvider}
+      applicationInfo=ApplicationInfo{dd55631 rw.mobi.app}
+  [rw.mobi.app.flutter.share_provider]:
+    Provider{e40a282 rw.mobi.app/dev.fluttercommunity.plus.share.ShareFileProvider}
+      applicationInfo=ApplicationInfo{efed116 rw.mobi.app}
+  [rw.mobi.app.flutterfirebasemessaginginitprovider]:
+    Provider{594fd93 rw.mobi.app/io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingInitProvider}
+      applicationInfo=ApplicationInfo{337ea97 rw.mobi.app}
+  [rw.mobi.app.firebaseinitprovider]:
+    Provider{6690364 rw.mobi.app/com.google.firebase.provider.FirebaseInitProvider}
+      applicationInfo=ApplicationInfo{131484 rw.mobi.app}
+  [rw.mobi.app.mlkitinitprovider]:
+    Provider{546c8f7 rw.mobi.app/com.google.mlkit.common.internal.MlKitInitProvider}
+      applicationInfo=ApplicationInfo{a78246d rw.mobi.app}
+
+Key Set Manager:
+  [rw.mobi.app]
+      Signing KeySets: 683
+
+Packages:
+  Package [rw.mobi.app] (5b333d9):
+    userId=10906
+    pkg=Package{58ab585 rw.mobi.app}
+    codePath=/data/app/~~Cgka1ctkBpL2IAy0DtFW2g==/rw.mobi.app-ziCQwI0wlnayWcxRobLeOg==
+    resourcePath=/data/app/~~Cgka1ctkBpL2IAy0DtFW2g==/rw.mobi.app-ziCQwI0wlnayWcxRobLeOg==
+    legacyNativeLibraryDir=/data/app/~~Cgka1ctkBpL2IAy0DtFW2g==/rw.mobi.app-ziCQwI0wlnayWcxRobLeOg==/lib
+    extractNativeLibs=false
+    primaryCpuAbi=arm64-v8a
+    secondaryCpuAbi=null
+    cpuAbiOverride=null
+    versionCode=14 minSdk=24 targetSdk=35
+    minExtensionVersions=[]
+    versionName=1.0.0
+    usesNonSdkApi=false
+    splits=[base]
+    apkSigningVersion=2
+    flags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    privateFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION ALLOW_AUDIO_PLAYBACK_CAPTURE HAS_DOMAIN_URLS PARTIALLY_DIRECT_BOOT_AWARE PRIVATE_FLAG_ALLOW_NATIVE_HEAP_POINTER_TAGGING ]
+    forceQueryable=false
+    queriesIntents=[Intent { act=android.intent.action.PROCESS_TEXT dat=content://*/... typ=text/plain }, Intent { act=android.intent.action.VIEW dat=https:/... }, Intent { act=android.intent.action.VIEW dat=tel:xx }, Intent { act=android.intent.action.VIEW dat=whatsapp:/... }]
+    dataDir=/data/user/0/rw.mobi.app
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    usesOptionalLibraries:
+      androidx.window.extensions
+      androidx.window.sidecar
+      android.ext.adservices
+    timeStamp=2026-06-15 14:44:05
+    lastUpdateTime=2026-06-15 14:44:06
+    packageSource=0
+    signatures=PackageSignatures{93bffda version:2, signatures:[7d5569c4], past signatures:[]}
+    installPermissionsFixed=true
+    pkgFlags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    declared permissions:
+      rw.mobi.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION: prot=signature, INSTALLED
+    requested permissions:
+      android.permission.INTERNET
+      android.permission.ACCESS_NETWORK_STATE
+      android.permission.ACCESS_FINE_LOCATION
+      android.permission.ACCESS_COARSE_LOCATION
+      android.permission.ACCESS_BACKGROUND_LOCATION
+      android.permission.CAMERA
+      android.permission.NFC
+      android.permission.POST_NOTIFICATIONS
+      android.permission.FOREGROUND_SERVICE
+      android.permission.FOREGROUND_SERVICE_LOCATION
+      android.permission.WAKE_LOCK
+      android.permission.VIBRATE
+      com.google.android.c2dm.permission.RECEIVE
+      com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE
+      com.google.android.providers.gsf.permission.READ_GSERVICES
+      rw.mobi.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+    install permissions:
+      com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE: granted=true
+      com.google.android.c2dm.permission.RECEIVE: granted=true
+      rw.mobi.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION: granted=true
+      com.google.android.providers.gsf.permission.READ_GSERVICES: granted=true
+      android.permission.NFC: granted=true
+      android.permission.FOREGROUND_SERVICE: granted=true
+      android.permission.INTERNET: granted=true
+      android.permission.ACCESS_NETWORK_STATE: granted=true
+      android.permission.VIBRATE: granted=true
+      android.permission.WAKE_LOCK: granted=true
+    User 0: ceDataInode=540424 installed=true hidden=false suspended=false distractionFlags=0 stopped=true notLaunched=true enabled=0 instant=false virtual=false
+      installReason=0
+      firstInstallTime=2026-06-15 14:44:06
+      uninstallReason=0
+      overlay paths:
+        /product/overlay/NavigationBarModeGestural/NavigationBarModeGesturalOverlay.apk
+        /data/resource-cache/com.android.systemui-neutral-F1f7.frro
+        /data/resource-cache/com.android.systemui-accent-FKOA.frro
+      legacy overlay paths:
+        /product/overlay/NavigationBarModeGestural/NavigationBarModeGesturalOverlay.apk
+      gids=[3003]
+      runtime permissions:
+        android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+        android.permission.ACCESS_FINE_LOCATION: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+        android.permission.ACCESS_COARSE_LOCATION: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+        android.permission.CAMERA: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+        android.permission.ACCESS_BACKGROUND_LOCATION: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED|RESTRICTION_INSTALLER_EXEMPT]
+
+Queries:
+  system apps queryable: false
+  queries via forceQueryable:
+  queries via package name:
+  queries via component:
+    com.syz.mprint:
+      rw.mobi.app
+    com.whatsapp.w4b:
+      rw.mobi.app
+    com.facebook.katana:
+      rw.mobi.app
+    com.instagram.android:
+      rw.mobi.app
+    com.google.android.settings.intelligence:
+      rw.mobi.app
+    com.google.android.as:
+      rw.mobi.app
+    com.google.android.apps.messaging:
+      rw.mobi.app
+    com.google.android.apps.diagnosticstool:
+      rw.mobi.app
+    com.whatsapp:
+      rw.mobi.app
+    com.digicel.selfcare.mobile:
+      rw.mobi.app
+    com.fcbMobileBanking:
+      rw.mobi.app
+    com.peacock.flashlight:
+      rw.mobi.app
+    com.united.mobile.android:
+      rw.mobi.app
+    com.camerasideas.instashot:
+      rw.mobi.app
+    com.ml.mobile.mymerrill:
+      rw.mobi.app
+    com.xe.currency:
+      rw.mobi.app
+    translate.speech.text.translation.voicetranslator:
+      rw.mobi.app
+    com.airbnb.android:
+      rw.mobi.app
+    rw.mobi.app:
+      com.google.android.apps.translate
+      com.google.android.setupwizard
+      com.google.android.dialer
+      com.google.android.googlequicksearchbox
+      com.android.chrome
+      com.google.android.calendar
+      com.google.android.contacts
+      com.google.android.apps.docs
+      com.ml.mobile.mymerrill
+      com.touchtype.swiftkey
+      translate.speech.text.translation.voicetranslator
+      com.openai.chatgpt
+  queryable via interaction:
+    User 0:
+  queryable via uses-library:
+
+Dexopt state:
+  [rw.mobi.app]
+    path: /data/app/~~Cgka1ctkBpL2IAy0DtFW2g==/rw.mobi.app-ziCQwI0wlnayWcxRobLeOg==/base.apk
+      arm64: [status=verify] [reason=install]
+  BgDexopt state:
+    enabled:true
+    mDexOptThread:null
+    mDexOptCancellingThread:null
+    mFinishedPostBootUpdate:true
+    mLastExecutionStatus:1
+    mLastExecutionStartTimeMs:2187404543
+    mLastExecutionDurationIncludingSleepMs:43423
+    mLastExecutionStartUptimeMs:1788739406
+    mLastExecutionDurationMs:43423
+    now:2489120585
+    mLastCancelledPackages:com.linkedin.android
+    mFailedPackageNamesPrimary:
+    mFailedPackageNamesSecondary:
+
+Compiler stats:
+  [rw.mobi.app]
+     base.apk - 1599

@@ -106,10 +106,8 @@ class ProfileService {
   }
 
   Future<void> saveProfileSettings({
-    required String whatsapp,
     required String momoNumber,
     required String momoPayCode,
-    required String countryCode,
     required bool isDriver,
     required String vehicleTypeId,
     required String vehicleNumberPlate,
@@ -122,10 +120,8 @@ class ProfileService {
     final isRentalOwner = isDriver && vehicleTypeId == 'rentals';
 
     await updateProfileViaRpc(
-      whatsapp: whatsapp,
       momoNumber: momoNumber,
       momoPayCode: momoPayCode,
-      countryCode: countryCode,
       vehicleType: isDriver ? vehicleTypeId : null,
       vehicleNumberPlate: isDriver ? vehicleNumberPlate : null,
       busAgencyName: isBusDriver ? busAgencyName : null,

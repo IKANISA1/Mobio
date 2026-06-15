@@ -177,6 +177,67 @@ void main() {
       );
     });
 
+    test('admin workspaces use backend pagination for scalable queues', () {
+      final usersProvider = File(
+        'lib/features/admin/providers/admin_users_provider.dart',
+      ).readAsStringSync();
+      final usersState = File(
+        'lib/features/admin/models/admin_users_state.dart',
+      ).readAsStringSync();
+      final usersScreen = File(
+        'lib/features/admin/admin_users_screen.dart',
+      ).readAsStringSync();
+      final reports = File(
+        'lib/features/admin/admin_reports_screen.dart',
+      ).readAsStringSync();
+      final audit = File(
+        'lib/features/admin/admin_audit_log_screen.dart',
+      ).readAsStringSync();
+      final health = File(
+        'lib/features/admin/admin_operational_health_screen.dart',
+      ).readAsStringSync();
+      final trips = File(
+        'lib/features/admin/admin_trips_screen.dart',
+      ).readAsStringSync();
+      final tripService = File(
+        'lib/core/services/admin/admin_trip_service.dart',
+      ).readAsStringSync();
+      final tripMigration = File(
+        'supabase/migrations/20260615123000_admin_trip_search_pagination.sql',
+      ).readAsStringSync();
+
+      for (final source in [reports, audit, health, trips]) {
+        expect(source, contains('limit: _rowsPerPage + 1'));
+        expect(source, contains('offset: _page * _rowsPerPage'));
+        expect(source, isNot(contains('limit: 100')));
+        expect(source, isNot(contains('limit: 120')));
+        expect(source, isNot(contains('limit: 200')));
+      }
+
+      expect(usersProvider, contains('offset: safePage * safeRowsPerPage'));
+      expect(usersProvider, contains('limit: safeRowsPerPage + 1'));
+      expect(usersState, contains('hasNextPage'));
+      expect(usersState, contains('paginationTotal'));
+      expect(usersScreen, isNot(contains('_pageUsers')));
+      expect(reports, isNot(contains('_pagedReports')));
+      expect(audit, contains("action: _actionFilter == 'all' ? null"));
+      expect(audit, contains("targetType: _targetFilter == 'all' ? null"));
+      expect(health, contains("status: _statusFilter == 'all' ? null"));
+      expect(health, contains("severity: _severityFilter == 'all' ? null"));
+      expect(health, contains("service: _serviceFilter == 'all' ? null"));
+      expect(trips, contains('search: _searchQuery'));
+      expect(trips, isNot(contains('Reasonable cap for live moderating')));
+      expect(tripService, contains("'p_search': search"));
+      expect(tripMigration, contains('p_search text default null'));
+      expect(
+        tripMigration,
+        contains(
+          'drop function if exists public.rpc_admin_list_trips(text, text, integer, integer)',
+        ),
+      );
+      expect(tripMigration, contains('p.member_id ilike'));
+    });
+
     test('keeps active admin workspace aligned with design.md', () {
       final design = File('design.md').readAsStringSync();
       final adminUi = File(

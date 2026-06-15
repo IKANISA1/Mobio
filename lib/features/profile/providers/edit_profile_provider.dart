@@ -144,7 +144,6 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
   }
 
   Future<bool> saveProfile({
-    required String whatsApp,
     required String momoNumber,
     required String momoPayCode,
     required String vehicleNumberPlate,
@@ -161,7 +160,7 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         .trim();
     final normalizedMomoNumber =
         _localRwandaMomoNumber(momoNumber) ??
-        _localRwandaMomoNumber(whatsApp) ??
+        _localRwandaMomoNumber(s.initialWhatsApp) ??
         '';
     final normalizedMomoPayCode = momoPayCode
         .replaceAll(RegExp(r'[^0-9]'), '')
@@ -210,10 +209,8 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
 
     try {
       await profileService.saveProfileSettings(
-        whatsapp: whatsApp.trim(),
         momoNumber: normalizedMomoNumber,
         momoPayCode: normalizedMomoPayCode,
-        countryCode: s.countryCode,
         isDriver: s.isDriver,
         vehicleTypeId: s.vehicleTypeId,
         vehicleNumberPlate: normalizedPlate,

@@ -1,0 +1,1 @@
+  mCurrentFocus=Window{28a6719 u0 com.google.android.dialer/com.android.dialer.main.impl.MainActivity}

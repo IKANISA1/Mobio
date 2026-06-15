@@ -102,6 +102,18 @@
     }
   </style>
   <script id="splash-screen-script">
+    (function normalizeBioPayReviewUrl() {
+      var path = window.location.pathname || "";
+      var hash = window.location.hash || "";
+      if (path.indexOf("/biopay/") === 0 && hash.indexOf("#/admin") === 0) {
+        window.history.replaceState(
+          null,
+          "",
+          path + window.location.search
+        );
+      }
+    })();
+
     function removeElementById(id) {
       var element = document.getElementById(id);
       if (element && element.parentNode) {

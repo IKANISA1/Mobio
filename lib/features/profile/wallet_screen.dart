@@ -943,7 +943,7 @@ class _LedgerRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  entry.reason.replaceAll('_', ' '),
+                  _walletLedgerLabel(entry.reason),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTypography.bodyMd.copyWith(
@@ -979,4 +979,10 @@ class _LedgerRow extends StatelessWidget {
       ),
     );
   }
+}
+
+String _walletLedgerLabel(String raw) {
+  final label = raw.trim().replaceAll('_', ' ');
+  if (label.isEmpty) return 'Wallet activity';
+  return label[0].toUpperCase() + label.substring(1);
 }

@@ -1,0 +1,15 @@
+  bash arg: -p
+  bash arg: rw.mobi.app
+  bash arg: -c
+  bash arg: android.intent.category.LAUNCHER
+  bash arg: 1
+args: [-p, rw.mobi.app, -c, android.intent.category.LAUNCHER, 1]
+ arg: "-p"
+ arg: "rw.mobi.app"
+ arg: "-c"
+ arg: "android.intent.category.LAUNCHER"
+ arg: "1"
+data="rw.mobi.app"
+data="android.intent.category.LAUNCHER"
+Events injected: 1
+## Network stats: elapsed time=21ms (0ms mobile, 0ms wifi, 21ms not connected)

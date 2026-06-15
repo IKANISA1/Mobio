@@ -43,6 +43,7 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
   String _sortKey = 'newest';
   int _page = 0;
   int _rowsPerPage = 25;
+  bool _hasNextPage = false;
 
   @override
   void initState() {
@@ -207,12 +208,19 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
     });
 
     try {
-      final logs = await _adminService.listAuditLogs(limit: 100);
+      final logs = await _adminService.listAuditLogs(
+        action: _actionFilter == 'all' ? null : _actionFilter,
+        targetType: _targetFilter == 'all' ? null : _targetFilter,
+        search: _searchQuery,
+        limit: _rowsPerPage + 1,
+        offset: _page * _rowsPerPage,
+      );
       if (mounted) {
+        final hasNextPage = logs.length > _rowsPerPage;
         setState(() {
-          _logs = logs;
+          _logs = logs.take(_rowsPerPage).toList();
+          _hasNextPage = hasNextPage;
           _isLoading = false;
-          _page = 0;
         });
       }
     } on Object catch (error) {
@@ -280,10 +288,13 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
                             child: AdminSearchField(
                               controller: _searchController,
                               hintText: 'Search action, actor, target',
-                              onChanged: (value) => setState(() {
-                                _searchQuery = value;
-                                _page = 0;
-                              }),
+                              onChanged: (value) {
+                                setState(() {
+                                  _searchQuery = value;
+                                  _page = 0;
+                                });
+                                _load();
+                              },
                             ),
                           );
                           final controls = Wrap(
@@ -350,19 +361,25 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
                             label: 'All actions',
                             icon: LucideIcons.list,
                             isSelected: _actionFilter == 'all',
-                            onTap: () => setState(() {
-                              _actionFilter = 'all';
-                              _page = 0;
-                            }),
+                            onTap: () {
+                              setState(() {
+                                _actionFilter = 'all';
+                                _page = 0;
+                              });
+                              _load();
+                            },
                           ),
                           for (final action in uniqueActions.take(6))
                             AdminFilterChip(
                               label: _humanize(action),
                               isSelected: _actionFilter == action,
-                              onTap: () => setState(() {
-                                _actionFilter = action;
-                                _page = 0;
-                              }),
+                              onTap: () {
+                                setState(() {
+                                  _actionFilter = action;
+                                  _page = 0;
+                                });
+                                _load();
+                              },
                             ),
                         ],
                       ),
@@ -375,19 +392,25 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
                             label: 'All targets',
                             icon: LucideIcons.box,
                             isSelected: _targetFilter == 'all',
-                            onTap: () => setState(() {
-                              _targetFilter = 'all';
-                              _page = 0;
-                            }),
+                            onTap: () {
+                              setState(() {
+                                _targetFilter = 'all';
+                                _page = 0;
+                              });
+                              _load();
+                            },
                           ),
                           for (final target in uniqueTargets.take(6))
                             AdminFilterChip(
                               label: _humanize(target),
                               isSelected: _targetFilter == target,
-                              onTap: () => setState(() {
-                                _targetFilter = target;
-                                _page = 0;
-                              }),
+                              onTap: () {
+                                setState(() {
+                                  _targetFilter = target;
+                                  _page = 0;
+                                });
+                                _load();
+                              },
                             ),
                         ],
                       ),
@@ -444,14 +467,20 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
                             ],
                           ),
                         AdminPaginationBar(
-                          totalItems: visibleLogs.length,
+                          totalItems: _paginationTotal,
                           page: _page,
                           rowsPerPage: _rowsPerPage,
-                          onPageChanged: (page) => setState(() => _page = page),
-                          onRowsPerPageChanged: (rows) => setState(() {
-                            _rowsPerPage = rows;
-                            _page = 0;
-                          }),
+                          onPageChanged: (page) {
+                            setState(() => _page = page);
+                            _load();
+                          },
+                          onRowsPerPageChanged: (rows) {
+                            setState(() {
+                              _rowsPerPage = rows;
+                              _page = 0;
+                            });
+                            _load();
+                          },
                         ),
                       ],
                     ),
@@ -494,12 +523,11 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
   }
 
   List<AdminAuditLogItem> _pagedLogs(List<AdminAuditLogItem> logs) {
-    if (logs.isEmpty) return const [];
-    final safeRowsPerPage = _rowsPerPage <= 0 ? 25 : _rowsPerPage;
-    final start = (_page * safeRowsPerPage).clamp(0, logs.length).toInt();
-    final end = (start + safeRowsPerPage).clamp(0, logs.length).toInt();
-    return logs.sublist(start, end);
+    return logs;
   }
+
+  int get _paginationTotal =>
+      _page * _rowsPerPage + _logs.length + (_hasNextPage ? 1 : 0);
 
   int _dateValue(String? value) =>
       DateTime.tryParse(value ?? '')?.millisecondsSinceEpoch ?? 0;

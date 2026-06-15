@@ -1,0 +1,6 @@
+clickable=True bounds=[55,186][171,301] text='' desc='Back' class=android.widget.Button
+clickable=False bounds=[171,216][893,271] text='' desc='Face scan' class=android.view.View
+clickable=False bounds=[55,505][1025,557] text='' desc='AMOUNT' class=android.view.View
+clickable=False bounds=[132,675][319,769] text='' desc='RWF ' class=android.view.View
+clickable=True bounds=[55,620][1025,824] text='1,500' desc='' class=android.widget.EditText
+clickable=True bounds=[55,1987][1025,2152] text='' desc='Start Face Scan' class=android.widget.Button

@@ -1,13 +1,19 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
+import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/utils/app_logger.dart';
+import 'package:mobi_app/core/utils/money_formatting.dart';
+import 'package:mobi_app/features/biopay/biopay_device_nfc_service.dart';
 import 'package:mobi_app/features/biopay/biopay_flow_shared.dart';
 import 'package:mobi_app/features/biopay/biopay_nfc_foreground_listener.dart';
 import 'package:mobi_app/features/biopay/models/biopay_ussd_payment.dart';
-import 'package:ndef/ndef.dart' as ndef;
 
 class BioPayNfcScreen extends ConsumerStatefulWidget {
   const BioPayNfcScreen({super.key, required this.onBack});
@@ -19,15 +25,18 @@ class BioPayNfcScreen extends ConsumerStatefulWidget {
 }
 
 class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
+  static const _deviceNfcService = BioPayDeviceNfcService();
+
   final TextEditingController _receiverNumberController =
       TextEditingController();
   final TextEditingController _receiverCodeController = TextEditingController();
-  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController(
+    text: formatWholeAmount(1500),
+  );
   BioPayUssdPaymentRequest? _request;
   bool _receiverUsesCode = false;
   bool _busy = false;
   String? _error;
-  String? _tagLabel;
 
   TextEditingController get _activeReceiverController =>
       _receiverUsesCode ? _receiverCodeController : _receiverNumberController;
@@ -40,6 +49,11 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
 
   @override
   void dispose() {
+    if (_request != null) {
+      ref
+          .read(bioPayNfcForegroundSuspendedProvider.notifier)
+          .setSuspended(true);
+    }
     _receiverNumberController.dispose();
     _receiverCodeController.dispose();
     _amountController.dispose();
@@ -79,9 +93,14 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
   }
 
   void _resetRequest() {
+    if (_request != null) {
+      unawaited(_deviceNfcService.stop());
+      ref
+          .read(bioPayNfcForegroundSuspendedProvider.notifier)
+          .setSuspended(false);
+    }
     setState(() {
       _request = null;
-      _tagLabel = null;
       _error = null;
     });
   }
@@ -99,7 +118,7 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
     _resetRequest();
   }
 
-  Future<void> _prepareTapTag() async {
+  Future<void> _activateDeviceNfc() async {
     ref.read(bioPayNfcForegroundSuspendedProvider.notifier).setSuspended(true);
     setState(() {
       _busy = true;
@@ -113,9 +132,8 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
       if (receiver.isEmpty) {
         throw const FormatException('receiver_required');
       }
-      await _ensureNfcAvailable();
+      final amountMinor = amountMinorFromController(_amountController);
       final service = ref.read(biopayUssdServiceProvider);
-      final amountMinor = optionalAmountMinorFromController(_amountController);
       final request = SupabaseConfig.isConfigured
           ? await service.createPaymentRequest(
               channel: BioPayRequestChannel.nfc,
@@ -129,79 +147,74 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
               payeeLabel: 'MoMo receiver',
               payeePhone: receiver,
             );
-      final tag = await FlutterNfcKit.poll(
-        timeout: const Duration(seconds: 20),
-        iosAlertMessage: 'Hold near your NFC tag to receive payment',
-      );
-      if (tag.ndefWritable == false) {
-        throw StateError('This NFC tag is not writable.');
+      final status = kIsWeb && SupabaseConfig.isLocalUiPreview
+          ? BioPayDeviceNfcStatus(
+              supported: true,
+              enabled: true,
+              token: request.token,
+              expiresAt: request.expiresAt,
+            )
+          : await _deviceNfcService.startPaymentRequest(request);
+      if (!status.supported) {
+        throw StateError(status.reason ?? 'Device NFC is not supported.');
       }
-      await FlutterNfcKit.writeNDEFRecords([
-        ndef.TextRecord(language: 'en', text: buildBioPayQrPayload(request)),
-      ]);
-      await FlutterNfcKit.finish(iosAlertMessage: 'BioPay token written');
+      if (!status.canAdvertise) {
+        throw StateError(status.reason ?? 'Device NFC is not active.');
+      }
       if (!mounted) return;
       setState(() {
         _request = request;
-        _tagLabel = tag.id.isEmpty ? tag.standard : 'Tag ${tag.id}';
       });
-    } on Object catch (error) {
-      await _finishNfcWithError();
-      if (!mounted) return;
-      setState(
-        () => _error = _nfcErrorLabel(
-          error,
-          fallback: 'Enter a valid RWF amount.',
-        ),
-      );
-    } finally {
+    } on Object catch (error, stackTrace) {
+      unawaited(_deviceNfcService.stop());
       ref
           .read(bioPayNfcForegroundSuspendedProvider.notifier)
           .setSuspended(false);
+      AppLogger.warning(
+        'Device NFC activation failed: $error',
+        context: 'BioPayDeviceNfc',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      if (!mounted) return;
+      setState(
+        () => _error = _deviceNfcErrorLabel(
+          error,
+          fallback: 'Device NFC activation failed. Check NFC and try again.',
+        ),
+      );
+    } finally {
       if (mounted) setState(() => _busy = false);
     }
   }
 
-  Future<void> _ensureNfcAvailable() async {
-    final availability = await FlutterNfcKit.nfcAvailability;
-    if (availability == NFCAvailability.available) return;
-    if (availability == NFCAvailability.disabled) {
-      throw StateError('NFC is disabled on this device.');
-    }
-    throw StateError('NFC is not supported on this device.');
-  }
-
-  Future<void> _finishNfcWithError() async {
-    try {
-      await FlutterNfcKit.finish(iosErrorMessage: 'BioPay NFC failed');
-    } on Object {
-      // Session may not have started.
-    }
-  }
-
-  String _nfcErrorLabel(
+  String _deviceNfcErrorLabel(
     Object error, {
     String fallback = 'NFC request unavailable.',
   }) {
-    final message = error.toString();
-    if (message.contains('amount')) return fallback;
+    final message = error.toString().toLowerCase();
+    if (message.contains('amount')) return 'Enter a valid RWF amount.';
     if (message.contains('receiver_required')) {
       return 'Enter a MoMo number or MoMo Pay code.';
     }
     if (message.contains('disabled')) return 'NFC is disabled.';
-    if (message.contains('not supported')) return 'NFC is not supported.';
-    if (message.contains('not writable')) return 'NFC tag is not writable.';
+    if (message.contains('hce') || message.contains('not supported')) {
+      return 'Device NFC receive is Android-only on phones with HCE support.';
+    }
+    if (message.contains('supabase') || message.contains('rpc')) {
+      return 'Unable to create the NFC payment request. Check connection and try again.';
+    }
     return fallback;
   }
 
   @override
   Widget build(BuildContext context) {
     return BioPayFlowScreen(
-      title: 'NFC',
-      primaryLabel: _request == null ? 'Activate NFC' : 'NFC Active',
+      title: 'Device NFC',
+      primaryLabel: _request == null ? 'Activate Device NFC' : '',
       isPrimaryLoading: _busy,
       onBack: widget.onBack,
-      onPrimary: _request == null ? _prepareTapTag : null,
+      onPrimary: _request == null ? _activateDeviceNfc : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -213,7 +226,6 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
               onModeChanged: (usesCode) => setState(() {
                 _receiverUsesCode = usesCode;
                 _request = null;
-                _tagLabel = null;
                 _error = null;
               }),
               onChanged: _onReceiverChanged,
@@ -226,17 +238,144 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
             ),
             const SizedBox(height: AppSpacing.xl),
           ],
-          if (_request != null)
-            BioPayResolvedPaymentPreview(request: _request!),
-          if (_tagLabel != null) ...[
-            const SizedBox(height: AppSpacing.md),
-            BioPayDetailRow(label: 'NFC', value: _tagLabel!),
-          ],
+          if (_request != null) _DeviceNfcListeningView(request: _request!),
           if (_error != null) ...[
             const SizedBox(height: AppSpacing.md),
             BioPayInlineError(message: _error!),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _DeviceNfcListeningView extends StatefulWidget {
+  const _DeviceNfcListeningView({required this.request});
+
+  final BioPayUssdPaymentRequest request;
+
+  @override
+  State<_DeviceNfcListeningView> createState() =>
+      _DeviceNfcListeningViewState();
+}
+
+class _DeviceNfcListeningViewState extends State<_DeviceNfcListeningView>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const SizedBox(height: AppSpacing.lg),
+        SizedBox.square(
+          dimension: 250,
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  for (var index = 0; index < 3; index++)
+                    _NfcPulseRing(
+                      progress: (_controller.value + index / 3) % 1,
+                    ),
+                  Container(
+                    width: 112,
+                    height: 112,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [cs.primary, cs.secondary],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: cs.primary.withValues(alpha: 0.36),
+                          blurRadius: 34,
+                          spreadRadius: 3,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      LucideIcons.nfc,
+                      color: Colors.white,
+                      size: 58,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        Text(
+          'Listening',
+          textAlign: TextAlign.center,
+          style: AppTypography.headlineLg.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          widget.request.amountLabel,
+          textAlign: TextAlign.center,
+          style: AppTypography.titleMd.copyWith(
+            color: Colors.white.withValues(alpha: 0.78),
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _NfcPulseRing extends StatelessWidget {
+  const _NfcPulseRing({required this.progress});
+
+  final double progress;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final scale = 0.48 + progress * 0.62;
+    final opacity = (1 - progress).clamp(0.0, 1.0);
+
+    return Transform.scale(
+      scale: scale,
+      child: Opacity(
+        opacity: opacity * 0.52,
+        child: Container(
+          width: 228,
+          height: 228,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: cs.primary.withValues(alpha: 0.9),
+              width: 2,
+            ),
+          ),
+        ),
       ),
     );
   }

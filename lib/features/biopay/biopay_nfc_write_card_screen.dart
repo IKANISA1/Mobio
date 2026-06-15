@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/biopay/biopay_flow_shared.dart';
 import 'package:mobi_app/features/biopay/biopay_nfc_card_payload.dart';
 import 'package:mobi_app/features/biopay/biopay_nfc_foreground_listener.dart';
+import 'package:mobi_app/features/biopay/biopay_nfc_service.dart';
 import 'package:mobi_app/features/biopay/biopay_style.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
-import 'package:ndef/ndef.dart' as ndef;
 
 class BioPayNfcWriteCardScreen extends ConsumerStatefulWidget {
   const BioPayNfcWriteCardScreen({super.key, required this.onBack});
@@ -25,11 +25,15 @@ class BioPayNfcWriteCardScreen extends ConsumerStatefulWidget {
 
 class _BioPayNfcWriteCardScreenState
     extends ConsumerState<BioPayNfcWriteCardScreen> {
+  static const _nfcService = BioPayNfcService();
+
   final TextEditingController _receiverController = TextEditingController();
   BioPayNfcReceiverType _receiverType = BioPayNfcReceiverType.momoNumber;
   _NfcWriteStep _step = _NfcWriteStep.idle;
   BioPayNfcCardPayload? _writtenPayload;
   String? _tagLabel;
+  bool _cardLocked = false;
+  bool _canLockCard = false;
   String? _error;
 
   bool get _busy => _step != _NfcWriteStep.idle;
@@ -65,6 +69,8 @@ class _BioPayNfcWriteCardScreenState
       _receiverController.clear();
       _writtenPayload = null;
       _tagLabel = null;
+      _cardLocked = false;
+      _canLockCard = false;
       _error = null;
     });
   }
@@ -95,89 +101,127 @@ class _BioPayNfcWriteCardScreenState
     );
     if (confirmed != true || !mounted) return;
 
-    await _writeAndLock(payload);
+    await _writeCard(payload);
   }
 
-  Future<void> _writeAndLock(BioPayNfcCardPayload payload) async {
+  Future<void> _writeCard(BioPayNfcCardPayload payload) async {
     ref.read(bioPayNfcForegroundSuspendedProvider.notifier).setSuspended(true);
+    await _nfcService.cancelActiveSession();
+    await Future<void>.delayed(const Duration(milliseconds: 250));
     setState(() {
       _step = _NfcWriteStep.waiting;
       _writtenPayload = null;
       _tagLabel = null;
+      _cardLocked = false;
+      _canLockCard = false;
       _error = null;
     });
 
     try {
-      await _ensureNfcAvailable();
-      final tag = await FlutterNfcKit.poll(
-        timeout: const Duration(seconds: 25),
-        iosAlertMessage: 'Hold near the blank NFC card',
+      final result = await _nfcService.writeCard(
+        payload,
+        onStep: _setOperationStep,
       );
-      if (!mounted) return;
-      setState(() => _step = _NfcWriteStep.writing);
-
-      if (tag.ndefWritable == false) {
-        throw StateError('This NFC card is not writable.');
-      }
-
-      final records = buildBioPayNfcCardRecords(payload);
-      final encodedSize = ndef.encodeNdefMessage(records).length;
-      final capacity = tag.ndefCapacity;
-      if (capacity != null && capacity > 0 && encodedSize > capacity) {
-        throw StateError('This NFC card is too small.');
-      }
-
-      await FlutterNfcKit.writeNDEFRecords(records);
-      if (!mounted) return;
-      setState(() => _step = _NfcWriteStep.verifying);
-
-      final writtenPayload = await readBioPayNfcCardPayloadFromActiveTag();
-      if (writtenPayload == null ||
-          writtenPayload.ussdCode != payload.ussdCode) {
-        throw StateError('NFC card verification failed.');
-      }
-
-      if (!mounted) return;
-      setState(() => _step = _NfcWriteStep.locking);
-      await FlutterNfcKit.makeNdefReadOnly();
-      await FlutterNfcKit.finish(iosAlertMessage: 'BioPay card written');
       if (!mounted) return;
       setState(() {
         _step = _NfcWriteStep.idle;
         _writtenPayload = payload;
-        _tagLabel = tag.id.isEmpty ? tag.standard : 'Tag ${tag.id}';
+        _tagLabel = result.diagnostics.tagLabel;
+        _canLockCard = result.diagnostics.ndefCanMakeReadOnly == true;
       });
     } on Object catch (error) {
-      await _finishNfcWithError();
+      await _nfcService.finishWithError('BioPay NFC write failed');
+      _logNfcError(error);
       if (!mounted) return;
       setState(() {
         _step = _NfcWriteStep.idle;
         _error = _nfcWriteErrorLabel(error);
       });
     } finally {
-      if (!mounted) {
-        ref
-            .read(bioPayNfcForegroundSuspendedProvider.notifier)
-            .setSuspended(false);
-      }
+      _resumeForegroundListener();
     }
   }
 
-  Future<void> _ensureNfcAvailable() async {
-    final availability = await FlutterNfcKit.nfcAvailability;
-    if (availability == NFCAvailability.available) return;
-    if (availability == NFCAvailability.disabled) {
-      throw StateError('NFC is disabled on this device.');
-    }
-    throw StateError('NFC is not supported on this device.');
-  }
+  Future<void> _confirmAndLockCard() async {
+    final payload = _writtenPayload;
+    if (payload == null || _busy || _cardLocked) return;
 
-  Future<void> _finishNfcWithError() async {
+    final confirmed = await showModalBottomSheet<bool>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const _NfcLockConfirmationSheet(),
+    );
+    if (confirmed != true || !mounted) return;
+
+    ref.read(bioPayNfcForegroundSuspendedProvider.notifier).setSuspended(true);
+    await _nfcService.cancelActiveSession();
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+    setState(() {
+      _step = _NfcWriteStep.waiting;
+      _error = null;
+    });
+
     try {
-      await FlutterNfcKit.finish(iosErrorMessage: 'BioPay NFC write failed');
-    } on Object {
-      // Session may not have started.
+      final result = await _nfcService.lockVerifiedCard(
+        payload,
+        onStep: _setOperationStep,
+      );
+      if (!mounted) return;
+      setState(() {
+        _step = _NfcWriteStep.idle;
+        _cardLocked = true;
+        _canLockCard = false;
+        _tagLabel = result.diagnostics.tagLabel;
+      });
+    } on Object catch (error) {
+      await _nfcService.finishWithError('BioPay NFC lock failed');
+      _logNfcError(error);
+      if (!mounted) return;
+      setState(() {
+        _step = _NfcWriteStep.idle;
+        _error = _nfcWriteErrorLabel(error);
+      });
+    } finally {
+      _resumeForegroundListener();
     }
+  }
+
+  void _setOperationStep(BioPayNfcOperationStep step) {
+    if (!mounted) return;
+    setState(() {
+      _step = switch (step) {
+        BioPayNfcOperationStep.waiting => _NfcWriteStep.waiting,
+        BioPayNfcOperationStep.writing => _NfcWriteStep.writing,
+        BioPayNfcOperationStep.verifying => _NfcWriteStep.verifying,
+        BioPayNfcOperationStep.locking => _NfcWriteStep.locking,
+      };
+    });
+  }
+
+  void _resumeForegroundListener() {
+    try {
+      ref
+          .read(bioPayNfcForegroundSuspendedProvider.notifier)
+          .setSuspended(false);
+    } on Object {
+      // The surrounding ProviderScope may already be disposed in tests.
+    }
+  }
+
+  void _logNfcError(Object error) {
+    if (error is BioPayNfcException) {
+      AppLogger.warning(
+        'NFC write failed: ${error.message} ${error.diagnostics?.logSummary ?? ''}',
+        context: 'BioPayNfc',
+        error: error,
+      );
+      return;
+    }
+    AppLogger.warning(
+      'NFC write failed: $error',
+      context: 'BioPayNfc',
+      error: error,
+    );
   }
 
   String _nfcWriteErrorLabel(Object error) {
@@ -186,8 +230,14 @@ class _BioPayNfcWriteCardScreenState
     if (message.contains('not supported')) return 'NFC is not supported.';
     if (message.contains('not writable')) return 'NFC card is not writable.';
     if (message.contains('too small')) return 'NFC card is too small.';
+    if (message.contains('cannot be locked')) {
+      return 'This NFC card cannot be locked by this device.';
+    }
+    if (message.contains('not the verified')) {
+      return 'Hold the same verified NFC card to lock it.';
+    }
     if (message.contains('verification')) {
-      return 'NFC card verification failed.';
+      return 'NFC card verification failed. Keep the card still and try again.';
     }
     return 'NFC card write failed.';
   }
@@ -198,6 +248,8 @@ class _BioPayNfcWriteCardScreenState
       _receiverController.clear();
       _writtenPayload = null;
       _tagLabel = null;
+      _cardLocked = false;
+      _canLockCard = false;
       _error = null;
     });
   }
@@ -208,7 +260,7 @@ class _BioPayNfcWriteCardScreenState
 
     return BioPayFlowScreen(
       title: 'Write NFC',
-      primaryLabel: _writtenPayload == null ? 'Write & Lock NFC' : 'Done',
+      primaryLabel: _writtenPayload == null ? 'Write NFC' : 'Done',
       isPrimaryLoading: _busy,
       onBack: widget.onBack,
       onPrimary: _writtenPayload == null ? _confirmAndWrite : widget.onBack,
@@ -231,6 +283,9 @@ class _BioPayNfcWriteCardScreenState
             _NfcWriteSuccessPanel(
               payload: _writtenPayload!,
               tagLabel: _tagLabel,
+              locked: _cardLocked,
+              canLock: _canLockCard,
+              onLockCard: _confirmAndLockCard,
               onWriteAnother: _writeAnother,
             ),
           ],
@@ -652,7 +707,7 @@ class _NfcWriteConfirmationSheet extends StatelessWidget {
                 Row(
                   children: [
                     const BioPayIconBox(
-                      icon: LucideIcons.lock,
+                      icon: LucideIcons.pencil,
                       color: Colors.white,
                       background: bioPayNfcPurple,
                       dimension: 44,
@@ -661,7 +716,7 @@ class _NfcWriteConfirmationSheet extends StatelessWidget {
                     const SizedBox(width: AppSpacing.md),
                     Expanded(
                       child: Text(
-                        'Write & Lock',
+                        'Write NFC',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.titleLg.copyWith(
@@ -674,6 +729,11 @@ class _NfcWriteConfirmationSheet extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 _LightDetailRow(label: 'USSD', value: payload.ussdCode),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  'The card will be verified after writing. You can lock it permanently after a successful write.',
+                  style: AppTypography.bodySm.copyWith(color: bioPayMuted),
+                ),
                 const SizedBox(height: AppSpacing.lg),
                 Row(
                   children: [
@@ -689,6 +749,88 @@ class _NfcWriteConfirmationSheet extends StatelessWidget {
                       child: MobiButton(
                         onPressed: () => Navigator.of(context).pop(true),
                         child: const Text('Write'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NfcLockConfirmationSheet extends StatelessWidget {
+  const _NfcLockConfirmationSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: bioPayCanvas,
+            borderRadius: BorderRadius.circular(26),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.28),
+                blurRadius: 28,
+                offset: const Offset(0, 14),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    const BioPayIconBox(
+                      icon: LucideIcons.lock,
+                      color: Colors.white,
+                      background: bioPayNfcPurple,
+                      dimension: 44,
+                      iconSize: 21,
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Text(
+                        'Lock card',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.titleLg.copyWith(
+                          color: bioPayInk,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  'Locking makes the NFC card read-only and usually cannot be undone. Hold the same verified card to continue.',
+                  style: AppTypography.bodyMd.copyWith(color: bioPayMuted),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                Row(
+                  children: [
+                    Expanded(
+                      child: MobiButton(
+                        variant: MobiButtonVariant.ghost,
+                        onPressed: () => Navigator.of(context).pop(false),
+                        child: const Text('Cancel'),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: MobiButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: const Text('Lock'),
                       ),
                     ),
                   ],
@@ -745,11 +887,17 @@ class _NfcWriteSuccessPanel extends StatelessWidget {
   const _NfcWriteSuccessPanel({
     required this.payload,
     required this.tagLabel,
+    required this.locked,
+    required this.canLock,
+    required this.onLockCard,
     required this.onWriteAnother,
   });
 
   final BioPayNfcCardPayload payload;
   final String? tagLabel;
+  final bool locked;
+  final bool canLock;
+  final VoidCallback onLockCard;
   final VoidCallback onWriteAnother;
 
   @override
@@ -781,7 +929,7 @@ class _NfcWriteSuccessPanel extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              'Card written and locked',
+              locked ? 'Card written and locked' : 'Card written and verified',
               textAlign: TextAlign.center,
               style: AppTypography.headlineSm.copyWith(
                 color: Colors.white,
@@ -792,9 +940,21 @@ class _NfcWriteSuccessPanel extends StatelessWidget {
             BioPayDetailRow(label: 'Type', value: payload.receiverTypeLabel),
             BioPayDetailRow(label: 'Receiver', value: payload.receiver),
             BioPayDetailRow(label: 'USSD', value: payload.ussdCode),
+            BioPayDetailRow(
+              label: 'Status',
+              value: locked ? 'Locked' : 'Writable',
+            ),
             if (tagLabel != null)
               BioPayDetailRow(label: 'NFC', value: tagLabel!),
             const SizedBox(height: AppSpacing.lg),
+            if (canLock && !locked) ...[
+              MobiButton(
+                onPressed: onLockCard,
+                width: double.infinity,
+                child: const Text('Lock Card'),
+              ),
+              const SizedBox(height: AppSpacing.md),
+            ],
             MobiButton(
               onPressed: onWriteAnother,
               width: double.infinity,

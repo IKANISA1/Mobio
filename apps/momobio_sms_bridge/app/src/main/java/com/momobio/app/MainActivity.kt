@@ -96,9 +96,6 @@ class MainActivity : Activity() {
         upload.text = "Queued: ${queue.count()}"
         Thread {
             val result = try {
-                if (hasReadSms()) {
-                    queue.enqueue(readAllSms(contentResolver))
-                }
                 val messages = queue.all()
                 var uploadedCount = 0
                 runOnUiThread {
@@ -153,21 +150,16 @@ class MainActivity : Activity() {
     }
 
     private fun hasSmsAccess(): Boolean =
-        checkSelfPermission(Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED &&
-            checkSelfPermission(Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
-
-    private fun hasReadSms(): Boolean =
-        checkSelfPermission(Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
+        checkSelfPermission(Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED
 
     private fun requiredPermissions(): Array<String> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arrayOf(
                 Manifest.permission.RECEIVE_SMS,
-                Manifest.permission.READ_SMS,
                 Manifest.permission.POST_NOTIFICATIONS,
             )
         } else {
-            arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_SMS)
+            arrayOf(Manifest.permission.RECEIVE_SMS)
         }
 
     private fun requestBatteryOptimizationExemptionIfReady() {

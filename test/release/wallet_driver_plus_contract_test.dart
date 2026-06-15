@@ -152,6 +152,14 @@ void main() {
     expect(sql, contains('rpc_confirm_driver_subscription_payment'));
     expect(sql, contains('rpc_ingest_driver_subscription_momo_sms'));
     expect(sql, contains('driver_subscription_momo_sms_receipts'));
+    expect(sql, contains('sms_hash text not null unique'));
+    expect(sql, contains('uq_driver_subscription_momo_sms_provider_ref'));
+    expect(payerPhoneSql, contains('where sms_hash = v_sms_hash'));
+    expect(
+      payerPhoneSql,
+      contains('and provider_transaction_ref = v_provider_ref'),
+    );
+    expect(payerPhoneSql, contains("'duplicate', true"));
     expect(
       productionReadinessSql,
       contains('rpc_admin_expire_driver_subscription_payment_requests'),
@@ -171,6 +179,14 @@ void main() {
     expect(
       momoOpenAiTransactionsSql,
       contains('_sync_driver_subscription_momo_transaction_from_receipt'),
+    );
+    expect(
+      momoOpenAiTransactionsSql,
+      contains('uq_driver_subscription_momo_transactions_receipt'),
+    );
+    expect(
+      momoOpenAiTransactionsSql,
+      contains('uq_driver_subscription_momo_transactions_provider_ref'),
     );
     expect(momoSmsParser, contains('parseMomoSmsWithOpenAi'));
     expect(momoSmsParser, contains('https://api.openai.com/v1/responses'));
@@ -199,8 +215,13 @@ void main() {
 
     expect(driverPlusScreen, contains('walletBalanceTokens'));
     expect(driverPlusScreen, contains('walletBalanceTokens >= tokenCost'));
+    expect(driverPlusScreen, contains('if (canPayTokens)'));
+    expect(driverPlusScreen, contains('Pay with Tokens'));
+    expect(driverPlusScreen, isNot(contains('Pay tokens')));
     expect(driverPlusScreen, contains('Pay with MoMo'));
     expect(driverPlusScreen, isNot(contains('MoMo USSD')));
+    expect(driverPlusScreen, contains('TextOverflow.ellipsis'));
+    expect(driverPlusScreen, contains('softWrap: false'));
     expect(
       driverPlusScreen,
       isNot(contains('Upgrade to read passenger messages')),
@@ -217,6 +238,9 @@ void main() {
     final tappableIconButton = File(
       'lib/shared/widgets/tappable_icon_button.dart',
     ).readAsStringSync();
+    final mobiButton = File(
+      'lib/shared/widgets/mobi_button.dart',
+    ).readAsStringSync();
 
     expect(appRouter, contains('void _safePopToProfile(BuildContext context)'));
     expect(appRouter, contains('context.go(AppRoutes.profile)'));
@@ -225,6 +249,8 @@ void main() {
     expect(driverPlusScreen, contains('SupabaseConfig.canRunWithoutBackend'));
     expect(walletScreen, contains('_previewWalletSummary'));
     expect(walletScreen, contains('_previewLedgerEntries'));
+    expect(walletScreen, contains('_walletLedgerLabel(entry.reason)'));
+    expect(walletScreen, isNot(contains("entry.reason.replaceAll('_', ' ')")));
     expect(driverPlusScreen, contains('_previewDriverPlusWallet'));
     expect(driverPlusScreen, contains('_previewDriverPlusPlans'));
     expect(walletScreen, contains("title: 'Wallet unavailable'"));
@@ -239,6 +265,7 @@ void main() {
     expect(mobiPageHeader, contains("semanticLabel: 'Back'"));
     expect(mobiPageHeader, contains('const BoxConstraints(minHeight: 56)'));
     expect(mobiPageHeader, contains('FittedBox'));
+    expect(mobiPageHeader, contains('decoration: TextDecoration.none'));
     expect(
       mobiPageHeader,
       contains('const BoxConstraints(minWidth: 48, minHeight: 48)'),
@@ -246,6 +273,9 @@ void main() {
     expect(tappableIconButton, contains('SystemMouseCursors.click'));
     expect(tappableIconButton, contains('Feedback.forTap(context)'));
     expect(tappableIconButton, contains('enabled: onTap != null'));
+    expect(mobiButton, contains('maxLines: 1'));
+    expect(mobiButton, contains('TextOverflow.ellipsis'));
+    expect(mobiButton, contains('TextAlign.center'));
   });
 
   test('plus rules protect driver chat access server-side', () {

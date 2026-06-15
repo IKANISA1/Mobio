@@ -78,7 +78,6 @@ run "$APKSIGNER" verify --print-certs "$SIGNED"
 
 run "$ADB" -s "$SERIAL" install -r "$SIGNED"
 run "$ADB" -s "$SERIAL" shell pm clear "$PKG"
-run "$ADB" -s "$SERIAL" shell pm grant "$PKG" android.permission.READ_SMS
 run "$ADB" -s "$SERIAL" shell pm grant "$PKG" android.permission.RECEIVE_SMS
 run "$ADB" -s "$SERIAL" shell pm grant "$PKG" android.permission.POST_NOTIFICATIONS || true
 run "$ADB" -s "$SERIAL" shell dumpsys deviceidle whitelist +"$PKG" || true
@@ -95,7 +94,6 @@ capture "momobio-sms-bridge-initial"
 wait_for_terminal_sync "$PKG-uiautomator-auto-sync.xml" "uiautomator-after-auto-sync.xml"
 capture "momobio-sms-bridge-after-auto-sync"
 
-run "$ADB" -s "$SERIAL" shell pm revoke "$PKG" android.permission.READ_SMS
 run "$ADB" -s "$SERIAL" shell pm revoke "$PKG" android.permission.RECEIVE_SMS
 run "$ADB" -s "$SERIAL" shell am force-stop "$PKG"
 run "$ADB" -s "$SERIAL" shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1
@@ -103,7 +101,6 @@ sleep 2
 dump_ui "$PKG-uiautomator-permission.xml" "uiautomator-permission-needed.xml"
 capture "momobio-sms-bridge-permission-needed"
 
-run "$ADB" -s "$SERIAL" shell pm grant "$PKG" android.permission.READ_SMS
 run "$ADB" -s "$SERIAL" shell pm grant "$PKG" android.permission.RECEIVE_SMS
 run "$ADB" -s "$SERIAL" shell pm grant "$PKG" android.permission.POST_NOTIFICATIONS || true
 run "$ADB" -s "$SERIAL" shell am force-stop "$PKG"
