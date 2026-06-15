@@ -225,7 +225,11 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
       originLat: userLat,
       originLng: userLng,
       drivers: _nearbyDrivers.map(
-        (driver) => (latitude: driver.latitude, longitude: driver.longitude),
+        (driver) => GoogleMapsLocation(
+          latitude: driver.latitude,
+          longitude: driver.longitude,
+          label: driver.memberId,
+        ),
       ),
     );
     if (!mounted || opened) return;
@@ -305,7 +309,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                               actions: [
                                 MobiTopCommandBarAction(
                                   icon: LucideIcons.map,
-                                  label: 'Map',
+                                  label: 'Drivers map',
                                   onTap: _openDriversInGoogleMaps,
                                 ),
                                 MobiTopCommandBarAction(

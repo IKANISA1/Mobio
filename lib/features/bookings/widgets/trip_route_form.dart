@@ -151,6 +151,8 @@ class TripRouteForm extends StatelessWidget {
           destLng: destDetails!.longitude,
           originLabel: originDetails!.formattedAddress,
           destLabel: destDetails!.formattedAddress,
+          originPlaceId: originDetails!.placeId,
+          destPlaceId: destDetails!.placeId,
           height: 180,
         ),
       );

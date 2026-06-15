@@ -15,6 +15,8 @@ class RouteMapCard extends StatelessWidget {
   final double destLng;
   final String? originLabel;
   final String? destLabel;
+  final String? originPlaceId;
+  final String? destPlaceId;
   final double height;
 
   const RouteMapCard({
@@ -25,6 +27,8 @@ class RouteMapCard extends StatelessWidget {
     required this.destLng,
     this.originLabel,
     this.destLabel,
+    this.originPlaceId,
+    this.destPlaceId,
     this.height = 200,
   });
 
@@ -155,6 +159,10 @@ class RouteMapCard extends StatelessWidget {
       originLng: originLng,
       destLat: destLat,
       destLng: destLng,
+      originLabel: originLabel,
+      originPlaceId: originPlaceId,
+      destLabel: destLabel,
+      destPlaceId: destPlaceId,
     );
 
     if (!opened) {

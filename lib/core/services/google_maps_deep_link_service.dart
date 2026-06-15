@@ -1,5 +1,32 @@
 import 'package:url_launcher/url_launcher.dart';
 
+class GoogleMapsLocation {
+  final double latitude;
+  final double longitude;
+  final String? label;
+  final String? placeId;
+
+  const GoogleMapsLocation({
+    required this.latitude,
+    required this.longitude,
+    this.label,
+    this.placeId,
+  });
+
+  String get coordinate =>
+      GoogleMapsDeepLinkService.coordinate(latitude, longitude);
+
+  String get routeValue {
+    final cleanLabel = label?.trim();
+    if (cleanLabel != null &&
+        cleanLabel.isNotEmpty &&
+        GoogleMapsDeepLinkService.isGooglePlaceId(placeId)) {
+      return cleanLabel;
+    }
+    return coordinate;
+  }
+}
+
 class GoogleMapsDeepLinkService {
   const GoogleMapsDeepLinkService._();
 
@@ -8,13 +35,45 @@ class GoogleMapsDeepLinkService {
     required double originLng,
     required double destLat,
     required double destLng,
+    String? originLabel,
+    String? originPlaceId,
+    String? destLabel,
+    String? destPlaceId,
   }) {
-    return Uri.https('www.google.com', '/maps/dir/', {
+    return routeUriForLocations(
+      origin: GoogleMapsLocation(
+        latitude: originLat,
+        longitude: originLng,
+        label: originLabel,
+        placeId: originPlaceId,
+      ),
+      destination: GoogleMapsLocation(
+        latitude: destLat,
+        longitude: destLng,
+        label: destLabel,
+        placeId: destPlaceId,
+      ),
+    );
+  }
+
+  static Uri routeUriForLocations({
+    required GoogleMapsLocation origin,
+    required GoogleMapsLocation destination,
+  }) {
+    final params = <String, String>{
       'api': '1',
-      'origin': _coordinate(originLat, originLng),
-      'destination': _coordinate(destLat, destLng),
+      'origin': origin.routeValue,
+      'destination': destination.routeValue,
       'travelmode': 'driving',
-    });
+    };
+    if (isGooglePlaceId(origin.placeId)) {
+      params['origin_place_id'] = origin.placeId!.trim();
+    }
+    if (isGooglePlaceId(destination.placeId)) {
+      params['destination_place_id'] = destination.placeId!.trim();
+    }
+
+    return Uri.https('www.google.com', '/maps/dir/', params);
   }
 
   static Uri liveLocationUri({
@@ -23,39 +82,40 @@ class GoogleMapsDeepLinkService {
   }) {
     return Uri.https('www.google.com', '/maps/search/', {
       'api': '1',
-      'query': _coordinate(vehicleLat, vehicleLng),
+      'query': coordinate(vehicleLat, vehicleLng),
     });
   }
 
   static Uri nearbyDriverLocationsUri({
     required double originLat,
     required double originLng,
-    required Iterable<({double latitude, double longitude})> drivers,
+    required Iterable<GoogleMapsLocation> drivers,
   }) {
-    final coordinates = drivers.toList(growable: false);
-    if (coordinates.isEmpty) {
+    final driverLocations = drivers.toList(growable: false);
+    if (driverLocations.isEmpty) {
       return liveLocationUri(vehicleLat: originLat, vehicleLng: originLng);
     }
-    if (coordinates.length == 1) {
-      final driver = coordinates.first;
-      return routeUri(
-        originLat: originLat,
-        originLng: originLng,
-        destLat: driver.latitude,
-        destLng: driver.longitude,
+
+    final origin = GoogleMapsLocation(
+      latitude: originLat,
+      longitude: originLng,
+    );
+    if (driverLocations.length == 1) {
+      return routeUriForLocations(
+        origin: origin,
+        destination: driverLocations.first,
       );
     }
 
-    final stops = coordinates.take(10).toList(growable: false);
-    final destination = stops.last;
-    final waypointStops = stops
-        .take(stops.length - 1)
-        .map((driver) => _coordinate(driver.latitude, driver.longitude));
+    final destination = driverLocations.last;
+    final waypointStops = driverLocations
+        .take(driverLocations.length - 1)
+        .map((driver) => driver.coordinate);
 
     return Uri.https('www.google.com', '/maps/dir/', {
       'api': '1',
-      'origin': _coordinate(originLat, originLng),
-      'destination': _coordinate(destination.latitude, destination.longitude),
+      'origin': origin.coordinate,
+      'destination': destination.coordinate,
       'travelmode': 'driving',
       'waypoints': waypointStops.join('|'),
     });
@@ -66,6 +126,10 @@ class GoogleMapsDeepLinkService {
     required double originLng,
     required double destLat,
     required double destLng,
+    String? originLabel,
+    String? originPlaceId,
+    String? destLabel,
+    String? destPlaceId,
   }) {
     return _open(
       routeUri(
@@ -73,6 +137,10 @@ class GoogleMapsDeepLinkService {
         originLng: originLng,
         destLat: destLat,
         destLng: destLng,
+        originLabel: originLabel,
+        originPlaceId: originPlaceId,
+        destLabel: destLabel,
+        destPlaceId: destPlaceId,
       ),
     );
   }
@@ -89,7 +157,7 @@ class GoogleMapsDeepLinkService {
   static Future<bool> openNearbyDriverLocations({
     required double originLat,
     required double originLng,
-    required Iterable<({double latitude, double longitude})> drivers,
+    required Iterable<GoogleMapsLocation> drivers,
   }) {
     return _open(
       nearbyDriverLocationsUri(
@@ -104,5 +172,21 @@ class GoogleMapsDeepLinkService {
     return launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
-  static String _coordinate(double lat, double lng) => '$lat,$lng';
+  static bool isGooglePlaceId(String? placeId) {
+    final value = placeId?.trim();
+    if (value == null || value.isEmpty) {
+      return false;
+    }
+    const localPrefixes = [
+      'current-location-preview',
+      'home-preview',
+      'work-preview',
+      'airport-preview',
+      'trip-origin-',
+      'trip-destination-',
+    ];
+    return !localPrefixes.any(value.startsWith);
+  }
+
+  static String coordinate(double lat, double lng) => '$lat,$lng';
 }

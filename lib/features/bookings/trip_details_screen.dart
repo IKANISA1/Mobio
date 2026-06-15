@@ -313,6 +313,8 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
                   destLng: trip.destLng!,
                   originLabel: trip.origin,
                   destLabel: trip.destination,
+                  originPlaceId: trip.originPlaceId,
+                  destPlaceId: trip.destinationPlaceId,
                   height: 200,
                 ),
               ),

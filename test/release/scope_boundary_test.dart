@@ -770,6 +770,12 @@ void main() {
       final routeMapCard = File(
         'lib/shared/widgets/route_map_card.dart',
       ).readAsStringSync();
+      final nearbyScreen = File(
+        'lib/features/nearby/nearby_screen.dart',
+      ).readAsStringSync();
+      final mapsDeepLinkService = File(
+        'lib/core/services/google_maps_deep_link_service.dart',
+      ).readAsStringSync();
       final sharedExports = File(
         'packages/shared-types/lib/mobi_shared_types.dart',
       ).readAsStringSync();
@@ -781,6 +787,19 @@ void main() {
       expect(scheduleState, isNot(contains('isComputingRoute')));
       expect(routeForm, isNot(contains('RouteInfo')));
       expect(routeMapCard, isNot(contains('RouteInfo')));
+      expect(routeMapCard, contains('Open in Google Maps'));
+      expect(routeMapCard, isNot(contains("context.push('/maps")));
+      expect(mapsDeepLinkService, contains("Uri.https('www.google.com'"));
+      expect(mapsDeepLinkService, contains('LaunchMode.externalApplication'));
+      expect(mapsDeepLinkService, contains('origin_place_id'));
+      expect(mapsDeepLinkService, contains('destination_place_id'));
+      expect(mapsDeepLinkService, contains('/maps/dir/'));
+      expect(mapsDeepLinkService, contains('/maps/search/'));
+      expect(mapsDeepLinkService, isNot(contains("context.push('/maps")));
+      expect(nearbyScreen, contains('Drivers map'));
+      expect(nearbyScreen, contains('openNearbyDriverLocations'));
+      expect(nearbyScreen, contains('GoogleMapsLocation'));
+      expect(nearbyScreen, isNot(contains("context.push('/maps")));
       expect(sharedExports, isNot(contains('route_info.dart')));
       expect(File('lib/models/route_info.dart').existsSync(), isFalse);
       expect(
