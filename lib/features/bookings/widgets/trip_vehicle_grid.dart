@@ -28,6 +28,8 @@ class TripVehicleGrid extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final useGrid = constraints.maxWidth < 520;
+        final textScale = MediaQuery.textScalerOf(context).scale(1);
+        final mobileTileAspectRatio = textScale >= 1.6 ? 0.9 : 1.25;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -36,7 +38,7 @@ class TripVehicleGrid extends StatelessWidget {
             if (useGrid)
               GridView.count(
                 crossAxisCount: 3,
-                childAspectRatio: 1.25,
+                childAspectRatio: mobileTileAspectRatio,
                 mainAxisSpacing: AppSpacing.sm,
                 crossAxisSpacing: AppSpacing.sm,
                 shrinkWrap: true,

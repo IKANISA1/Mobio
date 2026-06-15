@@ -440,6 +440,11 @@ void main() {
       );
       expect(biopayNfcForegroundListener, contains('FlutterNfcKit'));
       expect(biopayNfcService, contains('writeNDEFRecords'));
+      expect(
+        biopayNfcService,
+        contains('const readModes = <bool?>[false, null, true]'),
+      );
+      expect(biopayNfcService, contains('attempt < 6'));
       expect(biopayNfcWriteCardScreen, contains('BioPayNfcService'));
       expect(biopayNfcWriteCardScreen, contains('writeCard'));
       expect(biopayScreen, contains('Dial USSD'));

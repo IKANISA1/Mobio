@@ -152,15 +152,18 @@ class BioPayNfcService {
 
   Future<List<ndef.NDEFRecord>> _readNdefRecordsWithRetry() async {
     Object? lastError;
-    for (var attempt = 0; attempt < 3; attempt += 1) {
-      try {
-        if (attempt > 0) {
-          await Future<void>.delayed(const Duration(milliseconds: 350));
+    const readModes = <bool?>[false, null, true];
+    for (var attempt = 0; attempt < 6; attempt += 1) {
+      if (attempt > 0) {
+        await Future<void>.delayed(Duration(milliseconds: 300 + attempt * 150));
+      }
+      for (final cached in readModes) {
+        try {
+          final records = await FlutterNfcKit.readNDEFRecords(cached: cached);
+          if (records.isNotEmpty) return records;
+        } on Object catch (error) {
+          lastError = error;
         }
-        final records = await FlutterNfcKit.readNDEFRecords(cached: false);
-        if (records.isNotEmpty) return records;
-      } on Object catch (error) {
-        lastError = error;
       }
     }
     if (lastError != null) throw lastError;

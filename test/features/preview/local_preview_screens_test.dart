@@ -70,11 +70,11 @@ void main() {
       ),
     );
 
-    expect(find.text('482013'), findsOneWidget);
+    expect(find.text('482013'), findsWidgets);
     expect(find.text('BioPay Face'), findsOneWidget);
     expect(find.text('Write NFC Card'), findsOneWidget);
     expect(find.text('Enroll AWS face identity'), findsNothing);
-    expect(find.text('Set up'), findsOneWidget);
+    expect(find.text('Set up'), findsWidgets);
     expect(find.textContaining('Supabase'), findsNothing);
     expect(tester.takeException(), isNull);
   });

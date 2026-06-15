@@ -47,7 +47,7 @@ Status legend:
 | `/biopay/face-scan` `BioPayFaceScanScreen` | BioPay face match | Verified app session | `biopay-face-provider`, AWS Rekognition health | Camera | Camera denied, liveness unavailable, match fail | BioPay entry, back pop | BioPay live readiness | Covered by gate |
 | `/biopay/enroll` `BioPayFaceEnrollScreen` | BioPay face enrollment | Verified app session | `biopay-face-provider`, enrollment RPCs | Camera | Camera denied, challenge fail, enrollment fail | Profile/BioPay entry, back pop | BioPay live readiness | Covered by gate |
 | `/biopay/nfc` `BioPayNfcScreen` | BioPay NFC | Verified app session | BioPay payload/profile | NFC | NFC unavailable, read fail, invalid payload | BioPay entry, back pop | BioPay NFC tests/goldens | Covered by gate |
-| `/biopay/nfc/write-card` `BioPayNfcWriteCardScreen` | BioPay NFC writer | Verified app session | BioPay payload/profile | NFC | NFC unavailable, write fail, confirmation | Profile entry, back pop | BioPay NFC tests plus Revolut mobile goldens; physical NFC proof still device-only | Covered by gate |
+| `/biopay/nfc/write-card` `BioPayNfcWriteCardScreen` | BioPay NFC writer | Verified app session | BioPay payload/profile | NFC | NFC unavailable, write fail, confirmation | Profile entry, back pop | BioPay NFC tests, readback retry contract, plus Revolut mobile goldens; physical NFC proof still device-only | Covered by gate |
 
 ## Screen Files Still Requiring Row-Level Audit
 

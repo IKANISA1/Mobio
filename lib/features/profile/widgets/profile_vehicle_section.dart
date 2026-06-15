@@ -87,6 +87,8 @@ class ProfileVehicleSection extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final crossAxisCount = constraints.maxWidth >= 560 ? 6 : 3;
+          final textScale = MediaQuery.textScalerOf(context).scale(1);
+          final childAspectRatio = textScale >= 1.6 ? 0.88 : 1.12;
           return GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -95,7 +97,7 @@ class ProfileVehicleSection extends StatelessWidget {
               crossAxisCount: crossAxisCount,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
-              childAspectRatio: 1.12,
+              childAspectRatio: childAspectRatio,
             ),
             itemBuilder: (context, index) {
               final vt = vehicleTypes[index];
