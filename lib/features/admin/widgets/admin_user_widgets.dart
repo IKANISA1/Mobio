@@ -157,9 +157,9 @@ class AdminUserRow extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(width: 80, child: _RoleBadge(role: user.role)),
+              SizedBox(width: 112, child: _RoleBadge(role: user.role)),
               SizedBox(
-                width: 80,
+                width: 92,
                 child: isUpdating
                     ? const Center(
                         child: SizedBox(

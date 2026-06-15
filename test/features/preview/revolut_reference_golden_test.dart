@@ -16,8 +16,11 @@ import 'package:mobi_app/features/admin/admin_auth_screen.dart';
 import 'package:mobi_app/features/admin/admin_reports_screen.dart';
 import 'package:mobi_app/features/admin/admin_subscriptions_screen.dart';
 import 'package:mobi_app/features/admin/admin_transport_agencies_screen.dart';
+import 'package:mobi_app/features/admin/admin_trips_screen.dart';
+import 'package:mobi_app/features/admin/admin_users_screen.dart';
 import 'package:mobi_app/features/admin/admin_vehicle_types_screen.dart';
 import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
+import 'package:mobi_app/features/auth/whatsapp_login_screen.dart';
 import 'package:mobi_app/features/biopay/biopay_screen.dart';
 import 'package:mobi_app/features/bookings/bookings_screen.dart';
 import 'package:mobi_app/features/bookings/schedule_trip_screen.dart';
@@ -57,6 +60,10 @@ void main() {
   const wideDesktop = Size(1440, 1000);
 
   final cases = <_GoldenCase>[
+    _GoldenCase(
+      name: 'login',
+      builder: () => WhatsAppLoginScreen(onBack: () {}, onSuccess: (_) {}),
+    ),
     _GoldenCase(
       name: 'home',
       builder: () => HomeScreen(
@@ -205,22 +212,14 @@ void main() {
       builder: _adminPreview,
       includeDesktop: true,
     ),
-    _GoldenCase(
+    const _GoldenCase(
       name: 'admin_users',
-      builder: () => _adminPreview(
-        tab: AdminWorkspaceTab.users,
-        title: 'Users',
-        subtitle: 'Accounts, access, and onboarding health',
-      ),
+      builder: AdminUsersScreen.new,
       includeDesktop: true,
     ),
     _GoldenCase(
       name: 'admin_trips',
-      builder: () => _adminPreview(
-        tab: AdminWorkspaceTab.trips,
-        title: 'Trips',
-        subtitle: 'Dispatch queue and service exceptions',
-      ),
+      builder: () => AdminTripsScreen(onBack: () {}),
       includeDesktop: true,
     ),
     _GoldenCase(
