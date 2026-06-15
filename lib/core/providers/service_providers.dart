@@ -151,7 +151,11 @@ final profileServiceProvider = Provider(
   (ref) => ProfileService(supabase: ref.read(supabaseClientProvider)),
 );
 final publicTransportServiceProvider = Provider(
-  (ref) => PublicTransportService(supabase: ref.read(supabaseClientProvider)),
+  (ref) => PublicTransportService(
+    supabase: SupabaseConfig.isConfigured
+        ? ref.read(supabaseClientProvider)
+        : null,
+  ),
 );
 final pushNotificationServiceProvider = Provider(
   (ref) => PushNotificationService.instance,

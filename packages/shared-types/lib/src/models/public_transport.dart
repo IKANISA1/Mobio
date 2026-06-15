@@ -19,6 +19,60 @@ List<String> _parseStringList(Object? value) {
   return const [];
 }
 
+class TransportAgency {
+  const TransportAgency({
+    required this.id,
+    required this.name,
+    required this.slug,
+    this.phone,
+    this.whatsapp,
+    this.email,
+    this.serviceArea = 'rwanda',
+    this.isActive = true,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  final String id;
+  final String name;
+  final String slug;
+  final String? phone;
+  final String? whatsapp;
+  final String? email;
+  final String serviceArea;
+  final bool isActive;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  factory TransportAgency.fromJson(Map<String, dynamic> json) {
+    return TransportAgency(
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      slug: json['slug'] as String? ?? '',
+      phone: json['phone'] as String?,
+      whatsapp: json['whatsapp'] as String?,
+      email: json['email'] as String?,
+      serviceArea: json['service_area'] as String? ?? 'rwanda',
+      isActive: json['is_active'] as bool? ?? true,
+      createdAt: _parseDateTime(json['created_at']),
+      updatedAt: _parseDateTime(json['updated_at']),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'name': name,
+    'slug': slug,
+    'phone': phone,
+    'whatsapp': whatsapp,
+    'email': email,
+    'service_area': serviceArea,
+    'is_active': isActive,
+    'created_at': createdAt?.toIso8601String(),
+    'updated_at': updatedAt?.toIso8601String(),
+  };
+}
+
 class PublicTransportSchedule {
   const PublicTransportSchedule({
     required this.scheduleId,

@@ -22,6 +22,8 @@ import 'package:mobi_app/features/admin/admin_reports_screen.dart'
     deferred as admin_reports_route;
 import 'package:mobi_app/features/admin/admin_subscriptions_screen.dart'
     deferred as admin_subscriptions_route;
+import 'package:mobi_app/features/admin/admin_transport_agencies_screen.dart'
+    deferred as admin_transport_agencies_route;
 import 'package:mobi_app/features/admin/admin_trips_screen.dart'
     deferred as admin_trips_route;
 import 'package:mobi_app/features/admin/admin_users_screen.dart';
@@ -73,6 +75,7 @@ abstract class AppRoutes {
   static const String adminUsers = '/admin/users';
   static const String adminProfile = '/admin/profile';
   static const String adminVehicleTypes = '/admin/vehicle-types';
+  static const String adminAgencies = '/admin/agencies';
   static const String adminSubscriptions = '/admin/subscriptions';
   static const String adminTrips = '/admin/trips';
   static const String adminReports = '/admin/reports';
@@ -93,11 +96,7 @@ abstract class AppRoutes {
 }
 
 void _safePopToProfile(BuildContext context) {
-  if (Navigator.of(context).canPop()) {
-    Navigator.of(context).pop();
-  } else {
-    context.go(AppRoutes.profile);
-  }
+  context.go(AppRoutes.profile);
 }
 
 /// Admin route guard — validates role before allowing admin UI.
@@ -491,6 +490,20 @@ GoRouter createRouter() {
             loadLibrary: admin_vehicle_types_route.loadLibrary,
             builder: (context) =>
                 admin_vehicle_types_route.AdminVehicleTypesScreen(
+                  onBack: () => safePop(context),
+                ),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/admin/agencies',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: admin_transport_agencies_route.loadLibrary,
+            builder: (context) =>
+                admin_transport_agencies_route.AdminTransportAgenciesScreen(
                   onBack: () => safePop(context),
                 ),
           ),

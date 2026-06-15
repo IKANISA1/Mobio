@@ -35,40 +35,58 @@ class MobiPageHeader extends StatelessWidget {
         AppSpacing.screenPadding,
         0,
       ),
-      child: Row(
-        children: [
-          if (showBackButton) ...[
-            TappableIconButton(
-              icon: LucideIcons.chevronLeft,
-              onTap: onBack ?? () => Navigator.maybePop(context),
-              backgroundColor: Colors.black.withValues(
-                alpha: ext.blackChromeAlpha,
-              ),
-              iconColor: Colors.white,
-              borderRadius: AppRadii.pill,
-            ),
-            const SizedBox(width: AppSpacing.md),
-          ],
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.headlineLg.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 56),
+        child: Row(
+          children: [
+            if (showBackButton) ...[
+              TappableIconButton(
+                icon: LucideIcons.chevronLeft,
+                semanticLabel: 'Back',
+                onTap: onBack ?? () => Navigator.maybePop(context),
+                backgroundColor: Colors.black.withValues(
+                  alpha: ext.blackChromeAlpha,
                 ),
-                if (showSubtitle) ...[const SizedBox(height: 4), subtitle!],
-              ],
+                iconColor: Colors.white,
+                borderRadius: AppRadii.pill,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+            ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(right: AppSpacing.sm),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.headlineLg.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                    if (showSubtitle) ...[const SizedBox(height: 4), subtitle!],
+                  ],
+                ),
+              ),
             ),
-          ),
-          ?trailing,
-        ],
+            if (trailing != null)
+              ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: trailing!,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

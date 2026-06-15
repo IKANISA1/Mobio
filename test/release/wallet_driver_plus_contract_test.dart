@@ -23,6 +23,7 @@ void main() {
   const referralAttributionServicePath =
       'lib/core/services/referral_attribution_service.dart';
   const walletScreenPath = 'lib/features/profile/wallet_screen.dart';
+  const driverPlusScreenPath = 'lib/features/profile/driver_plus_screen.dart';
   const appRouterPath = 'lib/core/router/app_router.dart';
 
   test('wallet and referral rewards are server-owned', () {
@@ -117,9 +118,7 @@ void main() {
     final driverPlusService = File(
       'lib/core/services/driver_plus_service.dart',
     ).readAsStringSync();
-    final driverPlusScreen = File(
-      'lib/features/profile/driver_plus_screen.dart',
-    ).readAsStringSync();
+    final driverPlusScreen = File(driverPlusScreenPath).readAsStringSync();
     final adminSubscriptionsScreen = File(
       'lib/features/admin/admin_subscriptions_screen.dart',
     ).readAsStringSync();
@@ -206,6 +205,47 @@ void main() {
       driverPlusScreen,
       isNot(contains('Upgrade to read passenger messages')),
     );
+  });
+
+  test('wallet and Mobio Plus pushed pages keep responsive navigation', () {
+    final appRouter = File(appRouterPath).readAsStringSync();
+    final walletScreen = File(walletScreenPath).readAsStringSync();
+    final driverPlusScreen = File(driverPlusScreenPath).readAsStringSync();
+    final mobiPageHeader = File(
+      'lib/shared/widgets/mobi_page_header.dart',
+    ).readAsStringSync();
+    final tappableIconButton = File(
+      'lib/shared/widgets/tappable_icon_button.dart',
+    ).readAsStringSync();
+
+    expect(appRouter, contains('void _safePopToProfile(BuildContext context)'));
+    expect(appRouter, contains('context.go(AppRoutes.profile)'));
+    expect(appRouter, isNot(contains('if (Navigator.of(context).canPop())')));
+    expect(walletScreen, contains('SupabaseConfig.canRunWithoutBackend'));
+    expect(driverPlusScreen, contains('SupabaseConfig.canRunWithoutBackend'));
+    expect(walletScreen, contains('_previewWalletSummary'));
+    expect(walletScreen, contains('_previewLedgerEntries'));
+    expect(driverPlusScreen, contains('_previewDriverPlusWallet'));
+    expect(driverPlusScreen, contains('_previewDriverPlusPlans'));
+    expect(walletScreen, contains("title: 'Wallet unavailable'"));
+    expect(driverPlusScreen, contains("title: 'Mobio Plus unavailable'"));
+    expect(walletScreen, contains('MobiErrorState'));
+    expect(driverPlusScreen, contains('MobiErrorState'));
+    expect(walletScreen, contains('onRetry: _load'));
+    expect(driverPlusScreen, contains('onRetry: _load'));
+    expect(walletScreen, contains("retryLabel: 'Refresh'"));
+    expect(driverPlusScreen, contains("retryLabel: 'Refresh'"));
+
+    expect(mobiPageHeader, contains("semanticLabel: 'Back'"));
+    expect(mobiPageHeader, contains('const BoxConstraints(minHeight: 56)'));
+    expect(mobiPageHeader, contains('FittedBox'));
+    expect(
+      mobiPageHeader,
+      contains('const BoxConstraints(minWidth: 48, minHeight: 48)'),
+    );
+    expect(tappableIconButton, contains('SystemMouseCursors.click'));
+    expect(tappableIconButton, contains('Feedback.forTap(context)'));
+    expect(tappableIconButton, contains('enabled: onTap != null'));
   });
 
   test('plus rules protect driver chat access server-side', () {

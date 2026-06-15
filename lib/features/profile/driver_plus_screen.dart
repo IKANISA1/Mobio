@@ -16,6 +16,7 @@ import 'package:mobi_app/models/wallet.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
+import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
@@ -76,7 +77,7 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
       });
     } on Object catch (_) {
       if (!mounted) return;
-      if (SupabaseConfig.isLocalUiPreview) {
+      if (SupabaseConfig.canRunWithoutBackend) {
         setState(() {
           _profile = _previewDriverProfile;
           _status = _previewDriverPlusStatus;
@@ -254,14 +255,13 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
                         const SizedBox(height: AppSpacing.md),
                         const LoadingSkeleton(height: 320, borderRadius: 28),
                       ] else if (_error != null) ...[
-                        ClayCard(
-                          padding: const EdgeInsets.all(20),
-                          child: Text(
-                            _error!,
-                            style: AppTypography.bodyMd.copyWith(
-                              color: cs.onSurface,
-                            ),
-                          ),
+                        MobiErrorState(
+                          title: 'Mobio Plus unavailable',
+                          subtitle: _error,
+                          icon: LucideIcons.badgeCheck,
+                          onRetry: _load,
+                          retryLabel: 'Refresh',
+                          height: 260,
                         ),
                       ] else ...[
                         _PlusStatusCard(

@@ -12,8 +12,16 @@ void main() {
         'supabase/migrations/20260612203130_driver_vehicle_records.sql';
     const rentalsVehicleMigrationPath =
         'supabase/migrations/20260614153000_rentals_vehicle_type_onboarding.sql';
+    const agencyAdminMigrationPath =
+        'supabase/migrations/20260615090000_transport_agency_admin_management.sql';
     const editProfileProviderPath =
         'lib/features/profile/providers/edit_profile_provider.dart';
+    const publicTransportServicePath =
+        'lib/core/services/public_transport_service.dart';
+    const appRouterPath = 'lib/core/router/app_router.dart';
+    const adminUiPath = 'lib/features/admin/widgets/admin_ui.dart';
+    const adminAgencyScreenPath =
+        'lib/features/admin/admin_transport_agencies_screen.dart';
 
     test('adds required booking-specific tables', () {
       final migration = File(migrationPath).readAsStringSync();
@@ -80,6 +88,79 @@ void main() {
       expect(migration, contains('transport.agencies.manage'));
       expect(migration, contains('transport.bookings.manage'));
       expect(migration, contains('transport.tracking.ingest'));
+    });
+
+    test('bus agency picker and admin management are Supabase-backed', () {
+      final migration = File(migrationPath).readAsStringSync();
+      final agencyAdminMigration = File(
+        agencyAdminMigrationPath,
+      ).readAsStringSync();
+      final publicTransportService = File(
+        publicTransportServicePath,
+      ).readAsStringSync();
+      final appRouter = File(appRouterPath).readAsStringSync();
+      final adminUi = File(adminUiPath).readAsStringSync();
+      final adminAgencyScreen = File(adminAgencyScreenPath).readAsStringSync();
+
+      expect(
+        migration,
+        contains('create table if not exists public.transport_agencies'),
+      );
+      expect(migration, contains('transport_agencies_read_active_or_admin'));
+      expect(publicTransportService, contains("from('transport_agencies')"));
+      expect(publicTransportService, contains('getAgencies'));
+      expect(publicTransportService, contains('getAgencyNames'));
+      expect(
+        publicTransportService,
+        contains('rpc_admin_upsert_transport_agency'),
+      );
+      expect(
+        publicTransportService,
+        contains('rpc_admin_set_transport_agency_active'),
+      );
+      expect(
+        publicTransportService,
+        contains('rpc_admin_remove_transport_agency'),
+      );
+      expect(
+        agencyAdminMigration,
+        contains('transport.agencies.manage permission required'),
+      );
+      expect(
+        agencyAdminMigration,
+        contains(
+          'create or replace function public.rpc_admin_upsert_transport_agency',
+        ),
+      );
+      expect(
+        agencyAdminMigration,
+        contains(
+          'create or replace function public.rpc_admin_set_transport_agency_active',
+        ),
+      );
+      expect(
+        agencyAdminMigration,
+        contains(
+          'create or replace function public.rpc_admin_remove_transport_agency',
+        ),
+      );
+      expect(agencyAdminMigration, contains('admin_audit_log'));
+      expect(
+        agencyAdminMigration,
+        contains(
+          'grant execute on function public.rpc_admin_upsert_transport_agency',
+        ),
+      );
+      expect(appRouter, contains("path: '/admin/agencies'"));
+      expect(adminUi, contains('AdminWorkspaceTab.agencies'));
+      expect(adminAgencyScreen, contains('AdminTransportAgenciesScreen'));
+      expect(adminAgencyScreen, contains('Add agency'));
+      expect(adminAgencyScreen, contains('Edit agency'));
+      expect(adminAgencyScreen, contains('Remove'));
+      expect(
+        adminAgencyScreen,
+        contains('Loaded from Supabase transport_agencies.'),
+      );
     });
 
     test('adds bus driver onboarding profile fields and RPC payloads', () {

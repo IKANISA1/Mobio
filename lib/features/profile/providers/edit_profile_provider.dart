@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
-import 'package:mobi_app/core/services/public_transport_service.dart';
 import 'package:mobi_app/features/profile/models/edit_profile_state.dart';
 import 'package:mobi_app/models/country.dart';
 import 'package:mobi_app/models/vehicle_type_model.dart';
@@ -23,15 +22,18 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
 
   Future<EditProfileState> _loadInitialData() async {
     if (SupabaseConfig.isLocalUiPreview) {
-      return const EditProfileState(
+      final agencyNames = await ref
+          .read(publicTransportServiceProvider)
+          .getAgencyNames();
+      return EditProfileState(
         countries: Country.fallbackCountries,
         countryCode: '+250',
         isLoading: false,
         isDriver: true,
         initialIsDriver: true,
         vehicleTypeId: 'bus',
-        vehicleTypes: VehicleTypeModel.fallbackTypes,
-        transportAgencyNames: PublicTransportService.fallbackAgencyNames,
+        vehicleTypes: const [...VehicleTypeModel.fallbackTypes],
+        transportAgencyNames: agencyNames,
         initialWhatsApp: '788 767 816',
         initialMomoNumber: '0788767816',
         initialMomoPayCode: '123456',

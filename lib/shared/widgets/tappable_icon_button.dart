@@ -36,21 +36,32 @@ class TappableIconButton extends StatelessWidget {
     final resolvedRadius = borderRadius ?? touchTargetSize / 2;
     return Semantics(
       button: true,
+      enabled: onTap != null,
       label: semanticLabel ?? 'Icon button',
       excludeSemantics: true,
-      child: SizedBox(
-        width: touchTargetSize,
-        height: touchTargetSize,
-        child: Material(
-          color: backgroundColor ?? Colors.transparent,
-          borderRadius: BorderRadius.circular(resolvedRadius),
-          child: InkWell(
-            onTap: onTap,
+      child: MouseRegion(
+        cursor: onTap == null
+            ? SystemMouseCursors.basic
+            : SystemMouseCursors.click,
+        child: SizedBox(
+          width: touchTargetSize,
+          height: touchTargetSize,
+          child: Material(
+            color: backgroundColor ?? Colors.transparent,
             borderRadius: BorderRadius.circular(resolvedRadius),
-            splashColor: resolvedColor.withValues(alpha: 0.15),
-            highlightColor: resolvedColor.withValues(alpha: 0.08),
-            child: Center(
-              child: Icon(icon, size: size, color: resolvedColor),
+            child: InkWell(
+              onTap: onTap == null
+                  ? null
+                  : () {
+                      Feedback.forTap(context);
+                      onTap!();
+                    },
+              borderRadius: BorderRadius.circular(resolvedRadius),
+              splashColor: resolvedColor.withValues(alpha: 0.15),
+              highlightColor: resolvedColor.withValues(alpha: 0.08),
+              child: Center(
+                child: Icon(icon, size: size, color: resolvedColor),
+              ),
             ),
           ),
         ),
