@@ -200,6 +200,10 @@ void main() {
       final mainActivity = File(
         'android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt',
       ).readAsStringSync();
+      final iosAppDelegate = File(
+        'ios/Runner/AppDelegate.swift',
+      ).readAsStringSync();
+      final iosInfoPlist = File('ios/Runner/Info.plist').readAsStringSync();
       final scopeDoc = File(
         'docs/product/biopay_ussd_aws_reactivation_scope_2026-06-12.md',
       ).readAsStringSync();
@@ -223,6 +227,15 @@ void main() {
       ).readAsStringSync();
       final biopayNfcScreen = File(
         'lib/features/biopay/biopay_nfc_screen.dart',
+      ).readAsStringSync();
+      final biopayQrExport = File(
+        'lib/features/biopay/biopay_qr_export.dart',
+      ).readAsStringSync();
+      final biopayQrExportIo = File(
+        'lib/features/biopay/biopay_qr_export_io.dart',
+      ).readAsStringSync();
+      final biopayQrExportStub = File(
+        'lib/features/biopay/biopay_qr_export_stub.dart',
       ).readAsStringSync();
       final biopayScreen = [
         'lib/features/biopay/biopay_screen.dart',
@@ -277,6 +290,21 @@ void main() {
 
       expect(mainActivity, isNot(contains('LedgerApi')));
       expect(mainActivity, isNot(contains('LedgerApiImpl')));
+      expect(mainActivity, contains('rw.mobi.app/biopay_qr_export'));
+      expect(mainActivity, contains('savePngToGallery'));
+      expect(mainActivity, contains('MediaStore.Images.Media'));
+      expect(mainActivity, contains('Pictures/Mobio'));
+      expect(iosAppDelegate, contains('rw.mobi.app/biopay_qr_export'));
+      expect(iosAppDelegate, contains('savePngToGallery'));
+      expect(iosAppDelegate, contains('UIImageWriteToSavedPhotosAlbum'));
+      expect(iosInfoPlist, contains('NSPhotoLibraryAddUsageDescription'));
+      expect(pubspec, contains('enable-swift-package-manager: false'));
+      expect(
+        FileSystemEntity.typeSync(
+          'ios/Runner.xcworkspace/xcshareddata/swiftpm/Package.resolved',
+        ),
+        FileSystemEntityType.notFound,
+      );
       expect(proguard, isNot(contains('tensorflow')));
       expect(proguard, isNot(contains('mlkit')));
       expect(proguard, isNot(contains('zxing')));
@@ -363,6 +391,15 @@ void main() {
       expect(biopayScreen, contains('Generate QR Code'));
       expect(biopayScreen, contains("'Save'"));
       expect(biopayScreen, contains("'Share'"));
+      expect(biopayQrExport, contains('if (dart.library.io)'));
+      expect(biopayQrExport, contains('biopay_qr_export_io.dart'));
+      expect(biopayQrExportIo, contains('MethodChannel'));
+      expect(biopayQrExportIo, contains('savePngToGallery'));
+      expect(biopayQrExportIo, contains('getTemporaryDirectory'));
+      expect(biopayQrExportIo, contains('SharePlus.instance.share'));
+      expect(biopayQrExportIo, contains('XFile'));
+      expect(biopayQrExportIo, isNot(contains('return false;')));
+      expect(biopayQrExportStub, contains('return false;'));
       expect(biopayScreen, isNot(contains('Share QR Code')));
       expect(
         biopayScreen,

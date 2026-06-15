@@ -34,6 +34,8 @@
 		<string>Mobio uses your location while the app is open to show nearby drivers and passengers and prepare Google Maps handoff.</string>
 		<key>NSCameraUsageDescription</key>
 		<string>Mobio uses the camera for BioPay QR scanning and AWS-backed face enrollment or identity check.</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>Mobio saves BioPay QR codes to Photos when you choose Save.</string>
 		<key>NFCReaderUsageDescription</key>
 		<string>Mobio uses NFC to read or write BioPay request tokens before opening the phone USSD dialer.</string>
 		<key>UIApplicationSceneManifest</key>

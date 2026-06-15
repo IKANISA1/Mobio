@@ -71,6 +71,7 @@ dependencies:
   firebase_analytics: ^12.2.0
   firebase_remote_config: ^6.3.0
   firebase_auth: ^6.3.0
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -86,6 +87,8 @@ dependency_overrides:
     path: packages/lucide_icons_compat
 
 flutter:
+  config:
+    enable-swift-package-manager: false
   generate: true
   uses-material-design: true
 
