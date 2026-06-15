@@ -93,6 +93,42 @@ require_play_service_account_decision() {
   echo "PASS: Play service-account credential retained by owner decision ($retention_evidence)"
 }
 
+current_android_version_code() {
+  awk -F'+' '/^version:/ {
+    split($2, parts, /[[:space:]]/)
+    print parts[1]
+    exit
+  }' pubspec.yaml
+}
+
+require_current_play_console_upload_evidence() {
+  require_evidence \
+    PLAY_CONSOLE_UPLOAD_VALIDATED \
+    PLAY_CONSOLE_UPLOAD_EVIDENCE \
+    "Play Console internal/closed-track upload validated"
+
+  local evidence_path="${PLAY_CONSOLE_UPLOAD_EVIDENCE:-}"
+  if [[ -z "$evidence_path" || ! -f "$evidence_path" || "$evidence_path" == *.example.md ]]; then
+    return
+  fi
+
+  local expected_version_code
+  expected_version_code="$(current_android_version_code)"
+  if [[ -z "$expected_version_code" ]]; then
+    echo "FAIL: could not read Android version code from pubspec.yaml." >&2
+    failures=$((failures + 1))
+    return
+  fi
+
+  if ! grep -Eq "Version code:[[:space:]]*\`?$expected_version_code\`?" "$evidence_path"; then
+    echo "FAIL: $evidence_path does not prove Play upload for current versionCode $expected_version_code." >&2
+    failures=$((failures + 1))
+    return
+  fi
+
+  echo "PASS: Play Console upload evidence matches current versionCode $expected_version_code"
+}
+
 if [[ "${RUN_FLUTTER_GATE:-true}" == "true" ]]; then
   run_gate "Flutter analyze/test gate" ./scripts/ci/verify_flutter.sh
 elif [[ "$dry_run" == "true" ]]; then
@@ -156,10 +192,7 @@ else
 fi
 
 require_play_service_account_decision
-require_evidence \
-  PLAY_CONSOLE_UPLOAD_VALIDATED \
-  PLAY_CONSOLE_UPLOAD_EVIDENCE \
-  "Play Console internal/closed-track upload validated"
+require_current_play_console_upload_evidence
 
 if [[ "${RUN_ANDROID_SMOKE:-true}" == "true" ]]; then
   run_gate "Physical Android release smoke" ./scripts/release/smoke_android_release.sh

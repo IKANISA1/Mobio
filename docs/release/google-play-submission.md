@@ -1,11 +1,11 @@
 # Google Play Submission Checklist
 
-Last updated: 2026-06-11
+Last updated: 2026-06-15
 
 ## Current Android Readiness
 
 - Package name: `rw.mobi.app`.
-- Version: `1.0.0+12` in `pubspec.yaml`.
+- Version: `1.0.0+14` in `pubspec.yaml`.
 - Android config: `compileSdk = 36`, `targetSdk = 35`, `minSdk = 24`.
 - Release signing: `android/key.properties` required for release Gradle tasks.
 - Google Play service-account JSON: must be supplied by
@@ -15,21 +15,23 @@ Last updated: 2026-06-11
 - Play uploads default to the internal testing track through GitHub Actions and
   Fastlane. Set `PLAY_RELEASE_TRACK=production` only after go/no-go approval,
   and set `PLAY_PRODUCTION_APPROVED=true` for production-track validation.
-- A signed local release AAB was built on 2026-06-11 at
+- A signed local release AAB was built on 2026-06-15 at
   `build/app/outputs/bundle/release/app-release.aab` with SHA-256
-  `4f33ee3e589a5c24b9ad3d0f6b6ad9dbcee969360657d0159cdccfa58017ba9b`.
+  `632a4ee11283491b814a972d419d138d9be6d9a5e6f9950579b2234d7f0061a0`
+  and uploaded to Google Play internal draft as versionCode `14`.
 - A signed local release APK was also built at
   `build/app/outputs/flutter-apk/app-release.apk` with SHA-256
-  `c2c05cfc3c3ff9417fe83f46877163b5d2a99f82d1f034a3549313c68c337cb5` and
-  verified with APK Signature Scheme v2. Physical-device smoke and Play Console
-  upload validation are still required.
+  `578dcfb44d60e3077718e2662c16e45d943088248505cb7fb5e1bbb8ca41a9b4`,
+  verified with APK Signature Scheme v2, installed on Pixel 4a
+  `13111JEC215558`, and smoke-tested successfully.
 - Required build defines: `SUPABASE_URL`, `SUPABASE_ANON_KEY`,
   `PRIVACY_POLICY_URL`, `ACCOUNT_DELETION_URL`.
-- Manifest after scope fix: network, location, and notification permissions
-  remain; camera/SMS/boot ledger receivers are not active.
-- Flutter/native app package cleanup removed BioPay, payment, ledger, camera,
-  QR, NFC, SMS ingestion, face-model, and local-auth dependencies from the
-  active Android build.
+- Manifest after scope fix: network, location, notification, camera, and NFC
+  permissions are active for Mobio. SMS permissions remain absent from the main
+  Mobio app and belong only to the private in-house Mo Mobio SMS utility app.
+- BioPay is an active Mobio feature for USSD handoff, AWS-backed face flows,
+  NFC, and QR receiver-code save/share. It is not an in-app settlement wallet
+  or card-payment processor.
 - Fastlane text metadata and phone screenshots now describe only nearby
   discovery, scheduled trip posts, profiles, chat, WhatsApp handoff, manual
   negotiation, report/block controls, and privacy controls.
@@ -56,9 +58,8 @@ Last updated: 2026-06-11
 
 ## Pre-Submission Gates
 
-1. Rotate/revoke the previously tracked Play service-account key and purge Git
-   history before public or production release. Verify the purge with
-   `scripts/qa/check_secret_history.sh`.
+1. Keep the owner-approved Play service-account retention evidence current and
+   verify secret history with `scripts/qa/check_secret_history.sh`.
 2. Before running the destructive history rewrite, run
    `scripts/qa/preflight_secret_history_purge.sh` from a clean full clone.
 3. Run `scripts/qa/scan_secrets.sh`.
@@ -84,7 +85,7 @@ Last updated: 2026-06-11
 13. Run the final fail-closed go/no-go gate after linked Supabase, Play upload,
    owner-approved credential-use, Google Maps server-key proof, FCM HTTP v1
    proof, and device-smoke evidence exists:
-   `RELEASE_TARGET=android PLAY_SERVICE_ACCOUNT_RETAINED=true PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE=docs/release/evidence/play-service-account-retention-2026-06-12.md PLAY_CONSOLE_UPLOAD_VALIDATED=true PLAY_CONSOLE_UPLOAD_EVIDENCE=/secure/path/play-console-upload.md GOOGLE_MAPS_SERVER_SECRET_VALIDATED=true GOOGLE_MAPS_SERVER_SECRET_EVIDENCE=/secure/path/maps-gateway-secret.md FCM_HTTP_V1_SECRET_VALIDATED=true FCM_HTTP_V1_SECRET_EVIDENCE=/secure/path/fcm-http-v1-secret.md ./scripts/release/go_no_go_check.sh`.
+   `RELEASE_TARGET=android PLAY_SERVICE_ACCOUNT_RETAINED=true PLAY_SERVICE_ACCOUNT_RETENTION_EVIDENCE=docs/release/evidence/play-service-account-retention-2026-06-12.md PLAY_CONSOLE_UPLOAD_VALIDATED=true PLAY_CONSOLE_UPLOAD_EVIDENCE=docs/release/evidence/play-console-upload-2026-06-15-v14.md GOOGLE_MAPS_SERVER_SECRET_VALIDATED=true GOOGLE_MAPS_SERVER_SECRET_EVIDENCE=docs/release/evidence/google-maps-server-secret-2026-06-14.md FCM_HTTP_V1_SECRET_VALIDATED=true FCM_HTTP_V1_SECRET_EVIDENCE=docs/release/evidence/fcm-http-v1-secret-2026-06-14.md ./scripts/release/go_no_go_check.sh`.
    `RELEASE_TARGET=android` keeps iOS Firebase/native checks out of the Google
    Play gate; use the default target after Android is submitted and iOS release
    work resumes. When the target includes iOS, also provide
@@ -101,8 +102,9 @@ Last updated: 2026-06-11
 ## Store Listing And Declarations
 
 - Position Mobio as nearby discovery, scheduled trip posting, and communication.
-- Do not describe in-app payment, BioPay settlement, automatic fare quotes,
-  dispatch, or trip lifecycle.
+- Do not describe in-app card payment, automatic fare quotes, dispatch, or
+  completed-trip lifecycle. BioPay may be described only as a Mobio USSD/NFC/QR
+  handoff feature, not as in-app settlement.
 - Data Safety must include location, phone/profile data, chat/user content,
   diagnostics/crash data if Firebase Crashlytics remains enabled, and push token
   data.
@@ -116,6 +118,6 @@ Last updated: 2026-06-11
 
 - Location permissions are justified by nearby discovery.
 - Notification permission is justified by chat/admin/service notifications.
-- Camera, NFC, SMS, biometric/payment, and related high-risk dependencies should
-  remain absent unless a future approved product scope re-enables those flows
-  and Play declarations are updated.
+- Camera and NFC are justified by active BioPay face/NFC/QR flows. SMS must
+  remain absent from the main Mobio app; SMS collection is isolated to the
+  private Mo Mobio office utility app.
