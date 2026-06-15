@@ -432,6 +432,9 @@ void main() {
         biopayNfcForegroundListener,
         contains('rw.mobi.app/biopay_native_nfc_reader'),
       );
+      expect(mainActivity, contains('handleBioPayLaunchIntent(intent)'));
+      expect(mainActivity, contains('isBioPayNfcViewIntent'));
+      expect(mainActivity, contains('biopay_nfc_app_link'));
       expect(biopayNfcForegroundListener, contains('consumePendingPayload'));
       expect(biopayNfcForegroundListener, contains('NFCTagType.iso7816'));
       expect(

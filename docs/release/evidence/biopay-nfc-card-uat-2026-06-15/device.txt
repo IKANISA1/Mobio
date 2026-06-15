@@ -1,0 +1,21 @@
+device=13111JEC215558
+Google
+Pixel 4a
+13
+33
+
+feature:android.hardware.camera
+feature:android.hardware.camera.any
+feature:android.hardware.camera.autofocus
+feature:android.hardware.camera.capability.manual_post_processing
+feature:android.hardware.camera.capability.manual_sensor
+feature:android.hardware.camera.capability.raw
+feature:android.hardware.camera.flash
+feature:android.hardware.camera.front
+feature:android.hardware.camera.level.full
+feature:android.hardware.nfc
+feature:android.hardware.nfc.any
+feature:android.hardware.nfc.ese
+feature:android.hardware.nfc.hce
+feature:android.hardware.nfc.hcef
+feature:android.hardware.nfc.uicc

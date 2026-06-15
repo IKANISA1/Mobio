@@ -113,7 +113,7 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
                 else -> result.notImplemented()
             }
         }
-        handleNfcIntent(intent)
+        handleBioPayLaunchIntent(intent)
     }
 
     override fun onResume() {
@@ -126,7 +126,7 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        handleNfcIntent(intent)
+        handleBioPayLaunchIntent(intent)
     }
 
     override fun onPause() {
@@ -152,8 +152,20 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
         }
     }
 
-    private fun handleNfcIntent(intent: Intent?) {
-        if (intent == null || !isNfcIntent(intent)) return
+    private fun handleBioPayLaunchIntent(intent: Intent?) {
+        if (intent == null) return
+        if (isBioPayNfcViewIntent(intent)) {
+            val payload = intent.dataString?.trim()
+            if (!payload.isNullOrBlank()) {
+                emitNativeNfcPayload("biopay_nfc_app_link", payload)
+            }
+            return
+        }
+        handleNfcIntent(intent)
+    }
+
+    private fun handleNfcIntent(intent: Intent) {
+        if (!isNfcIntent(intent)) return
         try {
             payloadFromNdefIntent(intent)?.let {
                 emitNativeNfcPayload("closed_app_ndef", it)
@@ -179,6 +191,18 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
         return intent.action == NfcAdapter.ACTION_NDEF_DISCOVERED ||
             intent.action == NfcAdapter.ACTION_TECH_DISCOVERED ||
             intent.action == NfcAdapter.ACTION_TAG_DISCOVERED
+    }
+
+    private fun isBioPayNfcViewIntent(intent: Intent): Boolean {
+        if (intent.action != Intent.ACTION_VIEW) return false
+        val data = intent.data ?: return false
+        val path = data.path ?: return false
+        return (data.scheme == "https" &&
+            data.host == "mobio.ikanisa.com" &&
+            path.startsWith("/biopay/nfc")) ||
+            (data.scheme == "mobio" &&
+                data.host == "biopay" &&
+                path.startsWith("/nfc"))
     }
 
     private fun enableNativeNfcReader() {
