@@ -83,7 +83,12 @@ void main() {
     );
     expect(walletScreen, contains('referral.shareUrl'));
     expect(walletScreen, isNot(contains("'\${referral.shareUrl}?ref=")));
-    expect(walletScreen, contains("RegExp(r'^\\d{6}\$')"));
+    expect(walletScreen, contains('normalizeMobioMemberId('));
+    expect(walletScreen, contains('mobioMemberIdInputError('));
+    expect(
+      walletScreen,
+      contains('LengthLimitingTextInputFormatter(mobioMemberIdLength)'),
+    );
     expect(walletScreen, contains('FilteringTextInputFormatter.digitsOnly'));
     expect(walletScreen, contains('_confirmAndTransferTokens'));
     expect(walletScreen, contains('Confirm transfer'));
@@ -251,6 +256,9 @@ void main() {
     expect(walletScreen, contains('_previewLedgerEntries'));
     expect(walletScreen, contains('_walletLedgerLabel(entry.reason)'));
     expect(walletScreen, isNot(contains("entry.reason.replaceAll('_', ' ')")));
+    expect(walletScreen, contains('QrImageView'));
+    expect(walletScreen, contains('_walletInviteQrData(summary)'));
+    expect(walletScreen, contains("label: 'Invite QR code'"));
     expect(driverPlusScreen, contains('_previewDriverPlusWallet'));
     expect(driverPlusScreen, contains('_previewDriverPlusPlans'));
     expect(walletScreen, contains("title: 'Wallet unavailable'"));

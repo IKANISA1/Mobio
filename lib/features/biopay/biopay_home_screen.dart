@@ -156,6 +156,8 @@ class _BioPayContextPanel extends StatelessWidget {
             style: AppTypography.bodySm.copyWith(color: cs.onSurfaceVariant),
           ),
           const SizedBox(height: AppSpacing.md),
+          const _BioPayActiveStateCard(),
+          const SizedBox(height: AppSpacing.md),
           const Row(
             children: [
               Expanded(
@@ -175,6 +177,77 @@ class _BioPayContextPanel extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _BioPayActiveStateCard extends StatelessWidget {
+  const _BioPayActiveStateCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: bioPayDarkPanelAlt.withValues(alpha: 0.68),
+        borderRadius: BorderRadius.circular(AppRadii.xl),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: bioPayBlue.withValues(alpha: 0.18),
+              ),
+              child: const Icon(
+                LucideIcons.radio,
+                size: 19,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Ready to receive',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.titleMd.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Show a face, tap NFC, or share QR.',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.labelMd.copyWith(
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Text(
+              'LIVE',
+              style: AppTypography.labelSm.copyWith(
+                color: AppColors.primaryFixedDim,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

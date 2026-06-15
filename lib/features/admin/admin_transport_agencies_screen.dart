@@ -521,7 +521,7 @@ class _AgencyMetricGrid extends StatelessWidget {
           crossAxisCount: columns,
           crossAxisSpacing: AppSpacing.md,
           mainAxisSpacing: AppSpacing.md,
-          childAspectRatio: columns == 1 ? 3.2 : 2.8,
+          childAspectRatio: columns == 1 ? 2.35 : 2.25,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           children: children,

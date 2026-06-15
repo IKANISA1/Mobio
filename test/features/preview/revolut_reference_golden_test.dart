@@ -15,6 +15,7 @@ import 'package:mobi_app/features/admin/admin_audit_log_screen.dart';
 import 'package:mobi_app/features/admin/admin_auth_screen.dart';
 import 'package:mobi_app/features/admin/admin_reports_screen.dart';
 import 'package:mobi_app/features/admin/admin_subscriptions_screen.dart';
+import 'package:mobi_app/features/admin/admin_transport_agencies_screen.dart';
 import 'package:mobi_app/features/admin/admin_vehicle_types_screen.dart';
 import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
 import 'package:mobi_app/features/biopay/biopay_screen.dart';
@@ -25,8 +26,10 @@ import 'package:mobi_app/features/chat/chat_screen.dart';
 import 'package:mobi_app/features/home/home_screen.dart';
 import 'package:mobi_app/features/nearby/nearby_screen.dart';
 import 'package:mobi_app/features/notifications/notifications_screen.dart';
+import 'package:mobi_app/features/profile/driver_plus_screen.dart';
 import 'package:mobi_app/features/profile/edit_profile_screen.dart';
 import 'package:mobi_app/features/profile/profile_screen.dart';
+import 'package:mobi_app/features/profile/wallet_screen.dart';
 import 'package:mobi_app/models/country.dart';
 import 'package:mobi_app/models/subscription_plan_model.dart';
 import 'package:mobi_app/models/trip.dart';
@@ -106,6 +109,14 @@ void main() {
       ),
     ),
     _GoldenCase(
+      name: 'wallet',
+      builder: () => WalletScreen(onBack: () {}),
+    ),
+    _GoldenCase(
+      name: 'mobio_plus',
+      builder: () => DriverPlusScreen(onBack: () {}),
+    ),
+    _GoldenCase(
       name: 'edit_profile',
       builder: () => EditProfileScreen(onBack: () {}),
     ),
@@ -150,6 +161,10 @@ void main() {
       name: 'biopay_nfc',
       builder: () => BioPayNfcScreen(onBack: () {}),
     ),
+    _GoldenCase(
+      name: 'biopay_nfc_write_card',
+      builder: () => BioPayNfcWriteCardScreen(onBack: () {}),
+    ),
     const _GoldenCase(
       name: 'admin_biopay_ops',
       builder: BioPayAdminConsoleScreen.new,
@@ -168,6 +183,11 @@ void main() {
     _GoldenCase(
       name: 'admin_subscriptions',
       builder: () => AdminSubscriptionsScreen(onBack: () {}),
+      includeDesktop: true,
+    ),
+    _GoldenCase(
+      name: 'admin_agencies',
+      builder: () => AdminTransportAgenciesScreen(onBack: () {}),
       includeDesktop: true,
     ),
     _GoldenCase(

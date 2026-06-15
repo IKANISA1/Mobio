@@ -296,7 +296,7 @@ class AdminMetricCard extends StatelessWidget {
     final showHint = hint?.trim().isNotEmpty == true;
 
     return AdminPanel(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -313,24 +313,24 @@ class AdminMetricCard extends StatelessWidget {
                 ),
               ),
               Container(
-                width: 40,
-                height: 40,
+                width: 34,
+                height: 34,
                 decoration: BoxDecoration(
                   color: accent.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 18, color: Colors.white),
+                child: Icon(icon, size: 16, color: Colors.white),
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.sm),
           Text(
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppTypography.headlineLg.copyWith(
               color: Colors.white,
-              fontSize: 28,
+              fontSize: 26,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -915,38 +915,54 @@ class _AdminWorkspaceTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ShaderMask(
-      blendMode: BlendMode.dstIn,
-      shaderCallback: (bounds) => const LinearGradient(
-        colors: [
-          Colors.transparent,
-          Colors.white,
-          Colors.white,
-          Colors.transparent,
-        ],
-        stops: [0, 0.035, 0.965, 1],
-      ).createShader(bounds),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
-          child: Row(
-            children: _tabs.keys.map((tab) {
-              final config = _tabs[tab]!;
-              return Padding(
-                padding: const EdgeInsets.only(right: AppSpacing.sm),
-                child: AdminFilterChip(
-                  label: config.label,
-                  icon: config.icon,
-                  isSelected: tab == currentTab,
-                  onTap: () => context.go(config.route),
-                ),
-              );
-            }).toList(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tabButtons = _tabs.keys.map((tab) {
+          final config = _tabs[tab]!;
+          return AdminFilterChip(
+            label: config.label,
+            icon: config.icon,
+            isSelected: tab == currentTab,
+            onTap: () => context.go(config.route),
+          );
+        }).toList();
+
+        if (constraints.maxWidth >= 1040) {
+          return Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: tabButtons,
+          );
+        }
+
+        return ShaderMask(
+          blendMode: BlendMode.dstIn,
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [
+              Colors.transparent,
+              Colors.white,
+              Colors.white,
+              Colors.transparent,
+            ],
+            stops: [0, 0.035, 0.965, 1],
+          ).createShader(bounds),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+              child: Row(
+                children: [
+                  for (final tabButton in tabButtons) ...[
+                    tabButton,
+                    const SizedBox(width: AppSpacing.sm),
+                  ],
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

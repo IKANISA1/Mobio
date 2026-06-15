@@ -11,6 +11,7 @@ import 'package:mobi_app/core/services/biopay_face_service.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/core/utils/mobio_member_id.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_feature_tile.dart';
@@ -82,17 +83,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (profile != null && mounted) {
         setState(() {
           final memberId = profile.memberId;
-          if (memberId != null && memberId.isNotEmpty) {
-            _userCode = memberId
-                .replaceAll(RegExp(r'[^0-9]'), '')
-                .padLeft(6, '0')
-                .substring(0, 6);
-          } else {
-            // Derive a stable 6-digit numeric code from the UUID
-            final rawId = profile.id;
-            final hash = rawId.hashCode.abs();
-            _userCode = (hash % 1000000).toString().padLeft(6, '0');
-          }
+          _userCode = displayMobioMemberId(
+            memberId: memberId,
+            stableSeed: profile.id,
+          );
           _bioPayEnrollment = bioPayEnrollment;
         });
       } else if (mounted) {
@@ -285,6 +279,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             fontSize: 38,
                             height: 1.05,
                           ),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        _ProfileIdentityStrip(
+                          memberId: _userCode,
+                          bioPayEnrollment: _bioPayEnrollment,
                         ),
                       ],
                     ),
@@ -494,6 +493,111 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     duration: 400.ms,
                     curve: Curves.easeOutQuad,
                   ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ProfileIdentityStrip extends StatelessWidget {
+  const _ProfileIdentityStrip({
+    required this.memberId,
+    required this.bioPayEnrollment,
+  });
+
+  final String memberId;
+  final BioPayEnrollmentStatus bioPayEnrollment;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+
+    return ClayCard(
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      borderRadius: 28,
+      child: Row(
+        children: [
+          Expanded(
+            child: _ProfileSignal(
+              icon: LucideIcons.badgeCheck,
+              label: 'Member',
+              value: memberId,
+              accent: cs.primary,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.xs),
+          Expanded(
+            child: _ProfileSignal(
+              icon: LucideIcons.scanFace,
+              label: 'BioPay',
+              value: bioPayEnrollment.label,
+              accent: bioPayEnrollment.isEnrolled ? ext.aqua : cs.secondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileSignal extends StatelessWidget {
+  const _ProfileSignal({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.accent,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: AppSpacing.sm,
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 16, color: Colors.white),
+            const SizedBox(width: AppSpacing.xs),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.labelSm.copyWith(
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+                  Text(
+                    value,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.labelMd.copyWith(
+                      color: cs.onSurface,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

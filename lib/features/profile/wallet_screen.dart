@@ -7,9 +7,11 @@ import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
+import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/core/utils/mobio_member_id.dart';
 import 'package:mobi_app/models/wallet.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
@@ -18,6 +20,7 @@ import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -127,6 +130,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
       context: context,
       builder: (context) {
         String? sheetError;
+        String? memberIdError;
         return StatefulBuilder(
           builder: (context, setSheetState) {
             return Padding(
@@ -185,11 +189,29 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                   TextField(
                     controller: memberController,
                     keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    maxLength: 6,
-                    decoration: const InputDecoration(
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(mobioMemberIdLength),
+                    ],
+                    maxLength: mobioMemberIdLength,
+                    onChanged: (value) {
+                      setSheetState(() {
+                        memberIdError = value.isEmpty
+                            ? null
+                            : mobioMemberIdInputError(value);
+                        if (sheetError?.contains('Mobio ID') == true ||
+                            sheetError?.contains('member ID') == true) {
+                          sheetError = null;
+                        }
+                      });
+                    },
+                    decoration: InputDecoration(
                       labelText: 'Receiver 6-digit ID',
                       counterText: '',
+                      helperText: memberIdError == null
+                          ? 'Use the exact 6-digit Mobio member ID.'
+                          : null,
+                      errorText: memberIdError,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
@@ -230,12 +252,15 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                       Expanded(
                         child: MobiButton(
                           onPressed: () {
-                            final memberId = memberController.text.trim();
+                            final memberId = normalizeMobioMemberId(
+                              memberController.text,
+                            );
                             final amount = int.tryParse(amountController.text);
-                            if (!RegExp(r'^\d{6}$').hasMatch(memberId)) {
+                            if (memberId == null) {
                               setSheetState(
-                                () => sheetError =
-                                    'Enter the receiver 6-digit member ID.',
+                                () => memberIdError = mobioMemberIdInputError(
+                                  memberController.text,
+                                ),
                               );
                               return;
                             }
@@ -564,7 +589,7 @@ const _previewWalletSummary = WalletSummary(
 );
 
 List<TokenLedgerEntry> _previewLedgerEntries() {
-  final now = DateTime.now();
+  final now = DateTime(2026, 6, 15, 19, 30);
   return [
     TokenLedgerEntry(
       id: 'preview-earned',
@@ -801,6 +826,7 @@ class _InviteCard extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final code = summary.referralCode?.trim();
     final shareUrl = summary.shareUrl?.trim();
+    final qrData = _walletInviteQrData(summary);
     return ClayCard(
       padding: const EdgeInsets.all(18),
       child: Column(
@@ -849,30 +875,56 @@ class _InviteCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: cs.outline.withValues(alpha: 0.14)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  code?.isNotEmpty == true ? code! : 'Create invite code',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.titleLg.copyWith(
-                    color: cs.onSurface,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                if (shareUrl?.isNotEmpty == true) ...[
-                  const SizedBox(height: 3),
-                  Text(
-                    shareUrl!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.bodySm.copyWith(
-                      color: cs.onSurfaceVariant,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final inviteDetails = Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      code?.isNotEmpty == true ? code! : 'Create invite code',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.titleLg.copyWith(
+                        color: cs.onSurface,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
-                  ),
-                ],
-              ],
+                    if (shareUrl?.isNotEmpty == true) ...[
+                      const SizedBox(height: 3),
+                      Text(
+                        shareUrl!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.bodySm.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ],
+                );
+
+                if (qrData == null) return inviteDetails;
+                if (constraints.maxWidth < 280) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      inviteDetails,
+                      const SizedBox(height: AppSpacing.sm),
+                      _InviteQrCode(data: qrData),
+                    ],
+                  );
+                }
+
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(child: inviteDetails),
+                    const SizedBox(width: AppSpacing.md),
+                    _InviteQrCode(data: qrData),
+                  ],
+                );
+              },
             ),
           ),
           const SizedBox(height: AppSpacing.md),
@@ -904,6 +956,47 @@ class _InviteCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _InviteQrCode extends StatelessWidget {
+  const _InviteQrCode({required this.data});
+
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: 'Invite QR code',
+      image: true,
+      child: Container(
+        width: 88,
+        height: 88,
+        padding: const EdgeInsets.all(7),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: AppColors.primaryFixed.withValues(alpha: 0.8),
+          ),
+        ),
+        child: QrImageView(
+          data: data,
+          version: QrVersions.auto,
+          gapless: true,
+          errorCorrectionLevel: QrErrorCorrectLevel.M,
+          backgroundColor: Colors.white,
+          eyeStyle: const QrEyeStyle(
+            eyeShape: QrEyeShape.square,
+            color: AppColors.primaryDim,
+          ),
+          dataModuleStyle: const QrDataModuleStyle(
+            dataModuleShape: QrDataModuleShape.square,
+            color: AppColors.primary,
+          ),
+        ),
       ),
     );
   }
@@ -985,4 +1078,16 @@ String _walletLedgerLabel(String raw) {
   final label = raw.trim().replaceAll('_', ' ');
   if (label.isEmpty) return 'Wallet activity';
   return label[0].toUpperCase() + label.substring(1);
+}
+
+String? _walletInviteQrData(WalletSummary summary) {
+  final shareUrl = summary.shareUrl?.trim();
+  if (shareUrl?.isNotEmpty == true) return shareUrl;
+
+  final code = summary.referralCode?.trim();
+  if (code?.isNotEmpty == true) {
+    return 'https://mobio.ikanisa.com/invite/$code';
+  }
+
+  return null;
 }
