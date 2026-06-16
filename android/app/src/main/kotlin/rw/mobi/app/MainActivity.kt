@@ -155,7 +155,9 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
     }
 
     override fun onPause() {
-        cancelNativeNfcWriter("INTERRUPTED", "NFC write interrupted.", null)
+        if (nativeNfcWriterResult != null && !isFinishing && !isDestroyed) {
+            cancelNativeNfcWriter("INTERRUPTED", "NFC write interrupted.", null)
+        }
         disableNativeNfcReader()
         super.onPause()
     }
@@ -186,6 +188,10 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
     private fun handleBioPayLaunchIntent(intent: Intent?) {
         if (intent == null) return
         if (isBioPayNfcViewIntent(intent)) {
+            if (System.currentTimeMillis() < suppressBioPayNfcLaunchUntilMs) {
+                Log.d(TAG, "Suppressing BioPay NFC self-launch after writer completion.")
+                return
+            }
             val payload = intent.dataString?.trim()
             if (!payload.isNullOrBlank()) {
                 emitNativeNfcPayload("biopay_nfc_app_link", payload)
@@ -335,6 +341,7 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
             } else {
                 writeNativeNfcTag(tag, request)
             }
+            ignoreNativeNfcTag(tag)
             completeNativeNfcWriter(response)
         } catch (error: NativeNfcWriterException) {
             completeNativeNfcWriter(error.code, error.message ?: "NFC card write failed.")
@@ -505,20 +512,25 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
     private fun completeNativeNfcWriter(response: Map<String, Any?>) {
         val result = nativeNfcWriterResult ?: return
         clearNativeNfcWriterState()
-        mainHandler.post {
-            disableNativeNfcReader()
-            if (nativeReaderRequested) enableNativeNfcReader()
+        suppressBioPayNfcLaunchUntilMs = System.currentTimeMillis() + NFC_SELF_LAUNCH_SUPPRESSION_MS
+        mainHandler.postAtFrontOfQueue {
             result.success(response)
+            mainHandler.postDelayed({
+                disableNativeNfcReader()
+                if (nativeReaderRequested) enableNativeNfcReader()
+            }, 500)
         }
     }
 
     private fun completeNativeNfcWriter(code: String, message: String) {
         val result = nativeNfcWriterResult ?: return
         clearNativeNfcWriterState()
-        mainHandler.post {
-            disableNativeNfcReader()
-            if (nativeReaderRequested) enableNativeNfcReader()
+        mainHandler.postAtFrontOfQueue {
             result.error(code, message, null)
+            mainHandler.post {
+                disableNativeNfcReader()
+                if (nativeReaderRequested) enableNativeNfcReader()
+            }
         }
     }
 
@@ -549,6 +561,14 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
             "active" to (nativeNfcWriterRequest != null),
             "writerMode" to "native_android_reader_mode",
         )
+    }
+
+    private fun ignoreNativeNfcTag(tag: Tag) {
+        try {
+            NfcAdapter.getDefaultAdapter(this)?.ignore(tag, 1_500, null, mainHandler)
+        } catch (error: Exception) {
+            Log.w(TAG, "Unable to debounce written NFC tag", error)
+        }
     }
 
     private fun readDeviceHcePayload(tag: Tag): String? {
@@ -788,6 +808,8 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
     companion object {
         private const val TAG = "MobiMainActivity"
         private const val BIOPAY_NFC_MIME_TYPE = "application/vnd.rw.mobi.biopay.nfc"
+        private const val NFC_SELF_LAUNCH_SUPPRESSION_MS = 4_000L
+        @Volatile private var suppressBioPayNfcLaunchUntilMs = 0L
     }
 
     private data class NativeNfcWriterRequest(
