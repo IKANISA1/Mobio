@@ -82,20 +82,20 @@ adb -s "$device" shell dumpsys package "$package_name" >"$package_file"
 adb -s "$device" shell dumpsys nfc >"$nfc_file" || true
 adb -s "$device" shell pm get-app-links "$package_name" >"$links_file" 2>&1 || true
 
-https_payload="https://mobio.ikanisa.com/biopay/nfc?type=$test_type&receiver=$test_receiver"
+if [[ "$test_type" == "momo_pay_code" ]]; then
+  tel_payload="tel:*182*8*1*$test_receiver%23"
+else
+  tel_payload="tel:*182*1*1*$test_receiver%23"
+fi
 custom_payload="mobio://biopay/nfc?type=$test_type&receiver=$test_receiver"
-https_payload_shell="${https_payload//&/\\&}"
-custom_payload_shell="${custom_payload//&/\\&}"
 
 {
-  echo "== HTTPS NFC payload resolution =="
+  echo "== Tel USSD NFC payload resolution =="
   adb -s "$device" shell cmd package resolve-activity --brief \
-    -a android.intent.action.VIEW \
-    -c android.intent.category.BROWSABLE \
-    -c android.intent.category.DEFAULT \
-    -d "$https_payload" || true
+    -a android.intent.action.DIAL \
+    -d "$tel_payload" || true
   echo
-  echo "== Custom scheme NFC payload resolution =="
+  echo "== Legacy custom scheme NFC payload resolution =="
   adb -s "$device" shell cmd package resolve-activity --brief \
     -a android.intent.action.VIEW \
     -c android.intent.category.BROWSABLE \
@@ -107,12 +107,10 @@ adb -s "$device" shell am force-stop "$package_name" >/dev/null 2>&1 || true
 adb -s "$device" shell am force-stop com.google.android.dialer >/dev/null 2>&1 || true
 adb -s "$device" logcat -c || true
 adb -s "$device" shell am start -W \
-  -a android.intent.action.VIEW \
-  -c android.intent.category.BROWSABLE \
-  -d "$https_payload_shell" \
-  "$package_name" >"$evidence_dir/https-payload-launch.txt" 2>&1 || true
+  -a android.intent.action.DIAL \
+  -d "$tel_payload" >"$evidence_dir/tel-payload-launch.txt" 2>&1 || true
 sleep 5
-capture_focus >"$evidence_dir/https-payload-focus.txt"
+capture_focus >"$evidence_dir/tel-payload-focus.txt"
 adb -s "$device" logcat -d -t 300 >"$payload_log" || true
 
 if [[ "$manual_seconds" =~ ^[0-9]+$ ]] && [[ "$manual_seconds" -gt 0 ]]; then
@@ -158,12 +156,10 @@ check() {
 check "device exposes NFC feature" "rg -q 'android.hardware.nfc' '$device_file'"
 check "device NFC service is on" "rg -q 'mState=on' '$nfc_file'"
 check "installed package has NFC permission" "rg -q 'android.permission.NFC' '$package_file'"
-check "installed package has HTTPS NFC app link filter" "rg -q 'Path: \"PatternMatcher\\{PREFIX: /biopay/nfc\\}\"' '$package_file'"
 check "installed package has NDEF_DISCOVERED filter" "rg -q 'android.nfc.action.NDEF_DISCOVERED' '$package_file'"
 check "installed package has custom mobio scheme filter" "rg -q 'Scheme: \"mobio\"' '$package_file'"
-check "mobio.ikanisa.com is verified for installed package" "rg -q 'mobio\\.ikanisa\\.com: verified' '$links_file'"
-check "HTTPS NFC payload resolves to Mobio" "rg -q 'rw\\.mobi\\.app/.MainActivity' '$resolve_file'"
-check "HTTPS NFC payload launches dialer handoff" "rg -q 'com\\.google\\.android\\.dialer|com\\.android\\.dialer' '$evidence_dir/https-payload-focus.txt'"
+check "tel USSD NFC payload resolves to phone dialer" "rg -q 'com\\.google\\.android\\.dialer|com\\.android\\.dialer|dialer' '$resolve_file'"
+check "tel USSD NFC payload launches phone dialer" "rg -q 'com\\.google\\.android\\.dialer|com\\.android\\.dialer|dialer' '$evidence_dir/tel-payload-focus.txt'"
 check "payload launch has no fatal app errors" "! rg -qi 'FATAL EXCEPTION|ANR|FlutterError' '$payload_log'"
 if [[ "$manual_seconds" =~ ^[0-9]+$ ]] && [[ "$manual_seconds" -gt 0 ]] && [[ "$require_manual" == "1" ]]; then
   check "manual phase started from Mobio" "rg -q 'rw\\.mobi\\.app/.MainActivity' '$manual_start_focus'"
@@ -184,7 +180,7 @@ fi
     echo "APK: $apk_path"
     echo "APK SHA-256: $(shasum -a 256 "$apk_path" | awk '{ print $1 }')"
   fi
-  echo "HTTPS payload: $https_payload"
+  echo "Tel USSD payload: $tel_payload"
   if [[ "$manual_seconds" =~ ^[0-9]+$ ]] && [[ "$manual_seconds" -gt 0 ]]; then
     echo "Manual physical card required: $require_manual"
   fi
@@ -199,7 +195,7 @@ fi
   echo "- App links: $links_file"
   echo "- Intent resolution: $resolve_file"
   echo "- Payload launch logcat: $payload_log"
-  echo "- HTTPS payload focus: $evidence_dir/https-payload-focus.txt"
+  echo "- Tel payload focus: $evidence_dir/tel-payload-focus.txt"
   if [[ "$manual_seconds" =~ ^[0-9]+$ ]] && [[ "$manual_seconds" -gt 0 ]]; then
     echo "- Manual start focus: $manual_start_focus"
     echo "- Manual start screenshot: $manual_start_screenshot"

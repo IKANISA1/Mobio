@@ -480,10 +480,12 @@ void main() {
         bioPayUssdCodeFromPayload(qrPayload),
         '*182*8*1*250788000000*2500#',
       );
+      expect(bioPayTokenFromPayload(qrPayload), isEmpty);
       expect(
         bioPayUssdCodeFromPayload('*182*8*1*250788000000*2500#'),
         '*182*8*1*250788000000*2500#',
       );
+      expect(bioPayTokenFromPayload('*182*8*1*250788000000*2500#'), isEmpty);
       expect(
         bioPayTokenFromPayload('mobio-biopay-token-1'),
         'mobio-biopay-token-1',

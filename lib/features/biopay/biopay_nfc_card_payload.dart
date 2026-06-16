@@ -60,6 +60,8 @@ class BioPayNfcCardPayload {
     return Uri.parse('tel:$encoded');
   }
 
+  String get ussdTelLink => ussdTelUri.toString();
+
   String get deepLink {
     return Uri(
       scheme: 'mobio',
@@ -74,16 +76,7 @@ class BioPayNfcCardPayload {
   }
 
   String get appLink {
-    return Uri(
-      scheme: 'https',
-      host: bioPayNfcAppLinkHost,
-      path: bioPayNfcAppLinkPath,
-      queryParameters: {
-        'type': receiverTypeWireName,
-        'receiver': receiver,
-        if (label != null && label!.trim().isNotEmpty) 'label': label!.trim(),
-      },
-    ).toString();
+    return ussdTelLink;
   }
 
   Map<String, dynamic> toJson() {
@@ -93,6 +86,7 @@ class BioPayNfcCardPayload {
       'receiver_type': receiverTypeWireName,
       'receiver': receiver,
       'provider_code': 'mtn_rw',
+      'ussd_code': ussdCode,
       if (label != null && label!.trim().isNotEmpty) 'label': label!.trim(),
     };
   }
@@ -220,7 +214,7 @@ List<ndef.NDEFRecord> buildBioPayNfcCardRecords(
   bool includeAndroidAppRecord = true,
 }) {
   return [
-    ndef.UriRecord.fromString(payload.appLink),
+    ndef.UriRecord.fromString(payload.ussdTelLink),
     if (includeStructuredPayload)
       ndef.MimeRecord(
         decodedType: bioPayNfcCardMimeType,

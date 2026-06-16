@@ -710,6 +710,7 @@ String bioPayUssdCodeFromPayload(String? rawValue) {
 String bioPayTokenFromPayload(String? rawValue) {
   final raw = rawValue?.trim();
   if (raw == null || raw.isEmpty) return '';
+  if (raw.startsWith('*182')) return '';
 
   try {
     final decoded = jsonDecode(raw);
@@ -727,6 +728,7 @@ String bioPayTokenFromPayload(String? rawValue) {
   final uri = Uri.tryParse(raw);
   final token = uri?.queryParameters['token']?.trim();
   if (token != null && token.isNotEmpty) return token;
+  if (uri != null && uri.hasScheme) return '';
 
   return raw;
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/features/biopay/models/biopay_ussd_payment.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -244,17 +243,6 @@ class BioPayUssdService {
   Uri ussdTelUri(String ussdCode) {
     final encoded = ussdCode.replaceAll('#', Uri.encodeComponent('#'));
     return Uri.parse('tel:$encoded');
-  }
-
-  Uri paymentRequestUriForToken(String token) {
-    return SupabaseConfig.publicAppBaseUri.replace(
-      path: '/biopay/pay/$token',
-      queryParameters: const {},
-    );
-  }
-
-  Uri paymentRequestUri(BioPayUssdPaymentRequest request) {
-    return paymentRequestUriForToken(request.token);
   }
 
   Uri paymentRequestDialerUri(BioPayUssdPaymentRequest request) {

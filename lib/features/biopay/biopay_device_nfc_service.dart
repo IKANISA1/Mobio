@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:mobi_app/features/biopay/biopay_flow_shared.dart';
-import 'package:mobi_app/features/biopay/biopay_nfc_card_payload.dart';
 import 'package:mobi_app/features/biopay/models/biopay_ussd_payment.dart';
 
 const bioPayDeviceNfcAid = 'F04D4F42494F00';
@@ -37,12 +36,7 @@ class BioPayDeviceNfcService {
 }
 
 String buildDeviceNfcPaymentPayload(BioPayUssdPaymentRequest request) {
-  return Uri(
-    scheme: 'https',
-    host: bioPayNfcAppLinkHost,
-    path: bioPayNfcAppLinkPath,
-    queryParameters: {'token': request.token},
-  ).toString();
+  return bioPayUssdTelPayload(request.dialerCode);
 }
 
 String? deviceNfcPayloadFromApduResponse(String response) {

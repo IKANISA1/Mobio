@@ -17,10 +17,13 @@ void main() {
 
       expect(receiver, '0788123456');
       expect(payload.ussdCode, '*182*1*1*0788123456#');
+      expect(payload.ussdTelLink, 'tel:*182*1*1*0788123456%23');
       expect(payload.deepLink, contains('type=momo_number'));
       expect(payload.deepLink, contains('receiver=0788123456'));
-      expect(payload.appLink, contains('https://mobio.ikanisa.com/biopay/nfc'));
+      expect(payload.appLink, 'tel:*182*1*1*0788123456%23');
+      expect(payload.appLink, isNot(contains('mobio.ikanisa.com')));
       expect(payload.toJson()['provider_code'], 'mtn_rw');
+      expect(payload.toJson()['ussd_code'], '*182*1*1*0788123456#');
     });
 
     test('normalizes MoMo Pay codes and builds the merchant USSD code', () {
@@ -98,7 +101,7 @@ void main() {
       expect(readBack.semanticallyMatches(expected), isTrue);
     });
 
-    test('writes app link, MIME JSON fallback, and AAR', () {
+    test('writes tel USSD URI, MIME JSON fallback, and AAR', () {
       const payload = BioPayNfcCardPayload(
         receiverType: BioPayNfcReceiverType.momoNumber,
         receiver: '0788123456',
@@ -108,6 +111,14 @@ void main() {
 
       expect(records, hasLength(3));
       expect(records[0], isA<ndef.UriRecord>());
+      expect(
+        (records[0] as ndef.UriRecord).uriString,
+        'tel:*182*1*1*0788123456%23',
+      );
+      expect(
+        (records[0] as ndef.UriRecord).uriString,
+        isNot(contains('mobio.ikanisa.com')),
+      );
       expect(records[1], isA<ndef.MimeRecord>());
       expect(records[2], isA<ndef.AARRecord>());
       expect(

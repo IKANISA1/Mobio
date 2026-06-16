@@ -108,7 +108,9 @@ void main() {
       expect(router, contains("path: '/biopay/pay/:token'"));
       expect(router, contains("path.startsWith('/biopay/pay/')"));
       expect(config, contains('MOBIO_PUBLIC_APP_URL'));
-      expect(service, contains("path: '/biopay/pay/"));
+      expect(service, isNot(contains("path: '/biopay/pay/")));
+      expect(service, isNot(contains('paymentRequestUriForToken')));
+      expect(service, isNot(contains('paymentRequestUri(')));
       expect(service, contains("Uri.parse('tel:\$encoded')"));
       expect(service, contains('paymentRequestDialerUri'));
       expect(service, contains('paymentRequestWhatsAppUri'));
@@ -119,7 +121,7 @@ void main() {
       expect(payerScreen, contains('_shouldAutoLaunchDialer'));
       expect(payerScreen, contains('openUssdDialer(request)'));
       expect(payerScreen, contains('Open MoMo USSD'));
-      expect(manifest, contains('android:pathPrefix="/biopay/pay"'));
+      expect(manifest, isNot(contains('android:pathPrefix="/biopay/pay"')));
       expect(manifest, contains('android:scheme="tel"'));
       expect(manifest, contains('android.permission.CALL_PHONE'));
       expect(manifest, contains('android.hardware.telephony'));

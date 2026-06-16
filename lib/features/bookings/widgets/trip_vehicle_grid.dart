@@ -29,7 +29,11 @@ class TripVehicleGrid extends StatelessWidget {
       builder: (context, constraints) {
         final useGrid = constraints.maxWidth < 520;
         final textScale = MediaQuery.textScalerOf(context).scale(1);
-        final mobileTileAspectRatio = textScale >= 1.6 ? 0.82 : 1.0;
+        final mobileTileAspectRatio = textScale >= 1.8
+            ? 0.72
+            : textScale >= 1.4
+            ? 0.82
+            : 1.0;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

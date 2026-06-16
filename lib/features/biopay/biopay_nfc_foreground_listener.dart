@@ -226,9 +226,9 @@ class _BioPayNfcForegroundListenerState
               bioPayDeviceNfcSelectApdu,
             );
             await FlutterNfcKit.finish();
-            final token = deviceNfcTokenFromApduResponse(response);
-            if (token.isNotEmpty) {
-              await _launchRequestToken(token);
+            final payload = deviceNfcPayloadFromApduResponse(response);
+            if (payload != null && payload.isNotEmpty) {
+              await _handleNativePayload(payload);
             }
             continue;
           }
