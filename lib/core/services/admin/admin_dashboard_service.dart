@@ -64,6 +64,76 @@ class AdminDashboardService extends AdminBaseService {
     }
   }
 
+  Future<AdminPlatformSettings> getPlatformSettings() async {
+    try {
+      final data = await supabaseClient.rpc('rpc_admin_get_platform_settings');
+      return AdminPlatformSettings.fromJson(data as Map<String, dynamic>?);
+    } on Object catch (error) {
+      AppLogger.error('Error fetching platform settings: $error');
+      rethrow;
+    }
+  }
+
+  Future<AdminPlatformSettings> updatePlatformSetting({
+    required String key,
+    required String value,
+  }) async {
+    try {
+      final data = await supabaseClient.rpc(
+        'rpc_admin_upsert_platform_setting',
+        params: {'p_key': key, 'p_value': value},
+      );
+      return AdminPlatformSettings.fromJson(data as Map<String, dynamic>?);
+    } on Object catch (error) {
+      AppLogger.error('Error updating platform setting: $error');
+      rethrow;
+    }
+  }
+
+  Future<List<AdminTokenRedemptionItem>> listTokenRedemptions({
+    String status = 'pending',
+    int limit = 8,
+  }) async {
+    try {
+      final rows = await supabaseClient.rpc(
+        'rpc_admin_list_token_redemption_requests',
+        params: {'p_status': status, 'p_limit': limit},
+      );
+
+      final list = rows as List<dynamic>? ?? const [];
+      return list
+          .whereType<Map<String, dynamic>>()
+          .map(AdminTokenRedemptionItem.fromJson)
+          .toList();
+    } on Object catch (error) {
+      AppLogger.error('Error fetching token redemptions: $error');
+      rethrow;
+    }
+  }
+
+  Future<AdminTokenRedemptionItem> updateTokenRedemptionStatus({
+    required String requestId,
+    required String status,
+    String? adminNote,
+  }) async {
+    try {
+      final data = await supabaseClient.rpc(
+        'rpc_admin_update_token_redemption_status',
+        params: {
+          'p_request_id': requestId,
+          'p_status': status,
+          'p_admin_note': adminNote,
+        },
+      );
+      return AdminTokenRedemptionItem.fromJson(
+        Map<String, dynamic>.from(data as Map),
+      );
+    } on Object catch (error) {
+      AppLogger.error('Error updating token redemption: $error');
+      rethrow;
+    }
+  }
+
   Future<void> markAdminNotificationRead(String notificationId) async {
     final userId = currentUserId;
     if (userId == null) {

@@ -6,9 +6,30 @@ import 'package:mobi_app/models/vehicle_type_model.dart';
 
 const Object _unset = Object();
 
+const List<String> rentalVehicleModelOptions = [
+  'SUV',
+  'Sedan',
+  'Truck',
+  'Van',
+  'Bus',
+];
+
+String? normalizeRentalVehicleModel(String value) {
+  final normalized = value.trim();
+  for (final option in rentalVehicleModelOptions) {
+    if (option.toLowerCase() == normalized.toLowerCase()) {
+      return option;
+    }
+  }
+  return null;
+}
+
 class ScheduleTripState {
   final List<VehicleTypeModel> vehicleTypes;
+  final List<String> transportAgencyNames;
   final String vehicleId;
+  final String busAgencyName;
+  final String rentalVehicleModel;
   final PlaceDetails? originDetails;
   final PlaceDetails? destDetails;
   final bool isSubmitting;
@@ -34,7 +55,10 @@ class ScheduleTripState {
 
   ScheduleTripState({
     this.vehicleTypes = const [],
+    this.transportAgencyNames = const [],
     this.vehicleId = 'cab',
+    this.busAgencyName = '',
+    this.rentalVehicleModel = '',
     this.originDetails,
     this.destDetails,
     this.isSubmitting = false,
@@ -64,13 +88,17 @@ class ScheduleTripState {
   factory ScheduleTripState.fromTrip(
     Trip trip, {
     List<VehicleTypeModel> vehicleTypes = const [],
+    List<String> transportAgencyNames = const [],
     List<FavoriteAddress> favoriteAddresses = const [],
   }) {
     return ScheduleTripState(
       vehicleTypes: vehicleTypes,
+      transportAgencyNames: transportAgencyNames,
       vehicleId: trip.vehicleTypeStr == 'private'
           ? 'private_'
           : trip.vehicleTypeStr,
+      busAgencyName: _busAgencyFromNote(trip.note, transportAgencyNames),
+      rentalVehicleModel: _vehicleModelFromNote(trip.note),
       originDetails: PlaceDetails(
         placeId:
             trip.originPlaceId ?? 'trip-origin-${trip.id ?? trip.hashCode}',
@@ -99,7 +127,10 @@ class ScheduleTripState {
 
   ScheduleTripState copyWith({
     List<VehicleTypeModel>? vehicleTypes,
+    List<String>? transportAgencyNames,
     String? vehicleId,
+    String? busAgencyName,
+    String? rentalVehicleModel,
     Object? originDetails = _unset,
     Object? destDetails = _unset,
     bool? isSubmitting,
@@ -125,7 +156,10 @@ class ScheduleTripState {
   }) {
     return ScheduleTripState(
       vehicleTypes: vehicleTypes ?? this.vehicleTypes,
+      transportAgencyNames: transportAgencyNames ?? this.transportAgencyNames,
       vehicleId: vehicleId ?? this.vehicleId,
+      busAgencyName: busAgencyName ?? this.busAgencyName,
+      rentalVehicleModel: rentalVehicleModel ?? this.rentalVehicleModel,
       originDetails: identical(originDetails, _unset)
           ? this.originDetails
           : originDetails as PlaceDetails?,
@@ -168,6 +202,23 @@ class ScheduleTripState {
 
   bool get isEditMode => editingTrip?.id?.isNotEmpty == true;
 
+  bool get requiresBusAgency => vehicleId == 'bus';
+
+  String? get normalizedBusAgencyName =>
+      normalizeBusAgencyName(busAgencyName, transportAgencyNames);
+
+  bool get requiresRentalVehicleModel => vehicleId == 'rentals';
+
+  bool get requiresVehicleModel =>
+      vehicleId == 'rentals' ||
+      vehicleId == 'private' ||
+      vehicleId == 'private_';
+
+  String? get normalizedRentalVehicleModel =>
+      normalizeRentalVehicleModel(rentalVehicleModel);
+
+  bool canSubmit(DateTime now) => validateForSubmit(now) == null;
+
   DateTime get selectedDateTime {
     return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
@@ -188,6 +239,14 @@ class ScheduleTripState {
     if (!_hasResolvedRoute(destDetails!)) {
       return 'Choose a destination from the location results.';
     }
+    if (requiresBusAgency && normalizedBusAgencyName == null) {
+      return 'Select the bus agency.';
+    }
+    if (requiresVehicleModel && normalizedRentalVehicleModel == null) {
+      return vehicleId == 'rentals'
+          ? 'Select the rental vehicle model.'
+          : 'Select the vehicle model.';
+    }
     if (selectedDateTime.isBefore(now)) {
       return 'Choose a future departure time.';
     }
@@ -198,6 +257,22 @@ class ScheduleTripState {
   }
 }
 
+String? normalizeBusAgencyName(String value, List<String> agencies) {
+  final normalized = value.replaceAll(RegExp(r'\s+'), ' ').trim();
+  if (normalized.isEmpty) return null;
+  final options = _normalizedAgencyNames(agencies);
+  if (options.isEmpty) return normalized;
+  for (final agency in options) {
+    if (agency.toLowerCase() == normalized.toLowerCase()) {
+      return agency;
+    }
+  }
+  return null;
+}
+
+List<String> normalizedBusAgencyNames(List<String> agencies) =>
+    _normalizedAgencyNames(agencies);
+
 String _newClientRequestId() {
   return 'trip-${DateTime.now().microsecondsSinceEpoch}';
 }
@@ -206,6 +281,39 @@ bool _hasResolvedRoute(PlaceDetails details) {
   return details.placeId.trim().isNotEmpty &&
       details.formattedAddress.trim().isNotEmpty &&
       (details.latitude != 0 || details.longitude != 0);
+}
+
+String _vehicleModelFromNote(String? note) {
+  final value = note?.trim();
+  if (value == null || value.isEmpty) return '';
+  final match = RegExp(
+    r'^(?:Rental model|Vehicle model):\s*(SUV|Sedan|Truck|Van|Bus)\s*$',
+    caseSensitive: false,
+    multiLine: true,
+  ).firstMatch(value);
+  if (match == null) return '';
+  return normalizeRentalVehicleModel(match.group(1) ?? '') ?? '';
+}
+
+String _busAgencyFromNote(String? note, List<String> agencies) {
+  final value = note?.trim();
+  if (value == null || value.isEmpty) return '';
+  final match = RegExp(
+    r'^Bus agency:\s*(.+?)\s*$',
+    caseSensitive: false,
+    multiLine: true,
+  ).firstMatch(value);
+  if (match == null) return '';
+  return normalizeBusAgencyName(match.group(1) ?? '', agencies) ?? '';
+}
+
+List<String> _normalizedAgencyNames(List<String> agencies) {
+  return agencies
+      .map((name) => name.replaceAll(RegExp(r'\s+'), ' ').trim())
+      .where((name) => name.isNotEmpty)
+      .toSet()
+      .toList()
+    ..sort();
 }
 
 DateTime _parseTripDate(String value) {

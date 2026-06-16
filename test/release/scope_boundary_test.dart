@@ -435,6 +435,12 @@ void main() {
       expect(mainActivity, contains('handleBioPayLaunchIntent(intent)'));
       expect(mainActivity, contains('isBioPayNfcViewIntent'));
       expect(mainActivity, contains('biopay_nfc_app_link'));
+      expect(mainActivity, contains('rw.mobi.app/biopay_nfc_writer'));
+      expect(mainActivity, contains('enableNativeNfcWriter'));
+      expect(mainActivity, contains('NdefFormatable'));
+      expect(mainActivity, contains('writeNdefMessage'));
+      expect(mainActivity, contains('formattable.format(message)'));
+      expect(mainActivity, contains('makeReadOnly'));
       expect(biopayNfcForegroundListener, contains('consumePendingPayload'));
       expect(biopayNfcForegroundListener, contains('NFCTagType.iso7816'));
       expect(
@@ -442,6 +448,12 @@ void main() {
         contains('bioPayDeviceNfcSelectApdu'),
       );
       expect(biopayNfcForegroundListener, contains('FlutterNfcKit'));
+      expect(
+        biopayNfcService,
+        contains("MethodChannel('rw.mobi.app/biopay_nfc_writer')"),
+      );
+      expect(biopayNfcService, contains('_writeCardWithAndroidNativeWriter'));
+      expect(biopayNfcService, contains('_lockCardWithAndroidNativeWriter'));
       expect(biopayNfcService, contains('writeNDEFRecords'));
       expect(
         biopayNfcService,
@@ -523,8 +535,8 @@ void main() {
       expect(biopayScreen, contains('External USSD only'));
       expect(biopayScreen, contains('admin_external_reference'));
       expect(biopayScreen, contains('QrImageView'));
-      expect(biopayScreen, contains('AppColors.primaryDim'));
-      expect(biopayScreen, contains('AppColors.primary'));
+      expect(biopayScreen, contains('AppColors.primaryFixedDim'));
+      expect(biopayScreen, contains('bioPayBlue'));
       expect(
         biopayScreen,
         isNot(contains('colors: [cs.primary, cs.secondary, bioPayBlue]')),

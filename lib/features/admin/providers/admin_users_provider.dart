@@ -198,6 +198,34 @@ class AdminUsersController extends AsyncNotifier<AdminUsersState> {
     }
   }
 
+  Future<void> addInsuranceRewardTokens(AdminUserListItem user) async {
+    final currentState = state.value;
+    if (currentState == null) return;
+
+    state = AsyncValue.data(currentState.copyWith(updatingUserId: user.id));
+
+    try {
+      await _adminService.adjustUserTokens(
+        userId: user.id,
+        amountTokens: 3000,
+        note: 'Motor insurance purchase reward',
+      );
+      final newState = await _fetchUsers();
+      state = AsyncValue.data(newState.copyWith(updatingUserId: null));
+    } on Object catch (error) {
+      final finalState = state.value;
+      if (finalState != null) {
+        state = AsyncValue.data(
+          finalState.copyWith(
+            updatingUserId: null,
+            loadError: error.toString(),
+          ),
+        );
+      }
+      rethrow;
+    }
+  }
+
   Future<void> applyRoleToSelected(String role) async {
     final currentState = state.value;
     if (currentState == null) return;

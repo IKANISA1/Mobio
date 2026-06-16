@@ -31,6 +31,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Nearby'), findsWidgets);
+    expect(find.text('Driver supply'), findsNothing);
+    expect(find.text('Passenger demand'), findsNothing);
+    expect(find.textContaining('Coordinate pick up'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }

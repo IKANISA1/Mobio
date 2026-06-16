@@ -256,7 +256,232 @@ class AdminAllowlistPanel extends StatelessWidget {
   }
 }
 
+class AdminPlatformSettingsPanel extends StatelessWidget {
+  const AdminPlatformSettingsPanel({
+    super.key,
+    required this.settings,
+    required this.isSaving,
+    required this.onEdit,
+  });
+
+  final AdminPlatformSettings settings;
+  final bool isSaving;
+  final VoidCallback onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return AdminPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AdminSectionHeader(
+            title: 'Platform settings',
+            subtitle: 'Insurance and redemption',
+            trailing: AdminActionChip(
+              label: 'Edit',
+              icon: LucideIcons.settings,
+              tone: MobiStatusBadgeTone.brand,
+              isBusy: isSaving,
+              onTap: onEdit,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          _SettingRow(
+            icon: LucideIcons.shieldCheck,
+            label: 'Insurance agent',
+            value: settings.insuranceAgentWhatsappE164,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          _SettingRow(
+            icon: LucideIcons.walletCards,
+            label: 'Redemption wallet',
+            value: settings.tokenRedemptionAdminMemberId.trim().isEmpty
+                ? 'Not configured'
+                : settings.tokenRedemptionAdminMemberId,
+            valueColor: settings.tokenRedemptionAdminMemberId.trim().isEmpty
+                ? cs.error
+                : null,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AdminTokenRedemptionsPanel extends StatelessWidget {
+  const AdminTokenRedemptionsPanel({
+    super.key,
+    required this.redemptions,
+    required this.busyRedemptionId,
+    required this.onCashSent,
+  });
+
+  final List<AdminTokenRedemptionItem> redemptions;
+  final String? busyRedemptionId;
+  final ValueChanged<AdminTokenRedemptionItem> onCashSent;
+
+  @override
+  Widget build(BuildContext context) {
+    return AdminPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AdminSectionHeader(
+            title: 'Token redemptions',
+            subtitle: '${redemptions.length} pending',
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          if (redemptions.isEmpty)
+            const _InlineEmptyState(
+              icon: LucideIcons.banknote,
+              title: 'No pending payouts',
+              message: 'Manual MoMo queue is clear.',
+            )
+          else
+            ...redemptions.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                child: _TokenRedemptionRow(
+                  item: item,
+                  isBusy: busyRedemptionId == item.id,
+                  onCashSent: () => onCashSent(item),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 // Internal Helper Widgets
+
+class _SettingRow extends StatelessWidget {
+  const _SettingRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.valueColor,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color? valueColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: cs.primary),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Text(
+            label,
+            style: AppTypography.bodySm.copyWith(color: cs.onSurfaceVariant),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.labelLg.copyWith(
+              color: valueColor ?? cs.onSurface,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TokenRedemptionRow extends StatelessWidget {
+  const _TokenRedemptionRow({
+    required this.item,
+    required this.isBusy,
+    required this.onCashSent,
+  });
+
+  final AdminTokenRedemptionItem item;
+  final bool isBusy;
+  final VoidCallback onCashSent;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final requester = item.requesterName?.trim().isNotEmpty == true
+        ? item.requesterName!
+        : item.requesterMemberId?.trim().isNotEmpty == true
+        ? 'Member ${item.requesterMemberId}'
+        : 'Mobio member';
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: Theme.of(
+          context,
+        ).extension<MobiThemeExtension>()!.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.55)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    Text(
+                      requester,
+                      style: AppTypography.titleMd.copyWith(
+                        color: cs.onSurface,
+                      ),
+                    ),
+                    MobiStatusBadge(
+                      label: '${item.amountTokens} TOKENS',
+                      tone: MobiStatusBadgeTone.info,
+                    ),
+                    MobiStatusBadge(
+                      label: '${item.amountRwf} RWF',
+                      tone: MobiStatusBadgeTone.positive,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  'MoMo ${item.momoNumber ?? 'missing'} · wallet ${item.adminMemberId}',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.bodySm.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          AdminActionChip(
+            label: 'Cash sent',
+            icon: LucideIcons.check,
+            tone: MobiStatusBadgeTone.positive,
+            isBusy: isBusy,
+            onTap: onCashSent,
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class _AttentionTile extends StatelessWidget {
   final String label;

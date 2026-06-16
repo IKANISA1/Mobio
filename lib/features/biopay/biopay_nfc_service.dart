@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/biopay/biopay_nfc_card_payload.dart';
@@ -17,8 +19,20 @@ class BioPayNfcService {
     onStep?.call(BioPayNfcOperationStep.waiting);
     await _ensureNfcAvailable();
 
+    if (_useAndroidNativeWriter) {
+      return _writeCardWithAndroidNativeWriter(payload, onStep: onStep);
+    }
+
+    return _writeCardWithFlutterNfcKit(payload, onStep: onStep);
+  }
+
+  Future<BioPayNfcWriteResult> _writeCardWithFlutterNfcKit(
+    BioPayNfcCardPayload payload, {
+    ValueChangedStep? onStep,
+  }) async {
     final tag = await FlutterNfcKit.poll(
       timeout: const Duration(seconds: 25),
+      androidPlatformSound: false,
       iosAlertMessage: 'Hold near the blank NFC card',
     );
     final diagnostics = BioPayNfcTagDiagnostics.fromTag(tag);
@@ -82,8 +96,20 @@ class BioPayNfcService {
     onStep?.call(BioPayNfcOperationStep.waiting);
     await _ensureNfcAvailable();
 
+    if (_useAndroidNativeWriter) {
+      return _lockCardWithAndroidNativeWriter(expected, onStep: onStep);
+    }
+
+    return _lockCardWithFlutterNfcKit(expected, onStep: onStep);
+  }
+
+  Future<BioPayNfcLockResult> _lockCardWithFlutterNfcKit(
+    BioPayNfcCardPayload expected, {
+    ValueChangedStep? onStep,
+  }) async {
     final tag = await FlutterNfcKit.poll(
       timeout: const Duration(seconds: 20),
+      androidPlatformSound: false,
       iosAlertMessage: 'Hold near the verified NFC card',
     );
     var diagnostics = BioPayNfcTagDiagnostics.fromTag(tag);
@@ -126,6 +152,7 @@ class BioPayNfcService {
   }
 
   Future<void> finishWithError(String message) async {
+    await _cancelAndroidNativeWriter();
     try {
       await FlutterNfcKit.finish(iosErrorMessage: message);
     } on Object {
@@ -134,6 +161,7 @@ class BioPayNfcService {
   }
 
   Future<void> cancelActiveSession() async {
+    await _cancelAndroidNativeWriter();
     try {
       await FlutterNfcKit.finish();
     } on Object {
@@ -148,6 +176,114 @@ class BioPayNfcService {
       throw const BioPayNfcException('NFC is disabled.');
     }
     throw const BioPayNfcException('NFC is not supported.');
+  }
+
+  Future<BioPayNfcWriteResult> _writeCardWithAndroidNativeWriter(
+    BioPayNfcCardPayload payload, {
+    ValueChangedStep? onStep,
+  }) async {
+    onStep?.call(BioPayNfcOperationStep.writing);
+    final response = await _invokeAndroidNativeWriter(
+      'writeCard',
+      payload,
+      timeout: const Duration(seconds: 30),
+    );
+    onStep?.call(BioPayNfcOperationStep.verifying);
+    final result = _androidWriteResultFromResponse(payload, response);
+    if (!result.verified) {
+      throw BioPayNfcVerificationException(result);
+    }
+    AppLogger.warning(
+      'Native NFC write verified: ${result.diagnostics.logSummary}',
+      context: 'BioPayNfc',
+    );
+    return result;
+  }
+
+  Future<BioPayNfcLockResult> _lockCardWithAndroidNativeWriter(
+    BioPayNfcCardPayload expected, {
+    ValueChangedStep? onStep,
+  }) async {
+    onStep?.call(BioPayNfcOperationStep.verifying);
+    final response = await _invokeAndroidNativeWriter(
+      'lockVerifiedCard',
+      expected,
+      timeout: const Duration(seconds: 30),
+    );
+    onStep?.call(BioPayNfcOperationStep.locking);
+    final result = _androidWriteResultFromResponse(expected, response);
+    if (!result.verified) {
+      throw BioPayNfcException(
+        'This is not the verified BioPay NFC card.',
+        result.diagnostics,
+      );
+    }
+    AppLogger.warning(
+      'Native NFC card locked: ${result.diagnostics.logSummary}',
+      context: 'BioPayNfc',
+    );
+    return BioPayNfcLockResult(
+      payload: expected,
+      diagnostics: result.diagnostics,
+    );
+  }
+
+  Future<Map<Object?, Object?>> _invokeAndroidNativeWriter(
+    String method,
+    BioPayNfcCardPayload payload, {
+    required Duration timeout,
+  }) async {
+    try {
+      final response = await _androidNfcWriterChannel
+          .invokeMapMethod<Object?, Object?>(method, {
+            'appLink': payload.appLink,
+            'jsonPayload': payload.toJsonString(),
+            'mimeType': bioPayNfcCardMimeType,
+            'packageName': bioPayNfcAppPackage,
+            'receiverType': payload.receiverTypeWireName,
+            'receiver': payload.receiver,
+          })
+          .timeout(timeout);
+      if (response == null) {
+        throw const BioPayNfcException('NFC card write failed.');
+      }
+      return response;
+    } on MissingPluginException {
+      throw const BioPayNfcException('NFC is not supported.');
+    } on TimeoutException {
+      throw const BioPayNfcException('NFC card write timed out.');
+    } on PlatformException catch (error) {
+      throw BioPayNfcException(_androidNfcErrorLabel(error));
+    }
+  }
+
+  BioPayNfcWriteResult _androidWriteResultFromResponse(
+    BioPayNfcCardPayload expected,
+    Map<Object?, Object?> response,
+  ) {
+    final diagnostics = BioPayNfcTagDiagnostics.fromNativeResponse(response);
+    final readBackPayload = BioPayNfcCardPayload.fromRawText(
+      response['readBackPayload']?.toString(),
+    );
+    final verified =
+        response['verified'] == true &&
+        readBackPayload != null &&
+        readBackPayload.semanticallyMatches(expected);
+    return BioPayNfcWriteResult(
+      expected: expected,
+      readBack: readBackPayload,
+      verified: verified,
+      diagnostics: diagnostics,
+    );
+  }
+
+  Future<void> _cancelAndroidNativeWriter() async {
+    if (!_useAndroidNativeWriter) return;
+    try {
+      await _androidNfcWriterChannel.invokeMethod<Object?>('cancel');
+    } on Object {
+      // Writer may not be active or available on this platform.
+    }
   }
 
   Future<List<ndef.NDEFRecord>> _readNdefRecordsWithRetry() async {
@@ -169,6 +305,26 @@ class BioPayNfcService {
     if (lastError != null) throw lastError;
     return const [];
   }
+}
+
+const _androidNfcWriterChannel = MethodChannel('rw.mobi.app/biopay_nfc_writer');
+
+bool get _useAndroidNativeWriter =>
+    !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
+String _androidNfcErrorLabel(PlatformException error) {
+  final message = error.message?.trim();
+  if (message != null && message.isNotEmpty) return message;
+  return switch (error.code) {
+    'NFC_DISABLED' => 'NFC is disabled.',
+    'NFC_NOT_SUPPORTED' => 'NFC is not supported.',
+    'NFC_TIMEOUT' => 'NFC card write timed out.',
+    'NFC_NOT_WRITABLE' => 'NFC card is not writable.',
+    'NFC_TOO_SMALL' => 'NFC card is too small.',
+    'NFC_VERIFY_FAILED' => 'NFC card verification failed.',
+    'NFC_LOCK_UNSUPPORTED' => 'This NFC card cannot be locked by this device.',
+    _ => 'NFC card write failed.',
+  };
 }
 
 typedef ValueChangedStep = void Function(BioPayNfcOperationStep step);
@@ -218,6 +374,27 @@ class BioPayNfcTagDiagnostics {
       ndefWritable: tag.ndefWritable,
       ndefCanMakeReadOnly: tag.ndefCanMakeReadOnly,
       ndefCapacity: tag.ndefCapacity,
+    );
+  }
+
+  factory BioPayNfcTagDiagnostics.fromNativeResponse(
+    Map<Object?, Object?> response,
+  ) {
+    final readBackTypes = response['readBackRecordTypes'];
+    return BioPayNfcTagDiagnostics(
+      tagId: response['tagId']?.toString() ?? '',
+      standard: response['standard']?.toString() ?? 'unknown',
+      type: response['type']?.toString() ?? 'unknown',
+      ndefAvailable: response['ndefAvailable'] as bool?,
+      ndefWritable: response['ndefWritable'] as bool?,
+      ndefCanMakeReadOnly: response['ndefCanMakeReadOnly'] as bool?,
+      ndefCapacity: response['ndefCapacity'] as int?,
+      encodedSize: response['encodedSize'] as int?,
+      recordCount: response['recordCount'] as int?,
+      readBackRecordCount: response['readBackRecordCount'] as int?,
+      readBackRecordTypes: readBackTypes is List
+          ? readBackTypes.map((value) => value.toString()).toList()
+          : const [],
     );
   }
 

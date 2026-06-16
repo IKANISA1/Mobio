@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/features/biopay/models/biopay_ussd_payment.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -6,6 +7,7 @@ class BioPayUssdService {
   BioPayUssdService({this.supabase});
 
   final SupabaseClient? supabase;
+  static const defaultInsuranceAgentWhatsapp = '+250795588248';
 
   Future<BioPayUssdPaymentRequest> createPaymentRequest({
     required BioPayRequestChannel channel,
@@ -214,7 +216,11 @@ class BioPayUssdService {
     final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched) return null;
 
-    return recordDialerOpened(request);
+    try {
+      return await recordDialerOpened(request);
+    } on Object {
+      return request.copyWith(status: BioPayRequestStatus.dialerOpened);
+    }
   }
 
   Future<bool> launchUssdCode(String ussdCode) {
@@ -227,6 +233,76 @@ class BioPayUssdService {
   Uri ussdTelUri(String ussdCode) {
     final encoded = ussdCode.replaceAll('#', Uri.encodeComponent('#'));
     return Uri.parse('tel:$encoded');
+  }
+
+  Uri paymentRequestUriForToken(String token) {
+    return SupabaseConfig.publicAppBaseUri.replace(
+      path: '/biopay/pay/$token',
+      queryParameters: const {},
+    );
+  }
+
+  Uri paymentRequestUri(BioPayUssdPaymentRequest request) {
+    return paymentRequestUriForToken(request.token);
+  }
+
+  String paymentRequestShareText(
+    BioPayUssdPaymentRequest request, {
+    String? receiverLabel,
+  }) {
+    final amount = request.amountLabel;
+    final link = paymentRequestUri(request);
+    final receiver = receiverLabel?.trim();
+    final receiverText = receiver == null || receiver.isEmpty
+        ? ''
+        : ' Receiver: $receiver.';
+    return 'Mobio payment request: $amount.$receiverText Tap this link to open MoMo USSD securely: $link';
+  }
+
+  Uri paymentRequestWhatsAppUri(
+    BioPayUssdPaymentRequest request, {
+    String? receiverLabel,
+  }) {
+    return Uri.https('wa.me', '/', {
+      'text': paymentRequestShareText(request, receiverLabel: receiverLabel),
+    });
+  }
+
+  Future<String> insuranceAgentWhatsapp() async {
+    final client = supabase;
+    if (client == null) return defaultInsuranceAgentWhatsapp;
+
+    try {
+      final response = await client.rpc<dynamic>(
+        'rpc_get_public_app_setting',
+        params: {
+          'p_key': 'insurance_agent_whatsapp_e164',
+          'p_fallback': defaultInsuranceAgentWhatsapp,
+        },
+      );
+      final value = response?.toString().trim() ?? '';
+      return value.isEmpty ? defaultInsuranceAgentWhatsapp : value;
+    } on Object {
+      return defaultInsuranceAgentWhatsapp;
+    }
+  }
+
+  Uri insuranceAgentWhatsAppUri(String phone) {
+    final digits = phone.replaceAll(RegExp(r'\D'), '');
+    return Uri.https('wa.me', '/$digits', {
+      'text':
+          'Hello Mobio Insurance, I want motor insurance and the 3000 TOKEN reward.',
+    });
+  }
+
+  Future<bool> openInsuranceAgentChat() async {
+    final phone = await insuranceAgentWhatsapp();
+    final digits = phone.replaceAll(RegExp(r'\D'), '');
+    if (digits.isEmpty) return false;
+    return launchUrl(
+      insuranceAgentWhatsAppUri(phone),
+      mode: LaunchMode.externalApplication,
+    );
   }
 
   SupabaseClient _requireSupabase() {

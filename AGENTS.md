@@ -57,6 +57,24 @@ See [CRITICAL_RULES.md](./CRITICAL_RULES.md) for the full list:
 4. Auth = Supabase anonymous (no login wall)
 5. **Build env vars = SUPABASE_URL + SUPABASE_ANON_KEY + PRIVACY_POLICY_URL + ACCOUNT_DELETION_URL mandatory on every build**
 
+## CRITICAL REVIEW-NOTE RULE: Batch Before Rebuild
+
+When the user provides browser comments, screenshot annotations, or review
+notes, implement **all active review notes in the batch first**. Do not rebuild,
+refresh, or verify the web preview after each individual note.
+
+Required sequence:
+
+1. Collect the visible review notes and any pending unverified review-note code
+   changes.
+2. Implement the full batch.
+3. Run focused analysis/tests for the changed files.
+4. Rebuild the web preview once.
+5. Verify the affected screens once after the batch is complete.
+
+Only break this sequence if the user explicitly asks for immediate verification
+of one specific fix.
+
 ## Product Scope Boundary
 
 Mobio is a limited mobility marketplace, not a full ride-hailing or payments

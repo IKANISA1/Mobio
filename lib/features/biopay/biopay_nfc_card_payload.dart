@@ -202,14 +202,16 @@ String normalizeBioPayNfcReceiver(
 }) {
   final digits = value.replaceAll(RegExp(r'\D'), '');
   if (digits.isEmpty) return '';
-  if (receiverType == BioPayNfcReceiverType.momoPayCode) return digits;
+  if (receiverType == BioPayNfcReceiverType.momoPayCode) {
+    return digits.length >= 5 && digits.length <= 6 ? digits : '';
+  }
 
-  final normalized = PhoneNumberNormalizer.normalizeForCountry(
+  final validation = PhoneNumberNormalizer.validateForCountry(
     phone: digits,
     countryCode: '+250',
   );
-  if (!PhoneNumberNormalizer.isValidCanonical(normalized)) return '';
-  return _displayMomoNumber(normalized);
+  if (!validation.isValid) return '';
+  return _displayMomoNumber(validation.normalized);
 }
 
 List<ndef.NDEFRecord> buildBioPayNfcCardRecords(

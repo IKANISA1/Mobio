@@ -55,19 +55,37 @@ class _PlaceAutocompleteFieldState
   bool _isLoadingDetails = false;
   bool _showClear = false;
   String? _sessionToken;
+  String? _confirmedAddress;
 
   @override
   void initState() {
     super.initState();
     _controller.text = widget.initialValue;
+    _confirmedAddress = widget.initialValue.trim().isEmpty
+        ? null
+        : widget.initialValue.trim();
     _showClear = widget.initialValue.isNotEmpty;
     _controller.addListener(_onTextChanged);
+    _focusNode.addListener(_onFocusChanged);
   }
 
   void _onTextChanged() {
     final show = _controller.text.isNotEmpty;
     if (show != _showClear) {
       setState(() => _showClear = show);
+    }
+
+    final current = _controller.text.trim();
+    final confirmed = _confirmedAddress;
+    if (confirmed != null && current != confirmed) {
+      _confirmedAddress = null;
+      widget.onPlaceSelected(null);
+    }
+  }
+
+  void _onFocusChanged() {
+    if (!_focusNode.hasFocus) {
+      unawaited(_resolveTypedAddress(showFeedback: false));
     }
   }
 
@@ -76,6 +94,9 @@ class _PlaceAutocompleteFieldState
     super.didUpdateWidget(oldWidget);
     if (widget.initialValue != oldWidget.initialValue &&
         widget.initialValue != _controller.text) {
+      _confirmedAddress = widget.initialValue.trim().isEmpty
+          ? null
+          : widget.initialValue.trim();
       _controller.text = widget.initialValue;
     }
   }
@@ -85,7 +106,9 @@ class _PlaceAutocompleteFieldState
     _controller
       ..removeListener(_onTextChanged)
       ..dispose();
-    _focusNode.dispose();
+    _focusNode
+      ..removeListener(_onFocusChanged)
+      ..dispose();
     super.dispose();
   }
 
@@ -119,11 +142,14 @@ class _PlaceAutocompleteFieldState
           _sessionToken = null;
         });
         if (details != null) {
-          _controller.text = details.formattedAddress.isNotEmpty
+          final resolvedAddress = details.formattedAddress.isNotEmpty
               ? details.formattedAddress
               : prediction.description;
+          _confirmedAddress = resolvedAddress;
+          _controller.text = resolvedAddress;
           widget.onPlaceSelected(details);
         } else {
+          _confirmedAddress = null;
           widget.onPlaceSelected(null);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -147,7 +173,61 @@ class _PlaceAutocompleteFieldState
     _controller.clear();
     _focusNode.unfocus();
     _sessionToken = null;
+    _confirmedAddress = null;
     widget.onPlaceSelected(null);
+  }
+
+  Future<void> _resolveTypedAddress({required bool showFeedback}) async {
+    final query = _controller.text.trim();
+    if (query.length < 3 || query == _confirmedAddress || _isLoadingDetails) {
+      return;
+    }
+
+    setState(() => _isLoadingDetails = true);
+    try {
+      final details = await _placesService.geocodeAddress(query);
+      if (!mounted) return;
+      setState(() => _isLoadingDetails = false);
+
+      if (details == null ||
+          details.latitude == 0 ||
+          details.longitude == 0 ||
+          details.formattedAddress.trim().isEmpty) {
+        _confirmedAddress = null;
+        widget.onPlaceSelected(null);
+        if (showFeedback) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Enter a valid Rwanda address.')),
+          );
+        }
+        return;
+      }
+
+      _confirmedAddress = details.formattedAddress;
+      _controller.text = details.formattedAddress;
+      _sessionToken = null;
+      widget.onPlaceSelected(details);
+    } on PlacesException catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoadingDetails = false);
+      _confirmedAddress = null;
+      widget.onPlaceSelected(null);
+      if (showFeedback) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.userMessage)));
+      }
+    } on Object {
+      if (!mounted) return;
+      setState(() => _isLoadingDetails = false);
+      _confirmedAddress = null;
+      widget.onPlaceSelected(null);
+      if (showFeedback) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to resolve that address.')),
+        );
+      }
+    }
   }
 
   String _ensureSessionToken() {
@@ -224,6 +304,10 @@ class _PlaceAutocompleteFieldState
                             child: TextField(
                               controller: controller,
                               focusNode: focusNode,
+                              textInputAction: TextInputAction.search,
+                              onSubmitted: (_) => unawaited(
+                                _resolveTypedAddress(showFeedback: true),
+                              ),
                               textAlignVertical: TextAlignVertical.center,
                               style: AppTypography.titleLg.copyWith(
                                 color: cs.onSurface,

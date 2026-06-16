@@ -44,9 +44,25 @@ void main() {
 
     await pump('cab');
     expect(find.text('Number plate'), findsOneWidget);
+    expect(
+      find.text('One free trip credit every day for 12 months.'),
+      findsNothing,
+    );
     expect(find.text('Bus details'), findsNothing);
     expect(find.text('Select agency'), findsNothing);
     expect(find.widgetWithText(TextField, 'Passenger capacity'), findsNothing);
+
+    await pump('moto');
+    expect(
+      find.text('One free trip credit every day for 12 months.'),
+      findsOneWidget,
+    );
+
+    await pump('private');
+    expect(
+      find.text('One free trip credit every day for 30 days.'),
+      findsOneWidget,
+    );
 
     await pump('bus');
     expect(find.text('Bus details'), findsOneWidget);
@@ -58,6 +74,17 @@ void main() {
 
     await pump('rentals');
     expect(find.text('Rental model'), findsOneWidget);
+    expect(
+      find.text('One free trip credit every day for 30 days.'),
+      findsOneWidget,
+    );
+    for (final model in ProfileVehicleSection.rentalModelOptions) {
+      expect(find.text(model), findsWidgets);
+    }
+
+    await pump('private');
+    expect(find.text('Vehicle model'), findsOneWidget);
+    expect(find.text('Rental model'), findsNothing);
     for (final model in ProfileVehicleSection.rentalModelOptions) {
       expect(find.text(model), findsWidgets);
     }

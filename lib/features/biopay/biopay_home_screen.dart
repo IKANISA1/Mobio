@@ -1,26 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/features/biopay/biopay_style.dart';
-import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 
-class BioPayScreen extends StatelessWidget {
+class BioPayScreen extends ConsumerStatefulWidget {
   const BioPayScreen({
     super.key,
     required this.onQr,
     required this.onScan,
     required this.onFace,
     required this.onNfc,
+    required this.onRequestPayment,
   });
 
   final VoidCallback onQr;
   final VoidCallback onScan;
   final VoidCallback onFace;
   final VoidCallback onNfc;
+  final VoidCallback onRequestPayment;
+
+  @override
+  ConsumerState<BioPayScreen> createState() => _BioPayScreenState();
+}
+
+class _BioPayScreenState extends ConsumerState<BioPayScreen> {
+  bool _isOpeningInsurance = false;
+
+  Future<void> _openInsuranceAgent() async {
+    if (_isOpeningInsurance) return;
+
+    setState(() => _isOpeningInsurance = true);
+    try {
+      final opened = await ref
+          .read(biopayUssdServiceProvider)
+          .openInsuranceAgentChat();
+      if (!opened && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open insurance chat.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isOpeningInsurance = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,31 +108,36 @@ class BioPayScreen extends StatelessWidget {
                           icon: LucideIcons.scanFace,
                           label: 'Face Scan',
                           color: bioPayBlue,
-                          onTap: onFace,
+                          onTap: widget.onFace,
                         ),
                         _BioPayHomeTile(
                           icon: LucideIcons.nfc,
                           label: 'NFC Tap',
                           color: bioPayNfcPurple,
-                          onTap: onNfc,
+                          onTap: widget.onNfc,
                         ),
                         _BioPayHomeTile(
                           icon: LucideIcons.qrCode,
                           label: 'Get QR',
                           color: bioPayQrOrange,
-                          onTap: onQr,
+                          onTap: widget.onQr,
                         ),
                         _BioPayHomeTile(
                           icon: LucideIcons.scanLine,
                           label: 'Scan QR',
                           color: bioPayScanTeal,
-                          onTap: onScan,
+                          onTap: widget.onScan,
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(height: AppSpacing.lg),
+                  _BioPayRequestPaymentButton(onTap: widget.onRequestPayment),
                   const SizedBox(height: AppSpacing.md),
-                  const _BioPayContextPanel(),
+                  _BioPayInsuranceBanner(
+                    isBusy: _isOpeningInsurance,
+                    onTap: _openInsuranceAgent,
+                  ),
                 ],
               ),
             ),
@@ -115,110 +148,138 @@ class BioPayScreen extends StatelessWidget {
   }
 }
 
-class _BioPayContextPanel extends StatelessWidget {
-  const _BioPayContextPanel();
+class _BioPayInsuranceBanner extends StatelessWidget {
+  const _BioPayInsuranceBanner({required this.isBusy, required this.onTap});
+
+  final bool isBusy;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
-    return MobiSurfacePanel(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      borderRadius: AppRadii.xl,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'BioPay identity',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
+    return Semantics(
+      button: true,
+      label: 'Get motor insurance and earn 3000 tokens',
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(AppRadii.xl),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppRadii.xl),
+          onTap: isBusy ? null : onTap,
+          child: Ink(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: bioPayDarkPanel.withValues(alpha: 0.86),
+              borderRadius: BorderRadius.circular(AppRadii.xl),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.22),
+                  blurRadius: 24,
+                  offset: const Offset(0, 12),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: bioPayScanTeal.withValues(alpha: 0.18),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: isBusy
+                      ? const Padding(
+                          padding: EdgeInsets.all(14),
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(
+                          LucideIcons.shieldCheck,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Motor insurance',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.titleMd.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Get covered and earn 3000 TOKENS.',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.bodySm.copyWith(
+                          color: Colors.white.withValues(alpha: 0.78),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              MobiStatusBadge(
-                label: 'Ready',
-                icon: LucideIcons.shieldCheck,
-                tone: MobiStatusBadgeTone.positive,
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            'Face, NFC, and QR stay available as fast payment handoffs.',
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: AppTypography.bodySm.copyWith(color: cs.onSurfaceVariant),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          const _BioPayActiveStateCard(),
-          const SizedBox(height: AppSpacing.md),
-          const Row(
-            children: [
-              Expanded(
-                child: _BioPaySignalPill(
-                  icon: LucideIcons.scanFace,
-                  label: 'Face',
+                const SizedBox(width: AppSpacing.sm),
+                const Icon(
+                  LucideIcons.messageCircle,
+                  color: Colors.white,
+                  size: 20,
                 ),
-              ),
-              SizedBox(width: AppSpacing.xs),
-              Expanded(
-                child: _BioPaySignalPill(icon: LucideIcons.nfc, label: 'NFC'),
-              ),
-              SizedBox(width: AppSpacing.xs),
-              Expanded(
-                child: _BioPaySignalPill(icon: LucideIcons.qrCode, label: 'QR'),
-              ),
-            ],
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class _BioPayActiveStateCard extends StatelessWidget {
-  const _BioPayActiveStateCard();
+class _BioPayRequestPaymentButton extends StatelessWidget {
+  const _BioPayRequestPaymentButton({required this.onTap});
+
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: bioPayDarkPanelAlt.withValues(alpha: 0.68),
-        borderRadius: BorderRadius.circular(AppRadii.xl),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: bioPayBlue.withValues(alpha: 0.18),
-              ),
-              child: const Icon(
-                LucideIcons.radio,
-                size: 19,
-                color: Colors.white,
-              ),
+    return Semantics(
+      button: true,
+      label: 'Get Payment Link',
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(AppRadii.pill),
+        elevation: 8,
+        shadowColor: Colors.black.withValues(alpha: 0.24),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppRadii.pill),
+          onTap: onTap,
+          child: Ink(
+            height: 64,
+            decoration: BoxDecoration(
+              color: bioPayDarkPanelAlt.withValues(alpha: 0.96),
+              borderRadius: BorderRadius.circular(AppRadii.pill),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.26),
+                  blurRadius: 24,
+                  offset: const Offset(0, 12),
+                ),
+              ],
             ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Ready to receive',
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(LucideIcons.badgeDollarSign, color: Colors.white),
+                const SizedBox(width: AppSpacing.sm),
+                Flexible(
+                  child: Text(
+                    'Get Payment Link',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.titleMd.copyWith(
@@ -226,69 +287,10 @@ class _BioPayActiveStateCard extends StatelessWidget {
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Show a face, tap NFC, or share QR.',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.labelMd.copyWith(
-                      color: cs.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Text(
-              'LIVE',
-              style: AppTypography.labelSm.copyWith(
-                color: AppColors.primaryFixedDim,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _BioPaySignalPill extends StatelessWidget {
-  const _BioPaySignalPill({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: bioPayDarkPanelAlt.withValues(alpha: 0.58),
-        borderRadius: BorderRadius.circular(AppRadii.pill),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm,
-          vertical: 9,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 14, color: Colors.white.withValues(alpha: 0.82)),
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTypography.labelSm.copyWith(
-                  color: Colors.white.withValues(alpha: 0.82),
-                  fontWeight: FontWeight.w800,
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

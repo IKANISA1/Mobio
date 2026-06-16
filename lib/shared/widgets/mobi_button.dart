@@ -28,58 +28,80 @@ class MobiButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = _getColors(context);
+    final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final isEnabled = !isLoading && onPressed != null;
+    final isInactive = !isEnabled && !isLoading;
+    final backgroundColor = isInactive
+        ? cs.onSurface.withValues(alpha: 0.10)
+        : colors.bg;
+    final foregroundColor = isInactive
+        ? cs.onSurfaceVariant.withValues(alpha: 0.46)
+        : colors.fg;
+    final borderColor = isInactive
+        ? cs.onSurfaceVariant.withValues(alpha: 0.22)
+        : colors.border;
 
     return Semantics(
       button: true,
       enabled: isEnabled,
       child: SizedBox(
         width: width,
-        child: Opacity(
-          opacity: isEnabled || isLoading ? 1 : 0.62,
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: isLoading ? null : onPressed,
-              borderRadius: BorderRadius.circular(AppRadii.pill),
-              splashColor: colors.fg.withValues(alpha: ext.pressedWhiteAlpha),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding:
-                    padding ??
-                    const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lg,
-                      vertical: AppSpacing.md,
-                    ),
-                decoration: BoxDecoration(
-                  color: colors.bg,
-                  borderRadius: BorderRadius.circular(AppRadii.pill),
-                  boxShadow: variant == MobiButtonVariant.ghost
-                      ? null
-                      : ext.clayButtonShadow,
-                  border: Border.all(color: colors.border, width: 1),
-                ),
-                child: Center(
-                  child: isLoading
-                      ? SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: colors.fg,
-                          ),
-                        )
-                      : DefaultTextStyle(
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: isLoading ? null : onPressed,
+            borderRadius: BorderRadius.circular(AppRadii.pill),
+            splashColor: isEnabled
+                ? colors.fg.withValues(alpha: ext.pressedWhiteAlpha)
+                : Colors.transparent,
+            highlightColor: isEnabled ? null : Colors.transparent,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding:
+                  padding ??
+                  const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.md,
+                  ),
+              decoration: BoxDecoration(
+                color: backgroundColor,
+                borderRadius: BorderRadius.circular(AppRadii.pill),
+                boxShadow: isEnabled && variant != MobiButtonVariant.ghost
+                    ? ext.clayButtonShadow
+                    : null,
+                border: Border.all(color: borderColor, width: 1),
+              ),
+              child: Center(
+                child: isLoading
+                    ? SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: foregroundColor,
+                        ),
+                      )
+                    : IconTheme(
+                        data: IconThemeData(color: foregroundColor),
+                        child: DefaultTextStyle(
                           style: AppTypography.titleMd.copyWith(
-                            color: colors.fg,
+                            color: foregroundColor,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
-                          child: child,
+                          child: isInactive
+                              ? ColorFiltered(
+                                  colorFilter: ColorFilter.mode(
+                                    foregroundColor,
+                                    BlendMode.srcIn,
+                                  ),
+                                  child: child,
+                                )
+                              : child,
                         ),
-                ),
+                      ),
               ),
             ),
           ),

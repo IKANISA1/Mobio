@@ -32,6 +32,8 @@ void main() {
     );
     expect(fields.every((field) => field.autofocus == false), isTrue);
     expect(fields.first.autofillHints, contains(AutofillHints.oneTimeCode));
+    expect(find.byType(TextButton), findsNothing);
+    expect(find.byIcon(Icons.backspace_outlined), findsNothing);
 
     for (var i = 0; i < 6; i += 1) {
       await tester.enterText(
@@ -43,22 +45,5 @@ void main() {
 
     expect(controller.text, '123456');
     expect(changes.last, '123456');
-
-    controller.clear();
-    await tester.pump();
-
-    for (final digit in ['7', '8', '8', '7', '6', '7']) {
-      await tester.tap(find.widgetWithText(TextButton, digit));
-      await tester.pump();
-    }
-
-    expect(controller.text, '788767');
-    expect(changes.last, '788767');
-
-    await tester.tap(find.byIcon(Icons.backspace_outlined));
-    await tester.pump();
-
-    expect(controller.text, '78876');
-    expect(changes.last, '78876');
   });
 }

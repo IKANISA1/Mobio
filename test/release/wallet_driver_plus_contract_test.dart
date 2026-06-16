@@ -19,6 +19,14 @@ void main() {
       'supabase/migrations/20260614221500_driver_subscription_momo_openai_transactions.sql';
   const productionReadinessMigrationPath =
       'supabase/migrations/20260615103000_wallet_subscription_production_readiness.sql';
+  const referralInviteeRewardMigrationPath =
+      'supabase/migrations/20260615124500_referral_invitee_reward_and_manual_code.sql';
+  const walletRedemptionMigrationPath =
+      'supabase/migrations/20260616110000_wallet_redemptions_and_insurance_config.sql';
+  const driverPlanCapsMigrationPath =
+      'supabase/migrations/20260616002000_driver_plan_caps_rentals_and_moto_allowance.sql';
+  const driverVehiclePolicyMigrationPath =
+      'supabase/migrations/20260616004500_driver_vehicle_policy_enforcement.sql';
   const chatScreenPath = 'lib/features/chat/chat_screen.dart';
   const referralAttributionServicePath =
       'lib/core/services/referral_attribution_service.dart';
@@ -35,9 +43,21 @@ void main() {
     final walletService = File(
       'lib/core/services/wallet_service.dart',
     ).readAsStringSync();
+    final adminService = File(
+      'lib/core/services/admin_service.dart',
+    ).readAsStringSync();
+    final adminUserSheet = File(
+      'lib/features/admin/widgets/admin_user_sheet.dart',
+    ).readAsStringSync();
     final appRouter = File(appRouterPath).readAsStringSync();
     final productionReadinessSql = File(
       productionReadinessMigrationPath,
+    ).readAsStringSync();
+    final referralInviteeRewardSql = File(
+      referralInviteeRewardMigrationPath,
+    ).readAsStringSync();
+    final walletRedemptionSql = File(
+      walletRedemptionMigrationPath,
     ).readAsStringSync();
 
     expect(sql, contains('create table if not exists public.token_wallets'));
@@ -61,6 +81,16 @@ void main() {
     expect(sql, contains('rpc_complete_referral_signup'));
     expect(sql, contains('Successful Mobio app share'));
     expect(sql, contains('100'));
+    expect(referralInviteeRewardSql, contains('invitee_reward_tokens'));
+    expect(referralInviteeRewardSql, contains('v_invitee_id'));
+    expect(
+      referralInviteeRewardSql,
+      contains('Mobio invite code signup reward'),
+    );
+    expect(
+      referralInviteeRewardSql,
+      contains('uq_referral_reward_invitee_once'),
+    );
     expect(sql, contains('install_not_verified'));
     expect(sql, contains('duplicate_install'));
     expect(sql, contains('uq_referral_reward_install_once'));
@@ -100,8 +130,38 @@ void main() {
       isNot(contains('DateTime.now().microsecondsSinceEpoch')),
     );
     expect(walletScreen, contains('Invite and earn'));
+    expect(walletScreen, contains('You are getting Mobio'));
+    expect(walletScreen, contains('quick rides and instant payment'));
+    expect(walletScreen, contains('100 TOKENS'));
+    expect(walletScreen, contains('Enter invite code'));
+    expect(walletScreen, contains('_walletInviteUrl(summary)'));
     expect(walletScreen, contains('Share invite'));
     expect(walletScreen, contains('Copy link'));
+    expect(walletScreen, contains('Redeem'));
+    expect(walletScreen, contains('_minimumRedemptionTokens = 5000'));
+    expect(walletScreen, contains('_confirmAndRedeemTokens'));
+    expect(walletScreen, contains('redeemTokens('));
+    expect(walletService, contains('rpc_redeem_wallet_tokens'));
+    expect(walletRedemptionSql, contains('token_redemption_requests'));
+    expect(
+      walletRedemptionSql,
+      contains('amount_tokens bigint not null check (amount_tokens >= 5000)'),
+    );
+    expect(walletRedemptionSql, contains('token_redemption_admin_member_id'));
+    expect(walletRedemptionSql, contains('REGISTERED_MOMO_REQUIRED'));
+    expect(
+      walletRedemptionSql,
+      contains('rpc_admin_list_token_redemption_requests'),
+    );
+    expect(
+      walletRedemptionSql,
+      contains('rpc_admin_update_token_redemption_status'),
+    );
+    expect(walletRedemptionSql, contains('rpc_admin_adjust_user_tokens'));
+    expect(walletRedemptionSql, contains('manual_token_credit'));
+    expect(adminService, contains('adjustUserTokens'));
+    expect(adminUserSheet, contains('Add 3000 TOKENS'));
+    expect(adminUserSheet, contains('Motor insurance purchase reward'));
     expect(appRouter, contains('_safePopToProfile'));
     expect(appRouter, contains('context.go(AppRoutes.profile)'));
   });
@@ -221,7 +281,7 @@ void main() {
     expect(driverPlusScreen, contains('walletBalanceTokens'));
     expect(driverPlusScreen, contains('walletBalanceTokens >= tokenCost'));
     expect(driverPlusScreen, contains('if (canPayTokens)'));
-    expect(driverPlusScreen, contains('Pay with Tokens'));
+    expect(driverPlusScreen, contains('Pay with TOKENS'));
     expect(driverPlusScreen, isNot(contains('Pay tokens')));
     expect(driverPlusScreen, contains('Pay with MoMo'));
     expect(driverPlusScreen, isNot(contains('MoMo USSD')));
@@ -298,7 +358,6 @@ void main() {
       contains('create table if not exists public.driver_plus_rules'),
     );
     expect(sql, contains("('bus', false, 0, 0, 0, true, true)"));
-    expect(sql, contains("('private', true, 0, 0, 0, false, true)"));
     expect(sql, contains('rpc_send_chat_message'));
     expect(sql, contains('MOBIO_PLUS_REQUIRED'));
     expect(sql, contains('rpc_list_chat_messages'));
@@ -320,5 +379,50 @@ void main() {
       chatScreen,
       contains('External contact is available with Mobio Plus.'),
     );
+  });
+
+  test('driver plan policy covers rentals others and moto allowances', () {
+    final migration = File(driverPlanCapsMigrationPath).readAsStringSync();
+    final enforcementMigration = File(
+      driverVehiclePolicyMigrationPath,
+    ).readAsStringSync();
+
+    expect(migration, contains("('moto', true, 365, 1, 365, false, true)"));
+    expect(migration, contains("('rentals', true, 30, 1, 30, false, true)"));
+    expect(migration, contains("('private', true, 30, 1, 30, false, true)"));
+    expect(migration, contains("'rentals'"));
+    expect(migration, contains('15000'));
+    expect(migration, contains('1000'));
+    expect(migration, contains('free_credit_days'));
+    expect(migration, contains('free_daily_request_limit'));
+    expect(migration, contains('free_total_request_limit'));
+    expect(migration, contains('30'));
+    expect(
+      enforcementMigration,
+      contains('create trigger enforce_driver_vehicle_policy_before_insert'),
+    );
+    expect(
+      enforcementMigration,
+      contains('public._driver_vehicle_policy_status'),
+    );
+    expect(enforcementMigration, contains("v_vehicle_type = 'private'"));
+    expect(enforcementMigration, contains("interval '30 days'"));
+    expect(enforcementMigration, contains('v_day_used < 1'));
+    expect(enforcementMigration, contains('v_total_used < 30'));
+    expect(
+      enforcementMigration,
+      contains('Others include one free driver trip credit per day.'),
+    );
+    expect(enforcementMigration, contains("v_vehicle_type = 'rentals'"));
+    expect(enforcementMigration, contains('rentals_daily_free_credit_used'));
+    expect(
+      enforcementMigration,
+      contains('Rentals include one free driver trip credit per day.'),
+    );
+    expect(enforcementMigration, contains("v_vehicle_type = 'moto'"));
+    expect(enforcementMigration, contains('v_day_used < 1'));
+    expect(enforcementMigration, contains('v_total_used < 365'));
+    expect(enforcementMigration, contains("interval '365 days'"));
+    expect(enforcementMigration, contains('Moto Taxi includes one free'));
   });
 }

@@ -74,6 +74,29 @@ class AdminUserListItem {
   }
 }
 
+class AdminTokenAdjustmentReceipt {
+  final String ledgerEntryId;
+  final String profileId;
+  final int amountTokens;
+  final String status;
+
+  const AdminTokenAdjustmentReceipt({
+    required this.ledgerEntryId,
+    required this.profileId,
+    required this.amountTokens,
+    required this.status,
+  });
+
+  factory AdminTokenAdjustmentReceipt.fromJson(Map<String, dynamic> json) {
+    return AdminTokenAdjustmentReceipt(
+      ledgerEntryId: json['ledger_entry_id'] as String? ?? '',
+      profileId: json['profile_id'] as String? ?? '',
+      amountTokens: (json['amount_tokens'] as num?)?.toInt() ?? 0,
+      status: json['status'] as String? ?? 'completed',
+    );
+  }
+}
+
 class AdminTripListItem {
   final String id;
   final String authorId;
@@ -149,6 +172,72 @@ class AdminWhatsappNumberItem {
       isActive: json['is_active'] as bool? ?? false,
       createdAt: json['created_at'] as String?,
       updatedAt: json['updated_at'] as String?,
+    );
+  }
+}
+
+class AdminPlatformSettings {
+  final String insuranceAgentWhatsappE164;
+  final String tokenRedemptionAdminMemberId;
+
+  const AdminPlatformSettings({
+    this.insuranceAgentWhatsappE164 = '+250795588248',
+    this.tokenRedemptionAdminMemberId = '',
+  });
+
+  factory AdminPlatformSettings.fromJson(Map<String, dynamic>? json) {
+    return AdminPlatformSettings(
+      insuranceAgentWhatsappE164:
+          json?['insurance_agent_whatsapp_e164'] as String? ?? '+250795588248',
+      tokenRedemptionAdminMemberId:
+          json?['token_redemption_admin_member_id'] as String? ?? '',
+    );
+  }
+}
+
+class AdminTokenRedemptionItem {
+  final String id;
+  final String requesterProfileId;
+  final String? requesterName;
+  final String? requesterPhone;
+  final String? requesterMemberId;
+  final String adminMemberId;
+  final String? momoNumber;
+  final int amountTokens;
+  final int amountRwf;
+  final String status;
+  final String? adminNote;
+  final String? createdAt;
+
+  const AdminTokenRedemptionItem({
+    required this.id,
+    required this.requesterProfileId,
+    required this.adminMemberId,
+    required this.amountTokens,
+    required this.amountRwf,
+    required this.status,
+    this.requesterName,
+    this.requesterPhone,
+    this.requesterMemberId,
+    this.momoNumber,
+    this.adminNote,
+    this.createdAt,
+  });
+
+  factory AdminTokenRedemptionItem.fromJson(Map<String, dynamic> json) {
+    return AdminTokenRedemptionItem(
+      id: json['id'] as String? ?? '',
+      requesterProfileId: json['requester_profile_id'] as String? ?? '',
+      requesterName: json['requester_name'] as String?,
+      requesterPhone: json['requester_phone'] as String?,
+      requesterMemberId: json['requester_member_id'] as String?,
+      adminMemberId: json['admin_member_id'] as String? ?? '',
+      momoNumber: json['momo_number'] as String?,
+      amountTokens: (json['amount_tokens'] as num?)?.toInt() ?? 0,
+      amountRwf: (json['amount_rwf'] as num?)?.toInt() ?? 0,
+      status: json['status'] as String? ?? 'pending',
+      adminNote: json['admin_note'] as String?,
+      createdAt: json['created_at'] as String?,
     );
   }
 }

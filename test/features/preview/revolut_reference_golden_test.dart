@@ -145,8 +145,13 @@ void main() {
     ),
     _GoldenCase(
       name: 'biopay_home',
-      builder: () =>
-          BioPayScreen(onQr: () {}, onScan: () {}, onFace: () {}, onNfc: () {}),
+      builder: () => BioPayScreen(
+        onQr: () {},
+        onScan: () {},
+        onFace: () {},
+        onNfc: () {},
+        onRequestPayment: () {},
+      ),
     ),
     _GoldenCase(
       name: 'biopay_qr',
@@ -801,6 +806,18 @@ class _PreviewAdminService implements AdminService {
   }) async {}
 
   @override
+  Future<AdminTokenAdjustmentReceipt> adjustUserTokens({
+    required String userId,
+    required int amountTokens,
+    String? note,
+  }) async => AdminTokenAdjustmentReceipt(
+    ledgerEntryId: 'ledger-$userId',
+    profileId: userId,
+    amountTokens: amountTokens,
+    status: 'completed',
+  );
+
+  @override
   Future<List<AdminWhatsappNumberItem>> listWhatsappAdminNumbers() async =>
       const [
         AdminWhatsappNumberItem(
@@ -862,6 +879,56 @@ class _PreviewAdminService implements AdminService {
       body: 'Reports, trips, and BioPay queues are up to date.',
     ),
   ];
+
+  @override
+  Future<AdminPlatformSettings> getPlatformSettings() async =>
+      const AdminPlatformSettings(
+        insuranceAgentWhatsappE164: '+250795588248',
+        tokenRedemptionAdminMemberId: '482013',
+      );
+
+  @override
+  Future<AdminPlatformSettings> updatePlatformSetting({
+    required String key,
+    required String value,
+  }) async => getPlatformSettings();
+
+  @override
+  Future<List<AdminTokenRedemptionItem>> listTokenRedemptions({
+    String status = 'pending',
+    int limit = 8,
+  }) async => const [
+    AdminTokenRedemptionItem(
+      id: 'redeem-1',
+      requesterProfileId: 'u1',
+      requesterName: 'Chantal Rider',
+      requesterMemberId: '482013',
+      adminMemberId: '482999',
+      momoNumber: '0788111222',
+      amountTokens: 5000,
+      amountRwf: 5000,
+      status: 'pending',
+      createdAt: '2026-06-16T08:00:00Z',
+    ),
+  ];
+
+  @override
+  Future<AdminTokenRedemptionItem> updateTokenRedemptionStatus({
+    required String requestId,
+    required String status,
+    String? adminNote,
+  }) async => AdminTokenRedemptionItem(
+    id: requestId,
+    requesterProfileId: 'u1',
+    requesterName: 'Chantal Rider',
+    requesterMemberId: '482013',
+    adminMemberId: '482999',
+    momoNumber: '0788111222',
+    amountTokens: 5000,
+    amountRwf: 5000,
+    status: status,
+    adminNote: adminNote,
+  );
 
   @override
   Future<void> markAdminNotificationRead(String notificationId) async {}

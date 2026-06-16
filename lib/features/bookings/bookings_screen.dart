@@ -351,7 +351,9 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
       child: AiEmptyState(
-        title: _activeToggle == 0 ? 'No trips yet' : 'No nearby trips',
+        title: _activeToggle == 0
+            ? 'No scheduled trips yet'
+            : 'No nearby trips',
         icon: _activeToggle == 0 ? LucideIcons.calendar : LucideIcons.mapPin,
         height: 260,
         onAction: _activeToggle == 0 ? widget.onSchedule : _loadTrips,

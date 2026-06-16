@@ -198,17 +198,6 @@ class _BioPayFaceEnrollScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          MobiButton(
-            onPressed: _busy ? null : primaryAction,
-            isLoading: _busy,
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.lg,
-              vertical: 19,
-            ),
-            child: Text(primaryLabel),
-          ),
-          const SizedBox(height: AppSpacing.lg),
           if (readyForCapture)
             BioPayCameraFrame(
               controller: _camera!,
@@ -219,6 +208,17 @@ class _BioPayFaceEnrollScreenState
             )
           else
             BioPayFaceEnrollmentStandby(iconColor: cs.primary),
+          const SizedBox(height: AppSpacing.md),
+          MobiButton(
+            onPressed: _busy ? null : primaryAction,
+            isLoading: _busy,
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: 19,
+            ),
+            child: Text(primaryLabel),
+          ),
           const SizedBox(height: AppSpacing.md),
           BioPayPoseCueStrip(
             capturedCount: capturedCount,

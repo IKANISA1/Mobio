@@ -80,6 +80,56 @@ void main() {
           ),
         );
         expect(withDestination.validateForSubmit(now), isNull);
+        expect(withDestination.canSubmit(now), isTrue);
+
+        final busWithoutAgency = withDestination.copyWith(
+          vehicleId: 'bus',
+          transportAgencyNames: const ['Volcano Express', 'Ritco'],
+        );
+        expect(
+          busWithoutAgency.validateForSubmit(now),
+          'Select the bus agency.',
+        );
+        expect(busWithoutAgency.canSubmit(now), isFalse);
+
+        final busWithAgency = busWithoutAgency.copyWith(
+          busAgencyName: 'volcano express',
+        );
+        expect(busWithAgency.normalizedBusAgencyName, 'Volcano Express');
+        expect(busWithAgency.validateForSubmit(now), isNull);
+        expect(busWithAgency.canSubmit(now), isTrue);
+
+        final rentalWithoutModel = withDestination.copyWith(
+          vehicleId: 'rentals',
+        );
+        expect(
+          rentalWithoutModel.validateForSubmit(now),
+          'Select the rental vehicle model.',
+        );
+        expect(rentalWithoutModel.canSubmit(now), isFalse);
+
+        final rentalWithModel = rentalWithoutModel.copyWith(
+          rentalVehicleModel: 'suv',
+        );
+        expect(rentalWithModel.normalizedRentalVehicleModel, 'SUV');
+        expect(rentalWithModel.validateForSubmit(now), isNull);
+        expect(rentalWithModel.canSubmit(now), isTrue);
+
+        final otherWithoutModel = withDestination.copyWith(
+          vehicleId: 'private',
+        );
+        expect(
+          otherWithoutModel.validateForSubmit(now),
+          'Select the vehicle model.',
+        );
+        expect(otherWithoutModel.canSubmit(now), isFalse);
+
+        final otherWithModel = otherWithoutModel.copyWith(
+          rentalVehicleModel: 'van',
+        );
+        expect(otherWithModel.normalizedRentalVehicleModel, 'Van');
+        expect(otherWithModel.validateForSubmit(now), isNull);
+        expect(otherWithModel.canSubmit(now), isTrue);
 
         final past = withDestination.copyWith(
           date: DateTime(2026, 5, 1),
@@ -136,6 +186,96 @@ void main() {
       expect(state.isRecurring, isTrue);
       expect(state.recurringDays, [0, 2, 4]);
       expect(state.clientRequestId, 'trip-request-1');
+    });
+
+    test('prefills rental vehicle model from a scheduled trip note', () {
+      final trip = Trip.fromJson({
+        'id': 'trip-2',
+        'author_id': 'user-1',
+        'origin': 'Kigali Heights',
+        'origin_lat': -1.95,
+        'origin_lng': 30.06,
+        'origin_place_id': 'origin-place',
+        'destination': 'Kigali Arena',
+        'dest_lat': -1.94,
+        'dest_lng': 30.1,
+        'destination_place_id': 'destination-place',
+        'departure_date': '2026-06-09',
+        'departure_time': '03:45 PM',
+        'role': 'passenger',
+        'vehicle_type': 'rentals',
+        'is_recurring': false,
+        'recurring_days': [],
+        'client_request_id': 'trip-request-2',
+        'note': 'Rental model: Van\nAirport pickup',
+      });
+
+      final state = ScheduleTripState.fromTrip(trip);
+
+      expect(state.vehicleId, 'rentals');
+      expect(state.rentalVehicleModel, 'Van');
+      expect(state.normalizedRentalVehicleModel, 'Van');
+    });
+
+    test('prefills other vehicle model from a scheduled trip note', () {
+      final trip = Trip.fromJson({
+        'id': 'trip-4',
+        'author_id': 'user-1',
+        'origin': 'Kigali Heights',
+        'origin_lat': -1.95,
+        'origin_lng': 30.06,
+        'origin_place_id': 'origin-place',
+        'destination': 'Kigali Arena',
+        'dest_lat': -1.94,
+        'dest_lng': 30.1,
+        'destination_place_id': 'destination-place',
+        'departure_date': '2026-06-09',
+        'departure_time': '03:45 PM',
+        'role': 'passenger',
+        'vehicle_type': 'private',
+        'is_recurring': false,
+        'recurring_days': [],
+        'client_request_id': 'trip-request-4',
+        'note': 'Vehicle model: SUV\nFlexible option',
+      });
+
+      final state = ScheduleTripState.fromTrip(trip);
+
+      expect(state.vehicleId, 'private_');
+      expect(state.rentalVehicleModel, 'SUV');
+      expect(state.normalizedRentalVehicleModel, 'SUV');
+    });
+
+    test('prefills bus agency from a scheduled trip note', () {
+      final trip = Trip.fromJson({
+        'id': 'trip-3',
+        'author_id': 'user-1',
+        'origin': 'Kigali Heights',
+        'origin_lat': -1.95,
+        'origin_lng': 30.06,
+        'origin_place_id': 'origin-place',
+        'destination': 'Kigali Arena',
+        'dest_lat': -1.94,
+        'dest_lng': 30.1,
+        'destination_place_id': 'destination-place',
+        'departure_date': '2026-06-09',
+        'departure_time': '03:45 PM',
+        'role': 'passenger',
+        'vehicle_type': 'bus',
+        'is_recurring': false,
+        'recurring_days': [],
+        'client_request_id': 'trip-request-3',
+        'note': 'Bus agency: Ritco\nWindow seat',
+      });
+
+      final state = ScheduleTripState.fromTrip(
+        trip,
+        transportAgencyNames: const ['Volcano Express', 'Ritco'],
+      );
+
+      expect(state.vehicleId, 'bus');
+      expect(state.busAgencyName, 'Ritco');
+      expect(state.normalizedBusAgencyName, 'Ritco');
     });
   });
 }

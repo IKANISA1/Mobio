@@ -37,5 +37,22 @@ void main() {
       expect(WhatsAppLoginService.isValidCanonicalPhone('+25012'), false);
       expect(WhatsAppLoginService.isValidCanonicalPhone('+250788123456'), true);
     });
+
+    test('uses selected-country semantics for send readiness', () {
+      expect(
+        WhatsAppLoginService.isValidCanonicalPhone(
+          '788123456',
+          countryCode: '+250',
+        ),
+        true,
+      );
+      expect(
+        WhatsAppLoginService.isValidCanonicalPhone(
+          '356123456',
+          countryCode: '+250',
+        ),
+        false,
+      );
+    });
   });
 }

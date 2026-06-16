@@ -122,6 +122,10 @@ void main() {
         placeField,
         contains('Select that location again to confirm the route.'),
       );
+      expect(placeField, contains('getAutocompletePredictions'));
+      expect(placeField, contains('getPlaceDetails'));
+      expect(placeField, contains('geocodeAddress'));
+      expect(placeField, contains('TextInputAction.search'));
       expect(
         placeField,
         isNot(contains('latitude: 0,\n              longitude: 0')),

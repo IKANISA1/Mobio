@@ -69,6 +69,16 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
             _showSnackBar(e.toString(), isError: true);
           }
         },
+        onAddInsuranceReward: () async {
+          try {
+            await ref
+                .read(adminUsersProvider.notifier)
+                .addInsuranceRewardTokens(user);
+            _showSnackBar('3000 TOKENS added to ${user.name}.');
+          } on Object catch (e) {
+            _showSnackBar(e.toString(), isError: true);
+          }
+        },
       ),
     );
   }

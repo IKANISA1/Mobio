@@ -54,6 +54,7 @@ class _BioPayQrScreenState extends ConsumerState<BioPayQrScreen> {
     if (SupabaseConfig.isLocalUiPreview) {
       _receiverNumberController.text = '0788767816';
       _receiverCodeController.text = '123456';
+      if (mounted) setState(() {});
       return;
     }
 
@@ -169,6 +170,17 @@ class _BioPayQrScreenState extends ConsumerState<BioPayQrScreen> {
     _resetRequest();
   }
 
+  bool get _hasValidReceiver {
+    return isValidMomoReceiver(
+      _activeReceiverController.text,
+      usesCode: _receiverUsesCode,
+    );
+  }
+
+  bool get _canCreateRequest {
+    return !_creating && _request == null && _hasValidReceiver;
+  }
+
   Future<void> _createRequest() async {
     setState(() {
       _creating = true;
@@ -218,7 +230,7 @@ class _BioPayQrScreenState extends ConsumerState<BioPayQrScreen> {
       primaryLabel: _request == null ? 'Generate QR Code' : '',
       isPrimaryLoading: _creating,
       onBack: widget.onBack,
-      onPrimary: _createRequest,
+      onPrimary: _canCreateRequest ? _createRequest : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

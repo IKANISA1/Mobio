@@ -9,6 +9,7 @@ import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/services/app_permission_service.dart';
+import 'package:mobi_app/core/services/public_transport_service.dart';
 import 'package:mobi_app/features/bookings/models/schedule_trip_state.dart';
 import 'package:mobi_app/models/favorite_address.dart';
 import 'package:mobi_app/models/place.dart';
@@ -96,9 +97,11 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
 
     if (SupabaseConfig.isLocalUiPreview) {
       final editingTrip = args.isEditMode ? AppConstants.mockTrips.first : null;
+      final agencyNames = await _loadAgencyNames();
       return editingTrip == null
           ? ScheduleTripState(
               vehicleTypes: VehicleTypeModel.fallbackTypes,
+              transportAgencyNames: agencyNames,
               selectedRole: args.mode,
               originDetails: _previewCurrentPickup,
               userLat: _previewCurrentPickup.latitude,
@@ -110,12 +113,14 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
           : ScheduleTripState.fromTrip(
               editingTrip,
               vehicleTypes: VehicleTypeModel.fallbackTypes,
+              transportAgencyNames: agencyNames,
               favoriteAddresses: _previewFavoriteAddresses,
             );
     }
 
     final vt = await ref.read(vehicleTypeServiceProvider).getAll();
     final favorites = await _loadFavoriteAddresses();
+    final agencyNames = await _loadAgencyNames();
 
     if (args.isEditMode) {
       final trip = await ref
@@ -128,12 +133,14 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
       return ScheduleTripState.fromTrip(
         trip,
         vehicleTypes: vt,
+        transportAgencyNames: agencyNames,
         favoriteAddresses: favorites,
       );
     }
 
     final initialState = ScheduleTripState(
       vehicleTypes: vt,
+      transportAgencyNames: agencyNames,
       selectedRole: args.mode,
       favoriteAddresses: favorites,
     );
@@ -149,6 +156,18 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     } on Object catch (error) {
       debugPrint('Unable to load favorite addresses: $error');
       return const [];
+    }
+  }
+
+  Future<List<String>> _loadAgencyNames() async {
+    try {
+      final names = await ref
+          .read(publicTransportServiceProvider)
+          .getAgencyNames();
+      return names.isEmpty ? PublicTransportService.fallbackAgencyNames : names;
+    } on Object catch (error) {
+      debugPrint('Unable to load bus agencies: $error');
+      return PublicTransportService.fallbackAgencyNames;
     }
   }
 
@@ -355,7 +374,33 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   void setVehicleId(String id) {
     final currentState = state.value;
     if (currentState == null) return;
-    state = AsyncValue.data(currentState.copyWith(vehicleId: id));
+    state = AsyncValue.data(
+      currentState.copyWith(
+        vehicleId: id,
+        busAgencyName: id == 'bus' ? currentState.busAgencyName : '',
+        rentalVehicleModel:
+            id == 'rentals' || id == 'private' || id == 'private_'
+            ? currentState.rentalVehicleModel
+            : '',
+        validationMessage: null,
+      ),
+    );
+  }
+
+  void setRentalVehicleModel(String model) {
+    final currentState = state.value;
+    if (currentState == null) return;
+    state = AsyncValue.data(
+      currentState.copyWith(rentalVehicleModel: model, validationMessage: null),
+    );
+  }
+
+  void setBusAgencyName(String agency) {
+    final currentState = state.value;
+    if (currentState == null) return;
+    state = AsyncValue.data(
+      currentState.copyWith(busAgencyName: agency, validationMessage: null),
+    );
   }
 
   void setRole(String role) {

@@ -57,6 +57,21 @@ class SupabaseConfig {
     defaultValue: '250795588248',
   );
 
+  /// Public app origin used for shareable links.
+  static const publicAppUrl = String.fromEnvironment(
+    'MOBIO_PUBLIC_APP_URL',
+    defaultValue: 'https://mobio.ikanisa.com',
+  );
+
+  static Uri get publicAppBaseUri {
+    final current = Uri.base;
+    if ((current.scheme == 'http' || current.scheme == 'https') &&
+        current.authority.isNotEmpty) {
+      return Uri.parse('${current.scheme}://${current.authority}');
+    }
+    return Uri.parse(publicAppUrl);
+  }
+
   /// Edge functions base URL derived from project URL.
   static String get functionsBaseUrl => '$url/functions/v1';
 
@@ -77,6 +92,23 @@ class SupabaseConfig {
   );
 
   static bool get isVisualProofMode => !kReleaseMode && visualProofModeEnabled;
+
+  /// Allows local browser previews to open the app shell without OTP.
+  ///
+  /// This is intentionally constrained to loopback hosts and must be explicitly
+  /// compiled in with `--dart-define=MOBI_LOCAL_AUTH_BYPASS=true`.
+  static const localAuthBypassEnabled = bool.fromEnvironment(
+    'MOBI_LOCAL_AUTH_BYPASS',
+  );
+
+  static bool get isLocalAuthBypass {
+    if (!localAuthBypassEnabled) {
+      return false;
+    }
+
+    final host = Uri.base.host.toLowerCase();
+    return host == 'localhost' || host == '127.0.0.1' || host == '::1';
+  }
 
   /// Validate that configuration is present (call at app startup).
   static bool get isConfigured =>

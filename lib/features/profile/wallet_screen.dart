@@ -34,6 +34,8 @@ class WalletScreen extends ConsumerStatefulWidget {
 }
 
 class _WalletScreenState extends ConsumerState<WalletScreen> {
+  static const int _minimumRedemptionTokens = 5000;
+
   WalletSummary? _summary;
   List<TokenLedgerEntry> _ledger = const [];
   bool _isLoading = true;
@@ -92,10 +94,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
           : await ref.read(referralServiceProvider).getOrCreateCode();
       if (!mounted) return;
       await SharePlus.instance.share(
-        ShareParams(
-          text:
-              'Join me on Mobio. Use code ${referral.code} and start with token rewards: ${referral.shareUrl}',
-        ),
+        ShareParams(text: _inviteShareMessage(referral)),
       );
       await _load();
     } on Object catch (_) {
@@ -121,6 +120,121 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     }
   }
 
+  Future<void> _redeemInviteCode() async {
+    final codeController = TextEditingController();
+
+    await MobiBottomSheet.show<void>(
+      context: context,
+      builder: (context) {
+        String? sheetError;
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final code = codeController.text.trim().toUpperCase();
+            final canApply = code.length >= 4;
+
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                24,
+                24,
+                24,
+                MediaQuery.of(context).viewInsets.bottom + 24,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Enter invite code',
+                    style: AppTypography.titleLg.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    'Add a Mobio invite code to get 100 TOKENS. The person who invited you also gets 100 TOKENS.',
+                    style: AppTypography.bodySm.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  TextField(
+                    controller: codeController,
+                    textCapitalization: TextCapitalization.characters,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp('[a-zA-Z0-9]')),
+                      LengthLimitingTextInputFormatter(16),
+                    ],
+                    onChanged: (_) => setSheetState(() => sheetError = null),
+                    decoration: const InputDecoration(
+                      labelText: 'Invite code',
+                      hintText: 'MOBIOCODE',
+                    ),
+                  ),
+                  if (sheetError != null) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      sheetError!,
+                      style: AppTypography.bodySm.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: AppSpacing.lg),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: MobiButton(
+                          variant: MobiButtonVariant.ghost,
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Cancel'),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: MobiButton(
+                          onPressed: canApply
+                              ? () async {
+                                  try {
+                                    await ref
+                                        .read(referralServiceProvider)
+                                        .completeSignup(
+                                          code: code,
+                                          metadata: const {
+                                            'source': 'manual_wallet_code',
+                                          },
+                                        );
+                                    if (!context.mounted) return;
+                                    Navigator.of(context).pop();
+                                    _showSnackBar(
+                                      'Invite code applied. 100 TOKENS added when eligible.',
+                                    );
+                                    await _load();
+                                  } on Object {
+                                    setSheetState(() {
+                                      sheetError =
+                                          'Unable to apply this invite code.';
+                                    });
+                                  }
+                                }
+                              : null,
+                          child: const Text('Apply'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    codeController.dispose();
+  }
+
   Future<void> _showTransferSheet() async {
     final memberController = TextEditingController();
     final amountController = TextEditingController();
@@ -133,6 +247,10 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
         String? memberIdError;
         return StatefulBuilder(
           builder: (context, setSheetState) {
+            final memberId = normalizeMobioMemberId(memberController.text);
+            final amount = int.tryParse(amountController.text);
+            final canSend = memberId != null && amount != null && amount > 0;
+
             return Padding(
               padding: EdgeInsets.fromLTRB(
                 24,
@@ -167,7 +285,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Transfer tokens',
+                              'Transfer TOKENS',
                               style: AppTypography.titleLg.copyWith(
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
@@ -219,7 +337,14 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                     controller: amountController,
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(labelText: 'Tokens'),
+                    onChanged: (_) {
+                      setSheetState(() {
+                        if (sheetError == 'Enter a valid TOKEN amount.') {
+                          sheetError = null;
+                        }
+                      });
+                    },
+                    decoration: const InputDecoration(labelText: 'TOKENS'),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   TextField(
@@ -251,33 +376,22 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: MobiButton(
-                          onPressed: () {
-                            final memberId = normalizeMobioMemberId(
-                              memberController.text,
-                            );
-                            final amount = int.tryParse(amountController.text);
-                            if (memberId == null) {
-                              setSheetState(
-                                () => memberIdError = mobioMemberIdInputError(
-                                  memberController.text,
-                                ),
-                              );
-                              return;
-                            }
-                            if (amount == null || amount <= 0) {
-                              setSheetState(
-                                () =>
-                                    sheetError = 'Enter a valid token amount.',
-                              );
-                              return;
-                            }
-                            Navigator.of(context).pop();
-                            _confirmAndTransferTokens(
-                              receiverMemberId: memberId,
-                              amountTokens: amount,
-                              note: noteController.text.trim(),
-                            );
-                          },
+                          onPressed: canSend
+                              ? () {
+                                  final memberId = normalizeMobioMemberId(
+                                    memberController.text,
+                                  );
+                                  final amount = int.tryParse(
+                                    amountController.text,
+                                  );
+                                  Navigator.of(context).pop();
+                                  _confirmAndTransferTokens(
+                                    receiverMemberId: memberId!,
+                                    amountTokens: amount!,
+                                    note: noteController.text.trim(),
+                                  );
+                                }
+                              : null,
                           child: const Text('Send'),
                         ),
                       ),
@@ -294,6 +408,230 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     memberController.dispose();
     amountController.dispose();
     noteController.dispose();
+  }
+
+  Future<void> _showRedeemSheet() async {
+    final balance = _summary?.balanceTokens ?? 0;
+    final amountController = TextEditingController(
+      text: balance > 0 ? balance.toString() : '',
+    );
+
+    await MobiBottomSheet.show<void>(
+      context: context,
+      builder: (context) {
+        String? sheetError;
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final amount = int.tryParse(amountController.text);
+
+            return Padding(
+              padding: EdgeInsets.fromLTRB(
+                24,
+                24,
+                24,
+                MediaQuery.of(context).viewInsets.bottom + 24,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withValues(alpha: 0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          LucideIcons.banknote,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Redeem TOKENS',
+                              style: AppTypography.titleLg.copyWith(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            Text(
+                              'Transfer TOKENS to the admin wallet for manual MoMo cash payout.',
+                              style: AppTypography.bodySm.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  TextField(
+                    controller: amountController,
+                    autofocus: true,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onChanged: (_) => setSheetState(() => sheetError = null),
+                    decoration: InputDecoration(
+                      labelText: 'TOKENS to redeem',
+                      helperText:
+                          'Minimum ${_format.format(_minimumRedemptionTokens)} TOKENS. Default is your full balance.',
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    'Available ${_format.format(balance)} TOKENS',
+                    style: AppTypography.labelMd.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  if (sheetError != null) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      sheetError!,
+                      style: AppTypography.bodySm.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: AppSpacing.lg),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: MobiButton(
+                          variant: MobiButtonVariant.ghost,
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('Cancel'),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: MobiButton(
+                          onPressed: amount == null
+                              ? null
+                              : () {
+                                  if (amount < _minimumRedemptionTokens) {
+                                    setSheetState(() {
+                                      sheetError =
+                                          'Redeem at least ${_format.format(_minimumRedemptionTokens)} TOKENS.';
+                                    });
+                                    return;
+                                  }
+                                  if (amount > balance) {
+                                    setSheetState(() {
+                                      sheetError =
+                                          'Your wallet does not have enough TOKENS.';
+                                    });
+                                    return;
+                                  }
+                                  Navigator.of(context).pop();
+                                  _confirmAndRedeemTokens(amountTokens: amount);
+                                },
+                          child: const Text('Send'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    amountController.dispose();
+  }
+
+  Future<void> _confirmAndRedeemTokens({required int amountTokens}) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm redemption'),
+        content: Text(
+          'Redeem ${_format.format(amountTokens)} TOKENS for MoMo cash. The TOKENS will move to the admin wallet and the payout will be sent manually to your registered MoMo number.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Redeem'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    final keyScope = 'wallet-redeem:$amountTokens';
+    setState(() => _isBusy = true);
+    try {
+      final receipt = await ref
+          .read(walletServiceProvider)
+          .redeemTokens(
+            amountTokens: amountTokens,
+            idempotencyKey: await _pendingOperationKey(
+              scope: keyScope,
+              prefix: 'wallet-redeem',
+            ),
+          );
+      await _clearPendingOperationKey(keyScope);
+      await _load();
+      if (!mounted) return;
+      await _showRedemptionReceipt(receipt);
+    } on Object catch (error) {
+      _showSnackBar(_redemptionError(error));
+    } finally {
+      if (mounted) setState(() => _isBusy = false);
+    }
+  }
+
+  Future<void> _showRedemptionReceipt(WalletRedemptionReceipt receipt) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Redemption sent'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('${_format.format(receipt.amountTokens)} TOKENS'),
+            const SizedBox(height: AppSpacing.sm),
+            Text('${_format.format(receipt.amountRwf)} RWF'),
+            const SizedBox(height: AppSpacing.sm),
+            Text('Admin wallet ${receipt.adminMemberId}'),
+            if (receipt.momoNumber?.trim().isNotEmpty == true) ...[
+              const SizedBox(height: AppSpacing.sm),
+              Text('MoMo ${receipt.momoNumber}'),
+            ],
+            const SizedBox(height: AppSpacing.sm),
+            Text('Request ${_shortId(receipt.redemptionId)}'),
+          ],
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Done'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _confirmAndTransferTokens({
@@ -325,7 +663,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Send ${_format.format(amountTokens)} tokens to'),
+            Text('Send ${_format.format(amountTokens)} TOKENS to'),
             const SizedBox(height: AppSpacing.sm),
             Text(
               recipient.displayName,
@@ -405,7 +743,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${_format.format(amountTokens)} tokens'),
+            Text('${_format.format(amountTokens)} TOKENS'),
             const SizedBox(height: AppSpacing.sm),
             Text('${recipient.displayName} · ${recipient.memberId}'),
             const SizedBox(height: AppSpacing.sm),
@@ -428,18 +766,35 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
       return 'No wallet was found for that 6-digit member ID.';
     }
     if (value.contains('SELF_TRANSFER_NOT_ALLOWED')) {
-      return 'You cannot transfer tokens to your own wallet.';
+      return 'You cannot transfer TOKENS to your own wallet.';
     }
     if (value.contains('INSUFFICIENT_TOKENS')) {
-      return 'Your wallet does not have enough tokens for this transfer.';
+      return 'Your wallet does not have enough TOKENS for this transfer.';
     }
     if (value.contains('INVALID_TOKEN_AMOUNT')) {
-      return 'Enter a token amount greater than zero.';
+      return 'Enter a TOKEN amount greater than zero.';
     }
     if (value.contains('INVALID_MEMBER_ID')) {
       return 'Enter a valid 6-digit member ID.';
     }
-    return 'Unable to transfer tokens. You can retry without being charged twice.';
+    return 'Unable to transfer TOKENS. You can retry without being charged twice.';
+  }
+
+  String _redemptionError(Object error) {
+    final value = error.toString();
+    if (value.contains('MINIMUM_REDEMPTION_TOKENS')) {
+      return 'Redeem at least ${_format.format(_minimumRedemptionTokens)} TOKENS.';
+    }
+    if (value.contains('ADMIN_WALLET_NOT_CONFIGURED')) {
+      return 'Redemption admin wallet is not configured yet.';
+    }
+    if (value.contains('REGISTERED_MOMO_REQUIRED')) {
+      return 'Add your MoMo number in profile before redeeming TOKENS.';
+    }
+    if (value.contains('INSUFFICIENT_TOKENS')) {
+      return 'Your wallet does not have enough TOKENS for this redemption.';
+    }
+    return 'Unable to redeem TOKENS. You can retry without being charged twice.';
   }
 
   String _transferKeyScope({
@@ -530,6 +885,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                         _WalletActionRail(
                           isBusy: _isBusy,
                           onTransfer: _showTransferSheet,
+                          onRedeem: _showRedeemSheet,
                           onShare: _shareInvite,
                           onCopy: _copyInvite,
                         ),
@@ -538,6 +894,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                           summary: _summary!,
                           onShare: _shareInvite,
                           onCopy: _copyInvite,
+                          onRedeem: _redeemInviteCode,
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         Text(
@@ -578,9 +935,9 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
 
 const _previewWalletSummary = WalletSummary(
   profileId: 'preview-profile',
-  balanceTokens: 3200,
-  rwfEquivalent: 3200,
-  lifetimeEarnedTokens: 5200,
+  balanceTokens: 8200,
+  rwfEquivalent: 8200,
+  lifetimeEarnedTokens: 10200,
   lifetimeSentTokens: 1400,
   lifetimeReceivedTokens: 900,
   successfulReferrals: 8,
@@ -627,7 +984,7 @@ class _WalletBalanceCard extends StatelessWidget {
           Icon(LucideIcons.walletCards, color: cs.primary, size: 28),
           const SizedBox(height: AppSpacing.md),
           Text(
-            '${format.format(summary.balanceTokens)} tokens',
+            '${format.format(summary.balanceTokens)} TOKENS',
             style: AppTypography.displayMd.copyWith(
               color: cs.onSurface,
               fontWeight: FontWeight.w900,
@@ -725,12 +1082,14 @@ class _WalletActionRail extends StatelessWidget {
   const _WalletActionRail({
     required this.isBusy,
     required this.onTransfer,
+    required this.onRedeem,
     required this.onShare,
     required this.onCopy,
   });
 
   final bool isBusy;
   final VoidCallback onTransfer;
+  final VoidCallback onRedeem;
   final VoidCallback onShare;
   final VoidCallback onCopy;
 
@@ -743,6 +1102,14 @@ class _WalletActionRail extends StatelessWidget {
             icon: LucideIcons.send,
             label: 'Send',
             onTap: isBusy ? null : onTransfer,
+          ),
+        ),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: _WalletActionTile(
+            icon: LucideIcons.banknote,
+            label: 'Redeem',
+            onTap: isBusy ? null : onRedeem,
           ),
         ),
         const SizedBox(width: AppSpacing.sm),
@@ -815,17 +1182,19 @@ class _InviteCard extends StatelessWidget {
     required this.summary,
     required this.onShare,
     required this.onCopy,
+    required this.onRedeem,
   });
 
   final WalletSummary summary;
   final VoidCallback onShare;
   final VoidCallback onCopy;
+  final VoidCallback onRedeem;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final code = summary.referralCode?.trim();
-    final shareUrl = summary.shareUrl?.trim();
+    final shareUrl = _walletInviteUrl(summary);
     final qrData = _walletInviteQrData(summary);
     return ClayCard(
       padding: const EdgeInsets.all(18),
@@ -865,6 +1234,11 @@ class _InviteCard extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            'Invite friends to Mobio for quick rides and instant payment. They get 100 TOKENS with your code; you get 100 TOKENS after signup.',
+            style: AppTypography.bodySm.copyWith(color: cs.onSurfaceVariant),
           ),
           const SizedBox(height: AppSpacing.md),
           Container(
@@ -954,6 +1328,17 @@ class _InviteCard extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          MobiButton(
+            variant: MobiButtonVariant.ghost,
+            onPressed: onRedeem,
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            child: const Text('Enter invite code'),
           ),
         ],
       ),
@@ -1081,13 +1466,24 @@ String _walletLedgerLabel(String raw) {
 }
 
 String? _walletInviteQrData(WalletSummary summary) {
+  final inviteUrl = _walletInviteUrl(summary);
+  if (inviteUrl != null) return inviteUrl;
+
+  return null;
+}
+
+String? _walletInviteUrl(WalletSummary summary) {
   final shareUrl = summary.shareUrl?.trim();
   if (shareUrl?.isNotEmpty == true) return shareUrl;
-
   final code = summary.referralCode?.trim();
   if (code?.isNotEmpty == true) {
     return 'https://mobio.ikanisa.com/invite/$code';
   }
-
   return null;
+}
+
+String _inviteShareMessage(ReferralCode referral) {
+  return 'You are getting Mobio for quick rides and instant payment. '
+      'Use invite code ${referral.code} to get 100 TOKENS. '
+      'I get 100 TOKENS too after you sign up: ${referral.shareUrl}';
 }

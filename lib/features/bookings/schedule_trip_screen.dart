@@ -7,6 +7,7 @@ import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/providers/service_providers.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
+import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
 import 'package:mobi_app/features/bookings/models/schedule_trip_state.dart';
 import 'package:mobi_app/features/bookings/providers/schedule_trip_provider.dart';
 import 'package:mobi_app/features/bookings/widgets/trip_mode_selector.dart';
@@ -21,7 +22,6 @@ import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_input_field.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
-import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
 import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
@@ -48,6 +48,7 @@ class ScheduleTripScreen extends ConsumerStatefulWidget {
 class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   late final TextEditingController _noteController;
   String? _noteSyncedTripId;
+  bool _isNoteExpanded = false;
   bool _didRequestInitialPickupLocation = false;
 
   bool get _isEditMode => widget.editingTripId?.isNotEmpty == true;
@@ -87,7 +88,10 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   Future<void> _handleSubmit(WidgetRef ref) async {
     final controller = ref.read(scheduleTripProvider.notifier);
     try {
-      final trip = await controller.submitTrip(note: _noteController.text);
+      final state = ref.read(scheduleTripProvider).value;
+      final trip = await controller.submitTrip(
+        note: _submissionNote(state, _noteController.text),
+      );
       if (trip != null) {
         final scheduleState = ref.read(scheduleTripProvider).value;
         final suggestions = scheduleState?.poolSuggestions ?? const [];
@@ -228,6 +232,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
     _syncNoteController(state);
     _requestInitialPickupLocationIfNeeded(state, controller);
     final title = state.isEditMode ? 'Edit trip' : 'Schedule';
+    final canSubmit = state.canSubmit(DateTime.now());
 
     return SoftGradient(
       child: Column(
@@ -326,24 +331,35 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                         selectedVehicleId: state.vehicleId,
                         onSelected: controller.setVehicleId,
                       ),
+                      if (state.requiresBusAgency) ...[
+                        const SizedBox(height: AppSpacing.md),
+                        _BusAgencySelector(
+                          agencies: state.transportAgencyNames,
+                          selectedAgency: state.normalizedBusAgencyName,
+                          onSelected: controller.setBusAgencyName,
+                        ),
+                      ],
+                      if (state.requiresVehicleModel) ...[
+                        const SizedBox(height: AppSpacing.md),
+                        _RentalVehicleModelPicker(
+                          selectedModel: state.normalizedRentalVehicleModel,
+                          onSelected: controller.setRentalVehicleModel,
+                        ),
+                      ],
                       const SizedBox(height: AppSpacing.xl),
-                      const MobiSectionHeader(
-                        title: 'Note',
-                        caption: 'Optional',
-                        icon: LucideIcons.stickyNote,
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      MobiInputField(
-                        label: 'Note',
-                        hint: 'Requirements or details',
+                      _NoteDisclosure(
+                        isExpanded: _isNoteExpanded,
                         controller: _noteController,
-                        maxLines: 3,
-                        keyboardType: TextInputType.text,
+                        onToggle: () {
+                          setState(() {
+                            _isNoteExpanded = !_isNoteExpanded;
+                          });
+                        },
                       ),
                       const SizedBox(height: AppSpacing.xxl),
                       MobiButton(
                         width: double.infinity,
-                        onPressed: state.isSubmitting
+                        onPressed: state.isSubmitting || !canSubmit
                             ? null
                             : () => _handleSubmit(ref),
                         isLoading: state.isSubmitting,
@@ -376,7 +392,10 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
     }
 
     _noteSyncedTripId = tripId;
-    _noteController.text = trip?.note ?? '';
+    _noteController.text = _noteWithoutScheduleMetadata(trip?.note ?? '');
+    if (_noteController.text.trim().isNotEmpty) {
+      _isNoteExpanded = true;
+    }
   }
 
   void _requestInitialPickupLocationIfNeeded(
@@ -400,6 +419,476 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
       }
       await _handleCurrentLocation(controller);
     });
+  }
+}
+
+class _NoteDisclosure extends StatelessWidget {
+  const _NoteDisclosure({
+    required this.isExpanded,
+    required this.controller,
+    required this.onToggle,
+  });
+
+  final bool isExpanded;
+  final TextEditingController controller;
+  final VoidCallback onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Semantics(
+          button: true,
+          toggled: isExpanded,
+          label: 'Note',
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(24),
+              onTap: onToggle,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: ext.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      child: Icon(
+                        LucideIcons.stickyNote,
+                        size: 20,
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Note',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.titleLg.copyWith(
+                              color: cs.onSurface,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Optional',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.bodySm.copyWith(
+                              color: cs.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: ext.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: ext.borderSubtle.withValues(
+                            alpha: ext.cardBorderAlpha,
+                          ),
+                        ),
+                      ),
+                      child: Icon(
+                        isExpanded
+                            ? LucideIcons.chevronUp
+                            : LucideIcons.chevronDown,
+                        size: 20,
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 180),
+          switchInCurve: Curves.easeOut,
+          switchOutCurve: Curves.easeIn,
+          child: isExpanded
+              ? Padding(
+                  key: const ValueKey('note-field'),
+                  padding: const EdgeInsets.only(top: AppSpacing.md),
+                  child: MobiInputField(
+                    label: 'Note',
+                    hint: 'Requirements or details',
+                    controller: controller,
+                    maxLines: 3,
+                    keyboardType: TextInputType.text,
+                  ),
+                )
+              : const SizedBox.shrink(key: ValueKey('note-collapsed')),
+        ),
+      ],
+    );
+  }
+}
+
+String _submissionNote(ScheduleTripState? state, String rawNote) {
+  final metadata = <String>[];
+  final note = _noteWithoutScheduleMetadata(rawNote);
+  final busAgency = state?.normalizedBusAgencyName;
+  if (state?.requiresBusAgency == true && busAgency != null) {
+    metadata.add('Bus agency: $busAgency');
+  }
+  final rentalModel = state?.normalizedRentalVehicleModel;
+  if (state?.requiresVehicleModel == true && rentalModel != null) {
+    final label = state?.vehicleId == 'rentals'
+        ? 'Rental model'
+        : 'Vehicle model';
+    metadata.add('$label: $rentalModel');
+  }
+  if (metadata.isEmpty) return note;
+  return note.isEmpty ? metadata.join('\n') : '${metadata.join('\n')}\n$note';
+}
+
+String _noteWithoutScheduleMetadata(String note) {
+  return note
+      .replaceAll(RegExp(r'^Bus agency:\s*.+?\s*\n?', caseSensitive: false), '')
+      .replaceAll(
+        RegExp(
+          r'^(?:Rental model|Vehicle model):\s*(SUV|Sedan|Truck|Van|Bus)\s*\n?',
+          caseSensitive: false,
+        ),
+        '',
+      )
+      .trim();
+}
+
+class _BusAgencySelector extends StatelessWidget {
+  const _BusAgencySelector({
+    required this.agencies,
+    required this.selectedAgency,
+    required this.onSelected,
+  });
+
+  final List<String> agencies;
+  final String? selectedAgency;
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final selected = selectedAgency?.trim() ?? '';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: ext.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: ext.borderSubtle.withValues(alpha: ext.cardBorderAlpha),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Bus agency',
+            style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: ext.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(22),
+              border: Border.all(
+                color: ext.borderSubtle.withValues(
+                  alpha: ext.surfacePanelBorderAlpha,
+                ),
+              ),
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(22),
+              onTap: () => _showAgencyPicker(context),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 18,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        selected.isEmpty ? 'Select agency' : selected,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.titleMd.copyWith(
+                          color: selected.isEmpty
+                              ? cs.onSurfaceVariant.withValues(alpha: 0.38)
+                              : cs.onSurface,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      LucideIcons.chevronDown,
+                      size: 20,
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAgencyPicker(BuildContext context) {
+    MobiBottomSheet.show<void>(
+      context: context,
+      title: 'Select agency',
+      maxHeightFraction: 0.78,
+      builder: (context) {
+        return _BusAgencyPickerSheet(
+          agencies: normalizedBusAgencyNames(agencies),
+          selectedAgency: selectedAgency ?? '',
+          onSelected: (agency) {
+            onSelected(agency);
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
+  }
+}
+
+class _BusAgencyPickerSheet extends StatefulWidget {
+  const _BusAgencyPickerSheet({
+    required this.agencies,
+    required this.selectedAgency,
+    required this.onSelected,
+  });
+
+  final List<String> agencies;
+  final String selectedAgency;
+  final ValueChanged<String> onSelected;
+
+  @override
+  State<_BusAgencyPickerSheet> createState() => _BusAgencyPickerSheetState();
+}
+
+class _BusAgencyPickerSheetState extends State<_BusAgencyPickerSheet> {
+  late final TextEditingController _searchController;
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final query = _query.toLowerCase();
+    final filtered = widget.agencies
+        .where((agency) => agency.toLowerCase().contains(query))
+        .toList();
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: _searchController,
+            autofocus: true,
+            textCapitalization: TextCapitalization.words,
+            onChanged: (value) => setState(() => _query = value.trim()),
+            style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
+            decoration: InputDecoration(
+              hintText: 'Search agencies',
+              prefixIcon: const Icon(LucideIcons.search, size: 20),
+              filled: true,
+              fillColor: Theme.of(
+                context,
+              ).extension<MobiThemeExtension>()!.surfaceContainerLow,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(22),
+                borderSide: BorderSide(
+                  color: cs.outlineVariant.withValues(alpha: 0.35),
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(22),
+                borderSide: BorderSide(
+                  color: cs.outlineVariant.withValues(alpha: 0.35),
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(22),
+                borderSide: BorderSide(color: cs.primary),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 360),
+            child: filtered.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      child: Text(
+                        'No agencies found',
+                        style: AppTypography.bodyMd.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  )
+                : ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: filtered.length,
+                    separatorBuilder: (context, index) => Divider(
+                      height: 1,
+                      color: cs.outlineVariant.withValues(alpha: 0.18),
+                    ),
+                    itemBuilder: (context, index) {
+                      final agency = filtered[index];
+                      final selected = agency == widget.selectedAgency;
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          agency,
+                          style: AppTypography.bodyMd.copyWith(
+                            color: cs.onSurface,
+                            fontWeight: selected
+                                ? FontWeight.w800
+                                : FontWeight.w600,
+                          ),
+                        ),
+                        trailing: selected
+                            ? Icon(
+                                LucideIcons.check,
+                                color: cs.primary,
+                                size: 20,
+                              )
+                            : null,
+                        onTap: () => widget.onSelected(agency),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RentalVehicleModelPicker extends StatelessWidget {
+  const _RentalVehicleModelPicker({
+    required this.selectedModel,
+    required this.onSelected,
+  });
+
+  final String? selectedModel;
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: ext.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: ext.borderSubtle.withValues(alpha: ext.cardBorderAlpha),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Vehicle model',
+            style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            children: rentalVehicleModelOptions.map((model) {
+              final isSelected = selectedModel == model;
+              return Semantics(
+                button: true,
+                selected: isSelected,
+                label: '$model rental model',
+                child: Tooltip(
+                  message: model,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(18),
+                      onTap: () => onSelected(model),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 180),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? cs.primaryContainer
+                              : ext.surfaceContainerLowest,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: isSelected
+                                ? cs.primary.withValues(alpha: 0.45)
+                                : ext.borderSubtle.withValues(
+                                    alpha: ext.cardBorderAlpha,
+                                  ),
+                          ),
+                        ),
+                        child: Text(
+                          model,
+                          style: AppTypography.labelMd.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: isSelected
+                                ? cs.primary
+                                : cs.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
   }
 }
 

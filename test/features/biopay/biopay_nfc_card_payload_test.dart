@@ -38,6 +38,23 @@ void main() {
       expect(payload.deepLink, contains('type=momo_pay_code'));
     });
 
+    test('rejects invalid MoMo Pay code lengths', () {
+      expect(
+        normalizeBioPayNfcReceiver(
+          '1234',
+          receiverType: BioPayNfcReceiverType.momoPayCode,
+        ),
+        isEmpty,
+      );
+      expect(
+        normalizeBioPayNfcReceiver(
+          '1234567',
+          receiverType: BioPayNfcReceiverType.momoPayCode,
+        ),
+        isEmpty,
+      );
+    });
+
     test('parses JSON, app deep links, tel URIs, and raw USSD codes', () {
       const payload = BioPayNfcCardPayload(
         receiverType: BioPayNfcReceiverType.momoPayCode,

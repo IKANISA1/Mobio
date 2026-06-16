@@ -33,6 +33,8 @@ class AdminDashboardController extends AsyncNotifier<AdminDashboardState> {
         _adminService.listWhatsappAdminNumbers(),
         _adminService.listAdminAccessAttempts(limit: 8),
         _adminService.listAdminNotifications(limit: 12),
+        _adminService.getPlatformSettings(),
+        _adminService.listTokenRedemptions(status: 'pending', limit: 8),
       ]);
 
       return AdminDashboardState(
@@ -40,6 +42,8 @@ class AdminDashboardController extends AsyncNotifier<AdminDashboardState> {
         adminNumbers: results[1] as List<AdminWhatsappNumberItem>,
         accessAttempts: results[2] as List<AdminAccessAttemptItem>,
         alerts: results[3] as List<AdminNotificationItem>,
+        platformSettings: results[4] as AdminPlatformSettings,
+        tokenRedemptions: results[5] as List<AdminTokenRedemptionItem>,
         isLoading: false,
       );
     } on Object catch (error) {
@@ -153,6 +157,65 @@ class AdminDashboardController extends AsyncNotifier<AdminDashboardState> {
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(finalState.copyWith(isSavingNumber: false));
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> savePlatformSettings({
+    required String insuranceAgentWhatsappE164,
+    required String tokenRedemptionAdminMemberId,
+  }) async {
+    final currentState = state.value;
+    if (currentState == null) return;
+
+    state = AsyncValue.data(
+      currentState.copyWith(isSavingPlatformSettings: true),
+    );
+
+    try {
+      await _adminService.updatePlatformSetting(
+        key: 'insurance_agent_whatsapp_e164',
+        value: insuranceAgentWhatsappE164,
+      );
+      await _adminService.updatePlatformSetting(
+        key: 'token_redemption_admin_member_id',
+        value: tokenRedemptionAdminMemberId,
+      );
+      final updatedData = await _fetchDashboardData();
+      state = AsyncValue.data(
+        updatedData.copyWith(isSavingPlatformSettings: false),
+      );
+    } on Object {
+      final finalState = state.value;
+      if (finalState != null) {
+        state = AsyncValue.data(
+          finalState.copyWith(isSavingPlatformSettings: false),
+        );
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> markTokenRedemptionCashSent(
+    AdminTokenRedemptionItem item,
+  ) async {
+    final currentState = state.value;
+    if (currentState == null) return;
+
+    state = AsyncValue.data(currentState.copyWith(busyRedemptionId: item.id));
+
+    try {
+      await _adminService.updateTokenRedemptionStatus(
+        requestId: item.id,
+        status: 'cash_sent',
+      );
+      final updatedData = await _fetchDashboardData();
+      state = AsyncValue.data(updatedData.copyWith(busyRedemptionId: ''));
+    } on Object {
+      final finalState = state.value;
+      if (finalState != null) {
+        state = AsyncValue.data(finalState.copyWith(busyRedemptionId: ''));
       }
       rethrow;
     }

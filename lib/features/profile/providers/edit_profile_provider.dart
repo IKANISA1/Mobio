@@ -166,7 +166,11 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         .replaceAll(RegExp(r'[^0-9]'), '')
         .trim();
     final isBusDriver = s.isDriver && s.vehicleTypeId == 'bus';
-    final isRentalOwner = s.isDriver && s.vehicleTypeId == 'rentals';
+    final requiresVehicleModel =
+        s.isDriver &&
+        (s.vehicleTypeId == 'rentals' ||
+            s.vehicleTypeId == 'private' ||
+            s.vehicleTypeId == 'private_');
     final normalizedBusAgencyName = busAgencyName
         .replaceAll(RegExp(r'\s+'), ' ')
         .trim();
@@ -195,10 +199,8 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
       );
     }
 
-    if (isRentalOwner && normalizedRentalVehicleModel == null) {
-      throw const ValidationException(
-        message: 'Select the rental vehicle model.',
-      );
+    if (requiresVehicleModel && normalizedRentalVehicleModel == null) {
+      throw const ValidationException(message: 'Select the vehicle model.');
     }
 
     if (SupabaseConfig.isLocalUiPreview) return true;
@@ -216,7 +218,9 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         vehicleNumberPlate: normalizedPlate,
         busAgencyName: isBusDriver ? normalizedBusAgencyName : null,
         busPassengerCapacity: isBusDriver ? parsedBusCapacity : null,
-        rentalVehicleModel: isRentalOwner ? normalizedRentalVehicleModel : null,
+        rentalVehicleModel: requiresVehicleModel
+            ? normalizedRentalVehicleModel
+            : null,
         previousIsDriver: s.initialIsDriver,
       );
       return true;

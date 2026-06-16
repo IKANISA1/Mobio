@@ -129,9 +129,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
 
   void _openChat() {
     final trip = _trip;
-    final currentUserId = SupabaseConfig.isConfigured
-        ? Supabase.instance.client.auth.currentUser?.id
-        : null;
+    final currentUserId = _currentUserIdForChat();
     if (trip == null || trip.id == null || currentUserId == null) {
       return;
     }
@@ -143,6 +141,15 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
     }
 
     context.push(Uri(path: '/chat', queryParameters: query).toString());
+  }
+
+  String? _currentUserIdForChat() {
+    if (SupabaseConfig.isLocalUiPreview) {
+      return 'preview-user';
+    }
+    return SupabaseConfig.isConfigured
+        ? Supabase.instance.client.auth.currentUser?.id
+        : null;
   }
 
   String _formatTripId(String? id) {
@@ -250,10 +257,15 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
         ? trip.time
         : '—';
     final isCancelled = trip.status == 'cancelled';
-    final currentUserId = SupabaseConfig.isConfigured
-        ? Supabase.instance.client.auth.currentUser?.id
-        : null;
+    final currentUserId = _currentUserIdForChat();
     final isTripOwner = currentUserId != null && trip.authorId == currentUserId;
+    final canChat = currentUserId != null && trip.id?.isNotEmpty == true;
+    final fareLabel = trip.price?.trim().isNotEmpty == true
+        ? trip.price!.trim()
+        : 'Agree in chat';
+    final contactLabel = trip.whatsapp.trim().isNotEmpty
+        ? trip.whatsapp.trim()
+        : 'In-app chat';
 
     return Expanded(
       child: SingleChildScrollView(
@@ -302,6 +314,62 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
             ),
             const SizedBox(height: AppSpacing.xl),
 
+            ClayCard(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              borderRadius: AppRadii.xxl,
+              child: Column(
+                children: [
+                  _TripDetailFactRow(
+                    icon: LucideIcons.mapPin,
+                    label: 'Pick up',
+                    value: trip.origin,
+                  ),
+                  const Divider(height: AppSpacing.lg),
+                  _TripDetailFactRow(
+                    icon: LucideIcons.flag,
+                    label: 'Drop off',
+                    value: trip.destination,
+                  ),
+                  const Divider(height: AppSpacing.lg),
+                  _TripDetailFactRow(
+                    icon: LucideIcons.clock3,
+                    label: 'Timing',
+                    value: [
+                      if (trip.departureDate.isNotEmpty) trip.departureDate,
+                      timeDisplay,
+                    ].join(' · '),
+                  ),
+                  const Divider(height: AppSpacing.lg),
+                  _TripDetailFactRow(
+                    icon: LucideIcons.armchair,
+                    label: 'Seats',
+                    value: trip.seats.toString(),
+                  ),
+                  const Divider(height: AppSpacing.lg),
+                  _TripDetailFactRow(
+                    icon: LucideIcons.badgeDollarSign,
+                    label: 'Fare',
+                    value: fareLabel,
+                  ),
+                  const Divider(height: AppSpacing.lg),
+                  _TripDetailFactRow(
+                    icon: LucideIcons.messageCircle,
+                    label: 'Contact',
+                    value: contactLabel,
+                  ),
+                  if (trip.isRecurring && trip.recurringDays.isNotEmpty) ...[
+                    const Divider(height: AppSpacing.lg),
+                    _TripDetailFactRow(
+                      icon: LucideIcons.refreshCw,
+                      label: 'Repeat',
+                      value: _formatDays(trip.recurringDays),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+
             // Route map
             if (hasCoords)
               Padding(
@@ -318,85 +386,6 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
                   height: 200,
                 ),
               ),
-
-            // Main details card — simplified
-            Hero(
-              tag: 'trip_card_${trip.id ?? trip.hashCode}',
-              child: Material(
-                type: MaterialType.transparency,
-                child: ClayCard(
-                  padding: const EdgeInsets.all(AppSpacing.xl),
-                  borderRadius: AppRadii.hero,
-                  child: Column(
-                    children: [
-                      // Departure time — prominent
-                      Row(
-                        children: [
-                          Icon(LucideIcons.clock, size: 18, color: cs.primary),
-                          const SizedBox(width: AppSpacing.sm),
-                          Text(
-                            'Departure',
-                            style: AppTypography.labelMd.copyWith(
-                              color: cs.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: AppSpacing.sm),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          timeDisplay,
-                          style: AppTypography.headlineLg.copyWith(
-                            color: cs.primary,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                      if (trip.departureDate.isNotEmpty) ...[
-                        const SizedBox(height: AppSpacing.xxs),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            trip.departureDate,
-                            style: AppTypography.bodySm.copyWith(
-                              color: cs.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                      ],
-
-                      // Recurring days
-                      if (trip.isRecurring &&
-                          trip.recurringDays.isNotEmpty) ...[
-                        const SizedBox(height: AppSpacing.lg),
-                        Divider(color: ext.surfaceContainer, height: 1),
-                        const SizedBox(height: AppSpacing.lg),
-                        Row(
-                          children: [
-                            Icon(
-                              LucideIcons.refreshCw,
-                              size: 16,
-                              color: cs.primary,
-                            ),
-                            const SizedBox(width: AppSpacing.sm),
-                            Expanded(
-                              child: Text(
-                                _formatDays(trip.recurringDays),
-                                style: AppTypography.bodySm.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
 
             // Note
             if (trip.note != null && trip.note!.isNotEmpty)
@@ -442,7 +431,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
-                      'Coordinate pickup, timing, luggage, and fare manually.',
+                      'Coordinate pick up, timing, luggage, fare, and seats, directly via chat',
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: AppTypography.bodySm.copyWith(
@@ -458,7 +447,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
             // Chat button
             MobiButton(
               width: double.infinity,
-              onPressed: _openChat,
+              onPressed: canChat ? _openChat : null,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -543,5 +532,53 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
         .where((d) => d >= 0 && d < labels.length)
         .map((d) => labels[d])
         .join(', ');
+  }
+}
+
+class _TripDetailFactRow extends StatelessWidget {
+  const _TripDetailFactRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: cs.primary),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: AppTypography.labelSm.copyWith(
+                  color: cs.onSurfaceVariant,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value.isEmpty ? '—' : value,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.bodyMd.copyWith(
+                  color: cs.onSurface,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

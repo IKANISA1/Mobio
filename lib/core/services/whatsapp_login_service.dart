@@ -172,8 +172,15 @@ class WhatsAppLoginService {
     countryCode: countryCode,
   );
 
-  static bool isValidCanonicalPhone(String phone) =>
-      PhoneNumberNormalizer.isValidCanonical(phone);
+  static bool isValidCanonicalPhone(String phone, {String? countryCode}) {
+    if (countryCode == null) {
+      return PhoneNumberNormalizer.isValidCanonical(phone);
+    }
+    return PhoneNumberNormalizer.isValidForCountry(
+      phone: phone,
+      countryCode: countryCode,
+    );
+  }
 
   static Map<String, dynamic> _asBody(Object? data) {
     if (data is Map<String, dynamic>) return data;
@@ -201,7 +208,7 @@ class WhatsAppLoginService {
     if (body != null) {
       return WhatsAppLoginResult(
         success: false,
-        message: body['message'] as String? ?? fallbackMessage,
+        message: _friendlyMessage(body['message'] as String?, fallbackMessage),
         retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'),
         attemptsRemaining: _extractInt(body, 'attemptsRemaining'),
       );
@@ -209,7 +216,43 @@ class WhatsAppLoginService {
 
     return WhatsAppLoginResult(
       success: false,
-      message: error.message ?? fallbackMessage,
+      message: _friendlyDioMessage(error, fallbackMessage),
     );
+  }
+
+  static String _friendlyDioMessage(
+    DioException error,
+    String fallbackMessage,
+  ) {
+    if (error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.receiveTimeout ||
+        error.type == DioExceptionType.sendTimeout) {
+      return 'Connection timed out. Check your internet and try again.';
+    }
+
+    if (error.type == DioExceptionType.connectionError ||
+        error.type == DioExceptionType.unknown) {
+      return fallbackMessage;
+    }
+
+    return _friendlyMessage(error.message, fallbackMessage);
+  }
+
+  static String _friendlyMessage(String? message, String fallbackMessage) {
+    final text = message?.trim();
+    if (text == null || text.isEmpty) {
+      return fallbackMessage;
+    }
+
+    final lower = text.toLowerCase();
+    if (lower.contains('xmlhttprequest') ||
+        lower.contains('socketexception') ||
+        lower.contains('clientexception') ||
+        lower.contains('connection errored') ||
+        lower.contains('failed host lookup')) {
+      return fallbackMessage;
+    }
+
+    return text;
   }
 }

@@ -67,26 +67,6 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
     super.dispose();
   }
 
-  void _setPhoneValue(String value) {
-    final digits = value.replaceAll(RegExp(r'\D'), '');
-    final limited = digits.length > 15 ? digits.substring(0, 15) : digits;
-    _controller.value = TextEditingValue(
-      text: limited,
-      selection: TextSelection.collapsed(offset: limited.length),
-    );
-    widget.onChanged(limited);
-  }
-
-  void _appendDigit(String digit) {
-    if (!widget.enabled || _controller.text.length >= 15) return;
-    _setPhoneValue('${_controller.text}$digit');
-  }
-
-  void _deleteDigit() {
-    if (!widget.enabled || _controller.text.isEmpty) return;
-    _setPhoneValue(_controller.text.substring(0, _controller.text.length - 1));
-  }
-
   Future<void> _loadCountries() async {
     try {
       final countries = await _countryService.getCountries();
@@ -230,12 +210,6 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
-        _PhoneNumberKeypad(
-          enabled: widget.enabled,
-          onDigit: _appendDigit,
-          onBackspace: _deleteDigit,
-        ),
       ],
     );
   }
@@ -323,102 +297,5 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
         );
       },
     ).whenComplete(searchController.dispose);
-  }
-}
-
-class _PhoneNumberKeypad extends StatelessWidget {
-  const _PhoneNumberKeypad({
-    required this.enabled,
-    required this.onDigit,
-    required this.onBackspace,
-  });
-
-  final bool enabled;
-  final ValueChanged<String> onDigit;
-  final VoidCallback onBackspace;
-
-  @override
-  Widget build(BuildContext context) {
-    const rows = [
-      ['1', '2', '3'],
-      ['4', '5', '6'],
-      ['7', '8', '9'],
-      ['', '0', 'backspace'],
-    ];
-
-    return Column(
-      children: [
-        for (final row in rows) ...[
-          Row(
-            children: [
-              for (final value in row)
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: _PhoneKeypadButton(
-                      value: value,
-                      enabled: enabled,
-                      onTap: value == 'backspace'
-                          ? onBackspace
-                          : value.isEmpty
-                          ? null
-                          : () => onDigit(value),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          if (row != rows.last) const SizedBox(height: 8),
-        ],
-      ],
-    );
-  }
-}
-
-class _PhoneKeypadButton extends StatelessWidget {
-  const _PhoneKeypadButton({
-    required this.value,
-    required this.enabled,
-    required this.onTap,
-  });
-
-  final String value;
-  final bool enabled;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    if (value.isEmpty) {
-      return const SizedBox(height: 48);
-    }
-
-    final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-    final isBackspace = value == 'backspace';
-
-    return SizedBox(
-      height: 48,
-      child: TextButton(
-        onPressed: enabled ? onTap : null,
-        style: TextButton.styleFrom(
-          foregroundColor: cs.onSurface,
-          disabledForegroundColor: cs.onSurfaceVariant.withValues(alpha: 0.36),
-          backgroundColor: ext.surfaceContainerLow.withValues(alpha: 0.72),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadii.lg),
-          ),
-          padding: EdgeInsets.zero,
-        ),
-        child: isBackspace
-            ? const Icon(Icons.backspace_outlined, size: 22)
-            : Text(
-                value,
-                style: AppTypography.titleLg.copyWith(
-                  color: cs.onSurface,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-      ),
-    );
   }
 }

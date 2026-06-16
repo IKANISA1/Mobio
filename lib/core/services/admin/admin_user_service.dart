@@ -48,6 +48,30 @@ class AdminUserService extends AdminBaseService {
     }
   }
 
+  Future<AdminTokenAdjustmentReceipt> adjustUserTokens({
+    required String userId,
+    required int amountTokens,
+    String? note,
+  }) async {
+    try {
+      final data = await supabaseClient.rpc(
+        'rpc_admin_adjust_user_tokens',
+        params: {
+          'p_profile_id': userId,
+          'p_amount_tokens': amountTokens,
+          'p_note': note,
+        },
+      );
+
+      return AdminTokenAdjustmentReceipt.fromJson(
+        Map<String, dynamic>.from(data as Map),
+      );
+    } on Object catch (error) {
+      AppLogger.error('Error adjusting user TOKENS: $error');
+      rethrow;
+    }
+  }
+
   Future<List<AdminWhatsappNumberItem>> listWhatsappAdminNumbers() async {
     try {
       final rows = await supabaseClient.rpc('rpc_admin_list_whatsapp_numbers');

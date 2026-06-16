@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_app/features/chat/models/chat_conversation.dart';
@@ -223,12 +225,63 @@ class ChatService {
   }
 
   Stream<List<ChatMessageModel>> streamMessages(String conversationId) {
-    return (() async* {
-      yield await getRecentMessages(conversationId);
-      await for (final _ in Stream<void>.periodic(const Duration(seconds: 3))) {
-        yield await getRecentMessages(conversationId);
+    late final StreamController<List<ChatMessageModel>> controller;
+    RealtimeChannel? channel;
+    var isRefreshing = false;
+    var refreshQueued = false;
+
+    Future<void> refreshMessages() async {
+      if (isRefreshing) {
+        refreshQueued = true;
+        return;
       }
-    })();
+
+      isRefreshing = true;
+      do {
+        refreshQueued = false;
+        try {
+          final messages = await getRecentMessages(conversationId);
+          if (!controller.isClosed) {
+            controller.add(messages);
+          }
+        } on Object catch (error, stackTrace) {
+          if (!controller.isClosed) {
+            controller.addError(error, stackTrace);
+          }
+        }
+      } while (refreshQueued && !controller.isClosed);
+      isRefreshing = false;
+    }
+
+    controller = StreamController<List<ChatMessageModel>>(
+      onListen: () {
+        unawaited(refreshMessages());
+        channel = _supabase
+            .channel('chat_conversation_$conversationId')
+            .onPostgresChanges(
+              event: PostgresChangeEvent.update,
+              schema: 'public',
+              table: 'chat_conversations',
+              filter: PostgresChangeFilter(
+                type: PostgresChangeFilterType.eq,
+                column: 'id',
+                value: conversationId,
+              ),
+              callback: (_) => unawaited(refreshMessages()),
+            )
+            .subscribe();
+      },
+      onCancel: () async {
+        final activeChannel = channel;
+        channel = null;
+        if (activeChannel != null) {
+          await activeChannel.unsubscribe();
+        }
+        await controller.close();
+      },
+    );
+
+    return controller.stream;
   }
 
   /// Minimum interval between message sends (prevents spam / double-tap).

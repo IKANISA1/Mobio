@@ -548,13 +548,11 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
               ? whatsapp
               : tripWhatsapp);
     if (raw.isEmpty) return null;
-    final normalized = PhoneNumberNormalizer.normalizeForCountry(
+    final validation = PhoneNumberNormalizer.validateForCountry(
       phone: raw,
       countryCode: '+250',
     );
-    return PhoneNumberNormalizer.isValidCanonical(normalized)
-        ? normalized
-        : null;
+    return validation.isValid ? validation.normalized : null;
   }
 
   String _externalMessageDraft() {

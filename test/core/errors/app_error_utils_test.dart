@@ -61,7 +61,7 @@ void main() {
       expect(mapped, isA<ForbiddenException>());
       expect(
         mapped.message,
-        'You have used your 30 free moto taxi trips this month. Upgrade to Pro to schedule more driver trips.',
+        'You have used your free Moto Taxi trip credit. Upgrade to Mobio Plus to schedule more driver trips.',
       );
     });
 

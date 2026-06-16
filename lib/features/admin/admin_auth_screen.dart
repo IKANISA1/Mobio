@@ -56,8 +56,13 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
 
   bool get _isBusy => _sendingCode || _verifyingCode;
 
-  bool get _canSendCode =>
-      !_isBusy && PhoneNumberNormalizer.isValidCanonical(_fullPhone);
+  PhoneValidationResult get _phoneValidation =>
+      PhoneNumberNormalizer.validateForCountry(
+        phone: _number,
+        countryCode: _countryCode,
+      );
+
+  bool get _canSendCode => !_isBusy && _phoneValidation.isValid;
 
   bool get _canVerifyCode => !_isBusy && _otpController.text.trim().length == 6;
 
@@ -182,6 +187,26 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
         _otpController.clear();
       }
     });
+  }
+
+  void _updateNumber(String value) {
+    setState(() {
+      _number = value;
+      _clearTransientMessages();
+    });
+  }
+
+  void _updateCountryCode(String value) {
+    setState(() {
+      _countryCode = value;
+      _clearTransientMessages();
+    });
+  }
+
+  void _clearTransientMessages() {
+    _error = null;
+    _statusMessage = null;
+    _attemptsRemaining = null;
   }
 
   void _resetOtpFlow() {
@@ -343,11 +368,9 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
                           const SizedBox(height: AppSpacing.lg),
                           WhatsAppInput(
                             value: _number,
-                            onChanged: (value) =>
-                                setState(() => _number = value),
+                            onChanged: _updateNumber,
                             countryCode: _countryCode,
-                            onCountryCodeChanged: (value) =>
-                                setState(() => _countryCode = value),
+                            onCountryCodeChanged: _updateCountryCode,
                             label: 'WhatsApp',
                             enabled: !_otpRequested && !_isBusy,
                           ),

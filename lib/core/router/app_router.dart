@@ -16,6 +16,8 @@ import 'package:mobi_app/features/admin/admin_audit_log_screen.dart'
 import 'package:mobi_app/features/admin/admin_broadcasts_screen.dart'
     deferred as admin_broadcasts_route;
 import 'package:mobi_app/features/admin/admin_dashboard_screen.dart';
+import 'package:mobi_app/features/admin/admin_ev_chargers_screen.dart'
+    deferred as admin_ev_chargers_route;
 import 'package:mobi_app/features/admin/admin_operational_health_screen.dart'
     deferred as admin_health_route;
 import 'package:mobi_app/features/admin/admin_reports_screen.dart'
@@ -40,8 +42,12 @@ import 'package:mobi_app/features/biopay/biopay_nfc_screen.dart'
     deferred as biopay_nfc_route;
 import 'package:mobi_app/features/biopay/biopay_nfc_write_card_screen.dart'
     deferred as biopay_nfc_write_card_route;
+import 'package:mobi_app/features/biopay/biopay_payment_link_screen.dart'
+    deferred as biopay_payment_link_route;
 import 'package:mobi_app/features/biopay/biopay_qr_screen.dart'
     deferred as biopay_qr_route;
+import 'package:mobi_app/features/biopay/biopay_request_payment_screen.dart'
+    deferred as biopay_request_payment_route;
 import 'package:mobi_app/features/biopay/biopay_scan_screen.dart'
     deferred as biopay_scan_route;
 import 'package:mobi_app/features/bookings/trip_details_screen.dart'
@@ -62,6 +68,7 @@ abstract class AppRoutes {
   static const String profile = '/profile';
   static const String nearby = '/nearby';
   static const String bookings = '/bookings';
+  static const String evChargers = '/ev-chargers';
   static const String schedule = '/schedule';
   static const String tripDetails = '/trip/:id';
   static const String tripEdit = '/trip/:id/edit';
@@ -76,6 +83,7 @@ abstract class AppRoutes {
   static const String adminProfile = '/admin/profile';
   static const String adminVehicleTypes = '/admin/vehicle-types';
   static const String adminAgencies = '/admin/agencies';
+  static const String adminEvChargers = '/admin/ev-chargers';
   static const String adminSubscriptions = '/admin/subscriptions';
   static const String adminTrips = '/admin/trips';
   static const String adminReports = '/admin/reports';
@@ -91,6 +99,8 @@ abstract class AppRoutes {
   static const String faceEnroll = '/biopay/enroll';
   static const String nfc = '/biopay/nfc';
   static const String nfcWriteCard = '/biopay/nfc/write-card';
+  static const String requestPayment = '/biopay/request-payment';
+  static const String payBioPayRequest = '/biopay/pay/:token';
 
   static const String configError = '/config-error';
 }
@@ -205,8 +215,18 @@ String? _appRouteGuard(GoRouterState state) {
     return null;
   }
 
+  if (SupabaseConfig.isLocalAuthBypass) {
+    return state.matchedLocation == AppRoutes.login
+        ? _safeRedirectTarget(state.uri.queryParameters['redirect'])
+        : null;
+  }
+
   final path = state.matchedLocation;
   if (path == AppRoutes.configError || path == AppRoutes.adminAuth) {
+    return null;
+  }
+
+  if (path.startsWith('/biopay/pay/')) {
     return null;
   }
 
@@ -326,6 +346,8 @@ GoRouter createRouter() {
                   onScan: () => context.push('/biopay/scan'),
                   onFace: () => context.push('/biopay/face-scan'),
                   onNfc: () => context.push('/biopay/nfc'),
+                  onRequestPayment: () =>
+                      context.push('/biopay/request-payment'),
                 ),
               ),
               GoRoute(
@@ -364,6 +386,12 @@ GoRouter createRouter() {
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) =>
             mobiRoutePage(state, const NearbyScreenWrapper()),
+      ),
+      GoRoute(
+        path: '/ev-chargers',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) =>
+            mobiRoutePage(state, const EvChargerLocatorScreenWrapper()),
       ),
       GoRoute(
         path: '/notifications',
@@ -459,6 +487,19 @@ GoRouter createRouter() {
         pageBuilder: (context, state) => mobiRoutePage(
           state,
           DriverPlusScreen(onBack: () => _safePopToProfile(context)),
+        ),
+      ),
+      GoRoute(
+        path: '/admin/ev-chargers',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: admin_ev_chargers_route.loadLibrary,
+            builder: (context) => admin_ev_chargers_route.AdminEvChargersScreen(
+              onBack: () => safePop(context),
+            ),
+          ),
         ),
       ),
       GoRoute(
@@ -591,6 +632,35 @@ GoRouter createRouter() {
         ),
       ),
 
+      GoRoute(
+        path: '/biopay/request-payment',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: biopay_request_payment_route.loadLibrary,
+            builder: (context) =>
+                biopay_request_payment_route.BioPayRequestPaymentScreen(
+                  onBack: () => safePop(context),
+                ),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/biopay/pay/:token',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: biopay_payment_link_route.loadLibrary,
+            builder: (context) =>
+                biopay_payment_link_route.BioPayPaymentLinkScreen(
+                  token: state.pathParameters['token'] ?? '',
+                  onBack: () => safePop(context),
+                ),
+          ),
+        ),
+      ),
       GoRoute(
         path: '/biopay/qr',
         parentNavigatorKey: rootNavigatorKey,

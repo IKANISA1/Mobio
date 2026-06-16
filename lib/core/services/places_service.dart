@@ -245,6 +245,35 @@ class PlacesService {
     );
   }
 
+  /// Resolves a typed address or location search into coordinates.
+  Future<PlaceDetails?> geocodeAddress(String address) async {
+    final query = address.trim();
+    if (query.length < 3) return null;
+
+    return _callWithRetry<PlaceDetails?>(
+      operationName: 'geocodeAddress',
+      timeout: const Duration(seconds: 10),
+      action: () async {
+        final response = await _supabase.functions.invoke(
+          'maps-gateway',
+          body: {'action': 'geocode', 'query': query},
+        );
+
+        final data = response.data;
+        if (data == null || data['place'] == null) return null;
+
+        final place = data['place'];
+        return PlaceDetails(
+          placeId: (place['placeId'] as String?) ?? '',
+          formattedAddress: (place['label'] as String?) ?? query,
+          latitude: (place['position']?['latitude'] as num?)?.toDouble() ?? 0.0,
+          longitude:
+              (place['position']?['longitude'] as num?)?.toDouble() ?? 0.0,
+        );
+      },
+    );
+  }
+
   /// Reverse geocodes a lat/lng pair into a place name.
   Future<PlaceDetails?> reverseGeocode(double lat, double lng) async {
     return _callWithRetry<PlaceDetails?>(

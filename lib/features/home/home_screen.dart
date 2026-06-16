@@ -38,6 +38,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final VoidCallback onViewNearby;
   final VoidCallback? onViewBookings;
   final VoidCallback? onSchedule;
+  final VoidCallback? onEvChargers;
   final VoidCallback? onNotifications;
 
   const HomeScreen({
@@ -48,6 +49,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.onViewNearby,
     this.onViewBookings,
     this.onSchedule,
+    this.onEvChargers,
     this.onNotifications,
   });
 
@@ -467,10 +469,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                         onTap: () => widget.onSchedule?.call(),
                       ),
                       MobiActionItem(
-                        icon: LucideIcons.calendarDays,
-                        label: 'Trips',
+                        icon: LucideIcons.plugZap,
+                        label: 'EV Charger',
                         accent: Theme.of(context).colorScheme.tertiary,
-                        onTap: () => widget.onViewBookings?.call(),
+                        onTap: () => widget.onEvChargers?.call(),
                       ),
                     ],
                   ).animate(delay: 200.ms).fade().slideY(begin: 0.1),
@@ -608,7 +610,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               .slideY(begin: 0.1),
                         )
                       : AiEmptyState(
-                          title: 'No trips yet',
+                          title: 'No scheduled trips yet',
                           icon: LucideIcons.calendar,
                           height: 200,
                           onAction: widget.onSchedule,

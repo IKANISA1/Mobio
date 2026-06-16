@@ -177,6 +177,12 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
   @override
   Widget build(BuildContext context) {
     final readyForPreview = _camera?.value.isInitialized == true;
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final isCompactHeight = screenHeight < 760;
+    final scannerHeight = isCompactHeight ? 276.0 : 316.0;
+    final standbyGuideSize = isCompactHeight
+        ? const Size(138, 188)
+        : const Size(156, 212);
     final primaryLabel = _request == null
         ? readyForPreview
               ? 'Match face'
@@ -205,6 +211,21 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
               showLabel: false,
             ),
             const SizedBox(height: AppSpacing.sm),
+            if (readyForPreview)
+              BioPayCameraFrame(
+                controller: _camera!,
+                totalSteps: 1,
+                currentStepId: 'straight_1',
+                showFaceGuide: true,
+                height: scannerHeight,
+              )
+            else
+              BioPayFaceEnrollmentStandby(
+                iconColor: Theme.of(context).colorScheme.primary,
+                height: scannerHeight,
+                guideSize: standbyGuideSize,
+              ),
+            const SizedBox(height: AppSpacing.md),
             MobiButton(
               onPressed: _busy ? null : _scanFace,
               isLoading: _busy,
@@ -215,20 +236,6 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
               ),
               child: Text(primaryLabel),
             ),
-            const SizedBox(height: AppSpacing.md),
-            if (readyForPreview)
-              BioPayCameraFrame(
-                controller: _camera!,
-                totalSteps: 1,
-                currentStepId: 'straight_1',
-                showFaceGuide: true,
-              )
-            else
-              BioPayFaceEnrollmentStandby(
-                iconColor: Theme.of(context).colorScheme.primary,
-                height: 376,
-                guideSize: const Size(190, 258),
-              ),
           ],
           if (_matchLabel != null) ...[
             const SizedBox(height: AppSpacing.md),

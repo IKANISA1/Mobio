@@ -16,6 +16,7 @@ import 'package:mobi_app/core/services/country_service.dart';
 import 'package:mobi_app/core/services/driver_location_service.dart';
 import 'package:mobi_app/core/services/driver_location_sharing_service.dart';
 import 'package:mobi_app/core/services/driver_plus_service.dart';
+import 'package:mobi_app/core/services/ev_charger_service.dart';
 import 'package:mobi_app/core/services/favorite_address_service.dart';
 import 'package:mobi_app/core/services/firebase_analytics_service.dart';
 import 'package:mobi_app/core/services/firebase_auth_service.dart';
@@ -119,6 +120,13 @@ final driverLocationSharingServiceProvider = Provider(
 );
 final driverPlusServiceProvider = Provider(
   (ref) => DriverPlusService(supabase: ref.read(supabaseClientProvider)),
+);
+final evChargerServiceProvider = Provider(
+  (ref) => EvChargerService(
+    supabase: SupabaseConfig.isConfigured
+        ? ref.read(supabaseClientProvider)
+        : null,
+  ),
 );
 final firebaseAnalyticsServiceProvider = Provider(
   (ref) => FirebaseAnalyticsService.instance,

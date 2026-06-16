@@ -60,7 +60,7 @@ class ProfileVehicleSection extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           _buildBusDetailsCard(context, cs, ext),
         ],
-        if (selectedVehicleId == 'rentals') ...[
+        if (_requiresVehicleModel) ...[
           const SizedBox(height: AppSpacing.lg),
           _buildRentalDetailsCard(context, cs, ext),
         ],
@@ -68,12 +68,18 @@ class ProfileVehicleSection extends StatelessWidget {
     );
   }
 
+  bool get _requiresVehicleModel =>
+      selectedVehicleId == 'rentals' ||
+      selectedVehicleId == 'private' ||
+      selectedVehicleId == 'private_';
+
   Widget _buildVehicleGrid(
     BuildContext context,
     ColorScheme cs,
     MobiThemeExtension ext,
   ) {
     if (vehicleTypes.isEmpty) return const SizedBox(height: 80);
+    final policyText = _selectedVehiclePolicyText;
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -84,75 +90,114 @@ class ProfileVehicleSection extends StatelessWidget {
           color: ext.borderSubtle.withValues(alpha: ext.cardBorderAlpha),
         ),
       ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final crossAxisCount = constraints.maxWidth >= 560 ? 6 : 3;
-          final textScale = MediaQuery.textScalerOf(context).scale(1);
-          final childAspectRatio = textScale >= 1.6 ? 0.88 : 1.12;
-          return GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: vehicleTypes.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              childAspectRatio: childAspectRatio,
-            ),
-            itemBuilder: (context, index) {
-              final vt = vehicleTypes[index];
-              final isSelected = selectedVehicleId == vt.id;
-              return _TappableSelector(
-                onTap: () => onVehicleTypeChanged(vt.id),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? cs.primaryContainer
-                        : ext.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(
-                      color: isSelected
-                          ? cs.primary.withValues(alpha: 0.45)
-                          : ext.borderSubtle.withValues(
-                              alpha: ext.cardBorderAlpha,
-                            ),
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      VehicleTypeIcon(
-                        vehicleType: vt,
-                        size: 22,
-                        color: isSelected ? cs.primary : cs.onSurfaceVariant,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final crossAxisCount = constraints.maxWidth >= 560 ? 6 : 3;
+              final textScale = MediaQuery.textScalerOf(context).scale(1);
+              final childAspectRatio = textScale >= 1.6 ? 0.88 : 1.12;
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: vehicleTypes.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: crossAxisCount,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: childAspectRatio,
+                ),
+                itemBuilder: (context, index) {
+                  final vt = vehicleTypes[index];
+                  final isSelected = selectedVehicleId == vt.id;
+                  return _TappableSelector(
+                    onTap: () => onVehicleTypeChanged(vt.id),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? cs.primaryContainer
+                            : ext.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(
+                          color: isSelected
+                              ? cs.primary.withValues(alpha: 0.45)
+                              : ext.borderSubtle.withValues(
+                                  alpha: ext.cardBorderAlpha,
+                                ),
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6),
-                        child: Text(
-                          vt.label,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: AppTypography.labelSm.copyWith(
-                            fontWeight: FontWeight.w800,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          VehicleTypeIcon(
+                            vehicleType: vt,
+                            size: 22,
                             color: isSelected
                                 ? cs.primary
                                 : cs.onSurfaceVariant,
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                            child: Text(
+                              vt.label,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: AppTypography.labelSm.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: isSelected
+                                    ? cs.primary
+                                    : cs.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               );
             },
-          );
-        },
+          ),
+          if (policyText != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: cs.primaryContainer.withValues(alpha: 0.34),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: cs.primary.withValues(alpha: 0.24)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                child: Text(
+                  policyText,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.labelMd.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
+
+  String? get _selectedVehiclePolicyText => switch (selectedVehicleId) {
+    'moto' => 'One free trip credit every day for 12 months.',
+    'private' ||
+    'private_' ||
+    'rentals' => 'One free trip credit every day for 30 days.',
+    _ => null,
+  };
 
   Widget _buildPlateCard(
     BuildContext context,
@@ -267,6 +312,10 @@ class ProfileVehicleSection extends StatelessWidget {
     ColorScheme cs,
     MobiThemeExtension ext,
   ) {
+    final title = selectedVehicleId == 'rentals'
+        ? 'Rental model'
+        : 'Vehicle model';
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -280,7 +329,7 @@ class ProfileVehicleSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Rental model',
+            title,
             style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
           ),
           const SizedBox(height: AppSpacing.md),

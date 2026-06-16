@@ -121,6 +121,40 @@ class GoogleMapsDeepLinkService {
     });
   }
 
+  static Uri evChargerLocationsUri({
+    required double originLat,
+    required double originLng,
+    required Iterable<GoogleMapsLocation> chargers,
+  }) {
+    final chargerLocations = chargers.toList(growable: false);
+    if (chargerLocations.isEmpty) {
+      return Uri.https('www.google.com', '/maps/search/', {
+        'api': '1',
+        'query': 'EV charger near ${coordinate(originLat, originLng)}',
+      });
+    }
+
+    if (chargerLocations.length == 1) {
+      return routeUriForLocations(
+        origin: GoogleMapsLocation(latitude: originLat, longitude: originLng),
+        destination: chargerLocations.first,
+      );
+    }
+
+    final destination = chargerLocations.last;
+    final waypointStops = chargerLocations
+        .take(chargerLocations.length - 1)
+        .map((charger) => charger.coordinate);
+
+    return Uri.https('www.google.com', '/maps/dir/', {
+      'api': '1',
+      'origin': coordinate(originLat, originLng),
+      'destination': destination.coordinate,
+      'travelmode': 'driving',
+      'waypoints': waypointStops.join('|'),
+    });
+  }
+
   static Future<bool> openRoute({
     required double originLat,
     required double originLng,
@@ -164,6 +198,20 @@ class GoogleMapsDeepLinkService {
         originLat: originLat,
         originLng: originLng,
         drivers: drivers,
+      ),
+    );
+  }
+
+  static Future<bool> openEvChargerLocations({
+    required double originLat,
+    required double originLng,
+    required Iterable<GoogleMapsLocation> chargers,
+  }) {
+    return _open(
+      evChargerLocationsUri(
+        originLat: originLat,
+        originLng: originLng,
+        chargers: chargers,
       ),
     );
   }

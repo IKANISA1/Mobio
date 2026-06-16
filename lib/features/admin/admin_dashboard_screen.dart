@@ -66,6 +66,110 @@ class AdminDashboardScreen extends ConsumerWidget {
     );
   }
 
+  void _showPlatformSettingsSheet(
+    BuildContext context,
+    WidgetRef ref,
+    AdminPlatformSettings settings,
+  ) {
+    final insuranceController = TextEditingController(
+      text: settings.insuranceAgentWhatsappE164,
+    );
+    final adminWalletController = TextEditingController(
+      text: settings.tokenRedemptionAdminMemberId,
+    );
+
+    MobiBottomSheet.show<void>(
+      context: context,
+      includeViewInsets: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.xl,
+          AppSpacing.xl,
+          AppSpacing.xl,
+          MediaQuery.of(ctx).viewInsets.bottom + AppSpacing.xl,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const AdminSectionHeader(
+              title: 'Platform settings',
+              subtitle: 'Insurance contact and redemption wallet',
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            TextField(
+              controller: insuranceController,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                labelText: 'Insurance agent WhatsApp',
+                hintText: '+250795588248',
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            TextField(
+              controller: adminWalletController,
+              keyboardType: TextInputType.number,
+              maxLength: 6,
+              decoration: const InputDecoration(
+                labelText: 'Redemption admin wallet ID',
+                counterText: '',
+                hintText: '123456',
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Row(
+              children: [
+                Expanded(
+                  child: AdminActionChip(
+                    label: 'Cancel',
+                    icon: LucideIcons.x,
+                    onTap: () => Navigator.of(ctx).pop(),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: AdminActionChip(
+                    label: 'Save',
+                    icon: LucideIcons.save,
+                    tone: MobiStatusBadgeTone.brand,
+                    onTap: () async {
+                      try {
+                        await ref
+                            .read(adminDashboardProvider.notifier)
+                            .savePlatformSettings(
+                              insuranceAgentWhatsappE164: insuranceController
+                                  .text
+                                  .trim(),
+                              tokenRedemptionAdminMemberId:
+                                  adminWalletController.text.trim(),
+                            );
+                        if (ctx.mounted) Navigator.of(ctx).pop();
+                        if (context.mounted) {
+                          _showSnackBar(context, 'Platform settings updated.');
+                        }
+                      } on Object catch (error) {
+                        if (context.mounted) {
+                          _showSnackBar(
+                            context,
+                            error.toString(),
+                            isError: true,
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ).whenComplete(() {
+      insuranceController.dispose();
+      adminWalletController.dispose();
+    });
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncState = ref.watch(adminDashboardProvider);
@@ -105,6 +209,11 @@ class AdminDashboardScreen extends ConsumerWidget {
             onAddNumber: () => _showWhatsappSheet(context, ref),
             onEditNumber: (item) =>
                 _showWhatsappSheet(context, ref, existing: item),
+            onEditPlatformSettings: () => _showPlatformSettingsSheet(
+              context,
+              ref,
+              state.platformSettings,
+            ),
           ),
         ),
         loading: () => const _DashboardLoadingState(),
@@ -121,12 +230,14 @@ class _DashboardContent extends StatelessWidget {
     required this.controller,
     required this.onAddNumber,
     required this.onEditNumber,
+    required this.onEditPlatformSettings,
   });
 
   final AdminDashboardState state;
   final AdminDashboardController controller;
   final VoidCallback onAddNumber;
   final ValueChanged<AdminWhatsappNumberItem> onEditNumber;
+  final VoidCallback onEditPlatformSettings;
 
   @override
   Widget build(BuildContext context) {
@@ -174,6 +285,12 @@ class _DashboardContent extends StatelessWidget {
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         AdminAccessPanel(accessAttempts: state.accessAttempts),
+                        const SizedBox(height: AppSpacing.lg),
+                        AdminPlatformSettingsPanel(
+                          settings: state.platformSettings,
+                          isSaving: state.isSavingPlatformSettings,
+                          onEdit: onEditPlatformSettings,
+                        ),
                       ],
                     ),
                   ),
@@ -195,6 +312,12 @@ class _DashboardContent extends StatelessWidget {
                           onAdd: onAddNumber,
                           onEdit: onEditNumber,
                           onToggle: controller.toggleNumber,
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        AdminTokenRedemptionsPanel(
+                          redemptions: state.tokenRedemptions,
+                          busyRedemptionId: state.busyRedemptionId,
+                          onCashSent: controller.markTokenRedemptionCashSent,
                         ),
                       ],
                     ),
@@ -222,6 +345,18 @@ class _DashboardContent extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.lg),
               AdminAccessPanel(accessAttempts: state.accessAttempts),
+              const SizedBox(height: AppSpacing.lg),
+              AdminPlatformSettingsPanel(
+                settings: state.platformSettings,
+                isSaving: state.isSavingPlatformSettings,
+                onEdit: onEditPlatformSettings,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              AdminTokenRedemptionsPanel(
+                redemptions: state.tokenRedemptions,
+                busyRedemptionId: state.busyRedemptionId,
+                onCashSent: controller.markTokenRedemptionCashSent,
+              ),
               const SizedBox(height: AppSpacing.lg),
               AdminAllowlistPanel(
                 adminNumbers: state.adminNumbers,

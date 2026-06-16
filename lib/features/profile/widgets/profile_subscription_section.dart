@@ -3,7 +3,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/core/utils/money_formatting.dart';
 import 'package:mobi_app/models/subscription_plan_model.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
@@ -22,25 +21,51 @@ class ProfileSubscriptionSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (vehicleTypeId.isEmpty || allPlans.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final activePlans = allPlans
-        .where(
-          (p) =>
-              p.isActive &&
-              p.vehicleTypeId == vehicleTypeId &&
-              p.countryId == countryId,
-        )
-        .toList();
-
-    if (activePlans.isEmpty) {
+    if (vehicleTypeId.isEmpty) {
       return const SizedBox.shrink();
     }
 
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final normalizedVehicleTypeId = vehicleTypeId.trim().toLowerCase();
+    final isOthers =
+        normalizedVehicleTypeId == 'private' ||
+        normalizedVehicleTypeId == 'private_';
+    final isRentals = normalizedVehicleTypeId == 'rentals';
+    final isMotoTaxi = normalizedVehicleTypeId == 'moto';
+    final hasVisiblePlanPolicy =
+        isMotoTaxi ||
+        isOthers ||
+        isRentals ||
+        normalizedVehicleTypeId == 'cab' ||
+        normalizedVehicleTypeId == 'truck' ||
+        normalizedVehicleTypeId == 'trike';
+    final planVehicleTypeId = isOthers ? 'private' : normalizedVehicleTypeId;
+    final activePlans = allPlans
+        .where(
+          (p) =>
+              p.isActive &&
+              p.vehicleTypeId == planVehicleTypeId &&
+              p.countryId == countryId,
+        )
+        .toList();
+    if (!hasVisiblePlanPolicy && activePlans.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final bannerTitle = isMotoTaxi
+        ? 'One free credit per day for 12 months'
+        : isOthers
+        ? 'One free Others credit every day for 30 days'
+        : isRentals
+        ? 'One free Rentals credit every day for 30 days'
+        : '30 free credits, one free everyday';
+    final helperText = isOthers
+        ? 'Use one free trip credit every day for 30 days before upgrading.'
+        : isRentals
+        ? 'Use one free trip credit every day for 30 days before upgrading.'
+        : isMotoTaxi
+        ? 'One free credit per day for 12 months.'
+        : 'Use one free driver credit per day before upgrading';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,59 +87,24 @@ class ProfileSubscriptionSection extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const MobiStateBanner(
+              MobiStateBanner(
                 icon: LucideIcons.creditCard,
-                title: 'Subscription required',
-                subtitle: 'Needed to receive trips',
+                title: bannerTitle,
+                subtitle: helperText,
                 tone: MobiStateBannerTone.brand,
               ),
-              const SizedBox(height: AppSpacing.md),
-              Wrap(
-                spacing: AppSpacing.sm,
-                runSpacing: AppSpacing.sm,
-                children: activePlans
-                    .map((plan) => _buildPlanCard(cs, ext, plan))
-                    .toList(),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                helperText,
+                style: AppTypography.bodySm.copyWith(
+                  color: cs.onSurfaceVariant,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildPlanCard(
-    ColorScheme cs,
-    MobiThemeExtension ext,
-    SubscriptionPlanModel plan,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: ext.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.1)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            plan.intervalLabel,
-            style: AppTypography.labelSm.copyWith(
-              fontWeight: FontWeight.w700,
-              color: cs.onSurface,
-            ),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          Text(
-            '${formatWholeAmount(plan.price)} ${plan.currency}',
-            style: AppTypography.labelSm.copyWith(
-              color: cs.primary,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

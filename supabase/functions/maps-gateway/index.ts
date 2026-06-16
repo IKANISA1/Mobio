@@ -17,6 +17,7 @@ type LatLng = {
 type MapsGatewayRequest = {
   action?:
     | "autocomplete"
+    | "geocode"
     | "text_search"
     | "place_details"
     | "reverse_geocode"
@@ -172,6 +173,7 @@ export async function handleMapsGatewayRequest(
 
     // ── Cache check ─────────────────────────────────────────────────
     const cacheable = body.action === "autocomplete" ||
+      body.action === "geocode" ||
       body.action === "reverse_geocode";
     let cacheKey: string | null = null;
 
@@ -260,6 +262,8 @@ async function handleAction(
   switch (body.action) {
     case "autocomplete":
       return { suggestions: await autocompletePlaces(body, deps) };
+    case "geocode":
+      return { place: await geocodeAddress(body, deps) };
     case "text_search":
       return { places: await textSearchPlaces(body, deps) };
     case "place_details":
@@ -276,6 +280,67 @@ async function handleAction(
         action: body.action ?? null,
       });
   }
+}
+
+async function geocodeAddress(
+  body: MapsGatewayRequest,
+  deps: { fetchImpl: typeof fetch },
+) {
+  const query = body.query?.trim() ?? "";
+  if (query.length < 3) {
+    return null;
+  }
+
+  const url = new URL("https://maps.googleapis.com/maps/api/geocode/json");
+  url.searchParams.set("address", query);
+  url.searchParams.set("key", requireMapsApiKey());
+  url.searchParams.set("region", RWANDA_REGION_CODE.toLowerCase());
+  url.searchParams.set("components", "country:RW");
+  url.searchParams.set(
+    "bounds",
+    `${RWANDA_BOUNDS.low.latitude},${RWANDA_BOUNDS.low.longitude}|${RWANDA_BOUNDS.high.latitude},${RWANDA_BOUNDS.high.longitude}`,
+  );
+
+  const languageCode = normalizeLanguageCode(body.languageCode);
+  if (languageCode) {
+    url.searchParams.set("language", languageCode);
+  }
+
+  const response = await deps.fetchImpl(url.toString());
+  const json = await response.json();
+  if (!response.ok) {
+    throw new HttpError(response.status, "Geocoding request failed", json);
+  }
+
+  if (json.status != "OK") {
+    if (json.status == "ZERO_RESULTS") {
+      return null;
+    }
+    throw new HttpError(502, "Geocoding failed", json);
+  }
+
+  const firstResult = asMap(asArray(json.results)[0]);
+  const location = asMap(asMap(firstResult.geometry).location);
+  const latitude = asNumber(location.lat);
+  const longitude = asNumber(location.lng);
+  if (latitude == null || longitude == null) {
+    throw new HttpError(502, "Geocoding did not return coordinates", json);
+  }
+
+  const position = { latitude, longitude };
+  assertRwandaPoint(position, "geocoded address");
+
+  const formattedAddress = firstResult.formatted_address?.toString().trim() ??
+    query;
+  const [primaryText, secondaryText] = splitAddress("", formattedAddress);
+
+  return {
+    placeId: firstResult.place_id?.toString() ?? null,
+    label: secondaryText ? `${primaryText}, ${secondaryText}` : primaryText,
+    primaryText,
+    secondaryText,
+    position,
+  };
 }
 
 async function autocompletePlaces(

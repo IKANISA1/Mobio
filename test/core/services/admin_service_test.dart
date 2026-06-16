@@ -138,6 +138,22 @@ void main() {
     });
   });
 
+  group('AdminTokenAdjustmentReceipt', () {
+    test('fromJson parses manual TOKEN credit receipt', () {
+      final receipt = AdminTokenAdjustmentReceipt.fromJson({
+        'ledger_entry_id': 'ledger-1',
+        'profile_id': 'user-1',
+        'amount_tokens': 3000,
+        'status': 'completed',
+      });
+
+      expect(receipt.ledgerEntryId, 'ledger-1');
+      expect(receipt.profileId, 'user-1');
+      expect(receipt.amountTokens, 3000);
+      expect(receipt.status, 'completed');
+    });
+  });
+
   group('AdminAuditLogItem', () {
     test('fromJson parses canonical audit log rows', () {
       final item = AdminAuditLogItem.fromJson({

@@ -13,6 +13,7 @@ import 'package:mobi_app/features/admin/admin_dashboard_screen.dart';
 import 'package:mobi_app/features/auth/whatsapp_login_screen.dart';
 import 'package:mobi_app/features/bookings/bookings_screen.dart';
 import 'package:mobi_app/features/bookings/schedule_trip_screen.dart';
+import 'package:mobi_app/features/ev_chargers/ev_charger_locator_screen.dart';
 import 'package:mobi_app/features/home/home_screen.dart';
 import 'package:mobi_app/features/nearby/nearby_screen.dart';
 import 'package:mobi_app/features/notifications/notifications_screen.dart';
@@ -59,8 +60,18 @@ class HomeScreenWrapper extends ConsumerWidget {
       onViewNearby: () => context.push('/nearby'),
       onViewBookings: () => context.push('/bookings'),
       onSchedule: () => context.push('/schedule'),
+      onEvChargers: () => context.push('/ev-chargers'),
       onNotifications: () => context.push('/notifications'),
     );
+  }
+}
+
+class EvChargerLocatorScreenWrapper extends StatelessWidget {
+  const EvChargerLocatorScreenWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return EvChargerLocatorScreen(onBack: () => safePop(context));
   }
 }
 

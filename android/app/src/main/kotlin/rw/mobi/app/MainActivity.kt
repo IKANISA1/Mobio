@@ -4,13 +4,17 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaScannerConnection
+import android.net.Uri
+import android.nfc.FormatException
 import android.nfc.NdefMessage
 import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.nfc.tech.Ndef
+import android.nfc.tech.NdefFormatable
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
@@ -21,14 +25,20 @@ import com.android.installreferrer.api.InstallReferrerStateListener
 import com.android.installreferrer.api.ReferrerDetails
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
+import java.io.IOException
 
 class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
     private val mainHandler = Handler(Looper.getMainLooper())
     private var nativeNfcReaderChannel: MethodChannel? = null
     private var nativeReaderRequested = false
     private var pendingNativeNfcPayload: Map<String, String>? = null
+    @Volatile private var nativeNfcWriterRequest: NativeNfcWriterRequest? = null
+    @Volatile private var nativeNfcWriterResult: MethodChannel.Result? = null
+    @Volatile private var nativeNfcWriterProcessing = false
+    private var nativeNfcWriterTimeout: Runnable? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -89,6 +99,21 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
                 else -> result.notImplemented()
             }
         }
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            "rw.mobi.app/biopay_nfc_writer",
+        ).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "writeCard" -> startNativeNfcWriter(call, result, lockOnly = false)
+                "lockVerifiedCard" -> startNativeNfcWriter(call, result, lockOnly = true)
+                "cancel" -> {
+                    cancelNativeNfcWriter("CANCELLED", "NFC write cancelled.", null)
+                    result.success(null)
+                }
+                "status" -> result.success(nativeNfcWriterStatus())
+                else -> result.notImplemented()
+            }
+        }
         nativeNfcReaderChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             "rw.mobi.app/biopay_native_nfc_reader",
@@ -130,11 +155,17 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
     }
 
     override fun onPause() {
+        cancelNativeNfcWriter("INTERRUPTED", "NFC write interrupted.", null)
         disableNativeNfcReader()
         super.onPause()
     }
 
     override fun onTagDiscovered(tag: Tag) {
+        val writerRequest = nativeNfcWriterRequest
+        if (writerRequest != null) {
+            handleNativeNfcWriterTag(tag, writerRequest)
+            return
+        }
         if (!nativeReaderRequested) return
         try {
             val devicePayload = readDeviceHcePayload(tag)
@@ -235,6 +266,291 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
         )
     }
 
+    private fun startNativeNfcWriter(
+        call: MethodCall,
+        result: MethodChannel.Result,
+        lockOnly: Boolean,
+    ) {
+        val adapter = NfcAdapter.getDefaultAdapter(this)
+        val supported = packageManager.hasSystemFeature(PackageManager.FEATURE_NFC)
+        if (!supported || adapter == null) {
+            result.error("NFC_NOT_SUPPORTED", "NFC is not supported.", null)
+            return
+        }
+        if (!adapter.isEnabled) {
+            result.error("NFC_DISABLED", "NFC is disabled.", null)
+            return
+        }
+        if (nativeNfcWriterRequest != null || nativeNfcWriterResult != null) {
+            result.error("NFC_BUSY", "Another NFC write is already active.", null)
+            return
+        }
+
+        val request = NativeNfcWriterRequest(
+            appLink = call.argument<String>("appLink")?.trim().orEmpty(),
+            jsonPayload = call.argument<String>("jsonPayload")?.trim().orEmpty(),
+            mimeType = call.argument<String>("mimeType")?.trim().orEmpty(),
+            packageName = call.argument<String>("packageName")?.trim().orEmpty(),
+            receiverType = call.argument<String>("receiverType")?.trim().orEmpty(),
+            receiver = call.argument<String>("receiver")?.trim().orEmpty(),
+            lockOnly = lockOnly,
+        )
+        if (!request.isValid) {
+            result.error("INVALID_ARGUMENTS", "BioPay NFC payload is required.", null)
+            return
+        }
+
+        nativeNfcWriterRequest = request
+        nativeNfcWriterResult = result
+        nativeNfcWriterProcessing = false
+        enableNativeNfcWriter()
+
+        val timeout = Runnable {
+            cancelNativeNfcWriter("NFC_TIMEOUT", "NFC card write timed out.", null)
+        }
+        nativeNfcWriterTimeout = timeout
+        mainHandler.postDelayed(timeout, 25_000)
+    }
+
+    private fun enableNativeNfcWriter() {
+        val adapter = NfcAdapter.getDefaultAdapter(this) ?: return
+        if (!adapter.isEnabled) return
+        val flags = NfcAdapter.FLAG_READER_NFC_A or
+            NfcAdapter.FLAG_READER_NFC_B or
+            NfcAdapter.FLAG_READER_NFC_F or
+            NfcAdapter.FLAG_READER_NFC_V or
+            NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS
+        val options = Bundle().apply {
+            putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, 250)
+        }
+        adapter.enableReaderMode(this, this, flags, options)
+    }
+
+    private fun handleNativeNfcWriterTag(tag: Tag, request: NativeNfcWriterRequest) {
+        if (nativeNfcWriterProcessing) return
+        nativeNfcWriterProcessing = true
+        try {
+            val response = if (request.lockOnly) {
+                lockNativeNfcTag(tag, request)
+            } else {
+                writeNativeNfcTag(tag, request)
+            }
+            completeNativeNfcWriter(response)
+        } catch (error: NativeNfcWriterException) {
+            completeNativeNfcWriter(error.code, error.message ?: "NFC card write failed.")
+        } catch (error: Exception) {
+            Log.w(TAG, "Native NFC writer failed", error)
+            completeNativeNfcWriter("NFC_WRITE_FAILED", error.message ?: "NFC card write failed.")
+        }
+    }
+
+    private fun writeNativeNfcTag(tag: Tag, request: NativeNfcWriterRequest): Map<String, Any?> {
+        val ndef = Ndef.get(tag)
+        if (ndef != null) {
+            ndef.use {
+                it.connect()
+                if (!it.isWritable) {
+                    throw NativeNfcWriterException("NFC_NOT_WRITABLE", "NFC card is not writable.")
+                }
+                val message = selectNativeNfcMessage(request, it.maxSize)
+                it.writeNdefMessage(message)
+                val readBackMessage = it.ndefMessage ?: it.cachedNdefMessage
+                val readBackPayload = payloadFromMessage(readBackMessage)
+                if (!request.matches(readBackPayload)) {
+                    throw NativeNfcWriterException(
+                        "NFC_VERIFY_FAILED",
+                        "NFC card verification failed.",
+                    )
+                }
+                return nativeNfcWriterResponse(
+                    tag = tag,
+                    ndef = it,
+                    message = message,
+                    readBackPayload = readBackPayload,
+                    verified = true,
+                    formatted = false,
+                    locked = false,
+                )
+            }
+        }
+
+        val formattable = NdefFormatable.get(tag)
+            ?: throw NativeNfcWriterException("NFC_NOT_WRITABLE", "NFC card is not NDEF writable.")
+        formattable.use {
+            it.connect()
+            val message = formatNativeNfcTag(it, request)
+            return nativeNfcWriterResponse(
+                tag = tag,
+                ndef = null,
+                message = message,
+                readBackPayload = request.appLink,
+                verified = true,
+                formatted = true,
+                locked = false,
+            )
+        }
+    }
+
+    private fun lockNativeNfcTag(tag: Tag, request: NativeNfcWriterRequest): Map<String, Any?> {
+        val ndef = Ndef.get(tag)
+            ?: throw NativeNfcWriterException("NFC_NOT_WRITABLE", "This is not an NDEF card.")
+        ndef.use {
+            it.connect()
+            val readBackMessage = it.ndefMessage ?: it.cachedNdefMessage
+            val readBackPayload = payloadFromMessage(readBackMessage)
+            if (!request.matches(readBackPayload)) {
+                throw NativeNfcWriterException(
+                    "NFC_VERIFY_FAILED",
+                    "This is not the verified BioPay NFC card.",
+                )
+            }
+            if (!it.isWritable || !it.canMakeReadOnly()) {
+                throw NativeNfcWriterException(
+                    "NFC_LOCK_UNSUPPORTED",
+                    "This NFC card cannot be locked by this device.",
+                )
+            }
+            if (!it.makeReadOnly()) {
+                throw NativeNfcWriterException("NFC_LOCK_FAILED", "Failed to lock NFC card.")
+            }
+            return nativeNfcWriterResponse(
+                tag = tag,
+                ndef = it,
+                message = readBackMessage ?: selectNativeNfcMessage(request, it.maxSize),
+                readBackPayload = readBackPayload,
+                verified = true,
+                formatted = false,
+                locked = true,
+            )
+        }
+    }
+
+    private fun formatNativeNfcTag(
+        formattable: NdefFormatable,
+        request: NativeNfcWriterRequest,
+    ): NdefMessage {
+        var lastError: Exception? = null
+        for (message in buildNativeNfcMessages(request)) {
+            try {
+                formattable.format(message)
+                return message
+            } catch (error: FormatException) {
+                lastError = error
+            } catch (error: IOException) {
+                lastError = error
+            }
+        }
+        throw NativeNfcWriterException(
+            "NFC_FORMAT_FAILED",
+            lastError?.message ?: "NFC card could not be formatted.",
+        )
+    }
+
+    private fun selectNativeNfcMessage(request: NativeNfcWriterRequest, maxSize: Int): NdefMessage {
+        val candidates = buildNativeNfcMessages(request)
+        if (maxSize <= 0) return candidates[1]
+        for (message in candidates) {
+            if (message.toByteArray().size <= maxSize) return message
+        }
+        throw NativeNfcWriterException("NFC_TOO_SMALL", "NFC card is too small.")
+    }
+
+    private fun buildNativeNfcMessages(request: NativeNfcWriterRequest): List<NdefMessage> {
+        val appLinkRecord = NdefRecord.createUri(request.appLink)
+        val mimeRecord = NdefRecord.createMime(
+            request.mimeType,
+            request.jsonPayload.toByteArray(Charsets.UTF_8),
+        )
+        val aarRecord = NdefRecord.createApplicationRecord(request.packageName)
+        return listOf(
+            NdefMessage(arrayOf(appLinkRecord, mimeRecord, aarRecord)),
+            NdefMessage(arrayOf(appLinkRecord, aarRecord)),
+            NdefMessage(arrayOf(appLinkRecord)),
+        )
+    }
+
+    private fun nativeNfcWriterResponse(
+        tag: Tag,
+        ndef: Ndef?,
+        message: NdefMessage,
+        readBackPayload: String?,
+        verified: Boolean,
+        formatted: Boolean,
+        locked: Boolean,
+    ): Map<String, Any?> {
+        return mapOf(
+            "tagId" to tag.id.toHex(),
+            "standard" to nativeNfcTagStandard(tag),
+            "type" to nativeNfcTagType(tag),
+            "ndefAvailable" to (ndef != null || formatted),
+            "ndefWritable" to when {
+                locked -> false
+                ndef != null -> ndef.isWritable
+                else -> true
+            },
+            "ndefCanMakeReadOnly" to (ndef?.canMakeReadOnly() == true && !locked),
+            "ndefCapacity" to ndef?.maxSize,
+            "encodedSize" to message.toByteArray().size,
+            "recordCount" to message.records.size,
+            "readBackRecordCount" to message.records.size,
+            "readBackRecordTypes" to message.records.map { nativeNfcRecordLabel(it) },
+            "readBackPayload" to readBackPayload,
+            "verified" to verified,
+            "formatted" to formatted,
+            "locked" to locked,
+            "writerMode" to "native_android_reader_mode",
+        )
+    }
+
+    private fun completeNativeNfcWriter(response: Map<String, Any?>) {
+        val result = nativeNfcWriterResult ?: return
+        clearNativeNfcWriterState()
+        mainHandler.post {
+            disableNativeNfcReader()
+            if (nativeReaderRequested) enableNativeNfcReader()
+            result.success(response)
+        }
+    }
+
+    private fun completeNativeNfcWriter(code: String, message: String) {
+        val result = nativeNfcWriterResult ?: return
+        clearNativeNfcWriterState()
+        mainHandler.post {
+            disableNativeNfcReader()
+            if (nativeReaderRequested) enableNativeNfcReader()
+            result.error(code, message, null)
+        }
+    }
+
+    private fun cancelNativeNfcWriter(code: String, message: String, details: Any?) {
+        val result = nativeNfcWriterResult
+        if (result == null && nativeNfcWriterRequest == null) return
+        clearNativeNfcWriterState()
+        mainHandler.post {
+            disableNativeNfcReader()
+            if (nativeReaderRequested) enableNativeNfcReader()
+            result?.error(code, message, details)
+        }
+    }
+
+    private fun clearNativeNfcWriterState() {
+        nativeNfcWriterTimeout?.let { mainHandler.removeCallbacks(it) }
+        nativeNfcWriterTimeout = null
+        nativeNfcWriterRequest = null
+        nativeNfcWriterResult = null
+        nativeNfcWriterProcessing = false
+    }
+
+    private fun nativeNfcWriterStatus(): Map<String, Any?> {
+        val adapter = NfcAdapter.getDefaultAdapter(this)
+        return mapOf(
+            "supported" to packageManager.hasSystemFeature(PackageManager.FEATURE_NFC),
+            "nfcEnabled" to (adapter?.isEnabled == true),
+            "active" to (nativeNfcWriterRequest != null),
+            "writerMode" to "native_android_reader_mode",
+        )
+    }
+
     private fun readDeviceHcePayload(tag: Tag): String? {
         val isoDep = IsoDep.get(tag) ?: return null
         isoDep.use {
@@ -299,6 +615,49 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
             }
         }
         return null
+    }
+
+    private fun payloadFromMessage(message: NdefMessage?): String? {
+        if (message == null) return null
+        for (record in message.records) {
+            val payload = payloadFromRecord(record)
+            if (!payload.isNullOrBlank()) return payload
+        }
+        return null
+    }
+
+    private fun nativeNfcRecordLabel(record: NdefRecord): String {
+        record.toMimeType()?.let { return "mime:$it" }
+        record.toUri()?.let { return "uri" }
+        return "tnf:${record.tnf}"
+    }
+
+    private fun nativeNfcTagStandard(tag: Tag): String {
+        val techs = tag.techList.toSet()
+        return when {
+            techs.contains("android.nfc.tech.IsoDep") -> "ISO 14443-4"
+            techs.contains("android.nfc.tech.NfcA") -> "ISO 14443-3 (Type A)"
+            techs.contains("android.nfc.tech.NfcB") -> "ISO 14443-3 (Type B)"
+            techs.contains("android.nfc.tech.NfcF") -> "ISO 18092"
+            techs.contains("android.nfc.tech.NfcV") -> "ISO 15693"
+            else -> "unknown"
+        }
+    }
+
+    private fun nativeNfcTagType(tag: Tag): String {
+        val techs = tag.techList.toSet()
+        return when {
+            techs.contains("android.nfc.tech.Ndef") -> "ndef"
+            techs.contains("android.nfc.tech.NdefFormatable") -> "ndef_formatable"
+            techs.contains("android.nfc.tech.IsoDep") -> "iso7816"
+            techs.contains("android.nfc.tech.MifareUltralight") -> "mifare_ultralight"
+            techs.contains("android.nfc.tech.MifareClassic") -> "mifare_classic"
+            else -> "unknown"
+        }
+    }
+
+    private fun ByteArray.toHex(): String {
+        return joinToString(separator = "") { "%02X".format(it) }
     }
 
     private fun emitNativeNfcPayload(kind: String, payload: String) {
@@ -428,5 +787,50 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
 
     companion object {
         private const val TAG = "MobiMainActivity"
+        private const val BIOPAY_NFC_MIME_TYPE = "application/vnd.rw.mobi.biopay.nfc"
     }
+
+    private data class NativeNfcWriterRequest(
+        val appLink: String,
+        val jsonPayload: String,
+        val mimeType: String,
+        val packageName: String,
+        val receiverType: String,
+        val receiver: String,
+        val lockOnly: Boolean,
+    ) {
+        val isValid: Boolean
+            get() = appLink.isNotBlank() &&
+                jsonPayload.isNotBlank() &&
+                mimeType == BIOPAY_NFC_MIME_TYPE &&
+                packageName.isNotBlank() &&
+                receiverType.isNotBlank() &&
+                receiver.isNotBlank()
+
+        fun matches(rawPayload: String?): Boolean {
+            val value = rawPayload?.trim()
+            if (value.isNullOrBlank()) return false
+            if (value == appLink || value == jsonPayload) return true
+            return try {
+                val uri = Uri.parse(value)
+                val type = uri.getQueryParameter("type")
+                val targetReceiver = uri.getQueryParameter("receiver")
+                val biopayLink = (uri.scheme == "mobio" &&
+                    uri.host == "biopay" &&
+                    uri.path == "/nfc") ||
+                    ((uri.scheme == "https" || uri.scheme == "http") &&
+                        uri.host == "mobio.ikanisa.com" &&
+                        uri.path == "/biopay/nfc")
+                biopayLink && type == receiverType && targetReceiver == receiver
+            } catch (_: Exception) {
+                value.contains("\"receiver_type\":\"$receiverType\"") &&
+                    value.contains("\"receiver\":\"$receiver\"")
+            }
+        }
+    }
+
+    private class NativeNfcWriterException(
+        val code: String,
+        override val message: String,
+    ) : Exception(message)
 }

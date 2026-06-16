@@ -8,9 +8,7 @@ import 'package:mobi_app/models/country.dart';
 import 'package:mobi_app/shared/widgets/whatsapp_input.dart';
 
 void main() {
-  testWidgets('WhatsApp input has native phone field and on-screen keypad', (
-    tester,
-  ) async {
+  testWidgets('WhatsApp input uses native phone text entry', (tester) async {
     var phone = '';
 
     await tester.pumpWidget(
@@ -36,20 +34,14 @@ void main() {
     final phoneField = tester.widget<TextField>(find.byType(TextField).first);
     expect(phoneField.keyboardType, TextInputType.phone);
     expect(phoneField.autofillHints, contains(AutofillHints.telephoneNumber));
+    expect(find.byType(TextButton), findsNothing);
+    expect(find.byIcon(Icons.backspace_outlined), findsNothing);
 
-    await tester.tap(find.text('7'));
-    await tester.tap(find.text('8').first);
-    await tester.tap(find.text('8').first);
+    await tester.enterText(find.byType(TextField).first, '0788 123 456');
     await tester.pump();
 
-    expect(phone, '788');
-    expect(find.text('788'), findsOneWidget);
-
-    await tester.tap(find.byIcon(Icons.backspace_outlined));
-    await tester.pump();
-
-    expect(phone, '78');
-    expect(find.text('78'), findsOneWidget);
+    expect(phone, '0788123456');
+    expect(find.text('0788123456'), findsOneWidget);
   });
 }
 

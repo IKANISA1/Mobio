@@ -60,4 +60,22 @@ class WalletService {
       Map<String, dynamic>.from(response as Map),
     );
   }
+
+  Future<WalletRedemptionReceipt> redeemTokens({
+    required int amountTokens,
+    required String idempotencyKey,
+  }) async {
+    final response = await supabase
+        .rpc<dynamic>(
+          'rpc_redeem_wallet_tokens',
+          params: {
+            'p_amount_tokens': amountTokens,
+            'p_idempotency_key': idempotencyKey,
+          },
+        )
+        .timeout(_timeout);
+    return WalletRedemptionReceipt.fromJson(
+      Map<String, dynamic>.from(response as Map),
+    );
+  }
 }

@@ -55,5 +55,60 @@ void main() {
         false,
       );
     });
+
+    test('validates Rwanda local mobile semantics for selected country', () {
+      expect(
+        PhoneNumberNormalizer.isValidForCountry(
+          phone: '0788 123 456',
+          countryCode: '+250',
+        ),
+        true,
+      );
+      expect(
+        PhoneNumberNormalizer.isValidForCountry(
+          phone: '788123456',
+          countryCode: '+250',
+        ),
+        true,
+      );
+      expect(
+        PhoneNumberNormalizer.isValidForCountry(
+          phone: '356123456',
+          countryCode: '+250',
+        ),
+        false,
+      );
+      expect(
+        PhoneNumberNormalizer.validateForCountry(
+          phone: '356123456',
+          countryCode: '+250',
+        ).message,
+        'Rwanda numbers must be 9 digits and start with 7.',
+      );
+    });
+
+    test('validates Malta local mobile semantics for selected country', () {
+      expect(
+        PhoneNumberNormalizer.isValidForCountry(
+          phone: '7718 6134',
+          countryCode: '+356',
+        ),
+        true,
+      );
+      expect(
+        PhoneNumberNormalizer.isValidForCountry(
+          phone: '7718613',
+          countryCode: '+356',
+        ),
+        false,
+      );
+      expect(
+        PhoneNumberNormalizer.validateForCountry(
+          phone: '7718613',
+          countryCode: '+356',
+        ).message,
+        'Malta numbers must be 8 digits and start with 7 or 9.',
+      );
+    });
   });
 }

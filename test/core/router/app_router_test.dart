@@ -31,6 +31,11 @@ void main() {
       expect(AppRoutes.tripEdit, '/trip/:id/edit');
     });
 
+    test('EV charger locator route', () {
+      expect(AppRoutes.evChargers, '/ev-chargers');
+      expect(AppRoutes.adminEvChargers, '/admin/ev-chargers');
+    });
+
     test('biopay sub-routes are prefixed', () {
       expect(AppRoutes.getQr, startsWith('/biopay'));
       expect(AppRoutes.scanQr, startsWith('/biopay'));

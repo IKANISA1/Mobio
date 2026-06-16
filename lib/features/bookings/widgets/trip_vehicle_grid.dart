@@ -29,7 +29,7 @@ class TripVehicleGrid extends StatelessWidget {
       builder: (context, constraints) {
         final useGrid = constraints.maxWidth < 520;
         final textScale = MediaQuery.textScalerOf(context).scale(1);
-        final mobileTileAspectRatio = textScale >= 1.6 ? 0.9 : 1.25;
+        final mobileTileAspectRatio = textScale >= 1.6 ? 0.82 : 1.0;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -65,6 +65,13 @@ class TripVehicleGrid extends StatelessWidget {
     final isSelected = selectedVehicleId == vt.id;
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final palette = _paletteForVehicleType(vt.id, ext);
+    final foregroundColor = isSelected
+        ? Colors.white
+        : Color.lerp(cs.onSurface, palette.accent, 0.32)!;
+    final labelColor = isSelected
+        ? Colors.white
+        : Color.lerp(cs.onSurfaceVariant, palette.accent, 0.28)!;
 
     return Semantics(
       label: '${vt.label} vehicle type${isSelected ? ", selected" : ""}',
@@ -82,44 +89,114 @@ class TripVehicleGrid extends StatelessWidget {
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
+                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.primaryFixed
-                      : ext.surfaceContainer,
                   borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: isSelected
+                        ? palette.accent.withValues(alpha: 0.72)
+                        : palette.accent.withValues(alpha: 0.22),
+                  ),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: isSelected
+                        ? [
+                            palette.accent,
+                            Color.lerp(palette.accent, palette.depth, 0.46)!,
+                            Color.lerp(palette.depth, Colors.black, 0.12)!,
+                          ]
+                        : [
+                            Color.lerp(
+                              ext.surfaceContainerHigh,
+                              palette.accent,
+                              0.18,
+                            )!,
+                            Color.lerp(
+                              ext.surfaceContainer,
+                              palette.depth,
+                              0.62,
+                            )!,
+                            Color.lerp(
+                              ext.surfaceContainerLowest,
+                              palette.depth,
+                              0.42,
+                            )!,
+                          ],
+                  ),
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: cs.primary.withValues(alpha: 0.2),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
+                            color: palette.accent.withValues(alpha: 0.32),
+                            blurRadius: 18,
+                            offset: const Offset(0, 10),
                           ),
                         ]
-                      : null,
+                      : [
+                          BoxShadow(
+                            color: palette.depth.withValues(alpha: 0.16),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Stack(
                   children: [
-                    VehicleTypeIcon(
-                      vehicleType: vt,
-                      size: 24,
-                      color: isSelected
-                          ? cs.onPrimaryFixed
-                          : cs.onSurfaceVariant,
+                    Positioned(
+                      left: 14,
+                      right: 14,
+                      top: 10,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: palette.accent.withValues(
+                            alpha: isSelected ? 0.72 : 0.36,
+                          ),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: const SizedBox(height: 3),
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(
-                        vt.label,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: AppTypography.labelSm.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: isSelected
-                              ? cs.onPrimaryFixed
-                              : cs.onSurfaceVariant,
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(8, 14, 8, 10),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 38,
+                              height: 38,
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(
+                                  alpha: isSelected ? 0.18 : 0.16,
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: Colors.white.withValues(
+                                    alpha: isSelected ? 0.18 : 0.08,
+                                  ),
+                                ),
+                              ),
+                              child: Center(
+                                child: VehicleTypeIcon(
+                                  vehicleType: vt,
+                                  size: 22,
+                                  color: foregroundColor,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              vt.label,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center,
+                              style: AppTypography.labelSm.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: labelColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -131,5 +208,58 @@ class TripVehicleGrid extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _VehicleCardPalette {
+  const _VehicleCardPalette({required this.accent, required this.depth});
+
+  final Color accent;
+  final Color depth;
+}
+
+_VehicleCardPalette _paletteForVehicleType(
+  String vehicleTypeId,
+  MobiThemeExtension ext,
+) {
+  switch (vehicleTypeId) {
+    case 'moto':
+      return const _VehicleCardPalette(
+        accent: AppColors.aqua,
+        depth: AppColors.aquaContainer,
+      );
+    case 'bus':
+      return const _VehicleCardPalette(
+        accent: AppColors.brandPeriwinkle,
+        depth: AppColors.violetDepth,
+      );
+    case 'cab':
+      return const _VehicleCardPalette(
+        accent: AppColors.caution,
+        depth: AppColors.cautionContainer,
+      );
+    case 'truck':
+      return const _VehicleCardPalette(
+        accent: AppColors.brandOrangeRed,
+        depth: AppColors.orangeDepth,
+      );
+    case 'trike':
+      return const _VehicleCardPalette(
+        accent: AppColors.brandMintGreen,
+        depth: AppColors.mintDepth,
+      );
+    case 'private':
+    case 'private_':
+      return const _VehicleCardPalette(
+        accent: AppColors.brandDustyRose,
+        depth: AppColors.roseDepth,
+      );
+    case 'rentals':
+      return const _VehicleCardPalette(
+        accent: AppColors.info,
+        depth: AppColors.infoContainer,
+      );
+    default:
+      return _VehicleCardPalette(accent: ext.aqua, depth: ext.aquaContainer);
   }
 }

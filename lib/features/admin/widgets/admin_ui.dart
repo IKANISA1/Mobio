@@ -13,6 +13,7 @@ enum AdminWorkspaceTab {
   users,
   fleet,
   agencies,
+  evChargers,
   subscriptions,
   trips,
   reports,
@@ -870,6 +871,11 @@ class _AdminWorkspaceTabs extends StatelessWidget {
           label: 'Agencies',
           icon: LucideIcons.building2,
           route: '/admin/agencies',
+        ),
+        AdminWorkspaceTab.evChargers: (
+          label: 'EV',
+          icon: LucideIcons.plugZap,
+          route: '/admin/ev-chargers',
         ),
         AdminWorkspaceTab.subscriptions: (
           label: 'Plans',

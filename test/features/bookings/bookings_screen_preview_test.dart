@@ -29,6 +29,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Trips'), findsOneWidget);
+    expect(find.textContaining('Coordinate pick up'), findsNothing);
     expect(find.textContaining('active records'), findsNothing);
     expect(find.text('Plan, track, and manage rides'), findsNothing);
     expect(find.textContaining('Supabase'), findsNothing);

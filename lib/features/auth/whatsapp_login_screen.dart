@@ -11,6 +11,7 @@ import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
 import 'package:mobi_app/shared/widgets/otp_code_field.dart';
@@ -56,6 +57,12 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
     countryCode: _countryCode,
   );
 
+  PhoneValidationResult get _phoneValidation =>
+      PhoneNumberNormalizer.validateForCountry(
+        phone: _number,
+        countryCode: _countryCode,
+      );
+
   String get _maskedPhone {
     final digits = _fullPhone.replaceAll(RegExp(r'\D'), '');
     if (digits.length < 5) {
@@ -64,10 +71,14 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
     return '$_countryCode ...${digits.substring(digits.length - 3)}';
   }
 
-  bool get _canSendCode =>
-      !_isBusy && WhatsAppLoginService.isValidCanonicalPhone(_fullPhone);
+  bool get _canSendCode => !_isBusy && _phoneValidation.isValid;
 
   bool get _canVerifyCode => !_isBusy && _otpController.text.trim().length == 6;
+
+  bool get _isLocalBrowserPreview {
+    final host = Uri.base.host.toLowerCase();
+    return host == 'localhost' || host == '127.0.0.1' || host == '::1';
+  }
 
   @override
   void initState() {
@@ -115,10 +126,17 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
       return;
     }
 
+    final message = result.message ?? 'Unable to send verification code.';
     _startResendCooldown(result.retryAfterSeconds ?? 0);
+    if (_isLocalBrowserPreview && _isNetworkError(message)) {
+      setState(() => _sendingCode = false);
+      _showSnackBar('Local preview cannot send WhatsApp codes.');
+      return;
+    }
+
     setState(() {
       _sendingCode = false;
-      _error = result.message ?? 'Unable to send verification code.';
+      _error = message;
     });
   }
 
@@ -165,6 +183,46 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
         _otpController.clear();
       }
     });
+  }
+
+  void _updateRole(AppRole role) {
+    setState(() {
+      _role = role;
+      _clearTransientErrors();
+    });
+  }
+
+  void _updateNumber(String value) {
+    setState(() {
+      _number = value;
+      _clearTransientErrors();
+    });
+  }
+
+  void _updateCountryCode(String value) {
+    setState(() {
+      _countryCode = value;
+      _clearTransientErrors();
+    });
+  }
+
+  void _clearTransientErrors() {
+    _error = null;
+    _attemptsRemaining = null;
+  }
+
+  bool _isNetworkError(String message) {
+    final normalized = message.toLowerCase();
+    return normalized.contains('network error') ||
+        normalized.contains('connection timed out') ||
+        normalized.contains('check your connection');
+  }
+
+  void _showSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _resetOtpFlow() {
@@ -281,20 +339,18 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
                                           : 1,
                                       onChanged: _isBusy
                                           ? (_) {}
-                                          : (index) => setState(() {
-                                              _role = index == 0
+                                          : (index) => _updateRole(
+                                              index == 0
                                                   ? AppRole.passenger
-                                                  : AppRole.driver;
-                                            }),
+                                                  : AppRole.driver,
+                                            ),
                                     ),
                                     const SizedBox(height: AppSpacing.lg),
                                     WhatsAppInput(
                                       value: _number,
-                                      onChanged: (value) =>
-                                          setState(() => _number = value),
+                                      onChanged: _updateNumber,
                                       countryCode: _countryCode,
-                                      onCountryCodeChanged: (value) =>
-                                          setState(() => _countryCode = value),
+                                      onCountryCodeChanged: _updateCountryCode,
                                       label: 'WhatsApp',
                                       enabled: !_isBusy,
                                     ),

@@ -107,7 +107,6 @@ class _BioPayNfcWriteCardScreenState
   Future<void> _writeCard(BioPayNfcCardPayload payload) async {
     ref.read(bioPayNfcForegroundSuspendedProvider.notifier).setSuspended(true);
     await _nfcService.cancelActiveSession();
-    await Future<void>.delayed(const Duration(milliseconds: 250));
     setState(() {
       _step = _NfcWriteStep.waiting;
       _writtenPayload = null;
@@ -155,7 +154,6 @@ class _BioPayNfcWriteCardScreenState
 
     ref.read(bioPayNfcForegroundSuspendedProvider.notifier).setSuspended(true);
     await _nfcService.cancelActiveSession();
-    await Future<void>.delayed(const Duration(milliseconds: 250));
     setState(() {
       _step = _NfcWriteStep.waiting;
       _error = null;
@@ -257,13 +255,20 @@ class _BioPayNfcWriteCardScreenState
   @override
   Widget build(BuildContext context) {
     final payload = _previewPayload();
+    final hasValidReceiver = payload != null;
+    final canWrite = !_busy && hasValidReceiver;
+    final VoidCallback? primaryAction = _writtenPayload == null
+        ? canWrite
+              ? _confirmAndWrite
+              : null
+        : widget.onBack;
 
     return BioPayFlowScreen(
       title: 'Write NFC',
       primaryLabel: _writtenPayload == null ? 'Write NFC' : 'Done',
       isPrimaryLoading: _busy,
       onBack: widget.onBack,
-      onPrimary: _writtenPayload == null ? _confirmAndWrite : widget.onBack,
+      onPrimary: primaryAction,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

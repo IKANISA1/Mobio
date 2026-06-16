@@ -95,37 +95,6 @@ class _MobiOtpCodeFieldState extends State<MobiOtpCodeField> {
     widget.onChanged(code);
   }
 
-  void _setCode(String value) {
-    final digits = value.replaceAll(RegExp(r'\D'), '');
-    final limited = digits.length > _digitCount
-        ? digits.substring(0, _digitCount)
-        : digits;
-
-    for (var i = 0; i < _digitCount; i += 1) {
-      _controllers[i].text = i < limited.length ? limited[i] : '';
-    }
-
-    final focusIndex = limited.length >= _digitCount
-        ? _digitCount - 1
-        : limited.length;
-    _focusNodes[focusIndex].requestFocus();
-    _publishCode();
-  }
-
-  void _appendDigit(String digit) {
-    if (!widget.enabled) return;
-    final code = widget.controller.text.replaceAll(RegExp(r'\D'), '');
-    if (code.length >= _digitCount) return;
-    _setCode('$code$digit');
-  }
-
-  void _deleteDigit() {
-    if (!widget.enabled) return;
-    final code = widget.controller.text.replaceAll(RegExp(r'\D'), '');
-    if (code.isEmpty) return;
-    _setCode(code.substring(0, code.length - 1));
-  }
-
   void _handleDigitChanged(int index, String value) {
     final digit = value.replaceAll(RegExp(r'\D'), '');
     if (digit != value) {
@@ -238,110 +207,7 @@ class _MobiOtpCodeFieldState extends State<MobiOtpCodeField> {
             }),
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
-        _OtpNumberKeypad(
-          enabled: widget.enabled,
-          onDigit: _appendDigit,
-          onBackspace: _deleteDigit,
-        ),
       ],
-    );
-  }
-}
-
-class _OtpNumberKeypad extends StatelessWidget {
-  const _OtpNumberKeypad({
-    required this.enabled,
-    required this.onDigit,
-    required this.onBackspace,
-  });
-
-  final bool enabled;
-  final ValueChanged<String> onDigit;
-  final VoidCallback onBackspace;
-
-  @override
-  Widget build(BuildContext context) {
-    const rows = [
-      ['1', '2', '3'],
-      ['4', '5', '6'],
-      ['7', '8', '9'],
-      ['', '0', 'backspace'],
-    ];
-
-    return Column(
-      children: [
-        for (final row in rows) ...[
-          Row(
-            children: [
-              for (final value in row)
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: _OtpKeypadButton(
-                      value: value,
-                      enabled: enabled,
-                      onTap: value == 'backspace'
-                          ? onBackspace
-                          : value.isEmpty
-                          ? null
-                          : () => onDigit(value),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          if (row != rows.last) const SizedBox(height: 8),
-        ],
-      ],
-    );
-  }
-}
-
-class _OtpKeypadButton extends StatelessWidget {
-  const _OtpKeypadButton({
-    required this.value,
-    required this.enabled,
-    required this.onTap,
-  });
-
-  final String value;
-  final bool enabled;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    if (value.isEmpty) {
-      return const SizedBox(height: 48);
-    }
-
-    final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-    final isBackspace = value == 'backspace';
-
-    return SizedBox(
-      height: 48,
-      child: TextButton(
-        onPressed: enabled ? onTap : null,
-        style: TextButton.styleFrom(
-          foregroundColor: cs.onSurface,
-          disabledForegroundColor: cs.onSurfaceVariant.withValues(alpha: 0.36),
-          backgroundColor: ext.surfaceContainerLow.withValues(alpha: 0.72),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadii.lg),
-          ),
-          padding: EdgeInsets.zero,
-        ),
-        child: isBackspace
-            ? const Icon(Icons.backspace_outlined, size: 22)
-            : Text(
-                value,
-                style: AppTypography.titleLg.copyWith(
-                  color: cs.onSurface,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-      ),
     );
   }
 }

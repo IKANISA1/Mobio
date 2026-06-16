@@ -84,6 +84,16 @@ class AdminService {
   Future<void> updateUserRole({required String userId, required String role}) =>
       _userService.updateUserRole(userId: userId, role: role);
 
+  Future<AdminTokenAdjustmentReceipt> adjustUserTokens({
+    required String userId,
+    required int amountTokens,
+    String? note,
+  }) => _userService.adjustUserTokens(
+    userId: userId,
+    amountTokens: amountTokens,
+    note: note,
+  );
+
   Future<List<AdminWhatsappNumberItem>> listWhatsappAdminNumbers() =>
       _userService.listWhatsappAdminNumbers();
 
@@ -111,6 +121,29 @@ class AdminService {
   Future<List<AdminNotificationItem>> listAdminNotifications({
     int limit = 12,
   }) => _dashboardService.listAdminNotifications(limit: limit);
+
+  Future<AdminPlatformSettings> getPlatformSettings() =>
+      _dashboardService.getPlatformSettings();
+
+  Future<AdminPlatformSettings> updatePlatformSetting({
+    required String key,
+    required String value,
+  }) => _dashboardService.updatePlatformSetting(key: key, value: value);
+
+  Future<List<AdminTokenRedemptionItem>> listTokenRedemptions({
+    String status = 'pending',
+    int limit = 8,
+  }) => _dashboardService.listTokenRedemptions(status: status, limit: limit);
+
+  Future<AdminTokenRedemptionItem> updateTokenRedemptionStatus({
+    required String requestId,
+    required String status,
+    String? adminNote,
+  }) => _dashboardService.updateTokenRedemptionStatus(
+    requestId: requestId,
+    status: status,
+    adminNote: adminNote,
+  );
 
   Future<void> markAdminNotificationRead(String notificationId) =>
       _dashboardService.markAdminNotificationRead(notificationId);

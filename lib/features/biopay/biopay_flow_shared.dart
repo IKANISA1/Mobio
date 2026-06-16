@@ -7,7 +7,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_radii.dart';
 import 'package:mobi_app/core/theme/app_spacing.dart';
 import 'package:mobi_app/core/theme/app_typography.dart';
@@ -26,6 +25,7 @@ class BioPayCameraFrame extends StatelessWidget {
     this.totalSteps = 0,
     this.currentStepId = 'straight_1',
     this.showFaceGuide = false,
+    this.height,
   });
 
   final CameraController controller;
@@ -33,46 +33,55 @@ class BioPayCameraFrame extends StatelessWidget {
   final int totalSteps;
   final String currentStepId;
   final bool showFaceGuide;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    return AspectRatio(
-      aspectRatio: 3 / 4,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadii.xl),
-        child: DecoratedBox(
-          decoration: BoxDecoration(color: cs.surfaceContainerHighest),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              _FittedCameraPreview(controller: controller),
-              if (showFaceGuide) ...[
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black.withValues(alpha: 0.34),
-                        Colors.transparent,
-                        Colors.black.withValues(alpha: 0.28),
-                      ],
-                    ),
+    final frame = ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadii.xl),
+      child: DecoratedBox(
+        decoration: BoxDecoration(color: cs.surfaceContainerHighest),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            _FittedCameraPreview(controller: controller),
+            if (showFaceGuide) ...[
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.34),
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.28),
+                    ],
                   ),
                 ),
-                BioPayFaceOvalGuide(
-                  capturedCount: capturedCount,
-                  totalSteps: totalSteps,
-                  currentStepId: currentStepId,
-                ),
-              ],
+              ),
+              BioPayFaceOvalGuide(
+                capturedCount: capturedCount,
+                totalSteps: totalSteps,
+                currentStepId: currentStepId,
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
+
+    final fixedHeight = height;
+    if (fixedHeight != null) {
+      return SizedBox(
+        width: double.infinity,
+        height: fixedHeight,
+        child: frame,
+      );
+    }
+
+    return AspectRatio(aspectRatio: 3 / 4, child: frame);
   }
 }
 
@@ -655,17 +664,26 @@ String momoPayCodeDisplay(String value) {
   return value.replaceAll(RegExp(r'\D'), '');
 }
 
+bool isValidMomoPayCode(String value) {
+  final digits = value.replaceAll(RegExp(r'\D'), '');
+  return digits.length >= 5 && digits.length <= 6;
+}
+
+bool isValidMomoReceiver(String value, {required bool usesCode}) {
+  return momoReceiverForRequest(value, usesCode: usesCode).isNotEmpty;
+}
+
 String momoReceiverForRequest(String value, {required bool usesCode}) {
   final digits = value.replaceAll(RegExp(r'\D'), '');
   if (digits.isEmpty) return '';
-  if (usesCode) return digits;
+  if (usesCode) return isValidMomoPayCode(digits) ? digits : '';
 
-  final normalized = PhoneNumberNormalizer.normalizeForCountry(
+  final validation = PhoneNumberNormalizer.validateForCountry(
     phone: digits,
     countryCode: '+250',
   );
-  if (!PhoneNumberNormalizer.isValidCanonical(normalized)) return '';
-  return momoReceiverDisplay(normalized);
+  if (!validation.isValid) return '';
+  return momoReceiverDisplay(validation.normalized);
 }
 
 String buildBioPayQrPayload(BioPayUssdPaymentRequest request) {
@@ -1109,6 +1127,13 @@ class BioPayQrPreview extends StatelessWidget {
   final BioPayUssdPaymentRequest request;
   final Key? boundaryKey;
 
+  static const _rwandaLogoGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF00A3E0), Color(0xFFFAD201), Color(0xFF00A651)],
+    stops: [0.06, 0.52, 1.0],
+  );
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -1134,20 +1159,17 @@ class BioPayQrPreview extends StatelessWidget {
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final logoSize = constraints.maxWidth * 0.16;
+                    final logoBadgeWidth = (constraints.maxWidth * 0.15).clamp(
+                      42.0,
+                      54.0,
+                    );
+                    final logoBadgeHeight = logoBadgeWidth * 0.72;
                     return Stack(
                       alignment: Alignment.center,
                       children: [
                         ShaderMask(
-                          shaderCallback: (rect) => const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              AppColors.primaryDim,
-                              AppColors.primary,
-                              AppColors.primaryDim,
-                            ],
-                          ).createShader(rect),
+                          shaderCallback: (rect) =>
+                              _rwandaLogoGradient.createShader(rect),
                           blendMode: BlendMode.srcIn,
                           child: QrImageView(
                             data: buildBioPayQrPayload(request),
@@ -1165,14 +1187,35 @@ class BioPayQrPreview extends StatelessWidget {
                           ),
                         ),
                         IgnorePointer(
-                          child: SizedBox.square(
-                            dimension: logoSize.clamp(40.0, 56.0),
-                            child: Opacity(
-                              opacity: 0.72,
-                              child: Image.asset(
-                                'icon/mobi_logo_transparent.png',
-                                fit: BoxFit.contain,
+                          child: Container(
+                            key: const ValueKey('biopayQrLogoBadge'),
+                            width: logoBadgeWidth,
+                            height: logoBadgeHeight,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: logoBadgeWidth * 0.04,
+                              vertical: logoBadgeHeight * 0.06,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(
+                                logoBadgeHeight * 0.24,
                               ),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.96),
+                                width: 1,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.08),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Image.asset(
+                              'icon/mobi_logo_transparent.png',
+                              key: const ValueKey('biopayQrLogoImage'),
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ),

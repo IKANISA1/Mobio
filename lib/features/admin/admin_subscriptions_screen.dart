@@ -721,7 +721,7 @@ class _SubscriptionOperationsPanel extends StatelessWidget {
               const Expanded(
                 child: AdminSectionHeader(
                   title: 'Payments',
-                  subtitle: 'MoMo SMS allocation and token payments',
+                  subtitle: 'MoMo SMS allocation and TOKENS payments',
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
@@ -894,7 +894,7 @@ class _PaymentRequestTile extends StatelessWidget {
     return _OpsTile(
       title: row.referenceCode,
       subtitle:
-          '${row.vehicleTypeId} · ${row.paymentMethod == 'tokens' ? 'Tokens' : 'Pay with MoMo'}',
+          '${row.vehicleTypeId} · ${row.paymentMethod == 'tokens' ? 'TOKENS' : 'Pay with MoMo'}',
       amount: '${row.amountRwf} ${row.currency}',
       status: row.status,
       detail: row.providerTransactionRef ?? row.confirmationSource,

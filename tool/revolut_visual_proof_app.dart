@@ -266,6 +266,7 @@ Widget _screenFor(String screen) {
       onScan: () {},
       onFace: () {},
       onNfc: () {},
+      onRequestPayment: () {},
     ),
     'schedule' => ScheduleTripScreen(
       mode: 'passenger',

@@ -13,11 +13,13 @@ class AdminUserSheet extends StatelessWidget {
     required this.user,
     required this.currentUserId,
     required this.onUpdateRole,
+    required this.onAddInsuranceReward,
   });
 
   final AdminUserListItem user;
   final String? currentUserId;
   final ValueChanged<String> onUpdateRole;
+  final Future<void> Function() onAddInsuranceReward;
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +80,38 @@ class AdminUserSheet extends StatelessWidget {
             AdminFieldPair(
               label: 'Joined',
               value: AdminUserUtils.formatDate(user.createdAt),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            AdminActionChip(
+              label: 'Add 3000 TOKENS',
+              icon: LucideIcons.coins,
+              tone: MobiStatusBadgeTone.positive,
+              onTap: () async {
+                final navigator = Navigator.of(context);
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (dialogContext) => AlertDialog(
+                    title: const Text('Add insurance reward'),
+                    content: Text(
+                      'Credit 3000 TOKENS to ${user.name}. Motor insurance purchase reward.',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(dialogContext).pop(false),
+                        child: const Text('Cancel'),
+                      ),
+                      FilledButton(
+                        onPressed: () => Navigator.of(dialogContext).pop(true),
+                        child: const Text('Add TOKENS'),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirmed == true) {
+                  navigator.pop();
+                  await onAddInsuranceReward();
+                }
+              },
             ),
             const SizedBox(height: AppSpacing.lg),
             if (!canEdit)

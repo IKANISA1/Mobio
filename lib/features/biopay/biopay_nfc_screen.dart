@@ -64,6 +64,7 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
     if (SupabaseConfig.isLocalUiPreview) {
       _receiverNumberController.text = '0788123456';
       _receiverCodeController.text = '23456';
+      if (mounted) setState(() {});
       return;
     }
 
@@ -116,6 +117,23 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
       }
     }
     _resetRequest();
+  }
+
+  bool get _hasValidReceiver {
+    return isValidMomoReceiver(
+      _activeReceiverController.text,
+      usesCode: _receiverUsesCode,
+    );
+  }
+
+  bool get _hasValidAmount {
+    final digits = _amountController.text.replaceAll(RegExp(r'[^0-9]'), '');
+    final amountMajor = int.tryParse(digits);
+    return amountMajor != null && amountMajor > 0;
+  }
+
+  bool get _canActivateDeviceNfc {
+    return !_busy && _request == null && _hasValidReceiver && _hasValidAmount;
   }
 
   Future<void> _activateDeviceNfc() async {
@@ -214,7 +232,7 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
       primaryLabel: _request == null ? 'Activate Device NFC' : '',
       isPrimaryLoading: _busy,
       onBack: widget.onBack,
-      onPrimary: _request == null ? _activateDeviceNfc : null,
+      onPrimary: _canActivateDeviceNfc ? _activateDeviceNfc : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

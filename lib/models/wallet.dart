@@ -109,6 +109,38 @@ class WalletTransferReceipt {
   }
 }
 
+class WalletRedemptionReceipt {
+  const WalletRedemptionReceipt({
+    required this.redemptionId,
+    required this.transferId,
+    required this.status,
+    required this.adminMemberId,
+    required this.amountTokens,
+    required this.amountRwf,
+    this.momoNumber,
+  });
+
+  final String redemptionId;
+  final String transferId;
+  final String status;
+  final String adminMemberId;
+  final int amountTokens;
+  final int amountRwf;
+  final String? momoNumber;
+
+  factory WalletRedemptionReceipt.fromJson(Map<String, dynamic> json) {
+    return WalletRedemptionReceipt(
+      redemptionId: json['redemption_id'] as String? ?? '',
+      transferId: json['transfer_id'] as String? ?? '',
+      status: json['status'] as String? ?? 'pending',
+      adminMemberId: json['admin_member_id'] as String? ?? '',
+      amountTokens: (json['amount_tokens'] as num?)?.toInt() ?? 0,
+      amountRwf: (json['amount_rwf'] as num?)?.toInt() ?? 0,
+      momoNumber: json['momo_number'] as String?,
+    );
+  }
+}
+
 class ReferralCode {
   const ReferralCode({
     required this.id,

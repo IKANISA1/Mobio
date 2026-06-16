@@ -126,7 +126,7 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
 
       if (paymentMethod == 'tokens') {
         await _clearPendingOperationKey(keyScope);
-        _showSnackBar('Mobio Plus activated with tokens.');
+        _showSnackBar('Mobio Plus activated with TOKENS.');
         await _load();
         return;
       }
@@ -162,7 +162,7 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
   String _paymentError(Object error) {
     final value = error.toString();
     if (value.contains('INSUFFICIENT_TOKENS')) {
-      return 'You do not have enough tokens for this plan.';
+      return 'You do not have enough TOKENS for this plan.';
     }
     if (value.contains('DRIVER_PROFILE_REQUIRED')) {
       return 'Mobio Plus is only available after your driver profile is active.';
@@ -171,7 +171,7 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
       return 'This plan is no longer available. Refresh plans and try again.';
     }
     if (value.contains('INVALID_PAYMENT_METHOD')) {
-      return 'Choose tokens or Pay with MoMo for this subscription.';
+      return 'Choose TOKENS or Pay with MoMo for this subscription.';
     }
     if (value.contains('PLAN_VEHICLE_TYPE_MISMATCH')) {
       return 'Choose a plan matching your vehicle type.';
@@ -420,7 +420,7 @@ class _PlusStatusCard extends StatelessWidget {
             runSpacing: AppSpacing.sm,
             children: [
               MobiStatusBadge(
-                label: '${format.format(wallet.balanceTokens)} tokens',
+                label: '${format.format(wallet.balanceTokens)} TOKENS',
               ),
               if (!status.isFreeForever)
                 MobiStatusBadge(
@@ -492,7 +492,7 @@ class _PlanCard extends StatelessWidget {
                   child: MobiButton(
                     onPressed: isBusy ? null : onPayTokens,
                     child: const Text(
-                      'Pay with Tokens',
+                      'Pay with TOKENS',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       softWrap: false,

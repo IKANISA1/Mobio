@@ -210,6 +210,50 @@ Deno.test("place_details forwards session token and returns Rwanda coordinates",
   }
 });
 
+Deno.test("geocode resolves typed Rwanda addresses through Google Geocoding API", async () => {
+  const snapshot = snapshotEnv();
+  try {
+    Deno.env.set("GOOGLE_MAPS_SERVER_API_KEY", "maps-server-key");
+    const { fetchImpl, calls } = recordCalls({
+      status: "OK",
+      results: [{
+        place_id: "geocode-1",
+        formatted_address: "Kigali Heights, KG 7 Ave, Kigali, Rwanda",
+        geometry: {
+          location: { lat: -1.9536, lng: 30.0927 },
+        },
+      }],
+    });
+
+    const response = await handleMapsGatewayRequest(
+      jsonRequest({
+        action: "geocode",
+        query: "Kigali Heights",
+      }),
+      {
+        authenticate: auth(),
+        fetchImpl,
+        recordFailure: async () => {},
+      },
+    );
+    const body = await response.json();
+    const url = new URL(calls[0].url);
+
+    assertEquals(response.status, 200);
+    assertEquals(body.success, true);
+    assertEquals(body.place.placeId, "geocode-1");
+    assertEquals(body.place.position.latitude, -1.9536);
+    assertEquals(url.origin, "https://maps.googleapis.com");
+    assertEquals(url.pathname, "/maps/api/geocode/json");
+    assertEquals(url.searchParams.get("address"), "Kigali Heights");
+    assertEquals(url.searchParams.get("key"), "maps-server-key");
+    assertEquals(url.searchParams.get("components"), "country:RW");
+    assertEquals(url.searchParams.get("region"), "rw");
+  } finally {
+    restoreEnv(snapshot);
+  }
+});
+
 Deno.test("reverse_geocode uses Geocoding API and rejects outside Rwanda before fetch", async () => {
   const snapshot = snapshotEnv();
   try {

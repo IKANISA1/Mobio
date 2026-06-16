@@ -32,6 +32,14 @@ class _AdminWhatsappSheetState extends State<AdminWhatsappSheet> {
   late bool _isActive;
   bool _isSaving = false;
 
+  PhoneValidationResult get _phoneValidation =>
+      PhoneNumberNormalizer.validateForCountry(
+        phone: _localNumber,
+        countryCode: _countryCode,
+      );
+
+  bool get _canSave => !_isSaving && _phoneValidation.isValid;
+
   @override
   void initState() {
     super.initState();
@@ -160,7 +168,7 @@ class _AdminWhatsappSheetState extends State<AdminWhatsappSheet> {
                 Expanded(
                   child: MobiButton(
                     isLoading: _isSaving,
-                    onPressed: _isSaving ? null : _handleSave,
+                    onPressed: _canSave ? _handleSave : null,
                     child: Text(widget.existing == null ? 'Save' : 'Update'),
                   ),
                 ),
@@ -173,13 +181,12 @@ class _AdminWhatsappSheetState extends State<AdminWhatsappSheet> {
   }
 
   Future<void> _handleSave() async {
-    final e164 = PhoneNumberNormalizer.normalizeForCountry(
-      phone: _localNumber,
-      countryCode: _countryCode,
-    );
-    if (!PhoneNumberNormalizer.isValidCanonical(e164)) {
+    final validation = _phoneValidation;
+    if (!validation.isValid) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid WhatsApp number.')),
+        SnackBar(
+          content: Text(validation.message ?? 'Enter a valid WhatsApp number.'),
+        ),
       );
       return;
     }
@@ -187,7 +194,7 @@ class _AdminWhatsappSheetState extends State<AdminWhatsappSheet> {
     setState(() => _isSaving = true);
     try {
       await widget.onSave(
-        phoneE164: e164,
+        phoneE164: validation.normalized,
         countryCode: _countryCode,
         displayName: _displayNameController.text.trim().isEmpty
             ? null
