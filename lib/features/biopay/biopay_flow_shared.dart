@@ -687,7 +687,7 @@ String momoReceiverForRequest(String value, {required bool usesCode}) {
 }
 
 String buildBioPayQrPayload(BioPayUssdPaymentRequest request) {
-  return bioPayUssdTelPayload(request.ussdCode);
+  return bioPayUssdTelPayload(request.dialerCode);
 }
 
 String bioPayUssdTelPayload(String ussdCode) {

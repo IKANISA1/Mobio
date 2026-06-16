@@ -584,7 +584,8 @@ void main() {
           contains("primaryLabel: _request == null\n          ? 'Scanning'"),
         ),
       );
-      expect(biopayScreen, contains('request.ussdCode'));
+      expect(biopayScreen, contains('request.dialerCode'));
+      expect(biopayScreen, isNot(contains('request.ussdCode')));
       expect(
         biopayScreen,
         contains("replaceAll('#', Uri.encodeComponent('#'))"),

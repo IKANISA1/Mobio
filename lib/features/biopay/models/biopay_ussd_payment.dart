@@ -72,6 +72,8 @@ class BioPayUssdPaymentRequest {
   final String? confirmationSource;
   final DateTime? createdAt;
 
+  String get dialerCode => ussdCode;
+
   BioPayUssdPaymentRequest copyWith({
     BioPayRequestStatus? status,
     DateTime? expiresAt,
