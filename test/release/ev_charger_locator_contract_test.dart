@@ -6,6 +6,10 @@ void main() {
   group('EV charger locator contract', () {
     const migrationPath =
         'supabase/migrations/20260615133000_ev_charger_locator.sql';
+    const seedMigrationPath =
+        'supabase/migrations/20260616120000_seed_kigali_ev_chargers.sql';
+    const seedCatalogPath = 'supabase/seed/kigali_ev_chargers.json';
+    const importScriptPath = 'scripts/admin/import_ev_chargers.ts';
     const modelPath = 'lib/models/ev_charger.dart';
     const servicePath = 'lib/core/services/ev_charger_service.dart';
     const screenPath =
@@ -40,6 +44,36 @@ void main() {
       expect(migration, contains('admin_audit_log'));
     });
 
+    test('production migration seeds initial Kigali EV charger catalog', () {
+      final seedMigration = File(seedMigrationPath).readAsStringSync();
+      final seedCatalog = File(seedCatalogPath).readAsStringSync();
+      final importScript = File(importScriptPath).readAsStringSync();
+
+      expect(seedMigration, contains('Volkswagen Rwanda SEZ Charger'));
+      expect(seedMigration, contains('Kigali Convention Centre EV Station'));
+      expect(seedMigration, contains('IZI Fast Charge - Century Park'));
+      expect(seedMigration, contains('Kabisa EV House'));
+      expect(seedMigration, contains('EVP Silverback Mall Fast Charger'));
+      expect(seedMigration, contains('EVP Lemigo Hotel Fast Charger'));
+      expect(seedMigration, contains('EVP Nyamirambo 1 Car Station'));
+      expect(seedMigration, contains('public.default_organization_id()'));
+      expect(seedMigration, contains('on conflict (id) do update'));
+      expect(
+        seedMigration,
+        contains('where public.default_organization_id() is not null'),
+      );
+
+      expect(seedCatalog, contains('"Volkswagen Rwanda SEZ Charger"'));
+      expect(seedCatalog, contains('"source_urls"'));
+      expect(seedCatalog, contains('"latitude"'));
+      expect(seedCatalog, contains('"connector_types"'));
+
+      expect(importScript, contains('kigali_ev_chargers.json'));
+      expect(importScript, contains('--apply'));
+      expect(importScript, contains('SUPABASE_SERVICE_ROLE_KEY'));
+      expect(importScript, contains('.upsert(payload, { onConflict: "id" })'));
+    });
+
     test('Flutter app exposes EV charger locator from home and route', () {
       final model = File(modelPath).readAsStringSync();
       final service = File(servicePath).readAsStringSync();
@@ -62,6 +96,8 @@ void main() {
       expect(screen, contains('Find EV chargers'));
       expect(screen, contains('Open on Google Maps'));
       expect(screen, contains('geocodeAddress'));
+      expect(screen, contains('_selectInitialKigaliPlace'));
+      expect(screen, contains('Kigali, Rwanda'));
       expect(screen, contains('_addressController.text.trim().length >= 3'));
       expect(placesService, contains('getAutocompletePredictions'));
       expect(placesService, contains('getPlaceDetails'));

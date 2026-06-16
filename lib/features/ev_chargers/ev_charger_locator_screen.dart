@@ -46,6 +46,8 @@ class _EvChargerLocatorScreenState
     super.initState();
     if (SupabaseConfig.isLocalUiPreview) {
       _selectPreviewPlace(_previewPlaces.first);
+    } else {
+      _selectInitialKigaliPlace();
     }
   }
 
@@ -145,6 +147,12 @@ class _EvChargerLocatorScreenState
     if (details == null) return;
     _addressController.text = details.formattedAddress;
     _selectedPlace = details;
+    unawaited(_findChargers());
+  }
+
+  void _selectInitialKigaliPlace() {
+    _addressController.text = _initialKigaliPlace.formattedAddress;
+    _selectedPlace = _initialKigaliPlace;
     unawaited(_findChargers());
   }
 
@@ -599,6 +607,13 @@ const _previewPlaces = [
     predictionType: 'place',
   ),
 ];
+
+const _initialKigaliPlace = PlaceDetails(
+  placeId: 'initial-kigali-rwanda',
+  formattedAddress: 'Kigali, Rwanda',
+  latitude: -1.941625,
+  longitude: 30.059601,
+);
 
 const _previewPlaceDetails = {
   'ev-preview-kigali-heights': PlaceDetails(

@@ -1,0 +1,112 @@
+[
+  {
+    "id": "51000000-0000-0000-0000-000000000001",
+    "name": "Volkswagen Rwanda SEZ Charger",
+    "address": "Plot G10, Kigali Special Economic Zone, Gasabo",
+    "latitude": -1.952676,
+    "longitude": 30.1566106,
+    "connector_types": ["Type 2"],
+    "operator_name": "Volkswagen Rwanda / CFAO Mobility",
+    "phone": "+250788179500",
+    "power_kw": 22,
+    "price_note": "Confirm public access with Volkswagen Rwanda before arrival.",
+    "is_active": true,
+    "source_urls": [
+      "https://www.volkswagen.rw/en/imprint.html",
+      "https://www.mininfra.gov.rw/fileadmin/user_upload/Mininfra/Publications/Laws_Orders_and_Instructions/Transport/16062021_Strategic_Paper_for_e-mobility_adaptation_in_Rwanda-Final.pdf"
+    ]
+  },
+  {
+    "id": "51000000-0000-0000-0000-000000000002",
+    "name": "Kigali Convention Centre EV Station",
+    "address": "Kigali Convention Centre, KG 2 Roundabout, Kimihurura",
+    "latitude": -1.955288,
+    "longitude": 30.0937817,
+    "connector_types": ["Type 2"],
+    "operator_name": "Volkswagen Mobility Solutions Rwanda",
+    "power_kw": 22,
+    "price_note": "Confirm access with Kigali Convention Centre or Radisson Blu.",
+    "is_active": true,
+    "source_urls": [
+      "https://gggi.org/going-green-volkswagen-rwanda-unveils-new-motor-charging-station/",
+      "https://www.mininfra.gov.rw/fileadmin/user_upload/Mininfra/Publications/Laws_Orders_and_Instructions/Transport/16062021_Strategic_Paper_for_e-mobility_adaptation_in_Rwanda-Final.pdf"
+    ]
+  },
+  {
+    "id": "51000000-0000-0000-0000-000000000003",
+    "name": "IZI Fast Charge - Century Park",
+    "address": "Century Park Hotel and Residences, 13 KG 9 Ave, Nyarutarama",
+    "latitude": -1.95254,
+    "longitude": 30.10185,
+    "connector_types": ["DC fast"],
+    "operator_name": "IZI Electric Rwanda",
+    "power_kw": 120,
+    "price_note": "Published launch price: RWF 400 per kWh.",
+    "is_active": true,
+    "source_urls": [
+      "https://www.izi-go.com/news/izi-launches-first-ever-fast-charging-station-in-rwanda",
+      "https://www.trip.com/hotels/kigali-hotel-detail-103981889/centurypark-hotel-and-residence/"
+    ]
+  },
+  {
+    "id": "51000000-0000-0000-0000-000000000004",
+    "name": "Kabisa EV House",
+    "address": "1 KN 77 St, Kiyovu, below Camp Kigali",
+    "latitude": -1.9512643,
+    "longitude": 30.0593834,
+    "connector_types": ["EV charging"],
+    "operator_name": "Kabisa",
+    "phone": "6420",
+    "price_note": "Confirm current bay availability with Kabisa.",
+    "is_active": true,
+    "source_urls": [
+      "https://www.gokabisa.com/rw",
+      "https://cleantechnica.com/2025/04/12/kabisa-ev-house-opens-in-kigali-as-new-hub-for-e-mobility-in-rwanda/"
+    ]
+  },
+  {
+    "id": "51000000-0000-0000-0000-000000000005",
+    "name": "EVP Silverback Mall Fast Charger",
+    "address": "Silverback Mall, RRA Headquarters, Kicukiro Sonatube",
+    "latitude": -1.9687816,
+    "longitude": 30.1026542,
+    "connector_types": ["GB/T"],
+    "operator_name": "EVP Charger Rwanda",
+    "power_kw": 120,
+    "price_note": "Confirm current tariff and status in the EVP app.",
+    "is_active": true,
+    "source_urls": [
+      "https://www.rra.gov.rw/en/contact-us",
+      "https://www.instagram.com/reel/DTK8gvNjAs7/"
+    ]
+  },
+  {
+    "id": "51000000-0000-0000-0000-000000000006",
+    "name": "EVP Lemigo Hotel Fast Charger",
+    "address": "Lemigo Hotel, Rugando, Kimihurura",
+    "latitude": -1.95376,
+    "longitude": 30.09668,
+    "connector_types": ["GB/T"],
+    "operator_name": "EVP Charger Rwanda",
+    "phone": "+250784999705",
+    "power_kw": 120,
+    "price_note": "Open 24 hours per EVP public station posts; confirm current status in the EVP app.",
+    "is_active": true,
+    "source_urls": [
+      "https://www.instagram.com/reel/DVf8IGHMQ6e/",
+      "https://www.lemigohotel.com/"
+    ]
+  },
+  {
+    "id": "51000000-0000-0000-0000-000000000007",
+    "name": "EVP Nyamirambo 1 Car Station",
+    "address": "Nyamirambo, Kigali",
+    "latitude": -1.9821,
+    "longitude": 30.0441,
+    "connector_types": ["GB/T"],
+    "operator_name": "EVP Charger Rwanda",
+    "price_note": "Confirm current tariff and status in the EVP app.",
+    "is_active": true,
+    "source_urls": ["https://evpcharger.com/"]
+  }
+]
