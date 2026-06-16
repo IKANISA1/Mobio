@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:mobi_app/models/wallet.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -7,6 +9,9 @@ class DriverPlusService {
 
   final SupabaseClient supabase;
   static const _timeout = Duration(seconds: 15);
+  static const _androidUssdDialerChannel = MethodChannel(
+    'rw.mobi.app/biopay_ussd_dialer',
+  );
 
   Future<DriverPlusStatus> getStatus({String? driverId}) async {
     final response = await supabase
@@ -49,11 +54,34 @@ class DriverPlusService {
         .timeout(_timeout);
   }
 
-  Future<bool> launchUssd(String ussdCode) {
+  Future<bool> launchUssd(String ussdCode) async {
+    final uri = ussdTelUri(ussdCode);
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      final launched = await _launchAndroidNativeUssd(uri);
+      if (launched) return true;
+    }
+
+    return launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  Uri ussdTelUri(String ussdCode) {
     final encoded = ussdCode.replaceAll('#', Uri.encodeComponent('#'));
-    return launchUrl(
-      Uri.parse('tel:$encoded'),
-      mode: LaunchMode.externalApplication,
-    );
+    return Uri.parse('tel:$encoded');
+  }
+
+  Future<bool> _launchAndroidNativeUssd(Uri uri) async {
+    try {
+      final response = await _androidUssdDialerChannel
+          .invokeMapMethod<Object?, Object?>('launchUssd', {
+            'uri': uri.toString(),
+          });
+      return response?['launched'] == true;
+    } on MissingPluginException {
+      return false;
+    } on PlatformException {
+      return false;
+    } on Object {
+      return false;
+    }
   }
 }

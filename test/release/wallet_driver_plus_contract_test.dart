@@ -210,6 +210,9 @@ void main() {
     expect(idempotencySql, contains('p_client_request_id'));
     expect(driverPlusService, contains('p_client_request_id'));
     expect(driverPlusService, contains(r'tel:$encoded'));
+    expect(driverPlusService, contains('rw.mobi.app/biopay_ussd_dialer'));
+    expect(driverPlusService, contains('launchUssd'));
+    expect(driverPlusService, contains('TargetPlatform.android'));
     expect(driverPlusScreen, contains('SharedPreferences.getInstance'));
     expect(driverPlusScreen, contains('_subscriptionKeyScope'));
     expect(driverPlusScreen, contains('DRIVER_PROFILE_REQUIRED'));

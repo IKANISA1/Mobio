@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/features/biopay/models/biopay_ussd_payment.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -8,6 +10,9 @@ class BioPayUssdService {
 
   final SupabaseClient? supabase;
   static const defaultInsuranceAgentWhatsapp = '+250795588248';
+  static const _androidUssdDialerChannel = MethodChannel(
+    'rw.mobi.app/biopay_ussd_dialer',
+  );
 
   Future<BioPayUssdPaymentRequest> createPaymentRequest({
     required BioPayRequestChannel channel,
@@ -90,8 +95,10 @@ class BioPayUssdService {
     final normalizedPhone = payeePhone.replaceAll(RegExp(r'[^0-9+]'), '');
     final receiver = normalizedPhone.isEmpty ? reference : normalizedPhone;
     if (providerCode == 'mtn_rw') {
-      if (amountMajor <= 0) return '*182*8*1*$receiver#';
-      return '*182*8*1*$receiver*$amountMajor#';
+      final isMomoPayCode = RegExp(r'^[0-9]{5,6}$').hasMatch(receiver);
+      final menu = isMomoPayCode ? '*182*8*1' : '*182*1*1';
+      if (amountMajor <= 0) return '$menu*$receiver#';
+      return '$menu*$receiver*$amountMajor#';
     }
     if (amountMajor <= 0) return '*$providerCode*$receiver#';
     return '*$providerCode*$receiver*$amountMajor#';
@@ -212,8 +219,7 @@ class BioPayUssdService {
   Future<BioPayUssdPaymentRequest?> openUssdDialer(
     BioPayUssdPaymentRequest request,
   ) async {
-    final uri = ussdTelUri(request.ussdCode);
-    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    final launched = await launchUssdCode(request.ussdCode);
     if (!launched) return null;
 
     try {
@@ -223,7 +229,12 @@ class BioPayUssdService {
     }
   }
 
-  Future<bool> launchUssdCode(String ussdCode) {
+  Future<bool> launchUssdCode(String ussdCode) async {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      final launched = await _launchAndroidNativeUssd(ussdCode);
+      if (launched) return true;
+    }
+
     return launchUrl(
       ussdTelUri(ussdCode),
       mode: LaunchMode.externalApplication,
@@ -246,17 +257,37 @@ class BioPayUssdService {
     return paymentRequestUriForToken(request.token);
   }
 
+  Uri paymentRequestDialerUri(BioPayUssdPaymentRequest request) {
+    return ussdTelUri(request.ussdCode);
+  }
+
   String paymentRequestShareText(
     BioPayUssdPaymentRequest request, {
     String? receiverLabel,
   }) {
     final amount = request.amountLabel;
-    final link = paymentRequestUri(request);
+    final ussdLink = paymentRequestDialerUri(request);
     final receiver = receiverLabel?.trim();
     final receiverText = receiver == null || receiver.isEmpty
         ? ''
         : ' Receiver: $receiver.';
-    return 'Mobio payment request: $amount.$receiverText Tap this link to open MoMo USSD securely: $link';
+    return 'Mobio payment request: $amount.$receiverText Tap this MoMo USSD link: $ussdLink';
+  }
+
+  Future<bool> _launchAndroidNativeUssd(String ussdCode) async {
+    try {
+      final response = await _androidUssdDialerChannel
+          .invokeMapMethod<Object?, Object?>('launchUssd', {
+            'uri': ussdTelUri(ussdCode).toString(),
+          });
+      return response?['launched'] == true;
+    } on MissingPluginException {
+      return false;
+    } on PlatformException {
+      return false;
+    } on Object {
+      return false;
+    }
   }
 
   Uri paymentRequestWhatsAppUri(

@@ -94,7 +94,7 @@ class _BioPayPaymentLinkScreenState
       if (updated == null) {
         setState(() {
           _error = _shouldAutoLaunchDialer
-              ? 'Tap Open MoMo dialer to continue.'
+              ? 'Allow phone permission or tap Open MoMo USSD.'
               : 'USSD dialer unavailable.';
         });
         return;
@@ -104,7 +104,7 @@ class _BioPayPaymentLinkScreenState
       if (!mounted) return;
       setState(() {
         _error = _shouldAutoLaunchDialer
-            ? 'Tap Open MoMo dialer to continue.'
+            ? 'Allow phone permission or tap Open MoMo USSD.'
             : 'USSD dialer unavailable.';
       });
     } finally {
@@ -116,7 +116,7 @@ class _BioPayPaymentLinkScreenState
   Widget build(BuildContext context) {
     final request = _request;
     return BioPayFlowScreen(
-      title: 'Payment Request',
+      title: 'MoMo USSD Request',
       primaryLabel: '',
       onBack: widget.onBack,
       headerSpacing: 26,
@@ -126,13 +126,13 @@ class _BioPayPaymentLinkScreenState
           if (_loading)
             const _PaymentLinkStatusCard(
               icon: LucideIcons.loader2,
-              title: 'Preparing MoMo',
-              body: 'Opening the Mobio payment request.',
+              title: 'Preparing MoMo USSD',
+              body: 'Opening MoMo USSD outside Mobio.',
             )
           else if (request == null)
             _PaymentLinkStatusCard(
               icon: LucideIcons.alertTriangle,
-              title: 'Payment link unavailable',
+              title: 'MoMo USSD request unavailable',
               body: _error ?? 'Ask the receiver to send a new link.',
             )
           else ...[
@@ -140,8 +140,8 @@ class _BioPayPaymentLinkScreenState
               icon: LucideIcons.badgeDollarSign,
               title: 'Mobio payment request',
               body: _shouldAutoLaunchDialer
-                  ? 'Mobio is opening MoMo USSD on this Android device.'
-                  : 'Tap the button to open the MoMo USSD dialer.',
+                  ? 'Mobio is launching MoMo USSD outside the app.'
+                  : 'Tap the button to open MoMo USSD outside the app.',
             ),
             const SizedBox(height: AppSpacing.md),
             BioPayResolvedPaymentPreview(request: request),
@@ -150,7 +150,7 @@ class _BioPayPaymentLinkScreenState
               onPressed: _dialing ? null : _openDialer,
               isLoading: _dialing,
               child: Text(
-                _shouldAutoLaunchDialer ? 'Open again' : 'Open MoMo dialer',
+                _shouldAutoLaunchDialer ? 'Open again' : 'Open MoMo USSD',
               ),
             ),
           ],

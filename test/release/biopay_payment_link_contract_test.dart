@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('BioPay payment request link contract', () {
+  group('BioPay direct MoMo USSD request contract', () {
     const homePath = 'lib/features/biopay/biopay_home_screen.dart';
     const requestScreenPath =
         'lib/features/biopay/biopay_request_payment_screen.dart';
@@ -19,7 +19,7 @@ void main() {
     const configMigrationPath =
         'supabase/migrations/20260616110000_wallet_redemptions_and_insurance_config.sql';
 
-    test('BioPay home exposes payment link action', () {
+    test('BioPay home exposes MoMo USSD request action', () {
       final home = File(homePath).readAsStringSync();
       final router = File(routerPath).readAsStringSync();
 
@@ -45,7 +45,7 @@ void main() {
       expect(migration, contains('is_public'));
     });
 
-    test('payee creates a link with receiver number or code and amount', () {
+    test('payee creates a direct MoMo USSD link with receiver and amount', () {
       final screen = File(requestScreenPath).readAsStringSync();
 
       expect(screen, contains('BioPayRequestPaymentScreen'));
@@ -57,7 +57,14 @@ void main() {
       expect(screen, contains("BioPayDetailRow(label: 'Receiver'"));
       expect(screen, contains("BioPayDetailRow(label: 'Amount'"));
       expect(screen, contains('Share on WhatsApp'));
-      expect(screen, contains("child: const Text('Copy link')"));
+      expect(
+        screen,
+        contains("primaryLabel: request == null ? 'Generate USSD link'"),
+      );
+      expect(screen, contains("child: const Text('Copy USSD link')"));
+      expect(screen, contains('MoMo USSD link ready'));
+      expect(screen, contains('paymentRequestDialerUri(request)'));
+      expect(screen, isNot(contains('paymentRequestUri(request).toString()')));
       expect(
         screen,
         isNot(
@@ -103,15 +110,36 @@ void main() {
       expect(config, contains('MOBIO_PUBLIC_APP_URL'));
       expect(service, contains("path: '/biopay/pay/"));
       expect(service, contains("Uri.parse('tel:\$encoded')"));
+      expect(service, contains('paymentRequestDialerUri'));
       expect(service, contains('paymentRequestWhatsAppUri'));
       expect(service, contains('Receiver:'));
+      expect(service, contains('Tap this MoMo USSD link:'));
+      expect(service, isNot(contains('Request reference:')));
       expect(payerScreen, contains('TargetPlatform.android'));
       expect(payerScreen, contains('_shouldAutoLaunchDialer'));
       expect(payerScreen, contains('openUssdDialer(request)'));
-      expect(payerScreen, contains('Open MoMo dialer'));
+      expect(payerScreen, contains('Open MoMo USSD'));
       expect(manifest, contains('android:pathPrefix="/biopay/pay"'));
       expect(manifest, contains('android:scheme="tel"'));
+      expect(manifest, contains('android.permission.CALL_PHONE'));
+      expect(manifest, contains('android.hardware.telephony'));
     });
+
+    test(
+      'Android native bridge places MoMo USSD call before dialer fallback',
+      () {
+        final mainActivity = File(
+          'android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt',
+        ).readAsStringSync();
+
+        expect(mainActivity, contains('rw.mobi.app/biopay_ussd_dialer'));
+        expect(mainActivity, contains('launchNativeUssd(call, result)'));
+        expect(mainActivity, contains('Intent.ACTION_CALL'));
+        expect(mainActivity, contains('Intent.ACTION_DIAL'));
+        expect(mainActivity, contains('Manifest.permission.CALL_PHONE'));
+        expect(mainActivity, contains('BIOPAY_USSD_CALL_PERMISSION_REQUEST'));
+      },
+    );
 
     test('backend records shared-link dialer handoff without profile row', () {
       final migration = File(migrationPath).readAsStringSync();

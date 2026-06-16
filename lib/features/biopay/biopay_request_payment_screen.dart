@@ -219,7 +219,7 @@ class _BioPayRequestPaymentScreenState
           ),
         );
       }
-      _showMessage('Payment request ready to share.');
+      _showMessage('MoMo USSD link ready to share.');
     } on Object {
       _showMessage('Unable to share this payment request.');
     } finally {
@@ -234,12 +234,12 @@ class _BioPayRequestPaymentScreenState
     try {
       final link = ref
           .read(biopayUssdServiceProvider)
-          .paymentRequestUri(request)
+          .paymentRequestDialerUri(request)
           .toString();
       await Clipboard.setData(ClipboardData(text: link));
-      _showMessage('Payment link copied.');
+      _showMessage('MoMo USSD link copied.');
     } on Object {
-      _showMessage('Unable to copy this payment link.');
+      _showMessage('Unable to copy this MoMo USSD link.');
     } finally {
       if (mounted) setState(() => _copying = false);
     }
@@ -251,7 +251,7 @@ class _BioPayRequestPaymentScreenState
     final validationHint = _validationHint;
     return BioPayFlowScreen(
       title: 'Request Payment',
-      primaryLabel: request == null ? 'Generate payment link' : '',
+      primaryLabel: request == null ? 'Generate USSD link' : '',
       isPrimaryLoading: _creating,
       onBack: widget.onBack,
       onPrimary: _canCreateRequest ? _createRequest : null,
@@ -293,7 +293,7 @@ class _BioPayRequestPaymentScreenState
               receiverLabel: _receiverLabel,
               link: ref
                   .read(biopayUssdServiceProvider)
-                  .paymentRequestUri(request)
+                  .paymentRequestDialerUri(request)
                   .toString(),
               isSharing: _sharing,
               isCopying: _copying,
@@ -356,7 +356,7 @@ class _PaymentLinkPanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Payment link ready',
+                        'MoMo USSD link ready',
                         style: AppTypography.titleMd.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w900,
@@ -394,7 +394,7 @@ class _PaymentLinkPanel extends StatelessWidget {
                   child: MobiButton(
                     onPressed: isCopying ? null : onCopy,
                     isLoading: isCopying,
-                    child: const Text('Copy link'),
+                    child: const Text('Copy USSD link'),
                   ),
                 ),
               ],

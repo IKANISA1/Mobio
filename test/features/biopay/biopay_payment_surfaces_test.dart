@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobi_app/core/services/biopay_ussd_service.dart';
 import 'package:mobi_app/core/theme/app_colors.dart';
 import 'package:mobi_app/core/theme/app_theme.dart';
 import 'package:mobi_app/features/biopay/biopay_flow_shared.dart';
@@ -186,7 +187,7 @@ void main() {
       await tester.pump();
 
       var action = tester.widget<MobiButton>(
-        find.widgetWithText(MobiButton, 'Generate payment link'),
+        find.widgetWithText(MobiButton, 'Generate USSD link'),
       );
       expect(action.onPressed, isNull);
       expect(find.text('Enter an amount greater than RWF 0.'), findsOneWidget);
@@ -195,7 +196,7 @@ void main() {
       await tester.pump();
 
       action = tester.widget<MobiButton>(
-        find.widgetWithText(MobiButton, 'Generate payment link'),
+        find.widgetWithText(MobiButton, 'Generate USSD link'),
       );
       expect(action.onPressed, isNotNull);
     },
@@ -495,6 +496,28 @@ void main() {
       );
     },
   );
+
+  test('Payment request share text uses direct MoMo USSD tel link', () {
+    final service = BioPayUssdService();
+    final request = service.createPreviewRequest(
+      channel: BioPayRequestChannel.qr,
+      amountMinor: 999900,
+      payeePhone: '0788767816',
+    );
+
+    expect(request.ussdCode, '*182*1*1*0788767816*9999#');
+    expect(
+      service.paymentRequestDialerUri(request).toString(),
+      'tel:*182*1*1*0788767816*9999%23',
+    );
+    expect(
+      service.paymentRequestShareText(
+        request,
+        receiverLabel: 'MoMo number 0788767816',
+      ),
+      contains('Tap this MoMo USSD link: tel:*182*1*1*0788767816*9999%23'),
+    );
+  });
 }
 
 BoxDecoration _buttonDecoration(WidgetTester tester, String label) {
