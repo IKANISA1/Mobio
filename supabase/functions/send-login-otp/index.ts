@@ -20,6 +20,11 @@ import {
   sendWhatsappCloudOtp,
   whatsappCloudDeliveryErrorMetadata,
 } from "../_shared/whatsapp-cloud.ts";
+import {
+  GOOGLE_PLAY_REVIEW_OTP,
+  googlePlayReviewMetadata,
+  isGooglePlayReviewPhone,
+} from "../_shared/play-review-login.ts";
 
 type AppLoginRole = "passenger" | "driver";
 
@@ -50,93 +55,97 @@ Deno.serve(async (req: Request) => {
     requestedRole = normalizeRole(body?.role);
     const supabase = createAdminClient();
 
-    const sourceFingerprint = requestSourceFingerprint(req);
-    const rateLimit = await consumeOtpRateLimits(supabase, [
-      {
-        scope: "phone_resend",
-        bucketKey: await otpRateLimitBucketKey([
-          "otp",
-          "app_login",
-          "phone_resend",
-          phone,
-        ]),
-        windowSeconds: 60,
-        maxRequests: 1,
-      },
-      {
-        scope: "phone_hour",
-        bucketKey: await otpRateLimitBucketKey([
-          "otp",
-          "app_login",
-          "phone_hour",
-          phone,
-        ]),
-        windowSeconds: 60 * 60,
-        maxRequests: 5,
-      },
-      {
-        scope: "source_5min",
-        bucketKey: await otpRateLimitBucketKey([
-          "otp",
-          "app_login",
-          "source_5min",
-          sourceFingerprint,
-        ]),
-        windowSeconds: 5 * 60,
-        maxRequests: 10,
-      },
-      {
-        scope: "source_hour",
-        bucketKey: await otpRateLimitBucketKey([
-          "otp",
-          "app_login",
-          "source_hour",
-          sourceFingerprint,
-        ]),
-        windowSeconds: 60 * 60,
-        maxRequests: 30,
-      },
-      {
-        scope: "global_minute",
-        bucketKey: await otpRateLimitBucketKey([
-          "otp",
-          "app_login",
-          "global_minute",
-        ]),
-        windowSeconds: 60,
-        maxRequests: 60,
-      },
-    ]);
-
-    if (!rateLimit.allowed) {
-      const retryAfter = rateLimit.retryAfterSeconds;
-
-      await tryRecordAppAuthAttempt({
-        supabase,
-        phone,
-        requestedRole,
-        status: "rate_limited",
-        reason: "OTP request throttled by resend cooldown.",
-        metadata: {
-          retry_after_seconds: retryAfter,
-          rate_limit_scope: rateLimit.scope,
-          stage: "send_login_otp",
-        },
-        request: req,
-      });
-
-      return jsonResponse(
+    const isReviewLogin = isGooglePlayReviewPhone(phone);
+    if (!isReviewLogin) {
+      const sourceFingerprint = requestSourceFingerprint(req);
+      const rateLimit = await consumeOtpRateLimits(supabase, [
         {
-          success: false,
-          message: `Please wait ${retryAfter}s before requesting another code`,
-          retryAfterSeconds: retryAfter,
+          scope: "phone_resend",
+          bucketKey: await otpRateLimitBucketKey([
+            "otp",
+            "app_login",
+            "phone_resend",
+            phone,
+          ]),
+          windowSeconds: 60,
+          maxRequests: 1,
         },
-        429,
-        req,
-      );
+        {
+          scope: "phone_hour",
+          bucketKey: await otpRateLimitBucketKey([
+            "otp",
+            "app_login",
+            "phone_hour",
+            phone,
+          ]),
+          windowSeconds: 60 * 60,
+          maxRequests: 5,
+        },
+        {
+          scope: "source_5min",
+          bucketKey: await otpRateLimitBucketKey([
+            "otp",
+            "app_login",
+            "source_5min",
+            sourceFingerprint,
+          ]),
+          windowSeconds: 5 * 60,
+          maxRequests: 10,
+        },
+        {
+          scope: "source_hour",
+          bucketKey: await otpRateLimitBucketKey([
+            "otp",
+            "app_login",
+            "source_hour",
+            sourceFingerprint,
+          ]),
+          windowSeconds: 60 * 60,
+          maxRequests: 30,
+        },
+        {
+          scope: "global_minute",
+          bucketKey: await otpRateLimitBucketKey([
+            "otp",
+            "app_login",
+            "global_minute",
+          ]),
+          windowSeconds: 60,
+          maxRequests: 60,
+        },
+      ]);
+
+      if (!rateLimit.allowed) {
+        const retryAfter = rateLimit.retryAfterSeconds;
+
+        await tryRecordAppAuthAttempt({
+          supabase,
+          phone,
+          requestedRole,
+          status: "rate_limited",
+          reason: "OTP request throttled by resend cooldown.",
+          metadata: {
+            retry_after_seconds: retryAfter,
+            rate_limit_scope: rateLimit.scope,
+            stage: "send_login_otp",
+          },
+          request: req,
+        });
+
+        return jsonResponse(
+          {
+            success: false,
+            message:
+              `Please wait ${retryAfter}s before requesting another code`,
+            retryAfterSeconds: retryAfter,
+          },
+          429,
+          req,
+        );
+      }
     }
 
-    const code = generateOtpCode();
+    const code = isReviewLogin ? GOOGLE_PLAY_REVIEW_OTP : generateOtpCode();
     const purpose = "app_login";
     const codeHash = await hashOtpCode(code, { phone, purpose });
     const expiresAt = new Date(Date.now() + 5 * 60_000).toISOString();
@@ -157,28 +166,30 @@ Deno.serve(async (req: Request) => {
       throw insertError;
     }
 
-    try {
-      await sendWhatsappCloudOtp({
-        code,
-        recipientPhone: phone,
-      });
-    } catch (deliveryError) {
-      await supabase.from("otp_codes").delete().eq("id", insertedOtp.id);
+    if (!isReviewLogin) {
+      try {
+        await sendWhatsappCloudOtp({
+          code,
+          recipientPhone: phone,
+        });
+      } catch (deliveryError) {
+        await supabase.from("otp_codes").delete().eq("id", insertedOtp.id);
 
-      await tryRecordAppAuthAttempt({
-        supabase,
-        phone,
-        requestedRole,
-        status: "delivery_failed",
-        reason: "WhatsApp Cloud OTP delivery failed.",
-        metadata: {
-          stage: "send_login_otp",
-          delivery_error: whatsappCloudDeliveryErrorMetadata(deliveryError),
-        },
-        request: req,
-      });
+        await tryRecordAppAuthAttempt({
+          supabase,
+          phone,
+          requestedRole,
+          status: "delivery_failed",
+          reason: "WhatsApp Cloud OTP delivery failed.",
+          metadata: {
+            stage: "send_login_otp",
+            delivery_error: whatsappCloudDeliveryErrorMetadata(deliveryError),
+          },
+          request: req,
+        });
 
-      throw deliveryError;
+        throw deliveryError;
+      }
     }
 
     const { error: invalidateError } = await supabase
@@ -204,9 +215,12 @@ Deno.serve(async (req: Request) => {
       phone,
       requestedRole,
       status: "otp_sent",
-      reason: "OTP dispatched for app login.",
+      reason: isReviewLogin
+        ? "Google Play review OTP prepared for app login."
+        : "OTP dispatched for app login.",
       metadata: {
         stage: "send_login_otp",
+        ...(isReviewLogin ? googlePlayReviewMetadata() : {}),
       },
       request: req,
     });

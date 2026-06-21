@@ -255,6 +255,9 @@ void main() {
         final verifyLoginOtp = File(
           'supabase/functions/verify-login-otp/index.ts',
         ).readAsStringSync();
+        final playReviewLogin = File(
+          'supabase/functions/_shared/play-review-login.ts',
+        ).readAsStringSync();
         final sendAdminOtp = File(
           'supabase/functions/send-otp/index.ts',
         ).readAsStringSync();
@@ -270,6 +273,12 @@ void main() {
           contains('await hashOtpCode(code, { phone, purpose })'),
         );
         expect(sendLoginOtp, contains('.neq("id", insertedOtp.id)'));
+        expect(sendLoginOtp, contains('isGooglePlayReviewPhone(phone)'));
+        expect(sendLoginOtp, contains('GOOGLE_PLAY_REVIEW_OTP'));
+        expect(
+          sendLoginOtp,
+          contains('Google Play review OTP prepared for app login.'),
+        );
         expect(sendAdminOtp, contains('const purpose = "admin_login"'));
         expect(
           sendAdminOtp,
@@ -290,6 +299,14 @@ void main() {
           expect(source, contains('.eq("purpose", purpose)'));
         }
 
+        expect(playReviewLogin, contains('GOOGLE_PLAY_REVIEW_PHONE'));
+        expect(playReviewLogin, contains('+250788767816'));
+        expect(playReviewLogin, contains('GOOGLE_PLAY_REVIEW_OTP'));
+        expect(playReviewLogin, contains('123456'));
+        expect(verifyLoginOtp, contains('isGooglePlayReviewOtp(phone, code)'));
+        expect(verifyLoginOtp, contains('googlePlayReviewMetadata()'));
+        expect(verifyLoginOtp, contains('forceRequestedRole = false'));
+        expect(verifyLoginOtp, contains('isReviewLogin,'));
         expect(verifyLoginOtp, contains('momo_number: momoNumber'));
         expect(verifyLoginOtp, contains('momo_pay_code: momoPayCode'));
       },

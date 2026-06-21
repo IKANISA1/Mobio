@@ -15,6 +15,10 @@ import {
   normalizeCountryCode,
   normalizePhoneWithCountry,
 } from "../_shared/phone.ts";
+import {
+  googlePlayReviewMetadata,
+  isGooglePlayReviewOtp,
+} from "../_shared/play-review-login.ts";
 import { createAdminClient, createAnonClient } from "../_shared/supabase.ts";
 
 type AppLoginRole = "passenger" | "driver";
@@ -120,6 +124,7 @@ async function ensureAppUserSession(
   requestedRole: AppLoginRole,
   normalizedPhone: string,
   requestedCountryCode: string | null,
+  forceRequestedRole = false,
 ) {
   const profileSeed = await findExistingProfile(supabase, normalizedPhone);
   const existingRole = profileSeed?.role?.trim();
@@ -127,7 +132,9 @@ async function ensureAppUserSession(
     throw new Error("ADMIN_PROFILE_REQUIRES_ADMIN_LOGIN");
   }
 
-  const effectiveRole: AppLoginRole = existingRole == "driver"
+  const effectiveRole: AppLoginRole = forceRequestedRole
+    ? requestedRole
+    : existingRole == "driver"
     ? "driver"
     : requestedRole;
   const displayName = profileSeed?.display_name?.trim() ||
@@ -334,12 +341,15 @@ Deno.serve(async (req: Request) => {
       throw attemptError;
     }
 
+    const isReviewLogin = isGooglePlayReviewOtp(phone, code);
     const codeHash = otpRecord.code_hash
       ? await hashOtpCode(code, { phone, purpose })
       : null;
     const legacyCodeHash = otpRecord.code_hash ? await hashOtpCode(code) : null;
     const isValidCode = otpRecord.code_hash
-      ? codeHash == otpRecord.code_hash || legacyCodeHash == otpRecord.code_hash
+      ? codeHash == otpRecord.code_hash ||
+        legacyCodeHash == otpRecord.code_hash ||
+        isReviewLogin
       : otpRecord.code == code;
 
     if (!isValidCode) {
@@ -377,6 +387,7 @@ Deno.serve(async (req: Request) => {
       requestedRole,
       phone,
       countryCode,
+      isReviewLogin,
     );
 
     const { error: verifyError } = await supabase
@@ -401,6 +412,7 @@ Deno.serve(async (req: Request) => {
         user_id: userId,
         role,
         stage: "verify_login_otp",
+        ...(isReviewLogin ? googlePlayReviewMetadata() : {}),
       },
       request: req,
     });
