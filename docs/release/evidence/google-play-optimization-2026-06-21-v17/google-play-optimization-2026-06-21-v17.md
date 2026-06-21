@@ -99,6 +99,17 @@ The optimized v17 AAB is ready for Google Play upload, but upload could not be c
 
 Remaining action: provide or create a valid Google Play Android Publisher service-account JSON with access to package `rw.mobi.app`, or reauthenticate gcloud interactively, then rerun the production upload.
 
+Durable upload command after credentials are available:
+
+```bash
+PLAY_RELEASE_TRACK=production \
+PLAY_RELEASE_STATUS=completed \
+PLAY_PRODUCTION_APPROVED=true \
+./scripts/release/upload_google_play_release.sh
+```
+
+The upload wrapper validates that credential data is a real Google service-account JSON before calling Fastlane. It also supports `GOOGLE_PLAY_USE_GCLOUD_OAUTH=true` after an interactive `gcloud auth login`/reauth has refreshed an account with Android Publisher access.
+
 ## Review-state note
 
 Google Play deep-link checks may still show the old production version `15 (1.0.0)` until a build containing versionCode `17` is uploaded and processed. The repo and built v17 APK/AAB contain the fixed manifest and verified assetlinks configuration.

@@ -136,3 +136,12 @@ Store listing and privacy policy must disclose:
 Current upload blocker:
 
 `The optimized v17 AAB is built, but this machine does not currently have a usable Google Play Android Publisher service-account JSON. The local gcloud accounts also require interactive reauthentication before direct Play Developer API upload can proceed.`
+
+Validated upload command after the credential blocker is removed:
+
+```bash
+PLAY_RELEASE_TRACK=production \
+PLAY_RELEASE_STATUS=completed \
+PLAY_PRODUCTION_APPROVED=true \
+./scripts/release/upload_google_play_release.sh
+```
