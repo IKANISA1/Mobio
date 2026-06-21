@@ -159,7 +159,7 @@ gates, API enablement, or store copy.
 Mobio uses foreground location for nearby discovery and pickup autofill.
 Driver live sharing is a separate driver-only flow: when a driver explicitly
 turns online, the app shows a prominent live-location disclosure, requests
-background/always location, starts an OS-visible background location stream, and
+foreground location, starts an OS-visible foreground location stream, and
 publishes fresh coordinates to `driver_locations`. The app must not use
 background location for passenger discovery, analytics, advertising, route
 history, fare distance, or hidden tracking.

@@ -1,6 +1,5 @@
 package rw.mobi.app
 
-import android.Manifest
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -40,8 +39,6 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
     @Volatile private var nativeNfcWriterResult: MethodChannel.Result? = null
     @Volatile private var nativeNfcWriterProcessing = false
     private var nativeNfcWriterTimeout: Runnable? = null
-    private var pendingUssdLaunchUri: Uri? = null
-    private var pendingUssdLaunchResult: MethodChannel.Result? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -160,28 +157,6 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray,
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode != BIOPAY_USSD_CALL_PERMISSION_REQUEST) return
-
-        val uri = pendingUssdLaunchUri
-        val result = pendingUssdLaunchResult
-        pendingUssdLaunchUri = null
-        pendingUssdLaunchResult = null
-        if (uri == null || result == null) return
-
-        val granted = grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED
-        if (granted) {
-            startNativeUssdCall(uri, result)
-        } else {
-            startNativeUssdDialer(uri, result)
-        }
-    }
-
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
@@ -251,49 +226,7 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
             return
         }
 
-        if (hasCallPhonePermission()) {
-            startNativeUssdCall(uri, result)
-            return
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (pendingUssdLaunchResult != null) {
-                result.error("USSD_BUSY", "Another USSD launch is waiting for permission.", null)
-                return
-            }
-            pendingUssdLaunchUri = uri
-            pendingUssdLaunchResult = result
-            requestPermissions(
-                arrayOf(Manifest.permission.CALL_PHONE),
-                BIOPAY_USSD_CALL_PERMISSION_REQUEST,
-            )
-            return
-        }
-
         startNativeUssdDialer(uri, result)
-    }
-
-    private fun hasCallPhonePermission(): Boolean {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
-            checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun startNativeUssdCall(uri: Uri, result: MethodChannel.Result) {
-        val intent = Intent(Intent.ACTION_CALL, uri)
-        try {
-            if (intent.resolveActivity(packageManager) == null) {
-                startNativeUssdDialer(uri, result)
-                return
-            }
-            startActivity(intent)
-            result.success(mapOf("launched" to true, "mode" to "action_call"))
-        } catch (error: SecurityException) {
-            Log.w(TAG, "Native USSD ACTION_CALL denied; falling back to dialer.", error)
-            startNativeUssdDialer(uri, result)
-        } catch (error: Exception) {
-            Log.w(TAG, "Native USSD ACTION_CALL failed; falling back to dialer.", error)
-            startNativeUssdDialer(uri, result)
-        }
     }
 
     private fun startNativeUssdDialer(uri: Uri, result: MethodChannel.Result) {
@@ -955,7 +888,6 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
         private const val NFC_SELF_LAUNCH_SUPPRESSION_MS = 10_000L
         private const val NFC_POST_WRITE_READER_SETTLE_MS = 8_000L
         private const val NFC_TAG_IGNORE_DEBOUNCE_MS = 8_000L
-        private const val BIOPAY_USSD_CALL_PERMISSION_REQUEST = 7_182
         @Volatile private var suppressBioPayNfcLaunchUntilMs = 0L
     }
 

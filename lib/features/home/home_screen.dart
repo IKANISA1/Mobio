@@ -285,7 +285,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     final action = await PermissionAccessDialog.show(
       context,
-      config: PermissionAccessDialogConfig.backgroundLocation(),
+      config: PermissionAccessDialogConfig.location(),
     );
     if (!mounted || action != PermissionAccessDialogAction.grantAccess) {
       return;
@@ -293,7 +293,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     final granted = await ref
         .read(appPermissionServiceProvider)
-        .ensureBackgroundLocationAccess();
+        .ensureLocationAccess();
     if (!mounted) {
       return;
     }

@@ -123,12 +123,12 @@ void main() {
       expect(payerScreen, contains('Open MoMo USSD'));
       expect(manifest, isNot(contains('android:pathPrefix="/biopay/pay"')));
       expect(manifest, contains('android:scheme="tel"'));
-      expect(manifest, contains('android.permission.CALL_PHONE'));
+      expect(manifest, isNot(contains('android.permission.CALL_PHONE')));
       expect(manifest, contains('android.hardware.telephony'));
     });
 
     test(
-      'Android native bridge places MoMo USSD call before dialer fallback',
+      'Android native bridge opens MoMo USSD outside the app without phone-call permission',
       () {
         final mainActivity = File(
           'android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt',
@@ -136,10 +136,13 @@ void main() {
 
         expect(mainActivity, contains('rw.mobi.app/biopay_ussd_dialer'));
         expect(mainActivity, contains('launchNativeUssd(call, result)'));
-        expect(mainActivity, contains('Intent.ACTION_CALL'));
         expect(mainActivity, contains('Intent.ACTION_DIAL'));
-        expect(mainActivity, contains('Manifest.permission.CALL_PHONE'));
-        expect(mainActivity, contains('BIOPAY_USSD_CALL_PERMISSION_REQUEST'));
+        expect(mainActivity, isNot(contains('Intent.ACTION_CALL')));
+        expect(mainActivity, isNot(contains('Manifest.permission.CALL_PHONE')));
+        expect(
+          mainActivity,
+          isNot(contains('BIOPAY_USSD_CALL_PERMISSION_REQUEST')),
+        );
       },
     );
 

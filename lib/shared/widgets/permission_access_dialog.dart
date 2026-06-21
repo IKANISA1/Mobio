@@ -37,7 +37,7 @@ class PermissionAccessDialogConfig {
     return const PermissionAccessDialogConfig(
       title: 'LIVE LOCATION SHARING',
       message:
-          'This app collects location data to enable driver live sharing even when the app is closed or not in use. Mobio uses it only while you are online as a driver.',
+          'Allow location access so Mobio can share your driver location while the app is active and you are online.',
       icon: LucideIcons.radio,
       primaryButtonLabel: 'ENABLE LIVE SHARING',
     );

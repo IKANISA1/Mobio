@@ -94,7 +94,7 @@ class _BioPayPaymentLinkScreenState
       if (updated == null) {
         setState(() {
           _error = _shouldAutoLaunchDialer
-              ? 'Allow phone permission or tap Open MoMo USSD.'
+              ? 'Tap Open MoMo USSD if the dialer did not open.'
               : 'USSD dialer unavailable.';
         });
         return;
@@ -104,7 +104,7 @@ class _BioPayPaymentLinkScreenState
       if (!mounted) return;
       setState(() {
         _error = _shouldAutoLaunchDialer
-            ? 'Allow phone permission or tap Open MoMo USSD.'
+            ? 'Tap Open MoMo USSD if the dialer did not open.'
             : 'USSD dialer unavailable.';
       });
     } finally {

@@ -112,17 +112,17 @@ void main() {
       expect(permissionDialog, contains('backgroundLocation'));
       expect(
         permissionDialog,
-        contains('even when the app is closed or not in use'),
+        contains('while the app is active and you are online'),
       );
       expect(permissionService, contains('ensureBackgroundLocationAccess'));
-      expect(permissionService, contains('Permission.locationAlways'));
+      expect(permissionService, isNot(contains('Permission.locationAlways')));
       expect(locationService, contains('backgroundPositionStream'));
       expect(locationService, contains('ForegroundNotificationConfig'));
       expect(driverSharingService, contains('DriverLocationSharingService'));
       expect(driverSharingService, contains('setDriverOnlineStatus(false)'));
       expect(
         androidManifest,
-        contains('android.permission.ACCESS_BACKGROUND_LOCATION'),
+        isNot(contains('android.permission.ACCESS_BACKGROUND_LOCATION')),
       );
       expect(
         androidManifest,
