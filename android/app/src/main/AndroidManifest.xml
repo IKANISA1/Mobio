@@ -107,9 +107,9 @@
                 <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data
-                    android:scheme="https"
-                    android:host="mobio.ikanisa.com"
-                    android:pathPrefix="/biopay/nfc"/>
+                    android:scheme="mobio"
+                    android:host="biopay"
+                    android:pathPrefix="/nfc"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.nfc.action.TECH_DISCOVERED"/>

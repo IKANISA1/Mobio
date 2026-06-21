@@ -7,7 +7,8 @@
       "namespace": "android_app",
       "package_name": "rw.mobi.app",
       "sha256_cert_fingerprints": [
-        "DA:9E:5E:AB:50:D0:85:05:BF:0B:78:7C:EA:B5:DB:5B:40:77:8E:BE:77:62:95:72:16:8A:72:37:D7:79:81:C0"
+        "DA:9E:5E:AB:50:D0:85:05:BF:0B:78:7C:EA:B5:DB:5B:40:77:8E:BE:77:62:95:72:16:8A:72:37:D7:79:81:C0",
+        "D9:ED:98:8B:8A:48:94:CC:1E:13:9E:C1:28:18:29:17:A3:97:9B:8C:EB:3D:B5:99:3A:31:B1:AB:E1:C5:E4:56"
       ]
     }
   }

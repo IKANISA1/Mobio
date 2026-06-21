@@ -20,9 +20,13 @@ class WhatsAppLoginResult extends OtpResult {
 
 /// WhatsApp Cloud OTP login for passenger and driver app sessions.
 class WhatsAppLoginService {
-  WhatsAppLoginService({Dio? dio}) : _dio = dio ?? _defaultDio();
+  WhatsAppLoginService({Dio? dio, this._playIntegrityEvidenceProvider})
+    : _dio = dio ?? _defaultDio(),
+      super();
 
   final Dio _dio;
+  final Future<Map<String, dynamic>?> Function(String action)?
+  _playIntegrityEvidenceProvider;
 
   static Dio _defaultDio() {
     return Dio(
@@ -50,14 +54,16 @@ class WhatsAppLoginService {
     );
 
     try {
-      final response = await _dio.post(
-        '/send-login-otp',
-        data: {
-          'phone': normalizedPhone,
-          'countryCode': countryCode,
-          'role': _loginRoleValue(role),
-        },
-      );
+      final playIntegrity = await _playIntegrityEvidence('app_login_send_otp');
+      final data = <String, dynamic>{
+        'phone': normalizedPhone,
+        'countryCode': countryCode,
+        'role': _loginRoleValue(role),
+      };
+      if (playIntegrity != null) {
+        data['playIntegrity'] = playIntegrity;
+      }
+      final response = await _dio.post('/send-login-otp', data: data);
       final body = _asBody(response.data);
 
       if (body['success'] == true) {
@@ -100,15 +106,19 @@ class WhatsAppLoginService {
     );
 
     try {
-      final response = await _dio.post(
-        '/verify-login-otp',
-        data: {
-          'phone': normalizedPhone,
-          'code': code,
-          'role': _loginRoleValue(role),
-          'countryCode': countryCode,
-        },
+      final playIntegrity = await _playIntegrityEvidence(
+        'app_login_verify_otp',
       );
+      final data = <String, dynamic>{
+        'phone': normalizedPhone,
+        'code': code,
+        'role': _loginRoleValue(role),
+        'countryCode': countryCode,
+      };
+      if (playIntegrity != null) {
+        data['playIntegrity'] = playIntegrity;
+      }
+      final response = await _dio.post('/verify-login-otp', data: data);
       final body = _asBody(response.data);
 
       if (body['success'] == true && body['session'] != null) {
@@ -162,6 +172,15 @@ class WhatsAppLoginService {
 
   String _loginRoleValue(AppRole role) {
     return role == AppRole.driver ? 'driver' : 'passenger';
+  }
+
+  Future<Map<String, dynamic>?> _playIntegrityEvidence(String action) async {
+    try {
+      return await _playIntegrityEvidenceProvider?.call(action);
+    } on Object catch (error) {
+      if (kDebugMode) debugPrint('Play integrity evidence failed: $error');
+      return null;
+    }
   }
 
   static String normalizePhoneForCountry({

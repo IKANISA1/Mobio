@@ -25,6 +25,7 @@ import {
   googlePlayReviewMetadata,
   isGooglePlayReviewPhone,
 } from "../_shared/play-review-login.ts";
+import { checkPlayIntegrityEvidence } from "../_shared/play-integrity.ts";
 
 type AppLoginRole = "passenger" | "driver";
 
@@ -56,6 +57,15 @@ Deno.serve(async (req: Request) => {
     const supabase = createAdminClient();
 
     const isReviewLogin = isGooglePlayReviewPhone(phone);
+    const integrityCheck = await checkPlayIntegrityEvidence(
+      body,
+      "app_login_send_otp",
+      req,
+      isReviewLogin,
+    );
+    if (!integrityCheck.ok && integrityCheck.response) {
+      return integrityCheck.response;
+    }
     if (!isReviewLogin) {
       const sourceFingerprint = requestSourceFingerprint(req);
       const rateLimit = await consumeOtpRateLimits(supabase, [
@@ -220,6 +230,7 @@ Deno.serve(async (req: Request) => {
         : "OTP dispatched for app login.",
       metadata: {
         stage: "send_login_otp",
+        ...integrityCheck.metadata,
         ...(isReviewLogin ? googlePlayReviewMetadata() : {}),
       },
       request: req,

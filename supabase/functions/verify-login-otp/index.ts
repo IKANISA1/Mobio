@@ -19,6 +19,7 @@ import {
   googlePlayReviewMetadata,
   isGooglePlayReviewOtp,
 } from "../_shared/play-review-login.ts";
+import { checkPlayIntegrityEvidence } from "../_shared/play-integrity.ts";
 import { createAdminClient, createAnonClient } from "../_shared/supabase.ts";
 
 type AppLoginRole = "passenger" | "driver";
@@ -274,6 +275,16 @@ Deno.serve(async (req: Request) => {
     const purpose = "app_login";
     const supabase = createAdminClient();
     const anonClient = createAnonClient();
+    const isReviewLogin = isGooglePlayReviewOtp(phone, code);
+    const integrityCheck = await checkPlayIntegrityEvidence(
+      body,
+      "app_login_verify_otp",
+      req,
+      isReviewLogin,
+    );
+    if (!integrityCheck.ok && integrityCheck.response) {
+      return integrityCheck.response;
+    }
 
     const { data: otpRows, error: fetchError } = await supabase
       .from("otp_codes")
@@ -341,7 +352,6 @@ Deno.serve(async (req: Request) => {
       throw attemptError;
     }
 
-    const isReviewLogin = isGooglePlayReviewOtp(phone, code);
     const codeHash = otpRecord.code_hash
       ? await hashOtpCode(code, { phone, purpose })
       : null;
@@ -412,6 +422,7 @@ Deno.serve(async (req: Request) => {
         user_id: userId,
         role,
         stage: "verify_login_otp",
+        ...integrityCheck.metadata,
         ...(isReviewLogin ? googlePlayReviewMetadata() : {}),
       },
       request: req,

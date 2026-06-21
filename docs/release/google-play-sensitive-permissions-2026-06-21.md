@@ -93,6 +93,10 @@ Foreground service type:
 
 `location`
 
+Play Console status:
+
+`Updated on 2026-06-21. The declaration now uses User-initiated location sharing and links to https://mobio.ikanisa.com/play-review/foreground-location-demo. The change was sent for Google Play review.`
+
 Purpose:
 
 `Driver live sharing while the driver is online.`
@@ -122,11 +126,13 @@ Store listing and privacy policy must disclose:
 
 ## Required Play Console Work
 
-1. Upload an app bundle that includes the restored permissions.
-2. Go to Play Console > Mobio > Policy > App content.
-3. Complete App access using the review account above.
-4. Complete Sensitive app permissions / Background location.
-5. Complete Phone permission declaration if Play prompts for `CALL_PHONE`.
-6. Complete Foreground service / Location foreground service declaration if Play prompts.
-7. Attach or link Android demo videos for background location and MoMo USSD direct handoff.
-8. Send the release for review only after all App content items show complete.
+1. App access: use the review account above.
+2. Foreground service / Location foreground service declaration: completed and sent for review with `https://mobio.ikanisa.com/play-review/foreground-location-demo`.
+3. Sensitive app permissions / Background location: complete or update if Play prompts after the v17 bundle is uploaded.
+4. Phone permission declaration: complete if Play prompts for `CALL_PHONE` after the v17 bundle is uploaded.
+5. Upload the v17 app bundle that includes restored permissions and the fixed BioPay NFC intent filters.
+6. Send the release for review after all App content items show complete.
+
+Current upload blocker:
+
+`The optimized v17 AAB is built, but this machine does not currently have a usable Google Play Android Publisher service-account JSON. The local gcloud accounts also require interactive reauthentication before direct Play Developer API upload can proceed.`

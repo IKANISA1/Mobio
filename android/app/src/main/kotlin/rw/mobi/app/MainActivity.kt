@@ -24,6 +24,9 @@ import android.util.Log
 import com.android.installreferrer.api.InstallReferrerClient
 import com.android.installreferrer.api.InstallReferrerStateListener
 import com.android.installreferrer.api.ReferrerDetails
+import com.google.android.play.core.integrity.IntegrityManagerFactory
+import com.google.android.play.core.integrity.IntegrityServiceException
+import com.google.android.play.core.integrity.IntegrityTokenRequest
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
@@ -126,6 +129,15 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
                 else -> result.notImplemented()
             }
         }
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            "rw.mobi.app/play_integrity",
+        ).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "requestIntegrityToken" -> requestPlayIntegrityToken(call, result)
+                else -> result.notImplemented()
+            }
+        }
         nativeNfcReaderChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             "rw.mobi.app/biopay_native_nfc_reader",
@@ -151,6 +163,44 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
             }
         }
         handleBioPayLaunchIntent(intent)
+    }
+
+    private fun requestPlayIntegrityToken(call: MethodCall, result: MethodChannel.Result) {
+        val nonce = call.argument<String>("nonce")?.trim()
+        if (nonce.isNullOrBlank()) {
+            result.error("INVALID_ARGUMENTS", "Play Integrity nonce is required.", null)
+            return
+        }
+
+        val request = IntegrityTokenRequest.builder()
+            .setNonce(nonce)
+            .build()
+        IntegrityManagerFactory.create(applicationContext)
+            .requestIntegrityToken(request)
+            .addOnSuccessListener { response ->
+                result.success(
+                    mapOf(
+                        "token" to response.token(),
+                        "provider" to "play_integrity",
+                    ),
+                )
+            }
+            .addOnFailureListener { error ->
+                val code = if (error is IntegrityServiceException) {
+                    error.errorCode
+                } else {
+                    null
+                }
+                Log.w(TAG, "Play Integrity token request failed", error)
+                result.success(
+                    mapOf(
+                        "token" to null,
+                        "provider" to "play_integrity",
+                        "errorCode" to code,
+                        "error" to (error.message ?: "Play Integrity token request failed."),
+                    ),
+                )
+            }
     }
 
     override fun onResume() {

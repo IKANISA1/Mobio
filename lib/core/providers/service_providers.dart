@@ -25,6 +25,7 @@ import 'package:mobi_app/core/services/location_service.dart';
 import 'package:mobi_app/core/services/notification_consent_service.dart';
 import 'package:mobi_app/core/services/notification_service.dart';
 import 'package:mobi_app/core/services/places_service.dart';
+import 'package:mobi_app/core/services/play_integrity_service.dart';
 import 'package:mobi_app/core/services/profile_service.dart';
 import 'package:mobi_app/core/services/public_transport_service.dart';
 import 'package:mobi_app/core/services/push_notification_service.dart';
@@ -155,6 +156,7 @@ final notificationConsentServiceProvider = Provider(
 final placesServiceProvider = Provider(
   (ref) => PlacesService(supabase: ref.read(supabaseClientProvider)),
 );
+final playIntegrityServiceProvider = Provider((ref) => PlayIntegrityService());
 final profileServiceProvider = Provider(
   (ref) => ProfileService(supabase: ref.read(supabaseClientProvider)),
 );
@@ -188,4 +190,10 @@ final vehicleTypeServiceProvider = Provider(
 final walletServiceProvider = Provider(
   (ref) => WalletService(supabase: ref.read(supabaseClientProvider)),
 );
-final whatsappLoginServiceProvider = Provider((ref) => WhatsAppLoginService());
+final whatsappLoginServiceProvider = Provider(
+  (ref) => WhatsAppLoginService(
+    playIntegrityEvidenceProvider: ref
+        .read(playIntegrityServiceProvider)
+        .evidenceForAction,
+  ),
+);

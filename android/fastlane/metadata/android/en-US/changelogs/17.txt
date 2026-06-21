@@ -1,0 +1,3 @@
+Improves Google Play protection, app link verification, and review access.
+
+Adds Play Integrity monitoring for login, refreshes foreground location review evidence, and keeps BioPay NFC links aligned with direct MoMo USSD handoff.
