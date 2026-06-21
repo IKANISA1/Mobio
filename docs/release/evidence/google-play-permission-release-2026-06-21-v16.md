@@ -29,8 +29,9 @@ Google Play:
 - Play Console Policy status page showed a privacy-policy rejection on 2026-06-21.
 - Updated and deployed https://mobio.ikanisa.com/privacy-policy to disclose background location, BioPay, MoMo USSD, camera/face, NFC, wallet tokens, redemption, subscriptions, phone/USSD handoff, data retention, account deletion, and service providers.
 - Live verification at 2026-06-21 14:30:19 CAT: https://mobio.ikanisa.com/privacy-policy?play_review=20260621 returned HTTP 200 and contained "Last updated: June 21, 2026", "background location", "BioPay", "MoMo USSD", and "info [at] ikanisa.com".
+- Play Console Publishing overview submitted 8 changes for review after quick checks completed.
+- Play Console verification at 2026-06-21 14:38 CAT: Publishing overview showed "Changes in review" and "Your changes are now in review."
 
 Pending UI-only work:
-- Complete App Content declarations in Play Console using docs/release/google-play-sensitive-permissions-2026-06-21.md.
-- Attach Android demo videos for background location and direct MoMo USSD handoff.
-- Submit/send changes for review after declarations are complete.
+- Monitor Google review outcome.
+- If Google opens sensitive-permission forms after this submitted build is reviewed, complete them using docs/release/google-play-sensitive-permissions-2026-06-21.md and attach Android demo videos for background location and direct MoMo USSD handoff.
