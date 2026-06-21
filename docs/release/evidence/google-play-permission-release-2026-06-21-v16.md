@@ -26,6 +26,9 @@ Google Play:
 - Uploaded build 16 to Google Play internal track as draft via fastlane supply.
 - Play API verification: internal track version codes include [16, 3].
 - Play Console App Content page opened in Chrome: title "App content | Mobio".
+- Play Console Policy status page showed a privacy-policy rejection on 2026-06-21.
+- Updated and deployed https://mobio.ikanisa.com/privacy-policy to disclose background location, BioPay, MoMo USSD, camera/face, NFC, wallet tokens, redemption, subscriptions, phone/USSD handoff, data retention, account deletion, and service providers.
+- Live verification at 2026-06-21 14:30:19 CAT: https://mobio.ikanisa.com/privacy-policy?play_review=20260621 returned HTTP 200 and contained "Last updated: June 21, 2026", "background location", "BioPay", "MoMo USSD", and "info [at] ikanisa.com".
 
 Pending UI-only work:
 - Complete App Content declarations in Play Console using docs/release/google-play-sensitive-permissions-2026-06-21.md.

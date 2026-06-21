@@ -83,6 +83,9 @@ required_phrases=(
   "account deletion"
   "does not process in-app ride payments"
   "does not provide automatic fare quotes"
+  "biopay"
+  "momo ussd"
+  "background location"
 )
 
 for phrase in "${required_phrases[@]}"; do
@@ -102,9 +105,6 @@ prohibited_phrases=(
   "ride bookings"
   "start a ride"
   "payment options"
-  "biopay"
-  "biopay —"
-  "#biopay"
 )
 
 for phrase in "${prohibited_phrases[@]}"; do
