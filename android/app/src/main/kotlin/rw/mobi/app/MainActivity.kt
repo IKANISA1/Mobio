@@ -1,5 +1,6 @@
 package rw.mobi.app
 
+import android.Manifest
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -35,6 +36,8 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
     private var nativeNfcReaderChannel: MethodChannel? = null
     private var nativeReaderRequested = false
     private var pendingNativeNfcPayload: Map<String, String>? = null
+    private var pendingUssdUri: Uri? = null
+    private var pendingUssdResult: MethodChannel.Result? = null
     @Volatile private var nativeNfcWriterRequest: NativeNfcWriterRequest? = null
     @Volatile private var nativeNfcWriterResult: MethodChannel.Result? = null
     @Volatile private var nativeNfcWriterProcessing = false
@@ -230,6 +233,39 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
     }
 
     private fun startNativeUssdDialer(uri: Uri, result: MethodChannel.Result) {
+        if (checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            pendingUssdUri = uri
+            pendingUssdResult = result
+            requestPermissions(arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CALL_PHONE_FOR_USSD)
+            return
+        }
+
+        startNativeUssdCall(uri, result)
+    }
+
+    private fun startNativeUssdCall(uri: Uri, result: MethodChannel.Result) {
+        val intent = Intent(Intent.ACTION_CALL, uri)
+        try {
+            if (intent.resolveActivity(packageManager) == null) {
+                startNativeUssdDialerFallback(uri, result, "call_unavailable")
+                return
+            }
+            startActivity(intent)
+            result.success(mapOf("launched" to true, "mode" to "action_call"))
+        } catch (error: SecurityException) {
+            Log.w(TAG, "Native USSD ACTION_CALL permission denied", error)
+            startNativeUssdDialerFallback(uri, result, "call_permission_denied")
+        } catch (error: Exception) {
+            Log.w(TAG, "Native USSD ACTION_CALL failed", error)
+            startNativeUssdDialerFallback(uri, result, "call_failed")
+        }
+    }
+
+    private fun startNativeUssdDialerFallback(
+        uri: Uri,
+        result: MethodChannel.Result,
+        reason: String,
+    ) {
         val intent = Intent(Intent.ACTION_DIAL, uri)
         try {
             if (intent.resolveActivity(packageManager) == null) {
@@ -237,10 +273,31 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
                 return
             }
             startActivity(intent)
-            result.success(mapOf("launched" to true, "mode" to "action_dial"))
+            result.success(mapOf("launched" to true, "mode" to "action_dial", "reason" to reason))
         } catch (error: Exception) {
             Log.w(TAG, "Native USSD ACTION_DIAL failed", error)
             result.success(mapOf("launched" to false, "mode" to "failed"))
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode != REQUEST_CALL_PHONE_FOR_USSD) return
+
+        val uri = pendingUssdUri
+        val result = pendingUssdResult
+        pendingUssdUri = null
+        pendingUssdResult = null
+        if (uri == null || result == null) return
+
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startNativeUssdCall(uri, result)
+        } else {
+            startNativeUssdDialerFallback(uri, result, "call_permission_denied")
         }
     }
 
@@ -884,6 +941,7 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
 
     companion object {
         private const val TAG = "MobiMainActivity"
+        private const val REQUEST_CALL_PHONE_FOR_USSD = 4201
         private const val BIOPAY_NFC_MIME_TYPE = "application/vnd.rw.mobi.biopay.nfc"
         private const val NFC_SELF_LAUNCH_SUPPRESSION_MS = 10_000L
         private const val NFC_POST_WRITE_READER_SETTLE_MS = 8_000L

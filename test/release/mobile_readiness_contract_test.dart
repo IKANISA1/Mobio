@@ -112,17 +112,21 @@ void main() {
       expect(permissionDialog, contains('backgroundLocation'));
       expect(
         permissionDialog,
-        contains('while the app is active and you are online'),
+        contains('Allow background location'),
+      );
+      expect(
+        permissionDialog,
+        contains('Turn off sharing anytime by going offline'),
       );
       expect(permissionService, contains('ensureBackgroundLocationAccess'));
-      expect(permissionService, isNot(contains('Permission.locationAlways')));
+      expect(permissionService, contains('Permission.locationAlways'));
       expect(locationService, contains('backgroundPositionStream'));
       expect(locationService, contains('ForegroundNotificationConfig'));
       expect(driverSharingService, contains('DriverLocationSharingService'));
       expect(driverSharingService, contains('setDriverOnlineStatus(false)'));
       expect(
         androidManifest,
-        isNot(contains('android.permission.ACCESS_BACKGROUND_LOCATION')),
+        contains('android.permission.ACCESS_BACKGROUND_LOCATION'),
       );
       expect(
         androidManifest,

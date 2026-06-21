@@ -38,9 +38,18 @@ class AppPermissionService {
     return Future.value(true);
   }
 
-  /// Requests foreground location for explicit driver live-sharing actions.
+  /// Requests background location for explicit driver live-sharing actions.
   Future<bool> ensureBackgroundLocationAccess() async {
-    return ensureLocationAccess();
+    if (!_supportsRuntimePermissions) {
+      return Future.value(true);
+    }
+
+    final foregroundGranted = await ensureLocationAccess();
+    if (!foregroundGranted) {
+      return false;
+    }
+
+    return _ensureActionPermission(Permission.locationAlways);
   }
 
   /// Checks if location permission is already granted without prompting.
@@ -49,9 +58,14 @@ class AppPermissionService {
     return status.isGranted || status.isLimited;
   }
 
-  /// Checks if foreground live-sharing location is already granted.
+  /// Checks if background live-sharing location is already granted.
   Future<bool> hasBackgroundLocationAccess() async {
-    return hasLocationAccess();
+    if (!_supportsRuntimePermissions) {
+      return true;
+    }
+
+    final status = await _safeReadStatus(Permission.locationAlways);
+    return status.isGranted || status.isLimited;
   }
 
   Future<LocationAccessState> locationAccessState({
@@ -61,7 +75,9 @@ class AppPermissionService {
       return LocationAccessState.granted;
     }
 
-    final status = await _safeReadStatus(Permission.locationWhenInUse);
+    final status = await _safeReadStatus(
+      background ? Permission.locationAlways : Permission.locationWhenInUse,
+    );
     return _locationAccessStateForPermissionStatus(status);
   }
 
