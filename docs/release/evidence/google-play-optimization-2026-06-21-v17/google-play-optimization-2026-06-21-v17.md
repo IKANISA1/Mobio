@@ -1,6 +1,6 @@
 # Google Play optimization evidence - 2026-06-21
 
-Timestamp: 2026-06-21 15:59 CAT
+Timestamp: 2026-06-21 16:40 CAT
 Package: `rw.mobi.app`
 Version: `1.0.0+17`
 
@@ -89,27 +89,35 @@ Release APK intent-filter proof:
   - Payment or promotion abuse.
   - Attacks on security such as data theft.
   - Repackaging and redistribution by other developers.
+- Background location permission declaration was completed from the release validation gate:
+  - Undeclared permissions shown by Play: `ACCESS_BACKGROUND_LOCATION`, `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION`.
+  - App purpose describes Mobio mobility, BioPay, MoMo handoff, wallet tokens, and NFC BioPay cards.
+  - Location feature declared: driver live availability sharing while the driver explicitly switches online.
+  - Video URL submitted: `https://mobio.ikanisa.com/play-review/foreground-location-demo`.
 
 ## Upload status
 
-The optimized v17 AAB is ready for Google Play upload, but upload could not be completed from this machine in this run:
+The optimized v17 AAB was uploaded through the Play Console web release flow and saved as a production full rollout change.
 
-- Fastlane `deploy` failed before upload because the available credential data is not a Google Play service-account JSON: `Invalid Google Credentials file provided - no credential type found.`
-- Direct Google Play Developer API upload was also blocked because both local gcloud accounts require interactive reauthentication and cannot refresh tokens non-interactively.
+- Whole-computer/SSD credential search found valid Android Publisher service-account access for package `rw.mobi.app`.
+- Fastlane and direct Android Publisher API both uploaded the v17 AAB successfully, but API validation/commit returned: `Release artifacts require permissions that are missing from permission declaration.`
+- Google Play documentation requires the Play Console web flow when a new high-risk/sensitive permission declaration must be completed.
+- Play Console production release draft `17 (1.0.0)` was created manually.
+- Release notes were saved from `android/fastlane/metadata/android/en-US/changelogs/17.txt`.
+- Release validation initially showed one error: `This release includes permissions that haven't been declared in Play Console. Go to Sensitive app permissions to update your permission declarations.`
+- Background location declaration was completed and saved.
+- Release validation changed to `Ready to release`.
+- Publishing overview was submitted with `Submit 1 change for review` / `Send changes for review`.
+- Current Play Console state: `Changes in review` for `Production` / `17 (1.0.0)` / `Start full rollout`.
+- Android Publisher API track check after Console submission reports production release `17 (1.0.0)`, versionCode `17`, status `completed`.
+- Quick checks were still running at the last capture and Play stated changes will be sent for review as soon as checks complete successfully.
 
-Remaining action: provide or create a valid Google Play Android Publisher service-account JSON with access to package `rw.mobi.app`, or reauthenticate gcloud interactively, then rerun the production upload.
+Evidence screenshots:
 
-Durable upload command after credentials are available:
-
-```bash
-PLAY_RELEASE_TRACK=production \
-PLAY_RELEASE_STATUS=completed \
-PLAY_PRODUCTION_APPROVED=true \
-./scripts/release/upload_google_play_release.sh
-```
-
-The upload wrapper validates that credential data is a real Google service-account JSON before calling Fastlane. It also supports `GOOGLE_PLAY_USE_GCLOUD_OAUTH=true` after an interactive `gcloud auth login`/reauth has refreshed an account with Android Publisher access.
+- `play-console/app-content-overview-after-v17-upload-error.png`
+- `play-console/app-content-actioned-after-v17-upload-error.png`
+- `play-console/publishing-overview-v17-changes-in-review.png`
 
 ## Review-state note
 
-Google Play deep-link checks may still show the old production version `15 (1.0.0)` until a build containing versionCode `17` is uploaded and processed. The repo and built v17 APK/AAB contain the fixed manifest and verified assetlinks configuration.
+Google Play deep-link checks and public availability may lag until Google quick checks/review complete and the submitted v17 production rollout is fully published to users. The Android Publisher API already reports production versionCode `17` with status `completed`; the repo and built v17 APK/AAB contain the fixed manifest and verified assetlinks configuration.
