@@ -32,22 +32,66 @@ archive. Generated Dependabot jobs also exhibit this result.
 
 Actions and all five repository workflows are enabled; all actions are allowed.
 No deployment approval is pending. GitHub Status reported all systems operational
-when checked. These observations do not identify the startup failure's cause.
-The CLI's generic “likely workflow file issue” is not a server diagnostic.
+when checked. The CLI's generic “likely workflow file issue” is not a server
+diagnostic.
+
+### Confirmed account restriction
+
+After browser sign-in, the summary for the corrected workflow commit `fd65c4c`
+([run 33970927866](https://github.com/IKANISA1/Mobio/actions/runs/33970927866))
+visibly reported at 14:23 UTC: “The job was not started because recent account
+payments have failed or your spending limit…” (the displayed annotation was
+truncated). The signed-in Billing Overview then displayed at 14:28 UTC:
+“Your payment authorization has failed” and “Please contact your bank to resolve
+the issue.” It offers Update payment method and Retry authorization. This
+identifies the payment authorization as the account blocker. No budget increase
+is established as necessary. Workflow edits cannot clear this restriction. The
+REST API still returns zero check runs and no annotation for the failed run,
+despite the signed-in page displaying the error.
 
 The authenticated token cannot read account billing usage (HTTP 404 with a
 required `user` scope). No authentication scopes or billing settings were changed.
-The next evidence needed is the error banner in the signed-in run summary; if it
-provides no explanation, provide these run IDs to GitHub Support. GitHub documents
+The [billing overview](https://github.com/settings/billing) is ready for a retry
+of the saved payment authorization or an owner update of the payment method.
+Approval for the bank-facing retry was requested; no retry, payment, or budget
+change has been performed. GitHub documents
 [billing, trigger and runner troubleshooting](https://docs.github.com/en/actions/how-tos/troubleshoot-workflows).
-Do not infer billing failure solely from this startup result.
 
 ## Remaining iOS configuration
 
-`FIREBASE_IOS_APP_ID` is absent from both repository variables/secrets and the
-`Mobio` environment metadata. The iOS release check still requires its real value.
-The checked-in runtime deliberately has no fabricated fallback. A verified iOS
-Firebase application ID must be configured before the iOS CI job can pass.
+Firebase CLI authentication succeeded as the existing project administrator.
+There is no `rw.mobi.app` iOS registration in `gen-lang-client-0172279957`.
+The project has 30 registered apps: 16 Android, 11 iOS, and 3 web. No dedicated
+Mobio project was found among the 17 Firebase projects returned for this account.
+
+Creating `Mobio iOS` with bundle ID `rw.mobi.app` was rejected by Firebase:
+HTTP 429, `RESOURCE_EXHAUSTED`, “Too many Apps on project:1074154147498”.
+No iOS app was created. `FIREBASE_IOS_APP_ID` remains absent from GitHub and the
+local configuration; the release check still requires a real value.
+
+Firebase documents the [30-app limit](https://firebase.google.com/support/faq#how-many-apps-per-project).
+A quota increase requires Blaze billing and Google evaluation. Existing app
+registrations were retained; no project was upgraded or migrated.
+
+Two concrete routes were presented to the owner:
+
+1. Create a dedicated Mobio Firebase project. Register its Android, iOS and web
+   variants; update Mobio's Firebase configuration and native registrations;
+   preserve push delivery for existing Android installations during the change;
+   configure the real iOS app ID in GitHub; run analysis, tests and iOS builds.
+   The current push function uses a single Firebase project/credential pair, so
+   changing only the iOS app ID would not be a complete migration.
+2. Keep the current shared project, approve its Blaze billing configuration,
+   and request a higher app quota. Register Mobio iOS only after the provider
+   approves the quota, then configure and validate the build.
+
+The choice is pending. The affected runtime boundaries are
+`lib/core/config/firebase_runtime_config.dart`, `lib/core/firebase/`, native
+Firebase registrations, and `supabase/functions/send-push/index.ts`. Supabase
+WhatsApp authentication and marketplace data do not need a Firebase migration.
+The existing iOS requirement was preserved; no placeholder app ID or bypass was
+introduced, and no iOS build with a verified Mobio Firebase registration could
+be performed during this investigation.
 
 ## Local validation
 

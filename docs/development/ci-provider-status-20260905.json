@@ -1,0 +1,28 @@
+{
+  "checked_at_utc": "2026-09-05T14:33:07.823550+00:00",
+  "repository": "IKANISA1/Mobio",
+  "workflow_run": 33970927866,
+  "workflow_commit": "fd65c4c2557a7051efbd7ea8a8a35b40c7022168",
+  "github": {
+    "conclusion": "startup_failure",
+    "jobs": 0,
+    "signed_in_billing_banner": "Your payment authorization has failed",
+    "retry_performed": false
+  },
+  "firebase": {
+    "project_id": "gen-lang-client-0172279957",
+    "project_number": "1074154147498",
+    "registered_apps": {
+      "android": 16,
+      "ios": 11,
+      "web": 3,
+      "total": 30
+    },
+    "requested_ios_bundle_id": "rw.mobi.app",
+    "creation_http_status": 429,
+    "creation_status": "RESOURCE_EXHAUSTED",
+    "creation_message": "Too many Apps on project:1074154147498",
+    "ios_app_created": false,
+    "firebase_ios_app_id_configured": false
+  }
+}
