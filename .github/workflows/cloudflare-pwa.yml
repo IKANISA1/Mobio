@@ -38,9 +38,9 @@ jobs:
 
       - name: Validate PWA deployment configuration
         env:
-          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
-          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL || secrets.PRIVACY_POLICY_URL }}
           ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_PAGES_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}
@@ -63,9 +63,9 @@ jobs:
 
       - name: Build PWA bundles
         env:
-          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
-          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL || secrets.PRIVACY_POLICY_URL }}
           ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
         run: ./scripts/web/prepare_pwa_bundles.sh
 

@@ -33,9 +33,9 @@ jobs:
 
       - name: Build AAB (release)
         env:
-          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
-          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL || secrets.PRIVACY_POLICY_URL }}
           ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -69,9 +69,9 @@ jobs:
 
       - name: Build iOS (release, no codesign)
         env:
-          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
-          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL || secrets.PRIVACY_POLICY_URL }}
           ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
           FIREBASE_IOS_APP_ID: ${{ vars.FIREBASE_IOS_APP_ID }}
         run: ./scripts/ci/verify_ios_release.sh
@@ -98,5 +98,5 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF || secrets.SUPABASE_PROJECT_REF }}
         run: ./scripts/ci/verify_backend.sh

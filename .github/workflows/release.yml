@@ -37,9 +37,9 @@ jobs:
 
       - name: Build iOS (release, no codesign)
         env:
-          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
-          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL || secrets.PRIVACY_POLICY_URL }}
           ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
           FIREBASE_IOS_APP_ID: ${{ vars.FIREBASE_IOS_APP_ID }}
         run: ./scripts/ci/verify_ios_release.sh
@@ -75,15 +75,15 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF || secrets.SUPABASE_PROJECT_REF }}
           REQUIRE_LINKED_SUPABASE: 'true'
         run: ./scripts/ci/verify_backend.sh
 
       - name: Validate release configuration
         env:
-          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
-          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL || secrets.PRIVACY_POLICY_URL }}
           ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
           FIREBASE_IOS_APP_ID: ${{ vars.FIREBASE_IOS_APP_ID }}
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
@@ -111,9 +111,9 @@ jobs:
 
       - name: Build signed AAB
         env:
-          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
-          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL || secrets.PRIVACY_POLICY_URL }}
           ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
         run: ./scripts/release/build_android_release.sh appbundle
 
@@ -134,7 +134,7 @@ jobs:
           retention-days: 30
 
       - name: Upload draft to Google Play track
-        uses: r0adkll/upload-google-play@eb49699984a39f23558439581660aa6f088acfd6 # v1
+        uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5 (peeled v1 commit)
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
           packageName: rw.mobi.app

@@ -38,24 +38,24 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF || secrets.SUPABASE_PROJECT_REF }}
           REQUIRE_LINKED_SUPABASE: 'true'
         run: ./scripts/ci/verify_backend.sh
 
       - name: Validate Android release configuration
         env:
-          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
-          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL || secrets.PRIVACY_POLICY_URL }}
           ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           PLAY_STORE_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
-          PLAY_RELEASE_TRACK: ${{ vars.PLAY_RELEASE_TRACK }}
-          PLAY_RELEASE_STATUS: ${{ vars.PLAY_RELEASE_STATUS }}
-          PLAY_PRODUCTION_APPROVED: ${{ vars.PLAY_PRODUCTION_APPROVED }}
+          PLAY_RELEASE_TRACK: ${{ vars.PLAY_RELEASE_TRACK || 'internal' }}
+          PLAY_RELEASE_STATUS: ${{ vars.PLAY_RELEASE_STATUS || 'draft' }}
+          PLAY_PRODUCTION_APPROVED: ${{ vars.PLAY_PRODUCTION_APPROVED || 'false' }}
           REQUIRE_ANDROID_SIGNING: 'true'
           REQUIRE_SECRET_HISTORY_CLEAN: 'true'
           REQUIRE_IOS_FIREBASE: 'false'
@@ -73,9 +73,9 @@ jobs:
 
       - name: Build signed Android App Bundle
         env:
-          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
-          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL }}
+          SUPABASE_URL: ${{ vars.SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
+          PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL || secrets.PRIVACY_POLICY_URL }}
           ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
         run: ./scripts/release/build_android_release.sh appbundle
 
@@ -94,14 +94,14 @@ jobs:
           retention-days: 30
 
       - name: Upload draft to Google Play internal track
-        uses: r0adkll/upload-google-play@eb49699984a39f23558439581660aa6f088acfd6 # v1
+        uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5 (peeled v1 commit)
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_SERVICE_ACCOUNT_JSON }}
           packageName: rw.mobi.app
           releaseFiles: build/app/outputs/bundle/release/app-release.aab
           mappingFile: build/app/outputs/mapping/release/mapping.txt
-          track: ${{ vars.PLAY_RELEASE_TRACK }}
-          status: ${{ vars.PLAY_RELEASE_STATUS }}
+          track: ${{ vars.PLAY_RELEASE_TRACK || 'internal' }}
+          status: ${{ vars.PLAY_RELEASE_STATUS || 'draft' }}
 
       - name: Clean Android signing files
         if: always()
