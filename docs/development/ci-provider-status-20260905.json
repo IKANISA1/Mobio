@@ -1,8 +1,8 @@
 {
-  "checked_at_utc": "2026-09-05T14:33:07.823550+00:00",
+  "checked_at_utc": "2026-09-05T14:50:53.610023+00:00",
   "repository": "IKANISA1/Mobio",
-  "workflow_run": 33970927866,
-  "workflow_commit": "fd65c4c2557a7051efbd7ea8a8a35b40c7022168",
+  "workflow_run": 33972173064,
+  "workflow_commit": "ad247e1d70e7683bde89f4f4245a64d38eff3ed7",
   "github": {
     "conclusion": "startup_failure",
     "jobs": 0,
@@ -13,16 +13,76 @@
     "project_id": "gen-lang-client-0172279957",
     "project_number": "1074154147498",
     "registered_apps": {
-      "android": 16,
-      "ios": 11,
+      "android": 14,
+      "ios": 10,
       "web": 3,
-      "total": 30
+      "total": 27
     },
     "requested_ios_bundle_id": "rw.mobi.app",
-    "creation_http_status": 429,
-    "creation_status": "RESOURCE_EXHAUSTED",
-    "creation_message": "Too many Apps on project:1074154147498",
-    "ios_app_created": false,
-    "firebase_ios_app_id_configured": false
+    "ios_app_created": true,
+    "firebase_ios_app_id_configured": true,
+    "initial_creation_error": {
+      "creation_http_status": 429,
+      "creation_status": "RESOURCE_EXHAUSTED",
+      "creation_message": "Too many Apps on project:1074154147498"
+    },
+    "ios_app_id": "1:1074154147498:ios:d794485b11f0b741dc4ad3",
+    "android_app_id_retained": "1:1074154147498:android:ba6986f8f1f04787dc4ad3",
+    "retained_app_ids_verified": 26,
+    "ios_sdk_config_verified": true,
+    "github_variable_readback_verified": true,
+    "approved_permanent_deletions": [
+      {
+        "name": "FINA iOS",
+        "app_id": "1:1074154147498:ios:e661187da2adc56bdc4ad3",
+        "readback_http_status": 404,
+        "deleted_at": "2026-09-05T14:38:48.336Z"
+      },
+      {
+        "name": "SAKA Homes iOS",
+        "app_id": "1:1074154147498:ios:8bb5b1037e2b4168dc4ad3",
+        "readback_http_status": 404,
+        "deleted_at": "2026-09-05T14:38:50.008Z"
+      },
+      {
+        "name": "SAKA Homes Android",
+        "app_id": "1:1074154147498:android:8984b392984a188edc4ad3",
+        "readback_http_status": 404,
+        "deleted_at": "2026-09-05T14:38:51.637Z"
+      },
+      {
+        "name": "FINA Android",
+        "app_id": "1:1074154147498:android:e3675868efced64adc4ad3",
+        "readback_http_status": 404,
+        "deleted_at": "2026-09-05T14:38:53.445Z"
+      }
+    ],
+    "removal_mode": "permanent_after_soft_delete_did_not_free_quota",
+    "project_migrated": false
+  },
+  "validation": {
+    "dart_analyze": "passed",
+    "flutter_tests_passed": 516,
+    "python_tests_passed": 9,
+    "sdk_configuration_tests_passed": 2,
+    "repository_structure": "passed",
+    "secret_scan": "passed",
+    "ios_release_build": "passed_unsigned",
+    "store_upload_performed": false,
+    "device_push_verified": false,
+    "ios_artifact": {
+      "verified_at_utc": "2026-09-05T14:50:53.610023+00:00",
+      "bundle_id": "rw.mobi.app",
+      "version": "1.0.0",
+      "build": "17",
+      "unsigned_release": true,
+      "total_bytes": 43242610,
+      "dart_framework_sha256": "070a806ff50def1b15f9c90142e29ae68712cedb314f21449cd20647f07e5f26",
+      "ios_app_id_embedded": true,
+      "ios_sdk_api_key_embedded": true,
+      "required_runtime_defines_verified": true,
+      "xcode_version": "26.6 (17F113)",
+      "flutter_version": "3.44.3"
+    }
   }
 }

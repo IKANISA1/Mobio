@@ -38,8 +38,7 @@ class FirebaseBootstrapService {
     if (options == null) {
       AppLogger.warning(
         'Firebase is not configured for this platform. '
-        'Android is ready; iOS/Web need a FlutterFire app registration or '
-        '--dart-define app IDs.',
+        'Supply the registered platform app ID through --dart-define.',
       );
       return false;
     }

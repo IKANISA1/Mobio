@@ -1,7 +1,8 @@
 # GitHub CI follow-up — 2026-09-05
 
 The application design revision is `aa15841774f2de5a1390219ffe443f27286c5c04`.
-This follow-up changes workflow configuration only.
+This follow-up corrects workflow configuration and completes Mobio iOS registration
+in the existing Firebase project.
 
 ## Findings and corrections
 
@@ -57,41 +58,53 @@ Approval for the bank-facing retry was requested; no retry, payment, or budget
 change has been performed. GitHub documents
 [billing, trigger and runner troubleshooting](https://docs.github.com/en/actions/how-tos/troubleshoot-workflows).
 
-## Remaining iOS configuration
+## Firebase iOS registration completed
 
-Firebase CLI authentication succeeded as the existing project administrator.
-There is no `rw.mobi.app` iOS registration in `gen-lang-client-0172279957`.
-The project has 30 registered apps: 16 Android, 11 iOS, and 3 web. No dedicated
-Mobio project was found among the 17 Firebase projects returned for this account.
+The existing `MOBI` registration is Android, package `rw.mobi.app`, app ID
+`1:1074154147498:android:ba6986f8f1f04787dc4ad3`. It remains active and unchanged.
+Mobio iOS needs a separate platform registration in the same Firebase project,
+`gen-lang-client-0172279957`; no replacement project or migration is needed.
 
-Creating `Mobio iOS` with bundle ID `rw.mobi.app` was rejected by Firebase:
-HTTP 429, `RESOURCE_EXHAUSTED`, “Too many Apps on project:1074154147498”.
-No iOS app was created. `FIREBASE_IOS_APP_ID` remains absent from GitHub and the
-local configuration; the release check still requires a real value.
+The project initially contained 30 apps and rejected iOS creation with HTTP 429,
+`RESOURCE_EXHAUSTED`, “Too many Apps on project:1074154147498”. The owner explicitly
+selected these four registrations for deletion:
 
-Firebase documents the [30-app limit](https://firebase.google.com/support/faq#how-many-apps-per-project).
-A quota increase requires Blaze billing and Google evaluation. Existing app
-registrations were retained; no project was upgraded or migrated.
+| App | Platform | Package or bundle ID | Firebase App ID |
+| --- | --- | --- | --- |
+| FINA iOS | iOS | `rw.fina.app` | `1:1074154147498:ios:e661187da2adc56bdc4ad3` |
+| SAKA Homes iOS | iOS | `com.sakahomes.sakaHomesMobile` | `1:1074154147498:ios:8bb5b1037e2b4168dc4ad3` |
+| SAKA Homes Android | Android | `com.sakahomes.saka_homes_mobile` | `1:1074154147498:android:8984b392984a188edc4ad3` |
+| FINA Android | Android | `rw.fina.app` | `1:1074154147498:android:e3675868efced64adc4ad3` |
 
-Two concrete routes were presented to the owner:
+Each target's exact identity and active state were verified before removal.
+Recoverable removal succeeded for all four, but iOS creation still returned the
+same quota error. Permanent deletion of those same authorized targets then
+completed; every individual resource returned HTTP 404 on readback. The four
+registrations cannot be restored. Google documents
+[removal and permanent deletion](https://support.google.com/firebase/answer/7047853?hl=en).
 
-1. Create a dedicated Mobio Firebase project. Register its Android, iOS and web
-   variants; update Mobio's Firebase configuration and native registrations;
-   preserve push delivery for existing Android installations during the change;
-   configure the real iOS app ID in GitHub; run analysis, tests and iOS builds.
-   The current push function uses a single Firebase project/credential pair, so
-   changing only the iOS app ID would not be a complete migration.
-2. Keep the current shared project, approve its Blaze billing configuration,
-   and request a higher app quota. Register Mobio iOS only after the provider
-   approves the quota, then configure and validate the build.
+Mobio iOS was then created successfully:
 
-The choice is pending. The affected runtime boundaries are
-`lib/core/config/firebase_runtime_config.dart`, `lib/core/firebase/`, native
-Firebase registrations, and `supabase/functions/send-push/index.ts`. Supabase
-WhatsApp authentication and marketplace data do not need a Firebase migration.
-The existing iOS requirement was preserved; no placeholder app ID or bypass was
-introduced, and no iOS build with a verified Mobio Firebase registration could
-be performed during this investigation.
+- Firebase App ID: `1:1074154147498:ios:d794485b11f0b741dc4ad3`.
+- Bundle ID: `rw.mobi.app`.
+- Project: `gen-lang-client-0172279957`.
+- State: `ACTIVE`.
+- Final inventory: 27 active apps, comprising 14 Android, 10 iOS, and 3 web.
+- Exact inventory comparison verified all 26 retained app IDs, with only the
+  four approved removals and new Mobio iOS registration changing membership.
+
+The downloaded iOS SDK configuration matches the project, sender, storage bucket,
+App ID, and bundle ID. Its public API key differs from Android's, so
+`FirebaseRuntimeConfig.iosOptions` now uses the verified iOS key through a separate
+`FIREBASE_IOS_API_KEY` override/default. Android configuration remains unchanged.
+`FIREBASE_IOS_APP_ID` was set and read back in the GitHub repository variables and
+set in ignored local `.env`. The required iOS App ID check remains enabled.
+The downloaded SDK plist and operation evidence are retained under ignored
+`output/ci-followup-20260905/`; credentials were not copied into source.
+
+The shared Firebase backend and push project's identity remain unchanged.
+Physical-device APNs/push delivery and store distribution are separate from this
+registration and local build verification.
 
 ## Local validation
 
@@ -103,8 +116,24 @@ be performed during this investigation.
 - Existing action-pin check, repository structure check, secret scan and
   `git diff --check` pass.
 - All 9 Python architecture/configuration tests pass.
+- Dart analysis after the iOS runtime correction: no issues.
+- All 516 Flutter tests pass.
+- Two additional SDK verification tests pass: compiled iOS options exactly match
+  the downloaded registration, and Android retains its existing App ID and key.
+- The updated source passes the repository structure check and secret scan.
+- CocoaPods refreshed 21 local plugin podspec checksums in `ios/Podfile.lock`;
+  dependency versions and the Podfile checksum are unchanged.
 
-No application source or platform configuration changed, so the already verified
-Android/web artifacts remain evidence for the design revision. No deployment,
-store upload, or provider configuration change was performed by this follow-up.
-A remote startup failure is not a passing CI result.
+The unsigned iOS release build passed using Flutter 3.44.3 and Xcode 26.6, with
+the required four public runtime values and verified `FIREBASE_IOS_APP_ID`.
+`build/ios/iphoneos/Runner.app` has bundle ID `rw.mobi.app`, version
+`1.0.0`, build `17`. Binary inspection confirms the registered iOS
+App ID and downloaded SDK API key are embedded. The compiled Dart framework
+SHA-256 is `070a806ff50def1b15f9c90142e29ae68712cedb314f21449cd20647f07e5f26`. The first local attempt
+hit a Ruby/FFI architecture mismatch: the configured Flutter SDK is Intel and
+launched Intel Ruby, while the installed FFI extension is ARM. A local ignored
+`pod` wrapper uses `arch -arm64 /usr/bin/ruby -rlogger` with the existing CocoaPods
+1.16.2 installation. No system gems were removed or replaced.
+No deployment or store upload has been performed.
+GitHub Actions remains blocked by the confirmed account payment authorization
+failure; a remote startup failure is not a passing CI result.

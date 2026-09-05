@@ -3,10 +3,9 @@ import 'package:flutter/foundation.dart';
 
 /// Shared Firebase runtime configuration for the Mobio project.
 ///
-/// Android is fully configured from the checked-in Firebase app registration.
-/// iOS and Web can be wired either by running `flutterfire configure` after
-/// re-authenticating the Firebase CLI, or by passing the platform app IDs via
-/// `--dart-define`.
+/// Android and iOS use their own Firebase API keys in the shared project.
+/// Pass the registered iOS app ID via `--dart-define=FIREBASE_IOS_APP_ID`.
+/// Web remains optional and requires its own registered app ID.
 class FirebaseRuntimeConfig {
   FirebaseRuntimeConfig._();
 
@@ -20,6 +19,10 @@ class FirebaseRuntimeConfig {
   static const androidAppId = String.fromEnvironment(
     'FIREBASE_ANDROID_APP_ID',
     defaultValue: '1:1074154147498:android:ba6986f8f1f04787dc4ad3',
+  );
+  static const iosApiKey = String.fromEnvironment(
+    'FIREBASE_IOS_API_KEY',
+    defaultValue: 'AIzaSyC8dE6DUHuVTK9tFkNx31EcEqNeNogUpjw',
   );
   static const iosAppId = String.fromEnvironment('FIREBASE_IOS_APP_ID');
   static const webAppId = String.fromEnvironment('FIREBASE_WEB_APP_ID');
@@ -67,7 +70,7 @@ class FirebaseRuntimeConfig {
     }
 
     return const FirebaseOptions(
-      apiKey: apiKey,
+      apiKey: iosApiKey,
       appId: iosAppId,
       messagingSenderId: messagingSenderId,
       projectId: projectId,
