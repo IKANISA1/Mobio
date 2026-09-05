@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_style.dart';
+import 'package:mobi_app/shared/widgets/mobi_action_row.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
-import 'package:mobi_design_system/theme/app_colors.dart';
+import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
@@ -55,8 +56,9 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
     return Theme(
       data: bioPayLightTheme(context),
       child: Scaffold(
-        backgroundColor: bioPayCanvas,
-        body: BioPayLightCanvas(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: SoftGradient(
+          tone: SoftGradientTone.shell,
           child: SafeArea(
             bottom: false,
             child: SingleChildScrollView(
@@ -72,61 +74,81 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
                 children: [
                   const SizedBox(height: AppSpacing.xl),
                   Text(
-                    'Pay & Get Paid',
-                    style: AppTypography.displayLg.copyWith(
-                      color: Colors.white,
-                      fontSize: 40,
-                      height: 1,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0,
+                    'BioPay',
+                    textAlign: TextAlign.center,
+                    style: AppTypography.bodyLg.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.xs),
+                  const SizedBox(height: AppSpacing.md),
                   Text(
-                    'Instant & Secure',
-                    style: AppTypography.headlineLg.copyWith(
-                      color: AppColors.primaryFixedDim,
-                      fontSize: 30,
-                      height: 1.05,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0,
+                    'Your identity.\nYour connection.',
+                    textAlign: TextAlign.center,
+                    style: AppTypography.displayLg.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 36,
+                      height: 1.08,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.xl),
+                  const SizedBox(height: 40),
+                  MobiActionRow(
+                    items: [
+                      MobiActionItem(
+                        icon: LucideIcons.scanFace,
+                        label: 'Face Scan',
+                        onTap: widget.onFace,
+                      ),
+                      MobiActionItem(
+                        icon: LucideIcons.nfc,
+                        label: 'NFC Tap',
+                        onTap: widget.onNfc,
+                      ),
+                      MobiActionItem(
+                        icon: LucideIcons.qrCode,
+                        label: 'Get QR',
+                        onTap: widget.onQr,
+                      ),
+                      MobiActionItem(
+                        icon: LucideIcons.scanLine,
+                        label: 'Scan QR',
+                        onTap: widget.onScan,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
                   MobiSurfacePanel(
-                    padding: const EdgeInsets.all(AppSpacing.sm),
-                    borderRadius: AppRadii.xxl,
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: AppSpacing.sm,
-                      crossAxisSpacing: AppSpacing.sm,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      childAspectRatio: 1.1,
+                    child: Row(
                       children: [
-                        _BioPayHomeTile(
-                          icon: LucideIcons.scanFace,
-                          label: 'Face Scan',
-                          color: bioPayBlue,
-                          onTap: widget.onFace,
+                        Icon(
+                          LucideIcons.smartphone,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          size: 24,
                         ),
-                        _BioPayHomeTile(
-                          icon: LucideIcons.nfc,
-                          label: 'NFC Tap',
-                          color: bioPayNfcPurple,
-                          onTap: widget.onNfc,
-                        ),
-                        _BioPayHomeTile(
-                          icon: LucideIcons.qrCode,
-                          label: 'Get QR',
-                          color: bioPayQrOrange,
-                          onTap: widget.onQr,
-                        ),
-                        _BioPayHomeTile(
-                          icon: LucideIcons.scanLine,
-                          label: 'Scan QR',
-                          color: bioPayScanTeal,
-                          onTap: widget.onScan,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Connect to a recipient',
+                                style: AppTypography.titleMd.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Use face, QR or NFC, then continue with your mobile network.',
+                                style: AppTypography.bodySm.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -210,7 +232,7 @@ class _BioPayInsuranceBanner extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.titleMd.copyWith(
                           color: Colors.white,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -284,125 +306,13 @@ class _BioPayRequestPaymentButton extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.titleMd.copyWith(
                       color: Colors.white,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _BioPayHomeTile extends StatelessWidget {
-  const _BioPayHomeTile({
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: label,
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
-        shadowColor: Colors.black.withValues(alpha: 0.22),
-        elevation: 5,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: onTap,
-          child: Ink(
-            decoration: BoxDecoration(
-              color: bioPayDarkPanel.withValues(alpha: 0.78),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white.withValues(alpha: 0.08),
-                  bioPayDarkPanelAlt.withValues(alpha: 0.68),
-                ],
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _BioPayActionGlyph(icon: icon, accent: color),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.labelLg.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _BioPayActionGlyph extends StatelessWidget {
-  const _BioPayActionGlyph({required this.icon, required this.accent});
-
-  final IconData icon;
-  final Color accent;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: 52,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: bioPayInk,
-          borderRadius: BorderRadius.circular(17),
-          boxShadow: [
-            BoxShadow(
-              color: accent.withValues(alpha: 0.20),
-              blurRadius: 18,
-              offset: const Offset(0, 9),
-            ),
-          ],
-        ),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Positioned(
-              right: 8,
-              top: 8,
-              child: SizedBox.square(
-                dimension: 7,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: accent,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ),
-            Icon(icon, color: Colors.white, size: 24),
-          ],
         ),
       ),
     );

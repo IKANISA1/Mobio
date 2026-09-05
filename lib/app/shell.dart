@@ -120,7 +120,7 @@ class _MobiShellState extends ConsumerState<MobiShell> {
     final role = ref.watch(roleProvider);
     final isExpandedWidth = MediaQuery.sizeOf(context).width >= 720;
 
-    if (isExpandedWidth) {
+    if (isExpandedWidth && !role.isAdmin) {
       return Scaffold(
         backgroundColor: cs.surface,
         body: SafeArea(
@@ -138,6 +138,13 @@ class _MobiShellState extends ConsumerState<MobiShell> {
             ],
           ),
         ),
+      );
+    }
+
+    if (isExpandedWidth && role.isAdmin) {
+      return Scaffold(
+        backgroundColor: cs.surface,
+        body: SafeArea(child: widget.navigationShell),
       );
     }
 

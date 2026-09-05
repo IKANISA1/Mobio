@@ -261,7 +261,7 @@ class _AdminEvChargersScreenState extends ConsumerState<AdminEvChargersScreen> {
                           'Active',
                           style: AppTypography.bodyMd.copyWith(
                             color: cs.onSurface,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         subtitle: Text(
@@ -277,7 +277,7 @@ class _AdminEvChargersScreenState extends ConsumerState<AdminEvChargersScreen> {
                           sheetError!,
                           style: AppTypography.bodySm.copyWith(
                             color: cs.error,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
@@ -639,7 +639,7 @@ class _ChargerRow extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.titleMd.copyWith(
                           color: cs.onSurface,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 4),

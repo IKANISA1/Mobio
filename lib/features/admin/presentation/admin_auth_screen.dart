@@ -329,6 +329,7 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
                         children: [
                           AdminIconButton(
                             icon: LucideIcons.chevronLeft,
+                            label: 'Back',
                             onPressed: widget.onBack,
                           ),
                           const SizedBox(width: AppSpacing.md),

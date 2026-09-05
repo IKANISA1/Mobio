@@ -562,7 +562,7 @@ class _TripDetailFactRow extends StatelessWidget {
                 label,
                 style: AppTypography.labelSm.copyWith(
                   color: cs.onSurfaceVariant,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 2),
@@ -572,7 +572,7 @@ class _TripDetailFactRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppTypography.bodyMd.copyWith(
                   color: cs.onSurface,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],

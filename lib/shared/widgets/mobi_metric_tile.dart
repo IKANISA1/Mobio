@@ -50,7 +50,7 @@ class MobiMetricTile extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: AppTypography.headlineLg.copyWith(
               color: cs.onSurface,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 2),

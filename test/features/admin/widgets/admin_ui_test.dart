@@ -29,6 +29,10 @@ void main() {
     );
 
     expect(find.text('1-25 of 60'), findsOneWidget);
+    final semantics = tester.ensureSemantics();
+    expect(find.bySemanticsLabel('Previous page'), findsOneWidget);
+    expect(find.bySemanticsLabel('Next page'), findsOneWidget);
+    semantics.dispose();
 
     await tester.tap(find.byIcon(LucideIcons.chevronRight));
     await tester.pump();

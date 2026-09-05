@@ -41,8 +41,8 @@ class MobiBottomNav extends StatelessWidget {
 
     return Positioned(
       bottom: 12 + safeBottom,
-      left: 20,
-      right: 20,
+      left: 16,
+      right: 16,
       child: isAdmin
           ? _AdminNavContainer(child: navRow)
           : GlassCard(
@@ -109,14 +109,13 @@ class _NavItem {
   const _NavItem(this.icon, this.label);
 }
 
-/// Nav item with opacity + scale press feedback.
-class _TappableNavItem extends StatefulWidget {
+/// One accessible navigation target for touch, keyboard and assistive input.
+class _TappableNavItem extends StatelessWidget {
   final VoidCallback onTap;
   final bool isActive;
   final IconData icon;
   final String label;
   final bool isAdmin;
-
   const _TappableNavItem({
     required this.onTap,
     required this.isActive,
@@ -124,92 +123,46 @@ class _TappableNavItem extends StatefulWidget {
     required this.label,
     this.isAdmin = false,
   });
-
-  @override
-  State<_TappableNavItem> createState() => _TappableNavItemState();
-}
-
-class _TappableNavItemState extends State<_TappableNavItem> {
-  bool _isPressed = false;
-
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-    final reduceMotion = MediaQuery.disableAnimationsOf(context);
-    final fastDuration = reduceMotion
-        ? Duration.zero
-        : const Duration(milliseconds: 100);
-    final settleDuration = reduceMotion
-        ? Duration.zero
-        : const Duration(milliseconds: 220);
-
     return Semantics(
       button: true,
-      selected: widget.isActive,
-      label: '${widget.label} tab',
-      hint: widget.isActive ? 'Current tab' : 'Switch tab',
-      onTap: widget.onTap,
+      selected: isActive,
+      label: '$label tab',
+      hint: isActive ? 'Current tab' : 'Switch tab',
       child: Tooltip(
-        message: widget.label,
-        child: GestureDetector(
-          onTap: widget.onTap,
-          onTapDown: (_) => setState(() => _isPressed = true),
-          onTapUp: (_) => setState(() => _isPressed = false),
-          onTapCancel: () => setState(() => _isPressed = false),
-          behavior: HitTestBehavior.opaque,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 48, minWidth: 64),
-            child: AnimatedOpacity(
-              duration: fastDuration,
-              opacity: _isPressed ? 0.7 : 1.0,
-              child: AnimatedScale(
-                duration: fastDuration,
-                scale: reduceMotion || !_isPressed ? 1.0 : 0.95,
-                child: AnimatedContainer(
-                  duration: settleDuration,
-                  curve: Curves.easeOutCubic,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: widget.isActive
-                        ? ext.surfaceContainerHigh.withValues(alpha: 0.84)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(AppRadii.pill),
-                  ),
-                  child: ExcludeSemantics(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          widget.icon,
-                          size: 22,
-                          color: widget.isActive
-                              ? Colors.white
-                              : cs.onSurfaceVariant,
+        excludeFromSemantics: true,
+        message: label,
+        child: Material(
+          color: isActive ? cs.surfaceContainerHigh : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppRadii.pill),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(AppRadii.pill),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 48),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+                child: ExcludeSemantics(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        icon,
+                        size: 22,
+                        color: isActive ? cs.onSurface : cs.onSurfaceVariant,
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        label,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        style: AppTypography.labelSm.copyWith(
+                          color: isActive ? cs.onSurface : cs.onSurfaceVariant,
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          widget.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: false,
-                          textAlign: TextAlign.center,
-                          style: AppTypography.labelSm.copyWith(
-                            fontWeight: widget.isActive
-                                ? FontWeight.w800
-                                : FontWeight.w600,
-                            letterSpacing: 0,
-                            color: widget.isActive
-                                ? Colors.white
-                                : cs.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),

@@ -384,7 +384,7 @@ class _NfcReceiverTypePicker extends StatelessWidget {
                 onChanged: onTextChanged,
                 style: AppTypography.displayMd.copyWith(
                   color: Colors.white,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: 0,
                 ),
                 decoration: InputDecoration(
@@ -393,7 +393,7 @@ class _NfcReceiverTypePicker extends StatelessWidget {
                       : 'MoMo Pay code',
                   hintStyle: AppTypography.titleLg.copyWith(
                     color: Colors.white.withValues(alpha: 0.36),
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.xl,
@@ -482,7 +482,7 @@ class _NfcReceiverModeButton extends StatelessWidget {
                       softWrap: false,
                       style: AppTypography.titleMd.copyWith(
                         color: contentColor,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -538,7 +538,7 @@ class _NfcUssdPreview extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.titleMd.copyWith(
                       color: Colors.white,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -673,7 +673,7 @@ class _NfcProgressItem extends StatelessWidget {
             color: Colors.white.withValues(
               alpha: active || completed ? 1 : 0.55,
             ),
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],
@@ -726,7 +726,7 @@ class _NfcWriteConfirmationSheet extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.titleLg.copyWith(
                           color: bioPayInk,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -810,7 +810,7 @@ class _NfcLockConfirmationSheet extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.titleLg.copyWith(
                           color: bioPayInk,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -868,7 +868,7 @@ class _LightDetailRow extends StatelessWidget {
               label,
               style: AppTypography.labelMd.copyWith(
                 color: bioPayMuted,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -878,7 +878,7 @@ class _LightDetailRow extends StatelessWidget {
               textAlign: TextAlign.right,
               style: AppTypography.labelLg.copyWith(
                 color: bioPayInk,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -938,7 +938,7 @@ class _NfcWriteSuccessPanel extends StatelessWidget {
               textAlign: TextAlign.center,
               style: AppTypography.headlineSm.copyWith(
                 color: Colors.white,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: AppSpacing.lg),

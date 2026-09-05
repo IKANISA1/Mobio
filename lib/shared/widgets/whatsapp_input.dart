@@ -124,14 +124,14 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.label.toUpperCase(),
+          widget.label,
           style: AppTypography.labelSm.copyWith(color: cs.onSurfaceVariant),
         ),
         const SizedBox(height: 8),
         DecoratedBox(
           decoration: BoxDecoration(
             color: ext.surfaceContainerLowest.withValues(alpha: 0.94),
-            borderRadius: BorderRadius.circular(AppRadii.xxl),
+            borderRadius: BorderRadius.circular(AppRadii.md),
             border: Border.all(
               color: ext.borderSubtle.withValues(
                 alpha: ext.surfacePanelBorderAlpha,
@@ -199,7 +199,11 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
                       fontSize: 20,
                       color: cs.onSurfaceVariant.withValues(alpha: 0.38),
                     ),
+                    filled: false,
                     border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.md,
                       vertical: 16,

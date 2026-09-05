@@ -1,127 +1,283 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy — Mobio</title>
-  <meta name="description" content="Mobio Privacy Policy. Learn how we collect, use, and protect your personal information.">
-  <link rel="icon" type="image/png" href="assets/mobi_icon.png">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy — Mobio</title>
+    <meta
+      name="description"
+      content="Mobio Privacy Policy. Learn how we collect, use, and protect your personal information."
+    />
+    <link rel="icon" type="image/png" href="assets/mobi_icon.png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="legal-body">
+    <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Navigation -->
-  <nav class="nav scrolled" id="nav">
-    <div class="nav-inner">
-      <a href="index.html" class="nav-logo">
-        <img src="assets/mobi_icon.png" alt="Mobio logo" width="40" height="40">
-        <span>Mobio</span>
-      </a>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="index.html#features">Features</a></li>
-        <li><a href="index.html#scope">Scope</a></li>
-        <li><a href="index.html#download">Download</a></li>
-      </ul>
-      <div class="nav-cta">
-        <a href="index.html#download" class="btn btn-primary" style="padding:12px 24px;font-size:14px;">Get the App</a>
+    <!-- Navigation -->
+    <header class="nav scrolled" id="nav">
+      <nav class="nav-inner" aria-label="Main navigation">
+        <a class="nav-logo" href="index.html" aria-label="Mobio home"
+          ><img src="assets/mobi_icon.png" alt="" width="32" height="32" /><span
+            >Mobio</span
+          ></a
+        >
+        <ul class="nav-links" id="nav-links">
+          <li><a href="index.html#discover">Discover</a></li>
+          <li><a href="index.html#trips">Trips</a></li>
+          <li><a href="index.html#biopay">BioPay</a></li>
+          <li><a href="index.html#how-it-works">How it works</a></li>
+        </ul>
+        <div class="nav-cta">
+          <a class="nav-login" href="/admin-auth">Business log in</a
+          ><a class="btn btn-primary" href="index.html#download">Get Mobio</a>
+        </div>
+        <button
+          class="nav-toggle"
+          id="nav-toggle"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="nav-links"
+        >
+          <span></span><span></span>
+        </button>
+      </nav>
+    </header>
+
+    <!-- Privacy Policy Content -->
+    <main class="legal-page" id="main">
+      <div class="container legal-content">
+        <h1>Privacy Policy</h1>
+        <p class="updated">Last updated: June 21, 2026</p>
+
+        <p>
+          Mobio is operated by Ikanisa Ltd ("Mobio", "we", "us", or "our"). This
+          Privacy Policy explains what information we collect through the Mobio
+          mobile application and related web pages, why we collect it, how we
+          use it, and how users can control or delete it.
+        </p>
+
+        <h2>1. Information We Collect</h2>
+        <p>Depending on the features you use, Mobio may collect:</p>
+        <ul>
+          <li>
+            <strong>Account and authentication data:</strong> phone number,
+            WhatsApp login verification status, user ID, display name, selected
+            account role, profile photo, vehicle details, and profile
+            preferences.
+          </li>
+          <li>
+            <strong>Location data:</strong> approximate or precise location when
+            you grant permission. Drivers who explicitly go online may share
+            background location while online so passengers can find nearby
+            available drivers. Drivers can stop sharing by going offline.
+          </li>
+          <li>
+            <strong>Trip and mobility data:</strong> pickup or destination
+            labels, optional coordinates, scheduled trip times, vehicle type,
+            availability status, route notes, chat context, and booking or post
+            status.
+          </li>
+          <li>
+            <strong>BioPay and payment handoff data:</strong> MoMo number or
+            MoMo Pay code you provide, BioPay payment request details, QR/NFC
+            payloads, payment request status, wallet token balances, token
+            transactions, redemption requests, subscription status, and related
+            admin audit records.
+          </li>
+          <li>
+            <strong>Camera, face, QR, and NFC data:</strong> camera access is
+            used for BioPay face enrollment, face scan, QR scan, and payment
+            verification. NFC is used for BioPay card or device handoff.
+            Face-related data is used only for BioPay identity/payment
+            verification and security checks.
+          </li>
+          <li>
+            <strong>Phone and USSD handoff data:</strong> when you choose MoMo
+            USSD, Mobio opens the phone app with a <code>tel:</code> USSD code
+            such as <code>*182...</code>. The USSD session happens outside Mobio
+            through your mobile network operator.
+          </li>
+          <li>
+            <strong>Communication and safety data:</strong> in-app chat
+            messages, support requests, reports, blocks, admin actions,
+            moderation records, and notification preferences.
+          </li>
+          <li>
+            <strong>Device, diagnostics, and security data:</strong> device
+            model, operating system, app version, crash logs, performance data,
+            IP-derived network information, fraud-prevention signals, and
+            security audit logs.
+          </li>
+        </ul>
+
+        <h2>2. How We Use Information</h2>
+        <ul>
+          <li>Authenticate users and maintain secure app sessions.</li>
+          <li>
+            Show nearby drivers, passengers, scheduled trips, and mobility
+            options.
+          </li>
+          <li>
+            Allow drivers to go online, share live location while online, and go
+            offline anytime.
+          </li>
+          <li>
+            Create and manage BioPay QR, NFC, face verification, MoMo USSD
+            handoff, wallet, token, subscription, and redemption workflows.
+          </li>
+          <li>
+            Send account, trip, chat, subscription, wallet, safety, and support
+            notifications.
+          </li>
+          <li>
+            Detect abuse, protect accounts, investigate disputes, enforce
+            policies, and comply with legal obligations.
+          </li>
+          <li>
+            Improve app reliability, security, accessibility, and performance.
+          </li>
+        </ul>
+
+        <h2>3. Permissions and User Controls</h2>
+        <ul>
+          <li>
+            <strong>Location:</strong> used for nearby discovery and driver live
+            sharing. Background location is used only after a driver chooses to
+            go online. You can deny or revoke location permissions in device
+            settings.
+          </li>
+          <li>
+            <strong>Camera:</strong> used for face enrollment, face scan, QR
+            scan, and BioPay verification. You can deny or revoke camera access
+            in device settings.
+          </li>
+          <li>
+            <strong>NFC:</strong> used to read or write BioPay NFC payloads when
+            you choose NFC features.
+          </li>
+          <li>
+            <strong>Phone:</strong> used only for user-initiated MoMo USSD
+            handoff. Mobio does not read call logs or monitor calls.
+          </li>
+          <li>
+            <strong>Notifications:</strong> used for app alerts. You can disable
+            notifications in device settings.
+          </li>
+        </ul>
+
+        <h2>4. Sharing and Third-Party Services</h2>
+        <p>
+          We do not sell personal information. We share or process data only as
+          needed to operate Mobio, provide requested features, protect users, or
+          comply with law. Service providers may include:
+        </p>
+        <ul>
+          <li>
+            <strong>Supabase:</strong> authentication, database, storage,
+            realtime features, and serverless functions.
+          </li>
+          <li>
+            <strong>Firebase and Google services:</strong> push notifications,
+            crash reporting, diagnostics, analytics, maps, and Android platform
+            services.
+          </li>
+          <li>
+            <strong>Cloudflare:</strong> public website hosting, security,
+            caching, and network protection.
+          </li>
+          <li>
+            <strong
+              >AWS Rekognition or equivalent face verification provider:</strong
+            >
+            BioPay face verification where enabled.
+          </li>
+          <li>
+            <strong>WhatsApp / Meta services:</strong> OTP and user-requested
+            WhatsApp communication where enabled.
+          </li>
+          <li>
+            <strong>Mobile network operators and MoMo:</strong> external USSD
+            flows that you initiate outside Mobio.
+          </li>
+        </ul>
+
+        <h2>5. Data Retention</h2>
+        <p>
+          We retain account data while your account is active. Security, payment
+          handoff, wallet, subscription, redemption, audit, dispute, and
+          compliance records may be retained as needed for fraud prevention,
+          legal obligations, accounting, safety, and platform integrity. Driver
+          live sharing data is used for current availability and should not be
+          retained longer than needed for the feature, safety, or audit
+          purposes.
+        </p>
+
+        <h2>6. Account Deletion and User Rights</h2>
+        <p>
+          You may request access, correction, export, or deletion of your
+          personal data. You may also revoke device permissions at any time.
+          Account deletion instructions are available at
+          <a href="account-deletion.html">Account Deletion</a>. We may retain
+          limited records where required for security, fraud prevention, dispute
+          resolution, legal compliance, or accounting obligations.
+        </p>
+
+        <h2>7. Security</h2>
+        <p>
+          We use TLS encryption in transit, role-based access controls, database
+          access policies, audit logs, and administrative controls designed to
+          protect user data. No method of transmission or storage is completely
+          secure, but we work to protect Mobio systems from unauthorized access,
+          loss, misuse, or alteration.
+        </p>
+
+        <h2>8. Children's Privacy</h2>
+        <p>
+          Mobio is not intended for children under the age of 16. We do not
+          knowingly collect personal information from children.
+        </p>
+
+        <h2>9. Changes to This Policy</h2>
+        <p>
+          We may update this Privacy Policy when Mobio features, providers,
+          legal requirements, or security practices change. The latest version
+          is always posted on this page with the effective date above.
+        </p>
+
+        <h2>10. Contact Us</h2>
+        <p>
+          If you have privacy questions or requests, contact Ikanisa Ltd in
+          Kigali, Rwanda.
+        </p>
+        <p>Email: info [at] ikanisa.com</p>
       </div>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </nav>
+    </main>
 
-  <!-- Privacy Policy Content -->
-  <section class="legal-page">
-    <div class="container legal-content">
-      <h1>Privacy Policy</h1>
-      <p class="updated">Last updated: June 21, 2026</p>
-
-      <p>Mobio is operated by Ikanisa Ltd ("Mobio", "we", "us", or "our"). This Privacy Policy explains what information we collect through the Mobio mobile application and related web pages, why we collect it, how we use it, and how users can control or delete it.</p>
-
-      <h2>1. Information We Collect</h2>
-      <p>Depending on the features you use, Mobio may collect:</p>
-      <ul>
-        <li><strong>Account and authentication data:</strong> phone number, WhatsApp login verification status, user ID, display name, selected account role, profile photo, vehicle details, and profile preferences.</li>
-        <li><strong>Location data:</strong> approximate or precise location when you grant permission. Drivers who explicitly go online may share background location while online so passengers can find nearby available drivers. Drivers can stop sharing by going offline.</li>
-        <li><strong>Trip and mobility data:</strong> pickup or destination labels, optional coordinates, scheduled trip times, vehicle type, availability status, route notes, chat context, and booking or post status.</li>
-        <li><strong>BioPay and payment handoff data:</strong> MoMo number or MoMo Pay code you provide, BioPay payment request details, QR/NFC payloads, payment request status, wallet token balances, token transactions, redemption requests, subscription status, and related admin audit records.</li>
-        <li><strong>Camera, face, QR, and NFC data:</strong> camera access is used for BioPay face enrollment, face scan, QR scan, and payment verification. NFC is used for BioPay card or device handoff. Face-related data is used only for BioPay identity/payment verification and security checks.</li>
-        <li><strong>Phone and USSD handoff data:</strong> when you choose MoMo USSD, Mobio opens the phone app with a <code>tel:</code> USSD code such as <code>*182...</code>. The USSD session happens outside Mobio through your mobile network operator.</li>
-        <li><strong>Communication and safety data:</strong> in-app chat messages, support requests, reports, blocks, admin actions, moderation records, and notification preferences.</li>
-        <li><strong>Device, diagnostics, and security data:</strong> device model, operating system, app version, crash logs, performance data, IP-derived network information, fraud-prevention signals, and security audit logs.</li>
-      </ul>
-
-      <h2>2. How We Use Information</h2>
-      <ul>
-        <li>Authenticate users and maintain secure app sessions.</li>
-        <li>Show nearby drivers, passengers, scheduled trips, and mobility options.</li>
-        <li>Allow drivers to go online, share live location while online, and go offline anytime.</li>
-        <li>Create and manage BioPay QR, NFC, face verification, MoMo USSD handoff, wallet, token, subscription, and redemption workflows.</li>
-        <li>Send account, trip, chat, subscription, wallet, safety, and support notifications.</li>
-        <li>Detect abuse, protect accounts, investigate disputes, enforce policies, and comply with legal obligations.</li>
-        <li>Improve app reliability, security, accessibility, and performance.</li>
-      </ul>
-
-      <h2>3. Permissions and User Controls</h2>
-      <ul>
-        <li><strong>Location:</strong> used for nearby discovery and driver live sharing. Background location is used only after a driver chooses to go online. You can deny or revoke location permissions in device settings.</li>
-        <li><strong>Camera:</strong> used for face enrollment, face scan, QR scan, and BioPay verification. You can deny or revoke camera access in device settings.</li>
-        <li><strong>NFC:</strong> used to read or write BioPay NFC payloads when you choose NFC features.</li>
-        <li><strong>Phone:</strong> used only for user-initiated MoMo USSD handoff. Mobio does not read call logs or monitor calls.</li>
-        <li><strong>Notifications:</strong> used for app alerts. You can disable notifications in device settings.</li>
-      </ul>
-
-      <h2>4. Sharing and Third-Party Services</h2>
-      <p>We do not sell personal information. We share or process data only as needed to operate Mobio, provide requested features, protect users, or comply with law. Service providers may include:</p>
-      <ul>
-        <li><strong>Supabase:</strong> authentication, database, storage, realtime features, and serverless functions.</li>
-        <li><strong>Firebase and Google services:</strong> push notifications, crash reporting, diagnostics, analytics, maps, and Android platform services.</li>
-        <li><strong>Cloudflare:</strong> public website hosting, security, caching, and network protection.</li>
-        <li><strong>AWS Rekognition or equivalent face verification provider:</strong> BioPay face verification where enabled.</li>
-        <li><strong>WhatsApp / Meta services:</strong> OTP and user-requested WhatsApp communication where enabled.</li>
-        <li><strong>Mobile network operators and MoMo:</strong> external USSD flows that you initiate outside Mobio.</li>
-      </ul>
-
-      <h2>5. Data Retention</h2>
-      <p>We retain account data while your account is active. Security, payment handoff, wallet, subscription, redemption, audit, dispute, and compliance records may be retained as needed for fraud prevention, legal obligations, accounting, safety, and platform integrity. Driver live sharing data is used for current availability and should not be retained longer than needed for the feature, safety, or audit purposes.</p>
-
-      <h2>6. Account Deletion and User Rights</h2>
-      <p>You may request access, correction, export, or deletion of your personal data. You may also revoke device permissions at any time. Account deletion instructions are available at <a href="account-deletion.html">Account Deletion</a>. We may retain limited records where required for security, fraud prevention, dispute resolution, legal compliance, or accounting obligations.</p>
-
-      <h2>7. Security</h2>
-      <p>We use TLS encryption in transit, role-based access controls, database access policies, audit logs, and administrative controls designed to protect user data. No method of transmission or storage is completely secure, but we work to protect Mobio systems from unauthorized access, loss, misuse, or alteration.</p>
-
-      <h2>8. Children's Privacy</h2>
-      <p>Mobio is not intended for children under the age of 16. We do not knowingly collect personal information from children.</p>
-
-      <h2>9. Changes to This Policy</h2>
-      <p>We may update this Privacy Policy when Mobio features, providers, legal requirements, or security practices change. The latest version is always posted on this page with the effective date above.</p>
-
-      <h2>10. Contact Us</h2>
-      <p>If you have privacy questions or requests, contact Ikanisa Ltd in Kigali, Rwanda.</p>
-      <p>Email: info [at] ikanisa.com</p>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container footer-inner">
-      <div class="footer-brand">
-        <img src="assets/mobi_icon.png" alt="Mobio" width="32" height="32">
-        <span>Mobio</span>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <img src="assets/mobi_icon.png" alt="Mobio" width="32" height="32" />
+          <span>Mobio</span>
+        </div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li>
+            <a href="privacy-policy.html" style="color: var(--on-surface)"
+              >Privacy Policy</a
+            >
+          </li>
+          <li><a href="account-deletion.html">Account Deletion</a></li>
+          <li><a href="terms-and-conditions.html">Terms & Conditions</a></li>
+          <li><span>Contact: info [at] ikanisa.com</span></li>
+        </ul>
+        <p class="footer-copy">
+          &copy; 2026 Mobio by Ikanisa. All rights reserved.
+        </p>
       </div>
-      <ul class="footer-links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="privacy-policy.html" style="color:var(--on-surface);">Privacy Policy</a></li>
-        <li><a href="account-deletion.html">Account Deletion</a></li>
-        <li><a href="terms-and-conditions.html">Terms & Conditions</a></li>
-        <li><span>Contact: info [at] ikanisa.com</span></li>
-      </ul>
-      <p class="footer-copy">&copy; 2026 Mobio by Ikanisa. All rights reserved.</p>
-    </div>
-  </footer>
+    </footer>
 
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>

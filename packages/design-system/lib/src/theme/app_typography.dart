@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Typography scale for the MOBI Revolut-reference shell.
-/// Headline/Display: Manrope 800, zero tracking
-/// Body/Label: Inter 400-700
+/// Headline/Display: Inter 600, measured native typography adapter
+/// Body/Label: Inter 400-600. Native font identity remains unverified.
 ///
 /// NOTE: Colors are NOT baked in — apply color at point-of-use via
 /// `Theme.of(context).colorScheme.onSurface` or `.onSurfaceVariant`.
@@ -11,57 +11,57 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTypography {
   AppTypography._();
 
-  static TextStyle get _manrope => GoogleFonts.manrope();
+  static TextStyle get _heading => GoogleFonts.inter();
   static TextStyle get _inter => GoogleFonts.inter();
 
   // ─── Display ───
-  static TextStyle displayLg = _manrope.copyWith(
+  static TextStyle displayLg = _heading.copyWith(
     fontSize: 36,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w600,
     height: 1.12,
     letterSpacing: 0,
   );
 
-  static TextStyle displayMd = _manrope.copyWith(
+  static TextStyle displayMd = _heading.copyWith(
     fontSize: 30,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w600,
     height: 1.14,
     letterSpacing: 0,
   );
 
   // ─── Headline ───
-  static TextStyle headlineLg = _manrope.copyWith(
+  static TextStyle headlineLg = _heading.copyWith(
     fontSize: 24,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w600,
     height: 1.2,
     letterSpacing: 0,
   );
 
-  static TextStyle headlineMd = _manrope.copyWith(
+  static TextStyle headlineMd = _heading.copyWith(
     fontSize: 20,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w600,
     height: 1.2,
     letterSpacing: 0,
   );
 
-  static TextStyle headlineSm = _manrope.copyWith(
+  static TextStyle headlineSm = _heading.copyWith(
     fontSize: 18,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w600,
     height: 1.25,
     letterSpacing: 0,
   );
 
   // ─── Title ───
-  static TextStyle titleLg = _manrope.copyWith(
+  static TextStyle titleLg = _heading.copyWith(
     fontSize: 18,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w600,
     height: 1.28,
     letterSpacing: 0,
   );
 
-  static TextStyle titleMd = _manrope.copyWith(
+  static TextStyle titleMd = _heading.copyWith(
     fontSize: 16,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w500,
     height: 1.28,
   );
 
@@ -79,7 +79,7 @@ class AppTypography {
   );
 
   static TextStyle bodySm = _inter.copyWith(
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: FontWeight.w400,
     height: 1.42,
   );
@@ -87,26 +87,26 @@ class AppTypography {
   // ─── Label ───
   static TextStyle labelSm = _inter.copyWith(
     fontSize: 11,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w500,
     letterSpacing: 0,
   );
 
   static TextStyle labelMd = _inter.copyWith(
-    fontSize: 12,
-    fontWeight: FontWeight.w700,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
     letterSpacing: 0,
   );
 
   static TextStyle labelLg = _inter.copyWith(
     fontSize: 13,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w500,
     letterSpacing: 0,
   );
 
   // ─── Special ───
-  static TextStyle heroNumber = _manrope.copyWith(
+  static TextStyle heroNumber = _heading.copyWith(
     fontSize: 44,
-    fontWeight: FontWeight.w800,
+    fontWeight: FontWeight.w600,
     height: 0.94,
     letterSpacing: 0,
   );
@@ -118,7 +118,7 @@ class AppTypography {
 
   static TextStyle badgeText = _inter.copyWith(
     fontSize: 11,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w500,
     letterSpacing: 0,
   );
 }

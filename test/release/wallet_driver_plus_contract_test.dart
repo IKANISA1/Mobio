@@ -337,7 +337,8 @@ void main() {
 
     expect(mobiPageHeader, contains("semanticLabel: 'Back'"));
     expect(mobiPageHeader, contains('const BoxConstraints(minHeight: 56)'));
-    expect(mobiPageHeader, contains('FittedBox'));
+    // Large-text layout and back navigation are exercised by
+    // accessibility_resilience_test, without requiring text to shrink.
     expect(mobiPageHeader, contains('decoration: TextDecoration.none'));
     expect(
       mobiPageHeader,
@@ -346,8 +347,6 @@ void main() {
     expect(tappableIconButton, contains('SystemMouseCursors.click'));
     expect(tappableIconButton, contains('Feedback.forTap(context)'));
     expect(tappableIconButton, contains('enabled: onTap != null'));
-    expect(mobiButton, contains('maxLines: 1'));
-    expect(mobiButton, contains('TextOverflow.ellipsis'));
     expect(mobiButton, contains('TextAlign.center'));
   });
 

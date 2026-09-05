@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 /// MOBI visual tokens.
 ///
-/// Brand nodes come from the four-color logo direction. The app shell uses a
-/// dark, immersive material system inspired by the Revolut reference while
-/// retaining MOBI-owned product semantics.
+/// Mobio logo colours remain brand identifiers. Product neutrals follow the
+/// selected September 2026 Dark Glow reference. Native geometry/colours are
+/// measured adapters; the historical public kit supplies named neutral roles.
 class AppColors {
   AppColors._();
 
@@ -14,12 +14,13 @@ class AppColors {
   static const brandOrangeRed = Color(0xFFFF5E43);
   static const brandMintGreen = Color(0xFF3CD070);
 
-  static const primary = brandPeriwinkle;
+  static const primaryLight = Color(0xFF4055CB);
+  static const primary = Color(0xFF667DFF);
   static const primaryDim = Color(0xFF6E6BE0);
   static const primaryFixed = Color(0xFFE8E7FF);
   static const primaryFixedDim = Color(0xFFC9C8FF);
   static const inversePrimary = Color(0xFFC7C5FF);
-  static const surfaceTint = brandPeriwinkle;
+  static const surfaceTint = Color(0xFF667DFF);
 
   // ─── Secondary (mode-independent) ───
   static const secondary = brandDustyRose;
@@ -92,27 +93,27 @@ class AppColors {
 class _DarkPalette {
   const _DarkPalette();
 
-  Color get background => const Color(0xFF02030A);
-  Color get surface => const Color(0xFF02030A);
-  Color get surfaceDim => const Color(0xFF000105);
-  Color get surfaceBright => const Color(0xFF111338);
-  Color get surfaceContainerLowest => const Color(0xFF070812);
-  Color get surfaceContainerLow => const Color(0xFF101120);
-  Color get surfaceContainer => const Color(0xFF151627);
-  Color get surfaceContainerHigh => const Color(0xFF1D1F33);
-  Color get surfaceContainerHighest => const Color(0xFF272A42);
-  Color get surfaceVariant => const Color(0xFF22243A);
-  Color get onSurface => const Color(0xFFF7F7FF);
-  Color get onSurfaceVariant => const Color(0xFFB9BBCD);
-  Color get onSurfaceTertiary => const Color(0xFF8B8EA5);
-  Color get onSurfaceDisabled => const Color(0xFF5E6278);
-  Color get onBackground => const Color(0xFFF7F7FF);
-  Color get inverseSurface => const Color(0xFFF7F7FF);
+  Color get background => const Color(0xFF000000);
+  Color get surface => const Color(0xFF000000);
+  Color get surfaceDim => const Color(0xFF000000);
+  Color get surfaceBright => const Color(0xFF29292B);
+  Color get surfaceContainerLowest => const Color(0xFF101012);
+  Color get surfaceContainerLow => const Color(0xFF161618);
+  Color get surfaceContainer => const Color(0xFF161618);
+  Color get surfaceContainerHigh => const Color(0xFF222224);
+  Color get surfaceContainerHighest => const Color(0xFF303033);
+  Color get surfaceVariant => const Color(0xFF29292B);
+  Color get onSurface => const Color(0xFFF4F4F4);
+  Color get onSurfaceVariant => const Color(0xFFA1A1A3);
+  Color get onSurfaceTertiary => const Color(0xFF909093);
+  Color get onSurfaceDisabled => const Color(0xFF646467);
+  Color get onBackground => const Color(0xFFF4F4F4);
+  Color get inverseSurface => const Color(0xFFF4F4F4);
   Color get inverseOnSurface => const Color(0xFF090A12);
-  Color get outline => const Color(0xFF5B5E78);
-  Color get outlineVariant => const Color(0xFF35374E);
-  Color get outlineStrong => const Color(0xFF686B86);
-  Color get outlineSubtle => const Color(0xFF383B55);
+  Color get outline => const Color(0xFF555558);
+  Color get outlineVariant => const Color(0xFF303033);
+  Color get outlineStrong => const Color(0xFF707074);
+  Color get outlineSubtle => const Color(0xFF29292C);
   Color get onPrimary => const Color(0xFFFFFFFF);
   Color get primaryContainer => const Color(0xFF242155);
   Color get onPrimaryContainer => const Color(0xFFE7E6FF);
@@ -125,8 +126,8 @@ class _DarkPalette {
   Color get tertiaryContainer => const Color(0xFF10351E);
   Color get onTertiaryContainer => const Color(0xFFDDFBE8);
 
-  Color get gradientTop => AppColors.brandPeriwinkle;
-  Color get gradientMid => AppColors.blueDepth;
+  Color get gradientTop => const Color(0xFF567EFF);
+  Color get gradientMid => const Color(0xFF1024DA);
   Color get gradientBottom => background;
 }
 
@@ -134,23 +135,23 @@ class _DarkPalette {
 class _LightPalette {
   const _LightPalette();
 
-  Color get background => const Color(0xFFF7F7FF);
-  Color get surface => const Color(0xFFF7F7FF);
-  Color get surfaceDim => const Color(0xFFE3E2F8);
+  Color get background => const Color(0xFFF4F4F4);
+  Color get surface => const Color(0xFFF4F4F4);
+  Color get surfaceDim => const Color(0xFFE2E2E2);
   Color get surfaceBright => const Color(0xFFFFFFFF);
   Color get surfaceContainerLowest => const Color(0xFFFFFFFF);
-  Color get surfaceContainerLow => const Color(0xFFF0EFFF);
-  Color get surfaceContainer => const Color(0xFFE7E6FB);
-  Color get surfaceContainerHigh => const Color(0xFFDEDCF5);
-  Color get surfaceContainerHighest => const Color(0xFFD5D3EF);
-  Color get surfaceVariant => const Color(0xFFE2E0F6);
-  Color get onSurface => const Color(0xFF11121E);
-  Color get onSurfaceVariant => const Color(0xFF62657D);
+  Color get surfaceContainerLow => const Color(0xFFF7F7F7);
+  Color get surfaceContainer => const Color(0xFFFFFFFF);
+  Color get surfaceContainerHigh => const Color(0xFFEBEBEB);
+  Color get surfaceContainerHighest => const Color(0xFFE2E2E2);
+  Color get surfaceVariant => const Color(0xFFEDEDED);
+  Color get onSurface => const Color(0xFF191C1F);
+  Color get onSurfaceVariant => const Color(0xFF626265);
   Color get onSurfaceTertiary => const Color(0xFF777992);
   Color get onSurfaceDisabled => const Color(0xFFA0A1B6);
-  Color get onBackground => const Color(0xFF11121E);
+  Color get onBackground => const Color(0xFF191C1F);
   Color get inverseSurface => const Color(0xFF090A12);
-  Color get inverseOnSurface => const Color(0xFFF7F7FF);
+  Color get inverseOnSurface => const Color(0xFFF4F4F4);
   Color get outline => const Color(0xFFA8A9C1);
   Color get outlineVariant => const Color(0xFFD2D2E6);
   Color get outlineStrong => const Color(0xFF8D8FA8);

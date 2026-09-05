@@ -283,7 +283,7 @@ class _BioPayRequestPaymentScreenState
               textAlign: TextAlign.center,
               style: AppTypography.labelMd.copyWith(
                 color: Colors.white.withValues(alpha: 0.58),
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],
@@ -360,7 +360,7 @@ class _PaymentLinkPanel extends StatelessWidget {
                         'MoMo USSD link ready',
                         style: AppTypography.titleMd.copyWith(
                           color: Colors.white,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],

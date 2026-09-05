@@ -60,10 +60,7 @@ void main() {
     );
     expect(scheduleButton.onPressed, isNull);
     expect(find.text('Requirements or details'), findsNothing);
-    await tester.drag(
-      find.byType(SingleChildScrollView).first,
-      const Offset(0, -700),
-    );
+    await tester.ensureVisible(find.text('Note').last);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Note').last);
     await tester.pumpAndSettle();

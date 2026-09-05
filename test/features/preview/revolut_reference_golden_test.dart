@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +12,10 @@ import 'package:mobi_app/features/admin/application/admin_services.dart';
 import 'package:mobi_app/features/admin/data/admin_service.dart';
 import 'package:mobi_app/features/admin/presentation/admin_audit_log_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_auth_screen.dart';
+import 'package:mobi_app/features/admin/presentation/admin_broadcasts_screen.dart';
+import 'package:mobi_app/features/admin/presentation/admin_dashboard_screen.dart';
+import 'package:mobi_app/features/admin/presentation/admin_ev_chargers_screen.dart';
+import 'package:mobi_app/features/admin/presentation/admin_operational_health_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_reports_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_subscriptions_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_transport_agencies_screen.dart';
@@ -18,13 +24,18 @@ import 'package:mobi_app/features/admin/presentation/admin_users_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_vehicle_types_screen.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
 import 'package:mobi_app/features/auth/presentation/whatsapp_login_screen.dart';
+import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
+import 'package:mobi_app/features/biopay/data/biopay_ussd_service.dart';
+import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_admin_console_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_face_enroll_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_face_scan_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_home_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_nfc_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_nfc_write_card_screen.dart';
+import 'package:mobi_app/features/biopay/presentation/biopay_payment_link_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_qr_screen.dart';
+import 'package:mobi_app/features/biopay/presentation/biopay_request_payment_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_scan_screen.dart';
 import 'package:mobi_app/features/bookings/application/booking_services.dart';
 import 'package:mobi_app/features/bookings/data/trip_service.dart';
@@ -32,6 +43,7 @@ import 'package:mobi_app/features/bookings/presentation/bookings_screen.dart';
 import 'package:mobi_app/features/bookings/presentation/schedule_trip_screen.dart';
 import 'package:mobi_app/features/bookings/presentation/trip_details_screen.dart';
 import 'package:mobi_app/features/chat/presentation/chat_screen.dart';
+import 'package:mobi_app/features/ev_chargers/presentation/ev_charger_locator_screen.dart';
 import 'package:mobi_app/features/home/presentation/home_screen.dart';
 import 'package:mobi_app/features/nearby/presentation/nearby_screen.dart';
 import 'package:mobi_app/features/notifications/presentation/notifications_screen.dart';
@@ -43,6 +55,7 @@ import 'package:mobi_app/features/profile/presentation/edit_profile_screen.dart'
 import 'package:mobi_app/features/profile/presentation/profile_screen.dart';
 import 'package:mobi_app/features/profile/presentation/wallet_screen.dart';
 import 'package:mobi_app/shared/models/vehicle_type_model.dart';
+import 'package:mobi_app/shared/widgets/mobi_bottom_nav.dart';
 import 'package:mobi_design_system/theme/app_theme.dart';
 import 'package:mobi_shared_types/models/country.dart';
 import 'package:mobi_shared_types/models/subscription_plan_model.dart';
@@ -53,6 +66,12 @@ import '../../helpers/mobile_scanner_test_channel.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  final captureDirectory = Platform.environment['MOBIO_CAPTURE_DIR'];
+  if (captureDirectory != null && captureDirectory.isNotEmpty) {
+    goldenFileComparator = _DesignCaptureComparator(
+      Directory(captureDirectory),
+    );
+  }
 
   setUpAll(() async {
     installMobileScannerTestChannel();
@@ -255,9 +274,84 @@ void main() {
       ),
       includeDesktop: true,
     ),
+    _GoldenCase(
+      name: 'ev_locator',
+      builder: () => EvChargerLocatorScreen(onBack: () {}),
+    ),
+    _GoldenCase(
+      name: 'biopay_request',
+      builder: () => BioPayRequestPaymentScreen(onBack: () {}),
+    ),
+    _GoldenCase(
+      name: 'biopay_link_expired',
+      builder: () => ProviderScope(
+        overrides: [
+          biopayUssdServiceProvider.overrideWithValue(
+            _ExpiredPreviewUssdService(),
+          ),
+        ],
+        child: BioPayPaymentLinkScreen(token: 'expired-preview', onBack: () {}),
+      ),
+    ),
+    _GoldenCase(
+      name: 'admin_ev_recovery',
+      builder: () => AdminEvChargersScreen(onBack: () {}),
+      includeDesktop: true,
+    ),
+    const _GoldenCase(
+      name: 'admin_dashboard_actual',
+      builder: AdminDashboardScreen.new,
+      includeDesktop: true,
+    ),
+    _GoldenCase(
+      name: 'admin_health_actual',
+      builder: () => AdminOperationalHealthScreen(onBack: () {}),
+      includeDesktop: true,
+    ),
+    _GoldenCase(
+      name: 'admin_broadcasts_actual',
+      builder: () => AdminBroadcastsScreen(onBack: () {}),
+      includeDesktop: true,
+    ),
     const _GoldenCase(name: 'config_error', builder: ConfigErrorScreen.new),
     const _GoldenCase(name: 'not_found', builder: NotFoundScreen.new),
   ];
+
+  final shellCases = [
+    for (final (index, name) in [
+      'home',
+      'bookings',
+      'biopay_home',
+      'profile',
+    ].indexed)
+      _GoldenCase(
+        name: '${name}_shell',
+        builder: () => Stack(
+          children: [
+            cases.firstWhere((item) => item.name == name).builder(),
+            MobiBottomNav(currentIndex: index, onTap: (_) {}),
+          ],
+        ),
+      ),
+  ];
+  cases.addAll(shellCases);
+
+  for (final name in [
+    'home',
+    'profile',
+    'bookings',
+    'biopay_qr',
+    'admin_users',
+  ]) {
+    testWidgets('light theme $name', (tester) async {
+      final item = cases.firstWhere((item) => item.name == name);
+      await _pumpGolden(tester, compact, item.builder(), light: true);
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/revolut/light/${name}_390x844.png'),
+      );
+    });
+  }
 
   for (final size in [compact, large]) {
     final suffix = '${size.width.toInt()}x${size.height.toInt()}';
@@ -297,7 +391,12 @@ void main() {
   }
 }
 
-Future<void> _pumpGolden(WidgetTester tester, Size size, Widget child) async {
+Future<void> _pumpGolden(
+  WidgetTester tester,
+  Size size,
+  Widget child, {
+  bool light = false,
+}) async {
   await const AssetImage('icon/mobi_logo_transparent.png').evict();
   PaintingBinding.instance.imageCache
     ..clear()
@@ -311,7 +410,7 @@ Future<void> _pumpGolden(WidgetTester tester, Size size, Widget child) async {
       overrides: _baseOverrides,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.darkTheme,
+        theme: light ? AppTheme.lightTheme : AppTheme.darkTheme,
         home: MediaQuery(
           data: MediaQueryData(
             size: size,
@@ -321,6 +420,12 @@ Future<void> _pumpGolden(WidgetTester tester, Size size, Widget child) async {
           child: Scaffold(body: child),
         ),
       ),
+    ),
+  );
+  await tester.runAsync(
+    () => precacheImage(
+      const AssetImage('icon/mobi_logo_transparent.png'),
+      tester.element(find.byType(MaterialApp)),
     ),
   );
   await tester.pumpAndSettle();
@@ -1140,4 +1245,31 @@ class _PreviewAdminService implements AdminService {
     required String status,
     String? notes,
   }) async {}
+}
+
+/// Capture-only mode: writes synthetic renders for human review, without
+/// comparing or approving a baseline. Normal invocations still compare goldens.
+class _DesignCaptureComparator extends GoldenFileComparator {
+  _DesignCaptureComparator(this.directory);
+  final Directory directory;
+  @override
+  Future<bool> compare(Uint8List imageBytes, Uri golden) async {
+    await update(golden, imageBytes);
+    return true;
+  }
+
+  @override
+  Future<void> update(Uri golden, Uint8List imageBytes) async {
+    final relative = golden.path.replaceFirst('goldens/revolut/', '');
+    final target = File('${directory.path}/$relative');
+    await target.parent.create(recursive: true);
+    await target.writeAsBytes(imageBytes);
+  }
+}
+
+class _ExpiredPreviewUssdService extends BioPayUssdService {
+  @override
+  BioPayUssdPaymentRequest resolvePreviewToken(String token) {
+    throw const FormatException('Expired synthetic request');
+  }
 }

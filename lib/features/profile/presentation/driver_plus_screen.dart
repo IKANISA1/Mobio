@@ -393,7 +393,7 @@ class _PlusStatusCard extends StatelessWidget {
                   profile.vehicleType?.toUpperCase() ?? 'DRIVER',
                   style: AppTypography.titleLg.copyWith(
                     color: cs.onSurface,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -474,7 +474,7 @@ class _PlanCard extends StatelessWidget {
                   plan.intervalLabel,
                   style: AppTypography.titleMd.copyWith(
                     color: cs.onSurface,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

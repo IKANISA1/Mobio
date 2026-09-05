@@ -36,7 +36,7 @@ class HomeHeader extends StatelessWidget {
         MobiTopCommandBar(
           showSearch: false,
           centerControl: SizedBox(
-            height: 52,
+            height: 48,
             child: _HomeModeToggle(
               isDriver: isDriver,
               onChanged: onModeChanged,
@@ -172,7 +172,7 @@ class _HomeModeSegment extends StatelessWidget {
                 softWrap: false,
                 style: AppTypography.labelMd.copyWith(
                   color: selected ? Colors.white : cs.onSurfaceVariant,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),

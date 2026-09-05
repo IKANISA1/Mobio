@@ -106,8 +106,8 @@ class MobiTopCommandBar extends StatelessWidget {
                     alpha: ext.pressedWhiteAlpha,
                   ),
                   child: Container(
-                    height: 52,
-                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    height: 48,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(999),
                       border: Border.all(
@@ -121,7 +121,7 @@ class MobiTopCommandBar extends StatelessWidget {
                         const Icon(
                           LucideIcons.search,
                           color: Colors.white,
-                          size: 24,
+                          size: 20,
                         ),
                         const SizedBox(width: AppSpacing.sm),
                         Flexible(
@@ -174,12 +174,13 @@ class _CommandCircle extends StatelessWidget {
       button: true,
       label: action.label,
       child: Tooltip(
+        excludeFromSemantics: true,
         message: action.label,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
             SizedBox.square(
-              dimension: 52,
+              dimension: 48,
               child: Material(
                 color: Colors.black.withValues(alpha: ext.blackChromeAlpha),
                 shape: CircleBorder(
@@ -196,7 +197,7 @@ class _CommandCircle extends StatelessWidget {
                     alpha: ext.pressedWhiteAlpha,
                   ),
                   child: Center(
-                    child: Icon(action.icon, color: Colors.white, size: 23),
+                    child: Icon(action.icon, color: Colors.white, size: 21),
                   ),
                 ),
               ),

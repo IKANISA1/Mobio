@@ -22,16 +22,16 @@ class HomeHeroCard extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                isDriver ? 'Requests' : 'Drivers',
+                isDriver ? 'Scheduled passenger requests' : 'Drivers nearby',
                 textAlign: TextAlign.center,
-                style: AppTypography.displayLg.copyWith(
-                  color: Colors.white,
-                  fontSize: 40,
+                style: AppTypography.bodyLg.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 16,
                   height: 1.08,
                 ),
               ),
@@ -40,8 +40,8 @@ class HomeHeroCard extends StatelessWidget {
                 nearbyCount.toString(),
                 textAlign: TextAlign.center,
                 style: AppTypography.heroNumber.copyWith(
-                  color: Colors.white,
-                  fontSize: 64,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 56,
                   height: 0.98,
                 ),
               ),

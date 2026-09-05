@@ -66,7 +66,7 @@ class AiEmptyState extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: AppTypography.titleLg.copyWith(
                       color: cs.onSurface,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   if (subtitle != null) ...[

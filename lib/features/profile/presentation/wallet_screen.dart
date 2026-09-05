@@ -147,7 +147,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                     'Enter invite code',
                     style: AppTypography.titleLg.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xs),
@@ -669,7 +669,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
               recipient.displayName,
               style: AppTypography.titleMd.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
-                fontWeight: FontWeight.w900,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: 2),
@@ -901,7 +901,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                           'Activity',
                           style: AppTypography.titleMd.copyWith(
                             color: cs.onSurface,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.sm),
@@ -987,7 +987,7 @@ class _WalletBalanceCard extends StatelessWidget {
             '${format.format(summary.balanceTokens)} TOKENS',
             style: AppTypography.displayMd.copyWith(
               color: cs.onSurface,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 4),
@@ -1069,7 +1069,7 @@ class _WalletMetric extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: AppTypography.labelLg.copyWith(
               color: cs.onSurface,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -1168,7 +1168,7 @@ class _WalletActionTile extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: AppTypography.labelLg.copyWith(
               color: cs.onSurface,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -1221,7 +1221,7 @@ class _InviteCard extends StatelessWidget {
                       'Invite and earn',
                       style: AppTypography.titleMd.copyWith(
                         color: cs.onSurface,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
@@ -1261,7 +1261,7 @@ class _InviteCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: AppTypography.titleLg.copyWith(
                         color: cs.onSurface,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     if (shareUrl?.isNotEmpty == true) ...[
@@ -1426,7 +1426,7 @@ class _LedgerRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTypography.bodyMd.copyWith(
                     color: cs.onSurface,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -1450,7 +1450,7 @@ class _LedgerRow extends StatelessWidget {
             '${isCredit ? '+' : '-'}${format.format(entry.amountTokens)}',
             style: AppTypography.labelLg.copyWith(
               color: isCredit ? cs.primary : cs.error,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],

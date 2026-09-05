@@ -202,7 +202,7 @@ class _PaymentLinkStatusCard extends StatelessWidget {
                     title,
                     style: AppTypography.titleMd.copyWith(
                       color: Colors.white,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xs),

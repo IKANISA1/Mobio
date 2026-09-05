@@ -147,11 +147,11 @@ class AdminDashboardScreen extends ConsumerWidget {
                         if (context.mounted) {
                           _showSnackBar(context, 'Platform settings updated.');
                         }
-                      } on Object catch (error) {
+                      } on Object {
                         if (context.mounted) {
                           _showSnackBar(
                             context,
-                            error.toString(),
+                            'Unable to save settings. Please try again.',
                             isError: true,
                           );
                         }
@@ -217,8 +217,7 @@ class AdminDashboardScreen extends ConsumerWidget {
           ),
         ),
         loading: () => const _DashboardLoadingState(),
-        error: (err, stack) =>
-            _ErrorBanner(message: err.toString(), onRetry: controller.refresh),
+        error: (err, stack) => _ErrorBanner(onRetry: controller.refresh),
       ),
     );
   }
@@ -258,10 +257,7 @@ class _DashboardContent extends StatelessWidget {
           padding: AdminLayoutTokens.pagePadding,
           children: [
             if (state.loadError != null) ...[
-              _ErrorBanner(
-                message: state.loadError!,
-                onRetry: controller.refresh,
-              ),
+              _ErrorBanner(onRetry: controller.refresh),
               const SizedBox(height: AppSpacing.lg),
             ],
             AdminStatsGrid(stats: state.stats, isLoading: state.isLoading),
@@ -381,8 +377,7 @@ class _DashboardContent extends StatelessWidget {
 }
 
 class _ErrorBanner extends StatelessWidget {
-  const _ErrorBanner({required this.message, required this.onRetry});
-  final String message;
+  const _ErrorBanner({required this.onRetry});
   final VoidCallback onRetry;
 
   @override
@@ -395,7 +390,11 @@ class _ErrorBanner extends StatelessWidget {
             color: Theme.of(context).colorScheme.error,
           ),
           const SizedBox(width: AppSpacing.md),
-          Expanded(child: Text(message)),
+          const Expanded(
+            child: Text(
+              'Unable to load operations. Check your connection and try again.',
+            ),
+          ),
           AdminActionChip(
             label: 'Retry',
             icon: LucideIcons.refreshCw,

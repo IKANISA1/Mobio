@@ -171,7 +171,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.screenPadding,
-            80,
+            24,
             AppSpacing.screenPadding,
             160,
           ),
@@ -241,7 +241,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.screenPadding,
-          80,
+          24,
           AppSpacing.screenPadding,
           160,
         ),
@@ -251,24 +251,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     Column(
                       children: [
                         Container(
-                          width: 112,
-                          height: 112,
+                          width: 80,
+                          height: 80,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [cs.primary, cs.secondary],
-                            ),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.22),
-                              width: 2,
-                            ),
+                            color: cs.surfaceContainerHigh,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             LucideIcons.user,
-                            size: 42,
-                            color: Colors.white,
+                            size: 32,
+                            color: cs.onSurface,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.lg),
@@ -276,8 +268,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           _userCode,
                           textAlign: TextAlign.center,
                           style: AppTypography.displayLg.copyWith(
-                            color: Colors.white,
-                            fontSize: 38,
+                            color: cs.onSurface,
+                            fontSize: 30,
                             height: 1.05,
                           ),
                         ),
@@ -304,7 +296,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             thickness: 1,
                             indent: 72,
                             endIndent: 20,
-                            color: Colors.white.withValues(
+                            color: cs.onSurface.withValues(
                               alpha: ext.cardBorderAlpha,
                             ),
                           ),
@@ -318,7 +310,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             thickness: 1,
                             indent: 72,
                             endIndent: 20,
-                            color: Colors.white.withValues(
+                            color: cs.onSurface.withValues(
                               alpha: ext.cardBorderAlpha,
                             ),
                           ),
@@ -332,7 +324,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             thickness: 1,
                             indent: 72,
                             endIndent: 20,
-                            color: Colors.white.withValues(
+                            color: cs.onSurface.withValues(
                               alpha: ext.cardBorderAlpha,
                             ),
                           ),
@@ -352,7 +344,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             thickness: 1,
                             indent: 72,
                             endIndent: 20,
-                            color: Colors.white.withValues(
+                            color: cs.onSurface.withValues(
                               alpha: ext.cardBorderAlpha,
                             ),
                           ),
@@ -563,7 +555,7 @@ class _ProfileSignal extends StatelessWidget {
       decoration: BoxDecoration(
         color: accent.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+        border: Border.all(color: cs.onSurface.withValues(alpha: 0.10)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(
@@ -572,7 +564,7 @@ class _ProfileSignal extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 16, color: Colors.white),
+            Icon(icon, size: 16, color: cs.onSurface),
             const SizedBox(width: AppSpacing.xs),
             Expanded(
               child: Column(
@@ -592,7 +584,7 @@ class _ProfileSignal extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.labelMd.copyWith(
                       color: cs.onSurface,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
@@ -629,28 +621,26 @@ class _ProfileActionRow extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.lg,
-            vertical: AppSpacing.md,
+            vertical: 12,
           ),
           child: Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 32,
+                height: 32,
                 decoration: BoxDecoration(
-                  color: cs.primary.withValues(alpha: 0.12),
+                  color: cs.surfaceContainerHigh,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 18, color: Colors.white),
+                child: Icon(icon, size: 18, color: cs.onSurface),
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
                   title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.bodySm.copyWith(
+                  style: AppTypography.bodyMd.copyWith(
                     color: cs.onSurface,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -697,7 +687,7 @@ class _ProfileStatusPill extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         style: AppTypography.labelSm.copyWith(
           color: cs.onSurface,
-          fontWeight: FontWeight.w800,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

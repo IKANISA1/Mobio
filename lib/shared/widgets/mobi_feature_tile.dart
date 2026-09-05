@@ -77,7 +77,7 @@ class MobiFeatureTile extends StatelessWidget {
             child: Icon(
               icon,
               size: iconSize,
-              color: accentBackground == null ? Colors.white : resolvedAccent,
+              color: accentBackground == null ? cs.onSurface : resolvedAccent,
             ),
           ),
           SizedBox(width: isDense ? AppSpacing.sm : AppSpacing.md),
@@ -87,7 +87,7 @@ class MobiFeatureTile extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style:
                       (compact ? AppTypography.bodySm : AppTypography.titleMd)

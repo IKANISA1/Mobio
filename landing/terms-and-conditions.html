@@ -1,127 +1,242 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Terms & Conditions — Mobio</title>
-  <meta name="description" content="Mobio Terms and Conditions. Read the terms governing your use of the Mobio mobility platform.">
-  <link rel="icon" type="image/png" href="assets/mobi_icon.png">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms & Conditions — Mobio</title>
+    <meta
+      name="description"
+      content="Mobio Terms and Conditions. Read the terms governing your use of the Mobio mobility platform."
+    />
+    <link rel="icon" type="image/png" href="assets/mobi_icon.png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="legal-body">
+    <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Navigation -->
-  <nav class="nav scrolled" id="nav">
-    <div class="nav-inner">
-      <a href="index.html" class="nav-logo">
-        <img src="assets/mobi_icon.png" alt="Mobio logo" width="40" height="40">
-        <span>Mobio</span>
-      </a>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="index.html#features">Features</a></li>
-        <li><a href="index.html#scope">Scope</a></li>
-        <li><a href="index.html#download">Download</a></li>
-      </ul>
-      <div class="nav-cta">
-        <a href="index.html#download" class="btn btn-primary" style="padding:12px 24px;font-size:14px;">Get the App</a>
+    <!-- Navigation -->
+    <header class="nav scrolled" id="nav">
+      <nav class="nav-inner" aria-label="Main navigation">
+        <a class="nav-logo" href="index.html" aria-label="Mobio home"
+          ><img src="assets/mobi_icon.png" alt="" width="32" height="32" /><span
+            >Mobio</span
+          ></a
+        >
+        <ul class="nav-links" id="nav-links">
+          <li><a href="index.html#discover">Discover</a></li>
+          <li><a href="index.html#trips">Trips</a></li>
+          <li><a href="index.html#biopay">BioPay</a></li>
+          <li><a href="index.html#how-it-works">How it works</a></li>
+        </ul>
+        <div class="nav-cta">
+          <a class="nav-login" href="/admin-auth">Business log in</a
+          ><a class="btn btn-primary" href="index.html#download">Get Mobio</a>
+        </div>
+        <button
+          class="nav-toggle"
+          id="nav-toggle"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="nav-links"
+        >
+          <span></span><span></span>
+        </button>
+      </nav>
+    </header>
+
+    <!-- Terms Content -->
+    <main class="legal-page" id="main">
+      <div class="container legal-content">
+        <h1>Terms & Conditions</h1>
+        <p class="updated">Last updated: May 23, 2026</p>
+
+        <p>
+          Welcome to Mobio. These Terms and Conditions ("Terms") govern your use
+          of the Mobio mobile application ("App") operated by Ikanisa ("we",
+          "us", or "our"). By downloading, installing, or using the App, you
+          agree to be bound by these Terms.
+        </p>
+
+        <h2>1. Acceptance of Terms</h2>
+        <p>
+          By accessing or using Mobio, you confirm that you are at least 16
+          years old and agree to comply with these Terms. If you do not agree,
+          you must not use the App.
+        </p>
+
+        <h2>2. Service Description</h2>
+        <p>
+          Mobio is a peer-to-peer mobility discovery marketplace that helps
+          drivers and passengers in Rwanda coordinate directly. The App
+          provides:
+        </p>
+        <ul>
+          <li>
+            <strong>Nearby Discovery:</strong> Listing of nearby drivers or
+            passengers who choose to be visible.
+          </li>
+          <li>
+            <strong>Scheduled Trip Posts:</strong> The ability to create, edit,
+            cancel, and view planned trip posts.
+          </li>
+          <li>
+            <strong>Communication:</strong> Direct communication through in-app
+            chat or WhatsApp handoff.
+          </li>
+          <li>
+            <strong>Safety Controls:</strong> Report and block controls for
+            marketplace safety.
+          </li>
+        </ul>
+        <p>
+          Mobio acts as a marketplace platform only. We do not provide
+          transportation services directly and are not a transportation carrier.
+          All transportation is provided by independent drivers.
+        </p>
+
+        <h2>3. User Accounts</h2>
+        <p>
+          Mobio uses anonymous authentication. You are automatically assigned an
+          anonymous account upon first use — no registration, email, or password
+          is required. Your anonymous session provides a unique internal
+          identifier used for data operations. You may optionally provide
+          profile information (name, phone number) but this is never mandatory.
+        </p>
+
+        <h2>4. User Responsibilities</h2>
+        <p>As a user of Mobio, you agree to:</p>
+        <ul>
+          <li>
+            Use the App only for lawful purposes and in accordance with these
+            Terms.
+          </li>
+          <li>
+            Not misuse the platform to harass, threaten, or defraud other users
+            or drivers.
+          </li>
+          <li>
+            Provide accurate information when creating trip listings or profile
+            details.
+          </li>
+          <li>
+            Not attempt to reverse engineer, decompile, or tamper with the App.
+          </li>
+          <li>Not use automated systems or bots to interact with the App.</li>
+        </ul>
+
+        <h2>5. Manual Negotiation</h2>
+        <p>
+          Mobio does not provide automatic fare quotes, taxi dispatch, trip
+          start/complete workflow, route tracking, in-app ride payment
+          settlement, refunds, or driver earnings settlement. Users negotiate
+          fares and pickup details manually. MoMo USSD handoffs, when used, open
+          outside the App through the user's phone and mobile network operator.
+        </p>
+
+        <h2>6. Location Services</h2>
+        <p>
+          Certain features require access to your device's location. Location
+          data is used for nearby discovery and scheduled post context. Mobio
+          does not provide live route tracking. You may revoke location
+          permissions at any time through your device settings, though this may
+          limit App functionality.
+        </p>
+
+        <h2>7. Intellectual Property</h2>
+        <p>
+          All content, designs, trademarks, logos, and software associated with
+          Mobio are the property of Ikanisa and are protected by applicable
+          intellectual property laws. You may not reproduce, distribute, or
+          create derivative works without our prior written consent.
+        </p>
+
+        <h2>8. Disclaimer of Warranties</h2>
+        <p>
+          Mobio is provided "as is" and "as available" without warranties of any
+          kind, whether express or implied. We do not guarantee:
+        </p>
+        <ul>
+          <li>
+            The availability, reliability, or safety of any user listed on the
+            platform.
+          </li>
+          <li>
+            The accuracy of nearby distances, profiles, vehicle details, or
+            scheduled post information.
+          </li>
+          <li>Uninterrupted or error-free operation of the App.</li>
+        </ul>
+
+        <h2>9. Limitation of Liability</h2>
+        <p>
+          To the maximum extent permitted by law, Ikanisa shall not be liable
+          for any indirect, incidental, special, consequential, or punitive
+          damages arising from your use of Mobio, including but not limited to
+          damages for loss of profits, data, or other intangible losses, even if
+          we have been advised of the possibility of such damages.
+        </p>
+
+        <h2>10. Indemnification</h2>
+        <p>
+          You agree to indemnify and hold harmless Ikanisa, its officers,
+          directors, and employees from any claims, damages, losses, or expenses
+          arising from your use of the App or violation of these Terms.
+        </p>
+
+        <h2>11. Modifications</h2>
+        <p>
+          We reserve the right to modify these Terms at any time. Changes will
+          be effective upon posting the updated Terms in the App or on our
+          website. Your continued use of Mobio after changes constitutes
+          acceptance of the modified Terms.
+        </p>
+
+        <h2>12. Termination</h2>
+        <p>
+          We may suspend or terminate your access to Mobio at any time, without
+          notice, for conduct that we determine violates these Terms or is
+          harmful to other users or Ikanisa.
+        </p>
+
+        <h2>13. Governing Law</h2>
+        <p>
+          These Terms shall be governed by and construed in accordance with the
+          laws of the Republic of Rwanda. Any disputes arising under these Terms
+          shall be subject to the exclusive jurisdiction of the courts located
+          in Kigali, Rwanda.
+        </p>
+
+        <h2>14. Contact Us</h2>
+        <p>If you have questions about these Terms, contact us at:</p>
+        <p>Email: <a href="mailto:info@ikanisa.com">info@ikanisa.com</a></p>
+        <p>Ikanisa</p>
       </div>
-      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </nav>
+    </main>
 
-  <!-- Terms Content -->
-  <section class="legal-page">
-    <div class="container legal-content">
-      <h1>Terms & Conditions</h1>
-      <p class="updated">Last updated: May 23, 2026</p>
-
-      <p>Welcome to Mobio. These Terms and Conditions ("Terms") govern your use of the Mobio mobile application ("App") operated by Ikanisa ("we", "us", or "our"). By downloading, installing, or using the App, you agree to be bound by these Terms.</p>
-
-      <h2>1. Acceptance of Terms</h2>
-      <p>By accessing or using Mobio, you confirm that you are at least 16 years old and agree to comply with these Terms. If you do not agree, you must not use the App.</p>
-
-      <h2>2. Service Description</h2>
-      <p>Mobio is a peer-to-peer mobility discovery marketplace that helps drivers and passengers in Rwanda coordinate directly. The App provides:</p>
-      <ul>
-        <li><strong>Nearby Discovery:</strong> Listing of nearby drivers or passengers who choose to be visible.</li>
-        <li><strong>Scheduled Trip Posts:</strong> The ability to create, edit, cancel, and view planned trip posts.</li>
-        <li><strong>Communication:</strong> Direct communication through in-app chat or WhatsApp handoff.</li>
-        <li><strong>Safety Controls:</strong> Report and block controls for marketplace safety.</li>
-      </ul>
-      <p>Mobio acts as a marketplace platform only. We do not provide transportation services directly and are not a transportation carrier. All transportation is provided by independent drivers.</p>
-
-      <h2>3. User Accounts</h2>
-      <p>Mobio uses anonymous authentication. You are automatically assigned an anonymous account upon first use — no registration, email, or password is required. Your anonymous session provides a unique internal identifier used for data operations. You may optionally provide profile information (name, phone number) but this is never mandatory.</p>
-
-      <h2>4. User Responsibilities</h2>
-      <p>As a user of Mobio, you agree to:</p>
-      <ul>
-        <li>Use the App only for lawful purposes and in accordance with these Terms.</li>
-        <li>Not misuse the platform to harass, threaten, or defraud other users or drivers.</li>
-        <li>Provide accurate information when creating trip listings or profile details.</li>
-        <li>Not attempt to reverse engineer, decompile, or tamper with the App.</li>
-        <li>Not use automated systems or bots to interact with the App.</li>
-      </ul>
-
-      <h2>5. Manual Negotiation</h2>
-      <p>Mobio does not provide automatic fare quotes, taxi dispatch, trip start/complete workflow, route tracking, in-app ride payment settlement, refunds, or driver earnings settlement. Users negotiate fares and pickup details manually. MoMo USSD handoffs, when used, open outside the App through the user's phone and mobile network operator.</p>
-
-      <h2>6. Location Services</h2>
-      <p>Certain features require access to your device's location. Location data is used for nearby discovery and scheduled post context. Mobio does not provide live route tracking. You may revoke location permissions at any time through your device settings, though this may limit App functionality.</p>
-
-      <h2>7. Intellectual Property</h2>
-      <p>All content, designs, trademarks, logos, and software associated with Mobio are the property of Ikanisa and are protected by applicable intellectual property laws. You may not reproduce, distribute, or create derivative works without our prior written consent.</p>
-
-      <h2>8. Disclaimer of Warranties</h2>
-      <p>Mobio is provided "as is" and "as available" without warranties of any kind, whether express or implied. We do not guarantee:</p>
-      <ul>
-        <li>The availability, reliability, or safety of any user listed on the platform.</li>
-        <li>The accuracy of nearby distances, profiles, vehicle details, or scheduled post information.</li>
-        <li>Uninterrupted or error-free operation of the App.</li>
-      </ul>
-
-      <h2>9. Limitation of Liability</h2>
-      <p>To the maximum extent permitted by law, Ikanisa shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of Mobio, including but not limited to damages for loss of profits, data, or other intangible losses, even if we have been advised of the possibility of such damages.</p>
-
-      <h2>10. Indemnification</h2>
-      <p>You agree to indemnify and hold harmless Ikanisa, its officers, directors, and employees from any claims, damages, losses, or expenses arising from your use of the App or violation of these Terms.</p>
-
-      <h2>11. Modifications</h2>
-      <p>We reserve the right to modify these Terms at any time. Changes will be effective upon posting the updated Terms in the App or on our website. Your continued use of Mobio after changes constitutes acceptance of the modified Terms.</p>
-
-      <h2>12. Termination</h2>
-      <p>We may suspend or terminate your access to Mobio at any time, without notice, for conduct that we determine violates these Terms or is harmful to other users or Ikanisa.</p>
-
-      <h2>13. Governing Law</h2>
-      <p>These Terms shall be governed by and construed in accordance with the laws of the Republic of Rwanda. Any disputes arising under these Terms shall be subject to the exclusive jurisdiction of the courts located in Kigali, Rwanda.</p>
-
-      <h2>14. Contact Us</h2>
-      <p>If you have questions about these Terms, contact us at:</p>
-      <p>Email: <a href="mailto:info@ikanisa.com">info@ikanisa.com</a></p>
-      <p>Ikanisa</p>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container footer-inner">
-      <div class="footer-brand">
-        <img src="assets/mobi_icon.png" alt="Mobio" width="32" height="32">
-        <span>Mobio</span>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <img src="assets/mobi_icon.png" alt="Mobio" width="32" height="32" />
+          <span>Mobio</span>
+        </div>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="account-deletion.html">Account Deletion</a></li>
+          <li>
+            <a href="terms-and-conditions.html" style="color: var(--on-surface)"
+              >Terms & Conditions</a
+            >
+          </li>
+          <li><a href="mailto:info@ikanisa.com">Contact</a></li>
+        </ul>
+        <p class="footer-copy">
+          &copy; 2026 Mobio by Ikanisa. All rights reserved.
+        </p>
       </div>
-      <ul class="footer-links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="privacy-policy.html">Privacy Policy</a></li>
-        <li><a href="account-deletion.html">Account Deletion</a></li>
-        <li><a href="terms-and-conditions.html" style="color:var(--on-surface);">Terms & Conditions</a></li>
-        <li><a href="mailto:info@ikanisa.com">Contact</a></li>
-      </ul>
-      <p class="footer-copy">&copy; 2026 Mobio by Ikanisa. All rights reserved.</p>
-    </div>
-  </footer>
+    </footer>
 
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>

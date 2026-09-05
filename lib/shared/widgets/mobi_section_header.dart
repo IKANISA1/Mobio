@@ -3,7 +3,6 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
-import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 
 class MobiSectionHeader extends StatelessWidget {
   final String title;
@@ -24,23 +23,10 @@ class MobiSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final showCaption = caption?.trim().isNotEmpty == true;
 
     return Row(
       children: [
-        if (icon != null) ...[
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: ext.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(AppRadii.lg),
-            ),
-            child: Icon(icon, size: 18, color: cs.onSurfaceVariant),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-        ],
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

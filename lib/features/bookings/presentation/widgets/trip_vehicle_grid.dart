@@ -196,7 +196,7 @@ class TripVehicleGrid extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
                               style: AppTypography.labelSm.copyWith(
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: labelColor,
                               ),
                             ),

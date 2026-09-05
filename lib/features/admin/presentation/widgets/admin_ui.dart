@@ -28,8 +28,8 @@ class AdminLayoutTokens {
   const AdminLayoutTokens._();
 
   static const double maxContentWidth = 1360;
-  static const double headerRadius = 30;
-  static const double panelRadius = 24;
+  static const double headerRadius = 24;
+  static const double panelRadius = 16;
   static const EdgeInsets pagePadding = EdgeInsets.fromLTRB(
     AppSpacing.xl,
     8,
@@ -65,105 +65,79 @@ class AdminWorkspaceFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final showSubtitle = subtitle.trim().isNotEmpty;
-
     return SoftGradient(
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final horizontalPadding = constraints.maxWidth >= 1100 ? 32.0 : 20.0;
-          final stackActions = constraints.maxWidth < 820;
-
-          return Column(
+          final wide = constraints.maxWidth >= 1000;
+          final inset = wide ? 32.0 : 16.0;
+          final workspace = Column(
             children: [
-              Align(
-                alignment: Alignment.topCenter,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: AdminLayoutTokens.maxContentWidth,
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      horizontalPadding,
-                      20,
-                      horizontalPadding,
-                      12,
-                    ),
-                    child: AdminPanel(
-                      radius: AdminLayoutTokens.headerRadius,
-                      padding: const EdgeInsets.all(AppSpacing.xl),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+              Padding(
+                padding: EdgeInsets.fromLTRB(inset, 24, inset, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        if (onBack != null) ...[
+                          AdminIconButton(
+                            icon: LucideIcons.chevronLeft,
+                            label: 'Back',
+                            onPressed: onBack,
+                          ),
+                          const SizedBox(width: 12),
+                        ],
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (onBack != null) ...[
-                                AdminIconButton(
-                                  icon: LucideIcons.chevronLeft,
-                                  onPressed: onBack,
-                                ),
-                                const SizedBox(width: AppSpacing.md),
-                              ],
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const MobiStatusBadge(
-                                      label: 'Admin',
-                                      icon: LucideIcons.shieldCheck,
-                                      tone: MobiStatusBadgeTone.brand,
-                                    ),
-                                    const SizedBox(height: AppSpacing.md),
-                                    Text(
-                                      title,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: AppTypography.titleLg.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    if (showSubtitle) ...[
-                                      const SizedBox(height: AppSpacing.xs),
-                                      Text(
-                                        subtitle,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: AppTypography.bodySm.copyWith(
-                                          color: cs.onSurfaceVariant,
-                                        ),
-                                      ),
-                                    ],
-                                  ],
+                              Text(
+                                'Mobio Business',
+                                style: AppTypography.labelMd.copyWith(
+                                  color: cs.onSurfaceVariant,
                                 ),
                               ),
-                              if (!stackActions && actions.isNotEmpty) ...[
-                                const SizedBox(width: AppSpacing.md),
-                                Flexible(
-                                  child: Wrap(
-                                    spacing: AppSpacing.sm,
-                                    runSpacing: AppSpacing.sm,
-                                    alignment: WrapAlignment.end,
-                                    children: actions,
-                                  ),
+                              const SizedBox(height: 8),
+                              Text(
+                                title,
+                                style: AppTypography.displayMd.copyWith(
+                                  color: cs.onSurface,
                                 ),
-                              ],
+                              ),
                             ],
                           ),
-                          if (stackActions && actions.isNotEmpty) ...[
-                            const SizedBox(height: AppSpacing.lg),
-                            Wrap(
-                              spacing: AppSpacing.sm,
-                              runSpacing: AppSpacing.sm,
+                        ),
+                        if (wide && actions.isNotEmpty) ...[
+                          const SizedBox(width: 24),
+                          Flexible(
+                            child: Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              alignment: WrapAlignment.end,
                               children: actions,
                             ),
-                          ],
-                          const SizedBox(height: AppSpacing.lg),
-                          _AdminWorkspaceTabs(currentTab: currentTab),
+                          ),
                         ],
-                      ),
+                      ],
                     ),
-                  ),
+                    if (subtitle.trim().isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        subtitle,
+                        style: AppTypography.bodySm.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                    if (!wide) ...[
+                      if (actions.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        Wrap(spacing: 8, runSpacing: 8, children: actions),
+                      ],
+                      const SizedBox(height: 20),
+                      _AdminWorkspaceTabs(currentTab: currentTab),
+                    ],
+                  ],
                 ),
               ),
               Expanded(
@@ -177,6 +151,83 @@ class AdminWorkspaceFrame extends StatelessWidget {
                   ),
                 ),
               ),
+            ],
+          );
+          if (!wide) return workspace;
+          return Row(
+            children: [
+              SizedBox(
+                width: 216,
+                child: Material(
+                  color: cs.surfaceContainerLow,
+                  child: SafeArea(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                'icon/mobi_logo_transparent.png',
+                                width: 32,
+                                height: 32,
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                'Mobio',
+                                style: AppTypography.headlineLg.copyWith(
+                                  color: cs.onSurface,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
+                            child: Column(
+                              children: [
+                                for (final entry
+                                    in _AdminWorkspaceTabs._tabs.entries)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 4),
+                                    child: Semantics(
+                                      selected: entry.key == currentTab,
+                                      child: ListTile(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        minTileHeight: 48,
+                                        selected: entry.key == currentTab,
+                                        selectedTileColor:
+                                            cs.surfaceContainerHighest,
+                                        selectedColor: cs.onSurface,
+                                        leading: Icon(
+                                          entry.value.icon,
+                                          size: 20,
+                                        ),
+                                        title: Text(
+                                          entry.value.label,
+                                          style: AppTypography.bodySm,
+                                        ),
+                                        onTap: () =>
+                                            context.go(entry.value.route),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(child: workspace),
             ],
           );
         },
@@ -203,17 +254,8 @@ class AdminPanel extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: ext.surfaceContainer.withValues(alpha: ext.surfacePanelAlpha),
+        color: ext.surfaceContainer,
         borderRadius: BorderRadius.circular(radius),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.24),
-            blurRadius: 30,
-            spreadRadius: -14,
-            offset: const Offset(0, 16),
-          ),
-        ],
       ),
       child: Padding(padding: padding, child: child),
     );
@@ -247,7 +289,7 @@ class AdminSectionHeader extends StatelessWidget {
               Text(
                 title,
                 style: AppTypography.titleMd.copyWith(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -320,7 +362,7 @@ class AdminMetricCard extends StatelessWidget {
                   color: accent.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, size: 16, color: Colors.white),
+                child: Icon(icon, size: 16, color: cs.onSurface),
               ),
             ],
           ),
@@ -330,9 +372,9 @@ class AdminMetricCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppTypography.headlineLg.copyWith(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onSurface,
               fontSize: 26,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w500,
             ),
           ),
           if (showHint) ...[
@@ -785,6 +827,7 @@ class AdminPaginationBar extends StatelessWidget {
               ],
               AdminIconButton(
                 icon: LucideIcons.chevronLeft,
+                label: 'Previous page',
                 onPressed: currentPage > 0
                     ? () => onPageChanged(currentPage - 1)
                     : null,
@@ -792,6 +835,7 @@ class AdminPaginationBar extends StatelessWidget {
               const SizedBox(width: AppSpacing.xs),
               AdminIconButton(
                 icon: LucideIcons.chevronRight,
+                label: 'Next page',
                 onPressed: currentPage < maxPage
                     ? () => onPageChanged(currentPage + 1)
                     : null,
@@ -975,9 +1019,15 @@ class _AdminWorkspaceTabs extends StatelessWidget {
 
 class AdminIconButton extends StatelessWidget {
   final IconData icon;
+  final String label;
   final VoidCallback? onPressed;
 
-  const AdminIconButton({super.key, required this.icon, this.onPressed});
+  const AdminIconButton({
+    super.key,
+    required this.icon,
+    required this.label,
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -997,7 +1047,12 @@ class AdminIconButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.6)),
           ),
-          child: Icon(icon, size: 18, color: cs.onSurface),
+          child: Icon(
+            icon,
+            semanticLabel: label,
+            size: 18,
+            color: cs.onSurface,
+          ),
         ),
       ),
     );

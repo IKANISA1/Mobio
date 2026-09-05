@@ -392,7 +392,7 @@ class _SettingRow extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: AppTypography.labelLg.copyWith(
               color: valueColor ?? cs.onSurface,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),

@@ -1,97 +1,62 @@
-/* ============================================================
-   Mobio Landing Page — Interactions & Animations
-   Zero dependencies. Respects prefers-reduced-motion.
-   ============================================================ */
-
-(function () {
-  'use strict';
-
-  // --- Scroll-triggered reveal animations ---
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (!prefersReducedMotion) {
-    const revealElements = document.querySelectorAll('.reveal');
-    const revealObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            revealObserver.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
-    );
-
-    revealElements.forEach((el, i) => {
-      el.style.transitionDelay = `${i % 3 * 100}ms`;
-      revealObserver.observe(el);
-    });
-  } else {
-    // If reduced motion, make everything visible immediately
-    document.querySelectorAll('.reveal').forEach((el) => {
-      el.classList.add('visible');
-    });
+(() => {
+  "use strict";
+  const nav = document.getElementById("nav");
+  const toggle = document.getElementById("nav-toggle");
+  const links = document.getElementById("nav-links");
+  const main = document.querySelector("main, .legal-page");
+  const footer = document.querySelector("footer");
+  const mobile = window.matchMedia("(max-width: 760px)");
+  if (!nav || !toggle || !links) return;
+  toggle.setAttribute("aria-controls", links.id);
+  toggle.setAttribute("aria-expanded", "false");
+  function setMenu(open, restoreFocus = false) {
+    links.classList.toggle("open", open);
+    toggle.classList.toggle("active", open);
+    document.body.classList.toggle("menu-open", open);
+    document.body.style.overflow = open ? "hidden" : "";
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    if (main) main.inert = open;
+    if (footer) footer.inert = open;
+    if (open) links.querySelector("a")?.focus();
+    else if (restoreFocus) toggle.focus();
   }
-
-  // --- Sticky nav background on scroll ---
-  const nav = document.getElementById('nav');
-  let lastScroll = 0;
-
-  function handleNavScroll() {
-    const scrollY = window.scrollY;
-    if (scrollY > 60) {
-      nav.classList.add('scrolled');
-    } else {
-      nav.classList.remove('scrolled');
+  toggle.addEventListener("click", () =>
+    setMenu(toggle.getAttribute("aria-expanded") !== "true"),
+  );
+  links.addEventListener("click", (event) => {
+    if (event.target.closest("a")) setMenu(false);
+  });
+  window.closeMenu = () => setMenu(false);
+  document.addEventListener("keydown", (event) => {
+    if (toggle.getAttribute("aria-expanded") !== "true") return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setMenu(false, true);
     }
-    lastScroll = scrollY;
-  }
-
-  window.addEventListener('scroll', handleNavScroll, { passive: true });
-  handleNavScroll(); // Run on load
-
-  // --- Mobile menu toggle ---
-  const toggle = document.getElementById('nav-toggle');
-  const links = document.getElementById('nav-links');
-
-  toggle.addEventListener('click', () => {
-    toggle.classList.toggle('active');
-    links.classList.toggle('open');
-    document.body.style.overflow = links.classList.contains('open') ? 'hidden' : '';
+    if (event.key === "Tab") {
+      const focusable = [...nav.querySelectorAll("a,button")].filter(
+        (el) => el.getClientRects().length,
+      );
+      const first = focusable[0],
+        last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
   });
-
-  // Close menu on link click
-  window.closeMenu = function () {
-    toggle.classList.remove('active');
-    links.classList.remove('open');
-    document.body.style.overflow = '';
-  };
-
-  // --- Smooth scroll for anchor links ---
-  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-    anchor.addEventListener('click', function (e) {
-      const targetId = this.getAttribute('href');
-      if (targetId === '#') return;
-
-      const targetEl = document.querySelector(targetId);
-      if (!targetEl) return;
-
-      e.preventDefault();
-      const navHeight = nav.offsetHeight;
-      const targetPos = targetEl.getBoundingClientRect().top + window.scrollY - navHeight - 20;
-
-      window.scrollTo({
-        top: targetPos,
-        behavior: prefersReducedMotion ? 'auto' : 'smooth',
-      });
-    });
+  mobile.addEventListener("change", () => {
+    if (!mobile.matches) setMenu(false);
   });
-
-  // --- Staggered card animation reset ---
-  // Add stagger delays to grid children
-  document.querySelectorAll('.features-grid .reveal, .steps-grid .reveal').forEach((el, i) => {
-    el.style.transitionDelay = `${i * 120}ms`;
-  });
-
+  const updateNav = () =>
+    nav.classList.toggle(
+      "scrolled",
+      document.body.classList.contains("legal-body") || window.scrollY > 48,
+    );
+  window.addEventListener("scroll", updateNav, { passive: true });
+  updateNav();
 })();

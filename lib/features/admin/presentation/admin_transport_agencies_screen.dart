@@ -181,7 +181,7 @@ class _AdminTransportAgenciesScreenState
                           'Active',
                           style: AppTypography.bodyMd.copyWith(
                             color: cs.onSurface,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         subtitle: Text(
@@ -200,7 +200,7 @@ class _AdminTransportAgenciesScreenState
                           sheetError!,
                           style: AppTypography.bodySm.copyWith(
                             color: cs.error,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
@@ -570,7 +570,7 @@ class _AgencyRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppTypography.titleMd.copyWith(
                   color: cs.onSurface,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 4),

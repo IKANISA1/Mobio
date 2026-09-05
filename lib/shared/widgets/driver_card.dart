@@ -43,28 +43,24 @@ class DriverCard extends StatelessWidget {
         type: MaterialType.transparency,
         child: ClayCard(
           onTap: onTap,
-          padding: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Container(
-                    width: 56,
-                    height: 56,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [cs.primary, cs.tertiary],
-                      ),
+                      color: cs.surfaceContainerHigh,
                     ),
                     child: Center(
                       child: VehicleTypeIcon.fromId(
                         vehicleTypeId: vehicleTypeId,
                         size: 24,
-                        color: Colors.white,
+                        color: cs.onSurface,
                       ),
                     ),
                   ),
@@ -76,8 +72,8 @@ class DriverCard extends StatelessWidget {
                         Text(
                           driverId,
                           style: AppTypography.titleLg.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
+                            color: cs.onSurface,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.xs),
@@ -111,11 +107,11 @@ class DriverCard extends StatelessWidget {
                           onTap: onChat,
                           customBorder: const CircleBorder(),
                           splashColor: cs.primary.withValues(alpha: 0.18),
-                          child: const Center(
+                          child: Center(
                             child: Icon(
                               LucideIcons.messageCircle,
                               size: 20,
-                              color: Colors.white,
+                              color: cs.onSurface,
                             ),
                           ),
                         ),

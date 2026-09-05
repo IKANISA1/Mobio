@@ -538,7 +538,6 @@ void main() {
       expect(biopayScreen, contains('External USSD only'));
       expect(biopayScreen, contains('admin_external_reference'));
       expect(biopayScreen, contains('QrImageView'));
-      expect(biopayScreen, contains('AppColors.primaryFixedDim'));
       expect(biopayScreen, contains('bioPayBlue'));
       expect(
         biopayScreen,

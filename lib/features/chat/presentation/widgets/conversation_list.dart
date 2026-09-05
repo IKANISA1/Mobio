@@ -97,7 +97,7 @@ class ConversationList extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: AppTypography.titleMd.copyWith(
                             color: Colors.white,
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         if (memberId != null && memberId.isNotEmpty) ...[

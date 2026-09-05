@@ -223,7 +223,7 @@ class _PaymentRequestItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTypography.titleMd.copyWith(
                     color: cs.onSurface,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -231,7 +231,7 @@ class _PaymentRequestItem extends StatelessWidget {
                 request.amountLabel,
                 style: AppTypography.labelLg.copyWith(
                   color: cs.onSurface,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -415,14 +415,16 @@ class _BioPayAdminOverview extends StatelessWidget {
             ],
           );
         }
-        return GridView.count(
-          crossAxisCount: 3,
-          crossAxisSpacing: AppSpacing.lg,
-          mainAxisSpacing: AppSpacing.lg,
-          childAspectRatio: 0.78,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          children: children,
+        // Natural-height columns keep all request states readable after the
+        // workspace sidebar reduces the content width or text is enlarged.
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var index = 0; index < children.length; index++) ...[
+              if (index > 0) const SizedBox(width: AppSpacing.lg),
+              Expanded(child: children[index]),
+            ],
+          ],
         );
       },
     );

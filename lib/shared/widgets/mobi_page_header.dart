@@ -4,7 +4,6 @@ import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
-import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 
 /// Reference-style pushed-page header.
 class MobiPageHeader extends StatelessWidget {
@@ -26,7 +25,7 @@ class MobiPageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final showSubtitle = subtitle != null;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final cs = Theme.of(context).colorScheme;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -44,10 +43,8 @@ class MobiPageHeader extends StatelessWidget {
                 icon: LucideIcons.chevronLeft,
                 semanticLabel: 'Back',
                 onTap: onBack ?? () => Navigator.maybePop(context),
-                backgroundColor: Colors.black.withValues(
-                  alpha: ext.blackChromeAlpha,
-                ),
-                iconColor: Colors.white,
+                backgroundColor: cs.surfaceContainerHigh,
+                iconColor: cs.onSurface,
                 borderRadius: AppRadii.pill,
               ),
               const SizedBox(width: AppSpacing.sm),
@@ -55,26 +52,27 @@ class MobiPageHeader extends StatelessWidget {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(right: AppSpacing.sm),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
+                // Keep the complete enlarged title reachable even in a short
+                // landscape viewport, while the back control stays fixed.
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
                         title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                         style: AppTypography.headlineLg.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
+                          color: cs.onSurface,
+                          fontWeight: FontWeight.w600,
                           decoration: TextDecoration.none,
                         ),
                       ),
-                    ),
-                    if (showSubtitle) ...[const SizedBox(height: 4), subtitle!],
-                  ],
+                      if (showSubtitle) ...[
+                        const SizedBox(height: 4),
+                        subtitle!,
+                      ],
+                    ],
+                  ),
                 ),
               ),
             ),

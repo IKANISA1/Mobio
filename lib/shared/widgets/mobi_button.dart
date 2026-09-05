@@ -32,12 +32,8 @@ class MobiButton extends StatelessWidget {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final isEnabled = !isLoading && onPressed != null;
     final isInactive = !isEnabled && !isLoading;
-    final backgroundColor = isInactive
-        ? cs.onSurface.withValues(alpha: 0.10)
-        : colors.bg;
-    final foregroundColor = isInactive
-        ? cs.onSurfaceVariant.withValues(alpha: 0.46)
-        : colors.fg;
+    final backgroundColor = isInactive ? cs.surfaceContainerHighest : colors.bg;
+    final foregroundColor = isInactive ? cs.onSurfaceVariant : colors.fg;
     final borderColor = isInactive
         ? cs.onSurfaceVariant.withValues(alpha: 0.22)
         : colors.border;
@@ -45,6 +41,8 @@ class MobiButton extends StatelessWidget {
     return Semantics(
       button: true,
       enabled: isEnabled,
+      value: isLoading ? 'Loading' : null,
+      liveRegion: isLoading,
       child: SizedBox(
         width: width,
         child: Material(
@@ -57,39 +55,36 @@ class MobiButton extends StatelessWidget {
                 : Colors.transparent,
             highlightColor: isEnabled ? null : Colors.transparent,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+              duration: MediaQuery.disableAnimationsOf(context)
+                  ? Duration.zero
+                  : const Duration(milliseconds: 160),
+              constraints: const BoxConstraints(minHeight: 52),
               padding:
                   padding ??
                   const EdgeInsets.symmetric(
                     horizontal: AppSpacing.lg,
-                    vertical: AppSpacing.md,
+                    vertical: 14,
                   ),
               decoration: BoxDecoration(
                 color: backgroundColor,
                 borderRadius: BorderRadius.circular(AppRadii.pill),
-                boxShadow: isEnabled && variant != MobiButtonVariant.ghost
-                    ? ext.clayButtonShadow
-                    : null,
                 border: Border.all(color: borderColor, width: 1),
               ),
               child: Center(
-                child: isLoading
-                    ? SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
-                          color: foregroundColor,
-                        ),
-                      )
-                    : IconTheme(
+                widthFactor: 1,
+                heightFactor: 1,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Opacity(
+                      opacity: isLoading ? 0 : 1,
+                      alwaysIncludeSemantics: true,
+                      child: IconTheme(
                         data: IconThemeData(color: foregroundColor),
                         child: DefaultTextStyle(
                           style: AppTypography.titleMd.copyWith(
                             color: foregroundColor,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.center,
                           child: isInactive
                               ? ColorFiltered(
@@ -102,6 +97,19 @@ class MobiButton extends StatelessWidget {
                               : child,
                         ),
                       ),
+                    ),
+                    if (isLoading)
+                      ExcludeSemantics(
+                        child: SizedBox.square(
+                          dimension: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: foregroundColor,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),

@@ -320,7 +320,7 @@ class _EvChargerLocatorScreenState
                         _error!,
                         style: AppTypography.bodySm.copyWith(
                           color: cs.error,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -422,7 +422,7 @@ class _SearchCard extends StatelessWidget {
               'Selected address',
               style: AppTypography.labelMd.copyWith(
                 color: cs.onSurfaceVariant,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -532,7 +532,7 @@ class _EvChargerCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.titleMd.copyWith(
                           color: cs.onSurface,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.xs),

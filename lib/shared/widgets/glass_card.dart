@@ -3,7 +3,7 @@ import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 
-/// Base translucent surface card used across the app.
+/// Tonal content group. The historical class name is kept for consumers.
 class ClayCard extends StatefulWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
@@ -77,22 +77,7 @@ class _ClayCardState extends State<ClayCard>
     final card = Material(
       color: Colors.transparent,
       child: Ink(
-        decoration: BoxDecoration(
-          color: surfaceColor,
-          borderRadius: radius,
-          boxShadow: ext.clayCardShadow,
-          border: Border.all(
-            color: Colors.white.withValues(alpha: ext.cardBorderAlpha),
-          ),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.white.withValues(alpha: ext.clayCardGradientWhiteAlpha),
-              Colors.transparent,
-            ],
-          ),
-        ),
+        decoration: BoxDecoration(color: surfaceColor, borderRadius: radius),
         child: Padding(
           padding: widget.padding ?? const EdgeInsets.all(AppSpacing.lg),
           child: widget.child,
@@ -115,7 +100,9 @@ class _ClayCardState extends State<ClayCard>
           animation: _controller,
           builder: (context, child) {
             return Transform.scale(
-              scale: _scaleAnimation.value,
+              scale: MediaQuery.disableAnimationsOf(context)
+                  ? 1
+                  : _scaleAnimation.value,
               child: Opacity(
                 opacity: _opacityAnimation.value,
                 child: Material(

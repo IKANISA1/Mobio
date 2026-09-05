@@ -147,7 +147,7 @@ class ProfileVehicleSection extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.center,
                               style: AppTypography.labelSm.copyWith(
-                                fontWeight: FontWeight.w800,
+                                fontWeight: FontWeight.w600,
                                 color: isSelected
                                     ? cs.primary
                                     : cs.onSurfaceVariant,
@@ -180,7 +180,7 @@ class ProfileVehicleSection extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: AppTypography.labelMd.copyWith(
                     color: cs.onSurface,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -367,7 +367,7 @@ class ProfileVehicleSection extends StatelessWidget {
                       child: Text(
                         model,
                         style: AppTypography.labelMd.copyWith(
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                           color: isSelected ? cs.primary : cs.onSurfaceVariant,
                         ),
                       ),
@@ -589,7 +589,7 @@ class _AgencyPickerSheetState extends State<_AgencyPickerSheet> {
                           style: AppTypography.bodyMd.copyWith(
                             color: cs.onSurface,
                             fontWeight: selected
-                                ? FontWeight.w800
+                                ? FontWeight.w600
                                 : FontWeight.w600,
                           ),
                         ),

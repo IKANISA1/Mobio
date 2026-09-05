@@ -177,7 +177,7 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                           width: cardWidth,
                           child: AdminMetricCard(
                             label: 'Visible',
-                            value: '$_trips.length',
+                            value: '${_trips.length}',
                             hint: 'Current filters',
                             icon: LucideIcons.mapPin,
                             tone: MobiStatusBadgeTone.info,

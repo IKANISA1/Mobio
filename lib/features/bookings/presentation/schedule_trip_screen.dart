@@ -781,7 +781,7 @@ class _BusAgencyPickerSheetState extends State<_BusAgencyPickerSheet> {
                           style: AppTypography.bodyMd.copyWith(
                             color: cs.onSurface,
                             fontWeight: selected
-                                ? FontWeight.w800
+                                ? FontWeight.w600
                                 : FontWeight.w600,
                           ),
                         ),
@@ -873,7 +873,7 @@ class _RentalVehicleModelPicker extends StatelessWidget {
                         child: Text(
                           model,
                           style: AppTypography.labelMd.copyWith(
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w600,
                             color: isSelected
                                 ? cs.primary
                                 : cs.onSurfaceVariant,

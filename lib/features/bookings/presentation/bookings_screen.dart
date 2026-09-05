@@ -211,13 +211,14 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                     ),
                     sliver: SliverToBoxAdapter(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
                             'Trips',
-                            textAlign: TextAlign.center,
+                            textAlign: TextAlign.start,
                             style: AppTypography.displayLg.copyWith(
-                              color: Colors.white,
-                              fontSize: 42,
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontSize: 32,
                               height: 1.05,
                             ),
                           ),
@@ -429,30 +430,23 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         child: Material(
           type: MaterialType.transparency,
           child: ClayCard(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            borderRadius: AppRadii.hero,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            borderRadius: AppRadii.xl,
             onTap: () => widget.onTripDetails(trip.id ?? ''),
             child: Row(
               children: [
                 SizedBox.square(
-                  dimension: 58,
+                  dimension: 44,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Theme.of(context).colorScheme.primary,
-                          Theme.of(context).colorScheme.tertiary,
-                        ],
-                      ),
+                      color: Theme.of(context).colorScheme.primaryContainer,
                     ),
                     child: Center(
                       child: VehicleTypeIcon.fromId(
                         vehicleTypeId: vehicleTypeId,
-                        size: 26,
-                        color: Colors.white,
+                        size: 22,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
                     ),
                   ),
@@ -473,11 +467,11 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                         ),
                       Text(
                         route,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.titleMd.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: 3),

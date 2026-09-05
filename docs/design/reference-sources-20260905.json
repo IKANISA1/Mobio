@@ -1,0 +1,59 @@
+{
+  "collection_root": "owner private Revolut research collection",
+  "sources": [
+    {
+      "id": "native_home",
+      "local_reference": "private/native-current-20260905/020-home-current-clean.jpg",
+      "sha256": "dbe799cc878a14cd7db4b04cdfce86f5eba42268743bfc2f33f06aba540837a5",
+      "runtime_copy": false,
+      "comparison": "component-pattern",
+      "capture_date": "2026-09-05",
+      "build_version": "unverified"
+    },
+    {
+      "id": "native_profile",
+      "local_reference": "private/native-current-20260905/006-profile-lower.jpg",
+      "sha256": "bf0198ededd1907456c153798a8f3d34f0d16686eb2797817d48a0717f27f26a",
+      "runtime_copy": false,
+      "comparison": "component-pattern",
+      "capture_date": "2026-09-05",
+      "build_version": "unverified"
+    },
+    {
+      "id": "native_settings",
+      "local_reference": "private/native-current-20260905/007-settings-overview.jpg",
+      "sha256": "0e9a62b71f436b84b45f45bd929cd436517c2a3c51d86a8b344a5009238aa0bb",
+      "runtime_copy": false,
+      "comparison": "component-pattern",
+      "capture_date": "2026-09-05",
+      "build_version": "unverified"
+    },
+    {
+      "id": "native_list",
+      "local_reference": "private/native-current-20260905/051-payments-full-header.jpg",
+      "sha256": "b7337364826f7fd36d0f5156b42a777ca57faa780edae3fa14884a0759a920f1",
+      "runtime_copy": false,
+      "comparison": "component-pattern",
+      "capture_date": "2026-09-05",
+      "build_version": "unverified"
+    },
+    {
+      "id": "native_form",
+      "local_reference": "private/native-current-20260905/058-card-transfer-other-recipient.jpg",
+      "sha256": "2a6f44cf8d9c5e667cefa5181b68c0f5f848d9de8fcaa0bddc01c9adf2cd58e2",
+      "runtime_copy": false,
+      "comparison": "component-pattern",
+      "capture_date": "2026-09-05",
+      "build_version": "unverified"
+    },
+    {
+      "id": "business_panel",
+      "local_reference": "assets/public-business/bills-preview.png",
+      "sha256": "d142f7fcb0fd7098e2574e98bad74da84c4d4a849d48d65ce9de9cc0fc56e849",
+      "runtime_copy": false,
+      "comparison": "component-pattern",
+      "capture_date": "undated promotional asset collected 2026-09-05",
+      "build_version": "unverified"
+    }
+  ]
+}

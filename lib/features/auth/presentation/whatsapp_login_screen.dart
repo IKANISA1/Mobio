@@ -288,7 +288,7 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 110, 20, 28),
+                    padding: const EdgeInsets.fromLTRB(20, 100, 20, 28),
                     child: Center(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
@@ -305,7 +305,7 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
                                   ? 'Enter code'
                                   : 'WhatsApp login',
                             ),
-                            const SizedBox(height: 74),
+                            const SizedBox(height: 40),
                             _RevolutAuthPanel(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -527,7 +527,7 @@ class _LoginHero extends StatelessWidget {
           textAlign: TextAlign.center,
           style: AppTypography.displayMd.copyWith(
             color: cs.onSurface,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w600,
             letterSpacing: 0,
           ),
         ),
@@ -543,28 +543,9 @@ class _RevolutAuthPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: ext.surfaceContainerHigh.withValues(alpha: 0.82),
-        borderRadius: BorderRadius.circular(AppRadii.hero),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: ext.surfacePanelBorderAlpha),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: ext.surfacePanelShadowAlpha),
-            blurRadius: 28,
-            spreadRadius: -12,
-            offset: const Offset(0, 16),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: child,
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+      child: child,
     );
   }
 }
@@ -618,7 +599,7 @@ class _PhoneAnchor extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppTypography.titleMd.copyWith(
                   color: cs.onSurface,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: 0,
                 ),
               ),
@@ -688,7 +669,7 @@ class _LoginNotice extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.titleMd.copyWith(
                       color: cs.onSurface,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                       letterSpacing: 0,
                     ),
                   ),

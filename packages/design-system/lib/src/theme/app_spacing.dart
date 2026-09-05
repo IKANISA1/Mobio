@@ -11,7 +11,7 @@ class AppSpacing {
   static const double xxxl = 32;
   static const double jumbo = 40;
 
-  static const double screenPadding = xl;
+  static const double screenPadding = md;
   static const double sectionGap = xxxl;
   static const double cardGap = lg;
   static const double compactGap = sm;

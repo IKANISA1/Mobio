@@ -1,0 +1,19 @@
+{
+  "date": "2026-09-05",
+  "flutter": "3.44.3",
+  "targets": [
+    {
+      "path": "build/pwa/site/main.dart.js",
+      "bytes": 4880654,
+      "sha256": "18fe01af25e0126ccfb809716052ce03f27b4b744f911f1c88116a84fde839b6",
+      "includes_final_dashboard_recovery": true
+    },
+    {
+      "path": "build/app/outputs/bundle/release/app-release.aab",
+      "bytes": 83154342,
+      "sha256": "7931f0ac98b809dbd9d68a94480ffb1e0b89399e25a8395ececab60320bfe9fe",
+      "includes_final_dashboard_recovery": true
+    }
+  ],
+  "deployment": "not performed"
+}

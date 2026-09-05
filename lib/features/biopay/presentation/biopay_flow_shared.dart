@@ -378,7 +378,7 @@ class BioPayFaceEnrollmentStandby extends StatelessWidget {
                   label!,
                   style: AppTypography.labelLg.copyWith(
                     color: Colors.white,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -480,7 +480,7 @@ class BioPayFaceEnrollmentStatusPanel extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: AppTypography.labelLg.copyWith(
                             color: Colors.white,
-                            fontWeight: FontWeight.w900,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -489,7 +489,7 @@ class BioPayFaceEnrollmentStatusPanel extends StatelessWidget {
                         '${capturedCount.clamp(0, totalSteps)}/$totalSteps',
                         style: AppTypography.labelLg.copyWith(
                           color: bioPayBlue,
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -539,32 +539,30 @@ class BioPayFlowScreen extends StatelessWidget {
     return Theme(
       data: bioPayLightTheme(context),
       child: Scaffold(
-        backgroundColor: bioPayCanvas,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: BioPayLightCanvas(
           child: SafeArea(
             bottom: false,
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(20, 18, 20, 132),
+              padding: const EdgeInsets.fromLTRB(16, 18, 16, 132),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Row(
                     children: [
                       BioPayBackAvatar(onTap: onBack),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           title,
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTypography.titleMd.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
+                          textAlign: TextAlign.start,
+                          style: AppTypography.headlineLg.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 48),
                     ],
                   ),
                   SizedBox(height: headerSpacing),
@@ -605,21 +603,16 @@ class BioPayBackAvatar extends StatelessWidget {
       child: Tooltip(
         message: 'Back',
         child: SizedBox.square(
-          dimension: 42,
+          dimension: 48,
           child: Material(
-            color: bioPayChrome,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: Colors.white.withValues(alpha: 0.16)),
-            ),
-            elevation: 8,
-            shadowColor: bioPayBlue.withValues(alpha: 0.10),
+            color: Theme.of(context).colorScheme.surfaceContainerHigh,
+            shape: const CircleBorder(),
             child: InkWell(
-              borderRadius: BorderRadius.circular(12),
+              customBorder: const CircleBorder(),
               onTap: onTap,
-              child: const Icon(
+              child: Icon(
                 LucideIcons.chevronLeft,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onSurface,
                 size: 22,
               ),
             ),
@@ -807,14 +800,14 @@ class BioPayReceiverField extends StatelessWidget {
                 onChanged: onChanged,
                 style: AppTypography.displayMd.copyWith(
                   color: Colors.white,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: 0,
                 ),
                 decoration: InputDecoration(
                   hintText: usesCode ? 'MoMo Pay code' : 'MoMo number',
                   hintStyle: AppTypography.titleLg.copyWith(
                     color: Colors.white.withValues(alpha: 0.36),
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.xl,
@@ -879,7 +872,7 @@ class _QrReceiverModeButton extends StatelessWidget {
               color: selected
                   ? Colors.white
                   : Colors.white.withValues(alpha: 0.68),
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -948,12 +941,15 @@ class BioPayReceiveAmountFieldState extends State<BioPayReceiveAmountField> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (widget.showLabel) ...[
-          Divider(color: Colors.white.withValues(alpha: 0.12), height: 32),
+          Divider(
+            color: Theme.of(context).colorScheme.outlineVariant,
+            height: 32,
+          ),
           Text(
             'AMOUNT',
             style: AppTypography.labelLg.copyWith(
-              color: Colors.white.withValues(alpha: 0.68),
-              fontWeight: FontWeight.w900,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
               letterSpacing: 1.8,
             ),
           ),
@@ -975,14 +971,14 @@ class BioPayReceiveAmountFieldState extends State<BioPayReceiveAmountField> {
                 onChanged: widget.onChanged,
                 style: AppTypography.displayMd.copyWith(
                   color: Colors.white,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: 0,
                 ),
                 decoration: InputDecoration(
                   prefixText: widget.controller.text.isEmpty ? null : 'RWF ',
                   prefixStyle: AppTypography.displayMd.copyWith(
                     color: Colors.white.withValues(alpha: 0.70),
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w600,
                     letterSpacing: 0,
                   ),
                   contentPadding: const EdgeInsets.symmetric(
@@ -1018,7 +1014,7 @@ class BioPayReceiveAmountFieldState extends State<BioPayReceiveAmountField> {
                         'RWF ',
                         style: AppTypography.displayMd.copyWith(
                           color: Colors.white.withValues(alpha: 0.70),
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w600,
                           letterSpacing: 0,
                         ),
                       ),
@@ -1026,7 +1022,7 @@ class BioPayReceiveAmountFieldState extends State<BioPayReceiveAmountField> {
                         '0.00',
                         style: AppTypography.displayMd.copyWith(
                           color: Colors.white.withValues(alpha: 0.38),
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w600,
                           letterSpacing: 0,
                         ),
                       ),
@@ -1290,7 +1286,7 @@ class _BioPayQrActionButton extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: AppTypography.bodyMd.copyWith(
                         color: Colors.white,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -1491,7 +1487,7 @@ class BioPayDetailRow extends StatelessWidget {
             value,
             style: AppTypography.titleMd.copyWith(
               color: Colors.white,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],

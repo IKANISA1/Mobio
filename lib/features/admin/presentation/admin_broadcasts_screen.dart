@@ -514,6 +514,7 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
               ),
               AdminIconButton(
                 icon: LucideIcons.refreshCw,
+                label: 'Refresh approvals',
                 onPressed: _isLoadingCampaigns ? null : _loadCampaigns,
               ),
             ],
@@ -941,7 +942,7 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
                     title,
                     style: AppTypography.titleMd.copyWith(
                       color: cs.onSurface,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xs),
@@ -1462,7 +1463,7 @@ class _BroadcastTypeCard extends StatelessWidget {
             Text(
               title,
               style: AppTypography.labelSm.copyWith(
-                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w600,
                 color: isSelected ? cs.onSurface : cs.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,

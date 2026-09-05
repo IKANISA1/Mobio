@@ -1,83 +1,48 @@
 import 'package:flutter/material.dart';
-import 'package:mobi_design_system/theme/app_colors.dart';
-import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 
-enum SoftGradientTone { shell, nearby, profile, success, alert }
+enum SoftGradientTone { neutral, shell, nearby, profile, success, alert }
 
-/// Full-screen immersive background layer.
+/// Page canvas. Glow belongs to overviews; tasks and settings stay neutral.
+/// The blue stops are measured adapters for September 2026 Dark · Glow.
 class SoftGradient extends StatelessWidget {
   final Widget child;
   final SoftGradientTone tone;
-
   const SoftGradient({
     super.key,
     required this.child,
-    this.tone = SoftGradientTone.shell,
+    this.tone = SoftGradientTone.neutral,
   });
 
   @override
   Widget build(BuildContext context) {
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-    final colors = _colorsFor(ext);
-
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              stops: const [0, 0.42, 1],
-              colors: colors,
-            ),
-          ),
-        ),
-        DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.black.withValues(alpha: 0),
-                Colors.black.withValues(alpha: ext.scrimAlpha * 0.38),
-                Colors.black.withValues(alpha: ext.scrimAlpha),
-              ],
-            ),
-          ),
-        ),
-        child,
-      ],
+    final theme = Theme.of(context);
+    final glow = tone == SoftGradientTone.shell;
+    final dark = theme.brightness == Brightness.dark;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        gradient: glow
+            ? LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: const [0, 0.22, 0.56, 1],
+                colors: dark
+                    ? const [
+                        Color(0xFF567EFF),
+                        Color(0xFF1625DC),
+                        Color(0xFF050543),
+                        Color(0xFF000000),
+                      ]
+                    : const [
+                        Color(0xFFCEDCFF),
+                        Color(0xFFEDF1FF),
+                        Color(0xFFF4F4F4),
+                        Color(0xFFF4F4F4),
+                      ],
+              )
+            : null,
+      ),
+      child: SizedBox.expand(child: child),
     );
-  }
-
-  List<Color> _colorsFor(MobiThemeExtension ext) {
-    return switch (tone) {
-      SoftGradientTone.shell => [
-        ext.backgroundGradientTop,
-        ext.backgroundGradientMid,
-        ext.backgroundGradientBottom,
-      ],
-      SoftGradientTone.nearby => [
-        AppColors.aqua,
-        AppColors.aquaContainer,
-        ext.backgroundGradientBottom,
-      ],
-      SoftGradientTone.profile => [
-        AppColors.brandDustyRose,
-        AppColors.roseDepth,
-        ext.backgroundGradientBottom,
-      ],
-      SoftGradientTone.success => [
-        AppColors.brandMintGreen,
-        AppColors.mintDepth,
-        ext.backgroundGradientBottom,
-      ],
-      SoftGradientTone.alert => [
-        AppColors.brandOrangeRed,
-        AppColors.orangeDepth,
-        ext.backgroundGradientBottom,
-      ],
-    };
   }
 }

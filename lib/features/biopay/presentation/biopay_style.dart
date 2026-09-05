@@ -10,30 +10,11 @@ const bioPayMuted = Color(0xFF667085);
 const bioPayCanvas = Color(0xFFFBFCFF);
 const bioPayPanel = Color(0xFFF5F7FA);
 const bioPayChrome = Color(0xFF050815);
-const bioPayDarkPanel = Color(0xFF171B3E);
-const bioPayDarkPanelAlt = Color(0xFF202654);
+const bioPayDarkPanel = Color(0xFF161618);
+const bioPayDarkPanelAlt = Color(0xFF222224);
 
 ThemeData bioPayLightTheme(BuildContext context) {
-  final base = Theme.of(context);
-  final scheme =
-      ColorScheme.fromSeed(
-        seedColor: bioPayBlue,
-        brightness: Brightness.light,
-      ).copyWith(
-        primary: bioPayBlue,
-        onPrimary: Colors.white,
-        surface: bioPayCanvas,
-        onSurface: bioPayInk,
-        onSurfaceVariant: bioPayMuted,
-        surfaceContainerHighest: bioPayPanel,
-        outlineVariant: const Color(0xFFE4E7EC),
-      );
-
-  return base.copyWith(
-    brightness: Brightness.light,
-    colorScheme: scheme,
-    scaffoldBackgroundColor: bioPayCanvas,
-  );
+  return Theme.of(context);
 }
 
 class BioPayLightCanvas extends StatelessWidget {

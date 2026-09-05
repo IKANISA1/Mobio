@@ -1,379 +1,54 @@
-# Mobio UI System
+# Mobio design system
 
-> Version: 3.1
-> Last updated: 2026-06-11
-> Source of truth: `lib/core/theme/`, `lib/shared/widgets/`
+Version 4 · 5 September 2026. This contract supersedes the June v3.1 visual treatment following the user's whole-product reimplementation request. Product scope, permissions and server contracts remain governed by `AGENTS.md` and the dated product approvals.
 
-## 1. Product framing
+## Reference and identity
 
-Mobio is an existing production mobility app. The system must refine the current product, not replace it.
+Mobio retains its name, logo, app icon, feature names, legal entity and real capabilities. The native visual reference is the September 2026 iOS Dark · Glow cohort. Marketing uses the current UK public website's editorial composition and typography. Admin uses official Business imagery for surface/hierarchy patterns, with explicit adaptations for Mobio's operational tables. These are three separate reference cohorts; none is evidence of the others' exact tokens or behavior.
 
-Non-negotiable constraints:
+The source and route map is in `docs/design/reimplementation-20260905.md`. Private account captures stay outside this repository. Reference marks and screenshots are not runtime artwork. No percentage or pixel-equivalence claim follows from passing tests or capturing target screens.
 
-- keep the 4-branch shell and current route structure
-- preserve the current core flows: Home, BioPay, Profile, Nearby, Bookings, Schedule, Trip Details, Chat, Admin
-- work additively on top of current business logic and data contracts
-- make screens darker, more immersive, and faster while supporting the approved bus/public-transport expansion
+## Shared implementation
 
-## 2. Core design principles
+- Semantic tokens: `packages/design-system/lib/src/theme/`.
+- App controls: `lib/shared/widgets/`.
+- App shell: `lib/app/shell.dart`; four branches: Home, Trips, BioPay, Profile.
+- Feature presentation: `lib/features/*/presentation/`.
+- Admin primitives: `lib/features/admin/presentation/widgets/admin_ui.dart`.
+- Marketing and legal pages: `landing/`.
 
-- fewer words
-- fewer competing actions
-- more meaning through widgets
-- stronger hierarchy through spacing and grouping
-- one reusable pattern for each repeated job
-- sentence case by default
-- immersive gradient surfaces over decorative depth
-- Revolut-reference command bars, circular actions, and floating black navigation
+Use one component for repeated jobs. Preserve existing route callbacks, WhatsApp OTP, confirmation steps, retry actions, permissions, server-owned balances and external USSD handoffs.
 
-Practical rule:
+## Native semantic contract
 
-- if a badge, chip, icon, or tile can communicate the state, remove the sentence
+The dark canvas is black; grouped widgets use #161618 with #222224 and #303033 for raised/selected states. Foreground is #F4F4F4, secondary text #A1A1A3. These are Mobio semantic adapters informed by the reference, not asserted native source-code values. Light mode uses the paired neutral theme. Brand logo colours remain intact.
 
-## 3. Audit summary
+Inter is the bundled native typography adapter; the installed reference app's exact font/build were not exposed. Display is 30–36, pushed-page title 24, section title 18–20, row title 16, body 14–16, labels 11–13. Headings use 600, labels 500, body 400. Avoid heavy 800/900 headings and shrink-to-fit text. Allow enlarged text to wrap; a constrained pushed title can scroll while its back control stays available.
 
-The main UI problems were:
+Use a 4-point spacing grid, 16 horizontal page insets, 24-radius grouped mobile panels, and 48 minimum icon targets. Primary buttons are contrasting pills, at least 52 high, with stable loading geometry. Ordinary surfaces are opaque and flat. Home and BioPay overviews own the blue top glow; pushed forms, lists, profile, chat and admin use neutral canvases. Do not spread decorative gradients, borders and shadows across every card.
 
-- explanatory subtitles on obvious actions
-- mixed surface styles within the same screen
-- headers that described scope instead of simply showing it
-- empty/error states that relied on helper copy instead of direct actions
-- route and status information expressed as raw text instead of chips and badges
+Quick actions use 48 circles with labels inside the entire tap target. Bottom navigation floats above system safe areas and exposes selected semantics, keyboard activation and four real destinations. Secondary routes use a back control. Native UI and browser previews respect reduced motion.
 
-## 4. Design tokens
+## Screen patterns
 
-### 4.1 Token files
+Home places nearby availability first, followed by compact actions and discovery rows. Trips puts routes/times/status ahead of support copy; create/edit/details keep existing validation. BioPay uses a centered identity overview with Face Scan, NFC Tap, Get QR and Scan QR, followed by payment-link and insurance actions. QR contrast, camera permissions, NFC progress, request expiry and network handoff remain functional requirements.
 
-- colors: `lib/core/theme/app_colors.dart`
-- typography: `lib/core/theme/app_typography.dart`
-- spacing: `lib/core/theme/app_spacing.dart`
-- radii: `lib/core/theme/app_radii.dart`
-- shadows: `lib/core/theme/app_shadows.dart`
-- theme wiring: `lib/core/theme/app_theme.dart`
+Profile leads with identity and groups settings. Wallet and Mobio Plus preserve server-authoritative balances, plans, confirmation and recovery. Nearby and EV discovery retain filters, permission handling and external maps. Chat preserves composition, keyboard clearance and message state. Empty/error/loading states use the same typography and surfaces with a clear next action.
 
-### 4.2 Color direction
+## Admin
 
-Brand:
+Preserve operational information architecture and permissions. At 1000 logical pixels and above, use a 216-wide sidebar with all existing modules, a quiet heading/action area, and content constrained to 1360. Below that width, use scrollable module tabs; the mobile shell retains its four destinations. The wide shell does not duplicate the workspace sidebar.
 
-- primary is `#8885F0` periwinkle
-- secondary is `#D38B96` dusty rose
-- tertiary/success is `#3CD070` mint green
-- warning/error emphasis is `#FF5E43` vibrant orange-red
+Use 16-radius tonal panels, structured filters, status chips, tables/cards and detail sheets. Keep selection visible through Material ink, support keyboard focus, and keep destructive confirmations. Always reduce headline intensity and use the same chip and spacing language across operational screens. Business promotional images support composition only; they do not establish a live desktop breakpoint or full table specification.
 
-Neutrals:
+## Public website
 
-- dark mode uses black, ink, and deep violet surfaces
-- light mode remains available but is secondary to the dark shell
+Use self-hosted Aeonik Pro for editorial headings and Inter for legal copy. The measured website reference is 48/48 mobile H1 and approximately 84/84 at 1267 desktop width; our responsive scale follows those anchors. The website is light and editorial, with a photographic hero, large sections and simple black/white pill CTAs. Image content is original illustrative Mobio artwork, with explicit provenance.
 
-Semantic usage:
+Navigation supports keyboard, Escape, focus return and a small-screen menu. Main content remains available without JavaScript. Native details elements provide FAQ disclosure. Public download, business login, contact and legal links use real destinations; no placeholder store link or unsupported service claim. Policy text is preserved; shared navigation and readable legal layout are updated.
 
-- `primary`: selection, focus, premium gradient node
-- `primaryContainer`: secure and brand-tinted surfaces
-- `secondaryContainer`: profile, promo, and warm secondary surfaces
-- `tertiaryContainer`: live, confirmed, and positive transport state
-- `errorContainer`: destructive or warning states
-- `info`: route, analytics, map, calendar, and informational links
-- `aqua`: live mobility, map pulse, and route availability accents
-- `caution`: pending, review, limited availability, and non-destructive warnings
-- `surfaceContainer*`: general layout surfaces and cards
-- `textTertiary` and `textDisabled`: timestamps, captions, and inactive controls
-- `borderStrong` and `borderSubtle`: raised chrome and quiet panel divisions
+## Verification and release
 
-Support palette:
+Use functional tests for journeys, accessibility checks for large text/keyboard and target captures for inspection at 390×844, 430×932, 768×1024, 1280×900 and 1440×1000 as applicable. Existing historical goldens remain historical evidence; explicit capture mode writes synthetic targets under ignored `output/` and is not a parity pass. Record known differences and evidence gaps in the design report.
 
-- `info` is `#4D8DFF`, with `infoContainer` `#0F274F`
-- `aqua` is `#5DE2E7`, with `aquaContainer` `#0B3439`
-- `caution` is `#FFB84D`, with `cautionContainer` `#3A2608`
-- depth stops are `#18124A`, `#10164B`, `#2A1639`, `#39202D`, `#0F3421`, `#3E1510`
-
-Revolut-reference rule:
-
-- use the support palette for small semantic accents and depth, not as competing brand colors
-- command bars, circular actions, and bottom navigation use black chrome with tokenized overlay alpha
-- primary CTAs stay white pill controls on dark surfaces unless a semantic state requires otherwise
-
-Gradient presets:
-
-- `SoftGradientTone.shell`: default Home, Trips, BioPay, Admin, and Chat shell
-- `SoftGradientTone.nearby`: aqua mobility depth for map and nearby discovery
-- `SoftGradientTone.profile`: dusty rose profile/account depth
-- `SoftGradientTone.success`: mint confirmation and live success depth
-- `SoftGradientTone.alert`: orange-red failure and destructive-state depth
-
-### 4.3 Typography rules
-
-Families:
-
-- Manrope for headlines
-- Inter for body and labels
-
-Rules:
-
-- keep the scale tight
-- keep letter spacing at `0`
-- reserve `display*` and `heroNumber` for rare moments
-- default to `titleLg`, `titleMd`, `bodySm`, `labelMd`
-- keep titles short
-- avoid paragraph-style support text unless it directly prevents user failure
-
-### 4.4 Spacing rules
-
-Grid: 4px
-
-Core tokens:
-
-- `screenPadding = 24`
-- `sectionGap = 32`
-- `cardGap = 20`
-- `compactGap = 12`
-
-Spacing usage:
-
-- use padding and grouping to create hierarchy before adding labels
-- keep repeated list items visually rhythmic
-- separate sections with space, not decorative dividers
-
-### 4.5 Radii rules
-
-Core tokens:
-
-- `sm = 12`
-- `md = 16`
-- `lg = 20`
-- `xl = 24`
-- `xxl = 28`
-- `hero = 32`
-- `pill = 999`
-
-Usage:
-
-- `hero` for major cards and headers
-- `xl` and `xxl` for standard cards
-- `pill` for badges, chips, toggles, and compact actions
-
-### 4.6 Elevation rules
-
-- use subtle elevation only when it helps orientation
-- prefer borders and surface contrast over strong shadows
-- keep floating chrome distinct from content chrome
-
-## 5. Component library
-
-### 5.1 Base surfaces
-
-`ClayCard` compatibility alias
-
-- default translucent content surface
-- retained source name for compatibility only
-- not a public legacy-surface design direction
-- subtle press feedback
-
-`MobiSurfacePanel`
-
-- readable header and grouping surface
-- use when content must sit clearly above the background layer
-
-`GlassCard`
-
-- floating chrome only
-- bottom navigation and persistent overlay treatment
-
-### 5.2 Reusable components
-
-`MobiTopCommandBar`
-
-- avatar/logo, black search pill, and two circular command buttons
-- default primary shell chrome for Home, Trips, Profile, and product hubs
-
-`MobiPageHeader`
-
-- pushed-screen header
-- compact title, optional subtitle, optional trailing action
-
-`MobiActionRow`
-
-- 2-4 icon-led quick actions
-- use when actions should feel lighter than full tiles
-
-`MobiFeatureTile`
-
-- icon-led navigation or settings row
-- use optional subtitle only when it changes user success
-
-`MobiMetricTile`
-
-- compact stat tile for counts and summary metrics
-
-`MobiStatusBadge`
-
-- strong semantic badge
-- use for state, identity, and mode
-
-`MobiInfoChip`
-
-- lighter inline metadata chip
-- use for time, date, compact route metadata, and filters
-
-`MobiStateBanner`
-
-- inline status, permission, or availability banner
-- replaces bespoke notice cards
-
-`MobiToggle`
-
-- segmented control for short state switching
-
-`MobiButton`
-
-- primary, ghost, danger, success, WhatsApp
-- minimal fill, subtle shadow, restrained typography
-
-`AiEmptyState` and `MobiErrorState`
-
-- concise title
-- optional one-line support text
-- direct action when one exists
-
-### 5.3 Reusable widget patterns
-
-Prefer these patterns:
-
-- summary card + metric tiles
-- compact quick-action strip
-- badge row under primary content
-- terse settings list
-- sticky primary action
-- bottom sheet for secondary actions
-- inline state banner for permission/availability issues
-
-Avoid:
-
-- free-floating helper paragraphs
-- stacked titles plus subtitles that repeat each other
-- one-off banners and dialogs when a shared pattern already exists
-
-## 6. Icon usage rules
-
-Mobio uses Lucide icons.
-
-Rules:
-
-- every icon must communicate action, category, or state
-- no decorative icons without a semantic job
-- standard sizes:
-  - `12-14` for micro metadata
-  - `16-20` for compact controls and chips
-  - `22-24` for primary action tiles
-- keep icon containers aligned to the spacing grid
-- never mix icon families inside the same system
-
-## 7. Screen-level redesign guidance
-
-### 7.1 Home
-
-- one compact header panel
-- one summary card for live state
-- one quick-action strip
-- compact sections with count-led captions
-- empty states should expose direct actions when possible
-
-### 7.2 BioPay
-
-- one identity header with brand and region badges
-- use the shared dark shell, command bar, circular action row, and tokenized panels
-- keep 3-4 primary actions visible
-- no repeated brand subtitles inside every action tile
-- use state banners for availability constraints
-- keep QR/scanner/NFC readability high, but do not reintroduce a separate light product system
-
-### 7.3 Bookings
-
-- header should show scope, not explain it
-- use date pills and metadata chips
-- route should be primary, time/status should be structured metadata
-- bus trips should expose agency, route, seat availability, and Google Maps handoff as compact chips/actions
-- never embed a map; use a Google Maps deep link for route or live vehicle position handoff
-- use shared confirm patterns for destructive actions
-
-### 7.4 Profile
-
-- member identity first
-- use badges for trust and tenure
-- settings should read as a terse list, not a paragraph list
-- inline controls should replace explanatory subtitles
-
-### 7.5 Nearby
-
-- location and permission issues belong in a reusable banner
-- filters stay compact and horizontal
-- browsing content should stay list-first
-
-### 7.6 Chat
-
-- header context should be a route or short mode label only
-- conversation chrome stays minimal so the thread remains primary
-
-### 7.7 Admin
-
-- keep the same information architecture
-- reduce headline intensity to match the core app
-- use the same chip and spacing language as passenger screens
-
-## 8. Navigation simplification guidance
-
-Keep the current navigation architecture.
-
-Rules:
-
-- 4 top-level branches only: Home, Trips, BioPay, and Profile
-- use short labels and icon-led scanning
-- push secondary flows over the shell
-- prefer contextual entry points from cards, tiles, and FABs
-- do not add new top-level destinations unless the product model changes
-
-## 9. Incremental implementation guidance
-
-Roll out in this order:
-
-1. tokens and shared surfaces
-2. shared action, tile, badge, empty, and banner components
-3. top-traffic passenger screens
-4. forms and detail screens
-5. admin workspace alignment
-6. snackbars, dialogs, and remaining edge states
-
-When touching an existing screen:
-
-1. remove repeated headings and subtitles first
-2. collapse repeated metadata into chips or badges
-3. replace one-off notice UI with shared banners or empty states
-4. normalize padding, radii, and icon sizing
-5. only then consider deeper layout changes
-
-## 10. Implementation checklist
-
-Every new or refactored screen should pass this checklist:
-
-- is the title shorter and clearer?
-- did raw text become tiles, chips, badges, or stat blocks where appropriate?
-- is there a single primary action?
-- are surfaces consistent inside the section?
-- are icons Lucide and semantically meaningful?
-- is helper text only present when it materially improves success?
-- is the pattern shared instead of restyled locally?
-
-## 11. Reference screens
-
-The current benchmark screens for the minimalist system are:
-
-- `lib/features/home/home_screen.dart`
-- `lib/features/bookings/bookings_screen.dart`
-- `lib/features/profile/profile_screen.dart`
-- `lib/features/nearby/nearby_screen.dart`
-- `lib/features/biopay/biopay_screen.dart`
-- `lib/features/chat/chat_screen.dart`
-- `lib/features/admin/widgets/admin_ui.dart`
-
-Legacy payment and ledger routes are not benchmark screens for this release.
-They remain intentionally unavailable under the active product scope. BioPay is
-active only as an external USSD handoff and face/QR/NFC identity surface.
+Run strict analysis, relevant tests, guarded release packaging and secret checks. A local build, visual inspection, deployment and user acceptance are separate results. Do not publish a synthetic preview as a production app.

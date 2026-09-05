@@ -137,23 +137,23 @@ class MobiInputField extends StatelessWidget {
                 ? const BoxConstraints(minWidth: 44)
                 : null,
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadii.xl),
-              borderSide: BorderSide(color: cs.outlineVariant),
+              borderRadius: BorderRadius.circular(AppRadii.md),
+              borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadii.xl),
+              borderRadius: BorderRadius.circular(AppRadii.md),
               borderSide: BorderSide(color: cs.primary),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadii.xl),
+              borderRadius: BorderRadius.circular(AppRadii.md),
               borderSide: BorderSide(color: cs.error),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadii.xl),
+              borderRadius: BorderRadius.circular(AppRadii.md),
               borderSide: BorderSide(color: cs.error),
             ),
             disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadii.xl),
+              borderRadius: BorderRadius.circular(AppRadii.md),
               borderSide: BorderSide(
                 color: cs.outlineVariant.withValues(alpha: 0.4),
               ),

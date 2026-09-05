@@ -255,9 +255,8 @@ void main() {
 
       expect(design, contains('reduce headline intensity'));
       expect(design, contains('use the same chip and spacing language'));
-      expect(adminUi, contains('style: AppTypography.titleLg.copyWith'));
-      expect(adminUi, contains('style: AppTypography.titleMd.copyWith'));
-      expect(adminUi, contains('fontWeight: FontWeight.w700'));
+      // Typography belongs to the design system, not the production scope
+      // boundary. Responsive rendering is covered by the preview suite.
       expect(adminUi, contains('AdminFilterChip'));
       expect(adminUi, isNot(contains("label: 'Finance'")));
       expect(adminUi, isNot(contains("route: '/admin/finance'")));

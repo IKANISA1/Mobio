@@ -244,7 +244,7 @@ class _NotificationTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: AppTypography.titleMd.copyWith(
                         color: Colors.white,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     if ((notification.body ?? '').isNotEmpty) ...[
@@ -264,7 +264,7 @@ class _NotificationTile extends StatelessWidget {
                       _labelFor(notification.type),
                       style: AppTypography.labelSm.copyWith(
                         color: cs.primary.withValues(alpha: 0.92),
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],

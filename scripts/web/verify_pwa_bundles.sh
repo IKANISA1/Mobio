@@ -41,6 +41,13 @@ for filename in (
     "main.dart.js",
     "style.css",
     "script.js",
+    "privacy-policy.html",
+    "terms-and-conditions.html",
+    "account-deletion.html",
+    "assets/mobio-journey-hero.jpg",
+    "assets/fonts/AeonikPro-Medium.woff2",
+    "assets/fonts/AeonikPro-Regular.woff2",
+    "assets/fonts/Inter-Regular.woff2",
     "_worker.js",
     "_headers",
     "_redirects",
@@ -91,7 +98,7 @@ redirects = read_text(site_dir / "_redirects")
 worker = read_text(site_dir / "_worker.js")
 
 require(
-    "<title>Mobio — Mobility Discovery in Rwanda</title>" in landing_index,
+    "<title>Mobio — Your next connection</title>" in landing_index,
     "Landing index title mismatch",
 )
 require(

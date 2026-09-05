@@ -352,7 +352,7 @@ class _DeviceNfcListeningViewState extends State<_DeviceNfcListeningView>
           textAlign: TextAlign.center,
           style: AppTypography.headlineLg.copyWith(
             color: Colors.white,
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: AppSpacing.xs),
@@ -361,7 +361,7 @@ class _DeviceNfcListeningViewState extends State<_DeviceNfcListeningView>
           textAlign: TextAlign.center,
           style: AppTypography.titleMd.copyWith(
             color: Colors.white.withValues(alpha: 0.78),
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],

@@ -188,7 +188,7 @@ class _MobiOtpCodeFieldState extends State<MobiOtpCodeField> {
                         ],
                         style: AppTypography.titleLg.copyWith(
                           color: cs.onSurface,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                         ),
                         decoration: const InputDecoration(
                           counterText: '',

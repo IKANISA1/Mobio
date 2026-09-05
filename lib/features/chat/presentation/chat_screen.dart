@@ -1010,7 +1010,7 @@ class _ChatContactAction extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.labelMd.copyWith(
                           color: cs.onSurface,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),

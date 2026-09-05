@@ -403,6 +403,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         : widget.onViewNearby;
 
     return SoftGradient(
+      tone: SoftGradientTone.shell,
       child: SafeArea(
         bottom: false,
         child: RefreshIndicator.adaptive(

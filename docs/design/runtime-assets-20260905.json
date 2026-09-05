@@ -1,0 +1,27 @@
+[
+  {
+    "path": "landing/assets/fonts/Inter-Regular.woff2",
+    "sha256": "f536bae011685cdeb84a3ec10450fd024d62536949d870582f4651cd47404067",
+    "bytes": 103152
+  },
+  {
+    "path": "landing/assets/fonts/AeonikPro-Medium.woff2",
+    "sha256": "84c864840f6aa107dc9ae6f0c3e588eb8d1f88696949a63362a89f328158ba6f",
+    "bytes": 40328
+  },
+  {
+    "path": "landing/assets/fonts/AeonikPro-Regular.woff2",
+    "sha256": "4a470b7f273906c503b0315b232fe0762762ea864ee535f6ed0e951415d69660",
+    "bytes": 53688
+  },
+  {
+    "path": "landing/assets/mobio-journey-hero.jpg",
+    "sha256": "32f4b4d5a04dc9b57e21cca649ead0b2e3181057556cd104915c2804c0a70863",
+    "bytes": 386249
+  },
+  {
+    "path": "landing/assets/mobi_icon.png",
+    "sha256": "e7460f37af85de9f54cd76f8077a39400bc4d19c7c46c077bf611238e462a3e3",
+    "bytes": 9602
+  }
+]

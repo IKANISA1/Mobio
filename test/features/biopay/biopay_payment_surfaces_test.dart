@@ -15,7 +15,6 @@ import 'package:mobi_app/features/biopay/presentation/biopay_request_payment_scr
 import 'package:mobi_app/features/biopay/presentation/biopay_scan_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_style.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
-import 'package:mobi_design_system/theme/app_colors.dart';
 import 'package:mobi_design_system/theme/app_theme.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
@@ -25,7 +24,10 @@ void main() {
   setUpAll(installMobileScannerTestChannel);
   tearDownAll(uninstallMobileScannerTestChannel);
 
-  testWidgets('BioPay home uses four two-by-two payment cards', (tester) async {
+  testWidgets('BioPay overview connects every identity action to its flow', (
+    tester,
+  ) async {
+    final invoked = <String>[];
     await tester.binding.setSurfaceSize(const Size(390, 844));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -34,24 +36,18 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.darkTheme,
           home: BioPayScreen(
-            onQr: () {},
-            onScan: () {},
-            onFace: () {},
-            onNfc: () {},
-            onRequestPayment: () {},
+            onQr: () => invoked.add('Get QR'),
+            onScan: () => invoked.add('Scan QR'),
+            onFace: () => invoked.add('Face Scan'),
+            onNfc: () => invoked.add('NFC Tap'),
+            onRequestPayment: () => invoked.add('Get Payment Link'),
           ),
         ),
       ),
     );
 
-    final grid = tester.widget<GridView>(find.byType(GridView).first);
-    final delegate =
-        grid.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
-    expect(delegate.crossAxisCount, 2);
-    expect(find.text('Pay & Get Paid'), findsOneWidget);
-    expect(find.text('Instant & Secure'), findsOneWidget);
-    final secondary = tester.widget<Text>(find.text('Instant & Secure'));
-    expect(secondary.style?.color, AppColors.primaryFixedDim);
+    expect(find.text('BioPay'), findsOneWidget);
+    expect(find.text('Your identity.\nYour connection.'), findsOneWidget);
     expect(find.text('Face Scan'), findsOneWidget);
     expect(find.text('NFC Tap'), findsOneWidget);
     expect(find.text('Get QR'), findsOneWidget);
@@ -73,6 +69,17 @@ void main() {
       paymentLinkDecoration.color,
       bioPayDarkPanelAlt.withValues(alpha: 0.96),
     );
+    for (final label in [
+      'Face Scan',
+      'NFC Tap',
+      'Get QR',
+      'Scan QR',
+      'Get Payment Link',
+    ]) {
+      await tester.tap(find.text(label));
+      await tester.pump();
+      expect(invoked.last, label);
+    }
     expect(find.text('BioPay identity'), findsNothing);
     expect(find.text('Ready to receive'), findsNothing);
   });
@@ -231,7 +238,6 @@ void main() {
       find.widgetWithText(MobiButton, 'Generate QR Code'),
     );
     expect(action.onPressed, isNull);
-    expect(_buttonDecoration(tester, 'Generate QR Code').boxShadow, isNull);
 
     await tester.enterText(find.byType(TextField).first, '0788767816');
     await tester.pump();
@@ -239,7 +245,6 @@ void main() {
       find.widgetWithText(MobiButton, 'Generate QR Code'),
     );
     expect(action.onPressed, isNotNull);
-    expect(_buttonDecoration(tester, 'Generate QR Code').boxShadow, isNotNull);
 
     await tester.tap(find.text('Code'));
     await tester.pump();
@@ -249,7 +254,6 @@ void main() {
       find.widgetWithText(MobiButton, 'Generate QR Code'),
     );
     expect(action.onPressed, isNull);
-    expect(_buttonDecoration(tester, 'Generate QR Code').boxShadow, isNull);
 
     await tester.enterText(find.byType(TextField).first, '12345');
     await tester.pump();
@@ -257,7 +261,6 @@ void main() {
       find.widgetWithText(MobiButton, 'Generate QR Code'),
     );
     expect(action.onPressed, isNotNull);
-    expect(_buttonDecoration(tester, 'Generate QR Code').boxShadow, isNotNull);
   });
 
   testWidgets('Device NFC surface does not write physical NFC cards', (
@@ -364,7 +367,6 @@ void main() {
       find.widgetWithText(MobiButton, 'Write NFC'),
     );
     expect(action.onPressed, isNull);
-    expect(_buttonDecoration(tester, 'Write NFC').boxShadow, isNull);
 
     await tester.enterText(find.byType(TextField), '1234');
     await tester.pump();
@@ -372,7 +374,6 @@ void main() {
       find.widgetWithText(MobiButton, 'Write NFC'),
     );
     expect(action.onPressed, isNull);
-    expect(_buttonDecoration(tester, 'Write NFC').boxShadow, isNull);
 
     await tester.enterText(find.byType(TextField), '12345');
     await tester.pump();
@@ -380,7 +381,6 @@ void main() {
       find.widgetWithText(MobiButton, 'Write NFC'),
     );
     expect(action.onPressed, isNotNull);
-    expect(_buttonDecoration(tester, 'Write NFC').boxShadow, isNotNull);
   });
 
   testWidgets('Face scan surface keeps redundant AWS helper label removed', (
@@ -527,15 +527,4 @@ void main() {
       contains('Tap this MoMo USSD link: tel:*182*1*1*0788767816*9999%23'),
     );
   });
-}
-
-BoxDecoration _buttonDecoration(WidgetTester tester, String label) {
-  final button = find.widgetWithText(MobiButton, label);
-  final container = find.descendant(
-    of: button,
-    matching: find.byType(AnimatedContainer),
-  );
-  expect(container, findsOneWidget);
-  return tester.widget<AnimatedContainer>(container).decoration!
-      as BoxDecoration;
 }
