@@ -9,8 +9,6 @@ void main() {
         'lib/features/biopay/presentation/biopay_request_payment_screen.dart';
     const payerScreenPath =
         'lib/features/biopay/presentation/biopay_payment_link_screen.dart';
-    const flowSharedPath =
-        'lib/features/biopay/presentation/biopay_flow_shared.dart';
     const servicePath = 'lib/features/biopay/data/biopay_ussd_service.dart';
     const routerPath = 'lib/app/router/app_router.dart';
     const configPath = 'lib/core/config/supabase_config.dart';
@@ -85,18 +83,6 @@ void main() {
           ),
         ),
       );
-    });
-
-    test('QR output uses Rwanda logo gradient and tight logo badge', () {
-      final flowShared = File(flowSharedPath).readAsStringSync();
-
-      expect(flowShared, contains('_rwandaLogoGradient'));
-      expect(flowShared, contains('Color(0xFF00A3E0)'));
-      expect(flowShared, contains('Color(0xFFFAD201)'));
-      expect(flowShared, contains('Color(0xFF00A651)'));
-      expect(flowShared, contains('logoBadgeWidth'));
-      expect(flowShared, contains('logoBadgeHeight'));
-      expect(flowShared, isNot(contains('constraints.maxWidth * 0.24')));
     });
 
     test('payer link resolves and Android auto-launches the USSD dialer', () {

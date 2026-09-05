@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/app/launch_screen.dart';
 import 'package:mobi_app/app/router/error_screens.dart';
 import 'package:mobi_app/features/admin/presentation/admin_audit_log_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_auth_screen.dart';
@@ -18,6 +19,8 @@ import 'package:mobi_app/features/admin/presentation/admin_trips_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_users_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_vehicle_types_screen.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
+import 'package:mobi_app/features/auth/application/auth_providers.dart';
+import 'package:mobi_app/features/auth/presentation/whatsapp_login_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_admin_console_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_face_enroll_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_face_scan_screen.dart';
@@ -39,6 +42,7 @@ import 'package:mobi_app/shared/widgets/mobi_bottom_nav.dart';
 import 'package:mobi_design_system/theme/app_theme.dart';
 
 import 'revolut_preview_services.dart';
+import 'revolut_whatsapp_preview_service.dart';
 
 void main() {
   GoogleFonts.config.allowRuntimeFetching = false;
@@ -66,7 +70,9 @@ class RevolutVisualProofApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
+      theme: Uri.base.queryParameters['theme'] == 'light'
+          ? AppTheme.lightTheme
+          : AppTheme.darkTheme,
       home: _VisualProofHost(
         initialScreen: screen,
         allowInitialLink: _screenFromDefine.isEmpty && queryScreen == null,
@@ -99,6 +105,8 @@ class _VisualProofHostState extends State<_VisualProofHost> {
     defaultValue: _intervalMs,
   );
   static const _screens = [
+    'splash',
+    'login',
     'home_shell',
     'bookings_shell',
     'biopay_shell',
@@ -305,8 +313,16 @@ Widget _screenFor(String screen) {
     'biopay_face_enroll' => BioPayFaceEnrollScreen(onBack: () {}),
     'biopay_nfc' => BioPayNfcScreen(onBack: () {}),
     'biopay_nfc_write' => BioPayNfcWriteCardScreen(onBack: () {}),
-    'admin_auth' ||
-    'login_large_text' => AdminAuthScreen(onBack: () {}, onSuccess: () {}),
+    'splash' => const MobiLaunchScreen(),
+    'login' || 'login_large_text' => ProviderScope(
+      overrides: [
+        whatsappLoginServiceProvider.overrideWith(
+          (ref) => PreviewWhatsAppLoginService(),
+        ),
+      ],
+      child: WhatsAppLoginScreen(onBack: () {}, onSuccess: (_) {}),
+    ),
+    'admin_auth' => AdminAuthScreen(onBack: () {}, onSuccess: () {}),
     'admin_dashboard' => const AdminDashboardScreen(),
     'admin_users' => const AdminUsersScreen(),
     'admin_trips' => AdminTripsScreen(onBack: () {}),

@@ -17,6 +17,7 @@ import 'package:mobi_app/features/biopay/presentation/biopay_style.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_design_system/theme/app_theme.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../helpers/mobile_scanner_test_channel.dart';
 
@@ -129,6 +130,17 @@ void main() {
       lessThan(logoBadge.constraints!.maxWidth),
     );
     expect(logoDecoration.color, Colors.white);
+    final qr = tester.widget<QrImageView>(find.byType(QrImageView));
+    expect(qr.eyeStyle.color, Colors.black);
+    expect(qr.dataModuleStyle.color, Colors.black);
+    expect(qr.errorCorrectionLevel, QrErrorCorrectLevel.H);
+    expect(
+      find.ancestor(
+        of: find.byType(QrImageView),
+        matching: find.byType(ShaderMask),
+      ),
+      findsNothing,
+    );
     expect(find.byKey(const ValueKey('biopayQrLogoImage')), findsOneWidget);
     expect(find.text('Dial USSD'), findsNothing);
     expect(find.textContaining('Token expires'), findsNothing);

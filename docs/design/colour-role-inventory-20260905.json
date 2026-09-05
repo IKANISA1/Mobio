@@ -1,0 +1,1733 @@
+{
+  "date": "2026-09-05",
+  "scope": "source literals; semantic references inherit their role definitions; not pixel parity",
+  "logo_sha256": {
+    "icon/mobi_logo_transparent.png": "d756c1bc6ccfa7a02bdce0ca1eba3dabf6a122134a1a634b2d24cd7679301c94",
+    "landing/assets/mobi_icon.png": "e7460f37af85de9f54cd76f8077a39400bc4d19c7c46c077bf611238e462a3e3",
+    "web/icons/mobio-mark.png": "d756c1bc6ccfa7a02bdce0ca1eba3dabf6a122134a1a634b2d24cd7679301c94"
+  },
+  "literals": [
+    {
+      "file": "lib/app/launch_screen.dart",
+      "line": 32,
+      "literal": "FF191C1F",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "lib/core/constants/app_constants.dart",
+      "line": 29,
+      "literal": "7FFFFFFF",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "lib/features/biopay/presentation/biopay_flow_shared.dart",
+      "line": 858,
+      "literal": "FF28333D",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "lib/features/biopay/presentation/biopay_nfc_write_card_screen.dart",
+      "line": 458,
+      "literal": "FF28333D",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "lib/features/biopay/presentation/biopay_style.dart",
+      "line": 9,
+      "literal": "FF191C1F",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "lib/features/biopay/presentation/biopay_style.dart",
+      "line": 10,
+      "literal": "FF717173",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "lib/features/biopay/presentation/biopay_style.dart",
+      "line": 11,
+      "literal": "FFF7F7F7",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "lib/features/biopay/presentation/biopay_style.dart",
+      "line": 12,
+      "literal": "FFF4F5F6",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "lib/features/biopay/presentation/biopay_style.dart",
+      "line": 13,
+      "literal": "FF000D19",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "lib/features/biopay/presentation/biopay_style.dart",
+      "line": 14,
+      "literal": "FF161618",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "lib/features/biopay/presentation/biopay_style.dart",
+      "line": 15,
+      "literal": "FF222224",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "lib/features/profile/data/referral_attribution_service.dart",
+      "line": 141,
+      "literal": "811c9dc5",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "lib/features/profile/data/referral_attribution_service.dart",
+      "line": 144,
+      "literal": "01000193",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "lib/features/profile/data/referral_attribution_service.dart",
+      "line": 144,
+      "literal": "ffffffff",
+      "classification": "native fixed overlay or neutral adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 14,
+      "literal": "FF6FA0FF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 15,
+      "literal": "FF315FD6",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 16,
+      "literal": "FF5E5CE6",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 17,
+      "literal": "FFE3ECFC",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 18,
+      "literal": "FFC8D2E6",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 21,
+      "literal": "FFBF5AF2",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 22,
+      "literal": "FF805CFF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 23,
+      "literal": "FFF1E5FC",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 24,
+      "literal": "FFDDC8EE",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 25,
+      "literal": "FF191C1F",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 26,
+      "literal": "FF28133A",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 27,
+      "literal": "FF65407C",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 28,
+      "literal": "FF1AC097",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 29,
+      "literal": "FF13D1A3",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 30,
+      "literal": "FFDFF6EF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 31,
+      "literal": "FFBCEBDD",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 32,
+      "literal": "FF002B22",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 34,
+      "literal": "FF075F4A",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 35,
+      "literal": "FFFF5363",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 36,
+      "literal": "FFBA263B",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 37,
+      "literal": "FF191C1F",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 41,
+      "literal": "FFFF9F0A",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 42,
+      "literal": "FF191C1F",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 44,
+      "literal": "FF0A84FF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 45,
+      "literal": "FF122B4B",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 46,
+      "literal": "FF000D19",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 47,
+      "literal": "FFE3ECFC",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 48,
+      "literal": "FF0CD9E6",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 49,
+      "literal": "FF13D1A3",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 50,
+      "literal": "FF082A35",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 51,
+      "literal": "FF000D19",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 52,
+      "literal": "FFDAF8FA",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 54,
+      "literal": "FF9A5A00",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 55,
+      "literal": "FF332207",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 57,
+      "literal": "FFFFE9C4",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 58,
+      "literal": "FF16133A",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 59,
+      "literal": "FF00043C",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 60,
+      "literal": "FF302B7D",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 61,
+      "literal": "FF28133A",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 62,
+      "literal": "FF021920",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 63,
+      "literal": "FF330E0C",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 76,
+      "literal": "FF000000",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 77,
+      "literal": "FF000000",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 78,
+      "literal": "FF000000",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 79,
+      "literal": "FF29292B",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 80,
+      "literal": "FF101012",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 81,
+      "literal": "FF161618",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 82,
+      "literal": "FF161618",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 83,
+      "literal": "FF222224",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 84,
+      "literal": "FF303033",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 85,
+      "literal": "FF29292B",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 86,
+      "literal": "FFF4F4F4",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 87,
+      "literal": "FFA1A1A3",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 88,
+      "literal": "FF909093",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 89,
+      "literal": "FF646467",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 90,
+      "literal": "FFF4F4F4",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 91,
+      "literal": "FFF4F4F4",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 92,
+      "literal": "FF090A12",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 93,
+      "literal": "FF555558",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 94,
+      "literal": "FF303033",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 95,
+      "literal": "FF707074",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 96,
+      "literal": "FF29292C",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 97,
+      "literal": "FF000D19",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 98,
+      "literal": "FF122B4B",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 99,
+      "literal": "FFE3ECFC",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 100,
+      "literal": "FF000D19",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 101,
+      "literal": "FF315FD6",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 102,
+      "literal": "FF28133A",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 103,
+      "literal": "FFF1E5FC",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 104,
+      "literal": "FF330E0C",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 105,
+      "literal": "FFFFDDE1",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 106,
+      "literal": "FF072D26",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 107,
+      "literal": "FFDFF6EF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 109,
+      "literal": "FF3453FC",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 110,
+      "literal": "FF03108D",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 118,
+      "literal": "FFF4F4F4",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 119,
+      "literal": "FFF4F4F4",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 120,
+      "literal": "FFE2E2E2",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 121,
+      "literal": "FFFFFFFF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 122,
+      "literal": "FFFFFFFF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 123,
+      "literal": "FFF7F7F7",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 124,
+      "literal": "FFFFFFFF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 125,
+      "literal": "FFEBEBEB",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 126,
+      "literal": "FFE2E2E2",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 127,
+      "literal": "FFEDEDED",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 128,
+      "literal": "FF191C1F",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 129,
+      "literal": "FF626265",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 130,
+      "literal": "FF717173",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 131,
+      "literal": "FF929296",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 132,
+      "literal": "FF191C1F",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 133,
+      "literal": "FF090A12",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 134,
+      "literal": "FFF4F4F4",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 135,
+      "literal": "FF8D8D91",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 136,
+      "literal": "FFC9C9CD",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 137,
+      "literal": "FF717173",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 138,
+      "literal": "FFE2E2E7",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 139,
+      "literal": "FFFFFFFF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 140,
+      "literal": "FFE3ECFC",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 141,
+      "literal": "FF122B4B",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 142,
+      "literal": "FF000D19",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 143,
+      "literal": "FF315FD6",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 144,
+      "literal": "FFF1E5FC",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 145,
+      "literal": "FF28133A",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 146,
+      "literal": "FFFFE5E8",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 147,
+      "literal": "FF7C1928",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 148,
+      "literal": "FFDFF6EF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 149,
+      "literal": "FF075F4A",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 151,
+      "literal": "FFDCE5FF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_colors.dart",
+      "line": 152,
+      "literal": "FFE3ECFC",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_shadows.dart",
+      "line": 14,
+      "literal": "1F000000",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_shadows.dart",
+      "line": 20,
+      "literal": "14000000",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_shadows.dart",
+      "line": 29,
+      "literal": "18000000",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_shadows.dart",
+      "line": 34,
+      "literal": "0AFFFFFF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_shadows.dart",
+      "line": 39,
+      "literal": "12000000",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_shadows.dart",
+      "line": 45,
+      "literal": "0A000000",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_shadows.dart",
+      "line": 56,
+      "literal": "14000000",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_shadows.dart",
+      "line": 61,
+      "literal": "08FFFFFF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_shadows.dart",
+      "line": 66,
+      "literal": "0F111111",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_shadows.dart",
+      "line": 71,
+      "literal": "BFFFFFFF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_theme.dart",
+      "line": 201,
+      "literal": "FFD8E7FF",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_theme.dart",
+      "line": 204,
+      "literal": "FFD7FAFC",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/app_theme.dart",
+      "line": 207,
+      "literal": "FFFFE7BD",
+      "classification": "semantic role; source/adaptation mapping in follow-up report"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 24,
+      "literal": "FF3453FC",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 25,
+      "literal": "FF182BE2",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 26,
+      "literal": "FF0B1CC7",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 27,
+      "literal": "FF03108D",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 28,
+      "literal": "FF04086A",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 29,
+      "literal": "FF000545",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 30,
+      "literal": "FF00043C",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 31,
+      "literal": "FF00043C",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 34,
+      "literal": "FF36A9BE",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 35,
+      "literal": "FF1E7389",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 36,
+      "literal": "FF125063",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 37,
+      "literal": "FF0D3442",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 38,
+      "literal": "FF082A35",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 39,
+      "literal": "FF051C23",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 40,
+      "literal": "FF021920",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 41,
+      "literal": "FF021920",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 44,
+      "literal": "FF673CDC",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 45,
+      "literal": "FF221546",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 46,
+      "literal": "FF1B123A",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 47,
+      "literal": "FF17133A",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 48,
+      "literal": "FF17133A",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 49,
+      "literal": "FF17123A",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 50,
+      "literal": "FF16133A",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 51,
+      "literal": "FF16133A",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 54,
+      "literal": "FF8398EF",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 55,
+      "literal": "FF5F6EBA",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 56,
+      "literal": "FF405093",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 57,
+      "literal": "FF27336C",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 58,
+      "literal": "FF202A5C",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 59,
+      "literal": "FF161A37",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 60,
+      "literal": "FF121732",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 61,
+      "literal": "FF121732",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 64,
+      "literal": "FF943FF6",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 65,
+      "literal": "FF7E4DF5",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 66,
+      "literal": "FF7351F3",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 67,
+      "literal": "FF644AF2",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 68,
+      "literal": "FF5650E5",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 69,
+      "literal": "FF342B7D",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 70,
+      "literal": "FF302B7D",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 71,
+      "literal": "FF302B7D",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 74,
+      "literal": "FF435E8E",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 75,
+      "literal": "FF374C8D",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 76,
+      "literal": "FF2C3D8E",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 77,
+      "literal": "FF18227D",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 78,
+      "literal": "FF151D74",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 79,
+      "literal": "FF0F164C",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 80,
+      "literal": "FF0E113D",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 81,
+      "literal": "FF0E113D",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "packages/design-system/lib/src/theme/mobi_visual_family.dart",
+      "line": 83,
+      "literal": "FF000000",
+      "classification": "DESK screenshot sample; light/interpolation adapter"
+    },
+    {
+      "file": "landing/index.html",
+      "line": 9,
+      "literal": "2863cd",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "landing/play-review/foreground-location-demo.html",
+      "line": 23,
+      "literal": "000",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "landing/play-review/foreground-location-demo.html",
+      "line": 24,
+      "literal": "f4f4f4",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "landing/play-review/foreground-location-demo.html",
+      "line": 29,
+      "literal": "000",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "landing/play-review/foreground-location-demo.html",
+      "line": 46,
+      "literal": "c6c6c8",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "landing/play-review/foreground-location-demo.html",
+      "line": 62,
+      "literal": "000",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "landing/play-review/foreground-location-demo.html",
+      "line": 69,
+      "literal": "161618",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "landing/play-review/foreground-location-demo.html",
+      "line": 85,
+      "literal": "a1a1a3",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "landing/play-review/foreground-location-demo.html",
+      "line": 95,
+      "literal": "c6c6c8",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "landing/play-review/foreground-location-demo.html",
+      "line": 100,
+      "literal": "ffffff",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 20,
+      "literal": "191c1f",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 21,
+      "literal": "717173",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 22,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 23,
+      "literal": "f7f7f7",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 24,
+      "literal": "1326fd",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 62,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 62,
+      "literal": "1975eb",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 101,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 102,
+      "literal": "000",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 128,
+      "literal": "1f1f1f",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 129,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 132,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 133,
+      "literal": "191c1f",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 147,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 154,
+      "literal": "eee",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 201,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 202,
+      "literal": "191c1f",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 205,
+      "literal": "191c1f",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 206,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 229,
+      "literal": "2863cd",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 230,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 277,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 299,
+      "literal": "58585b",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 303,
+      "literal": "f5f5f7",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 316,
+      "literal": "3453fc",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 317,
+      "literal": "03108d",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 318,
+      "literal": "00043c",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 327,
+      "literal": "ffffff26",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 343,
+      "literal": "e3ecfc",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 344,
+      "literal": "00043c",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 348,
+      "literal": "0004",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 352,
+      "literal": "6fa0ff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 356,
+      "literal": "805cff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 357,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 365,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 375,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 391,
+      "literal": "16133a",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 392,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 405,
+      "literal": "c9c9cd",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 415,
+      "literal": "f1e5fc",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 415,
+      "literal": "ddc8ee",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 418,
+      "literal": "28133a",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 420,
+      "literal": "673cdc44",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 433,
+      "literal": "65407c",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 438,
+      "literal": "718ac680",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 444,
+      "literal": "8d92a2",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 454,
+      "literal": "36a9be",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 455,
+      "literal": "bcebdd",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 456,
+      "literal": "dff6ef",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 466,
+      "literal": "125063",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 466,
+      "literal": "021920",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 471,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 472,
+      "literal": "082a3566",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 490,
+      "literal": "0cd9e6",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 498,
+      "literal": "daf8fa",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 503,
+      "literal": "c9c9cd",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 514,
+      "literal": "f7f7f7",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 526,
+      "literal": "d5d5d5",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 531,
+      "literal": "717173",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 536,
+      "literal": "717173",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 551,
+      "literal": "ddd",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 575,
+      "literal": "717173",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 584,
+      "literal": "dce6ff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 596,
+      "literal": "101012",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 597,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 605,
+      "literal": "ffffff21",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 611,
+      "literal": "a1a1a3",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 620,
+      "literal": "99999d",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 633,
+      "literal": "8b8b8e",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 634,
+      "literal": "ffffff21",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 640,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 644,
+      "literal": "191c1f",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 645,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 676,
+      "literal": "55565a",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 683,
+      "literal": "315fd6",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 689,
+      "literal": "717173",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 777,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 778,
+      "literal": "191c1f",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 786,
+      "literal": "eee",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 795,
+      "literal": "fff",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 796,
+      "literal": "191c1f",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 813,
+      "literal": "124fad55",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 813,
+      "literal": "10469a33",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "landing/style.css",
+      "line": 813,
+      "literal": "081f3c55",
+      "classification": "web editorial, interaction or original illustration adapter"
+    },
+    {
+      "file": "web/index.html",
+      "line": 20,
+      "literal": "ffffff",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "web/index.html",
+      "line": 21,
+      "literal": "000000",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "web/index.html",
+      "line": 40,
+      "literal": "fff",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "web/index.html",
+      "line": 40,
+      "literal": "000",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "web/index.html",
+      "line": 46,
+      "literal": "000",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "web/index.html",
+      "line": 46,
+      "literal": "fff",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "web/manifest.json",
+      "line": 6,
+      "literal": "ffffff",
+      "classification": "web theme or neutral adapter"
+    },
+    {
+      "file": "web/manifest.json",
+      "line": 7,
+      "literal": "ffffff",
+      "classification": "web theme or neutral adapter"
+    }
+  ]
+}

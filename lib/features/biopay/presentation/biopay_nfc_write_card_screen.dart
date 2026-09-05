@@ -9,6 +9,7 @@ import 'package:mobi_app/features/biopay/presentation/biopay_flow_shared.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_nfc_foreground_listener.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_style.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
+import 'package:mobi_design_system/theme/app_colors.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
@@ -454,7 +455,7 @@ class _NfcReceiverModeButton extends StatelessWidget {
                 color: selected ? Colors.white : null,
                 gradient: selected
                     ? const LinearGradient(
-                        colors: [bioPayInk, Color(0xFF1D2939)],
+                        colors: [bioPayInk, Color(0xFF28333D)],
                       )
                     : null,
                 borderRadius: BorderRadius.circular(AppRadii.xl),
@@ -641,7 +642,7 @@ class _NfcProgressItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = completed
-        ? const Color(0xFF22C55E)
+        ? AppColors.success
         : active
         ? bioPayNfcPurple
         : Colors.white.withValues(alpha: 0.38);
@@ -914,7 +915,7 @@ class _NfcWriteSuccessPanel extends StatelessWidget {
         border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF22C55E).withValues(alpha: 0.10),
+            color: AppColors.success.withValues(alpha: 0.10),
             blurRadius: 26,
             offset: const Offset(0, 14),
           ),
@@ -928,7 +929,7 @@ class _NfcWriteSuccessPanel extends StatelessWidget {
             const BioPayIconBox(
               icon: LucideIcons.check,
               color: Colors.white,
-              background: Color(0xFF22C55E),
+              background: AppColors.success,
               dimension: 58,
               iconSize: 28,
             ),

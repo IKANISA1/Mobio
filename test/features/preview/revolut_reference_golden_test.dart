@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/app/launch_screen.dart';
 import 'package:mobi_app/app/router/error_screens.dart';
 import 'package:mobi_app/core/localization/country_providers.dart';
 import 'package:mobi_app/core/localization/country_service.dart';
@@ -23,6 +25,8 @@ import 'package:mobi_app/features/admin/presentation/admin_trips_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_users_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_vehicle_types_screen.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
+import 'package:mobi_app/features/auth/application/auth_providers.dart';
+import 'package:mobi_app/features/auth/data/whatsapp_login_service.dart';
 import 'package:mobi_app/features/auth/presentation/whatsapp_login_screen.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/data/biopay_ussd_service.dart';
@@ -63,6 +67,7 @@ import 'package:mobi_shared_types/models/trip.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../helpers/mobile_scanner_test_channel.dart';
+import '../../helpers/whatsapp_login_fixture.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -89,6 +94,76 @@ void main() {
   const wideDesktop = Size(1440, 1000);
 
   final cases = <_GoldenCase>[
+    const _GoldenCase(name: 'splash', builder: MobiLaunchScreen.new),
+    for (final state in [
+      'number_ready',
+      'sending',
+      'send_error',
+      'rate_limited',
+      'otp',
+      'otp_invalid',
+      'otp_expired',
+      'verifying',
+      'resend_ready',
+    ])
+      _GoldenCase(
+        name: 'whatsapp_$state',
+        builder: () {
+          final service = FakeWhatsAppLoginService();
+          if (state == 'sending') {
+            service.send = () => Completer<WhatsAppLoginResult>().future;
+          } else if (state == 'send_error') {
+            service.send = () async => const WhatsAppLoginResult(
+              success: false,
+              message: 'Unable to send a code. Please try again.',
+            );
+          } else if (state == 'rate_limited') {
+            service.send = () async => const WhatsAppLoginResult(
+              success: false,
+              message: 'Please wait before requesting another code.',
+              retryAfterSeconds: 30,
+            );
+          }
+          if (state == 'otp_invalid') {
+            service.verify = () async => const WhatsAppLoginResult(
+              success: false,
+              message: 'That code is incorrect. Try again.',
+              attemptsRemaining: 2,
+            );
+          } else if (state == 'otp_expired') {
+            service.verify = () async => const WhatsAppLoginResult(
+              success: false,
+              message: 'Your code expired. Please request a new one.',
+              attemptsRemaining: 0,
+            );
+          } else if (state == 'verifying') {
+            service.verify = () => Completer<WhatsAppLoginResult>().future;
+          }
+          return ProviderScope(
+            overrides: [
+              whatsappLoginServiceProvider.overrideWithValue(service),
+            ],
+            child: WhatsAppLoginScreen(onBack: () {}, onSuccess: (_) {}),
+          );
+        },
+        prepare: (tester) async {
+          if (state == 'number_ready') {
+            await enterPreviewPhone(tester);
+            return;
+          }
+          await requestPreviewCode(tester);
+          if (['otp_invalid', 'otp_expired', 'verifying'].contains(state)) {
+            await enterPreviewCode(tester);
+            await tester.ensureVisible(find.text('Verify code'));
+            await tester.tap(find.text('Verify code'));
+            await tester.pump();
+            await tester.pump(const Duration(milliseconds: 250));
+          }
+          if (state == 'resend_ready') {
+            await tester.pump(const Duration(seconds: 61));
+          }
+        },
+      ),
     _GoldenCase(
       name: 'login',
       builder: () => WhatsAppLoginScreen(onBack: () {}, onSuccess: (_) {}),
@@ -337,6 +412,10 @@ void main() {
   cases.addAll(shellCases);
 
   for (final name in [
+    'splash',
+    'login',
+    'biopay_home',
+    'wallet',
     'home',
     'profile',
     'bookings',
@@ -360,11 +439,13 @@ void main() {
       for (final item in cases) {
         testWidgets(item.name, (tester) async {
           await _pumpGolden(tester, size, item.builder());
+          await item.prepare?.call(tester);
 
           await expectLater(
             find.byType(MaterialApp),
             matchesGoldenFile('goldens/revolut/${item.name}_$suffix.png'),
           );
+          await tester.pumpWidget(const SizedBox.shrink());
         });
       }
     });
@@ -378,6 +459,7 @@ void main() {
       for (final item in desktopCases) {
         testWidgets(item.name, (tester) async {
           await _pumpGolden(tester, size, item.builder());
+          await item.prepare?.call(tester);
 
           await expectLater(
             find.byType(MaterialApp),
@@ -531,11 +613,13 @@ class _GoldenCase {
   final String name;
   final Widget Function() builder;
   final bool includeDesktop;
+  final Future<void> Function(WidgetTester)? prepare;
 
   const _GoldenCase({
     required this.name,
     required this.builder,
     this.includeDesktop = false,
+    this.prepare,
   });
 }
 

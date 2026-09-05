@@ -15,12 +15,14 @@ import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
+import 'package:mobi_app/shared/widgets/mobi_visual_theme.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/vehicle_type_icon.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
+import 'package:mobi_design_system/theme/mobi_visual_family.dart';
 import 'package:mobi_shared_types/models/trip.dart';
 import 'package:mobi_shared_types/models/vehicle_type.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -184,12 +186,18 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => MobiVisualTheme(
+    family: MobiVisualFamily.payments,
+    builder: _buildContent,
+  );
+
+  Widget _buildContent(BuildContext context) {
     final mediaPadding = MediaQuery.paddingOf(context);
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final grouped = _groupTrips(_currentTrips);
 
     return SoftGradient(
+      tone: SoftGradientTone.trips,
       child: SafeArea(
         bottom: false,
         child: Stack(

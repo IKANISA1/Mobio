@@ -110,14 +110,16 @@ flutter_launcher_icons:
     image_path: "icon/mobi_logo_transparent.png"
 
 flutter_native_splash:
-  background_image: "icon/mobi_splash_gradient.png"
-  background_image_dark: "icon/mobi_splash_gradient.png"
+  web: false
+  color: "#FFFFFF"
+  color_dark: "#000000"
+  ios_content_mode: center
   image: "icon/mobi_logo_transparent.png"
   image_dark: "icon/mobi_logo_transparent.png"
   android_12:
     image: "icon/mobi_logo_transparent.png"
     image_dark: "icon/mobi_logo_transparent.png"
-    icon_background_color: "#10164B"
-    icon_background_color_dark: "#10164B"
-    color: "#10164B"
-    color_dark: "#10164B"
+    icon_background_color: "#FFFFFF"
+    icon_background_color_dark: "#000000"
+    color: "#FFFFFF"
+    color_dark: "#000000"

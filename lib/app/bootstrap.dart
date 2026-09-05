@@ -9,6 +9,7 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobi_app/app/app.dart';
 import 'package:mobi_app/app/app_providers.dart';
+import 'package:mobi_app/app/launch_screen.dart';
 import 'package:mobi_app/app/theme_provider.dart';
 import 'package:mobi_app/core/auth/supabase_session_service.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
@@ -33,6 +34,10 @@ Future<void> bootstrap() async {
 
       // Disable runtime font fetching — fonts are pre-bundled in assets/google_fonts/
       GoogleFonts.config.allowRuntimeFetching = false;
+      // Render the real launch screen while existing services initialise.
+      // No artificial delay and no authentication or routing changes.
+      runApp(const MobiLaunchApp());
+      FlutterNativeSplash.remove();
 
       final firebaseReady = await FirebaseBootstrapService.instance
           .initialize();

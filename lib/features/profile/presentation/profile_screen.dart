@@ -13,10 +13,12 @@ import 'package:mobi_app/features/profile/application/profile_services.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_feature_tile.dart';
+import 'package:mobi_app/shared/widgets/mobi_visual_theme.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
+import 'package:mobi_design_system/theme/mobi_visual_family.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -161,7 +163,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      MobiVisualTheme(family: MobiVisualFamily.rewards, builder: _buildContent);
+
+  Widget _buildContent(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 

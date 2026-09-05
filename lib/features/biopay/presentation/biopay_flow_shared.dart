@@ -10,6 +10,7 @@ import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
 import 'package:mobi_app/features/biopay/domain/payment_payload.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_style.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
+import 'package:mobi_design_system/theme/app_colors.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
@@ -192,7 +193,7 @@ class _BioPayFaceGuidePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 7
       ..strokeCap = StrokeCap.round
-      ..color = const Color(0xFF22C55E);
+      ..color = AppColors.success;
 
     canvas
       ..drawOval(ringRect, glowPaint)
@@ -301,7 +302,7 @@ class _PoseCueDot extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final color = completed
-        ? const Color(0xFF22C55E)
+        ? AppColors.success
         : active && hasError
         ? cs.error
         : active
@@ -601,6 +602,7 @@ class BioPayBackAvatar extends StatelessWidget {
       button: true,
       label: 'Back',
       child: Tooltip(
+        excludeFromSemantics: true,
         message: 'Back',
         child: SizedBox.square(
           dimension: 48,
@@ -853,7 +855,7 @@ class _QrReceiverModeButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: selected ? Colors.white : null,
             gradient: selected
-                ? const LinearGradient(colors: [bioPayInk, Color(0xFF1D2939)])
+                ? const LinearGradient(colors: [bioPayInk, Color(0xFF28333D)])
                 : null,
             borderRadius: BorderRadius.circular(AppRadii.xl),
             boxShadow: selected
@@ -1084,13 +1086,6 @@ class BioPayQrPreview extends StatelessWidget {
   final BioPayUssdPaymentRequest request;
   final Key? boundaryKey;
 
-  static const _rwandaLogoGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [Color(0xFF00A3E0), Color(0xFFFAD201), Color(0xFF00A651)],
-    stops: [0.06, 0.52, 1.0],
-  );
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -1124,24 +1119,19 @@ class BioPayQrPreview extends StatelessWidget {
                     return Stack(
                       alignment: Alignment.center,
                       children: [
-                        ShaderMask(
-                          shaderCallback: (rect) =>
-                              _rwandaLogoGradient.createShader(rect),
-                          blendMode: BlendMode.srcIn,
-                          child: QrImageView(
-                            data: buildBioPayQrPayload(request),
-                            backgroundColor: Colors.transparent,
-                            errorCorrectionLevel: QrErrorCorrectLevel.H,
-                            eyeStyle: const QrEyeStyle(
-                              eyeShape: QrEyeShape.square,
-                              color: Colors.white,
-                            ),
-                            dataModuleStyle: const QrDataModuleStyle(
-                              dataModuleShape: QrDataModuleShape.square,
-                              color: Colors.white,
-                            ),
-                            padding: EdgeInsets.zero,
+                        QrImageView(
+                          data: buildBioPayQrPayload(request),
+                          backgroundColor: Colors.transparent,
+                          errorCorrectionLevel: QrErrorCorrectLevel.H,
+                          eyeStyle: const QrEyeStyle(
+                            eyeShape: QrEyeShape.square,
+                            color: Colors.black,
                           ),
+                          dataModuleStyle: const QrDataModuleStyle(
+                            dataModuleShape: QrDataModuleShape.square,
+                            color: Colors.black,
+                          ),
+                          padding: EdgeInsets.zero,
                         ),
                         IgnorePointer(
                           child: Container(
@@ -1250,6 +1240,7 @@ class _BioPayQrActionButton extends StatelessWidget {
       label: label,
       enabled: !isLoading,
       child: Tooltip(
+        excludeFromSemantics: true,
         message: label,
         child: Material(
           color: bioPayDarkPanel.withValues(alpha: 0.76),
@@ -1409,7 +1400,7 @@ class _QrScannerCornerPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5
       ..strokeCap = StrokeCap.round
-      ..color = const Color(0xFFFFCC00);
+      ..color = AppColors.warning;
     const length = 34.0;
 
     canvas

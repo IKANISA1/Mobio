@@ -1,12 +1,12 @@
 # Mobio design system
 
-Version 4 · 5 September 2026. This contract supersedes the June v3.1 visual treatment following the user's whole-product reimplementation request. Product scope, permissions and server contracts remain governed by `AGENTS.md` and the dated product approvals.
+Version 5 · 5 September 2026. This contract includes the 5 September follow-up for missing launch/auth states and the full applicable colour families. Product scope, permissions and server contracts remain governed by `AGENTS.md` and the dated product approvals.
 
 ## Reference and identity
 
 Mobio retains its name, logo, app icon, feature names, legal entity and real capabilities. The native visual reference is the September 2026 iOS Dark · Glow cohort. Marketing uses the current UK public website's editorial composition and typography. Admin uses official Business imagery for surface/hierarchy patterns, with explicit adaptations for Mobio's operational tables. These are three separate reference cohorts; none is evidence of the others' exact tokens or behavior.
 
-The source and route map is in `docs/design/reimplementation-20260905.md`. Private account captures stay outside this repository. Reference marks and screenshots are not runtime artwork. No percentage or pixel-equivalence claim follows from passing tests or capturing target screens.
+The current source, colour-role and route/state map is in `docs/design/colour-and-auth-followup-20260905.md`; the earlier geometry report is `docs/design/reimplementation-20260905.md`. Private account captures stay outside this repository. Reference marks and screenshots are not runtime artwork. No percentage or pixel-equivalence claim follows from passing tests or capturing target screens.
 
 ## Shared implementation
 
@@ -25,7 +25,7 @@ The dark canvas is black; grouped widgets use #161618 with #222224 and #303033 f
 
 Inter is the bundled native typography adapter; the installed reference app's exact font/build were not exposed. Display is 30–36, pushed-page title 24, section title 18–20, row title 16, body 14–16, labels 11–13. Headings use 600, labels 500, body 400. Avoid heavy 800/900 headings and shrink-to-fit text. Allow enlarged text to wrap; a constrained pushed title can scroll while its back control stays available.
 
-Use a 4-point spacing grid, 16 horizontal page insets, 24-radius grouped mobile panels, and 48 minimum icon targets. Primary buttons are contrasting pills, at least 52 high, with stable loading geometry. Ordinary surfaces are opaque and flat. Home and BioPay overviews own the blue top glow; pushed forms, lists, profile, chat and admin use neutral canvases. Do not spread decorative gradients, borders and shadows across every card.
+Use a 4-point spacing grid, 16 horizontal page insets, 24-radius grouped mobile panels, and 48 minimum icon targets. Primary buttons are contrasting pills, at least 52 high, with stable loading geometry. Ordinary surfaces are opaque and flat. Home uses royal blue, BioPay teal, Trips/Nearby purple, Wallet muted slate blue-violet, Profile/Mobio Plus vivid violet and WhatsApp login slate-indigo. Their wash scrolls away into a matching lower canvas. Pushed tasks, chat and admin retain quiet neutral surfaces. Do not spread decorative gradients, borders and shadows across every card.
 
 Quick actions use 48 circles with labels inside the entire tap target. Bottom navigation floats above system safe areas and exposes selected semantics, keyboard activation and four real destinations. Secondary routes use a back control. Native UI and browser previews respect reduced motion.
 

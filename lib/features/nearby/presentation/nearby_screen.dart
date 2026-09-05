@@ -19,12 +19,14 @@ import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_top_command_bar.dart';
+import 'package:mobi_app/shared/widgets/mobi_visual_theme.dart';
 import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
+import 'package:mobi_design_system/theme/mobi_visual_family.dart';
 import 'package:mobi_shared_types/models/trip.dart';
 import 'package:mobi_shared_types/models/vehicle_type.dart';
 
@@ -252,7 +254,12 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => MobiVisualTheme(
+    family: MobiVisualFamily.payments,
+    builder: _buildContent,
+  );
+
+  Widget _buildContent(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final mediaPadding = MediaQuery.paddingOf(context);
 

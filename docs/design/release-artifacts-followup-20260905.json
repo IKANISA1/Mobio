@@ -1,0 +1,35 @@
+{
+  "android": {
+    "path": "build/app/outputs/bundle/release/app-release.aab",
+    "bytes": 83235406,
+    "sha256": "3143d8837d307341aba30264d60ce5bbdd95f070eba410f12e2cf4ecbb3aa1bb",
+    "arm64_checks": {
+      "Mobio is loading": true,
+      "Try again in ": true,
+      "Digit ": true
+    },
+    "simulation_service_in_release": false
+  },
+  "web": {
+    "path": "build/pwa/site/main.dart.js",
+    "bytes": 4877215,
+    "sha256": "a9d02bda9c8369a2c0237909f5098fcc80f4dc26478349eb97e35b009eb427c8",
+    "content_checks": {
+      "Mobio is loading": true,
+      "Try again in ": true,
+      "Digit ": true
+    },
+    "simulation_service_in_release": false
+  },
+  "scope": "Guarded local Android and web release packages; no deployment or store upload.",
+  "web_boot": {
+    "path": "build/pwa/site/__admin_shell",
+    "bytes": 3426,
+    "sha256": "88c498d5bfbc570b7e885af219885860c5d783bb31587017198e40603daa1989"
+  },
+  "ios_launch": {
+    "path": "ios/Runner/Base.lproj/LaunchScreen.storyboard",
+    "bytes": 3489,
+    "sha256": "c711127e95ae25e3009957db2c04bbe094d2d29d4174428311fec856fe5374d6"
+  }
+}

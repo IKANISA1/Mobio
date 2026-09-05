@@ -7,15 +7,19 @@ import 'package:mobi_app/core/constants/app_enums.dart';
 import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:mobi_app/features/auth/application/auth_providers.dart';
 import 'package:mobi_app/features/auth/data/whatsapp_login_service.dart';
+import 'package:mobi_app/shared/widgets/mobi_brand_mark.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
+import 'package:mobi_app/shared/widgets/mobi_visual_theme.dart';
 import 'package:mobi_app/shared/widgets/otp_code_field.dart';
+import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_app/shared/widgets/whatsapp_input.dart';
 import 'package:mobi_design_system/theme/app_colors.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
+import 'package:mobi_design_system/theme/mobi_visual_family.dart';
 
 class WhatsAppLoginScreen extends ConsumerStatefulWidget {
   final VoidCallback onBack;
@@ -71,7 +75,8 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
     return '$_countryCode ...${digits.substring(digits.length - 3)}';
   }
 
-  bool get _canSendCode => !_isBusy && _phoneValidation.isValid;
+  bool get _canSendCode =>
+      !_isBusy && _resendCooldown == 0 && _phoneValidation.isValid;
 
   bool get _canVerifyCode => !_isBusy && _otpController.text.trim().length == 6;
 
@@ -261,26 +266,23 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => MobiVisualTheme(
+    family: MobiVisualFamily.authentication,
+    builder: _buildContent,
+  );
+
+  Widget _buildContent(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-    final ctaLabel = _otpRequested ? 'Verify code' : 'Send code';
+    final ctaLabel = _otpRequested
+        ? 'Verify code'
+        : _resendCooldown > 0
+        ? 'Try again in ${_resendCooldown}s'
+        : 'Send code';
 
     return Scaffold(
       backgroundColor: AppColors.dark.background,
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              ext.backgroundGradientTop,
-              ext.backgroundGradientMid,
-              ext.backgroundGradientBottom,
-            ],
-            stops: const [0, 0.34, 0.82],
-          ),
-        ),
+      body: SoftGradient(
+        tone: SoftGradientTone.authentication,
         child: Stack(
           children: [
             SafeArea(
@@ -288,30 +290,29 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 100, 20, 28),
+                    padding: const EdgeInsets.fromLTRB(16, 104, 16, 28),
                     child: Center(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
                           maxWidth: 560,
-                          minHeight: constraints.maxHeight - 138,
+                          minHeight: constraints.maxHeight - 132,
                         ),
                         child: Column(
                           children: [
                             _LoginHero(
-                              icon: _otpRequested
-                                  ? LucideIcons.keyRound
-                                  : LucideIcons.messageCircle,
                               title: _otpRequested
                                   ? 'Enter code'
                                   : 'WhatsApp login',
                             ),
-                            const SizedBox(height: 40),
-                            _RevolutAuthPanel(
+                            const SizedBox(height: 32),
+                            _AuthFormBody(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    _otpRequested ? 'Verification' : 'Account',
+                                    _otpRequested
+                                        ? 'Check your WhatsApp'
+                                        : 'Your account',
                                     style: AppTypography.headlineSm.copyWith(
                                       color: cs.onSurface,
                                       letterSpacing: 0,
@@ -329,7 +330,11 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
                                     MobiOtpCodeField(
                                       controller: _otpController,
                                       enabled: !_isBusy,
-                                      onChanged: (_) => setState(() {}),
+                                      hasError: _error != null,
+                                      onChanged: (_) => setState(() {
+                                        _error = null;
+                                        _attemptsRemaining = null;
+                                      }),
                                     ),
                                   ] else ...[
                                     MobiToggle(
@@ -388,7 +393,7 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
                                             width: double.infinity,
                                             child: Text(
                                               _resendCooldown > 0
-                                                  ? 'Resend ${_resendCooldown}s'
+                                                  ? 'Resend in ${_resendCooldown}s'
                                                   : 'Resend',
                                             ),
                                           ),
@@ -401,7 +406,7 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
                                                 : _resetOtpFlow,
                                             variant: MobiButtonVariant.ghost,
                                             width: double.infinity,
-                                            child: const Text('Change'),
+                                            child: const Text('Change number'),
                                           ),
                                         ),
                                       ],
@@ -454,8 +459,10 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
       return _LoginNotice(
         icon: LucideIcons.alertTriangle,
         title: 'Sign-in failed',
-        subtitle: _error,
-        accent: AppColors.brandOrangeRed,
+        subtitle: _attemptsRemaining == null
+            ? _error
+            : '$_error $_attemptsRemaining attempts remaining.',
+        accent: Theme.of(context).colorScheme.error,
       );
     }
 
@@ -493,14 +500,16 @@ class _ChromeCircleButton extends StatelessWidget {
     return Tooltip(
       message: tooltip,
       child: SizedBox.square(
-        dimension: 58,
+        dimension: 48,
         child: Material(
-          color: Colors.black.withValues(alpha: ext.blackChromeAlpha),
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.black.withValues(alpha: ext.blackChromeAlpha)
+              : cs.surfaceContainerHigh,
           shape: const CircleBorder(),
           child: InkWell(
             customBorder: const CircleBorder(),
             onTap: onPressed,
-            child: Icon(icon, color: cs.onSurface, size: 26),
+            child: Icon(icon, color: cs.onSurface, size: 22),
           ),
         ),
       ),
@@ -509,10 +518,9 @@ class _ChromeCircleButton extends StatelessWidget {
 }
 
 class _LoginHero extends StatelessWidget {
-  final IconData icon;
   final String title;
 
-  const _LoginHero({required this.icon, required this.title});
+  const _LoginHero({required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -520,7 +528,7 @@ class _LoginHero extends StatelessWidget {
 
     return Column(
       children: [
-        Icon(icon, color: Colors.white, size: 42),
+        const MobiBrandMark(size: 100),
         const SizedBox(height: AppSpacing.lg),
         Text(
           title,
@@ -536,10 +544,10 @@ class _LoginHero extends StatelessWidget {
   }
 }
 
-class _RevolutAuthPanel extends StatelessWidget {
+class _AuthFormBody extends StatelessWidget {
   final Widget child;
 
-  const _RevolutAuthPanel({required this.child});
+  const _AuthFormBody({required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -582,12 +590,12 @@ class _PhoneAnchor extends StatelessWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: AppColors.brandMintGreen.withValues(alpha: 0.18),
+                color: cs.primary.withValues(alpha: 0.18),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 LucideIcons.messageCircle,
-                color: AppColors.brandMintGreen,
+                color: cs.primary,
                 size: 22,
               ),
             ),
@@ -677,11 +685,9 @@ class _LoginNotice extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       subtitle!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                       style: AppTypography.bodyMd.copyWith(
                         color: cs.onSurface.withValues(alpha: 0.72),
-                        height: 1.18,
+                        height: 1.35,
                       ),
                     ),
                   ],

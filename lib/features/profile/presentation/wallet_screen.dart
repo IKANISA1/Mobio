@@ -15,11 +15,13 @@ import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
+import 'package:mobi_app/shared/widgets/mobi_visual_theme.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_design_system/theme/app_colors.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
+import 'package:mobi_design_system/theme/mobi_visual_family.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -839,14 +841,17 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      MobiVisualTheme(family: MobiVisualFamily.value, builder: _buildContent);
+
+  Widget _buildContent(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
     return Scaffold(
       backgroundColor: ext.surfaceContainerLow,
       body: SoftGradient(
-        tone: SoftGradientTone.profile,
+        tone: SoftGradientTone.wallet,
         child: SafeArea(
           bottom: false,
           child: Column(
@@ -1375,11 +1380,11 @@ class _InviteQrCode extends StatelessWidget {
           backgroundColor: Colors.white,
           eyeStyle: const QrEyeStyle(
             eyeShape: QrEyeShape.square,
-            color: AppColors.primaryDim,
+            color: Colors.black,
           ),
           dataModuleStyle: const QrDataModuleStyle(
             dataModuleShape: QrDataModuleShape.square,
-            color: AppColors.primary,
+            color: Colors.black,
           ),
         ),
       ),

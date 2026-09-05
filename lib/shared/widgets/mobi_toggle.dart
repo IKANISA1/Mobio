@@ -28,9 +28,7 @@ class MobiToggle extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xs),
       decoration: BoxDecoration(
-        color: ext.surfaceContainerHighest.withValues(
-          alpha: ext.controlTrackAlpha,
-        ),
+        color: cs.onSurface.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(AppRadii.pill),
         border: Border.all(
           color: cs.outlineVariant.withValues(
@@ -45,14 +43,18 @@ class MobiToggle extends StatelessWidget {
             child: Semantics(
               selected: isSelected,
               button: true,
-              label: labels[index],
-              child: GestureDetector(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(AppRadii.pill),
                 onTap: () => onChanged(index),
                 child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 220),
+                  duration: MediaQuery.disableAnimationsOf(context)
+                      ? Duration.zero
+                      : const Duration(milliseconds: 220),
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                   decoration: BoxDecoration(
-                    color: isSelected ? cs.surface : Colors.transparent,
+                    color: isSelected
+                        ? cs.onSurface.withValues(alpha: 0.16)
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(AppRadii.pill),
                     border: isSelected
                         ? Border.all(
@@ -60,18 +62,6 @@ class MobiToggle extends StatelessWidget {
                               alpha: ext.cardBorderAlpha,
                             ),
                           )
-                        : null,
-                    boxShadow: isSelected
-                        ? [
-                            BoxShadow(
-                              color: Colors.black.withValues(
-                                alpha: ext.controlShadowAlpha,
-                              ),
-                              blurRadius: 12,
-                              spreadRadius: -8,
-                              offset: const Offset(0, 6),
-                            ),
-                          ]
                         : null,
                   ),
                   child: Center(
@@ -84,7 +74,7 @@ class MobiToggle extends StatelessWidget {
                         softWrap: false,
                         textAlign: TextAlign.center,
                         style: AppTypography.labelLg.copyWith(
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w500,
                           color: isSelected
                               ? cs.onSurface
                               : cs.onSurfaceVariant,

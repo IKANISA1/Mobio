@@ -234,7 +234,7 @@ _VehicleCardPalette _paletteForVehicleType(
       );
     case 'bus':
       return const _VehicleCardPalette(
-        accent: AppColors.brandPeriwinkle,
+        accent: AppColors.primary,
         depth: AppColors.violetDepth,
       );
     case 'cab':
@@ -244,18 +244,18 @@ _VehicleCardPalette _paletteForVehicleType(
       );
     case 'truck':
       return const _VehicleCardPalette(
-        accent: AppColors.brandOrangeRed,
+        accent: AppColors.error,
         depth: AppColors.orangeDepth,
       );
     case 'trike':
       return const _VehicleCardPalette(
-        accent: AppColors.brandMintGreen,
+        accent: AppColors.success,
         depth: AppColors.mintDepth,
       );
     case 'private':
     case 'private_':
       return const _VehicleCardPalette(
-        accent: AppColors.brandDustyRose,
+        accent: AppColors.secondary,
         depth: AppColors.roseDepth,
       );
     case 'rentals':

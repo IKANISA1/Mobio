@@ -141,38 +141,48 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
           child: Row(
             children: [
               // Country code button
-              GestureDetector(
-                onTap: widget.enabled
-                    ? () => _showCountryPicker(context)
-                    : null,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      right: BorderSide(
-                        color: ext.borderSubtle.withValues(
-                          alpha: ext.hairlineAlpha,
+              Semantics(
+                label: 'Choose country code, ${selected.name}',
+                button: true,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(AppRadii.md),
+                  onTap: widget.enabled
+                      ? () => _showCountryPicker(context)
+                      : null,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: 16,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        right: BorderSide(
+                          color: ext.borderSubtle.withValues(
+                            alpha: ext.hairlineAlpha,
+                          ),
+                          width: 1,
                         ),
-                        width: 1,
                       ),
                     ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(selected.flag, style: const TextStyle(fontSize: 20)),
-                      const SizedBox(width: 8),
-                      Text(
-                        selected.dialingCode,
-                        style: AppTypography.titleMd.copyWith(
-                          fontSize: 16,
-                          color: cs.onSurface,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          selected.isoCode,
+                          style: AppTypography.labelLg.copyWith(
+                            color: cs.onSurface,
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 8),
+                        Text(
+                          selected.dialingCode,
+                          style: AppTypography.titleMd.copyWith(
+                            fontSize: 16,
+                            color: cs.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -197,7 +207,7 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
                     hintText: selected.phonePlaceholder,
                     hintStyle: AppTypography.titleMd.copyWith(
                       fontSize: 20,
-                      color: cs.onSurfaceVariant.withValues(alpha: 0.38),
+                      color: cs.onSurfaceVariant,
                     ),
                     filled: false,
                     border: InputBorder.none,
@@ -270,7 +280,7 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
                         final country = filteredCountries[index];
                         return ListTile(
                           leading: Text(
-                            country.flag,
+                            country.isoCode,
                             style: const TextStyle(fontSize: 24),
                           ),
                           title: Text(

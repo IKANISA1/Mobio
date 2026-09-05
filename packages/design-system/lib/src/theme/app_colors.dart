@@ -8,79 +8,59 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // ─── Primary (mode-independent) ───
-  static const brandPeriwinkle = Color(0xFF8885F0);
-  static const brandDustyRose = Color(0xFFD38B96);
-  static const brandOrangeRed = Color(0xFFFF5E43);
-  static const brandMintGreen = Color(0xFF3CD070);
-
-  static const primaryLight = Color(0xFF4055CB);
-  static const primary = Color(0xFF667DFF);
-  static const primaryDim = Color(0xFF6E6BE0);
-  static const primaryFixed = Color(0xFFE8E7FF);
-  static const primaryFixedDim = Color(0xFFC9C8FF);
-  static const inversePrimary = Color(0xFFC7C5FF);
-  static const surfaceTint = Color(0xFF667DFF);
-
-  // ─── Secondary (mode-independent) ───
-  static const secondary = brandDustyRose;
-  static const secondaryDim = Color(0xFFB87480);
-  static const secondaryFixed = Color(0xFFFFE6EA);
-  static const secondaryFixedDim = Color(0xFFF5C8D0);
-  static const onSecondary = Color(0xFF14070A);
-  static const onSecondaryFixed = Color(0xFF3E171D);
-  static const onSecondaryFixedVariant = Color(0xFF7D3D48);
-
-  // ─── Tertiary (mode-independent) ───
-  static const tertiary = brandMintGreen;
-  static const tertiaryDim = Color(0xFF2AB45E);
-  static const tertiaryFixed = Color(0xFFDDFBE8);
-  static const tertiaryFixedDim = Color(0xFFBFF5D2);
-  static const onTertiary = Color(0xFF031508);
-  static const onTertiaryFixed = Color(0xFF063815);
-  static const onTertiaryFixedVariant = Color(0xFF146733);
-
-  // ─── Error (mode-independent) ───
-  static const error = brandOrangeRed;
-  static const errorDim = Color(0xFFD84831);
-  static const onError = Color(0xFF1C0703);
-
-  // ─── WhatsApp ───
-  static const whatsappGreen = Color(0xFF25D366);
-  static const whatsappDark = Color(0xFF128C7E);
-
-  // ─── System (mode-independent) ───
-  static const redAccent = brandOrangeRed;
-  static const success = brandMintGreen;
-  static const onSuccess = Color(0xFF031508);
-  static const warning = Color(0xFFFFB14A);
-  static const onWarning = Color(0xFF1C1000);
-
-  // ─── Support semantics (mode-independent) ───
-  static const info = Color(0xFF4D8DFF);
-  static const infoDim = Color(0xFF2E69D8);
-  static const infoContainer = Color(0xFF0F274F);
-  static const onInfo = Color(0xFF061226);
-  static const onInfoContainer = Color(0xFFD8E7FF);
-
-  static const aqua = Color(0xFF5DE2E7);
-  static const aquaDim = Color(0xFF33B7C0);
-  static const aquaContainer = Color(0xFF0B3439);
-  static const onAqua = Color(0xFF041415);
-  static const onAquaContainer = Color(0xFFD7FAFC);
-
-  static const caution = Color(0xFFFFB84D);
-  static const cautionDim = Color(0xFFD98F25);
-  static const cautionContainer = Color(0xFF3A2608);
-  static const onCaution = Color(0xFF1B1000);
-  static const onCautionContainer = Color(0xFFFFE7BD);
-
-  static const violetDepth = Color(0xFF18124A);
-  static const blueDepth = Color(0xFF10164B);
-  static const plumDepth = Color(0xFF2A1639);
-  static const roseDepth = Color(0xFF39202D);
-  static const mintDepth = Color(0xFF0F3421);
-  static const orangeDepth = Color(0xFF3E1510);
+  // Current public SSO web colour definitions (WEB-STATE-002, 2026-09-05).
+  // Native semantic use is an explicit adapter, not a native token export.
+  // Logo masters retain their pixels; no UI role derives from their palette.
+  static const primary = Color(0xFF6FA0FF);
+  static const primaryLight = Color(0xFF315FD6); // light contrast adapter
+  static const primaryDim = Color(0xFF5E5CE6);
+  static const primaryFixed = Color(0xFFE3ECFC);
+  static const primaryFixedDim = Color(0xFFC8D2E6);
+  static const inversePrimary = primary;
+  static const surfaceTint = primary;
+  static const secondary = Color(0xFFBF5AF2);
+  static const secondaryDim = Color(0xFF805CFF);
+  static const secondaryFixed = Color(0xFFF1E5FC);
+  static const secondaryFixedDim = Color(0xFFDDC8EE);
+  static const onSecondary = Color(0xFF191C1F);
+  static const onSecondaryFixed = Color(0xFF28133A);
+  static const onSecondaryFixedVariant = Color(0xFF65407C);
+  static const tertiary = Color(0xFF1AC097);
+  static const tertiaryDim = Color(0xFF13D1A3);
+  static const tertiaryFixed = Color(0xFFDFF6EF);
+  static const tertiaryFixedDim = Color(0xFFBCEBDD);
+  static const onTertiary = Color(0xFF002B22);
+  static const onTertiaryFixed = onTertiary;
+  static const onTertiaryFixedVariant = Color(0xFF075F4A);
+  static const error = Color(0xFFFF5363);
+  static const errorDim = Color(0xFFBA263B); // light contrast adapter
+  static const onError = Color(0xFF191C1F);
+  static const redAccent = error;
+  static const success = tertiary;
+  static const onSuccess = onTertiary;
+  static const warning = Color(0xFFFF9F0A);
+  static const onWarning = Color(0xFF191C1F);
+  static const info = primary;
+  static const infoDim = Color(0xFF0A84FF);
+  static const infoContainer = Color(0xFF122B4B);
+  static const onInfo = Color(0xFF000D19);
+  static const onInfoContainer = Color(0xFFE3ECFC);
+  static const aqua = Color(0xFF0CD9E6);
+  static const aquaDim = Color(0xFF13D1A3);
+  static const aquaContainer = Color(0xFF082A35);
+  static const onAqua = Color(0xFF000D19);
+  static const onAquaContainer = Color(0xFFDAF8FA);
+  static const caution = warning;
+  static const cautionDim = Color(0xFF9A5A00); // light contrast adapter
+  static const cautionContainer = Color(0xFF332207);
+  static const onCaution = onWarning;
+  static const onCautionContainer = Color(0xFFFFE9C4);
+  static const violetDepth = Color(0xFF16133A);
+  static const blueDepth = Color(0xFF00043C);
+  static const plumDepth = Color(0xFF302B7D);
+  static const roseDepth = Color(0xFF28133A);
+  static const mintDepth = Color(0xFF021920);
+  static const orangeDepth = Color(0xFF330E0C);
 
   // ═══ Dark palette ═══
   static const dark = _DarkPalette();
@@ -114,20 +94,20 @@ class _DarkPalette {
   Color get outlineVariant => const Color(0xFF303033);
   Color get outlineStrong => const Color(0xFF707074);
   Color get outlineSubtle => const Color(0xFF29292C);
-  Color get onPrimary => const Color(0xFFFFFFFF);
-  Color get primaryContainer => const Color(0xFF242155);
-  Color get onPrimaryContainer => const Color(0xFFE7E6FF);
-  Color get onPrimaryFixed => const Color(0xFF191547);
-  Color get onPrimaryFixedVariant => const Color(0xFF4F4BD0);
-  Color get secondaryContainer => const Color(0xFF372028);
-  Color get onSecondaryContainer => const Color(0xFFFFE6EA);
-  Color get errorContainer => const Color(0xFF3E1510);
-  Color get onErrorContainer => const Color(0xFFFFD8D0);
-  Color get tertiaryContainer => const Color(0xFF10351E);
-  Color get onTertiaryContainer => const Color(0xFFDDFBE8);
+  Color get onPrimary => const Color(0xFF000D19);
+  Color get primaryContainer => const Color(0xFF122B4B);
+  Color get onPrimaryContainer => const Color(0xFFE3ECFC);
+  Color get onPrimaryFixed => const Color(0xFF000D19);
+  Color get onPrimaryFixedVariant => const Color(0xFF315FD6);
+  Color get secondaryContainer => const Color(0xFF28133A);
+  Color get onSecondaryContainer => const Color(0xFFF1E5FC);
+  Color get errorContainer => const Color(0xFF330E0C);
+  Color get onErrorContainer => const Color(0xFFFFDDE1);
+  Color get tertiaryContainer => const Color(0xFF072D26);
+  Color get onTertiaryContainer => const Color(0xFFDFF6EF);
 
-  Color get gradientTop => const Color(0xFF567EFF);
-  Color get gradientMid => const Color(0xFF1024DA);
+  Color get gradientTop => const Color(0xFF3453FC);
+  Color get gradientMid => const Color(0xFF03108D);
   Color get gradientBottom => background;
 }
 
@@ -147,28 +127,28 @@ class _LightPalette {
   Color get surfaceVariant => const Color(0xFFEDEDED);
   Color get onSurface => const Color(0xFF191C1F);
   Color get onSurfaceVariant => const Color(0xFF626265);
-  Color get onSurfaceTertiary => const Color(0xFF777992);
-  Color get onSurfaceDisabled => const Color(0xFFA0A1B6);
+  Color get onSurfaceTertiary => const Color(0xFF717173);
+  Color get onSurfaceDisabled => const Color(0xFF929296);
   Color get onBackground => const Color(0xFF191C1F);
   Color get inverseSurface => const Color(0xFF090A12);
   Color get inverseOnSurface => const Color(0xFFF4F4F4);
-  Color get outline => const Color(0xFFA8A9C1);
-  Color get outlineVariant => const Color(0xFFD2D2E6);
-  Color get outlineStrong => const Color(0xFF8D8FA8);
-  Color get outlineSubtle => const Color(0xFFE2E2F0);
+  Color get outline => const Color(0xFF8D8D91);
+  Color get outlineVariant => const Color(0xFFC9C9CD);
+  Color get outlineStrong => const Color(0xFF717173);
+  Color get outlineSubtle => const Color(0xFFE2E2E7);
   Color get onPrimary => const Color(0xFFFFFFFF);
-  Color get primaryContainer => const Color(0xFFE8E7FF);
-  Color get onPrimaryContainer => const Color(0xFF242155);
-  Color get onPrimaryFixed => const Color(0xFF191547);
-  Color get onPrimaryFixedVariant => const Color(0xFF4F4BD0);
-  Color get secondaryContainer => const Color(0xFFFFE6EA);
-  Color get onSecondaryContainer => const Color(0xFF3E171D);
-  Color get errorContainer => const Color(0xFFFFDFD8);
-  Color get onErrorContainer => const Color(0xFF5A160E);
-  Color get tertiaryContainer => const Color(0xFFDDFBE8);
-  Color get onTertiaryContainer => const Color(0xFF063815);
+  Color get primaryContainer => const Color(0xFFE3ECFC);
+  Color get onPrimaryContainer => const Color(0xFF122B4B);
+  Color get onPrimaryFixed => const Color(0xFF000D19);
+  Color get onPrimaryFixedVariant => const Color(0xFF315FD6);
+  Color get secondaryContainer => const Color(0xFFF1E5FC);
+  Color get onSecondaryContainer => const Color(0xFF28133A);
+  Color get errorContainer => const Color(0xFFFFE5E8);
+  Color get onErrorContainer => const Color(0xFF7C1928);
+  Color get tertiaryContainer => const Color(0xFFDFF6EF);
+  Color get onTertiaryContainer => const Color(0xFF075F4A);
 
-  Color get gradientTop => const Color(0xFFC7C5FF);
-  Color get gradientMid => const Color(0xFFE8E7FF);
+  Color get gradientTop => const Color(0xFFDCE5FF);
+  Color get gradientMid => const Color(0xFFE3ECFC);
   Color get gradientBottom => background;
 }

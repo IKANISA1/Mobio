@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
+import 'package:mobi_design_system/theme/app_colors.dart';
 
-const bioPayBlue = Color(0xFF006DFF);
-const bioPayNfcPurple = Color(0xFF6D4CFF);
-const bioPayQrOrange = Color(0xFFFF9800);
-const bioPayScanTeal = Color(0xFF14B8A6);
-const bioPayInk = Color(0xFF101828);
-const bioPayMuted = Color(0xFF667085);
-const bioPayCanvas = Color(0xFFFBFCFF);
-const bioPayPanel = Color(0xFFF5F7FA);
-const bioPayChrome = Color(0xFF050815);
+const bioPayBlue = AppColors.primary;
+const bioPayNfcPurple = AppColors.secondaryDim;
+const bioPayQrOrange = AppColors.warning;
+const bioPayScanTeal = AppColors.tertiary;
+const bioPayInk = Color(0xFF191C1F);
+const bioPayMuted = Color(0xFF717173);
+const bioPayCanvas = Color(0xFFF7F7F7);
+const bioPayPanel = Color(0xFFF4F5F6);
+const bioPayChrome = Color(0xFF000D19);
 const bioPayDarkPanel = Color(0xFF161618);
 const bioPayDarkPanelAlt = Color(0xFF222224);
 

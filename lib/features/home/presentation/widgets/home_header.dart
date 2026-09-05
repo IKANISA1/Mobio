@@ -95,9 +95,7 @@ class _HomeModeToggle extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: ext.surfaceContainerHighest.withValues(
-          alpha: ext.controlTrackAlpha,
-        ),
+        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: .08),
         borderRadius: BorderRadius.circular(AppRadii.pill),
         border: Border.all(
           color: Colors.white.withValues(alpha: ext.surfacePanelBorderAlpha),
@@ -147,7 +145,9 @@ class _HomeModeSegment extends StatelessWidget {
         selected: selected,
         label: label,
         child: Material(
-          color: selected ? Colors.black : Colors.transparent,
+          color: selected
+              ? cs.onSurface.withValues(alpha: .16)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(AppRadii.pill),
           child: InkWell(
             onTap: onTap,
@@ -171,7 +171,7 @@ class _HomeModeSegment extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 softWrap: false,
                 style: AppTypography.labelMd.copyWith(
-                  color: selected ? Colors.white : cs.onSurfaceVariant,
+                  color: selected ? cs.onSurface : cs.onSurfaceVariant,
                   fontWeight: FontWeight.w600,
                 ),
               ),

@@ -130,10 +130,10 @@ class MobiButton extends StatelessWidget {
           border: Colors.white.withValues(alpha: ext.surfacePanelBorderAlpha),
         );
       case MobiButtonVariant.whatsapp:
-        return const _ButtonColors(
-          bg: AppColors.whatsappGreen,
-          fg: Colors.white,
-          border: Color(0x1FFFFFFF),
+        return _ButtonColors(
+          bg: cs.onSurface,
+          fg: cs.onInverseSurface,
+          border: Colors.transparent,
         );
       case MobiButtonVariant.ghost:
         return _ButtonColors(
@@ -149,9 +149,9 @@ class MobiButton extends StatelessWidget {
         );
       case MobiButtonVariant.success:
         return _ButtonColors(
-          bg: AppColors.brandMintGreen,
+          bg: AppColors.success,
           fg: AppColors.onSuccess,
-          border: AppColors.brandMintGreen.withValues(alpha: 0.24),
+          border: AppColors.success.withValues(alpha: 0.24),
         );
     }
   }

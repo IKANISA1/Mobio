@@ -5,10 +5,12 @@ import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_style.dart';
 import 'package:mobi_app/shared/widgets/mobi_action_row.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
+import 'package:mobi_app/shared/widgets/mobi_visual_theme.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
+import 'package:mobi_design_system/theme/mobi_visual_family.dart';
 
 class BioPayScreen extends ConsumerStatefulWidget {
   const BioPayScreen({
@@ -52,13 +54,16 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      MobiVisualTheme(family: MobiVisualFamily.teal, builder: _buildContent);
+
+  Widget _buildContent(BuildContext context) {
     return Theme(
       data: bioPayLightTheme(context),
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: SoftGradient(
-          tone: SoftGradientTone.shell,
+          tone: SoftGradientTone.biopay,
           child: SafeArea(
             bottom: false,
             child: SingleChildScrollView(
