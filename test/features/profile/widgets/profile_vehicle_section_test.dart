@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/services/public_transport_service.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
-import 'package:mobi_app/features/profile/widgets/profile_vehicle_section.dart';
-import 'package:mobi_app/models/vehicle_type_model.dart';
+import 'package:mobi_app/features/bookings/data/public_transport_service.dart';
+import 'package:mobi_app/features/profile/presentation/widgets/profile_vehicle_section.dart';
+import 'package:mobi_app/shared/models/vehicle_type_model.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
 
 void main() {
   testWidgets('ProfileVehicleSection shows bus fields only for bus drivers', (

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/features/bookings/models/schedule_trip_state.dart';
-import 'package:mobi_app/models/place.dart';
-import 'package:mobi_app/models/trip.dart';
+import 'package:mobi_app/features/bookings/application/schedule_trip_state.dart';
+import 'package:mobi_shared_types/models/place.dart';
+import 'package:mobi_shared_types/models/trip.dart';
 
 void main() {
   group('ScheduleTripState.copyWith', () {

@@ -21,20 +21,20 @@ void main() {
         'supabase/tests/backend_security_assertions.sql',
       ).readAsStringSync();
       chatService = File(
-        'lib/core/services/chat_service.dart',
+        'lib/features/chat/data/chat_service.dart',
       ).readAsStringSync();
       chatScreen = File(
-        'lib/features/chat/chat_screen.dart',
+        'lib/features/chat/presentation/chat_screen.dart',
       ).readAsStringSync();
       adminService = File(
-        'lib/core/services/admin_service.dart',
+        'lib/features/admin/data/admin_service.dart',
       ).readAsStringSync();
-      adminRouter = File('lib/core/router/app_router.dart').readAsStringSync();
+      adminRouter = File('lib/app/router/app_router.dart').readAsStringSync();
       adminUi = File(
-        'lib/features/admin/widgets/admin_ui.dart',
+        'lib/features/admin/presentation/widgets/admin_ui.dart',
       ).readAsStringSync();
       adminReportsScreen = File(
-        'lib/features/admin/admin_reports_screen.dart',
+        'lib/features/admin/presentation/admin_reports_screen.dart',
       ).readAsStringSync();
     });
 

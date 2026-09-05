@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
 import 'package:mobi_app/shared/widgets/mobi_async_state_view.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
 
 void main() {
   testWidgets('MobiAsyncStateView renders friendly error and retry action', (

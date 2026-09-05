@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/models/trip.dart';
-import 'package:mobi_app/models/vehicle_type.dart';
+import 'package:mobi_shared_types/models/trip.dart';
+import 'package:mobi_shared_types/models/vehicle_type.dart';
 
 void main() {
   group('Trip model', () {

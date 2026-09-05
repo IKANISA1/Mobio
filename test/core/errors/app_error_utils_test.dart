@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/errors/app_exception_mapper.dart';
-import 'package:mobi_app/core/services/places_exception.dart';
+import 'package:mobi_app/core/location/places_exception.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
 void main() {

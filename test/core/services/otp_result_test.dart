@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/services/otp_service.dart';
+import 'package:mobi_app/features/admin/data/otp_service.dart';
 
 void main() {
   group('OtpResult', () {

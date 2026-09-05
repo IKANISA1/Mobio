@@ -6,6 +6,7 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   exclude:
     - build/**
+    - output/**
     - .dart_tool/**
     - android/build/**
     - ios/.symlinks/**

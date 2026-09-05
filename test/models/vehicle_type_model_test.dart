@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/models/vehicle_type_model.dart';
+import 'package:mobi_app/shared/models/vehicle_type_model.dart';
 
 void main() {
   test('fallback vehicle types use the canonical display order', () {

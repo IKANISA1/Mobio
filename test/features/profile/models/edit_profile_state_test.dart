@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/features/profile/models/edit_profile_state.dart';
-import 'package:mobi_app/models/country.dart';
+import 'package:mobi_app/features/profile/application/edit_profile_state.dart';
+import 'package:mobi_shared_types/models/country.dart';
 
 void main() {
   group('EditProfileState', () {

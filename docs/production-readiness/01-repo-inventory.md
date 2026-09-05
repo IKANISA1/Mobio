@@ -22,7 +22,7 @@ Date: 2026-05-06
 | --- | --- | --- |
 | Flutter mobile | `lib/`, `android/`, `ios/`, `assets/`, `icon/`, `pigeons/` | Root Flutter package remains active runtime. |
 | Flutter PWA/client | `lib/`, `web/`, `scripts/web/prepare_pwa_bundles.sh` | Generated to `build/pwa/client`. |
-| Admin panel/PWA | `lib/features/admin`, admin routes in `lib/core/router/app_router.dart` | Embedded in the same Flutter app; generated to `build/pwa/admin`. |
+| Admin panel/PWA | `lib/features/admin`, admin routes in `lib/app/router/app_router.dart` | Embedded in the same Flutter app; generated to `build/pwa/admin`. |
 | Public website | `landing/`, `firebase.json`, `.github/workflows/cloudflare-pages.yml` | Static marketing/privacy site. |
 | Supabase backend | `supabase/config.toml`, `supabase/migrations`, `supabase/functions`, `supabase/tests`, `supabase/seed.sql` | Canonical backend source in this repo. |
 | Local packages | `packages/design-system`, `packages/shared-types` | Path dependencies consumed by root Flutter app. The legacy `packages/payments` package has been removed from active scope. |

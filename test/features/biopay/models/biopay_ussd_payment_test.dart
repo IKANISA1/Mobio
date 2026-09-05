@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/features/biopay/models/biopay_ussd_payment.dart';
+import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
 
 void main() {
   test('parses token and formats external USSD request amount', () {

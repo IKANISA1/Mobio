@@ -5,13 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('scheduled empty states keep coordination copy out of cards', () {
     final homeScreen = File(
-      'lib/features/home/home_screen.dart',
+      'lib/features/home/presentation/home_screen.dart',
     ).readAsStringSync();
     final bookingsScreen = File(
-      'lib/features/bookings/bookings_screen.dart',
+      'lib/features/bookings/presentation/bookings_screen.dart',
     ).readAsStringSync();
     final tripDetailsScreen = File(
-      'lib/features/bookings/trip_details_screen.dart',
+      'lib/features/bookings/presentation/trip_details_screen.dart',
     ).readAsStringSync();
 
     expect(homeScreen, contains("title: 'No scheduled trips yet'"));

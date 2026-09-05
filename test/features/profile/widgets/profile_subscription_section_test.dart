@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
-import 'package:mobi_app/features/profile/widgets/profile_subscription_section.dart';
-import 'package:mobi_app/models/subscription_plan_model.dart';
+import 'package:mobi_app/features/profile/presentation/widgets/profile_subscription_section.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
+import 'package:mobi_shared_types/models/subscription_plan_model.dart';
 
 void main() {
   const plans = [

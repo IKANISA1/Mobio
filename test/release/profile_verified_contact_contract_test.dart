@@ -5,16 +5,16 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('profile keeps authenticated WhatsApp number read-only', () {
     final contactSection = File(
-      'lib/features/profile/widgets/profile_contact_section.dart',
+      'lib/features/profile/presentation/widgets/profile_contact_section.dart',
     ).readAsStringSync();
     final editProfileScreen = File(
-      'lib/features/profile/edit_profile_screen.dart',
+      'lib/features/profile/presentation/edit_profile_screen.dart',
     ).readAsStringSync();
     final editProfileProvider = File(
-      'lib/features/profile/providers/edit_profile_provider.dart',
+      'lib/features/profile/application/edit_profile_provider.dart',
     ).readAsStringSync();
     final profileService = File(
-      'lib/core/services/profile_service.dart',
+      'lib/features/profile/data/profile_service.dart',
     ).readAsStringSync();
 
     expect(contactSection, contains('Authenticated WhatsApp number'));

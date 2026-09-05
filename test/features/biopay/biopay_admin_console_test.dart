@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/providers/service_providers.dart';
-import 'package:mobi_app/core/services/biopay_admin_service.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
-import 'package:mobi_app/features/biopay/biopay_screen.dart';
-import 'package:mobi_app/features/biopay/models/biopay_admin.dart';
+import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
+import 'package:mobi_app/features/biopay/data/biopay_admin_service.dart';
+import 'package:mobi_app/features/biopay/domain/biopay_admin.dart';
+import 'package:mobi_app/features/biopay/presentation/biopay_admin_console_screen.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
 
 class _FakeBioPayAdminService extends BioPayAdminService {
   _FakeBioPayAdminService() : super();

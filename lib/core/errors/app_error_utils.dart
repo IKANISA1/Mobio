@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:mobi_app/core/errors/app_exception.dart';
-import 'package:mobi_app/core/services/places_exception.dart';
+import 'package:mobi_app/core/location/places_exception.dart';
 
 /// Converts exceptions into copy that is safe to show in the UI.
 String userMessageForError(

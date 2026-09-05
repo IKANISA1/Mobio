@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
-import 'package:mobi_app/core/theme/app_spacing.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/models/trip.dart';
-import 'package:mobi_app/models/vehicle_type.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 import 'package:mobi_app/shared/widgets/vehicle_type_icon.dart';
+import 'package:mobi_design_system/theme/app_spacing.dart';
+import 'package:mobi_design_system/theme/app_typography.dart';
+import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
+import 'package:mobi_shared_types/models/trip.dart';
+import 'package:mobi_shared_types/models/vehicle_type.dart';
 
 /// Discovery card for a nearby driver/passenger listing.
 /// The active product scope allows profile browsing and communication only.

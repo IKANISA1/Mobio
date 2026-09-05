@@ -1,13 +1,16 @@
-import 'package:mobi_app/core/providers/service_providers.dart';
-import 'package:mobi_app/core/services/admin_service.dart';
-import 'package:mobi_app/core/services/country_service.dart';
-import 'package:mobi_app/core/services/subscription_plan_service.dart';
-import 'package:mobi_app/core/services/trip_service.dart';
-import 'package:mobi_app/core/services/vehicle_type_service.dart';
-import 'package:mobi_app/models/country.dart';
-import 'package:mobi_app/models/subscription_plan_model.dart';
-import 'package:mobi_app/models/trip.dart';
-import 'package:mobi_app/models/vehicle_type_model.dart';
+import 'package:mobi_app/core/localization/country_providers.dart';
+import 'package:mobi_app/core/localization/country_service.dart';
+import 'package:mobi_app/features/admin/application/admin_services.dart';
+import 'package:mobi_app/features/admin/data/admin_service.dart';
+import 'package:mobi_app/features/bookings/application/booking_services.dart';
+import 'package:mobi_app/features/bookings/data/trip_service.dart';
+import 'package:mobi_app/features/profile/application/profile_services.dart';
+import 'package:mobi_app/features/profile/data/subscription_plan_service.dart';
+import 'package:mobi_app/features/profile/data/vehicle_type_service.dart';
+import 'package:mobi_app/shared/models/vehicle_type_model.dart';
+import 'package:mobi_shared_types/models/country.dart';
+import 'package:mobi_shared_types/models/subscription_plan_model.dart';
+import 'package:mobi_shared_types/models/trip.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final revolutPreviewOverrides = [

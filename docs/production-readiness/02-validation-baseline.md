@@ -32,9 +32,9 @@ Date: 2026-05-06
 | `bash -n scripts/ci/verify_backend.sh scripts/ci/write_android_signing_files.sh scripts/qa/scan_secrets.sh scripts/web/prepare_pwa_bundles.sh` | Passed | Shell scripts parse. |
 | `dart format --set-exit-if-changed <touched Dart files>` | Passed | 13 touched Dart files checked; 0 changed. |
 | `flutter analyze --no-fatal-infos --no-fatal-warnings` | Passed | No issues found. |
-| `flutter test test/core/router/admin_session_guard_test.dart` | Passed | 7 tests passed. |
+| `flutter test test/app/router/admin_session_guard_test.dart` | Passed | 7 tests passed. |
 | `flutter test test/features/admin/widgets/admin_ui_test.dart` | Passed | 6 tests passed, including the operational health model/tab checks. |
-| `flutter test test/features/admin/widgets/admin_ui_test.dart test/core/router/admin_session_guard_test.dart test/core/services/admin_service_test.dart` | Passed | 27 targeted admin/service tests passed. |
+| `flutter test test/features/admin/widgets/admin_ui_test.dart test/app/router/admin_session_guard_test.dart test/features/admin/data/admin_service_test.dart` | Passed | 27 targeted admin/service tests passed. |
 | `set -a; source .env; set +a; SKIP_FLUTTER_BUILD=true ./scripts/web/prepare_pwa_bundles.sh /tmp/mobi_pwa_check` | Passed | Prepared client/admin PWA bundles from existing build output. |
 | `SKIP_FLUTTER_BUILD=true ./scripts/web/prepare_pwa_bundles.sh /tmp/mobi_pwa_check` | Failed | Expected without environment; `SUPABASE_URL` was not set. |
 | `supabase db lint --local --fail-on error` | Failed | Local Postgres at `127.0.0.1:54322` refused connection; Supabase local stack not running. |

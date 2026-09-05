@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/theme/app_radii.dart';
-import 'package:mobi_app/core/theme/app_spacing.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/models/vehicle_type.dart';
-import 'package:mobi_app/models/vehicle_type_model.dart';
+import 'package:mobi_app/shared/models/vehicle_type_model.dart';
 import 'package:mobi_app/shared/widgets/vehicle_type_icon.dart';
+import 'package:mobi_design_system/theme/app_radii.dart';
+import 'package:mobi_design_system/theme/app_spacing.dart';
+import 'package:mobi_design_system/theme/app_typography.dart';
+import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
+import 'package:mobi_shared_types/models/vehicle_type.dart';
 
 /// Returns the icon for a [VehicleType] enum value.
 IconData getVehicleIcon(VehicleType type) {

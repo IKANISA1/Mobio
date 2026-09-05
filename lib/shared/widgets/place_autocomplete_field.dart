@@ -7,13 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/providers/service_providers.dart';
-import 'package:mobi_app/core/services/places_exception.dart';
-import 'package:mobi_app/core/services/places_service.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-import 'package:mobi_app/models/place.dart';
+import 'package:mobi_app/core/location/location_providers.dart';
+import 'package:mobi_app/core/location/places_exception.dart';
+import 'package:mobi_app/core/location/places_service.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_design_system/theme/app_typography.dart';
+import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
+import 'package:mobi_shared_types/models/place.dart';
 
 class PlaceAutocompleteField extends ConsumerStatefulWidget {
   final String label;

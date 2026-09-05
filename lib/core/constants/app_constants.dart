@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:mobi_app/models/trip.dart';
-import 'package:mobi_app/models/user.dart';
-import 'package:mobi_app/models/vehicle_type.dart';
+import 'package:mobi_shared_types/models/trip.dart';
+import 'package:mobi_shared_types/models/user.dart';
+import 'package:mobi_shared_types/models/vehicle_type.dart';
 
 class AppConstants {
   AppConstants._();

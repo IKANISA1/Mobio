@@ -10,18 +10,20 @@ void main() {
         'supabase/migrations/20260616120000_seed_kigali_ev_chargers.sql';
     const seedCatalogPath = 'supabase/seed/kigali_ev_chargers.json';
     const importScriptPath = 'scripts/admin/import_ev_chargers.ts';
-    const modelPath = 'lib/models/ev_charger.dart';
-    const servicePath = 'lib/core/services/ev_charger_service.dart';
+    const modelPath = 'lib/features/ev_chargers/domain/ev_charger.dart';
+    const servicePath = 'lib/features/ev_chargers/data/ev_charger_service.dart';
     const screenPath =
-        'lib/features/ev_chargers/ev_charger_locator_screen.dart';
-    const adminScreenPath = 'lib/features/admin/admin_ev_chargers_screen.dart';
-    const routerPath = 'lib/core/router/app_router.dart';
-    const wrappersPath = 'lib/core/router/screen_wrappers.dart';
-    const homePath = 'lib/features/home/home_screen.dart';
-    const adminUiPath = 'lib/features/admin/widgets/admin_ui.dart';
-    const mapsPath = 'lib/core/services/google_maps_deep_link_service.dart';
-    const providersPath = 'lib/core/providers/service_providers.dart';
-    const placesServicePath = 'lib/core/services/places_service.dart';
+        'lib/features/ev_chargers/presentation/ev_charger_locator_screen.dart';
+    const adminScreenPath =
+        'lib/features/admin/presentation/admin_ev_chargers_screen.dart';
+    const routerPath = 'lib/app/router/app_router.dart';
+    const wrappersPath = 'lib/app/router/screen_wrappers.dart';
+    const homePath = 'lib/features/home/presentation/home_screen.dart';
+    const adminUiPath = 'lib/features/admin/presentation/widgets/admin_ui.dart';
+    const mapsPath = 'lib/core/location/google_maps_deep_link_service.dart';
+    const providersPath =
+        'lib/features/ev_chargers/application/ev_charger_providers.dart';
+    const placesServicePath = 'lib/core/location/places_service.dart';
     const mapsGatewayPath = 'supabase/functions/maps-gateway/index.ts';
 
     test('Supabase migration defines managed EV charger catalog and RPCs', () {

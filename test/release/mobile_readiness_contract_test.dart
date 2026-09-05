@@ -25,34 +25,34 @@ void main() {
     late final String adminAudit;
 
     setUpAll(() {
-      appShell = File('lib/app.dart').readAsStringSync();
-      router = File('lib/core/router/app_router.dart').readAsStringSync();
+      appShell = File('lib/app/shell.dart').readAsStringSync();
+      router = File('lib/app/router/app_router.dart').readAsStringSync();
       scheduleScreen = File(
-        'lib/features/bookings/schedule_trip_screen.dart',
+        'lib/features/bookings/presentation/schedule_trip_screen.dart',
       ).readAsStringSync();
       scheduleProvider = File(
-        'lib/features/bookings/providers/schedule_trip_provider.dart',
+        'lib/features/bookings/application/schedule_trip_provider.dart',
       ).readAsStringSync();
       profileConsent = File(
-        'lib/features/profile/widgets/profile_notification_consent_section.dart',
+        'lib/features/profile/presentation/widgets/profile_notification_consent_section.dart',
       ).readAsStringSync();
       editProfileScreen = File(
-        'lib/features/profile/edit_profile_screen.dart',
+        'lib/features/profile/presentation/edit_profile_screen.dart',
       ).readAsStringSync();
       nearbyScreen = File(
-        'lib/features/nearby/nearby_screen.dart',
+        'lib/features/nearby/presentation/nearby_screen.dart',
       ).readAsStringSync();
       permissionDialog = File(
         'lib/shared/widgets/permission_access_dialog.dart',
       ).readAsStringSync();
       permissionService = File(
-        'lib/core/services/app_permission_service.dart',
+        'lib/core/permissions/app_permission_service.dart',
       ).readAsStringSync();
       locationService = File(
-        'lib/core/services/location_service.dart',
+        'lib/core/location/location_service.dart',
       ).readAsStringSync();
       driverSharingService = File(
-        'lib/core/services/driver_location_sharing_service.dart',
+        'lib/features/nearby/data/driver_location_sharing_service.dart',
       ).readAsStringSync();
       androidManifest = File(
         'android/app/src/main/AndroidManifest.xml',
@@ -65,16 +65,16 @@ void main() {
         'landing/.well-known/apple-app-site-association',
       ).readAsStringSync();
       chatScreen = File(
-        'lib/features/chat/chat_screen.dart',
+        'lib/features/chat/presentation/chat_screen.dart',
       ).readAsStringSync();
       chatModerationSheet = File(
-        'lib/features/chat/widgets/chat_moderation_sheet.dart',
+        'lib/features/chat/presentation/widgets/chat_moderation_sheet.dart',
       ).readAsStringSync();
       adminReports = File(
-        'lib/features/admin/admin_reports_screen.dart',
+        'lib/features/admin/presentation/admin_reports_screen.dart',
       ).readAsStringSync();
       adminAudit = File(
-        'lib/features/admin/admin_audit_log_screen.dart',
+        'lib/features/admin/presentation/admin_audit_log_screen.dart',
       ).readAsStringSync();
     });
 
@@ -110,10 +110,7 @@ void main() {
       expect(nearbyScreen, contains('_requestLocationAndReload'));
       expect(nearbyScreen, contains('PermissionAccessDialogConfig.location'));
       expect(permissionDialog, contains('backgroundLocation'));
-      expect(
-        permissionDialog,
-        contains('Allow background location'),
-      );
+      expect(permissionDialog, contains('Allow background location'));
       expect(
         permissionDialog,
         contains('Turn off sharing anytime by going offline'),

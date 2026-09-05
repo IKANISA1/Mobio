@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/features/biopay/biopay_device_nfc_service.dart';
-import 'package:mobi_app/features/biopay/models/biopay_ussd_payment.dart';
+import 'package:mobi_app/features/biopay/data/biopay_device_nfc_service.dart';
+import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
 
 void main() {
   group('BioPayDeviceNfcService', () {

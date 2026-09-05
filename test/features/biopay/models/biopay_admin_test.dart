@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/services/biopay_face_service.dart';
-import 'package:mobi_app/features/biopay/models/biopay_admin.dart';
+import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
+import 'package:mobi_app/features/biopay/domain/biopay_admin.dart';
 
 void main() {
   test('parses BioPay admin summary and payee status', () {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
-import 'package:mobi_app/features/admin/models/admin_users_state.dart';
-import 'package:mobi_app/features/admin/widgets/admin_ui.dart';
-import 'package:mobi_app/models/admin/admin_models.dart';
+import 'package:mobi_app/features/admin/application/admin_users_state.dart';
+import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
+import 'package:mobi_shared_types/models/admin/admin_models.dart';
 
 void main() {
   testWidgets('AdminPaginationBar reports range and changes page', (

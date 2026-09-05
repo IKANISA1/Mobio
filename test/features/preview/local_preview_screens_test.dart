@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
-import 'package:mobi_app/features/bookings/schedule_trip_screen.dart';
-import 'package:mobi_app/features/bookings/trip_details_screen.dart';
-import 'package:mobi_app/features/chat/chat_screen.dart';
-import 'package:mobi_app/features/ev_chargers/ev_charger_locator_screen.dart';
-import 'package:mobi_app/features/profile/edit_profile_screen.dart';
-import 'package:mobi_app/features/profile/profile_screen.dart';
+import 'package:mobi_app/features/bookings/presentation/schedule_trip_screen.dart';
+import 'package:mobi_app/features/bookings/presentation/trip_details_screen.dart';
+import 'package:mobi_app/features/chat/presentation/chat_screen.dart';
+import 'package:mobi_app/features/ev_chargers/presentation/ev_charger_locator_screen.dart';
+import 'package:mobi_app/features/profile/presentation/edit_profile_screen.dart';
+import 'package:mobi_app/features/profile/presentation/profile_screen.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
 
 void main() {
   Future<void> pumpPreview(WidgetTester tester, Widget child) async {

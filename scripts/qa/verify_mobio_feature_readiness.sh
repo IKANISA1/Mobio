@@ -5,11 +5,8 @@ repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo_root"
 
 failures=0
-flutter_bin="${FLUTTER_BIN:-/Volumes/PRO-G40/flutter_3_44/bin/flutter}"
-
-if [[ ! -x "$flutter_bin" ]]; then
-  flutter_bin="${FLUTTER_BIN:-flutter}"
-fi
+source "$repo_root/scripts/lib/flutter.sh"
+flutter_bin="$FLUTTER_BIN"
 
 run_gate() {
   local name="$1"

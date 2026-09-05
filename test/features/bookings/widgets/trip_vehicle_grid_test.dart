@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
-import 'package:mobi_app/features/bookings/widgets/trip_vehicle_grid.dart';
-import 'package:mobi_app/models/vehicle_type_model.dart';
+import 'package:mobi_app/features/bookings/presentation/widgets/trip_vehicle_grid.dart';
+import 'package:mobi_app/shared/models/vehicle_type_model.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
 
 void main() {
   testWidgets('TripVehicleGrid gives vehicle cards distinct color palettes', (

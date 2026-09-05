@@ -5,11 +5,14 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('admin panel production readiness contract', () {
     test('serves the admin PWA on real path URLs', () {
-      final main = File('lib/main.dart').readAsStringSync();
+      final main = [
+        'lib/app/bootstrap.dart',
+        'lib/app/app.dart',
+      ].map((path) => File(path).readAsStringSync()).join('\n');
       final preparePwa = File(
         'scripts/web/prepare_pwa_bundles.sh',
       ).readAsStringSync();
-      final router = File('lib/core/router/app_router.dart').readAsStringSync();
+      final router = File('lib/app/router/app_router.dart').readAsStringSync();
 
       expect(
         main,
@@ -56,7 +59,7 @@ void main() {
         'scripts/web/verify_pwa_bundles.sh',
       ).readAsStringSync();
 
-      expect(workflow, contains("flutter-version: '3.44.0'"));
+      expect(workflow, contains("flutter-version: '3.44.3'"));
       expect(workflow, isNot(contains("flutter-version: '3.38.9'")));
       expect(workflow, contains('Run admin PWA readiness contracts'));
       expect(
@@ -100,7 +103,7 @@ void main() {
 
     test('keeps admin catalog writes behind audited RPCs', () {
       final service = File(
-        'lib/core/services/vehicle_type_service.dart',
+        'lib/features/profile/data/vehicle_type_service.dart',
       ).readAsStringSync();
       final migration = File(
         'supabase/migrations/20260612120000_admin_catalog_rpc_audit_hardening.sql',
@@ -139,7 +142,7 @@ void main() {
 
     test('keeps admin subscription-plan writes behind audited RPCs', () {
       final service = File(
-        'lib/core/services/subscription_plan_service.dart',
+        'lib/features/profile/data/subscription_plan_service.dart',
       ).readAsStringSync();
       final migration = File(
         'supabase/migrations/20260612120000_admin_catalog_rpc_audit_hardening.sql',
@@ -179,28 +182,28 @@ void main() {
 
     test('admin workspaces use backend pagination for scalable queues', () {
       final usersProvider = File(
-        'lib/features/admin/providers/admin_users_provider.dart',
+        'lib/features/admin/application/admin_users_provider.dart',
       ).readAsStringSync();
       final usersState = File(
-        'lib/features/admin/models/admin_users_state.dart',
+        'lib/features/admin/application/admin_users_state.dart',
       ).readAsStringSync();
       final usersScreen = File(
-        'lib/features/admin/admin_users_screen.dart',
+        'lib/features/admin/presentation/admin_users_screen.dart',
       ).readAsStringSync();
       final reports = File(
-        'lib/features/admin/admin_reports_screen.dart',
+        'lib/features/admin/presentation/admin_reports_screen.dart',
       ).readAsStringSync();
       final audit = File(
-        'lib/features/admin/admin_audit_log_screen.dart',
+        'lib/features/admin/presentation/admin_audit_log_screen.dart',
       ).readAsStringSync();
       final health = File(
-        'lib/features/admin/admin_operational_health_screen.dart',
+        'lib/features/admin/presentation/admin_operational_health_screen.dart',
       ).readAsStringSync();
       final trips = File(
-        'lib/features/admin/admin_trips_screen.dart',
+        'lib/features/admin/presentation/admin_trips_screen.dart',
       ).readAsStringSync();
       final tripService = File(
-        'lib/core/services/admin/admin_trip_service.dart',
+        'lib/features/admin/data/admin_trip_service.dart',
       ).readAsStringSync();
       final tripMigration = File(
         'supabase/migrations/20260615123000_admin_trip_search_pagination.sql',
@@ -241,13 +244,13 @@ void main() {
     test('keeps active admin workspace aligned with design.md', () {
       final design = File('design.md').readAsStringSync();
       final adminUi = File(
-        'lib/features/admin/widgets/admin_ui.dart',
+        'lib/features/admin/presentation/widgets/admin_ui.dart',
       ).readAsStringSync();
       final reports = File(
-        'lib/features/admin/admin_reports_screen.dart',
+        'lib/features/admin/presentation/admin_reports_screen.dart',
       ).readAsStringSync();
       final audit = File(
-        'lib/features/admin/admin_audit_log_screen.dart',
+        'lib/features/admin/presentation/admin_audit_log_screen.dart',
       ).readAsStringSync();
 
       expect(design, contains('reduce headline intensity'));

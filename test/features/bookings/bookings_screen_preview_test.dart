@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
-import 'package:mobi_app/features/bookings/bookings_screen.dart';
+import 'package:mobi_app/features/bookings/presentation/bookings_screen.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
 
 void main() {
   testWidgets('BookingsScreen local preview does not require Supabase', (

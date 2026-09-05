@@ -12,7 +12,7 @@
 - Every user-facing ID (driver ID, passenger ID, display ID) **MUST** be exactly **6 numeric digits** (`000000`–`999999`).
 - **No letters.** No alphanumeric. No UUIDs shown to users.
 - Internal Supabase UUIDs exist for database operations but are **never displayed** in the UI.
-- The canonical implementation is `AppConstants.getDriverId(String id)` in [`app_constants.dart`](file:///Volumes/PRO-G40/MOBI/mobi_app/lib/core/constants/app_constants.dart), which hashes any string into a 6-digit number.
+- The canonical implementation is `AppConstants.getDriverId(String id)` in [`app_constants.dart`](file:///Volumes/PRO-G40/mobio/lib/core/constants/app_constants.dart), which hashes any string into a 6-digit number.
 - **Validation rule**: `RegExp(r'^\d{6}$')` — if a user-facing ID doesn't match this pattern, it is a bug.
 
 ---
@@ -32,7 +32,7 @@
 
 ## Rule 3: UI Must Never Be Changed Without Following `design.md`
 
-- The **sole source of truth** for all UI decisions is [`design.md`](file:///Volumes/PRO-G40/MOBI/mobi_app/design.md) — the official "Claymorphic Utility" design system specification.
+- The **sole source of truth** for all UI decisions is [`design.md`](file:///Volumes/PRO-G40/mobio/design.md) — the official "Claymorphic Utility" design system specification.
 - **No ad-hoc colors, fonts, spacing, shadows, radii, or component styles may be introduced** that are not defined in `design.md`.
 - All UI changes **must reference** the exact token from the design system (color token, typography token, spacing token, shadow token, component spec).
 - If a new visual element or pattern is needed, `design.md` **must be updated first** with the new token/spec before any code is written.
@@ -83,7 +83,7 @@
     --dart-define=PRIVACY_POLICY_URL=https://your-domain/privacy-policy.html
   ```
 - **Agent enforcement**: Any AI agent or CI pipeline that calls `flutter build apk` or `flutter build appbundle` **without** these `--dart-define` flags is producing **invalid output** and must be stopped immediately.
-- Runtime guard: `main.dart` throws `StateError` in release mode if `SupabaseConfig.isConfigured` is `false`. This is intentional — it is better to crash on launch than to ship a silently broken app.
+- Runtime guard: `lib/app/bootstrap.dart` throws `StateError` in release mode if `SupabaseConfig.isConfigured` is `false`. This is intentional — it is better to crash on launch than to ship a silently broken app.
 
 ---
 

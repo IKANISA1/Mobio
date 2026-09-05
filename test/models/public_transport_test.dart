@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/models/public_transport.dart';
+import 'package:mobi_shared_types/models/public_transport.dart';
 
 void main() {
   group('PublicTransportSchedule', () {

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/models/favorite_address.dart';
+import 'package:mobi_shared_types/models/favorite_address.dart';
 
 void main() {
   group('FavoriteAddress', () {

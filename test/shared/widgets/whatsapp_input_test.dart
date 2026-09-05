@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/providers/service_providers.dart';
-import 'package:mobi_app/core/services/country_service.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
-import 'package:mobi_app/models/country.dart';
+import 'package:mobi_app/core/localization/country_providers.dart';
+import 'package:mobi_app/core/localization/country_service.dart';
 import 'package:mobi_app/shared/widgets/whatsapp_input.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
+import 'package:mobi_shared_types/models/country.dart';
 
 void main() {
   testWidgets('WhatsApp input uses native phone text entry', (tester) async {

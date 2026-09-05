@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/models/country.dart';
+import 'package:mobi_shared_types/models/country.dart';
 
 void main() {
   group('Country fallback catalog', () {

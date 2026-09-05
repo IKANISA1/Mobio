@@ -6,10 +6,10 @@ cd "$repo_root"
 
 ./scripts/ci/verify_release_config.sh
 
-flutter pub get
-flutter gen-l10n
+source "$repo_root/scripts/lib/flutter.sh"
+./scripts/ci/bootstrap_flutter.sh
 
-COCOAPODS_DISABLE_STATS=true flutter build ios --release --no-codesign \
+COCOAPODS_DISABLE_STATS=true "$FLUTTER_BIN" build ios --release --no-codesign \
   --dart-define=SUPABASE_URL="$SUPABASE_URL" \
   --dart-define=SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY" \
   --dart-define=PRIVACY_POLICY_URL="$PRIVACY_POLICY_URL" \

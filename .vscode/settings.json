@@ -16,5 +16,16 @@
   "files.exclude": {
     "**/.dart_tool": true,
     "**/build": true
+  },
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "search.exclude": {
+    "**/.dart_tool": true,
+    "**/build": true,
+    "**/output": true
+  },
+  "files.watcherExclude": {
+    "**/.dart_tool/**": true,
+    "**/build/**": true,
+    "**/output/**": true
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 
 /// Skeleton loading shimmer with preset shapes for common UI patterns.
 ///

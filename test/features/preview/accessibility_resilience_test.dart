@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
-import 'package:mobi_app/features/biopay/biopay_screen.dart';
-import 'package:mobi_app/features/bookings/bookings_screen.dart';
-import 'package:mobi_app/features/bookings/schedule_trip_screen.dart';
-import 'package:mobi_app/features/chat/widgets/chat_composer.dart';
-import 'package:mobi_app/features/home/home_screen.dart';
-import 'package:mobi_app/features/profile/edit_profile_screen.dart';
+import 'package:mobi_app/features/biopay/presentation/biopay_nfc_write_card_screen.dart';
+import 'package:mobi_app/features/biopay/presentation/biopay_scan_screen.dart';
+import 'package:mobi_app/features/bookings/presentation/bookings_screen.dart';
+import 'package:mobi_app/features/bookings/presentation/schedule_trip_screen.dart';
+import 'package:mobi_app/features/chat/presentation/widgets/chat_composer.dart';
+import 'package:mobi_app/features/home/presentation/home_screen.dart';
+import 'package:mobi_app/features/profile/presentation/edit_profile_screen.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
 
 import '../../helpers/mobile_scanner_test_channel.dart';
 

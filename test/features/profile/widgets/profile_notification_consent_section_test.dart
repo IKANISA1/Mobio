@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
-import 'package:mobi_app/features/profile/providers/notification_consent_provider.dart';
-import 'package:mobi_app/features/profile/widgets/profile_notification_consent_section.dart';
-import 'package:mobi_app/models/notification_consent_settings.dart';
+import 'package:mobi_app/features/profile/application/notification_consent_provider.dart';
+import 'package:mobi_app/features/profile/presentation/widgets/profile_notification_consent_section.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
+import 'package:mobi_shared_types/models/notification_consent_settings.dart';
 
 void main() {
   setUp(_FakeNotificationConsentController.reset);

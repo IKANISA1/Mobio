@@ -4,12 +4,18 @@ Production script groups:
 
 - `admin/`: privileged administrative bootstrap utilities.
 - `ci/`: verification gates used locally and by GitHub Actions.
+- `lib/`: shared Flutter/Dart selection and public runtime configuration parsing.
+- `tests/`: local Python tests for build helpers and architecture enforcement.
 - `qa/`: local security and environment checks, including working-tree and Git
   history secret scans.
 - `release/`: release build wrappers.
 - `web/`: PWA and website deployment helpers.
 
 Useful release commands:
+
+- `scripts/ci/bootstrap_flutter.sh` prepares dependencies and generated models.
+- `scripts/ci/verify_flutter.sh` checks architecture, helpers, analysis and tests.
+- `python3 scripts/ci/check_repository_structure.py` validates source ownership.
 
 - `scripts/release/build_android_release.sh appbundle`
 - `scripts/release/build_android_release.sh apk`

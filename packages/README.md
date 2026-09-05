@@ -1,18 +1,17 @@
-# Packages
+# Shared packages
 
-This folder defines shared package boundaries.
+Only implemented, buildable packages live here.
 
-Runtime code may move here only through local path packages with compatibility
-exports from the old `../lib` paths, updated `pubspec.yaml` dependencies, and a
-passing analysis/build/test loop.
+| Package | Ownership | Public API |
+| --- | --- | --- |
+| `design-system` | Flutter theme and design tokens | `package:mobi_design_system/theme/...` |
+| `shared-types` | Pure Dart model contracts | `package:mobi_shared_types/models/...` |
+| `lucide_icons_compat` | Local icon compatibility fork and licence | `package:lucide_icons/lucide_icons.dart` |
 
-| Package boundary | Current source |
-| --- | --- |
-| `design-system` | `design.md`, `design-system/lib/src/theme`; compatibility exports in `../lib/core/theme`; widgets still in `../lib/shared/widgets` |
-| `shared-types` | `shared-types/lib/src/models`; compatibility exports in `../lib/models`; UI-backed `VehicleTypeModel` remains in the app |
-| `shared-utils` | `../lib/core/utils`, pure helpers inside services |
-| `domain` | Trip, profile, saved-place, entitlement, demand-zone logic in `../lib/core/services` and feature providers |
-| `api-clients` | Supabase and Edge Function clients in `../lib/core/services` and `../lib/features/*/services` |
-| `auth` | `../lib/core/auth`, session services, OTP/login services |
-| `agent-ui` | Future shared operator/agent UI components |
-| `analytics` | Firebase analytics/crash/remote-config services |
+Feature services, state, and screens belong to `lib/features/<owner>/`. Core
+platform services belong to `lib/core/`. Import package APIs directly; app-level
+model/theme compatibility wrappers have been retired.
+
+Run `scripts/ci/bootstrap_flutter.sh` from the root to prepare shared models and
+the application. Add a package only when it has real source, a build definition,
+and a clear consumer.

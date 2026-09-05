@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/features/biopay/biopay_nfc_card_payload.dart';
+import 'package:mobi_app/features/biopay/data/biopay_nfc_card_payload.dart';
 import 'package:ndef/ndef.dart' as ndef;
 
 void main() {

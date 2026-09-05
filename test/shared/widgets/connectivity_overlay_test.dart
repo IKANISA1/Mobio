@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
 import 'package:mobi_app/shared/widgets/connectivity_overlay.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
 
 void main() {
   Widget buildSubject({

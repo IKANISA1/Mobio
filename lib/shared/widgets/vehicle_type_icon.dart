@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mobi_app/models/vehicle_type_model.dart';
+import 'package:mobi_app/shared/models/vehicle_type_model.dart';
 
 class VehicleTypeIcon extends StatelessWidget {
   const VehicleTypeIcon({

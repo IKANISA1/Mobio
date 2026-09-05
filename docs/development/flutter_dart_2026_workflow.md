@@ -1,6 +1,6 @@
 # Flutter and Dart 2026 Workflow
 
-Use Flutter 3.44.x with Dart 3.12.x for this repo.
+Use Flutter 3.44.3 with Dart 3.12.2, pinned in the root `.flutter-version`.
 
 ## Local Toolchain
 
@@ -34,8 +34,8 @@ Codex or reconnect the MCP server before relying on MCP test execution.
 ## Daily Checks
 
 ```bash
-$FLUTTER_BIN pub get
-$FLUTTER_BIN gen-l10n
+./scripts/ci/bootstrap_flutter.sh
+python3 scripts/ci/check_repository_structure.py
 /Volumes/PRO-G40/flutter_3_44/bin/dart analyze
 $FLUTTER_BIN test --reporter expanded
 ```
@@ -43,7 +43,8 @@ $FLUTTER_BIN test --reporter expanded
 Run generated-code refresh only when the matching source models changed:
 
 ```bash
-$FLUTTER_BIN pub run build_runner build --delete-conflicting-outputs
+cd packages/shared-types
+$DART_BIN run build_runner build --delete-conflicting-outputs
 ```
 
 ## Release Builds

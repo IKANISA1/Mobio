@@ -64,13 +64,13 @@ void main() {
 
     test('profile edit flow does not expose BioPay handle editing', () {
       final editScreen = File(
-        'lib/features/profile/edit_profile_screen.dart',
+        'lib/features/profile/presentation/edit_profile_screen.dart',
       ).readAsStringSync();
       final editProvider = File(
-        'lib/features/profile/providers/edit_profile_provider.dart',
+        'lib/features/profile/application/edit_profile_provider.dart',
       ).readAsStringSync();
       final editState = File(
-        'lib/features/profile/models/edit_profile_state.dart',
+        'lib/features/profile/application/edit_profile_state.dart',
       ).readAsStringSync();
 
       expect(editScreen, isNot(contains('ProfileBiopaySection')));
@@ -84,16 +84,16 @@ void main() {
       'admin BioPay ops is explicit and legacy finance review is absent',
       () {
         final router = File(
-          'lib/core/router/app_router.dart',
+          'lib/app/router/app_router.dart',
         ).readAsStringSync();
         final adminUi = File(
-          'lib/features/admin/widgets/admin_ui.dart',
+          'lib/features/admin/presentation/widgets/admin_ui.dart',
         ).readAsStringSync();
         final adminService = File(
-          'lib/core/services/admin_service.dart',
+          'lib/features/admin/data/admin_service.dart',
         ).readAsStringSync();
         final complianceService = File(
-          'lib/core/services/admin/admin_compliance_service.dart',
+          'lib/features/admin/data/admin_compliance_service.dart',
         ).readAsStringSync();
         final adminModels = File(
           'packages/shared-types/lib/src/models/admin/admin_models.dart',
@@ -125,10 +125,10 @@ void main() {
       'login copy stays within discovery, trips, chat, and profile scope',
       () {
         final loginScreen = File(
-          'lib/features/auth/whatsapp_login_screen.dart',
+          'lib/features/auth/presentation/whatsapp_login_screen.dart',
         ).readAsStringSync();
         final screenWrappers = File(
-          'lib/core/router/screen_wrappers.dart',
+          'lib/app/router/screen_wrappers.dart',
         ).readAsStringSync();
 
         expect(loginScreen, contains('WhatsApp login'));
@@ -147,9 +147,12 @@ void main() {
     );
 
     test('ride-request lifecycle is not shipped in active Flutter package', () {
-      final providers = File(
-        'lib/core/providers/service_providers.dart',
-      ).readAsStringSync();
+      final providers = Directory('lib')
+          .listSync(recursive: true)
+          .whereType<File>()
+          .where((file) => file.path.endsWith('.dart'))
+          .map((file) => file.readAsStringSync())
+          .join('\n');
 
       expect(
         File('lib/core/services/ride_request_service.dart').existsSync(),
@@ -179,10 +182,10 @@ void main() {
         'packages/shared-types/lib/src/models/trip.dart',
       ).readAsStringSync();
       final adminTrips = File(
-        'lib/features/admin/admin_trips_screen.dart',
+        'lib/features/admin/presentation/admin_trips_screen.dart',
       ).readAsStringSync();
       final adminStats = File(
-        'lib/features/admin/widgets/admin_stats_grid.dart',
+        'lib/features/admin/presentation/widgets/admin_stats_grid.dart',
       ).readAsStringSync();
       final adminModels = File(
         'packages/shared-types/lib/src/models/admin/admin_models.dart',
@@ -223,63 +226,63 @@ void main() {
         'docs/product/biopay_reference_screen_gap_map_2026-06-12.md',
       ).readAsStringSync();
       final biopayService = File(
-        'lib/core/services/biopay_ussd_service.dart',
+        'lib/features/biopay/data/biopay_ussd_service.dart',
       ).readAsStringSync();
       final biopayAdminService = File(
-        'lib/core/services/biopay_admin_service.dart',
+        'lib/features/biopay/data/biopay_admin_service.dart',
       ).readAsStringSync();
       final biopayFaceService = File(
-        'lib/core/services/biopay_face_service.dart',
+        'lib/features/biopay/data/biopay_face_service.dart',
       ).readAsStringSync();
       final profileScreen = File(
-        'lib/features/profile/profile_screen.dart',
+        'lib/features/profile/presentation/profile_screen.dart',
       ).readAsStringSync();
       final screenWrappers = File(
-        'lib/core/router/screen_wrappers.dart',
+        'lib/app/router/screen_wrappers.dart',
       ).readAsStringSync();
       final biopayNfcScreen = File(
-        'lib/features/biopay/biopay_nfc_screen.dart',
+        'lib/features/biopay/presentation/biopay_nfc_screen.dart',
       ).readAsStringSync();
       final biopayDeviceNfcService = File(
-        'lib/features/biopay/biopay_device_nfc_service.dart',
+        'lib/features/biopay/data/biopay_device_nfc_service.dart',
       ).readAsStringSync();
       final biopayNfcForegroundListener = File(
-        'lib/features/biopay/biopay_nfc_foreground_listener.dart',
+        'lib/features/biopay/presentation/biopay_nfc_foreground_listener.dart',
       ).readAsStringSync();
       final biopayNfcService = File(
-        'lib/features/biopay/biopay_nfc_service.dart',
+        'lib/features/biopay/data/biopay_nfc_service.dart',
       ).readAsStringSync();
       final biopayNfcWriteCardScreen = File(
-        'lib/features/biopay/biopay_nfc_write_card_screen.dart',
+        'lib/features/biopay/presentation/biopay_nfc_write_card_screen.dart',
       ).readAsStringSync();
       final androidHceService = File(
         'android/app/src/main/kotlin/rw/mobi/app/BioPayHostApduService.kt',
       ).readAsStringSync();
       final biopayQrExport = File(
-        'lib/features/biopay/biopay_qr_export.dart',
+        'lib/features/biopay/data/biopay_qr_export.dart',
       ).readAsStringSync();
       final biopayQrExportIo = File(
-        'lib/features/biopay/biopay_qr_export_io.dart',
+        'lib/features/biopay/data/biopay_qr_export_io.dart',
       ).readAsStringSync();
       final biopayQrExportStub = File(
-        'lib/features/biopay/biopay_qr_export_stub.dart',
+        'lib/features/biopay/data/biopay_qr_export_stub.dart',
       ).readAsStringSync();
       final biopayScreen = [
-        'lib/features/biopay/biopay_screen.dart',
-        'lib/features/biopay/biopay_admin_console_screen.dart',
-        'lib/features/biopay/biopay_face_enroll_screen.dart',
-        'lib/features/biopay/biopay_face_scan_screen.dart',
-        'lib/features/biopay/biopay_flow_shared.dart',
-        'lib/features/biopay/biopay_home_screen.dart',
-        'lib/features/biopay/biopay_nfc_screen.dart',
-        'lib/features/biopay/biopay_nfc_foreground_listener.dart',
-        'lib/features/biopay/biopay_nfc_service.dart',
-        'lib/features/biopay/biopay_nfc_write_card_screen.dart',
-        'lib/features/biopay/biopay_qr_screen.dart',
-        'lib/features/biopay/biopay_scan_screen.dart',
+        'lib/features/biopay/domain/payment_payload.dart',
+        'lib/features/biopay/presentation/biopay_admin_console_screen.dart',
+        'lib/features/biopay/presentation/biopay_face_enroll_screen.dart',
+        'lib/features/biopay/presentation/biopay_face_scan_screen.dart',
+        'lib/features/biopay/presentation/biopay_flow_shared.dart',
+        'lib/features/biopay/presentation/biopay_home_screen.dart',
+        'lib/features/biopay/presentation/biopay_nfc_screen.dart',
+        'lib/features/biopay/presentation/biopay_nfc_foreground_listener.dart',
+        'lib/features/biopay/data/biopay_nfc_service.dart',
+        'lib/features/biopay/presentation/biopay_nfc_write_card_screen.dart',
+        'lib/features/biopay/presentation/biopay_qr_screen.dart',
+        'lib/features/biopay/presentation/biopay_scan_screen.dart',
       ].map((path) => File(path).readAsStringSync()).join('\n');
       final biopayModel = File(
-        'lib/features/biopay/models/biopay_ussd_payment.dart',
+        'lib/features/biopay/domain/biopay_ussd_payment.dart',
       ).readAsStringSync();
       final iosEntitlements = File(
         'ios/Runner/Runner.entitlements',
@@ -686,18 +689,22 @@ void main() {
       final releaseScript = File(
         'scripts/release/build_android_release.sh',
       ).readAsStringSync();
+      final runtimeDefines = File(
+        'scripts/lib/runtime_defines.py',
+      ).readAsStringSync();
       final releaseConfig = File(
         'scripts/ci/verify_release_config.sh',
       ).readAsStringSync();
       final profileScreen = File(
-        'lib/features/profile/profile_screen.dart',
+        'lib/features/profile/presentation/profile_screen.dart',
       ).readAsStringSync();
 
       expect(config, contains('ACCOUNT_DELETION_URL'));
       expect(config, contains('hasAccountDeletionUrl'));
-      expect(releaseScript, contains('"ACCOUNT_DELETION_URL"'));
-      expect(releaseScript, contains('missing.append(key)'));
-      expect(releaseScript, contains('Add them to .env or export them'));
+      expect(releaseScript, contains('scripts/lib/runtime_defines.py'));
+      expect(runtimeDefines, contains('"ACCOUNT_DELETION_URL"'));
+      expect(runtimeDefines, contains('raise ValueError'));
+      expect(runtimeDefines, contains('Add them to .env or export them'));
       expect(releaseScript, contains(r'build_cmd=("$FLUTTER_BIN" build'));
       expect(releaseScript, contains('build appbundle --release --no-pub'));
       expect(releaseScript, contains('build apk --release --no-pub'));
@@ -846,31 +853,31 @@ void main() {
 
     test('scheduled trips do not compute automatic routes or fares', () {
       final scheduleProvider = File(
-        'lib/features/bookings/providers/schedule_trip_provider.dart',
+        'lib/features/bookings/application/schedule_trip_provider.dart',
       ).readAsStringSync();
       final routeForm = File(
-        'lib/features/bookings/widgets/trip_route_form.dart',
+        'lib/features/bookings/presentation/widgets/trip_route_form.dart',
       ).readAsStringSync();
       final chatComposer = File(
-        'lib/features/chat/widgets/chat_composer.dart',
+        'lib/features/chat/presentation/widgets/chat_composer.dart',
       ).readAsStringSync();
       final placesService = File(
-        'lib/core/services/places_service.dart',
+        'lib/core/location/places_service.dart',
       ).readAsStringSync();
       final mapsGateway = File(
         'supabase/functions/maps-gateway/index.ts',
       ).readAsStringSync();
       final scheduleState = File(
-        'lib/features/bookings/models/schedule_trip_state.dart',
+        'lib/features/bookings/application/schedule_trip_state.dart',
       ).readAsStringSync();
       final routeMapCard = File(
         'lib/shared/widgets/route_map_card.dart',
       ).readAsStringSync();
       final nearbyScreen = File(
-        'lib/features/nearby/nearby_screen.dart',
+        'lib/features/nearby/presentation/nearby_screen.dart',
       ).readAsStringSync();
       final mapsDeepLinkService = File(
-        'lib/core/services/google_maps_deep_link_service.dart',
+        'lib/core/location/google_maps_deep_link_service.dart',
       ).readAsStringSync();
       final sharedExports = File(
         'packages/shared-types/lib/mobi_shared_types.dart',
@@ -944,7 +951,7 @@ void main() {
           'lib/shared/widgets/driver_card.dart',
         ).readAsStringSync();
         final nearbyScreen = File(
-          'lib/features/nearby/nearby_screen.dart',
+          'lib/features/nearby/presentation/nearby_screen.dart',
         ).readAsStringSync();
         final sharedExports = File(
           'packages/shared-types/lib/mobi_shared_types.dart',
@@ -965,7 +972,7 @@ void main() {
 
     test('historical docs defer to current limited marketplace scope', () {
       final schemaInventory = File(
-        'docs/architecture/schema_inventory.md',
+        'docs/architecture/history/schema_inventory.md',
       ).readAsStringSync();
       final backendAudit = File(
         'supabase/docs/backend_security_audit_2026-05-01.md',

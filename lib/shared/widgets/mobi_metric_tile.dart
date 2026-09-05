@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobi_app/core/theme/app_radii.dart';
-import 'package:mobi_app/core/theme/app_spacing.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_design_system/theme/app_radii.dart';
+import 'package:mobi_design_system/theme/app_spacing.dart';
+import 'package:mobi_design_system/theme/app_typography.dart';
 
 class MobiMetricTile extends StatelessWidget {
   final String label;

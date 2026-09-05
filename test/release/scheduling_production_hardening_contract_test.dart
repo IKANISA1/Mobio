@@ -9,7 +9,7 @@ void main() {
 
     test('keeps user trip mutations behind validated audited RPCs', () {
       final service = File(
-        'lib/core/services/trip_service.dart',
+        'lib/features/bookings/data/trip_service.dart',
       ).readAsStringSync();
       final migration = File(migrationPath).readAsStringSync();
 
@@ -42,13 +42,13 @@ void main() {
       () {
         final migration = File(migrationPath).readAsStringSync();
         final state = File(
-          'lib/features/bookings/models/schedule_trip_state.dart',
+          'lib/features/bookings/application/schedule_trip_state.dart',
         ).readAsStringSync();
         final provider = File(
-          'lib/features/bookings/providers/schedule_trip_provider.dart',
+          'lib/features/bookings/application/schedule_trip_provider.dart',
         ).readAsStringSync();
         final service = File(
-          'lib/core/services/trip_service.dart',
+          'lib/features/bookings/data/trip_service.dart',
         ).readAsStringSync();
 
         expect(migration, contains('Departure time must be in the future.'));
@@ -97,13 +97,13 @@ void main() {
 
     test('surfaces degraded scheduling states instead of silent failures', () {
       final bookings = File(
-        'lib/features/bookings/bookings_screen.dart',
+        'lib/features/bookings/presentation/bookings_screen.dart',
       ).readAsStringSync();
       final provider = File(
-        'lib/features/bookings/providers/schedule_trip_provider.dart',
+        'lib/features/bookings/application/schedule_trip_provider.dart',
       ).readAsStringSync();
       final scheduleScreen = File(
-        'lib/features/bookings/schedule_trip_screen.dart',
+        'lib/features/bookings/presentation/schedule_trip_screen.dart',
       ).readAsStringSync();
       final placeField = File(
         'lib/shared/widgets/place_autocomplete_field.dart',

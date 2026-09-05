@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/models/profile.dart';
+import 'package:mobi_shared_types/models/profile.dart';
 
 void main() {
   group('Profile model', () {

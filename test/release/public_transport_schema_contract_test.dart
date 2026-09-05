@@ -15,13 +15,13 @@ void main() {
     const agencyAdminMigrationPath =
         'supabase/migrations/20260615090000_transport_agency_admin_management.sql';
     const editProfileProviderPath =
-        'lib/features/profile/providers/edit_profile_provider.dart';
+        'lib/features/profile/application/edit_profile_provider.dart';
     const publicTransportServicePath =
-        'lib/core/services/public_transport_service.dart';
-    const appRouterPath = 'lib/core/router/app_router.dart';
-    const adminUiPath = 'lib/features/admin/widgets/admin_ui.dart';
+        'lib/features/bookings/data/public_transport_service.dart';
+    const appRouterPath = 'lib/app/router/app_router.dart';
+    const adminUiPath = 'lib/features/admin/presentation/widgets/admin_ui.dart';
     const adminAgencyScreenPath =
-        'lib/features/admin/admin_transport_agencies_screen.dart';
+        'lib/features/admin/presentation/admin_transport_agencies_screen.dart';
 
     test('adds required booking-specific tables', () {
       final migration = File(migrationPath).readAsStringSync();

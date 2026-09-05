@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/models/notification_consent_settings.dart';
+import 'package:mobi_shared_types/models/notification_consent_settings.dart';
 
 void main() {
   group('NotificationConsentSettings', () {

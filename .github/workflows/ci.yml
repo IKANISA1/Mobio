@@ -24,7 +24,7 @@ jobs:
 
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
-          flutter-version: '3.38.9'
+          flutter-version: '3.44.3'
           channel: stable
           cache: true
 
@@ -52,11 +52,7 @@ jobs:
           fi
           PRESERVE_ANDROID_SIGNING_FILES=true ./scripts/ci/write_android_signing_files.sh
           trap 'rm -f android/key.properties android/app/release.keystore' EXIT
-          flutter build appbundle --release \
-            --dart-define=SUPABASE_URL=$SUPABASE_URL \
-            --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
-            --dart-define=PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL \
-            --dart-define=ACCOUNT_DELETION_URL=$ACCOUNT_DELETION_URL
+          ./scripts/release/build_android_release.sh appbundle
 
   ios:
     runs-on: macos-latest
@@ -67,7 +63,7 @@ jobs:
 
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
-          flutter-version: '3.38.9'
+          flutter-version: '3.44.3'
           channel: stable
           cache: true
 

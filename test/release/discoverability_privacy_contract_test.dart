@@ -17,28 +17,28 @@ void main() {
 
     setUpAll(() {
       tripService = File(
-        'lib/core/services/trip_service.dart',
+        'lib/features/bookings/data/trip_service.dart',
       ).readAsStringSync();
       homeScreen = File(
-        'lib/features/home/home_screen.dart',
+        'lib/features/home/presentation/home_screen.dart',
       ).readAsStringSync();
       bookingsScreen = File(
-        'lib/features/bookings/bookings_screen.dart',
+        'lib/features/bookings/presentation/bookings_screen.dart',
       ).readAsStringSync();
       chatScreen = File(
-        'lib/features/chat/chat_screen.dart',
+        'lib/features/chat/presentation/chat_screen.dart',
       ).readAsStringSync();
       scheduleProvider = File(
-        'lib/features/bookings/providers/schedule_trip_provider.dart',
+        'lib/features/bookings/application/schedule_trip_provider.dart',
       ).readAsStringSync();
       tripRouteForm = File(
-        'lib/features/bookings/widgets/trip_route_form.dart',
+        'lib/features/bookings/presentation/widgets/trip_route_form.dart',
       ).readAsStringSync();
       profileFavorites = File(
-        'lib/features/profile/widgets/profile_favorite_addresses_section.dart',
+        'lib/features/profile/presentation/widgets/profile_favorite_addresses_section.dart',
       ).readAsStringSync();
       editProfileScreen = File(
-        'lib/features/profile/edit_profile_screen.dart',
+        'lib/features/profile/presentation/edit_profile_screen.dart',
       ).readAsStringSync();
       scheduledChatPrivacySql = File(
         'supabase/migrations/20260614170000_driver_passenger_scheduled_chat_privacy.sql',

@@ -26,19 +26,19 @@ void main() {
         'supabase/functions/send-push/index.ts',
       ).readAsStringSync();
       pushService = File(
-        'lib/core/services/push_notification_service.dart',
+        'lib/features/notifications/data/push_notification_service.dart',
       ).readAsStringSync();
       notificationService = File(
-        'lib/core/services/notification_service.dart',
+        'lib/features/notifications/data/notification_service.dart',
       ).readAsStringSync();
-      router = File('lib/core/router/app_router.dart').readAsStringSync();
-      wrappers = File(
-        'lib/core/router/screen_wrappers.dart',
-      ).readAsStringSync();
+      router = File('lib/app/router/app_router.dart').readAsStringSync();
+      wrappers = File('lib/app/router/screen_wrappers.dart').readAsStringSync();
       inbox = File(
-        'lib/features/notifications/notifications_screen.dart',
+        'lib/features/notifications/presentation/notifications_screen.dart',
       ).readAsStringSync();
-      home = File('lib/features/home/home_screen.dart').readAsStringSync();
+      home = File(
+        'lib/features/home/presentation/home_screen.dart',
+      ).readAsStringSync();
     });
 
     test('creates the missing push delivery tables and audit trail', () {

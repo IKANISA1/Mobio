@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-
-import 'package:mobi_app/core/services/google_maps_deep_link_service.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/core/location/google_maps_deep_link_service.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_design_system/theme/app_typography.dart';
+import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 
 /// Displays a compact trip-location summary card.
 /// The mobile app does not support embedded maps, so this widget intentionally

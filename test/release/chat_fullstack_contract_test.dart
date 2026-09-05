@@ -14,13 +14,13 @@ void main() {
       'supabase/migrations/20260614120000_wallet_referrals_driver_plus.sql',
     ).readAsStringSync();
     final chatService = File(
-      'lib/core/services/chat_service.dart',
+      'lib/features/chat/data/chat_service.dart',
     ).readAsStringSync();
     final chatScreen = File(
-      'lib/features/chat/chat_screen.dart',
+      'lib/features/chat/presentation/chat_screen.dart',
     ).readAsStringSync();
     final tripDetails = File(
-      'lib/features/bookings/trip_details_screen.dart',
+      'lib/features/bookings/presentation/trip_details_screen.dart',
     ).readAsStringSync();
 
     expect(

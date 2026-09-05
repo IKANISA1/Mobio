@@ -9,7 +9,7 @@ SERIAL="${ANDROID_SERIAL:-13111JEC215558}"
 PKG="com.momobio.app"
 UNSIGNED="$APP_DIR/app/build/outputs/apk/release/app-release-unsigned.apk"
 SIGNED="$APP_DIR/app/build/outputs/apk/release/mo-mobio-sms-bridge-internal-release.apk"
-EVIDENCE_DIR="${1:-$APP_DIR/qa/device-uat-$(date +%Y%m%d-%H%M%S)}"
+EVIDENCE_DIR="${1:-$ROOT_DIR/build/qa/momobio-sms-bridge/device-uat-$(date +%Y%m%d-%H%M%S)}"
 
 mkdir -p "$EVIDENCE_DIR"
 

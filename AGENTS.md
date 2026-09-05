@@ -54,7 +54,7 @@ See [CRITICAL_RULES.md](./CRITICAL_RULES.md) for the full list:
 1. User IDs = 6 numeric digits only
 2. Default country = Rwanda (RW)
 3. UI = follow `design.md` exactly
-4. Auth = Supabase anonymous (no login wall)
+4. Auth = WhatsApp OTP; anonymous Supabase sessions are bootstrap only
 5. **Build env vars = SUPABASE_URL + SUPABASE_ANON_KEY + PRIVACY_POLICY_URL + ACCOUNT_DELETION_URL mandatory on every build**
 
 ## CRITICAL REVIEW-NOTE RULE: Batch Before Rebuild
@@ -87,6 +87,11 @@ platform. Active work must stay inside:
 - Basic moderation/admin operations for users, scheduled posts, chat/reports,
   roles, audit logs, and operational health.
 
+Preserve existing expansions documented in dated product approvals, including
+`docs/product/biopay_ussd_aws_reactivation_scope_2026-06-12.md` and the
+public-transport scope documents. Consult those documents before interpreting
+older limited-scope notes as instructions to remove current features.
+
 Do not add or re-enable fare quotes, automatic dispatch, trip start/complete
 lifecycle, driver earnings, refunds, route tracking, BioPay trip settlement,
 payment ledgers, SMS payment ingestion, or in-app payment APIs unless a new
@@ -114,6 +119,12 @@ be proposed as Mobio work.
 - Run `scripts/qa/scan_secrets.sh` before release changes.
 
 ## Flutter/Dart Agent Workflow
+
+- Read `docs/architecture/README.md` for the implemented source boundaries.
+- Run `scripts/ci/bootstrap_flutter.sh` for clean-checkout setup and
+  `python3 scripts/ci/check_repository_structure.py` after structural changes.
+- Import shared model and theme package APIs directly; do not restore the retired
+  `lib/models`, `lib/core/theme`, or centralized service-provider wrappers.
 
 - Prefer `/Volumes/PRO-G40/flutter_3_44/bin/flutter` and its bundled Dart
   3.12 SDK for local validation. If a script supports it, set `FLUTTER_BIN`

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/theme/app_radii.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
-
 import 'package:mobi_app/shared/widgets/glass_container.dart';
+import 'package:mobi_design_system/theme/app_radii.dart';
+import 'package:mobi_design_system/theme/app_typography.dart';
+import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 
 /// Floating bottom navigation bar.
 class MobiBottomNav extends StatelessWidget {

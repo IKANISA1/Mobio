@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobi_app/core/providers/service_providers.dart';
-import 'package:mobi_app/core/services/country_service.dart';
-import 'package:mobi_app/core/theme/app_radii.dart';
-import 'package:mobi_app/core/theme/app_spacing.dart';
-import 'package:mobi_app/core/theme/app_typography.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_app/core/localization/country_providers.dart';
+import 'package:mobi_app/core/localization/country_service.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
-import 'package:mobi_app/models/country.dart';
 import 'package:mobi_app/shared/data/phone_country_codes.dart';
 import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
+import 'package:mobi_design_system/theme/app_radii.dart';
+import 'package:mobi_design_system/theme/app_spacing.dart';
+import 'package:mobi_design_system/theme/app_typography.dart';
+import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
+import 'package:mobi_shared_types/models/country.dart';
 
 /// WhatsApp phone input with country code picker.
 ///

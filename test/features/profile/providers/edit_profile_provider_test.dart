@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
-import 'package:mobi_app/features/profile/providers/edit_profile_provider.dart';
+import 'package:mobi_app/features/profile/application/edit_profile_provider.dart';
 
 void main() {
   test('Others driver profile requires a selected vehicle model', () async {

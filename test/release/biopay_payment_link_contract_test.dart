@@ -4,14 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('BioPay direct MoMo USSD request contract', () {
-    const homePath = 'lib/features/biopay/biopay_home_screen.dart';
+    const homePath = 'lib/features/biopay/presentation/biopay_home_screen.dart';
     const requestScreenPath =
-        'lib/features/biopay/biopay_request_payment_screen.dart';
+        'lib/features/biopay/presentation/biopay_request_payment_screen.dart';
     const payerScreenPath =
-        'lib/features/biopay/biopay_payment_link_screen.dart';
-    const flowSharedPath = 'lib/features/biopay/biopay_flow_shared.dart';
-    const servicePath = 'lib/core/services/biopay_ussd_service.dart';
-    const routerPath = 'lib/core/router/app_router.dart';
+        'lib/features/biopay/presentation/biopay_payment_link_screen.dart';
+    const flowSharedPath =
+        'lib/features/biopay/presentation/biopay_flow_shared.dart';
+    const servicePath = 'lib/features/biopay/data/biopay_ussd_service.dart';
+    const routerPath = 'lib/app/router/app_router.dart';
     const configPath = 'lib/core/config/supabase_config.dart';
     const manifestPath = 'android/app/src/main/AndroidManifest.xml';
     const migrationPath =
@@ -141,10 +142,7 @@ void main() {
         expect(mainActivity, contains('Intent.ACTION_CALL'));
         expect(mainActivity, contains('Intent.ACTION_DIAL'));
         expect(mainActivity, contains('startNativeUssdDialerFallback'));
-        expect(
-          mainActivity,
-          contains('REQUEST_CALL_PHONE_FOR_USSD'),
-        );
+        expect(mainActivity, contains('REQUEST_CALL_PHONE_FOR_USSD'));
       },
     );
 

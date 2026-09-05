@@ -9,4 +9,6 @@ Current source of truth:
 
 Extraction rule: move only stable, app-agnostic widgets here. Feature-specific cards, screens, providers, and backend calls must stay in their feature/app boundary.
 
-Compatibility exports remain in `../../lib/core/theme` so existing app imports continue to work while new code can import `package:mobi_design_system/mobi_design_system.dart`.
+Import tokens directly through `package:mobi_design_system/theme/...` or
+`package:mobi_design_system/mobi_design_system.dart`. App-level compatibility
+exports were removed in the September 2026 consolidation.

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
 import 'package:mobi_app/shared/widgets/otp_code_field.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
 
 void main() {
   testWidgets('OTP field uses native numeric text fields', (tester) async {

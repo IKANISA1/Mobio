@@ -27,12 +27,14 @@ void main() {
       'supabase/migrations/20260616002000_driver_plan_caps_rentals_and_moto_allowance.sql';
   const driverVehiclePolicyMigrationPath =
       'supabase/migrations/20260616004500_driver_vehicle_policy_enforcement.sql';
-  const chatScreenPath = 'lib/features/chat/chat_screen.dart';
+  const chatScreenPath = 'lib/features/chat/presentation/chat_screen.dart';
   const referralAttributionServicePath =
-      'lib/core/services/referral_attribution_service.dart';
-  const walletScreenPath = 'lib/features/profile/wallet_screen.dart';
-  const driverPlusScreenPath = 'lib/features/profile/driver_plus_screen.dart';
-  const appRouterPath = 'lib/core/router/app_router.dart';
+      'lib/features/profile/data/referral_attribution_service.dart';
+  const walletScreenPath =
+      'lib/features/profile/presentation/wallet_screen.dart';
+  const driverPlusScreenPath =
+      'lib/features/profile/presentation/driver_plus_screen.dart';
+  const appRouterPath = 'lib/app/router/app_router.dart';
 
   test('wallet and referral rewards are server-owned', () {
     final sql = File(migrationPath).readAsStringSync();
@@ -41,13 +43,13 @@ void main() {
     ).readAsStringSync();
     final walletScreen = File(walletScreenPath).readAsStringSync();
     final walletService = File(
-      'lib/core/services/wallet_service.dart',
+      'lib/features/profile/data/wallet_service.dart',
     ).readAsStringSync();
     final adminService = File(
-      'lib/core/services/admin_service.dart',
+      'lib/features/admin/data/admin_service.dart',
     ).readAsStringSync();
     final adminUserSheet = File(
-      'lib/features/admin/widgets/admin_user_sheet.dart',
+      'lib/features/admin/presentation/widgets/admin_user_sheet.dart',
     ).readAsStringSync();
     final appRouter = File(appRouterPath).readAsStringSync();
     final productionReadinessSql = File(
@@ -181,14 +183,14 @@ void main() {
       'supabase/functions/_shared/momo-sms.ts',
     ).readAsStringSync();
     final driverPlusService = File(
-      'lib/core/services/driver_plus_service.dart',
+      'lib/features/profile/data/driver_plus_service.dart',
     ).readAsStringSync();
     final driverPlusScreen = File(driverPlusScreenPath).readAsStringSync();
     final adminSubscriptionsScreen = File(
-      'lib/features/admin/admin_subscriptions_screen.dart',
+      'lib/features/admin/presentation/admin_subscriptions_screen.dart',
     ).readAsStringSync();
     final subscriptionPlanService = File(
-      'lib/core/services/subscription_plan_service.dart',
+      'lib/features/profile/data/subscription_plan_service.dart',
     ).readAsStringSync();
     final productionReadinessSql = File(
       productionReadinessMigrationPath,

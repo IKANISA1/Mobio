@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobi_app/core/theme/app_theme.dart';
 import 'package:mobi_app/shared/widgets/mobi_bottom_nav.dart';
+import 'package:mobi_design_system/theme/app_theme.dart';
 
 void main() {
   Widget buildSubject({

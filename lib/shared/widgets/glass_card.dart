@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobi_app/core/theme/app_radii.dart';
-import 'package:mobi_app/core/theme/app_spacing.dart';
-import 'package:mobi_app/core/theme/mobi_theme_extension.dart';
+import 'package:mobi_design_system/theme/app_radii.dart';
+import 'package:mobi_design_system/theme/app_spacing.dart';
+import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 
 /// Base translucent surface card used across the app.
 class ClayCard extends StatefulWidget {
