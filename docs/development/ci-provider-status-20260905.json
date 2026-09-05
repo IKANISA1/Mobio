@@ -7,7 +7,10 @@
     "conclusion": "startup_failure",
     "jobs": 0,
     "signed_in_billing_banner": "Your payment authorization has failed",
-    "retry_performed": false
+    "retry_performed": false,
+    "owner_decision": "keep_github_free_use_local_verification",
+    "payment_retry_cancelled": true,
+    "paid_account_authorized": false
   },
   "firebase": {
     "project_id": "gen-lang-client-0172279957",
@@ -62,27 +65,72 @@
   },
   "validation": {
     "dart_analyze": "passed",
-    "flutter_tests_passed": 516,
-    "python_tests_passed": 9,
-    "sdk_configuration_tests_passed": 2,
+    "flutter_tests_passed": 519,
+    "python_tests_passed": 12,
     "repository_structure": "passed",
     "secret_scan": "passed",
     "ios_release_build": "passed_unsigned",
     "store_upload_performed": false,
     "device_push_verified": false,
     "ios_artifact": {
-      "verified_at_utc": "2026-09-05T14:50:53.610023+00:00",
+      "verified_at_utc": "2026-09-05T17:40:39.712031+00:00",
       "bundle_id": "rw.mobi.app",
       "version": "1.0.0",
       "build": "17",
       "unsigned_release": true,
       "total_bytes": 43242610,
-      "dart_framework_sha256": "070a806ff50def1b15f9c90142e29ae68712cedb314f21449cd20647f07e5f26",
+      "dart_framework_sha256": "4833824081d62eb6feea87d7cbd5f6241b4d6d102bfedc32120a2e9bd8f7d777",
       "ios_app_id_embedded": true,
       "ios_sdk_api_key_embedded": true,
       "required_runtime_defines_verified": true,
       "xcode_version": "26.6 (17F113)",
       "flutter_version": "3.44.3"
-    }
-  }
+    },
+    "backend_tests_passed": 24,
+    "backend_typechecks": "passed",
+    "local_pipeline": "passed",
+    "web_build": "passed",
+    "pwa_validation": "passed",
+    "android_aab_build": "passed",
+    "android_apk_build": "passed",
+    "android_signature_verified": true,
+    "linked_database_checks_run": false,
+    "browser_console_errors": 0,
+    "admin_startup_routes": "passed",
+    "report": "docs/development/local-verification-20260905.md",
+    "sdk_configuration": "passed_artifact_inspection",
+    "artifacts": [
+      {
+        "path": "build/app/outputs/bundle/release/app-release.aab",
+        "bytes": 83235121,
+        "sha256": "68b0701813f49e004e0d66479e06fc932607b03181c82a30647709949f88e7b8"
+      },
+      {
+        "path": "build/app/outputs/flutter-apk/app-release.apk",
+        "bytes": 91648375,
+        "sha256": "a9b966221a7875bb1cd0dcac2436cd0d802a80791ae978bdea89b11b1f4489e8"
+      },
+      {
+        "path": "build/ios/iphoneos/Runner.app/Frameworks/App.framework/App",
+        "bytes": 12154688,
+        "sha256": "4833824081d62eb6feea87d7cbd5f6241b4d6d102bfedc32120a2e9bd8f7d777"
+      },
+      {
+        "path": "build/pwa/site/main.dart.js",
+        "bytes": 4877064,
+        "sha256": "67f60c554bfe4a449552f92aab80af549d6eb976ecb745472baed1d0075c52f2"
+      },
+      {
+        "path": "build/pwa/site/_worker.js",
+        "bytes": 1015,
+        "sha256": "ffab397bf0ad4f9a9ad9caabc903fa65083ab5cd572fa952134a7519864b3cc8"
+      },
+      {
+        "path": "build/pwa/site/__admin_shell",
+        "bytes": 3435,
+        "sha256": "193d4590c2e009ed01a7a17ef568636d73cfdd508e33bbb79a50af6791f3a59c"
+      }
+    ]
+  },
+  "local_validation_at_utc": "2026-09-05T17:40:39.712031+00:00"
 }

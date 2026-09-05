@@ -52,10 +52,11 @@ despite the signed-in page displaying the error.
 
 The authenticated token cannot read account billing usage (HTTP 404 with a
 required `user` scope). No authentication scopes or billing settings were changed.
-The [billing overview](https://github.com/settings/billing) is ready for a retry
-of the saved payment authorization or an owner update of the payment method.
-Approval for the bank-facing retry was requested; no retry, payment, or budget
-change has been performed. GitHub documents
+The owner subsequently chose to keep GitHub Free and ignore payment remediation.
+The pending bank-facing retry was dropped; no retry, payment, or budget change
+was performed. Local checks and builds now use `scripts/ci/verify_local.sh`;
+GitHub continues to host and synchronize source. The recorded Actions failure
+does not block local verification. GitHub documents
 [billing, trigger and runner troubleshooting](https://docs.github.com/en/actions/how-tos/troubleshoot-workflows).
 
 ## Firebase iOS registration completed
@@ -106,7 +107,7 @@ The shared Firebase backend and push project's identity remain unchanged.
 Physical-device APNs/push delivery and store distribution are separate from this
 registration and local build verification.
 
-## Local validation
+## Earlier Firebase configuration validation
 
 - actionlint 1.7.12: all five workflows pass syntax, schema and expression checks.
   Its macOS binary was verified against the publisher's release checksum;
@@ -137,3 +138,11 @@ launched Intel Ruby, while the installed FFI extension is ARM. A local ignored
 No deployment or store upload has been performed.
 GitHub Actions remains blocked by the confirmed account payment authorization
 failure; a remote startup failure is not a passing CI result.
+
+## Latest local verification
+
+The subsequent [local verification report](local-verification-20260905.md) records
+the startup-route and favicon fixes, 12 Python / 519 Flutter / 24 backend tests,
+all platform builds, and current artifact hashes. It supersedes the earlier
+validation counts and iOS framework hash above. GitHub billing remediation is
+cancelled following the owner's instruction to keep GitHub Free.

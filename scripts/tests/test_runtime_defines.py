@@ -1,6 +1,10 @@
 import importlib.util
 from pathlib import Path
 import tempfile
+import subprocess
+import json
+import os
+import sys
 import unittest
 
 MODULE = Path(__file__).resolve().parents[1] / "lib/runtime_defines.py"
@@ -37,6 +41,54 @@ class RuntimeDefinesTest(unittest.TestCase):
             self.assertEqual(values["SUPABASE_URL"], "https://example.test?a=b")
             self.assertEqual(values["VALUE"], "$(touch should-not-exist)")
             self.assertFalse((Path(directory) / "should-not-exist").exists())
+
+    def test_ios_requires_its_own_registration(self):
+        with self.assertRaisesRegex(ValueError, "Missing FIREBASE_IOS_APP_ID"):
+            runtime.public_defines(self.public, {}, "ios")
+        with self.assertRaisesRegex(ValueError, "registered iOS Firebase App ID"):
+            runtime.public_defines(
+                {**self.public, "FIREBASE_IOS_APP_ID": "1:123:android:abc"}, {}, "ios"
+            )
+
+    def test_ios_only_adds_public_platform_fields(self):
+        dotenv = {
+            **self.public,
+            "FIREBASE_IOS_APP_ID": "1:123:ios:abc",
+            "FIREBASE_IOS_API_KEY": "ios-public-key",
+            "FIREBASE_IOS_BUNDLE_ID": "rw.mobi.app",
+            "FIREBASE_PRIVATE_KEY": "server-only",
+            "SUPABASE_SERVICE_ROLE_KEY": "server-only",
+        }
+        result = runtime.public_defines(dotenv, {}, "ios")
+        self.assertEqual(result["FIREBASE_IOS_API_KEY"], "ios-public-key")
+        self.assertEqual(set(result), set(self.public) | {
+            "FIREBASE_IOS_APP_ID", "FIREBASE_IOS_API_KEY", "FIREBASE_IOS_BUNDLE_ID"
+        })
+        self.assertEqual(runtime.public_defines(dotenv, {}), self.public)
+
+    def test_cli_ios_file_is_private_and_does_not_execute_dotenv(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            lines = [f"{key}={value}" for key, value in self.public.items()]
+            lines += ["FIREBASE_IOS_APP_ID=1:123:ios:abc",
+                      "FIREBASE_IOS_API_KEY=$(touch injected)",
+                      "FIREBASE_PRIVATE_KEY=server-only"]
+            (root / ".env").write_text("\n".join(lines))
+            output = root / "defines.json"
+            output.write_text("old")
+            output.chmod(0o644)
+            env = {key: value for key, value in os.environ.items()
+                   if key not in self.public and not key.startswith("FIREBASE_")}
+            result = subprocess.run(
+                [sys.executable, str(MODULE), str(output), "--platform", "ios"],
+                cwd=root, env=env, capture_output=True, text=True, check=True,
+            )
+            values = json.loads(output.read_text())
+            self.assertEqual(output.stat().st_mode & 0o777, 0o600)
+            self.assertEqual(values["FIREBASE_IOS_API_KEY"], "$(touch injected)")
+            self.assertNotIn("FIREBASE_PRIVATE_KEY", values)
+            self.assertFalse((root / "injected").exists())
+            self.assertEqual(result.stdout, "")
 
 
 if __name__ == "__main__":

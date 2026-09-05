@@ -53,6 +53,8 @@ class MobiLaunchApp extends StatelessWidget {
     theme: AppTheme.lightTheme,
     darkTheme: AppTheme.darkTheme,
     themeMode: ThemeMode.system,
-    home: const MobiLaunchScreen(),
+    // The loading view must not create a Navigator and replace an incoming
+    // admin/deep-link URL before the main router takes over.
+    builder: (context, child) => const MobiLaunchScreen(),
   );
 }

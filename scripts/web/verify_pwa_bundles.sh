@@ -10,7 +10,9 @@ python3 - <<'PY' "$output_root"
 import json
 import os
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import urlsplit
 
 root = Path(sys.argv[1])
 site_dir = root / "site"
@@ -32,6 +34,22 @@ def read_manifest(path: Path) -> dict[str, object]:
 
 
 require(site_dir.is_dir(), f"Missing combined Pages bundle directory: {site_dir}")
+
+
+class IconReferences(HTMLParser):
+    def handle_starttag(self, tag, attributes):
+        attrs = dict(attributes)
+        if tag != "link" or not ({"icon", "apple-touch-icon"} & set((attrs.get("rel") or "").split())):
+            return
+        reference = urlsplit(attrs.get("href", ""))
+        if not reference.scheme and not reference.netloc:
+            require((site_dir / reference.path.lstrip("/")).is_file(),
+                    f"Missing linked icon asset: {reference.path}")
+
+
+for document in ("index.html", "__admin_shell"):
+    IconReferences().feed(read_text(site_dir / document))
+
 for filename in (
     "index.html",
     ".well-known/assetlinks.json",

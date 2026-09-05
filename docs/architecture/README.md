@@ -74,10 +74,13 @@ model parts are generated inside `packages/shared-types`.
 
 `.flutter-version` pins all Flutter GitHub Actions jobs. `scripts/lib/flutter.sh`
 selects one Flutter/Dart installation; `runtime_defines.py` is the public
-configuration parser shared by Android, PWA and profiling scripts.
+configuration parser shared by Android, iOS, PWA and profiling scripts. Its iOS
+mode adds only the required platform App ID and optional public iOS overrides.
 
 `bootstrap_flutter.sh` prepares a clean checkout, including generated models.
 `verify_flutter.sh` runs architecture and helper checks before analysis and tests.
+`verify_local.sh` adds local backend verification and optional platform builds,
+without linked database credentials, deployment, or store uploads.
 `check_repository_structure.py` rejects dangling imports, placeholder packages,
 dependency inversions, tracked test output and mismatched CI Flutter versions.
 
