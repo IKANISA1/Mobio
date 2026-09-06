@@ -4,7 +4,7 @@ import 'package:mobi_design_system/theme/app_typography.dart';
 
 class HomeHeroCard extends StatelessWidget {
   final bool isDriver;
-  final int nearbyCount;
+  final int? nearbyCount;
   final VoidCallback onTap;
 
   const HomeHeroCard({
@@ -37,7 +37,7 @@ class HomeHeroCard extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.sm),
               Text(
-                nearbyCount.toString(),
+                nearbyCount?.toString() ?? '—',
                 textAlign: TextAlign.center,
                 style: AppTypography.heroNumber.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,

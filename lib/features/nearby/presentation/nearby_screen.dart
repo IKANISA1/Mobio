@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,18 +7,17 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/location/google_maps_deep_link_service.dart';
-import 'package:mobi_app/core/location/location_providers.dart';
-import 'package:mobi_app/core/location/location_service.dart';
+import 'package:mobi_app/core/location/location_access_state.dart';
 import 'package:mobi_app/core/permissions/permission_providers.dart';
 import 'package:mobi_app/features/nearby/application/nearby_providers.dart';
 import 'package:mobi_app/features/nearby/data/driver_location_service.dart';
+import 'package:mobi_app/features/nearby/presentation/widgets/nearby_location_notice.dart';
 import 'package:mobi_app/features/profile/application/profile_services.dart';
 import 'package:mobi_app/shared/models/vehicle_type_model.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
 import 'package:mobi_app/shared/widgets/driver_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
-import 'package:mobi_app/shared/widgets/mobi_state_banner.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_top_command_bar.dart';
 import 'package:mobi_app/shared/widgets/mobi_visual_theme.dart';
@@ -47,23 +48,22 @@ class NearbyScreen extends ConsumerStatefulWidget {
   ConsumerState<NearbyScreen> createState() => _NearbyScreenState();
 }
 
-class _NearbyScreenState extends ConsumerState<NearbyScreen> {
+class _NearbyScreenState extends ConsumerState<NearbyScreen>
+    with WidgetsBindingObserver {
   String _vehicleId = 'cab';
   bool _isLoading = true;
   bool _hasError = false;
+  int _loadGeneration = 0;
+  LocationAccessState _locationState = LocationAccessState.granted;
   double? _userLat;
   double? _userLng;
-  LocationService get _locationService => ref.read(locationServiceProvider);
-
-  DriverLocationService get _driverLocationService =>
-      ref.read(driverLocationServiceProvider);
-
   List<NearbyDriver> _nearbyDrivers = [];
   List<VehicleTypeModel> _vehicleTypes = [];
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     if (SupabaseConfig.isLocalUiPreview) {
       _loadLocalPreviewData();
       return;
@@ -73,54 +73,48 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
     _loadLocationAndDrivers();
   }
 
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_loadLocationAndDrivers());
+    }
+  }
+
   Future<void> _loadLocationAndDrivers() async {
     if (SupabaseConfig.isLocalUiPreview) {
       _loadLocalPreviewData();
       return;
     }
 
+    final generation = ++_loadGeneration;
     setState(() {
       _isLoading = true;
       _hasError = false;
+      _userLat = null;
+      _userLng = null;
+      _nearbyDrivers = [];
     });
 
     try {
-      final hasAccess = await ref
-          .read(appPermissionServiceProvider)
-          .hasLocationAccess();
-      if (!hasAccess) {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
-        return;
-      }
-
-      final position = await _locationService.getCurrentPosition();
-      if (mounted && position != null) {
-        setState(() {
-          _userLat = position.latitude;
-          _userLng = position.longitude;
-        });
-
-        final drivers = await _driverLocationService.findNearbyDrivers(
-          latitude: position.latitude,
-          longitude: position.longitude,
-          vehicleType: _vehicleId == 'all' ? null : _vehicleId,
-        );
-
-        if (mounted) {
-          setState(() {
-            _nearbyDrivers = drivers;
-            _isLoading = false;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() => _isLoading = false);
-        }
-      }
+      final result = await ref
+          .read(nearbyDiscoveryServiceProvider)
+          .load(vehicleType: _vehicleId == 'all' ? null : _vehicleId);
+      if (!mounted || generation != _loadGeneration) return;
+      setState(() {
+        _locationState = result.accessState;
+        _userLat = result.latitude;
+        _userLng = result.longitude;
+        _nearbyDrivers = result.drivers;
+        _isLoading = false;
+      });
     } on Object catch (_) {
-      if (mounted) {
+      if (mounted && generation == _loadGeneration) {
         setState(() {
           _isLoading = false;
           _hasError = true;
@@ -144,14 +138,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
       return;
     }
 
-    final granted = await permissionService.ensureLocationAccess();
-    if (!granted) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-      return;
-    }
-
+    await permissionService.ensureLocationAccess();
+    if (!mounted) return;
     await _loadLocationAndDrivers();
   }
 
@@ -207,6 +195,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
 
     setState(() {
       _vehicleTypes = VehicleTypeModel.fallbackTypes;
+      _locationState = LocationAccessState.granted;
       _nearbyDrivers = drivers;
       _userLat = -1.9441;
       _userLng = 30.0619;
@@ -352,7 +341,9 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                     ),
 
                     // Location prompt — compact banner
-                    if (_userLat == null && !_isLoading)
+                    if (_locationState != LocationAccessState.granted &&
+                        !_isLoading &&
+                        !_hasError)
                       SliverPadding(
                         padding: const EdgeInsets.fromLTRB(
                           AppSpacing.screenPadding,
@@ -361,12 +352,10 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                           AppSpacing.md,
                         ),
                         sliver: SliverToBoxAdapter(
-                          child: MobiStateBanner(
-                            icon: LucideIcons.mapPin,
-                            title: 'Enable location',
-                            subtitle: 'Find drivers nearby',
-                            tone: MobiStateBannerTone.brand,
-                            onTap: _requestLocationAndReload,
+                          child: NearbyLocationNotice(
+                            accessState: _locationState,
+                            onEnableLocation: _requestLocationAndReload,
+                            onRetry: _loadLocationAndDrivers,
                           ).animate(delay: 50.ms).fade().slideX(begin: 1.0),
                         ),
                       ),
@@ -417,6 +406,8 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen> {
                                 child: LoadingSkeleton.card(height: 128),
                               ),
                             )
+                          : _locationState != LocationAccessState.granted
+                          ? const SliverToBoxAdapter(child: SizedBox.shrink())
                           : driverTrips.isNotEmpty
                           ? SliverList.builder(
                               itemCount: driverTrips.length,

@@ -6,8 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
-import 'package:mobi_app/core/location/location_providers.dart';
-import 'package:mobi_app/core/location/location_service.dart';
+import 'package:mobi_app/core/location/location_access_state.dart';
 import 'package:mobi_app/core/permissions/permission_providers.dart';
 import 'package:mobi_app/features/bookings/application/booking_services.dart';
 import 'package:mobi_app/features/bookings/data/trip_service.dart';
@@ -16,6 +15,8 @@ import 'package:mobi_app/features/home/presentation/widgets/home_hero_card.dart'
 import 'package:mobi_app/features/home/presentation/widgets/scheduled_trip_card.dart';
 import 'package:mobi_app/features/nearby/application/nearby_providers.dart';
 import 'package:mobi_app/features/nearby/data/driver_location_service.dart';
+import 'package:mobi_app/features/nearby/data/nearby_discovery_service.dart';
+import 'package:mobi_app/features/nearby/presentation/widgets/nearby_location_notice.dart';
 import 'package:mobi_app/features/notifications/application/notification_services.dart';
 import 'package:mobi_app/features/notifications/data/notification_service.dart';
 import 'package:mobi_app/features/profile/application/profile_services.dart';
@@ -71,17 +72,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   bool _hasError = false;
   bool _isDriverOnline = false;
   int _nearbyCount = 0;
+  int _loadGeneration = 0;
+  LocationAccessState _nearbyLocationState = LocationAccessState.granted;
   int _unreadCount = 0;
   List<Trip> _nearbyPreview = [];
   List<Trip> _scheduledPreview = [];
   List<VehicleTypeModel> _vehicleTypes = [];
 
   TripService get _tripService => ref.read(tripServiceProvider);
-
-  LocationService get _locationService => ref.read(locationServiceProvider);
-
-  DriverLocationService get _driverLocationService =>
-      ref.read(driverLocationServiceProvider);
 
   NotificationService get _notificationService =>
       ref.read(notificationServiceProvider);
@@ -130,6 +128,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_loadData());
+    }
     if (state == AppLifecycleState.detached) {
       unawaited(_disableDriverSharing(showMessage: false));
     }
@@ -168,23 +169,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       return;
     }
 
+    final generation = ++_loadGeneration;
     setState(() {
       _isLoading = true;
       _hasError = false;
+      _nearbyCount = 0;
+      _nearbyPreview = [];
     });
     try {
       final isDriver = widget.mode == 'driver';
-      final myTripsFuture = _tripService.getMyTrips();
-      final scheduledFuture = _tripService.getCounterpartScheduledTrips(
-        widget.mode,
-      );
-      final onlineDriversFuture = isDriver
-          ? Future<List<Trip>>.value(const [])
-          : _loadOnlineDriverTrips();
-
-      final myTrips = await myTripsFuture;
-      final scheduled = await scheduledFuture;
-      final onlineDrivers = await onlineDriversFuture;
+      final (myTrips, scheduled, discovery) = await (
+        _tripService.getMyTrips(),
+        _tripService.getCounterpartScheduledTrips(widget.mode),
+        isDriver
+            ? Future<NearbyDiscoveryResult?>.value(null)
+            : ref
+                  .read(nearbyDiscoveryServiceProvider)
+                  .load(
+                    vehicleType: _vehicleId == 'all' ? null : _vehicleId,
+                    preferCachedLocation: true,
+                  ),
+      ).wait;
+      if (!mounted || generation != _loadGeneration) return;
+      final onlineDrivers =
+          discovery?.drivers
+              .map(_tripForNearbyDriver)
+              .toList(growable: false) ??
+          <Trip>[];
 
       final ownScheduled = myTrips
           .where((t) => t.status == 'active' || t.status == null)
@@ -197,6 +208,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
       if (mounted) {
         setState(() {
+          _nearbyLocationState =
+              discovery?.accessState ?? LocationAccessState.granted;
           _nearbyCount = nearby.length;
           _nearbyPreview = nearby.take(3).toList();
           _scheduledPreview = scheduledPreview;
@@ -204,7 +217,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         });
       }
     } on Object catch (_) {
-      if (mounted) {
+      if (mounted && generation == _loadGeneration) {
         setState(() {
           _nearbyCount = 0;
           _nearbyPreview = [];
@@ -214,31 +227,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
         });
       }
     }
-  }
-
-  Future<List<Trip>> _loadOnlineDriverTrips() async {
-    final hasAccess = await ref
-        .read(appPermissionServiceProvider)
-        .hasLocationAccess();
-    if (!hasAccess) {
-      return const [];
-    }
-
-    final position =
-        await _locationService.getLastKnownOrCached() ??
-        await _locationService.getCurrentPosition();
-    if (position == null) {
-      return const [];
-    }
-
-    final drivers = await _driverLocationService.findNearbyDrivers(
-      latitude: position.latitude,
-      longitude: position.longitude,
-      vehicleType: _vehicleId == 'all' ? null : _vehicleId,
-      limit: 20,
-    );
-
-    return drivers.map(_tripForNearbyDriver).toList(growable: false);
   }
 
   Trip _tripForNearbyDriver(NearbyDriver driver) {
@@ -376,6 +364,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
 
     setState(() {
       _vehicleTypes = VehicleTypeModel.fallbackTypes;
+      _nearbyLocationState = LocationAccessState.granted;
       _nearbyCount = nearby.length;
       _nearbyPreview = nearby;
       _scheduledPreview = scheduled;
@@ -403,6 +392,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     final cs = Theme.of(context).colorScheme;
     final mediaPadding = MediaQuery.paddingOf(context);
     final isDriver = widget.mode == 'driver';
+    final locationUnavailable =
+        !isDriver && _nearbyLocationState != LocationAccessState.granted;
     final discoverAction = isDriver
         ? (widget.onViewBookings ?? widget.onViewNearby)
         : widget.onViewNearby;
@@ -451,7 +442,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   child:
                       HomeHeroCard(
                             isDriver: isDriver,
-                            nearbyCount: _nearbyCount,
+                            nearbyCount:
+                                _isLoading || _hasError || locationUnavailable
+                                ? null
+                                : _nearbyCount,
                             onTap: discoverAction,
                           )
                           .animate(delay: 100.ms)
@@ -513,7 +507,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   ),
                   child: MobiSectionHeader(
                     title: isDriver ? 'Passenger requests' : 'Nearby',
-                    caption: _nearbyCount > 0
+                    caption: _isLoading
+                        ? 'Loading'
+                        : _hasError
+                        ? 'Unavailable'
+                        : locationUnavailable
+                        ? needsNearbyLocationPermission(_nearbyLocationState)
+                              ? 'Location needed'
+                              : 'Location unavailable'
+                        : _nearbyCount > 0
                         ? isDriver
                               ? '$_nearbyCount scheduled'
                               : '$_nearbyCount live'
@@ -548,6 +550,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               child: LoadingSkeleton.card(height: 100),
                             ),
                           ),
+                        )
+                      : locationUnavailable
+                      ? NearbyLocationNotice(
+                          accessState: _nearbyLocationState,
+                          onEnableLocation: widget.onViewNearby,
+                          onRetry: _loadData,
                         )
                       : _nearbyPreview.isNotEmpty
                       ? Column(

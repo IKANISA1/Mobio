@@ -65,10 +65,18 @@ void main() {
     });
 
     test('nearby discovery keeps passengers private by default', () {
-      expect(homeScreen, contains('findNearbyDrivers'));
-      expect(homeScreen, contains('_loadOnlineDriverTrips'));
+      expect(homeScreen, contains('nearbyDiscoveryServiceProvider'));
+      expect(
+        File(
+          'lib/features/nearby/data/nearby_discovery_service.dart',
+        ).readAsStringSync(),
+        contains('findNearbyDrivers'),
+      );
       expect(homeScreen, contains("widget.mode == 'driver'"));
-      expect(homeScreen, contains('Future<List<Trip>>.value(const [])'));
+      expect(
+        homeScreen,
+        contains('Future<NearbyDiscoveryResult?>.value(null)'),
+      );
       expect(homeScreen, contains('getCounterpartScheduledTrips'));
       expect(homeScreen, contains('Passenger requests'));
       expect(homeScreen, contains('No passenger scheduled trips'));

@@ -77,7 +77,7 @@ class DriverLocationService {
           .toList();
     } on Object catch (e) {
       AppLogger.error('Error finding nearby drivers: $e');
-      return [];
+      rethrow;
     }
   }
 
