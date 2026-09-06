@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/permissions/permission_providers.dart';
 import 'package:mobi_app/core/utils/money_formatting.dart';
 import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
@@ -1291,34 +1295,126 @@ class _BioPayQrActionButton extends StatelessWidget {
   }
 }
 
-class BioPayQrScannerSurface extends StatefulWidget {
-  const BioPayQrScannerSurface({super.key, required this.onDetect, this.error});
+class BioPayQrScannerSurface extends ConsumerStatefulWidget {
+  const BioPayQrScannerSurface({
+    super.key,
+    required this.onDetect,
+    this.error,
+    this.isResolving = false,
+    this.handoffComplete = false,
+    this.scanRevision = 0,
+    this.onRetry,
+  });
 
   final ValueChanged<String> onDetect;
   final String? error;
+  final bool isResolving;
+  final bool handoffComplete;
+  final int scanRevision;
+  final VoidCallback? onRetry;
 
   @override
-  State<BioPayQrScannerSurface> createState() => BioPayQrScannerSurfaceState();
+  ConsumerState<BioPayQrScannerSurface> createState() =>
+      BioPayQrScannerSurfaceState();
 }
 
-class BioPayQrScannerSurfaceState extends State<BioPayQrScannerSurface> {
+class BioPayQrScannerSurfaceState extends ConsumerState<BioPayQrScannerSurface>
+    with WidgetsBindingObserver {
   late final MobileScannerController _controller;
+  Future<void> _cameraOperation = Future.value();
+  bool _cameraActive = true;
+  bool _openingSettings = false;
+  String? _cameraActionError;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _controller = MobileScannerController(
       formats: const [BarcodeFormat.qrCode],
       detectionSpeed: DetectionSpeed.noDuplicates,
       cameraResolution: const Size(1920, 1080),
       autoZoom: true,
       initialZoom: 0.18,
+      autoStart: false,
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) unawaited(_updateCamera());
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant BioPayQrScannerSurface oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.scanRevision != oldWidget.scanRevision) {
+      unawaited(_restartCamera());
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _cameraActive = state == AppLifecycleState.resumed;
+    unawaited(_updateCamera());
+  }
+
+  // Serialize stop/start, including permission-dialog and Settings transitions.
+  // Read the latest lifecycle state when each queued operation executes.
+  Future<void> _updateCamera({bool restart = false}) {
+    _cameraOperation = _cameraOperation
+        .then((_) async {
+          if (!mounted) return;
+          if (restart || !_cameraActive) await _controller.stop();
+          if (!mounted) return;
+          if (_cameraActive) await _controller.start();
+        })
+        .catchError((Object error) {
+          if (mounted) {
+            setState(
+              () => _cameraActionError = 'Camera could not restart. Try again.',
+            );
+          }
+        });
+    return _cameraOperation;
+  }
+
+  Future<void> _restartCamera() {
+    if (!mounted) return Future.value();
+    setState(() => _cameraActionError = null);
+    return _updateCamera(restart: true);
+  }
+
+  Future<void> _openSettings() async {
+    if (_openingSettings) return;
+    setState(() {
+      _openingSettings = true;
+      _cameraActionError = null;
+    });
+    try {
+      final opened = await ref
+          .read(appPermissionServiceProvider)
+          .openAppPermissionSettings();
+      if (!opened && mounted) {
+        setState(
+          () => _cameraActionError =
+              'Open device Settings and allow camera access for Mobio.',
+        );
+      }
+    } on Object {
+      if (mounted) {
+        setState(
+          () => _cameraActionError =
+              'Open device Settings and allow camera access for Mobio.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _openingSettings = false);
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_cameraOperation.then((_) => _controller.dispose()));
     super.dispose();
   }
 
@@ -1331,47 +1427,138 @@ class BioPayQrScannerSurfaceState extends State<BioPayQrScannerSurface> {
           borderRadius: BorderRadius.circular(28),
           child: AspectRatio(
             aspectRatio: 1,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                MobileScanner(
-                  controller: _controller,
-                  fit: BoxFit.cover,
-                  tapToFocus: true,
-                  onDetect: (capture) {
-                    final value = capture.barcodes.firstOrNull?.rawValue;
-                    if (value != null) widget.onDetect(value);
-                  },
-                  errorBuilder: (context, error) => DecoratedBox(
-                    decoration: const BoxDecoration(color: Colors.black),
-                    child: Center(
-                      child: Icon(
-                        LucideIcons.scanLine,
-                        size: 64,
-                        color: Colors.white.withValues(alpha: 0.54),
-                      ),
+            child: MobileScanner(
+              controller: _controller,
+              fit: BoxFit.cover,
+              tapToFocus: true,
+              onDetect: (capture) {
+                final value = capture.barcodes.firstOrNull?.rawValue;
+                if (value != null) widget.onDetect(value);
+              },
+              errorBuilder: (context, error) => _BioPayCameraRecovery(
+                error: error,
+                onRetry: _restartCamera,
+                onOpenSettings: kIsWeb || _openingSettings
+                    ? null
+                    : _openSettings,
+              ),
+              overlayBuilder: (context, constraints) => Stack(
+                fit: StackFit.expand,
+                children: [
+                  const _QrScannerCornerGuide(),
+                  Positioned(
+                    right: 14,
+                    top: 14,
+                    child: IconButton.filledTonal(
+                      tooltip: 'Torch',
+                      onPressed: _controller.toggleTorch,
+                      icon: const Icon(LucideIcons.flashlight),
                     ),
                   ),
-                ),
-                const _QrScannerCornerGuide(),
-                Positioned(
-                  right: 14,
-                  top: 14,
-                  child: IconButton.filledTonal(
-                    tooltip: 'Torch',
-                    onPressed: _controller.toggleTorch,
-                    icon: const Icon(LucideIcons.flashlight),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
+        if (_cameraActionError != null) ...[
+          const SizedBox(height: AppSpacing.md),
+          BioPayInlineError(message: _cameraActionError!),
+          TextButton(
+            onPressed: _restartCamera,
+            child: const Text('Retry camera'),
+          ),
+        ],
         if (widget.error != null) ...[
           const SizedBox(height: AppSpacing.md),
           BioPayInlineError(message: widget.error!),
         ],
+        if (widget.isResolving) ...[
+          const SizedBox(height: AppSpacing.md),
+          const Center(child: Text('Reading QR…')),
+        ],
+        if (widget.handoffComplete) ...[
+          const SizedBox(height: AppSpacing.md),
+          const Center(child: Text('USSD dialer opened.')),
+        ],
+        if (!widget.isResolving &&
+            (widget.error != null || widget.handoffComplete) &&
+            widget.onRetry != null) ...[
+          const SizedBox(height: AppSpacing.md),
+          MobiButton(
+            onPressed: widget.onRetry,
+            child: const Text('Scan again'),
+          ),
+        ],
       ],
+    );
+  }
+}
+
+class _BioPayCameraRecovery extends StatelessWidget {
+  const _BioPayCameraRecovery({
+    required this.error,
+    required this.onRetry,
+    this.onOpenSettings,
+  });
+
+  final MobileScannerException error;
+  final VoidCallback onRetry;
+  final VoidCallback? onOpenSettings;
+
+  @override
+  Widget build(BuildContext context) {
+    final denied = error.errorCode == MobileScannerErrorCode.permissionDenied;
+    final unsupported = error.errorCode == MobileScannerErrorCode.unsupported;
+    final title = denied
+        ? 'Camera access needed'
+        : unsupported
+        ? 'No camera available'
+        : 'Camera unavailable';
+    final message = denied
+        ? kIsWeb
+              ? 'Allow camera access in your browser settings, then retry.'
+              : 'Allow camera access in Settings to scan QR codes.'
+        : unsupported
+        ? 'Use a device with a camera to scan QR codes.'
+        : 'Close any other camera app, then retry.';
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.surfaceContainerHigh,
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                LucideIcons.camera,
+                color: Theme.of(context).colorScheme.onSurface,
+                size: 36,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: AppTypography.titleMd,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: AppTypography.bodySm,
+              ),
+              const SizedBox(height: AppSpacing.md),
+              if (denied && !kIsWeb) ...[
+                MobiButton(
+                  onPressed: onOpenSettings,
+                  child: const Text('Open Settings'),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+              ],
+              TextButton(onPressed: onRetry, child: const Text('Retry camera')),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

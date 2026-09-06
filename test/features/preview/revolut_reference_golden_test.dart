@@ -420,6 +420,7 @@ void main() {
     'profile',
     'bookings',
     'biopay_qr',
+    'biopay_scan',
     'admin_users',
   ]) {
     testWidgets('light theme $name', (tester) async {

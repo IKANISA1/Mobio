@@ -20,49 +20,63 @@ class _BioPayScanScreenState extends ConsumerState<BioPayScanScreen> {
   bool _resolving = false;
   bool _externalActionBusy = false;
   bool _handledScan = false;
+  int _scanRevision = 0;
   String? _error;
 
-  Future<void> _resolve(String token) async {
-    final ussdCode = bioPayUssdCodeFromPayload(token);
-    if (ussdCode.isNotEmpty) {
-      if (_resolving) return;
-      setState(() {
-        _resolving = true;
-        _error = null;
-      });
-      try {
-        final opened = await ref
-            .read(biopayUssdServiceProvider)
-            .launchUssdCode(ussdCode);
-        if (!mounted) return;
-        if (!opened) {
-          setState(() => _error = 'USSD dialer unavailable.');
-        }
-      } on Object {
-        if (!mounted) return;
-        setState(() => _error = 'USSD dialer unavailable.');
-      } finally {
-        if (mounted) setState(() => _resolving = false);
-      }
-      return;
-    }
+  void _retryScan() {
+    if (_resolving || _request != null) return;
+    setState(() {
+      _handledScan = false;
+      _error = null;
+      _scanRevision++;
+    });
+  }
 
-    final resolvedToken = bioPayTokenFromPayload(token);
-    if (_resolving || resolvedToken.isEmpty) return;
+  Future<void> _resolve(String token) async {
+    if (_resolving || _handledScan || _request != null) return;
     setState(() {
       _resolving = true;
       _error = null;
     });
+    var isDirectUssd = false;
     try {
+      final ussdCode = bioPayUssdCodeFromPayload(token);
+      isDirectUssd = ussdCode.isNotEmpty;
+      if (isDirectUssd) {
+        final opened = await ref
+            .read(biopayUssdServiceProvider)
+            .launchUssdCode(ussdCode);
+        if (!mounted) return;
+        setState(() {
+          // A successful handoff stays latched until an explicit new scan.
+          // Failed/invalid scans remain eligible for the next detection.
+          _handledScan = opened;
+          if (!opened) _error = 'USSD dialer unavailable.';
+        });
+        return;
+      }
+
+      final resolvedToken = bioPayTokenFromPayload(token);
+      if (resolvedToken.isEmpty) {
+        setState(() => _error = 'Not a Mobio QR code. Try another code.');
+        return;
+      }
       final service = ref.read(biopayUssdServiceProvider);
       final request = SupabaseConfig.isConfigured
           ? await service.resolveRequest(resolvedToken)
           : service.resolvePreviewToken(resolvedToken);
       if (!mounted) return;
-      setState(() => _request = request);
-    } on Object catch (_) {
+      setState(() {
+        _request = request;
+        _handledScan = true;
+      });
+    } on Object {
       if (!mounted) return;
-      setState(() => _error = 'QR request unavailable.');
+      setState(
+        () => _error = isDirectUssd
+            ? 'USSD dialer unavailable.'
+            : 'QR request unavailable.',
+      );
     } finally {
       if (mounted) setState(() => _resolving = false);
     }
@@ -112,12 +126,12 @@ class _BioPayScanScreenState extends ConsumerState<BioPayScanScreen> {
           : null,
       child: _request == null
           ? BioPayQrScannerSurface(
-              onDetect: (value) {
-                if (_handledScan) return;
-                _handledScan = true;
-                _resolve(value);
-              },
+              onDetect: _resolve,
               error: _error,
+              isResolving: _resolving,
+              handoffComplete: _handledScan,
+              scanRevision: _scanRevision,
+              onRetry: _retryScan,
             )
           : BioPayResolvedPaymentPreview(request: _request!),
     );
