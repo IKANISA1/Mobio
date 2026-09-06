@@ -195,7 +195,8 @@ require_play_service_account_decision
 require_current_play_console_upload_evidence
 
 if [[ "${RUN_ANDROID_SMOKE:-true}" == "true" ]]; then
-  run_gate "Physical Android release smoke" ./scripts/release/smoke_android_release.sh
+  run_gate "Physical Android release smoke" \
+    env ANDROID_SMOKE_ALLOW_EMULATOR=false ./scripts/release/smoke_android_release.sh
 elif [[ "$dry_run" == "true" ]]; then
   echo
   echo "== Physical Android release smoke =="

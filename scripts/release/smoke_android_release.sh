@@ -59,6 +59,17 @@ else
   device="${devices[0]}"
 fi
 
+device_type="physical"
+qemu="$(adb -s "$device" shell getprop ro.kernel.qemu | tr -d '\r')"
+boot_qemu="$(adb -s "$device" shell getprop ro.boot.qemu | tr -d '\r')"
+if [[ "$device" == emulator-* || "$qemu" == "1" || "$boot_qemu" == "1" ]]; then
+  device_type="emulator"
+  if [[ "${ANDROID_SMOKE_ALLOW_EMULATOR:-false}" != "true" ]]; then
+    echo "A physical Android device is required for release evidence. For local emulator QA only, set ANDROID_SMOKE_ALLOW_EMULATOR=true." >&2
+    exit 1
+  fi
+fi
+
 if [[ ! -f "$apk_path" ]]; then
   echo "Release APK not found at $apk_path; building it first."
   if [[ ! -f android/key.properties ]]; then
@@ -94,6 +105,8 @@ mkdir -p "$evidence_dir"
   echo "Mobio Android release smoke"
   echo "timestamp=$timestamp"
   echo "device=$device"
+  echo "device_type=$device_type"
+  echo "physical_device_evidence=$([[ "$device_type" == "physical" ]] && echo true || echo false)"
   echo "package=$package_name"
   echo "apk=$apk_path"
   echo "apk_sha256=$(shasum -a 256 "$apk_path" | awk '{ print $1 }')"
@@ -122,10 +135,18 @@ adb -s "$device" install -r "$apk_path" >> "$evidence_file" 2>&1
 } >> "$evidence_file" 2>&1
 
 echo "Launching $package_name..."
+launch_activity="$(adb -s "$device" shell cmd package resolve-activity --brief \
+  -a android.intent.action.MAIN -c android.intent.category.LAUNCHER "$package_name" | tr -d '\r' | tail -1)"
+if [[ "$launch_activity" != "$package_name/"* ]]; then
+  echo "Could not resolve the launcher activity for $package_name. Evidence: $evidence_file" >&2
+  exit 1
+fi
+adb -s "$device" shell am force-stop "$package_name"
 adb -s "$device" logcat -c || true
 adb -s "$device" shell input keyevent WAKEUP >/dev/null 2>&1 || true
 adb -s "$device" shell wm dismiss-keyguard >/dev/null 2>&1 || true
-adb -s "$device" shell monkey -p "$package_name" -c android.intent.category.LAUNCHER 1 >> "$evidence_file" 2>&1
+adb -s "$device" shell am start -W -n "$launch_activity" \
+  -a android.intent.action.MAIN -c android.intent.category.LAUNCHER >> "$evidence_file" 2>&1
 sleep "${ANDROID_SMOKE_WAIT_SECONDS:-8}"
 
 pid="$(adb -s "$device" shell pidof "$package_name" | tr -d '\r' || true)"
@@ -206,4 +227,4 @@ fi
 } >> "$evidence_file" 2>&1
 rm -f "$logcat_snapshot"
 
-echo "Android release smoke passed. Evidence: $evidence_file"
+echo "Android $device_type release smoke passed. Evidence: $evidence_file"

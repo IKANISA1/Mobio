@@ -85,54 +85,61 @@ class _MobiBottomSheetContent extends StatelessWidget {
             ),
           ),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Handle bar
-            Padding(
-              padding: const EdgeInsets.only(top: AppSpacing.sm),
-              child: Center(
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: cs.outlineVariant,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-            ),
-
-            // Title
-            if (title != null) ...[
+        // Keep row ink effects above the sheet's opaque background decoration.
+        child: Material(
+          type: MaterialType.transparency,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
               Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.screenPadding,
-                  AppSpacing.lg,
-                  AppSpacing.screenPadding,
-                  AppSpacing.sm,
-                ),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    title!,
-                    style: AppTypography.titleLg.copyWith(color: cs.onSurface),
+                padding: const EdgeInsets.only(top: AppSpacing.sm),
+                child: Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: cs.outlineVariant,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
                 ),
               ),
-            ] else
-              const SizedBox(height: AppSpacing.md),
 
-            // Content
-            Flexible(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.paddingOf(context).bottom + AppSpacing.md,
+              // Title
+              if (title != null) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.screenPadding,
+                    AppSpacing.lg,
+                    AppSpacing.screenPadding,
+                    AppSpacing.sm,
+                  ),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      title!,
+                      style: AppTypography.titleLg.copyWith(
+                        color: cs.onSurface,
+                      ),
+                    ),
+                  ),
                 ),
-                child: child,
+              ] else
+                const SizedBox(height: AppSpacing.md),
+
+              // Content
+              Flexible(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    bottom:
+                        MediaQuery.paddingOf(context).bottom + AppSpacing.md,
+                  ),
+                  child: child,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

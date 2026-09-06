@@ -231,7 +231,8 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
   void _showCountryPicker(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-    final searchController = TextEditingController();
+    // TextField owns its controller until the sheet's exit animation completes.
+    var query = '';
 
     MobiBottomSheet.show<void>(
       context: context,
@@ -240,7 +241,6 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
-            final query = searchController.text.trim().toLowerCase();
             final filteredCountries = query.isEmpty
                 ? _countries
                 : _countries.where((country) {
@@ -255,9 +255,10 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
                     child: TextField(
-                      controller: searchController,
                       autofocus: true,
-                      onChanged: (_) => setSheetState(() {}),
+                      onChanged: (value) => setSheetState(() {
+                        query = value.trim().toLowerCase();
+                      }),
                       textInputAction: TextInputAction.search,
                       decoration: InputDecoration(
                         hintText: 'Search country or code',
@@ -310,6 +311,6 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
           },
         );
       },
-    ).whenComplete(searchController.dispose);
+    );
   }
 }

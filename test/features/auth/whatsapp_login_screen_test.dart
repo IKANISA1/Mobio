@@ -163,4 +163,69 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
     },
   );
+
+  testWidgets('country search can select, close, and reopen safely', (
+    tester,
+  ) async {
+    final service = FakeWhatsAppLoginService();
+    await pumpLogin(tester, service);
+    await tester.tap(find.text('+250'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(tester.takeException(), isNull);
+    final search = find.widgetWithText(TextField, 'Search country or code');
+    await tester.enterText(search, 'Kenya');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.tap(find.widgetWithText(ListTile, 'Kenya'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 50));
+    expect(tester.takeException(), isNull);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('+254'), findsOneWidget);
+
+    await tester.tap(find.text('+254'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(
+      tester
+          .widget<EditableText>(
+            find.descendant(of: search, matching: find.byType(EditableText)),
+          )
+          .controller
+          .text,
+      isEmpty,
+    );
+    await tester.enterText(search, 'Rwanda');
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.tap(find.widgetWithText(ListTile, 'Rwanda'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('+250'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    expect(service.sendCount, 0);
+  });
+
+  testWidgets('country search can be dismissed while its field is focused', (
+    tester,
+  ) async {
+    await pumpLogin(tester, FakeWhatsAppLoginService());
+    await tester.tap(find.text('+250'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.enterText(
+      find.widgetWithText(TextField, 'Search country or code'),
+      'Malta',
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.binding.handlePopRoute();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(tester.takeException(), isNull);
+    expect(find.text('Country code'), findsNothing);
+    expect(find.text('+250'), findsOneWidget);
+  });
 }
