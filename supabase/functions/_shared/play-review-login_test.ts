@@ -1,4 +1,5 @@
 import {
+  appLoginOtpDelivery,
   GOOGLE_PLAY_REVIEW_OTP,
   GOOGLE_PLAY_REVIEW_PHONE,
   googlePlayReviewMetadata,
@@ -37,5 +38,30 @@ Deno.test("Google Play review metadata is explicit for audit logs", () => {
   }
   if (metadata.review_account_phone != GOOGLE_PLAY_REVIEW_PHONE) {
     throw new Error("Expected audit metadata phone.");
+  }
+});
+
+Deno.test("review delivery instructions never claim a WhatsApp send or expose the code", () => {
+  const response = appLoginOtpDelivery(true);
+  if (
+    response.deliveryMode != "review_code" ||
+    !response.message.includes("No WhatsApp message is sent")
+  ) {
+    throw new Error("Review-only login needs truthful delivery instructions.");
+  }
+  if (JSON.stringify(response).includes(GOOGLE_PLAY_REVIEW_OTP)) {
+    throw new Error(
+      "Delivery instructions must not disclose the review credential.",
+    );
+  }
+});
+
+Deno.test("ordinary login retains WhatsApp delivery instructions", () => {
+  const response = appLoginOtpDelivery(false);
+  if (
+    response.deliveryMode != "whatsapp" ||
+    response.message != "OTP sent to your WhatsApp"
+  ) {
+    throw new Error("Ordinary login must keep WhatsApp delivery instructions.");
   }
 });

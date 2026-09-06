@@ -100,6 +100,57 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets(
+    'review-only instructions reset when switching to ordinary login',
+    (tester) async {
+      final service = FakeWhatsAppLoginService()
+        ..send = () async => const WhatsAppLoginResult(
+          success: true,
+          usesReviewCode: true,
+          retryAfterSeconds: 60,
+        );
+      await pumpLogin(tester, service, scale: 1.5, keyboardInset: 320);
+      await requestPreviewCode(tester);
+      expect(find.text('Use your review code'), findsOneWidget);
+      expect(find.text('Check your WhatsApp'), findsNothing);
+      expect(
+        find.textContaining('No WhatsApp message is sent.'),
+        findsOneWidget,
+      );
+      expect(find.text('Retry in 60s'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 61));
+      expect(find.text('Request again'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+      await tester.ensureVisible(find.text('Change number'));
+      await tester.tap(find.text('Change number'));
+      await tester.pumpAndSettle();
+      service.send = () async => const WhatsAppLoginResult(success: true);
+      await requestPreviewCode(tester);
+      expect(find.text('Check your WhatsApp'), findsOneWidget);
+      expect(find.text('Use your review code'), findsNothing);
+      expect(find.textContaining('No WhatsApp message is sent.'), findsNothing);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
+
+  testWidgets('review-only code uses the same verification flow', (
+    tester,
+  ) async {
+    final service = FakeWhatsAppLoginService()
+      ..send = () async =>
+          const WhatsAppLoginResult(success: true, usesReviewCode: true);
+    AppRole? verified;
+    await pumpLogin(tester, service, onSuccess: (role) => verified = role);
+    await requestPreviewCode(tester);
+    await enterPreviewCode(tester);
+    await tester.ensureVisible(find.text('Verify code'));
+    await tester.tap(find.text('Verify code'));
+    await tester.pump();
+    expect(verified, AppRole.passenger);
+    expect(service.lastCode, '123456');
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('send failure enforces retry delay, then permits retry', (
     tester,
   ) async {

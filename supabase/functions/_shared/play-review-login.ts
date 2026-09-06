@@ -16,3 +16,16 @@ export function googlePlayReviewMetadata() {
     review_account_phone: GOOGLE_PLAY_REVIEW_PHONE,
   };
 }
+
+export function appLoginOtpDelivery(isReviewLogin: boolean) {
+  return isReviewLogin
+    ? {
+      deliveryMode: "review_code",
+      message:
+        "Use the code supplied for store review. No WhatsApp message is sent.",
+    }
+    : {
+      deliveryMode: "whatsapp",
+      message: "OTP sent to your WhatsApp",
+    };
+}

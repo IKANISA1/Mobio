@@ -51,6 +51,7 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
   bool _sendingCode = false;
   bool _verifyingCode = false;
   bool _otpRequested = false;
+  bool _usesReviewCode = false;
   int _resendCooldown = 0;
   Timer? _resendTimer;
 
@@ -127,6 +128,7 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
       setState(() {
         _sendingCode = false;
         _otpRequested = true;
+        _usesReviewCode = result.usesReviewCode;
       });
       return;
     }
@@ -234,6 +236,7 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
     _resendTimer?.cancel();
     setState(() {
       _otpRequested = false;
+      _usesReviewCode = false;
       _error = null;
       _attemptsRemaining = null;
       _resendCooldown = 0;
@@ -311,7 +314,9 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
                                 children: [
                                   Text(
                                     _otpRequested
-                                        ? 'Check your WhatsApp'
+                                        ? (_usesReviewCode
+                                              ? 'Use your review code'
+                                              : 'Check your WhatsApp')
                                         : 'Your account',
                                     style: AppTypography.headlineSm.copyWith(
                                       color: cs.onSurface,
@@ -327,6 +332,15 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
                                           : 'Passenger',
                                     ),
                                     const SizedBox(height: AppSpacing.lg),
+                                    if (_usesReviewCode) ...[
+                                      Text(
+                                        'No WhatsApp message is sent. Use the code supplied for store review.',
+                                        style: AppTypography.bodyMd.copyWith(
+                                          color: cs.onSurfaceVariant,
+                                        ),
+                                      ),
+                                      const SizedBox(height: AppSpacing.lg),
+                                    ],
                                     MobiOtpCodeField(
                                       controller: _otpController,
                                       enabled: !_isBusy,
@@ -393,8 +407,10 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
                                             width: double.infinity,
                                             child: Text(
                                               _resendCooldown > 0
-                                                  ? 'Resend in ${_resendCooldown}s'
-                                                  : 'Resend',
+                                                  ? '${_usesReviewCode ? 'Retry' : 'Resend'} in ${_resendCooldown}s'
+                                                  : (_usesReviewCode
+                                                        ? 'Request again'
+                                                        : 'Resend'),
                                             ),
                                           ),
                                         ),

@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class WhatsAppLoginResult extends OtpResult {
   final AppRole? role;
+  final bool usesReviewCode;
 
   const WhatsAppLoginResult({
     required super.success,
@@ -15,6 +16,7 @@ class WhatsAppLoginResult extends OtpResult {
     super.retryAfterSeconds,
     super.attemptsRemaining,
     this.role,
+    this.usesReviewCode = false,
   });
 }
 
@@ -71,6 +73,7 @@ class WhatsAppLoginService {
           success: true,
           message: body['message'] as String? ?? 'OTP sent to your WhatsApp',
           retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'),
+          usesReviewCode: body['deliveryMode'] == 'review_code',
         );
       }
 

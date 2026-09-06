@@ -53,6 +53,8 @@ if [[ -f "supabase/functions/_shared/whatsapp-cloud_test.ts" ]]; then
   deno test "${deno_args[@]}" --allow-env supabase/functions/_shared/whatsapp-cloud_test.ts
 fi
 
+deno test "${deno_args[@]}" supabase/functions/_shared/play-review-login_test.ts
+
 if [[ -n "${SUPABASE_PROJECT_REF:-}" ]]; then
   mkdir -p "$supabase_workdir/supabase/.temp"
   printf '%s' "$SUPABASE_PROJECT_REF" > "$supabase_workdir/supabase/.temp/project-ref"

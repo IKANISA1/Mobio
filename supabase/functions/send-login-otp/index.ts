@@ -22,6 +22,7 @@ import {
 } from "../_shared/whatsapp-cloud.ts";
 import {
   GOOGLE_PLAY_REVIEW_OTP,
+  appLoginOtpDelivery,
   googlePlayReviewMetadata,
   isGooglePlayReviewPhone,
 } from "../_shared/play-review-login.ts";
@@ -239,7 +240,7 @@ Deno.serve(async (req: Request) => {
     return jsonResponse(
       {
         success: true,
-        message: "OTP sent to your WhatsApp",
+        ...appLoginOtpDelivery(isReviewLogin),
       },
       200,
       req,
