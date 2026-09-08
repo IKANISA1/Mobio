@@ -23,10 +23,16 @@ Kinyarwanda app copy is translated. Flutter platform picker/control copy falls b
 
 ## Integration and release boundaries
 
-The user authorized committing and pushing to main. The work uses an isolated checkout of main at `499e006`; the unavailable external-drive checkout and its uncommitted changes remain untouched. Main is fetched and compared again before pushing without force.
+The user authorized committing and pushing to main. The work uses an isolated checkout of main at `499e006`; the unavailable external-drive checkout and its uncommitted changes remain untouched. The implementation was committed as `07323dde2b3663bfdac97edb921f517fa642c391`, pushed without force, and read back from remote main with the same SHA.
 
 The GitHub public Supabase anon variable was malformed. The local build and that CI variable were corrected using the active public anon key of the same Mobio project, and the CI value was read back. This changes no database permissions or provider activation. Other configuration and signing material are not copied into Git.
 
 Before public rollout: apply the four additive migrations to a staging environment and rehearse against the full schema; complete independent security/device/provider evidence; supply the Android release signing configuration; validate Apple associated-domain entitlement/AASA behavior and real deep-link continuations; capture the current installed build; and obtain owner acceptance. Adapter roots are research evidence only. Complete instruction/tariff/test evidence, expiry and a second administrator are required to activate any route.
 
-No production migration, deployment, provider activation, signed store submission or confirmed payment occurred during this implementation.
+No production migration, manually invoked deployment, provider activation, signed store submission or confirmed payment occurred during implementation.
+
+## Post-push observations
+
+- The [GitHub run for the implementation commit](https://github.com/IKANISA1/Mobio/actions/runs/34205083702) ended with `startup_failure`, path `BuildFailed`, and zero jobs. The run UI supplied no diagnostic annotation and could not locate its reported workflow file. All five repository workflow files parse as YAML locally; this does not certify GitHub expression/action resolution. The [previous main push](https://github.com/IKANISA1/Mobio/actions/runs/34031158771) has the same `BuildFailed` startup result. Remote CI is therefore **not passed**; the failure mechanism remains unresolved and predates this implementation.
+- The existing Cloudflare Pages Git integration automatically deployed commit `07323dd`. Its GitHub check reports success for deployment `035e4f6a-53bf-4fc2-a315-a190fdbcd311`. This automatic action followed the authorized main push; no separate deployment command was issued. A direct request to the reported preview returned HTTP 403, so deployed behavior and public availability were not verified. The dashboard required a separate login and was not used to change any setting.
+- The deployment check does not demonstrate that the new BioPay database contracts or provider routes are live. The four new migrations have only been applied to the isolated local fixture; staging/full-schema rehearsal, live migration and the acceptance steps above remain pending.

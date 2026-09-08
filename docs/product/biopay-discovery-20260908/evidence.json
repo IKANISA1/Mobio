@@ -1,5 +1,5 @@
 {
-  "recorded_at": "2026-09-08T08:27:55.478071+00:00",
+  "recorded_at": "2026-09-08T08:37:24.086548+00:00",
   "base_commit": "499e0069ab3fe9a06f0919bc996c22ed62a7b8e4",
   "scope": "A01-A24 local implementation and regression evidence; not a production or visual parity certificate",
   "flutter_tests": {
@@ -12,7 +12,7 @@
   "visual_review": "representative synthetic renders reviewed by implementer; independent reviewer and owner acceptance pending",
   "provider_activation": false,
   "production_migrations_applied": false,
-  "deployment_performed": false,
+  "deployment_performed": true,
   "local_logs": [
     {
       "local_path": "build/qa/biopay/full-flutter-tests.log",
@@ -86,12 +86,12 @@
     },
     {
       "path": "docs/product/biopay-discovery-20260908/VALIDATION.md",
-      "sha256": "02b3a5af32d09b6ddda6cf2b41e38c0138ab547e2fb610d9f4fa86d1ace1ffc8",
+      "sha256": "fa0290900a256a5290d72fde121e3c54627913208c77b5bbc1d232efc034f93b",
       "bytes": 4746
     },
     {
       "path": "docs/product/biopay-discovery-20260908/requirements.json",
-      "sha256": "f0468690065ad158b74686c43844c83a7ef89f4505d74a066fe319cca24030af",
+      "sha256": "4a8d3ad55a8e4028db01744f77dbc74c0c0d4e2a9757288e02d2fb9d24bf97af",
       "bytes": 28318
     },
     {
@@ -479,5 +479,26 @@
       "sha256": "3e9fbbca34744346b7e75bb43ee4246f69a227474ff87ba97b8ae15d6575da50",
       "bytes": 2138
     }
-  ]
+  ],
+  "implementation_commit": "07323dde2b3663bfdac97edb921f517fa642c391",
+  "remote_main_verified_at_implementation_push": "07323dde2b3663bfdac97edb921f517fa642c391",
+  "deployment_trigger": "existing Cloudflare Pages Git integration after authorized main push; no manual deployment command",
+  "deployed_behavior_verified": false,
+  "post_push": {
+    "github_actions": {
+      "run_url": "https://github.com/IKANISA1/Mobio/actions/runs/34205083702",
+      "conclusion": "startup_failure",
+      "path": "BuildFailed",
+      "jobs": 0,
+      "diagnostic_annotation": null,
+      "previous_main_same_result": "https://github.com/IKANISA1/Mobio/actions/runs/34031158771"
+    },
+    "cloudflare_pages": {
+      "deployment_id": "035e4f6a-53bf-4fc2-a315-a190fdbcd311",
+      "github_check": "success",
+      "preview_http_status": 403,
+      "public_availability_verified": false
+    },
+    "live_database_migrations_applied": false
+  }
 }

@@ -608,6 +608,6 @@
   ],
   "base_commit": "499e006",
   "original_dirty_checkout_available": false,
-  "deployment": "not_performed",
+  "deployment": "existing Cloudflare Pages Git integration reports successful automatic deployment of implementation commit 07323dd; deployed behavior and public availability not verified; no manual deployment or live migrations",
   "provider_routes": "all seed evidence remains inactive; no executable routes enabled"
 }
