@@ -1,6 +1,5 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
+import 'package:mobi_app/features/biopay/domain/payment_entry.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -9,9 +8,6 @@ class BioPayUssdService {
 
   final SupabaseClient? supabase;
   static const defaultInsuranceAgentWhatsapp = '+250795588248';
-  static const _androidUssdDialerChannel = MethodChannel(
-    'rw.mobi.app/biopay_ussd_dialer',
-  );
 
   Future<BioPayUssdPaymentRequest> createPaymentRequest({
     required BioPayRequestChannel channel,
@@ -228,17 +224,10 @@ class BioPayUssdService {
     }
   }
 
-  Future<bool> launchUssdCode(String ussdCode) async {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      final launched = await _launchAndroidNativeUssd(ussdCode);
-      if (launched) return true;
-    }
-
-    return launchUrl(
-      ussdTelUri(ussdCode),
-      mode: LaunchMode.externalApplication,
-    );
-  }
+  @Deprecated(
+    'Use the discovery prepare contract and explicit reviewed handoff.',
+  )
+  Future<bool> launchUssdCode(String ussdCode) async => false;
 
   Uri ussdTelUri(String ussdCode) {
     final encoded = ussdCode.replaceAll('#', Uri.encodeComponent('#'));
@@ -246,7 +235,7 @@ class BioPayUssdService {
   }
 
   Uri paymentRequestDialerUri(BioPayUssdPaymentRequest request) {
-    return ussdTelUri(request.ussdCode);
+    return bioPayShareUri(request.token);
   }
 
   String paymentRequestShareText(
@@ -259,23 +248,7 @@ class BioPayUssdService {
     final receiverText = receiver == null || receiver.isEmpty
         ? ''
         : ' Receiver: $receiver.';
-    return 'Mobio payment request: $amount.$receiverText Tap this MoMo USSD link: $ussdLink';
-  }
-
-  Future<bool> _launchAndroidNativeUssd(String ussdCode) async {
-    try {
-      final response = await _androidUssdDialerChannel
-          .invokeMapMethod<Object?, Object?>('launchUssd', {
-            'uri': ussdTelUri(ussdCode).toString(),
-          });
-      return response?['launched'] == true;
-    } on MissingPluginException {
-      return false;
-    } on PlatformException {
-      return false;
-    } on Object {
-      return false;
-    }
+    return 'Mobio payment request: $amount.$receiverText Review this Mobio payment request: $ussdLink';
   }
 
   Uri paymentRequestWhatsAppUri(

@@ -1,0 +1,613 @@
+{
+  "date": "2026-09-08",
+  "status": "implemented_and_locally_validated; release_acceptance_pending",
+  "design_authority": "revolut-design",
+  "items": [
+    {
+      "id": "A01",
+      "priority": "P0",
+      "relative_effort": "M",
+      "title": "Pay by name or number in BioPay",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "A direct first action opens one recipient task. QR, NFC, manual, contacts and existing face entry converge on the same draft; BioPay remains the selected shell branch.",
+      "implementation_status": "implemented",
+      "wave": 2,
+      "dependencies": [
+        "A03",
+        "A16"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/payment_composer_screen.dart",
+        "lib/app/router/app_router.dart",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A02",
+      "priority": "P0",
+      "relative_effort": "M",
+      "title": "Native contact selection with manual fallback",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Select a specific phone number, review it, then resolve only that selection. Denial/cancellation retains the draft; no address-book upload. A nickname never becomes a verified account name.",
+      "implementation_status": "implemented",
+      "wave": 3,
+      "dependencies": [
+        "A01"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "not_applicable_to_native_or_presentation_part",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt",
+        "ios/Runner/AppDelegate.swift",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A03",
+      "priority": "P0",
+      "relative_effort": "L",
+      "title": "Payment methods under Profile",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Extend existing MoMo data to multiple eligible sources/destinations. Separate Pay from and Receive here roles, method labels, SIM association and sharing. Existing MoMo consumers keep working.",
+      "implementation_status": "implemented",
+      "wave": 1,
+      "dependencies": [],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/payment_methods_screen.dart",
+        "supabase/migrations/20260908090000_biopay_payment_discovery.sql",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A04",
+      "priority": "P0",
+      "relative_effort": "M",
+      "title": "From: My accounts picker",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Show saved, eligible payer sources and explain unavailable ones. No invented balance. A source change invalidates the old quote and requires renewed review.",
+      "implementation_status": "implemented",
+      "wave": 2,
+      "dependencies": [
+        "A03"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/payment_composer_screen.dart",
+        "supabase/migrations/20260908090000_biopay_payment_discovery.sql",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A05",
+      "priority": "P0",
+      "relative_effort": "L",
+      "title": "Three-row payment-route comparison",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Compare source → destination, rail, fee certainty and one evidence-supported reason. More options exposes the remainder. Unknown fee never appears free; sorting cannot bypass purpose or destination constraints.",
+      "implementation_status": "implemented",
+      "wave": 2,
+      "dependencies": [
+        "A04",
+        "A18"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/domain/payment_discovery.dart",
+        "test/features/biopay/payment_discovery_test.dart",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A06",
+      "priority": "P0",
+      "relative_effort": "L",
+      "title": "Review before provider handoff",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Show recipient, actual receiving endpoint, source, amount, purpose, fee and supported reference/SIM guidance. Only an explicit action opens/copies a validated provider instruction.",
+      "implementation_status": "implemented",
+      "wave": 2,
+      "dependencies": [
+        "A05",
+        "A11",
+        "A16",
+        "A22"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/application/payment_composer_controller.dart",
+        "supabase/migrations/20260908091000_biopay_discovery_rpc.sql",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A07",
+      "priority": "P0",
+      "relative_effort": "M",
+      "title": "Return-to-Mobio summary",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Restore the reviewed task after dialer return or relaunch. State that payment confirmation is unavailable unless trusted evidence exists; do not infer success or failure from app lifecycle.",
+      "implementation_status": "implemented",
+      "wave": 2,
+      "dependencies": [
+        "A06",
+        "A16"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/application/payment_composer_controller.dart",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A08",
+      "priority": "P0",
+      "relative_effort": "L",
+      "title": "Scoped QR and payment links",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Extend My QR/Get QR with all shared methods, a fixed method, or an amount request. Preview the disclosed scope. New links resolve opaque references and preserve legacy parser behavior safely.",
+      "implementation_status": "implemented",
+      "wave": 3,
+      "dependencies": [
+        "A03",
+        "A10"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/domain/payment_entry.dart",
+        "lib/features/biopay/presentation/payment_nfc_link_screen.dart",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A09",
+      "priority": "P1",
+      "relative_effort": "M",
+      "title": "Request manager",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "List active, expired and revoked requests with amount rules, destination scope and expiry. Copy/share/revoke work on the correct version. Opening a link does not mark a request paid.",
+      "implementation_status": "implemented",
+      "wave": 3,
+      "dependencies": [
+        "A08"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/payment_library_screen.dart",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A10",
+      "priority": "P1",
+      "relative_effort": "M",
+      "title": "View as payer and sharing controls",
+      "scope_origin": "review_addition_or_explicit_extension_beyond_pack",
+      "outcome_and_acceptance": "Show exactly what a payer can discover or see from each link. Private by default for newly added destinations; revoke scoped grants without falsely promising deletion of already shared copies.",
+      "implementation_status": "implemented",
+      "wave": 3,
+      "dependencies": [
+        "A03"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/payment_methods_screen.dart",
+        "supabase/tests/biopay_discovery_behavior.sql",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A11",
+      "priority": "P0",
+      "relative_effort": "M",
+      "title": "Recipient assurance and changed-details review",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Differentiate phone verified, recipient supplied, provider confirmed and operator reviewed. If a receiving destination changes, explain the changed field and re-review before handoff.",
+      "implementation_status": "implemented",
+      "wave": 2,
+      "dependencies": [
+        "A03",
+        "A08"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/data/payment_discovery_service.dart",
+        "supabase/tests/biopay_discovery_behavior.sql",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A12",
+      "priority": "P0",
+      "relative_effort": "M",
+      "title": "Task-preserving scan and lookup recovery",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "After camera denial, invalid QR, unsupported NFC or missing shared methods, offer manual entry/other existing methods. No dead end and no silent loss of amount or permitted request context.",
+      "implementation_status": "implemented",
+      "wave": 3,
+      "dependencies": [
+        "A01"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "not_applicable_to_native_or_presentation_part",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/biopay_scan_screen.dart",
+        "test/features/biopay/biopay_scan_recovery_test.dart",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A13",
+      "priority": "P1",
+      "relative_effort": "M",
+      "title": "Private recents and favourites",
+      "scope_origin": "review_addition_or_explicit_extension_beyond_pack",
+      "outcome_and_acceptance": "Reduce repeated lookup. Allow removal and distinguish contact nickname from payment identity. Recency records a chosen/resolved recipient or explicitly labelled attempt, not an inferred successful payment.",
+      "implementation_status": "implemented",
+      "wave": 4,
+      "dependencies": [
+        "A01"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/payment_library_screen.dart",
+        "supabase/migrations/20260908091000_biopay_discovery_rpc.sql",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A14",
+      "priority": "P1",
+      "relative_effort": "M",
+      "title": "Paste link / import QR image",
+      "scope_origin": "review_addition_or_explicit_extension_beyond_pack",
+      "outcome_and_acceptance": "Support users who received a request on the same phone. Read clipboard only on user action; use scoped media selection; run the same payload validation as live scanning.",
+      "implementation_status": "implemented",
+      "wave": 3,
+      "dependencies": [
+        "A08",
+        "A12"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "not_applicable_to_native_or_presentation_part",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/biopay_scan_screen.dart",
+        "android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt",
+        "ios/Runner/AppDelegate.swift",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A15",
+      "priority": "P1",
+      "relative_effort": "M",
+      "title": "BioPay activity with evidence labels",
+      "scope_origin": "review_addition_or_explicit_extension_beyond_pack",
+      "outcome_and_acceptance": "List requests and handoff attempts separately from confirmed payments. Each detail shows status source and timestamp. No balance or settlement ledger is fabricated from handoff events.",
+      "implementation_status": "implemented",
+      "wave": 4,
+      "dependencies": [
+        "A07",
+        "A09"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/payment_library_screen.dart",
+        "supabase/migrations/20260908093000_biopay_discovery_evidence.sql",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A16",
+      "priority": "P0",
+      "relative_effort": "L",
+      "title": "Draft recovery and quote refresh",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Preserve appropriate local draft state through back, interruption and network loss. Explain expired quotes and retain input. Reconnect/review revalidates changed methods, tariffs, requests and permissions.",
+      "implementation_status": "implemented",
+      "wave": 2,
+      "dependencies": [],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/application/payment_composer_controller.dart",
+        "test/features/biopay/payment_discovery_widgets_test.dart",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A17",
+      "priority": "P0",
+      "relative_effort": "M",
+      "title": "Accessible, localized payment forms",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Stable labels, clear currency, persistent recipient context, understandable errors and reachable actions at large text sizes. Test each supported locale; add no unverified language promise.",
+      "implementation_status": "implemented",
+      "wave": 5,
+      "dependencies": [],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "not_applicable_to_native_or_presentation_part",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/l10n/platform_localization_fallbacks.dart",
+        "test/features/biopay/payment_discovery_widgets_test.dart",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A18",
+      "priority": "P0",
+      "relative_effort": "L",
+      "title": "Provider routes and tariff review in Admin",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Extend existing BioPay Ops with evidence, versions, effective dates, test mode, approval and granular disable. A disabled route cannot pass the final handoff check; discovery remains useful.",
+      "implementation_status": "implemented",
+      "wave": 1,
+      "dependencies": [],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/payment_provider_routes_screen.dart",
+        "supabase/migrations/20260908092000_biopay_discovery_admin.sql",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A19",
+      "priority": "P1",
+      "relative_effort": "M",
+      "title": "Contextual payment help",
+      "scope_origin": "review_addition_or_explicit_extension_beyond_pack",
+      "outcome_and_acceptance": "Explain provider cancellation, wrong SIM, no response and unconfirmed outcome. Offer a user-reviewed support summary with minimal fields; no automatic outreach or provider PIN collection.",
+      "implementation_status": "implemented",
+      "wave": 4,
+      "dependencies": [
+        "A07"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "not_applicable_to_native_or_presentation_part",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/payment_composer_screen.dart",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A20",
+      "priority": "P2",
+      "relative_effort": "M",
+      "title": "Pay again as a fresh draft",
+      "scope_origin": "review_addition_or_explicit_extension_beyond_pack",
+      "outcome_and_acceptance": "Reuse a recipient and eligible preferences after an explicit tap. Re-resolve, re-quote and re-review; do not reuse a stale executable code or automatically resubmit.",
+      "implementation_status": "implemented",
+      "wave": 4,
+      "dependencies": [
+        "A13",
+        "A06"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/payment_library_screen.dart",
+        "supabase/tests/biopay_discovery_behavior.sql",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A21",
+      "priority": "P2",
+      "relative_effort": "S",
+      "title": "Preferred source setting",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Remember a user-chosen source without claiming it is always cheapest or available. Explain when a pinned destination or eligibility rule prevents using it.",
+      "implementation_status": "implemented",
+      "wave": 4,
+      "dependencies": [
+        "A04",
+        "A05"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/payment_methods_screen.dart",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A22",
+      "priority": "P0",
+      "relative_effort": "M",
+      "title": "Device and SIM capability guidance",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Tell users before handoff whether to open a tested dialer/menu, copy a code, or use another supported channel. Show clear manual SIM guidance; avoid promising automatic SIM control.",
+      "implementation_status": "implemented",
+      "wave": 2,
+      "dependencies": [
+        "A18"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "not_applicable_to_native_or_presentation_part",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/data/payment_discovery_service.dart",
+        "test/release/biopay_payment_link_contract_test.dart",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A23",
+      "priority": "P2",
+      "relative_effort": "M",
+      "title": "Private request templates",
+      "scope_origin": "review_addition_or_explicit_extension_beyond_pack",
+      "outcome_and_acceptance": "Save an optional label/note and permitted defaults for repetitive requests. Each use creates a fresh, scoped request; no recurring debit, automatic reminder or repeated charge.",
+      "implementation_status": "implemented",
+      "wave": 4,
+      "dependencies": [
+        "A09"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/payment_library_screen.dart",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    },
+    {
+      "id": "A24",
+      "priority": "P1",
+      "relative_effort": "L",
+      "title": "Payment-link arrival across phone and desktop",
+      "scope_origin": "pack_requirement_with_ux_detail",
+      "outcome_and_acceptance": "Resolve a minimal, authorized preview and preserve context through app opening/required login. Desktop can show a safe continuation QR/link; phone uses actual supported capabilities. No new domain assumed.",
+      "implementation_status": "implemented",
+      "wave": 3,
+      "dependencies": [
+        "A08",
+        "A06"
+      ],
+      "verification": {
+        "behavioral": "automated_suite_passed; see VALIDATION.md for scope",
+        "backend_authorization": "isolated_postgresql_fixture_passed",
+        "rendered_visual": "representative_fixture_surfaces_reviewed_by_implementer; not complete source parity certification",
+        "device": "physical_handset_and_provider_matrix_pending",
+        "owner_acceptance": "pending"
+      },
+      "evidence": [
+        "lib/features/biopay/presentation/payment_link_arrival_screen.dart",
+        "scripts/web/prepare_pwa_bundles.sh",
+        "test/web/payment_link_worker_test.ts",
+        "docs/product/biopay-discovery-20260908/VALIDATION.md"
+      ]
+    }
+  ],
+  "base_commit": "499e006",
+  "original_dirty_checkout_available": false,
+  "deployment": "not_performed",
+  "provider_routes": "all seed evidence remains inactive; no executable routes enabled"
+}

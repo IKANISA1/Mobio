@@ -47,13 +47,15 @@ class IconReferences(HTMLParser):
                     f"Missing linked icon asset: {reference.path}")
 
 
-for document in ("index.html", "__admin_shell"):
+for document in ("index.html", "__admin_shell", "__app_shell"):
     IconReferences().feed(read_text(site_dir / document))
 
 for filename in (
     "index.html",
     ".well-known/assetlinks.json",
     "__admin_shell",
+    "__app_shell",
+    "app-manifest.json",
     "admin-manifest.json",
     "flutter_bootstrap.js",
     "main.dart.js",
@@ -72,6 +74,12 @@ for filename in (
 ):
     require((site_dir / filename).is_file(), f"Missing {site_dir / filename}")
 
+app_manifest = read_manifest(site_dir / "app-manifest.json")
+require(app_manifest.get("name") == "Mobio", "Consumer manifest name mismatch")
+require(app_manifest.get("start_url") == "/biopay", "Consumer manifest start URL mismatch")
+app_index = read_text(site_dir / "__app_shell")
+require("<title>Mobio</title>" in app_index, "Consumer shell title mismatch")
+require('/app-manifest.json' in app_index, "Consumer manifest link missing")
 admin_manifest = read_manifest(site_dir / "admin-manifest.json")
 assetlinks = read_manifest(site_dir / ".well-known/assetlinks.json")
 aasa_path = site_dir / ".well-known/apple-app-site-association"
@@ -148,9 +156,10 @@ for expected in (
     'pathname === "/admin"',
     'pathname.startsWith("/admin/")',
     'Response.redirect(`${url.origin}/admin-auth`, 302)',
-    'const response = await serveAsset(env, request, "/__admin_shell");',
+    'const response = await serveAsset(env, request, shellPath);',
     'headers.set("content-type", "text/html; charset=utf-8");',
-    "return serveAdminShell(env, request);",
+    'return serveFlutterShell(env, request, "/__admin_shell");',
+    'return serveFlutterShell(env, request, "/__app_shell");',
     "return env.ASSETS.fetch(request);",
 ):
     require(expected in worker, f"Pages worker missing {expected}")

@@ -459,7 +459,7 @@ void main() {
     },
   );
 
-  testWidgets('Scan surface is camera scanner only before QR detection', (
+  testWidgets('Scan surface includes task-preserving manual and import recovery', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -471,54 +471,30 @@ void main() {
       ),
     );
 
-    expect(find.text('Scan'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text('Scan QR'), findsOneWidget);
     expect(find.byType(MobileScanner), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Enter receiving details'), 150, scrollable: find.byType(Scrollable).first);
+    expect(find.text('Enter receiving details'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Choose QR image'), 100, scrollable: find.byType(Scrollable).first);
+    expect(find.text('Choose QR image'), findsOneWidget);
+    expect(find.text('Paste a payment link'), findsOneWidget);
     expect(find.text('Preview scan'), findsNothing);
     expect(find.text('Scanning'), findsNothing);
     expect(find.byType(BioPayIconBox), findsNothing);
   });
 
-  test(
-    'QR payload uses MoMo tel USSD format and token QR remains readable',
-    () {
-      const request = BioPayUssdPaymentRequest(
-        id: 'request-1',
-        token: 'mobio-biopay-token-1',
-        channel: BioPayRequestChannel.qr,
-        providerCode: 'mtn_rw',
-        payeeLabel: 'BioPay merchant',
-        amountMinor: 250000,
-        currency: 'RWF',
-        reference: 'BP-1',
-        ussdCode: '*182*8*1*250788000000*2500#',
-        status: BioPayRequestStatus.readyToDial,
-      );
-      final qrPayload = buildBioPayQrPayload(request);
-      expect(qrPayload, 'tel:*182*8*1*250788000000*2500%23');
-      expect(
-        bioPayUssdCodeFromPayload(qrPayload),
-        '*182*8*1*250788000000*2500#',
-      );
-      expect(bioPayTokenFromPayload(qrPayload), isEmpty);
-      expect(
-        bioPayUssdCodeFromPayload('*182*8*1*250788000000*2500#'),
-        '*182*8*1*250788000000*2500#',
-      );
-      expect(bioPayTokenFromPayload('*182*8*1*250788000000*2500#'), isEmpty);
-      expect(
-        bioPayTokenFromPayload('mobio-biopay-token-1'),
-        'mobio-biopay-token-1',
-      );
-      expect(
-        bioPayTokenFromPayload(
-          'https://mobi.rw/biopay?token=mobio-biopay-token-1',
-        ),
-        'mobio-biopay-token-1',
-      );
-    },
-  );
+  test('QR payload is an opaque own-domain link with legacy token support', () {
+    final request = BioPayUssdService().createPreviewRequest(channel: BioPayRequestChannel.qr);
+    final qr = buildBioPayQrPayload(request);
+    expect(qr, 'https://mobio.ikanisa.com/biopay/pay/${request.token}');
+    expect(bioPayTokenFromPayload(qr), request.token);
+    expect(bioPayUssdCodeFromPayload(qr), isEmpty);
+    expect(bioPayTokenFromPayload('https://evil.example/?token=${request.token}'), isEmpty);
+    expect(bioPayTokenFromPayload(request.token), request.token);
+  });
 
-  test('Payment request share text uses direct MoMo USSD tel link', () {
+  test('Payment request share text opens review on Mobio', () {
     final service = BioPayUssdService();
     final request = service.createPreviewRequest(
       channel: BioPayRequestChannel.qr,
@@ -529,14 +505,14 @@ void main() {
     expect(request.ussdCode, '*182*1*1*0788767816*9999#');
     expect(
       service.paymentRequestDialerUri(request).toString(),
-      'tel:*182*1*1*0788767816*9999%23',
+      'https://mobio.ikanisa.com/biopay/pay/${request.token}',
     );
     expect(
       service.paymentRequestShareText(
         request,
         receiverLabel: 'MoMo number 0788767816',
       ),
-      contains('Tap this MoMo USSD link: tel:*182*1*1*0788767816*9999%23'),
+      contains('Review this Mobio payment request: https://mobio.ikanisa.com/biopay/pay/'),
     );
   });
 }

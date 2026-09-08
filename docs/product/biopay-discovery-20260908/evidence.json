@@ -1,0 +1,483 @@
+{
+  "recorded_at": "2026-09-08T08:27:55.478071+00:00",
+  "base_commit": "499e0069ab3fe9a06f0919bc996c22ed62a7b8e4",
+  "scope": "A01-A24 local implementation and regression evidence; not a production or visual parity certificate",
+  "flutter_tests": {
+    "passed": 604,
+    "failed": 0
+  },
+  "dart_analysis": "no issues",
+  "postgres": "isolated fixture passed",
+  "backend_linked_production_checks": "not run",
+  "visual_review": "representative synthetic renders reviewed by implementer; independent reviewer and owner acceptance pending",
+  "provider_activation": false,
+  "production_migrations_applied": false,
+  "deployment_performed": false,
+  "local_logs": [
+    {
+      "local_path": "build/qa/biopay/full-flutter-tests.log",
+      "sha256": "47c5b1214f485a7e659604a5864036633dcd89c0314f8621ef2433dafec0fd38"
+    },
+    {
+      "local_path": "build/qa/biopay/full-analysis.txt",
+      "sha256": "a84576b810cbc5037c4e9071dd1b38a60da0af1014b745daceb1b2be5558aed0"
+    },
+    {
+      "local_path": "build/qa/biopay/db-tests.log",
+      "sha256": "eef6bbbbe39eb6fe6bcfc8fa41096bb8e0dae68c7f131a6f67b1823d9bd1c19b"
+    },
+    {
+      "local_path": "build/qa/biopay/deno-tests.log",
+      "sha256": "e4b99b2711c6b74f1531b947872db7aad2fb1548b02dcb65e963300c143df8e7"
+    },
+    {
+      "local_path": "build/qa/biopay/web-routing-tests.log",
+      "sha256": "81cf4168e6b4fc52f4476febf741fe5054c31c869673894c08aa1c92ba402d22"
+    },
+    {
+      "local_path": "build/qa/biopay/backend-verification.log",
+      "sha256": "6c87af7dae904baed41d2a27d0dd194f664825d42f5d7e53696d2c13642fbcbd"
+    },
+    {
+      "local_path": "build/qa/biopay/web-build.log",
+      "sha256": "1ec8ff0568b5f7b338ce9c767ad8e9697175c6a66935039df0564e33fb8b5937"
+    },
+    {
+      "local_path": "build/qa/biopay/web-bundle.log",
+      "sha256": "5fcdcf5ce50dd70bfcb367b88b178c4281934ea39707e936cc4fdc5577dc26a2"
+    },
+    {
+      "local_path": "build/qa/biopay/ios-build.log",
+      "sha256": "7e2bdf15b365034201a76fccc66335feea14e460287641e63b3e2ef59803639f"
+    },
+    {
+      "local_path": "build/qa/biopay/android-compile.log",
+      "sha256": "168c8415ef51e103acb77e2c21981f9b0cd91c8395e49e47a5f49f5ae7009235"
+    },
+    {
+      "local_path": "build/qa/biopay/structure-check.log",
+      "sha256": "6f58ec736aff7ebb4a7c249d459bee339877ec721a65c63bbf50b8e5a4edb878"
+    },
+    {
+      "local_path": "build/qa/biopay/secrets-scan.log",
+      "sha256": "540f8873b42c44548958b07e274bc5079365a0ab116303e28379324828abaaf2"
+    }
+  ],
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "68daae6fedbc1006e127b50998501ed664b98b0786be63d3380639b9ee965449",
+      "bytes": 3762
+    },
+    {
+      "path": "android/app/src/main/AndroidManifest.xml",
+      "sha256": "89d9f47ce78f777cbee6162f544308ab746ee99d7b6f33f3ebacaa9c69744c30",
+      "bytes": 8240
+    },
+    {
+      "path": "android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt",
+      "sha256": "6830041adec79c2edc78d0a0811e6f71c90344a8fab7c1009f763fbdfe234c4a",
+      "bytes": 43466
+    },
+    {
+      "path": "docs/product/biopay-discovery-20260908/IMPLEMENTATION.md",
+      "sha256": "38c2df7df903533df1c8b725f88bfc52a083d8805d02a0822d59ff7717038c3a",
+      "bytes": 14022
+    },
+    {
+      "path": "docs/product/biopay-discovery-20260908/VALIDATION.md",
+      "sha256": "02b3a5af32d09b6ddda6cf2b41e38c0138ab547e2fb610d9f4fa86d1ace1ffc8",
+      "bytes": 4746
+    },
+    {
+      "path": "docs/product/biopay-discovery-20260908/requirements.json",
+      "sha256": "f0468690065ad158b74686c43844c83a7ef89f4505d74a066fe319cca24030af",
+      "bytes": 28318
+    },
+    {
+      "path": "ios/Runner/AppDelegate.swift",
+      "sha256": "86ffdd6efe054e5d726889b19f92259008da1c323b71ca749603f83a7f9e35b0",
+      "bytes": 6339
+    },
+    {
+      "path": "lib/app/app.dart",
+      "sha256": "0662fa930b64d90005d033376204c9cb2c23923a61de68fca27c0d888250ada8",
+      "bytes": 3250
+    },
+    {
+      "path": "lib/app/router/app_router.dart",
+      "sha256": "c15d7613bd585270c4dbfbaab415fa8915a0ab20ccca74739120faae72601207",
+      "bytes": 27457
+    },
+    {
+      "path": "lib/features/biopay/application/biopay_providers.dart",
+      "sha256": "c42aee9e1a5153d7eb5aac9778aca0e3db19575c976f2c729c1409d9ff6fa315",
+      "bytes": 1258
+    },
+    {
+      "path": "lib/features/biopay/application/payment_composer_controller.dart",
+      "sha256": "c03b2ed4a34b2a3152b4575512e18f05f05dfbff07837906a1362b859a6194ac",
+      "bytes": 7762
+    },
+    {
+      "path": "lib/features/biopay/data/biopay_nfc_card_payload.dart",
+      "sha256": "715058da71981f1dc06f56de8a4bc61fa2d5ea52d38842519df1adba205895d6",
+      "bytes": 10617
+    },
+    {
+      "path": "lib/features/biopay/data/biopay_ussd_service.dart",
+      "sha256": "023a1860f1283ab6c82e27fdaecfd3e647a7fd7d70076fc1dfe480e52238ffa6",
+      "bytes": 9684
+    },
+    {
+      "path": "lib/features/biopay/data/payment_discovery_service.dart",
+      "sha256": "22ab77dfb5a9cf8173954447bfb755213f65c4a021489d31f288f64c4c4d3e54",
+      "bytes": 5683
+    },
+    {
+      "path": "lib/features/biopay/domain/payment_discovery.dart",
+      "sha256": "958e0194d293c84c74d54f4a77ef74f93430050f5edb3fbca00ea6cc19484583",
+      "bytes": 11828
+    },
+    {
+      "path": "lib/features/biopay/domain/payment_entry.dart",
+      "sha256": "ae8dee4d9014f7e14349d0d600959b14521a0683355d1d83b4350ea1f4b2b6d6",
+      "bytes": 3404
+    },
+    {
+      "path": "lib/features/biopay/domain/payment_payload.dart",
+      "sha256": "f989b9f0dfe1618238f9f94264aa43163e486a553eb59074f823223117ed6e53",
+      "bytes": 971
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_admin_console_screen.dart",
+      "sha256": "a1b68e2bbdd267001aceba26cb0f641644223f54eb95a04aa25ad72c599514fa",
+      "bytes": 30079
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_face_scan_screen.dart",
+      "sha256": "cd2a43b9381f4f11098f7035a84af6f115edf81d22f61628ff3ce3401420c094",
+      "bytes": 8004
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_home_screen.dart",
+      "sha256": "e8ab00052f500b397e43dfa0093879895542df0d47b2d33d3522b11b6296a06f",
+      "bytes": 12951
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_nfc_foreground_listener.dart",
+      "sha256": "325ed0540cda1fa894c56a9330ab4986eef63f5087f0dcc3a206ef35885502bc",
+      "bytes": 10611
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_payment_link_screen.dart",
+      "sha256": "5178bc9681df0eafdc31fc0940bcff0dd3485620ca15d608163a373842f48c64",
+      "bytes": 6693
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_scan_screen.dart",
+      "sha256": "2d8bd005101f253240ec3285507478ee997685242b1e491ab867bc54b57af2fa",
+      "bytes": 3711
+    },
+    {
+      "path": "lib/features/biopay/presentation/payment_composer_screen.dart",
+      "sha256": "759ce12f286830fe028b77ff7dac4c0a05131b709e4852e42807786725d2984c",
+      "bytes": 28069
+    },
+    {
+      "path": "lib/features/biopay/presentation/payment_discovery_routes.dart",
+      "sha256": "4c2869300d4878215a63f6ec679e28d28952bf227adb0d8f4b11bdfffb422d88",
+      "bytes": 243
+    },
+    {
+      "path": "lib/features/biopay/presentation/payment_library_screen.dart",
+      "sha256": "1096f0dc732d112ec6c75cf9ec22fd26236f6f0b86df06ac97cea29de357f08c",
+      "bytes": 24814
+    },
+    {
+      "path": "lib/features/biopay/presentation/payment_link_arrival_screen.dart",
+      "sha256": "de7152475a862f73fb4e658c372495241000eb1d2299ee152ee94b69811685d0",
+      "bytes": 3999
+    },
+    {
+      "path": "lib/features/biopay/presentation/payment_methods_screen.dart",
+      "sha256": "f7dd4718c05d23596a4838b153c20f9a12eec93cb7833f63e94853a318df746e",
+      "bytes": 15708
+    },
+    {
+      "path": "lib/features/biopay/presentation/payment_nfc_link_screen.dart",
+      "sha256": "23a80f6b2fc712650b0bd2746a26d438e8eea4f683f34c187562a679fbf58a20",
+      "bytes": 6118
+    },
+    {
+      "path": "lib/features/biopay/presentation/payment_provider_routes_screen.dart",
+      "sha256": "af80dcdd7c0de39681756a25d51c9e3f9223bcd461dfb2072169a977a17907b5",
+      "bytes": 14558
+    },
+    {
+      "path": "lib/features/biopay/presentation/payment_widgets.dart",
+      "sha256": "ef267749222ada9ad455f815a44429a3e3813dc4e06410a79c08e2f6911a1307",
+      "bytes": 6799
+    },
+    {
+      "path": "lib/features/profile/presentation/profile_screen.dart",
+      "sha256": "7f1955053d896330b051dfeabbe097ad70c5718e6c7a6ba3747080d0d722189f",
+      "bytes": 25030
+    },
+    {
+      "path": "lib/l10n/app_en.arb",
+      "sha256": "1aad973a04336a1c2df36ed214754d2a9f663301d101929c2a7b83162732f9a2",
+      "bytes": 10864
+    },
+    {
+      "path": "lib/l10n/app_fr.arb",
+      "sha256": "28d04f7bdc1132517f56e32c782fbf9621294b6f312993af360ba4aea206c10e",
+      "bytes": 10251
+    },
+    {
+      "path": "lib/l10n/app_localizations.dart",
+      "sha256": "497c6adcc76dfded48c044225629d231d686a9d3dd6f73adff87739070a32b04",
+      "bytes": 35861
+    },
+    {
+      "path": "lib/l10n/app_localizations_en.dart",
+      "sha256": "2db97b0e98f29ad233997c7cce6addce2e086697a838417c503e4f7e12e8f1c8",
+      "bytes": 14332
+    },
+    {
+      "path": "lib/l10n/app_localizations_fr.dart",
+      "sha256": "274be18dff9cf11da77ea8d505267dec37b19e622727514f5005223c81d61850",
+      "bytes": 15424
+    },
+    {
+      "path": "lib/l10n/app_localizations_rw.dart",
+      "sha256": "ddc549752747ed69f9294bd7f26bc2134a189cacc3c69599e114036f0e08c7e2",
+      "bytes": 14977
+    },
+    {
+      "path": "lib/l10n/app_rw.arb",
+      "sha256": "323feda7a0a251e237c3aa54d8e1ad861607b8493227e79c8677e8737ecadd2b",
+      "bytes": 9824
+    },
+    {
+      "path": "lib/l10n/platform_localization_fallbacks.dart",
+      "sha256": "95b384e5bdb52e6198fe694b30c55891cd288e022eb291b75fbcb82ffd768ddc",
+      "bytes": 1649
+    },
+    {
+      "path": "scripts/qa/test_biopay_discovery_db.sh",
+      "sha256": "ef2af3534e78cdfd3aeb87b1801023675555e16b1330ca7b014b5fcc32aca084",
+      "bytes": 2092
+    },
+    {
+      "path": "scripts/web/prepare_pwa_bundles.sh",
+      "sha256": "8ce263c102835dd273b0b01a6f4acf432229de1815996e77b9d8176c77719492",
+      "bytes": 7176
+    },
+    {
+      "path": "scripts/web/verify_pwa_bundles.sh",
+      "sha256": "fbcdc34abfe54180271d94a616355af576429467fbea0d6eb631c18dabdc64cc",
+      "bytes": 6733
+    },
+    {
+      "path": "supabase/migrations/20260908090000_biopay_payment_discovery.sql",
+      "sha256": "d733c9502c71e031364d345d52c4c949f6a07f49de44f8221a2c44c7bb1cc122",
+      "bytes": 18257
+    },
+    {
+      "path": "supabase/migrations/20260908091000_biopay_discovery_rpc.sql",
+      "sha256": "e2851455b746bdbc3676e714c7c117b3156a7f72fb1dd25aa317814624557917",
+      "bytes": 20778
+    },
+    {
+      "path": "supabase/migrations/20260908092000_biopay_discovery_admin.sql",
+      "sha256": "13bace17c074a8b4d4d2147c258432b002626a7a4452dbb29665600212ba7365",
+      "bytes": 8682
+    },
+    {
+      "path": "supabase/migrations/20260908093000_biopay_discovery_evidence.sql",
+      "sha256": "5eb15f02a8233de302d67fd3ebf430ce294cb4bbe457f7e59d1283d16c69d93c",
+      "bytes": 2132
+    },
+    {
+      "path": "supabase/tests/biopay_discovery_behavior.sql",
+      "sha256": "04cf0f8a22f98733438d2e2e460ffbc713c85b46b53e28d83abb00ba8357882f",
+      "bytes": 16469
+    },
+    {
+      "path": "test/features/biopay/biopay_nfc_card_payload_test.dart",
+      "sha256": "6c1ddfb45fd9d07012d81f882058978683b0a9b255df387c364fb91fd09bb9e4",
+      "bytes": 5854
+    },
+    {
+      "path": "test/features/biopay/biopay_payment_surfaces_test.dart",
+      "sha256": "03aaa7c5183b16fbd55299e3a2c63a4667fe86a0b457132cd49d91caefcfa702",
+      "bytes": 18281
+    },
+    {
+      "path": "test/features/biopay/biopay_scan_recovery_test.dart",
+      "sha256": "020fbc156143b673764473318c44901cbd2b963a8e3aa578789998855c756a50",
+      "bytes": 9215
+    },
+    {
+      "path": "test/features/biopay/goldens/discovery_admin_routes_1280x900.png",
+      "sha256": "54ed23414d9fa8e907374ddf28a211fabc1b7a6e692259cb55640def291c1686",
+      "bytes": 70661
+    },
+    {
+      "path": "test/features/biopay/goldens/discovery_methods_390x844.png",
+      "sha256": "3aedd1f502858df6f2df7effae06769855135d0e3394f14842d7f29f8c7613b3",
+      "bytes": 31921
+    },
+    {
+      "path": "test/features/biopay/goldens/discovery_public_link_1280x900.png",
+      "sha256": "879fd2933ae8788a1273d39c90810a19e2368f0c50ed19df8308a50346d19e77",
+      "bytes": 45522
+    },
+    {
+      "path": "test/features/biopay/goldens/discovery_recipient_390x844.png",
+      "sha256": "c9d221fdcbda7f204e432197bb5a298d1b1c4fad3dc29f6ae7a36485cfcde8d0",
+      "bytes": 29994
+    },
+    {
+      "path": "test/features/biopay/goldens/discovery_request_editor_390x844.png",
+      "sha256": "a17e41774b2ce9ba650a89c455e1cad7bfa0441242ddf19b06f491214a7395f3",
+      "bytes": 45394
+    },
+    {
+      "path": "test/features/biopay/goldens/discovery_requests_390x844.png",
+      "sha256": "d6a3e353b9224e4e8111f3e96340d37bda167b2cdfd6fe1d51144042347caca5",
+      "bytes": 35669
+    },
+    {
+      "path": "test/features/biopay/goldens/discovery_review_390x844.png",
+      "sha256": "db2aa399bb0ddde19c98fea1a247eae86585931fa8a03cc1840263ac8655981d",
+      "bytes": 62043
+    },
+    {
+      "path": "test/features/biopay/payment_discovery_test.dart",
+      "sha256": "2e217841e6ac20bc8126d5a77bc7d60b68524a6e0d6f44394a661e134a5c02c2",
+      "bytes": 13227
+    },
+    {
+      "path": "test/features/biopay/payment_discovery_widgets_test.dart",
+      "sha256": "17536f5b383d8eff9b346f5b684cc6d052e075b18ddff80b1a4ec110994076b3",
+      "bytes": 9829
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/admin_biopay_ops_390x844.png",
+      "sha256": "f5af7e40cf421cf5b9947309367542e5b95db8fdf8a281c6f4679b9f7a475003",
+      "bytes": 235809
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/admin_biopay_ops_430x932.png",
+      "sha256": "f00b9405229f725c8e3b97f18f59eac215b0fdc4580edab5571d0559e36e111a",
+      "bytes": 258490
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/admin_desktop/admin_biopay_ops_1280x900.png",
+      "sha256": "2b05cb356efc27bf567a7f304de9fce14bc973dc75f746db66490c3026c152c9",
+      "bytes": 589246
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/admin_desktop/admin_biopay_ops_1440x1000.png",
+      "sha256": "58d2364ad1193b4b1c5cd8b8a42aa12ac66effd88a20968f3bcabc66622b044a",
+      "bytes": 615281
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/admin_desktop/admin_biopay_ops_768x1024.png",
+      "sha256": "4a88a95dcaf43bb79c70fc2cdc1897a8ce30c420c98e5af914bee67c564b00e1",
+      "bytes": 233361
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/biopay_home_390x844.png",
+      "sha256": "dfa00f55783127ffd145e7ceb9241bbe1515e2094972916fda250795e2cb936f",
+      "bytes": 250450
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/biopay_home_430x932.png",
+      "sha256": "ce4ce4c1c9c1dd6b1b4f0501a400c3848b6d223e1fccd0bcd1e9da0c4c167b5b",
+      "bytes": 257378
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/biopay_home_shell_390x844.png",
+      "sha256": "b4f6d16e0028a7f0ace35f90d8b1683eed0c5356547b56e8ebed2bcf90f4488f",
+      "bytes": 344810
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/biopay_home_shell_430x932.png",
+      "sha256": "57a75a87af339f1cc7b39c0950a4f674c43b39464127d4ea7376112d16dd1ab7",
+      "bytes": 340417
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/biopay_scan_390x844.png",
+      "sha256": "349acf0d7bf6f8597488e7d62a6c0881f032c7d1cde34fbea2f21cffa1d9d967",
+      "bytes": 126835
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/biopay_scan_430x932.png",
+      "sha256": "492a58baa9910866cbd20cc5273260a38fd3d5a2e43a703710f2b1ff39929495",
+      "bytes": 127949
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/light/biopay_home_390x844.png",
+      "sha256": "7352990c9abcadaf07f90087b3c8a717265f790329c8b893dac11240099f322f",
+      "bytes": 249338
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/light/biopay_scan_390x844.png",
+      "sha256": "b1751c9f2066bfb18ec6c482b6473de2cc4bd4270c7524b2834732aaaa58042b",
+      "bytes": 127330
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/light/profile_390x844.png",
+      "sha256": "84f209a07c95ca17d4dd8a72ae0854c864663b33ff8f05188c88eebafd3013ad",
+      "bytes": 175694
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/profile_390x844.png",
+      "sha256": "55cfc45b2ced7cee57e841c3d4a721fe01e38b732abab48829cb506a27e19cea",
+      "bytes": 189619
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/profile_430x932.png",
+      "sha256": "5165e91e96e114bd89ad6655a46ebc430e3869d706ac5bb58b7949c6c810c83d",
+      "bytes": 211949
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/profile_shell_390x844.png",
+      "sha256": "d42deabcd3731d9b4e06155a3c4a08c83a2b6125fab26a89a5e046d8a4024195",
+      "bytes": 288816
+    },
+    {
+      "path": "test/features/preview/goldens/revolut/profile_shell_430x932.png",
+      "sha256": "9ecc4184088ca182c9eb3cc54faddf17cddd6d5f6f963bcf29aabc8134196c01",
+      "bytes": 317872
+    },
+    {
+      "path": "test/helpers/payment_discovery_fixture.dart",
+      "sha256": "479998557f655046e741ffeca7e518b6013e3acf423fe71842121aaa02b49981",
+      "bytes": 4764
+    },
+    {
+      "path": "test/release/admin_panel_production_readiness_contract_test.dart",
+      "sha256": "13192201c73dc18ccc28f1446aa030786aa067b3be6a8e5653b6223e79cf5aa3",
+      "bytes": 10606
+    },
+    {
+      "path": "test/release/biopay_payment_link_contract_test.dart",
+      "sha256": "990995438857452f4a6e87566569411dd3aef2d3e5ae6322d33152877a2636b8",
+      "bytes": 3532
+    },
+    {
+      "path": "test/release/scope_boundary_test.dart",
+      "sha256": "50bd0fa58c8f77627bf6ccc16e869e2c3d8c6db640c9650bfc9b602482e84d06",
+      "bytes": 48509
+    },
+    {
+      "path": "test/web/payment_link_worker_test.ts",
+      "sha256": "3e9fbbca34744346b7e75bb43ee4246f69a227474ff87ba97b8ae15d6575da50",
+      "bytes": 2138
+    }
+  ]
+}

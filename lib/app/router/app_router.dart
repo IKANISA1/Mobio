@@ -41,16 +41,10 @@ import 'package:mobi_app/features/biopay/presentation/biopay_face_scan_screen.da
 import 'package:mobi_app/features/biopay/presentation/biopay_home_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_nfc_screen.dart'
     deferred as biopay_nfc_route;
-import 'package:mobi_app/features/biopay/presentation/biopay_nfc_write_card_screen.dart'
-    deferred as biopay_nfc_write_card_route;
-import 'package:mobi_app/features/biopay/presentation/biopay_payment_link_screen.dart'
-    deferred as biopay_payment_link_route;
-import 'package:mobi_app/features/biopay/presentation/biopay_qr_screen.dart'
-    deferred as biopay_qr_route;
-import 'package:mobi_app/features/biopay/presentation/biopay_request_payment_screen.dart'
-    deferred as biopay_request_payment_route;
 import 'package:mobi_app/features/biopay/presentation/biopay_scan_screen.dart'
     deferred as biopay_scan_route;
+import 'package:mobi_app/features/biopay/presentation/payment_discovery_routes.dart'
+    deferred as payment_discovery_route;
 import 'package:mobi_app/features/bookings/presentation/trip_details_screen.dart'
     deferred as trip_details_route;
 import 'package:mobi_app/features/chat/presentation/chat_screen.dart'
@@ -636,16 +630,68 @@ GoRouter createRouter() {
       ),
 
       GoRoute(
+        path: '/admin/biopay/routes',
+        parentNavigatorKey: rootNavigatorKey,
+        redirect: (context, state) => _adminRouteGuard(state),
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: payment_discovery_route.loadLibrary,
+            builder: (context) =>
+                payment_discovery_route.PaymentProviderRoutesScreen(),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/biopay/send',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: payment_discovery_route.loadLibrary,
+            builder: (context) => payment_discovery_route.PaymentComposerScreen(
+              entry: state.uri.queryParameters['entry'],
+              resume: state.uri.queryParameters['resume'] == 'true',
+            ),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/profile/payment-methods',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) => mobiRoutePage(
+          state,
+          DeferredRouteLoader(
+            loadLibrary: payment_discovery_route.loadLibrary,
+            builder: (context) =>
+                payment_discovery_route.PaymentMethodsScreen(),
+          ),
+        ),
+      ),
+      for (final section in ['requests', 'activity', 'recents', 'templates'])
+        GoRoute(
+          path: '/biopay/$section',
+          parentNavigatorKey: rootNavigatorKey,
+          pageBuilder: (context, state) => mobiRoutePage(
+            state,
+            DeferredRouteLoader(
+              loadLibrary: payment_discovery_route.loadLibrary,
+              builder: (context) =>
+                  payment_discovery_route.PaymentLibraryScreen(
+                    section: section,
+                  ),
+            ),
+          ),
+        ),
+      GoRoute(
         path: '/biopay/request-payment',
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (context, state) => mobiRoutePage(
           state,
           DeferredRouteLoader(
-            loadLibrary: biopay_request_payment_route.loadLibrary,
+            loadLibrary: payment_discovery_route.loadLibrary,
             builder: (context) =>
-                biopay_request_payment_route.BioPayRequestPaymentScreen(
-                  onBack: () => safePop(context),
-                ),
+                payment_discovery_route.PaymentRequestEditor(),
           ),
         ),
       ),
@@ -655,11 +701,10 @@ GoRouter createRouter() {
         pageBuilder: (context, state) => mobiRoutePage(
           state,
           DeferredRouteLoader(
-            loadLibrary: biopay_payment_link_route.loadLibrary,
+            loadLibrary: payment_discovery_route.loadLibrary,
             builder: (context) =>
-                biopay_payment_link_route.BioPayPaymentLinkScreen(
+                payment_discovery_route.PaymentLinkArrivalScreen(
                   token: state.pathParameters['token'] ?? '',
-                  onBack: () => safePop(context),
                 ),
           ),
         ),
@@ -670,9 +715,9 @@ GoRouter createRouter() {
         pageBuilder: (context, state) => mobiRoutePage(
           state,
           DeferredRouteLoader(
-            loadLibrary: biopay_qr_route.loadLibrary,
+            loadLibrary: payment_discovery_route.loadLibrary,
             builder: (context) =>
-                biopay_qr_route.BioPayQrScreen(onBack: () => safePop(context)),
+                payment_discovery_route.PaymentRequestEditor(),
           ),
         ),
       ),
@@ -735,11 +780,9 @@ GoRouter createRouter() {
         pageBuilder: (context, state) => mobiRoutePage(
           state,
           DeferredRouteLoader(
-            loadLibrary: biopay_nfc_write_card_route.loadLibrary,
+            loadLibrary: payment_discovery_route.loadLibrary,
             builder: (context) =>
-                biopay_nfc_write_card_route.BioPayNfcWriteCardScreen(
-                  onBack: () => safePop(context),
-                ),
+                payment_discovery_route.PaymentNfcLinkScreen(),
           ),
         ),
       ),

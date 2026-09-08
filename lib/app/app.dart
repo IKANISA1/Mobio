@@ -6,6 +6,7 @@ import 'package:mobi_app/app/app_providers.dart';
 import 'package:mobi_app/app/router/app_router.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_nfc_foreground_listener.dart';
 import 'package:mobi_app/l10n/app_localizations.dart';
+import 'package:mobi_app/l10n/platform_localization_fallbacks.dart';
 import 'package:mobi_app/shared/widgets/connectivity_overlay.dart';
 import 'package:mobi_design_system/theme/app_theme.dart';
 
@@ -53,11 +54,23 @@ class MobiMainApp extends ConsumerWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.mode,
             routerConfig: router,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: const [
+              ...rwPlatformLocalizationDelegates,
+              ...AppLocalizations.localizationsDelegates,
+            ],
             supportedLocales: AppLocalizations.supportedLocales,
             builder: (context, child) {
               return ConnectivityOverlay(
                 child: BioPayNfcForegroundListener(
+                  onPaymentEntry: (value) async {
+                    router.go('/biopay');
+                    await router.push(
+                      Uri(
+                        path: '/biopay/send',
+                        queryParameters: {'entry': value},
+                      ).toString(),
+                    );
+                  },
                   child: child ?? const SizedBox.shrink(),
                 ),
               );

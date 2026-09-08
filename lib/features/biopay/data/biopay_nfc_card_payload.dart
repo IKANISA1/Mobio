@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
+import 'package:mobi_app/features/biopay/domain/payment_entry.dart';
 import 'package:ndef/ndef.dart' as ndef;
 
 const bioPayNfcCardMimeType = 'application/vnd.rw.mobi.biopay.nfc';
@@ -10,7 +11,7 @@ const bioPayNfcAppPackage = 'rw.mobi.app';
 const bioPayNfcAppLinkHost = 'mobio.ikanisa.com';
 const bioPayNfcAppLinkPath = '/biopay/nfc';
 
-enum BioPayNfcReceiverType { momoNumber, momoPayCode }
+enum BioPayNfcReceiverType { momoNumber, momoPayCode, paymentLink }
 
 class BioPayNfcCardPayload {
   const BioPayNfcCardPayload({
@@ -18,6 +19,11 @@ class BioPayNfcCardPayload {
     required this.receiver,
     this.label,
   });
+
+  const BioPayNfcCardPayload.paymentLink(String token)
+    : receiverType = BioPayNfcReceiverType.paymentLink,
+      receiver = token,
+      label = null;
 
   final BioPayNfcReceiverType receiverType;
   final String receiver;
@@ -27,6 +33,7 @@ class BioPayNfcCardPayload {
     return switch (receiverType) {
       BioPayNfcReceiverType.momoNumber => 'momo_number',
       BioPayNfcReceiverType.momoPayCode => 'momo_pay_code',
+      BioPayNfcReceiverType.paymentLink => 'payment_link',
     };
   }
 
@@ -34,6 +41,7 @@ class BioPayNfcCardPayload {
     return switch (receiverType) {
       BioPayNfcReceiverType.momoNumber => 'MoMo Number',
       BioPayNfcReceiverType.momoPayCode => 'MoMo Pay Code',
+      BioPayNfcReceiverType.paymentLink => 'Mobio payment link',
     };
   }
 
@@ -41,10 +49,12 @@ class BioPayNfcCardPayload {
     return switch (receiverType) {
       BioPayNfcReceiverType.momoNumber => '*182*1*1*$receiver#',
       BioPayNfcReceiverType.momoPayCode => '*182*8*1*$receiver#',
+      BioPayNfcReceiverType.paymentLink => '',
     };
   }
 
   String get canonicalReceiver {
+    if (receiverType == BioPayNfcReceiverType.paymentLink) return receiver;
     final digits = receiver.replaceAll(RegExp(r'\D'), '');
     if (receiverType == BioPayNfcReceiverType.momoPayCode) return digits;
     return _displayMomoNumber(digits);
@@ -63,6 +73,7 @@ class BioPayNfcCardPayload {
   String get ussdTelLink => ussdTelUri.toString();
 
   String get deepLink {
+    if (receiverType == BioPayNfcReceiverType.paymentLink) return appLink;
     return Uri(
       scheme: 'mobio',
       host: 'biopay',
@@ -76,17 +87,24 @@ class BioPayNfcCardPayload {
   }
 
   String get appLink {
-    return ussdTelLink;
+    if (receiverType == BioPayNfcReceiverType.paymentLink) {
+      return bioPayShareUri(receiver).toString();
+    }
+    return Uri.https(bioPayNfcAppLinkHost, bioPayNfcAppLinkPath, {
+      'type': receiverTypeWireName,
+      'receiver': receiver,
+    }).toString();
   }
 
   Map<String, dynamic> toJson() {
     return {
       'type': 'mobio_biopay_nfc_card',
-      'version': 1,
+      'version': receiverType == BioPayNfcReceiverType.paymentLink ? 2 : 1,
       'receiver_type': receiverTypeWireName,
       'receiver': receiver,
       'provider_code': 'mtn_rw',
-      'ussd_code': ussdCode,
+      if (receiverType != BioPayNfcReceiverType.paymentLink)
+        'ussd_code': ussdCode,
       if (label != null && label!.trim().isNotEmpty) 'label': label!.trim(),
     };
   }
@@ -102,6 +120,10 @@ class BioPayNfcCardPayload {
     );
     final receiver = raw['receiver']?.toString().trim() ?? '';
     if (receiverType == null || receiver.isEmpty) return null;
+    if (receiverType == BioPayNfcReceiverType.paymentLink &&
+        parsePaymentEntry(receiver)?.token != receiver) {
+      return null;
+    }
 
     return BioPayNfcCardPayload(
       receiverType: receiverType,
@@ -133,6 +155,10 @@ class BioPayNfcCardPayload {
   }
 
   static BioPayNfcCardPayload? fromUriValue(Uri uri) {
+    final entry = parsePaymentEntry(uri.toString());
+    if (entry?.token != null) {
+      return BioPayNfcCardPayload.paymentLink(entry!.token!);
+    }
     if (uri.scheme == 'mobio' && uri.host == 'biopay' && uri.path == '/nfc') {
       final receiverType = _receiverTypeFromWireName(
         uri.queryParameters['type'],
@@ -146,7 +172,10 @@ class BioPayNfcCardPayload {
       );
     }
 
-    if ((uri.scheme == 'https' || uri.scheme == 'http') &&
+    if (uri.scheme == 'https' &&
+        uri.userInfo.isEmpty &&
+        !uri.hasPort &&
+        !uri.hasFragment &&
         uri.host == bioPayNfcAppLinkHost &&
         uri.path == bioPayNfcAppLinkPath) {
       final receiverType = _receiverTypeFromWireName(
@@ -162,7 +191,11 @@ class BioPayNfcCardPayload {
     }
 
     if (uri.scheme == 'tel') {
-      return fromUssdCode(Uri.decodeComponent(uri.toString().substring(4)));
+      try {
+        return fromUssdCode(Uri.decodeComponent(uri.toString().substring(4)));
+      } on ArgumentError {
+        return null;
+      }
     }
 
     return null;
@@ -214,7 +247,7 @@ List<ndef.NDEFRecord> buildBioPayNfcCardRecords(
   bool includeAndroidAppRecord = true,
 }) {
   return [
-    ndef.UriRecord.fromString(payload.ussdTelLink),
+    ndef.UriRecord.fromString(payload.appLink),
     if (includeStructuredPayload)
       ndef.MimeRecord(
         decodedType: bioPayNfcCardMimeType,
@@ -262,8 +295,14 @@ BioPayNfcCardPayload? bioPayNfcCardPayloadFromRecords(
   Iterable<ndef.NDEFRecord> records,
 ) {
   for (final record in records) {
-    final payload = _payloadFromRecord(record);
-    if (payload != null) return payload;
+    try {
+      final payload = _payloadFromRecord(record);
+      if (payload != null) return payload;
+    } on FormatException {
+      continue;
+    } on ArgumentError {
+      continue;
+    }
   }
   return null;
 }
@@ -299,6 +338,7 @@ BioPayNfcReceiverType? _receiverTypeFromWireName(String? raw) {
   return switch (raw) {
     'momo_number' => BioPayNfcReceiverType.momoNumber,
     'momo_pay_code' => BioPayNfcReceiverType.momoPayCode,
+    'payment_link' => BioPayNfcReceiverType.paymentLink,
     _ => null,
   };
 }

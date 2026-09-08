@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_admin.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_flow_shared.dart';
+import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
@@ -71,6 +73,44 @@ class _BioPayAdminConsoleScreenState
   }
 
   Future<void> _confirmExternal(BioPayUssdPaymentRequest request) async {
+    final l = paymentCopy(context);
+    final reference = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l.bpRecordEvidence),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(l.bpOperatorNotice),
+              TextField(
+                controller: reference,
+                maxLength: 120,
+                decoration: InputDecoration(labelText: l.bpEvidenceReference),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l.bpCancel),
+          ),
+          TextButton(
+            onPressed: () {
+              if (reference.text.trim().length >= 6) {
+                Navigator.pop(context, true);
+              }
+            },
+            child: Text(l.bpRecordEvidence),
+          ),
+        ],
+      ),
+    );
+    final value = reference.text.trim();
+    reference.dispose();
+    if (!mounted || confirmed != true) return;
     setState(() {
       _confirmingId = request.id;
       _error = null;
@@ -80,7 +120,7 @@ class _BioPayAdminConsoleScreenState
           .read(biopayAdminServiceProvider)
           .confirmRequestExternally(
             request: request,
-            confirmationSource: 'admin_external_reference',
+            confirmationSource: 'operator_review:$value',
           );
       if (!mounted) return;
       final snapshot = _snapshot;
@@ -113,6 +153,11 @@ class _BioPayAdminConsoleScreenState
       title: 'BioPay Ops',
       subtitle: 'AWS face identity and external USSD handoff.',
       actions: [
+        AdminActionChip(
+          label: paymentCopy(context).bpRoutes,
+          icon: LucideIcons.gitBranch,
+          onTap: () => context.push('/admin/biopay/routes'),
+        ),
         AdminActionChip(
           label: 'Payees',
           icon: LucideIcons.users,
@@ -239,7 +284,11 @@ class _PaymentRequestItem extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           BioPayDetailRow(
             label: 'Status',
-            value: requestStatusLabel(request.status),
+            value:
+                request.confirmationSource?.startsWith('operator_review:') ==
+                    true
+                ? paymentCopy(context).bpOperatorReviewed
+                : requestStatusLabel(request.status),
           ),
           BioPayDetailRow(
             label: 'Confirmation',
@@ -260,7 +309,7 @@ class _PaymentRequestItem extends StatelessWidget {
                         ),
                       )
                     : const Icon(LucideIcons.checkCircle),
-                label: const Text('Confirm external'),
+                label: Text(paymentCopy(context).bpRecordEvidence),
               ),
             ),
           ],

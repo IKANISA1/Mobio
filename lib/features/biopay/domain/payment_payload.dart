@@ -1,9 +1,8 @@
-import 'dart:convert';
-
 import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
+import 'package:mobi_app/features/biopay/domain/payment_entry.dart';
 
 String buildBioPayQrPayload(BioPayUssdPaymentRequest request) {
-  return bioPayUssdTelPayload(request.dialerCode);
+  return bioPayShareUri(request.token).toString();
 }
 
 String bioPayUssdTelPayload(String ussdCode) {
@@ -24,27 +23,6 @@ String bioPayUssdCodeFromPayload(String? rawValue) {
 }
 
 String bioPayTokenFromPayload(String? rawValue) {
-  final raw = rawValue?.trim();
-  if (raw == null || raw.isEmpty) return '';
-  if (raw.startsWith('*182')) return '';
-
-  try {
-    final decoded = jsonDecode(raw);
-    if (decoded is Map) {
-      for (final key in const ['token', 'biopay_token', 'payment_token']) {
-        final value = decoded[key]?.toString().trim();
-        if (value != null && value.isNotEmpty) return value;
-      }
-      return '';
-    }
-  } on FormatException {
-    // Older QR/NFC payloads may be a bare token.
-  }
-
-  final uri = Uri.tryParse(raw);
-  final token = uri?.queryParameters['token']?.trim();
-  if (token != null && token.isNotEmpty) return token;
-  if (uri != null && uri.hasScheme) return '';
-
-  return raw;
+  if (rawValue == null) return '';
+  return parsePaymentEntry(rawValue)?.token ?? '';
 }

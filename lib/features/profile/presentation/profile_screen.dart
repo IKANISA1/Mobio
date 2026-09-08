@@ -4,11 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/utils/mobio_member_id.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
+import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
 import 'package:mobi_app/features/profile/application/profile_services.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
@@ -295,6 +297,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             onTap: widget.onEditProfile,
                             icon: LucideIcons.user,
                             title: 'Edit Profile',
+                          ),
+                          Divider(
+                            height: 1,
+                            thickness: 1,
+                            indent: 72,
+                            endIndent: 20,
+                            color: cs.onSurface.withValues(
+                              alpha: ext.cardBorderAlpha,
+                            ),
+                          ),
+                          _ProfileActionRow(
+                            onTap: () =>
+                                context.push('/profile/payment-methods'),
+                            icon: LucideIcons.creditCard,
+                            title: paymentCopy(context).bpMethods,
                           ),
                           Divider(
                             height: 1,

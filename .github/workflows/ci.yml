@@ -94,6 +94,12 @@ jobs:
         with:
           version: 2.84.2
 
+      - name: Check BioPay discovery authorization in isolated PostgreSQL
+        run: ./scripts/qa/test_biopay_discovery_db.sh
+
+      - name: Check public payment-link routing
+        run: deno test --allow-read test/web/payment_link_worker_test.ts
+
       - name: Verify backend contract
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

@@ -30,6 +30,8 @@ test -f build/web/manifest.json
 
 mkdir -p "$site_dir"
 cp -R build/web/. "$site_dir/"
+cp "$site_dir/index.html" "$site_dir/__app_shell"
+cp "$site_dir/manifest.json" "$site_dir/app-manifest.json"
 mv "$site_dir/index.html" "$site_dir/__admin_shell"
 mv "$site_dir/manifest.json" "$site_dir/admin-manifest.json"
 cp -R landing/. "$site_dir/"
@@ -53,12 +55,14 @@ async function serveAsset(env, request, pathname) {
   return env.ASSETS.fetch(new Request(url, request));
 }
 
-async function serveAdminShell(env, request) {
-  const response = await serveAsset(env, request, "/__admin_shell");
+async function serveFlutterShell(env, request, shellPath) {
+  const response = await serveAsset(env, request, shellPath);
   const headers = new Headers(response.headers);
+  headers.set("Referrer-Policy", "no-referrer");
+  headers.set("Permissions-Policy", "camera=(self), geolocation=(), microphone=(), payment=()");
   headers.set("content-type", "text/html; charset=utf-8");
   return new Response(response.body, {
-    status: 200,
+    status: response.status,
     headers,
   });
 }
@@ -72,7 +76,11 @@ export default {
     }
 
     if (isAdminPath(url.pathname)) {
-      return serveAdminShell(env, request);
+      return serveFlutterShell(env, request, "/__admin_shell");
+    }
+    if (["/login", "/biopay", "/profile", "/home", "/bookings", "/nearby"]
+        .some(path => url.pathname === path || url.pathname.startsWith(`${path}/`))) {
+      return serveFlutterShell(env, request, "/__app_shell");
     }
 
     return env.ASSETS.fetch(request);
@@ -97,6 +105,10 @@ cat > "$site_dir/_headers" <<'EOF'
 /.well-known/apple-app-site-association
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=300
+
+/__app_shell
+  Cache-Control: no-store
+  Referrer-Policy: no-referrer
 
 /__admin_shell
   Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: blob: https:; font-src 'self' data:; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https: wss:; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' blob: data:; upgrade-insecure-requests
@@ -188,6 +200,17 @@ patch_index(
     description="Mobio admin progressive web app.",
     redirect_root_to=None,
 )
+
+patch_manifest(
+    site_dir / "app-manifest.json",
+    name="Mobio",
+    short_name="Mobio",
+    start_url="/biopay",
+    description="Mobio payment requests and recipient discovery.",
+)
+app_html = (site_dir / "__app_shell").read_text()
+app_html = app_html.replace('<link rel="manifest" href="manifest.json">', '<link rel="manifest" href="/app-manifest.json">')
+(site_dir / "__app_shell").write_text(app_html)
 
 admin_html = (site_dir / "__admin_shell").read_text()
 admin_html = admin_html.replace(

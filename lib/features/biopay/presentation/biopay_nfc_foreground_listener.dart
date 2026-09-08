@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobi_app/core/config/supabase_config.dart';
-import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/data/biopay_device_nfc_service.dart';
 import 'package:mobi_app/features/biopay/data/biopay_nfc_card_payload.dart';
 import 'package:mobi_app/features/biopay/domain/payment_payload.dart';
@@ -27,9 +25,14 @@ final bioPayNfcForegroundSuspendedProvider =
     );
 
 class BioPayNfcForegroundListener extends ConsumerStatefulWidget {
-  const BioPayNfcForegroundListener({super.key, required this.child});
+  const BioPayNfcForegroundListener({
+    super.key,
+    required this.child,
+    this.onPaymentEntry,
+  });
 
   final Widget child;
+  final Future<void> Function(String)? onPaymentEntry;
 
   @override
   ConsumerState<BioPayNfcForegroundListener> createState() =>
@@ -50,6 +53,7 @@ class _BioPayNfcForegroundListenerState
   bool _requestResolving = false;
   DateTime? _lastLaunchAt;
   Uri? _lastHandledUri;
+  DateTime? _lastHandledAt;
 
   @override
   void initState() {
@@ -189,9 +193,16 @@ class _BioPayNfcForegroundListenerState
   }
 
   Future<void> _handleIncomingUri(Uri uri) async {
-    if (_disposed || uri == _lastHandledUri) return;
+    if (_disposed ||
+        (uri == _lastHandledUri &&
+            _lastHandledAt != null &&
+            DateTime.now().difference(_lastHandledAt!) <
+                const Duration(seconds: 2))) {
+      return;
+    }
     final payload = BioPayNfcCardPayload.fromUriValue(uri);
     _lastHandledUri = uri;
+    _lastHandledAt = DateTime.now();
     if (payload != null) {
       await _launchPayload(payload);
       return;
@@ -271,12 +282,12 @@ class _BioPayNfcForegroundListenerState
     messenger?.hideCurrentSnackBar();
     messenger?.showSnackBar(
       const SnackBar(
-        content: Text('NFC card detected. Opening USSD.'),
+        content: Text('NFC card detected. Review receiving details.'),
         duration: Duration(seconds: 2),
       ),
     );
 
-    await ref.read(biopayUssdServiceProvider).launchUssdCode(payload.ussdCode);
+    await widget.onPaymentEntry?.call(payload.appLink);
   }
 
   Future<void> _launchRequestToken(String token) async {
@@ -290,24 +301,7 @@ class _BioPayNfcForegroundListenerState
     _requestResolving = true;
 
     try {
-      final service = ref.read(biopayUssdServiceProvider);
-      final request = SupabaseConfig.isConfigured
-          ? await service.resolveRequest(token)
-          : service.resolvePreviewToken(token);
-      final updated = await service.openUssdDialer(request);
-      if (!mounted) return;
-      final messenger = ScaffoldMessenger.maybeOf(context);
-      messenger?.hideCurrentSnackBar();
-      messenger?.showSnackBar(
-        SnackBar(
-          content: Text(
-            updated == null
-                ? 'USSD dialer unavailable.'
-                : 'NFC payment request detected. Opening USSD.',
-          ),
-          duration: const Duration(seconds: 2),
-        ),
-      );
+      await widget.onPaymentEntry?.call(token);
     } on Object {
       if (!mounted) return;
       final messenger = ScaffoldMessenger.maybeOf(context);

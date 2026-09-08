@@ -1,139 +1,126 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
-import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
-import 'package:mobi_app/features/biopay/domain/payment_payload.dart';
+import 'package:mobi_app/features/biopay/domain/payment_entry.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_flow_shared.dart';
+import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 class BioPayScanScreen extends ConsumerStatefulWidget {
-  const BioPayScanScreen({super.key, required this.onBack});
-
+  const BioPayScanScreen({super.key, required this.onBack, this.onEntry});
   final VoidCallback onBack;
-
+  final Future<void> Function(String)? onEntry;
   @override
   ConsumerState<BioPayScanScreen> createState() => _BioPayScanScreenState();
 }
 
 class _BioPayScanScreenState extends ConsumerState<BioPayScanScreen> {
-  BioPayUssdPaymentRequest? _request;
-  bool _resolving = false;
-  bool _externalActionBusy = false;
-  bool _handledScan = false;
-  int _scanRevision = 0;
-  String? _error;
-
-  void _retryScan() {
-    if (_resolving || _request != null) return;
+  bool _busy = false, _error = false;
+  int _revision = 0;
+  Future<void> _resolve(String raw) async {
+    if (_busy) return;
+    if (parsePaymentEntry(raw) == null) {
+      setState(() => _error = true);
+      return;
+    }
     setState(() {
-      _handledScan = false;
-      _error = null;
-      _scanRevision++;
+      _busy = true;
+      _error = false;
     });
-  }
-
-  Future<void> _resolve(String token) async {
-    if (_resolving || _handledScan || _request != null) return;
-    setState(() {
-      _resolving = true;
-      _error = null;
-    });
-    var isDirectUssd = false;
     try {
-      final ussdCode = bioPayUssdCodeFromPayload(token);
-      isDirectUssd = ussdCode.isNotEmpty;
-      if (isDirectUssd) {
-        final opened = await ref
-            .read(biopayUssdServiceProvider)
-            .launchUssdCode(ussdCode);
-        if (!mounted) return;
-        setState(() {
-          // A successful handoff stays latched until an explicit new scan.
-          // Failed/invalid scans remain eligible for the next detection.
-          _handledScan = opened;
-          if (!opened) _error = 'USSD dialer unavailable.';
-        });
-        return;
+      if (widget.onEntry != null) {
+        await widget.onEntry!(raw);
+      } else {
+        await context.push(
+          Uri(path: '/biopay/send', queryParameters: {'entry': raw}).toString(),
+        );
       }
-
-      final resolvedToken = bioPayTokenFromPayload(token);
-      if (resolvedToken.isEmpty) {
-        setState(() => _error = 'Not a Mobio QR code. Try another code.');
-        return;
-      }
-      final service = ref.read(biopayUssdServiceProvider);
-      final request = SupabaseConfig.isConfigured
-          ? await service.resolveRequest(resolvedToken)
-          : service.resolvePreviewToken(resolvedToken);
-      if (!mounted) return;
-      setState(() {
-        _request = request;
-        _handledScan = true;
-      });
     } on Object {
-      if (!mounted) return;
-      setState(
-        () => _error = isDirectUssd
-            ? 'USSD dialer unavailable.'
-            : 'QR request unavailable.',
-      );
+      if (mounted) setState(() => _error = true);
     } finally {
-      if (mounted) setState(() => _resolving = false);
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _revision++;
+        });
+      }
     }
   }
 
-  Future<void> _runExternalPaymentStep() async {
-    final request = _request;
-    if (request == null) return;
-    setState(() {
-      _externalActionBusy = true;
-      _error = null;
-    });
+  Future<void> _paste() async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    if (mounted) await _resolve(data?.text ?? '');
+  }
+
+  Future<void> _gallery() async {
+    if (_busy) return;
     try {
-      final service = ref.read(biopayUssdServiceProvider);
-      final updated = switch (request.status) {
-        BioPayRequestStatus.readyToDial => await service.openUssdDialer(
-          request,
-        ),
-        BioPayRequestStatus.dialerOpened => await service.markUserPaid(request),
-        _ => request,
-      };
-      if (!mounted) return;
-      if (updated == null) {
-        setState(() => _error = 'USSD dialer unavailable.');
-        return;
+      final path = await ref
+          .read(paymentDiscoveryServiceProvider)
+          .pickQrImage();
+      if (!mounted || path == null) return;
+      final scanner = MobileScannerController(autoStart: false);
+      try {
+        final capture = await scanner.analyzeImage(path);
+        final values =
+            capture?.barcodes
+                .map((b) => b.rawValue)
+                .whereType<String>()
+                .where((v) => parsePaymentEntry(v) != null)
+                .toSet()
+                .toList() ??
+            const <String>[];
+        if (values.length != 1) {
+          if (mounted) setState(() => _error = true);
+          return;
+        }
+        if (mounted) await _resolve(values.single);
+      } finally {
+        await scanner.dispose();
       }
-      setState(() => _request = updated);
-    } on Object catch (_) {
-      if (!mounted) return;
-      setState(() => _error = 'External payment status unavailable.');
-    } finally {
-      if (mounted) setState(() => _externalActionBusy = false);
+    } on Object {
+      if (mounted) setState(() => _error = true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BioPayFlowScreen(
-      title: 'Scan',
-      primaryLabel: _request == null ? '' : externalActionLabel(_request!),
-      isPrimaryLoading: _resolving || _externalActionBusy,
+    final l = paymentCopy(context);
+    return PaymentTaskScaffold(
+      title: l.bpScan,
       onBack: widget.onBack,
-      onPrimary: _request == null
-          ? null
-          : canRunExternalAction(_request)
-          ? _runExternalPaymentStep
-          : null,
-      child: _request == null
-          ? BioPayQrScannerSurface(
-              onDetect: _resolve,
-              error: _error,
-              isResolving: _resolving,
-              handoffComplete: _handledScan,
-              scanRevision: _scanRevision,
-              onRetry: _retryScan,
-            )
-          : BioPayResolvedPaymentPreview(request: _request!),
+      busy: _busy,
+      children: [
+        BioPayQrScannerSurface(
+          onDetect: (v) => unawaited(_resolve(v)),
+          isResolving: _busy,
+          scanRevision: _revision,
+          error: _error ? l.bpInvalidQr : null,
+          onRetry: () => setState(() {
+            _error = false;
+            _revision++;
+          }),
+        ),
+        PaymentAction(
+          label: l.bpManual,
+          secondary: true,
+          onPressed: _busy ? null : () => context.push('/biopay/send'),
+        ),
+        PaymentAction(
+          label: l.bpPaste,
+          secondary: true,
+          onPressed: _busy ? null : _paste,
+        ),
+        PaymentAction(
+          label: l.bpGallery,
+          secondary: true,
+          onPressed: _busy ? null : _gallery,
+        ),
+      ],
     );
   }
 }

@@ -1,6 +1,5 @@
 package rw.mobi.app
 
-import android.Manifest
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -19,6 +18,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
+import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.util.Log
 import com.android.installreferrer.api.InstallReferrerClient
@@ -39,8 +39,8 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
     private var nativeNfcReaderChannel: MethodChannel? = null
     private var nativeReaderRequested = false
     private var pendingNativeNfcPayload: Map<String, String>? = null
-    private var pendingUssdUri: Uri? = null
-    private var pendingUssdResult: MethodChannel.Result? = null
+    private var pendingContactResult: MethodChannel.Result? = null
+    private var pendingImageResult: MethodChannel.Result? = null
     @Volatile private var nativeNfcWriterRequest: NativeNfcWriterRequest? = null
     @Volatile private var nativeNfcWriterResult: MethodChannel.Result? = null
     @Volatile private var nativeNfcWriterProcessing = false
@@ -48,6 +48,37 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger,
+            "rw.mobi.app/biopay_discovery").setMethodCallHandler { call, result ->
+            if (pendingContactResult != null || pendingImageResult != null) {
+                result.error("PICKER_BUSY", "Finish the current selection.", null)
+                return@setMethodCallHandler
+            }
+            try {
+                when (call.method) {
+                    "pickPhone" -> {
+                        pendingContactResult = result
+                        val intent = Intent(Intent.ACTION_PICK).apply {
+                            type = ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE
+                        }
+                        startActivityForResult(intent, 4202)
+                    }
+                    "pickQrImage" -> {
+                        pendingImageResult = result
+                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                            type = "image/*"
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                        }
+                        startActivityForResult(intent, 4203)
+                    }
+                    else -> result.notImplemented()
+                }
+            } catch (_: Exception) {
+                pendingContactResult = null
+                pendingImageResult = null
+                result.error("PICKER_UNAVAILABLE", "Enter receiving details to continue.", null)
+            }
+        }
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             "rw.mobi.app/install_referrer",
@@ -283,71 +314,73 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
     }
 
     private fun startNativeUssdDialer(uri: Uri, result: MethodChannel.Result) {
-        if (checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-            pendingUssdUri = uri
-            pendingUssdResult = result
-            requestPermissions(arrayOf(Manifest.permission.CALL_PHONE), REQUEST_CALL_PHONE_FOR_USSD)
+        // User presses Call in their dialer. Mobio never requests CALL_PHONE.
+        val code = uri.schemeSpecificPart
+        if (!Regex("^\\*[0-9*]+#$").matches(code)) {
+            result.error("INVALID_ARGUMENTS", "Reviewed USSD instructions required.", null)
             return
         }
-
-        startNativeUssdCall(uri, result)
-    }
-
-    private fun startNativeUssdCall(uri: Uri, result: MethodChannel.Result) {
-        val intent = Intent(Intent.ACTION_CALL, uri)
         try {
-            if (intent.resolveActivity(packageManager) == null) {
-                startNativeUssdDialerFallback(uri, result, "call_unavailable")
-                return
-            }
-            startActivity(intent)
-            result.success(mapOf("launched" to true, "mode" to "action_call"))
-        } catch (error: SecurityException) {
-            Log.w(TAG, "Native USSD ACTION_CALL permission denied", error)
-            startNativeUssdDialerFallback(uri, result, "call_permission_denied")
-        } catch (error: Exception) {
-            Log.w(TAG, "Native USSD ACTION_CALL failed", error)
-            startNativeUssdDialerFallback(uri, result, "call_failed")
-        }
-    }
-
-    private fun startNativeUssdDialerFallback(
-        uri: Uri,
-        result: MethodChannel.Result,
-        reason: String,
-    ) {
-        val intent = Intent(Intent.ACTION_DIAL, uri)
-        try {
+            val intent = Intent(Intent.ACTION_DIAL, uri)
             if (intent.resolveActivity(packageManager) == null) {
                 result.success(mapOf("launched" to false, "mode" to "unavailable"))
                 return
             }
             startActivity(intent)
-            result.success(mapOf("launched" to true, "mode" to "action_dial", "reason" to reason))
-        } catch (error: Exception) {
-            Log.w(TAG, "Native USSD ACTION_DIAL failed", error)
-            result.success(mapOf("launched" to false, "mode" to "failed"))
+            result.success(mapOf("launched" to true, "mode" to "action_dial"))
+        } catch (_: Exception) {
+            result.success(mapOf("launched" to false, "mode" to "unavailable"))
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray,
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode != REQUEST_CALL_PHONE_FOR_USSD) return
-
-        val uri = pendingUssdUri
-        val result = pendingUssdResult
-        pendingUssdUri = null
-        pendingUssdResult = null
-        if (uri == null || result == null) return
-
-        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            startNativeUssdCall(uri, result)
-        } else {
-            startNativeUssdDialerFallback(uri, result, "call_permission_denied")
+    @Deprecated("Android activity result bridge")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 4202) {
+            val result = pendingContactResult ?: return
+            pendingContactResult = null
+            val uri = data?.data
+            if (resultCode != RESULT_OK || uri == null) { result.success(null); return }
+            try {
+                // Query only the selected phone row under its temporary URI grant.
+                contentResolver.query(uri, arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER,
+                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME), null, null, null)?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        result.success(mapOf("phone" to cursor.getString(0), "label" to cursor.getString(1)))
+                    } else result.success(null)
+                } ?: result.success(null)
+            } catch (_: Exception) {
+                result.error("CONTACT_UNAVAILABLE", "Enter a phone number to continue.", null)
+            }
+        } else if (requestCode == 4203) {
+            val result = pendingImageResult ?: return
+            pendingImageResult = null
+            val uri = data?.data
+            if (resultCode != RESULT_OK || uri == null) { result.success(null); return }
+            try {
+                if (contentResolver.getType(uri)?.startsWith("image/") != true) {
+                    result.error("IMAGE_REQUIRED", "Choose a QR image.", null); return
+                }
+                val folder = File(cacheDir, "biopay-qr-import").apply { mkdirs() }
+                folder.listFiles()?.forEach { it.delete() }
+                val file = File.createTempFile("selected-", ".image", folder)
+                contentResolver.openInputStream(uri)?.use { input ->
+                    file.outputStream().use { output ->
+                        val buffer = ByteArray(8192)
+                        var total = 0
+                        while (true) {
+                            val read = input.read(buffer)
+                            if (read < 0) break
+                            total += read
+                            require(total <= 10 * 1024 * 1024)
+                            output.write(buffer, 0, read)
+                        }
+                    }
+                } ?: throw IOException("Image unavailable")
+                result.success(file.absolutePath)
+            } catch (_: Exception) {
+                result.error("IMAGE_UNAVAILABLE", "Choose a QR image smaller than 10 MB.", null)
+            }
         }
     }
 
@@ -991,7 +1024,6 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
 
     companion object {
         private const val TAG = "MobiMainActivity"
-        private const val REQUEST_CALL_PHONE_FOR_USSD = 4201
         private const val BIOPAY_NFC_MIME_TYPE = "application/vnd.rw.mobi.biopay.nfc"
         private const val NFC_SELF_LAUNCH_SUPPRESSION_MS = 10_000L
         private const val NFC_POST_WRITE_READER_SETTLE_MS = 8_000L

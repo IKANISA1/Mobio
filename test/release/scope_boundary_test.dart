@@ -536,7 +536,7 @@ void main() {
       expect(biopayScreen, contains('Payee Directory'));
       expect(biopayScreen, contains('System Status'));
       expect(biopayScreen, contains('External USSD only'));
-      expect(biopayScreen, contains('admin_external_reference'));
+      expect(biopayScreen, contains('operator_review:'));
       expect(biopayScreen, contains('QrImageView'));
       expect(biopayScreen, contains('bioPayBlue'));
       expect(
@@ -556,11 +556,18 @@ void main() {
       expect(biopayScreen, contains('writeNDEFRecords'));
       expect(biopayScreen, contains('CameraController'));
       expect(biopayScreen, contains('CameraPreview'));
-      expect(biopayScreen, contains('resolveRequest'));
+      // September discovery review replaces scanner-side resolution/dialing.
+      expect(biopayScreen, contains('onPaymentEntry'));
+      expect(
+        File(
+          'lib/features/biopay/application/payment_composer_controller.dart',
+        ).readAsStringSync(),
+        contains("gateway.call('prepare'"),
+      );
       expect(biopayScreen, contains('I finished USSD'));
       expect(biopayScreen, contains('Waiting confirmation'));
       expect(biopayScreen, contains("'Confirmation', value: 'External'"));
-      expect(biopayScreen, contains('Confirm external'));
+      expect(biopayScreen, contains('bpRecordEvidence'));
       expect(biopayScreen, isNot(contains('BioPayActivityScreen')));
       expect(biopayScreen, isNot(contains('listPaymentRequests')));
       expect(biopayScreen, isNot(contains('confirmExternally')));
@@ -586,7 +593,7 @@ void main() {
           contains("primaryLabel: _request == null\n          ? 'Scanning'"),
         ),
       );
-      expect(biopayScreen, contains('request.dialerCode'));
+      expect(biopayScreen, contains('bioPayShareUri(request.token)'));
       expect(biopayScreen, isNot(contains('request.ussdCode')));
       expect(
         biopayScreen,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_style.dart';
+import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
 import 'package:mobi_app/shared/widgets/mobi_action_row.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_visual_theme.dart';
@@ -97,6 +99,11 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
                     ),
                   ),
                   const SizedBox(height: 40),
+                  PaymentAction(
+                    label: paymentCopy(context).bpPay,
+                    onPressed: () => context.push('/biopay/send'),
+                  ),
+                  const SizedBox(height: 12),
                   MobiActionRow(
                     items: [
                       MobiActionItem(
@@ -160,6 +167,26 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   _BioPayRequestPaymentButton(onTap: widget.onRequestPayment),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      TextButton(
+                        onPressed: () =>
+                            context.push('/biopay/send?resume=true'),
+                        child: Text(paymentCopy(context).bpResume),
+                      ),
+                      TextButton(
+                        onPressed: () => context.push('/biopay/requests'),
+                        child: Text(paymentCopy(context).bpRequests),
+                      ),
+                      TextButton(
+                        onPressed: () => context.push('/biopay/activity'),
+                        child: Text(paymentCopy(context).bpActivity),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: AppSpacing.md),
                   _BioPayInsuranceBanner(
                     isBusy: _isOpeningInsurance,

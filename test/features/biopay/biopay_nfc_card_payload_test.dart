@@ -20,8 +20,8 @@ void main() {
       expect(payload.ussdTelLink, 'tel:*182*1*1*0788123456%23');
       expect(payload.deepLink, contains('type=momo_number'));
       expect(payload.deepLink, contains('receiver=0788123456'));
-      expect(payload.appLink, 'tel:*182*1*1*0788123456%23');
-      expect(payload.appLink, isNot(contains('mobio.ikanisa.com')));
+      expect(payload.appLink, 'https://mobio.ikanisa.com/biopay/nfc?type=momo_number&receiver=0788123456');
+      expect(payload.appLink, contains('mobio.ikanisa.com'));
       expect(payload.toJson()['provider_code'], 'mtn_rw');
       expect(payload.toJson()['ussd_code'], '*182*1*1*0788123456#');
     });
@@ -101,7 +101,7 @@ void main() {
       expect(readBack.semanticallyMatches(expected), isTrue);
     });
 
-    test('writes tel USSD URI, MIME JSON fallback, and AAR', () {
+    test('writes a review link, MIME compatibility data, and AAR', () {
       const payload = BioPayNfcCardPayload(
         receiverType: BioPayNfcReceiverType.momoNumber,
         receiver: '0788123456',
@@ -113,11 +113,11 @@ void main() {
       expect(records[0], isA<ndef.UriRecord>());
       expect(
         (records[0] as ndef.UriRecord).uriString,
-        'tel:*182*1*1*0788123456%23',
+        payload.appLink,
       );
       expect(
         (records[0] as ndef.UriRecord).uriString,
-        isNot(contains('mobio.ikanisa.com')),
+        contains('mobio.ikanisa.com'),
       );
       expect(records[1], isA<ndef.MimeRecord>());
       expect(records[2], isA<ndef.AARRecord>());
@@ -125,6 +125,18 @@ void main() {
         bioPayNfcCardPayloadFromRecords(records)?.ussdCode,
         payload.ussdCode,
       );
+    });
+
+    test('scoped links roundtrip with no receiving data or executable code', () {
+      const token = '0123456789abcdef0123456789abcdef0123456789abcdef';
+      const payload = BioPayNfcCardPayload.paymentLink(token);
+      final records = buildBioPayNfcCardRecords(payload);
+      final restored = bioPayNfcCardPayloadFromRecords(records)!;
+      expect(restored.semanticallyMatches(payload), isTrue);
+      expect(restored.receiverType, BioPayNfcReceiverType.paymentLink);
+      expect(restored.ussdCode, isEmpty);
+      expect(restored.toJson().containsKey('ussd_code'), isFalse);
+      expect(payload.appLink, 'https://mobio.ikanisa.com/biopay/pay/$token');
     });
 
     test('selects a compact NDEF record set for small NFC card capacity', () {

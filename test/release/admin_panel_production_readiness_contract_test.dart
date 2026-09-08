@@ -31,9 +31,7 @@ void main() {
       );
       expect(
         preparePwa,
-        contains(
-          'const response = await serveAsset(env, request, "/__admin_shell");',
-        ),
+        contains('const response = await serveAsset(env, request, shellPath);'),
       );
       expect(
         preparePwa,

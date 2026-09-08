@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -36,9 +35,7 @@ class _BioPayPaymentLinkScreenState
   bool _autoDialAttempted = false;
   String? _error;
 
-  bool get _shouldAutoLaunchDialer {
-    return defaultTargetPlatform == TargetPlatform.android;
-  }
+  bool get _shouldAutoLaunchDialer => false;
 
   @override
   void initState() {

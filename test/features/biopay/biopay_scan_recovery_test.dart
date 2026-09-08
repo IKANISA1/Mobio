@@ -33,7 +33,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.darkTheme,
-          home: BioPayScanScreen(onBack: () {}),
+          home: BioPayScanScreen(onBack: () {}, onEntry: service.accept),
         ),
       ),
     );
@@ -51,118 +51,60 @@ void main() {
     await open(tester, service);
     detect(tester, 'https://example.invalid/unrelated');
     await tester.pumpAndSettle();
-    detect(tester, 'valid-review-token');
+    detect(tester, 'valid-review-token-0000000000');
     await tester.pumpAndSettle();
-    expect(
-      service.calls,
-      1,
-      reason: 'An unrelated QR must not disable all subsequent detection.',
-    );
-    expect(find.byType(BioPayResolvedPaymentPreview), findsOneWidget);
+    expect(service.calls, 1);
+    expect(service.dialerCalls, 0);
+    await tester.scrollUntilVisible(find.text('Enter receiving details'), 100, scrollable: find.byType(Scrollable).first);
+    expect(find.text('Enter receiving details'), findsOneWidget);
   });
 
-  testWidgets('another QR can resolve after a lookup failure', (tester) async {
+  testWidgets('another QR can resolve after a task-opening failure', (tester) async {
     final service = _ReviewService()..failFirst = true;
     await open(tester, service);
-    detect(tester, 'unavailable-review-token');
+    detect(tester, 'unavailable-review-token-0000');
     await tester.pumpAndSettle();
-    expect(find.text('QR request unavailable.'), findsOneWidget);
-    detect(tester, 'valid-review-token');
-    await tester.pumpAndSettle();
-    expect(
-      service.calls,
-      2,
-      reason: 'A failed request must not permanently lock scan handling.',
-    );
-    expect(find.byType(BioPayResolvedPaymentPreview), findsOneWidget);
-  });
-  testWidgets('scan again restarts detection and retries the same token', (
-    tester,
-  ) async {
-    final camera = _CameraChannel()..install();
-    final service = _ReviewService()..failFirst = true;
-    await open(tester, service);
-    expect(
-      tester
-          .widget<MobileScanner>(find.byType(MobileScanner))
-          .controller!
-          .value
-          .isRunning,
-      isTrue,
-    );
-    detect(tester, 'same-review-token');
-    await tester.pumpAndSettle();
-    expect(find.text('QR request unavailable.'), findsOneWidget);
-    final startsBefore = camera.starts;
-    await tester.ensureVisible(find.text('Scan again'));
-    await tester.tap(find.text('Scan again'));
-    await tester.pumpAndSettle();
-    expect(camera.starts, greaterThan(startsBefore));
-    expect(
-      tester
-          .widget<MobileScanner>(find.byType(MobileScanner))
-          .controller!
-          .value
-          .isRunning,
-      isTrue,
-    );
-    expect(find.text('QR request unavailable.'), findsNothing);
-    detect(tester, 'same-review-token');
+    expect(find.text('This is not a supported Mobio payment code.'), findsOneWidget);
+    detect(tester, 'valid-review-token-0000000000');
     await tester.pumpAndSettle();
     expect(service.calls, 2);
-    expect(find.byType(BioPayResolvedPaymentPreview), findsOneWidget);
   });
 
-  testWidgets('duplicate detections do not reopen the dialer', (tester) async {
-    final pending = Completer<bool>();
-    final service = _ReviewService()..dialerResult = pending.future;
+  testWidgets('scan again accepts the same code after a failed opening', (tester) async {
+    _CameraChannel().install();
+    final service = _ReviewService()..failFirst = true;
     await open(tester, service);
-    const qr = 'tel:*182*1*1*250788000000*100%23';
-    detect(tester, qr);
-    detect(tester, qr);
-    await tester.pump();
-    expect(service.dialerCalls, 1);
-    expect(find.text('Reading QR…'), findsOneWidget);
-    pending.complete(true);
+    detect(tester, 'unavailable-review-token-0000');
     await tester.pumpAndSettle();
-    expect(find.text('USSD dialer opened.'), findsOneWidget);
-    detect(tester, qr);
-    expect(service.dialerCalls, 1);
-    await tester.ensureVisible(find.text('Scan again'));
     await tester.tap(find.text('Scan again'));
     await tester.pumpAndSettle();
-    detect(tester, qr);
+    detect(tester, 'unavailable-review-token-0000');
     await tester.pumpAndSettle();
-    expect(service.dialerCalls, 2);
+    expect(service.calls, 2);
   });
 
-  testWidgets('failed dialer handoff permits another detection', (
-    tester,
-  ) async {
-    final service = _ReviewService()..dialerResult = Future.value(false);
+  testWidgets('duplicate detections open one review and never dial', (tester) async {
+    final pending = Completer<void>();
+    final service = _ReviewService()..opening = pending.future;
     await open(tester, service);
-    const qr = 'tel:*182*1*1*250788000000*100%23';
-    detect(tester, qr);
+    detect(tester, 'tel:*182*1*1*0788000001*1000%23');
+    detect(tester, 'tel:*182*1*1*0788000001*1000%23');
+    await tester.pump();
+    expect(service.calls, 1);
+    expect(service.dialerCalls, 0);
+    pending.complete();
     await tester.pumpAndSettle();
-    expect(find.text('USSD dialer unavailable.'), findsOneWidget);
-    service.dialerResult = Future.value(true);
-    detect(tester, qr);
-    await tester.pumpAndSettle();
-    expect(service.dialerCalls, 2);
-    expect(find.text('USSD dialer opened.'), findsOneWidget);
   });
 
-  testWidgets('malformed QR cannot crash or lock subsequent detection', (
-    tester,
-  ) async {
+  testWidgets('malformed input cannot crash or lock subsequent detection', (tester) async {
     final service = _ReviewService();
     await open(tester, service);
-    detect(tester, 'tel:%E0%A4%A');
+    detect(tester, 'tel:%not-an-encoding');
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
-    detect(tester, 'valid-review-token');
+    detect(tester, 'valid-review-token-0000000000');
     await tester.pumpAndSettle();
-    expect(find.byType(BioPayResolvedPaymentPreview), findsOneWidget);
+    expect(service.calls, 1);
   });
 
   testWidgets('camera denial explains recovery and opens Settings', (
@@ -248,7 +190,7 @@ void main() {
             ).copyWith(textScaler: const TextScaler.linear(2)),
             child: child!,
           ),
-          home: BioPayScanScreen(onBack: () {}),
+          home: BioPayScanScreen(onBack: () {}, onEntry: _ReviewService().accept),
         ),
       ),
     );
@@ -260,6 +202,12 @@ void main() {
 }
 
 class _ReviewService extends BioPayUssdService {
+  Future<void>? opening;
+  Future<void> accept(String value) async {
+    calls++;
+    if (failFirst && calls == 1) throw StateError('fixture opening failure');
+    await opening;
+  }
   int calls = 0;
   bool failFirst = false;
   int dialerCalls = 0;

@@ -9,6 +9,7 @@ import 'package:mobi_app/core/utils/money_formatting.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_flow_shared.dart';
+import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 
@@ -103,31 +104,12 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
   Future<void> _runExternalPaymentStep() async {
     final request = _request;
     if (request == null) return;
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
-    try {
-      final service = ref.read(biopayUssdServiceProvider);
-      final updated = switch (request.status) {
-        BioPayRequestStatus.readyToDial => await service.openUssdDialer(
-          request,
-        ),
-        BioPayRequestStatus.dialerOpened => await service.markUserPaid(request),
-        _ => request,
-      };
-      if (!mounted) return;
-      if (updated == null) {
-        setState(() => _error = 'USSD dialer unavailable.');
-        return;
-      }
-      setState(() => _request = updated);
-    } on Object catch (_) {
-      if (!mounted) return;
-      setState(() => _error = 'External payment status unavailable.');
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
+    await context.push(
+      Uri(
+        path: '/biopay/send',
+        queryParameters: {'entry': request.token},
+      ).toString(),
+    );
   }
 
   Future<void> _ensureCamera() async {
@@ -187,7 +169,7 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
         ? readyForPreview
               ? 'Match face'
               : 'Start Face Scan'
-        : externalActionLabel(_request!);
+        : paymentCopy(context).bpReview;
 
     return BioPayFlowScreen(
       title: 'Face scan',
