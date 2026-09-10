@@ -20,8 +20,7 @@ void main() {
         'https://mobio.ikanisa.com/biopay/pay/ABCDEFGHIJKLMNOPQRSTUVWX';
     const messages = MethodChannel('com.llfbandit.app_links/messages');
     const events = MethodChannel('com.llfbandit.app_links/events');
-    final messenger = tester.binding.defaultBinaryMessenger;
-    messenger
+    final messenger = tester.binding.defaultBinaryMessenger
       ..setMockMethodCallHandler(messages, (call) async {
         return call.method == 'getInitialLink' ? link : null;
       })

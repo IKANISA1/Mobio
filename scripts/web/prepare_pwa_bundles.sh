@@ -59,6 +59,7 @@ async function serveFlutterShell(env, request, shellPath) {
   const response = await serveAsset(env, request, shellPath);
   const headers = new Headers(response.headers);
   headers.set("Referrer-Policy", "no-referrer");
+  headers.set("Cache-Control", "no-store");
   headers.set("Permissions-Policy", "camera=(self), geolocation=(), microphone=(), payment=()");
   headers.set("content-type", "text/html; charset=utf-8");
   return new Response(response.body, {
@@ -81,6 +82,22 @@ export default {
     if (["/login", "/biopay", "/profile", "/home", "/bookings", "/nearby"]
         .some(path => url.pathname === path || url.pathname.startsWith(`${path}/`))) {
       return serveFlutterShell(env, request, "/__app_shell");
+    }
+
+    // Advanced-mode responses need explicit headers. These filenames are reused
+    // between Flutter releases, including deferred modules and asset manifests.
+    const isRuntime = url.pathname.startsWith("/main.dart.js") ||
+      ["/flutter.js", "/flutter_bootstrap.js", "/flutter_service_worker.js",
+        "/app-manifest.json", "/admin-manifest.json"].includes(url.pathname);
+    if (isRuntime || url.pathname.startsWith("/assets/")) {
+      const response = await env.ASSETS.fetch(request);
+      const headers = new Headers(response.headers);
+      headers.set("Cache-Control", isRuntime ? "no-store" : "no-cache");
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers,
+      });
     }
 
     return env.ASSETS.fetch(request);
@@ -121,7 +138,7 @@ cat > "$site_dir/_headers" <<'EOF'
   Cache-Control: no-store
 
 /main.dart.js
-  Cache-Control: no-cache
+  Cache-Control: no-store
 
 /assets/*
   Cache-Control: public, max-age=0, must-revalidate
