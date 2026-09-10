@@ -1,6 +1,7 @@
 {
   "date": "2026-09-08",
   "status": "implemented_and_locally_validated; release_acceptance_pending",
+  "latest_release_evidence": "docs/product/biopay-discovery-20260908/RELEASE-VALIDATION-20260910.md",
   "design_authority": "revolut-design",
   "items": [
     {

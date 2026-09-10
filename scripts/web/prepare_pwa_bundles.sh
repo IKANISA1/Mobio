@@ -121,10 +121,10 @@ cat > "$site_dir/_headers" <<'EOF'
   Cache-Control: no-store
 
 /main.dart.js
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: no-cache
 
 /assets/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=0, must-revalidate
 
 /canvaskit/*
   Cache-Control: public, max-age=31536000, immutable
@@ -138,7 +138,7 @@ cat > "$site_dir/_headers" <<'EOF'
 /*.css
   Cache-Control: public, max-age=86400
 
-/*.js
+/script.js
   Cache-Control: public, max-age=86400
 EOF
 

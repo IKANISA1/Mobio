@@ -8,11 +8,26 @@ declare rejected boolean:=false;
 begin begin execute statement; exception when others then rejected:=true; end;
   if not rejected then raise exception 'ASSERTION FAILED: unsafe action accepted: %',statement; end if;
 end $$;
+-- The fast fixture has no Auth table. The full-schema rehearsal creates genuine
+-- synthetic Auth rows so profile foreign keys and signup triggers are exercised.
+do $$ begin
+  if to_regclass('auth.users') is not null then
+    execute $seed$
+      insert into auth.users(id,phone,raw_app_meta_data,raw_user_meta_data)
+      select ('00000000-0000-4000-8000-' || lpad(n::text,12,'0'))::uuid,
+             '+25078800000' || n::text, '{}'::jsonb, '{}'::jsonb
+      from generate_series(1,4) n
+      on conflict(id) do nothing
+    $seed$;
+  end if;
+end $$;
 insert into public.profiles(id,phone,member_id,whatsapp_verified_at) values
  ('00000000-0000-4000-8000-000000000001','+250788000001','100001',now()),
  ('00000000-0000-4000-8000-000000000002','+250788000002','100002',now()),
  ('00000000-0000-4000-8000-000000000003','+250788000003','100003',now()),
- ('00000000-0000-4000-8000-000000000004','+250788000004','100004',now());
+ ('00000000-0000-4000-8000-000000000004','+250788000004','100004',now())
+ on conflict(id) do update set phone=excluded.phone,member_id=excluded.member_id,
+   whatsapp_verified_at=excluded.whatsapp_verified_at;
 select set_config('request.jwt.claims','{"is_anonymous":false}',true);
 select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000001',true);
 select pg_temp.expect_rejected($q$select public.rpc_biopay_discovery('save_method','{"provider":"mtn_rw","kind":"mobileWallet","identifier":"not-a-phone","label":"bad"}')$q$);
@@ -113,7 +128,8 @@ do $$ declare q jsonb; again jsonb; begin
 end $$;
 -- Administrator authentication and independent evidence review.
 update public.profiles set role='admin' where member_id in ('100003','100004');
-insert into public.admin_whatsapp_numbers(phone_e164,is_active) values('+250788000003',true),('+250788000004',true);
+insert into public.admin_whatsapp_numbers(phone_e164,country_code,is_active)
+ values('+250788000003','+250',true),('+250788000004','+250',true);
 select pg_temp.expect_rejected($q$select public.rpc_admin_biopay_routes('list','{}')$q$);
 select set_config('request.jwt.claim.sub','00000000-0000-4000-8000-000000000003',true);
 select pg_temp.expect_rejected($q$select public.rpc_admin_biopay_routes('list','{}')$q$);

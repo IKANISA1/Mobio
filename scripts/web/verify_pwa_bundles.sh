@@ -103,10 +103,16 @@ require(
 )
 
 apple_team_id = os.environ.get("APPLE_TEAM_ID", "").strip()
-if apple_team_id:
+if aasa_path.exists():
     aasa = read_manifest(aasa_path)
-    expected_app_id = f"{apple_team_id}.rw.mobi.app"
     details = aasa.get("applinks", {}).get("details", [])
+    payment_paths = [component.get("/") for detail in details
+                     for component in detail.get("components", [])
+                     if not component.get("exclude", False)]
+    require("/biopay/pay/*" in payment_paths, "AASA scoped payment path missing")
+if apple_team_id:
+    require(aasa_path.exists(), "AASA file missing")
+    expected_app_id = f"{apple_team_id}.rw.mobi.app"
     app_ids = []
     for detail in details:
         if "appIDs" in detail and isinstance(detail["appIDs"], list):

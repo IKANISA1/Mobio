@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobi_app/features/biopay/data/biopay_device_nfc_service.dart';
 import 'package:mobi_app/features/biopay/data/biopay_nfc_card_payload.dart';
 import 'package:mobi_app/features/biopay/domain/payment_payload.dart';
+import 'package:mobi_app/l10n/app_localizations.dart';
 import 'package:ndef/ndef.dart' as ndef;
 
 class BioPayNfcForegroundSuspendedNotifier extends Notifier<bool> {
@@ -281,9 +282,9 @@ class _BioPayNfcForegroundListenerState
     final messenger = ScaffoldMessenger.maybeOf(context);
     messenger?.hideCurrentSnackBar();
     messenger?.showSnackBar(
-      const SnackBar(
-        content: Text('NFC card detected. Review receiving details.'),
-        duration: Duration(seconds: 2),
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.bpReview),
+        duration: const Duration(seconds: 2),
       ),
     );
 
