@@ -1,0 +1,587 @@
+{
+  "recorded_at": "2026-09-10T09:39:16.680440+00:00",
+  "status": "implementation_complete; web_and_database_live; release_acceptance_pending",
+  "implementation_commit": "07323dde2b3663bfdac97edb921f517fa642c391",
+  "flutter_runtime_commit": "2759b9282c316b78dd5f95fa1d0ad2000e1f7adb",
+  "web_bundle_commit": "d722604dd8d9305d9c7bb23f554d16c87672c23b",
+  "flutter_tests": {
+    "passed": 605,
+    "failed": 0
+  },
+  "dart_analysis": "no issues",
+  "web_worker_tests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "database": {
+    "migration_count": 96,
+    "provider_routes": 0,
+    "new_private_tables": [
+      {
+        "rls": true,
+        "name": "biopay_discovery_rate_limits",
+        "anon_select": false,
+        "authenticated_select": false
+      },
+      {
+        "rls": true,
+        "name": "biopay_links",
+        "anon_select": false,
+        "authenticated_select": false
+      },
+      {
+        "rls": true,
+        "name": "biopay_method_grants",
+        "anon_select": false,
+        "authenticated_select": false
+      },
+      {
+        "rls": true,
+        "name": "biopay_payment_drafts",
+        "anon_select": false,
+        "authenticated_select": false
+      },
+      {
+        "rls": true,
+        "name": "biopay_payment_methods",
+        "anon_select": false,
+        "authenticated_select": false
+      },
+      {
+        "rls": true,
+        "name": "biopay_provider_routes",
+        "anon_select": false,
+        "authenticated_select": false
+      },
+      {
+        "rls": true,
+        "name": "biopay_recipient_shortcuts",
+        "anon_select": false,
+        "authenticated_select": false
+      },
+      {
+        "rls": true,
+        "name": "biopay_request_templates",
+        "anon_select": false,
+        "authenticated_select": false
+      },
+      {
+        "rls": true,
+        "name": "biopay_route_quotes",
+        "anon_select": false,
+        "authenticated_select": false
+      }
+    ],
+    "applied_migrations": [
+      {
+        "name": "biopay_payment_discovery",
+        "version": "20260908090000"
+      },
+      {
+        "name": "biopay_discovery_rpc",
+        "version": "20260908091000"
+      },
+      {
+        "name": "biopay_discovery_admin",
+        "version": "20260908092000"
+      },
+      {
+        "name": "biopay_discovery_evidence",
+        "version": "20260908093000"
+      }
+    ],
+    "recorded_at": "2026-09-10T09:08:47.964Z",
+    "security_advisors": {
+      "errors": 0,
+      "findings": [
+        {
+          "name": "rls_enabled_no_policy",
+          "level": "INFO",
+          "count": 21
+        },
+        {
+          "name": "function_search_path_mutable",
+          "level": "WARN",
+          "count": 7
+        },
+        {
+          "name": "extension_in_public",
+          "level": "WARN",
+          "count": 4
+        },
+        {
+          "name": "anon_security_definer_function_executable",
+          "level": "WARN",
+          "count": 41
+        },
+        {
+          "name": "authenticated_security_definer_function_executable",
+          "level": "WARN",
+          "count": 129
+        }
+      ],
+      "interpretation": "New private tables deliberately use RPC-only access: RLS enabled, no direct policies/grants. Existing project warnings remain; this is not a full security certification."
+    }
+  },
+  "full_schema_rehearsal": "96 migrations plus verified historical timestamp helper; behavior and backend security assertions passed",
+  "live_backend_security": {
+    "project": "paysnhuxngsvzdpwlosv",
+    "mode": "read-only transaction",
+    "result": [
+      {
+        "ok": "backend security assertions passed"
+      }
+    ]
+  },
+  "cloudflare": {
+    "verified_deployment": {
+      "id": "5e71941c-0604-435e-a206-50acd788d08a",
+      "url": "https://5e71941c.mobio-1h0.pages.dev",
+      "environment": "production",
+      "created_on": "2026-09-10T09:32:25.563797Z",
+      "latest_stage": {
+        "name": "deploy",
+        "started_on": null,
+        "ended_on": "2026-09-10T09:32:27.807284Z",
+        "status": "success"
+      },
+      "stages": [
+        {
+          "name": "queued",
+          "started_on": "2026-09-10T09:32:25.563797Z",
+          "ended_on": null,
+          "status": "active"
+        },
+        {
+          "name": "initialize",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "clone_repo",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "build",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "deploy",
+          "started_on": null,
+          "ended_on": "2026-09-10T09:32:27.807284Z",
+          "status": "success"
+        }
+      ],
+      "deployment_trigger": {
+        "type": "ad_hoc",
+        "metadata": {
+          "branch": "main",
+          "commit_hash": "d722604dd8d9305d9c7bb23f554d16c87672c23b",
+          "commit_message": "fix(web): prevent stale Flutter runtime assets after deployment",
+          "commit_dirty": false
+        }
+      },
+      "build_config": {
+        "build_command": "bash scripts/web/build_cloudflare_pages.sh",
+        "destination_dir": "build/pwa/site",
+        "build_caching": null,
+        "root_dir": "",
+        "web_analytics_tag": null,
+        "web_analytics_token": null
+      }
+    },
+    "automatic_build_proven_at": "69407fd2-15ab-40f9-a763-53795aabd076",
+    "automatic_cache_followup": {
+      "id": "e63e7e33-9877-4367-a35c-e3d931a0934f",
+      "url": "https://e63e7e33.mobio-1h0.pages.dev",
+      "environment": "production",
+      "created_on": "2026-09-10T09:32:15.092589Z",
+      "latest_stage": {
+        "name": "deploy",
+        "started_on": "2026-09-10T09:35:47.487693Z",
+        "ended_on": "2026-09-10T09:35:53.657271Z",
+        "status": "success"
+      },
+      "stages": [
+        {
+          "name": "queued",
+          "started_on": "2026-09-10T09:32:15.228584Z",
+          "ended_on": "2026-09-10T09:32:15.241112Z",
+          "status": "success"
+        },
+        {
+          "name": "initialize",
+          "started_on": "2026-09-10T09:32:15.241112Z",
+          "ended_on": "2026-09-10T09:32:17.726418Z",
+          "status": "success"
+        },
+        {
+          "name": "clone_repo",
+          "started_on": "2026-09-10T09:32:17.726418Z",
+          "ended_on": "2026-09-10T09:32:26.557721Z",
+          "status": "success"
+        },
+        {
+          "name": "build",
+          "started_on": "2026-09-10T09:32:26.557721Z",
+          "ended_on": "2026-09-10T09:35:47.487693Z",
+          "status": "success"
+        },
+        {
+          "name": "deploy",
+          "started_on": "2026-09-10T09:35:47.487693Z",
+          "ended_on": "2026-09-10T09:35:53.657271Z",
+          "status": "success"
+        }
+      ],
+      "deployment_trigger": {
+        "type": "github:push",
+        "metadata": {
+          "branch": "main",
+          "commit_hash": "d722604dd8d9305d9c7bb23f554d16c87672c23b",
+          "commit_message": "fix(web): prevent stale Flutter runtime assets after deployment",
+          "commit_dirty": false
+        }
+      },
+      "build_config": {
+        "build_command": "bash scripts/web/build_cloudflare_pages.sh",
+        "destination_dir": "build/pwa/site",
+        "build_caching": null,
+        "root_dir": "",
+        "web_analytics_tag": null,
+        "web_analytics_token": null
+      }
+    },
+    "final_production_deployment": {
+      "id": "e63e7e33-9877-4367-a35c-e3d931a0934f",
+      "url": "https://e63e7e33.mobio-1h0.pages.dev",
+      "environment": "production",
+      "created_on": "2026-09-10T09:32:15.092589Z",
+      "latest_stage": {
+        "name": "deploy",
+        "started_on": "2026-09-10T09:35:47.487693Z",
+        "ended_on": "2026-09-10T09:35:53.657271Z",
+        "status": "success"
+      },
+      "stages": [
+        {
+          "name": "queued",
+          "started_on": "2026-09-10T09:32:15.228584Z",
+          "ended_on": "2026-09-10T09:32:15.241112Z",
+          "status": "success"
+        },
+        {
+          "name": "initialize",
+          "started_on": "2026-09-10T09:32:15.241112Z",
+          "ended_on": "2026-09-10T09:32:17.726418Z",
+          "status": "success"
+        },
+        {
+          "name": "clone_repo",
+          "started_on": "2026-09-10T09:32:17.726418Z",
+          "ended_on": "2026-09-10T09:32:26.557721Z",
+          "status": "success"
+        },
+        {
+          "name": "build",
+          "started_on": "2026-09-10T09:32:26.557721Z",
+          "ended_on": "2026-09-10T09:35:47.487693Z",
+          "status": "success"
+        },
+        {
+          "name": "deploy",
+          "started_on": "2026-09-10T09:35:47.487693Z",
+          "ended_on": "2026-09-10T09:35:53.657271Z",
+          "status": "success"
+        }
+      ],
+      "deployment_trigger": {
+        "type": "github:push",
+        "metadata": {
+          "branch": "main",
+          "commit_hash": "d722604dd8d9305d9c7bb23f554d16c87672c23b",
+          "commit_message": "fix(web): prevent stale Flutter runtime assets after deployment",
+          "commit_dirty": false
+        }
+      },
+      "build_config": {
+        "build_command": "bash scripts/web/build_cloudflare_pages.sh",
+        "destination_dir": "build/pwa/site",
+        "build_caching": null,
+        "root_dir": "",
+        "web_analytics_tag": null,
+        "web_analytics_token": null
+      }
+    }
+  },
+  "deployed_routes": {
+    "recorded_at": "2026-09-10T09:38:39.178609+00:00",
+    "checks": [
+      {
+        "url": "https://mobio.ikanisa.com/",
+        "status": 200,
+        "kind": "marketing",
+        "bytes": 10968,
+        "sha256": "c5240511fd179ae9b2783c8918bd0518ff4d04d2c0addd4af4b004cd0adba422",
+        "cache_control": "public, max-age=0, must-revalidate",
+        "referrer_policy": "strict-origin-when-cross-origin"
+      },
+      {
+        "url": "https://mobio.ikanisa.com/biopay/send",
+        "status": 200,
+        "kind": "consumer",
+        "bytes": 3851,
+        "sha256": "f5ca6e0facac8e3e152dfd9f72a0ad57526df4510d23fad1060f8c12e3e3b863",
+        "cache_control": "no-store",
+        "referrer_policy": "no-referrer"
+      },
+      {
+        "url": "https://mobio.ikanisa.com/biopay/pay/ABCDEFGHIJKLMNOPQRSTUVWX",
+        "status": 200,
+        "kind": "consumer",
+        "bytes": 3851,
+        "sha256": "f5ca6e0facac8e3e152dfd9f72a0ad57526df4510d23fad1060f8c12e3e3b863",
+        "cache_control": "no-store",
+        "referrer_policy": "no-referrer"
+      },
+      {
+        "url": "https://mobioadmin.ikanisa.com/admin-auth",
+        "status": 200,
+        "kind": "admin",
+        "bytes": 3435,
+        "sha256": "193d4590c2e009ed01a7a17ef568636d73cfdd508e33bbb79a50af6791f3a59c",
+        "cache_control": "no-store",
+        "referrer_policy": "no-referrer"
+      },
+      {
+        "url": "https://mobio.ikanisa.com/.well-known/apple-app-site-association",
+        "status": 200,
+        "kind": "aasa",
+        "bytes": 511,
+        "sha256": "28f30f6878754a43cd3e8df6d208ffa91907cf58c18f1fc7d5c8f6d0948e9308",
+        "cache_control": "public, max-age=300",
+        "referrer_policy": "strict-origin-when-cross-origin",
+        "payment_path_present": true
+      },
+      {
+        "url": "https://mobio.ikanisa.com/.well-known/assetlinks.json",
+        "status": 200,
+        "kind": "assetlinks",
+        "bytes": 438,
+        "sha256": "f782e6746d31f8367dd17bf413337f66c81ed2c5d31d71923684749875fcc7db",
+        "cache_control": "public, max-age=300",
+        "referrer_policy": "strict-origin-when-cross-origin"
+      },
+      {
+        "url": "https://mobio.ikanisa.com/main.dart.js",
+        "status": 200,
+        "kind": "runtime",
+        "bytes": 4928365,
+        "sha256": "538c2a13b323c4bfe02b4d63ccb0ef427d2d4893d778f33d4ab36ec47fd77eb3",
+        "cache_control": "no-store",
+        "referrer_policy": "strict-origin-when-cross-origin"
+      }
+    ]
+  },
+  "browser": [
+    {
+      "name": "public-payment-link",
+      "url": "https://mobio.ikanisa.com/biopay/pay/ABCDEFGHIJKLMNOPQRSTUVWX",
+      "status": 200,
+      "title": "Mobio",
+      "runtimeErrors": [],
+      "accessibility": "- text: Request unavailable. Ask the recipient for a new link.\n- button \"Back\"\n- heading \"Payment requests\" [level=2]\n- group:\n  - text: Request unavailable. Ask the recipient for a new link.\n  - button \"Enter receiving details\""
+    },
+    {
+      "name": "admin-sign-in",
+      "url": "https://mobioadmin.ikanisa.com/admin-auth",
+      "status": 200,
+      "title": "Mobio Admin",
+      "runtimeErrors": [],
+      "accessibility": "- group:\n  - button \"Back\"\n  - text: Admin Admin access Sign in Use an allowlisted WhatsApp number to receive a login code. WhatsApp\n  - button \"Choose country code, Rwanda RW +250\"\n  - textbox \"000 000 000\"\n  - text: Restricted access Need access? Request allowlist approval or resend a code. Allowlist required\n  - button \"Send code\" [disabled]"
+    }
+  ],
+  "installed_android": {
+    "package": "rw.mobi.app",
+    "type": "debug APK in isolated Android emulator",
+    "cold_link": "passed",
+    "warm_link": "passed",
+    "manual_recovery_to_login": "passed",
+    "crash_buffer_bytes": 0
+  },
+  "ios": "unsigned release build passed; no signed archive or physical-device proof",
+  "github_ci": [
+    {
+      "id": 34461180656,
+      "head_sha": "d722604dd8d9305d9c7bb23f554d16c87672c23b",
+      "status": "completed",
+      "conclusion": "startup_failure",
+      "path": "BuildFailed",
+      "html_url": "https://github.com/IKANISA1/Mobio/actions/runs/34461180656",
+      "job_count": 0
+    }
+  ],
+  "remaining_acceptance": [
+    "remote GitHub CI startup failure",
+    "existing production signing configuration",
+    "physical Android/iOS, NFC, SIM, contacts/gallery and provider tests",
+    "reviewed provider instructions and tariffs plus independent administrator approval",
+    "independent source-parity review and owner acceptance"
+  ],
+  "provider_routes_activated": 0,
+  "provider_or_payment_success_claimed": false,
+  "scope_limit": "Installed emulator and browser checks cover anonymous entry/recovery, not authenticated end-to-end journeys or MOBILE-DESIGN-100.",
+  "logs": [
+    {
+      "path": "build/qa/biopay-release-20260910/final-analysis.log",
+      "sha256": "a84576b810cbc5037c4e9071dd1b38a60da0af1014b745daceb1b2be5558aed0",
+      "bytes": 58
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/final-flutter-tests.log",
+      "sha256": "d44a612fdd55379826e40f5333f84c10de99a522cf5481b8e5075bbbac359109",
+      "bytes": 131044
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/cold-launch-regression.log",
+      "sha256": "5b8df6b9c7642d6537b7b1c65d55ea89844dad5148de2ba765e2c0f09ea9edb9",
+      "bytes": 6890
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/reproducible-full-schema.log",
+      "sha256": "b03cbebc1086f11ac3177dbfb09ccab5e9e2550c3a1e7c28375922833841971c",
+      "bytes": 101
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/final-web-routing-tests.log",
+      "sha256": "2458175b7d7d65a576021c0f9d6d8461ec93e04544308558ca9393531e139069",
+      "bytes": 395
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/final-android-debug-build.log",
+      "sha256": "0f3e54e02f565027bd65951ef1abf8e276cf841bec68c34d6b6fe67498f5b81d",
+      "bytes": 7722
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/final-ios-release-build.log",
+      "sha256": "1a6f707431e8a7f77c74eb0c8162f84eb772a5cfab4d7cba5518f3037701317f",
+      "bytes": 15035
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/final-android-release-gate.log",
+      "sha256": "43572548a0ecb275b0e95f4165ca482814f6cbcd75abaaa5a56ecf8a1dbac6bc",
+      "bytes": 106
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/final-cloudflare-bundle-build.log",
+      "sha256": "37b4db68cf478d583d93fda4ba953a3b02dbd017f15cc280ec7508cdb28d6b4f",
+      "bytes": 15336
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/final-pages-packaging.log",
+      "sha256": "6fb9b26056b7878963e81ed65e52b6486d6d6cfb9ab6b028cf2db62f2eb0b091",
+      "bytes": 117
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/live-migration-apply.log",
+      "sha256": "f63af86a4a91061b3431fdd455957250a975c855d1c075647acfaa406fe5118f",
+      "bytes": 891
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/live-schema-readback.json",
+      "sha256": "5544c1764d269cd2652e960606afab267ec28baee8c8036a966c99c3f44387b3",
+      "bytes": 2561
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/live-rpc-readback.json",
+      "sha256": "58b4b7c2075d7b2e1f3d086d571d2672c4e03eaebc3c9826a33c8167ea585c6a",
+      "bytes": 337
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/live-backend-security-readback.json",
+      "sha256": "06be36bd5e42143feb5291dda1666f69fb674a6cd273f53cac0cb86a14fade62",
+      "bytes": 155
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/final-android-crash-buffer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/installed-ui-readback.json",
+      "sha256": "9e2c8e20ae8b508b84b6379f46aa4f638baf7fc3adb788a9d6f2ebf2eb820ee5",
+      "bytes": 550
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/deployed-route-readback.json",
+      "sha256": "db76bcc5ff790bc948bca864cbc42dfecef88a635f0b26634f84917de0a2e946",
+      "bytes": 2347
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/browser-readback.json",
+      "sha256": "eeab7b31256d604f7d24ff83b537fe9a06f9d34f48f6bd65cc56110d2b7ab3a9",
+      "bytes": 1002
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/final-github-ci.json",
+      "sha256": "92409b8da3da519856973df4a65ec5f5caa3a93e24cedcf3f76f0a9a013c238e",
+      "bytes": 283
+    },
+    {
+      "path": "build/qa/biopay-release-20260910/final-cloudflare-direct-deploy.log",
+      "sha256": "0ed6037306f367155037d8d08364dc5de22cc49cafda834d67955bc261c7043c",
+      "bytes": 492
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "docs/product/biopay-discovery-20260908/release-evidence-20260910/cold-arrival-settled.png",
+      "sha256": "40196e043f9b3d574f6a75fc84a11cab7160fa927f00c1b30623ed6fc4aaa1a1",
+      "bytes": 64267
+    },
+    {
+      "path": "docs/product/biopay-discovery-20260908/release-evidence-20260910/public-payment-link.png",
+      "sha256": "b09e6d48d6c00969e813c3d8918ca134888424fbe2c6aebd4129e3c69f166800",
+      "bytes": 15817
+    },
+    {
+      "path": "docs/product/biopay-discovery-20260908/release-evidence-20260910/admin-sign-in.png",
+      "sha256": "f49b04cd9d4902262cb7faf052e9b362ddefd6590d9e9353779a76ee02ed2058",
+      "bytes": 42468
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "build/app/outputs/flutter-apk/app-debug.apk",
+      "sha256": "b7265e6996c5d3b714ae33e0dc20c422e4807ab710c9712b36fa5fd4b53b97d4",
+      "bytes": 196562241
+    },
+    {
+      "path": "build/ios/iphoneos/Runner.app/Runner",
+      "sha256": "70cf4606e07d183ebf3746b807814b4c35ec13b73122717575ecda4a808ffbad",
+      "bytes": 4009208
+    },
+    {
+      "path": "build/pwa-release-20260910/site/main.dart.js",
+      "sha256": "538c2a13b323c4bfe02b4d63ccb0ef427d2d4893d778f33d4ab36ec47fd77eb3",
+      "bytes": 4928365
+    }
+  ],
+  "deployed_asset_headers": [
+    {
+      "path": "/main.dart.js_10.part.js",
+      "status": 200,
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/assets/AssetManifest.bin.json",
+      "status": 200,
+      "cache_control": "no-cache"
+    }
+  ]
+}
