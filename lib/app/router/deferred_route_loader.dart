@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobi_app/core/utils/app_logger.dart';
+import 'package:mobi_app/core/utils/navigation_utils.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
+import 'package:mobi_app/shared/widgets/mobi_button.dart';
 
 class DeferredRouteLoader extends StatefulWidget {
   const DeferredRouteLoader({
@@ -18,7 +21,30 @@ class DeferredRouteLoader extends StatefulWidget {
 }
 
 class _DeferredRouteLoaderState extends State<DeferredRouteLoader> {
-  late final Future<void> _loadFuture = widget.loadLibrary();
+  bool _isLoading = false;
+  late Future<void> _loadFuture = _load();
+
+  Future<void> _load() async {
+    _isLoading = true;
+    try {
+      await widget.loadLibrary();
+    } on Object catch (error) {
+      AppLogger.warning('Deferred screen load failed (${error.runtimeType}).');
+      rethrow;
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  void _retry() {
+    if (_isLoading || !mounted) {
+      return;
+    }
+    final loadFuture = _load();
+    setState(() {
+      _loadFuture = loadFuture;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +57,7 @@ class _DeferredRouteLoaderState extends State<DeferredRouteLoader> {
         }
 
         if (snapshot.hasError) {
-          return _DeferredRouteErrorScreen(error: snapshot.error);
+          return _DeferredRouteErrorScreen(onRetry: _retry);
         }
 
         return AnimatedSwitcher(
@@ -84,9 +110,9 @@ class _DeferredRouteLoadingScreen extends StatelessWidget {
 }
 
 class _DeferredRouteErrorScreen extends StatelessWidget {
-  const _DeferredRouteErrorScreen({required this.error});
+  const _DeferredRouteErrorScreen({required this.onRetry});
 
-  final Object? error;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -97,28 +123,48 @@ class _DeferredRouteErrorScreen extends StatelessWidget {
       backgroundColor: cs.surface,
       body: SafeArea(
         child: Center(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.error_outline, size: 36, color: cs.error),
-                const SizedBox(height: 16),
-                Text(
-                  'Screen failed to load',
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.error_outline, size: 36, color: cs.error),
+                  const SizedBox(height: 16),
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      'Screen failed to load',
+                      textAlign: TextAlign.center,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '$error',
-                  textAlign: TextAlign.center,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: cs.onSurfaceVariant,
+                  const SizedBox(height: 8),
+                  Text(
+                    'Check your connection and try again, or go back.',
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: cs.onSurfaceVariant,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 24),
+                  MobiButton(
+                    width: double.infinity,
+                    onPressed: onRetry,
+                    child: const Text('Try again'),
+                  ),
+                  const SizedBox(height: 12),
+                  MobiButton(
+                    width: double.infinity,
+                    variant: MobiButtonVariant.ghost,
+                    onPressed: () => safePop(context),
+                    child: const Text('Go back'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

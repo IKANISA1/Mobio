@@ -65,15 +65,18 @@ class HomeHeader extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.xs),
               SizedBox(
-                height: 28,
-                child: Switch(
-                  value: isDriverOnline,
-                  onChanged: onDriverOnlineToggle,
-                  activeThumbColor: cs.primary,
-                  activeTrackColor: cs.primary.withValues(alpha: 0.3),
-                  inactiveThumbColor: cs.onSurfaceVariant,
-                  inactiveTrackColor: ext.surfaceContainer,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                height: 48,
+                child: Semantics(
+                  label: 'Driver availability',
+                  child: Switch(
+                    value: isDriverOnline,
+                    onChanged: onDriverOnlineToggle,
+                    activeThumbColor: cs.primary,
+                    activeTrackColor: cs.primary.withValues(alpha: 0.3),
+                    inactiveThumbColor: cs.onSurfaceVariant,
+                    inactiveTrackColor: ext.surfaceContainer,
+                    materialTapTargetSize: MaterialTapTargetSize.padded,
+                  ),
                 ),
               ),
             ],
@@ -102,7 +105,7 @@ class _HomeModeToggle extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(5),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Row(
           children: [
             _HomeModeSegment(
@@ -144,35 +147,41 @@ class _HomeModeSegment extends StatelessWidget {
         button: true,
         selected: selected,
         label: label,
+        excludeSemantics: true,
+        onTap: onTap,
         child: Material(
-          color: selected
-              ? cs.onSurface.withValues(alpha: .16)
-              : Colors.transparent,
+          color: Colors.transparent,
           borderRadius: BorderRadius.circular(AppRadii.pill),
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(AppRadii.pill),
             splashColor: Colors.white.withValues(alpha: ext.pressedWhiteAlpha),
-            child: Container(
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(AppRadii.pill),
-                border: selected
-                    ? Border.all(
-                        color: Colors.white.withValues(
-                          alpha: ext.surfacePanelBorderAlpha,
-                        ),
-                      )
-                    : null,
-              ),
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                softWrap: false,
-                style: AppTypography.labelMd.copyWith(
-                  color: selected ? cs.onSurface : cs.onSurfaceVariant,
-                  fontWeight: FontWeight.w600,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Container(
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: selected
+                      ? cs.onSurface.withValues(alpha: .16)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(AppRadii.pill),
+                  border: selected
+                      ? Border.all(
+                          color: Colors.white.withValues(
+                            alpha: ext.surfacePanelBorderAlpha,
+                          ),
+                        )
+                      : null,
+                ),
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
+                  style: AppTypography.labelMd.copyWith(
+                    color: selected ? cs.onSurface : cs.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),

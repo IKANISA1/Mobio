@@ -39,7 +39,9 @@ const assets = {
       if ((await stat(path)).isDirectory()) path = resolve(path, "index.html");
       return new Response(await readFile(path), {
         headers: {
-          "Content-Type": mime[extname(path)] ?? "application/octet-stream",
+          "Content-Type": ["__admin_shell", "__app_shell"].some(name => path.endsWith(sep + name))
+            ? "text/html; charset=utf-8"
+            : mime[extname(path)] ?? "application/octet-stream",
           "Cache-Control": "no-store",
         },
       });

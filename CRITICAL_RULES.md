@@ -32,7 +32,7 @@
 
 ## Rule 3: UI Must Never Be Changed Without Following `design.md`
 
-- The **sole source of truth** for all UI decisions is [`design.md`](file:///Volumes/PRO-G40/mobio/design.md) — the official "Claymorphic Utility" design system specification.
+- The **sole source of truth** for all UI decisions is [`design.md`](file:///Volumes/PRO-G40/mobio/design.md) — the current Mobio design system and its dated source-cohort mappings.
 - **No ad-hoc colors, fonts, spacing, shadows, radii, or component styles may be introduced** that are not defined in `design.md`.
 - All UI changes **must reference** the exact token from the design system (color token, typography token, spacing token, shadow token, component spec).
 - If a new visual element or pattern is needed, `design.md` **must be updated first** with the new token/spec before any code is written.

@@ -1,0 +1,34 @@
+surface,source,permission,runtime_result,next_action
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.INTERNET,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.ACCESS_NETWORK_STATE,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.ACCESS_FINE_LOCATION,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.ACCESS_COARSE_LOCATION,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.ACCESS_BACKGROUND_LOCATION,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.CAMERA,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.NFC,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.POST_NOTIFICATIONS,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.FOREGROUND_SERVICE,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.FOREGROUND_SERVICE_LOCATION,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.WAKE_LOCK,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.RECORD_AUDIO,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,com.google.android.gms.permission.AD_ID,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.ACCESS_ADSERVICES_AD_ID,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.ACCESS_ADSERVICES_ATTRIBUTION,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.WRITE_EXTERNAL_STORAGE,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.READ_EXTERNAL_STORAGE,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.READ_MEDIA_IMAGES,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer Android,android/app/src/main/AndroidManifest.xml,android.permission.READ_MEDIA_VIDEO,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+Mo Mobio collector,apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml,android.permission.INTERNET,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+Mo Mobio collector,apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml,android.permission.ACCESS_NETWORK_STATE,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+Mo Mobio collector,apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml,android.permission.FOREGROUND_SERVICE,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+Mo Mobio collector,apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml,android.permission.FOREGROUND_SERVICE_SPECIAL_USE,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+Mo Mobio collector,apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml,android.permission.POST_NOTIFICATIONS,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+Mo Mobio collector,apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml,android.permission.RECEIVE_BOOT_COMPLETED,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+Mo Mobio collector,apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml,android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+Mo Mobio collector,apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml,android.permission.RECEIVE_SMS,unverified,"Verify implemented rationale, denial/retry, version behavior and actual device grant path"
+consumer iOS,ios/Runner/Info.plist,NSLocationAlwaysAndWhenInUseUsageDescription,unverified,Verify rationale and real iOS permission lifecycle separately
+consumer iOS,ios/Runner/Info.plist,NSLocationAlwaysUsageDescription,unverified,Verify rationale and real iOS permission lifecycle separately
+consumer iOS,ios/Runner/Info.plist,NSLocationWhenInUseUsageDescription,unverified,Verify rationale and real iOS permission lifecycle separately
+consumer iOS,ios/Runner/Info.plist,NSCameraUsageDescription,unverified,Verify rationale and real iOS permission lifecycle separately
+consumer iOS,ios/Runner/Info.plist,NSPhotoLibraryAddUsageDescription,unverified,Verify rationale and real iOS permission lifecycle separately
+consumer iOS,ios/Runner/Info.plist,NFCReaderUsageDescription,unverified,Verify rationale and real iOS permission lifecycle separately

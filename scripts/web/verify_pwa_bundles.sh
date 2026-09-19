@@ -103,10 +103,16 @@ require(
 )
 
 apple_team_id = os.environ.get("APPLE_TEAM_ID", "").strip()
-if apple_team_id:
+if aasa_path.exists():
     aasa = read_manifest(aasa_path)
-    expected_app_id = f"{apple_team_id}.rw.mobi.app"
     details = aasa.get("applinks", {}).get("details", [])
+    payment_paths = [component.get("/") for detail in details
+                     for component in detail.get("components", [])
+                     if not component.get("exclude", False)]
+    require("/biopay/pay/*" in payment_paths, "AASA scoped payment path missing")
+if apple_team_id:
+    require(aasa_path.exists(), "AASA file missing")
+    expected_app_id = f"{apple_team_id}.rw.mobi.app"
     app_ids = []
     for detail in details:
         if "appIDs" in detail and isinstance(detail["appIDs"], list):
@@ -150,19 +156,15 @@ require(
     "Redirects must delegate route control to the Pages worker",
 )
 
-for expected in (
-    'const ADMIN_HOST = "mobioadmin.ikanisa.com";',
-    'pathname === "/admin-auth"',
-    'pathname === "/admin"',
-    'pathname.startsWith("/admin/")',
-    'Response.redirect(`${url.origin}/admin-auth`, 302)',
-    'const response = await serveAsset(env, request, shellPath);',
-    'headers.set("content-type", "text/html; charset=utf-8");',
-    'return serveFlutterShell(env, request, "/__admin_shell");',
-    'return serveFlutterShell(env, request, "/__app_shell");',
-    "return env.ASSETS.fetch(request);",
-):
-    require(expected in worker, f"Pages worker missing {expected}")
+# The emitted code must be the same module exercised by the behavioral tests.
+source_worker = Path("scripts/web/pages_worker.mjs").read_text()
+release_file = site_dir / "release.json"
+if release_file.exists():
+    release_id = json.loads(release_file.read_text()).get("release_id", "")
+    require(len(release_id) == 64 and all(c in "0123456789abcdef" for c in release_id),
+            "Invalid worker release identity")
+    source_worker = source_worker.replace("__MOBIO_RELEASE_ID__", release_id)
+require(worker == source_worker, "Packaged Pages worker differs from the tested source module")
 
 for expected in (
     "Content-Security-Policy:",

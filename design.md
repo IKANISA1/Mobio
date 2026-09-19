@@ -1,6 +1,6 @@
 # Mobio design system
 
-Version 5 · 5 September 2026. This contract includes the 5 September follow-up for missing launch/auth states and the full applicable colour families. Product scope, permissions and server contracts remain governed by `AGENTS.md` and the dated product approvals.
+Version 6 · 6 September 2026. This contract includes the 5 September follow-up for missing launch/auth states and the full applicable colour families. Product scope, permissions and server contracts remain governed by `AGENTS.md` and the dated product approvals.
 
 ## Reference and identity
 
@@ -27,7 +27,7 @@ Inter is the bundled native typography adapter; the installed reference app's ex
 
 Use a 4-point spacing grid, 16 horizontal page insets, 24-radius grouped mobile panels, and 48 minimum icon targets. Primary buttons are contrasting pills, at least 52 high, with stable loading geometry. Ordinary surfaces are opaque and flat. Home uses royal blue, BioPay teal, Trips/Nearby purple, Wallet muted slate blue-violet, Profile/Mobio Plus vivid violet and WhatsApp login slate-indigo. Their wash scrolls away into a matching lower canvas. Pushed tasks, chat and admin retain quiet neutral surfaces. Do not spread decorative gradients, borders and shadows across every card.
 
-Quick actions use 48 circles with labels inside the entire tap target. Bottom navigation floats above system safe areas and exposes selected semantics, keyboard activation and four real destinations. Secondary routes use a back control. Native UI and browser previews respect reduced motion.
+Quick actions use 48 circles with labels inside the entire tap target. Bottom navigation uses a fully opaque neutral near-black capsule, a subtle neutral outline and a grey selected pill across the coloured route families (DESK-003, 5 September 2026, 408×857 phone capture). It has no backdrop blur or translucent white gradient. The semantic navigation roles are Mobio adapters: surface #161618, selection #303033, selected foreground #F4F4F4, secondary foreground #A1A1A3. The same high-contrast capsule in Light mode is an explicit Mobio adaptation pending matching source Light evidence. It floats above system safe areas and exposes selected semantics, keyboard activation and four real destinations. Secondary routes use a back control. Native UI and browser previews respect reduced motion.
 
 ## Screen patterns
 

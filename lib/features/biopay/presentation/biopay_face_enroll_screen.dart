@@ -59,6 +59,7 @@ class _BioPayFaceEnrollScreenState
     setState(() {
       _busy = true;
       _error = null;
+      _sessionId = null;
       _captureStepIndex = 0;
       _capturedFrames.clear();
       _enrolled = false;
@@ -111,6 +112,8 @@ class _BioPayFaceEnrollScreenState
       setState(() {
         _enrolled = result.status == 'enrolled';
         if (!_enrolled) {
+          _sessionId = null;
+          _error = 'Face enrollment was not accepted. Start again to retry.';
           _capturedFrames.clear();
           _captureStepIndex = 0;
         }
@@ -119,6 +122,7 @@ class _BioPayFaceEnrollScreenState
       if (!mounted) return;
       setState(() {
         _error = 'Face enrollment was not accepted.';
+        _sessionId = null;
         _capturedFrames.clear();
         _captureStepIndex = 0;
       });
@@ -174,7 +178,8 @@ class _BioPayFaceEnrollScreenState
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    final readyForCapture = _camera?.value.isInitialized == true;
+    final readyForCapture =
+        _camera?.value.isInitialized == true && _sessionId != null;
     final currentChallenge = _enrollmentChallenges[_captureStepIndex];
     final capturedCount = _enrolled
         ? _enrollmentChallenges.length

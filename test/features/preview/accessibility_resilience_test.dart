@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_nfc_write_card_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_scan_screen.dart';
 import 'package:mobi_app/features/bookings/presentation/bookings_screen.dart';
@@ -66,6 +67,26 @@ void main() {
 
     await tester.tap(find.bySemanticsLabel('Back'));
     expect(backCount, 1);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('desktop Admin wordmark stays inside its sidebar at 2x text', (
+    tester,
+  ) async {
+    await pumpAccessibilitySubject(
+      tester,
+      const AdminWorkspaceFrame(
+        title: 'Reports',
+        subtitle: 'Chat safety and user blocks.',
+        currentTab: AdminWorkspaceTab.reports,
+        child: SizedBox.expand(),
+      ),
+      size: const Size(1280, 720),
+    );
+    final wordmark = tester.getRect(find.text('Mobio'));
+    expect(wordmark.left, greaterThanOrEqualTo(24));
+    expect(wordmark.right, lessThanOrEqualTo(216 - 24));
+    expect(find.text('Mobio'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

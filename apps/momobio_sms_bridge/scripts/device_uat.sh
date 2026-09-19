@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 APP_DIR="$ROOT_DIR/apps/momobio_sms_bridge"
 ADB="${ADB:-/Volumes/PRO-G40/AppData/android/sdk/platform-tools/adb}"
 APKSIGNER="${APKSIGNER:-/Volumes/PRO-G40/AppData/android/sdk/build-tools/36.1.0/apksigner}"
-SERIAL="${ANDROID_SERIAL:-13111JEC215558}"
+SERIAL="${ANDROID_SERIAL:?Set ANDROID_SERIAL to the explicitly selected UAT device}"
 PKG="com.momobio.app"
 UNSIGNED="$APP_DIR/app/build/outputs/apk/release/app-release-unsigned.apk"
 SIGNED="$APP_DIR/app/build/outputs/apk/release/mo-mobio-sms-bridge-internal-release.apk"
@@ -77,7 +77,7 @@ run "$APKSIGNER" sign \
 run "$APKSIGNER" verify --print-certs "$SIGNED"
 
 run "$ADB" -s "$SERIAL" install -r "$SIGNED"
-run "$ADB" -s "$SERIAL" shell pm clear "$PKG"
+# Preserve pending receipts, acknowledgements and the device signing key across updates.
 run "$ADB" -s "$SERIAL" shell pm grant "$PKG" android.permission.RECEIVE_SMS
 run "$ADB" -s "$SERIAL" shell pm grant "$PKG" android.permission.POST_NOTIFICATIONS || true
 run "$ADB" -s "$SERIAL" shell dumpsys deviceidle whitelist +"$PKG" || true

@@ -370,7 +370,11 @@ void main() {
       expect(biopayService, contains('createPreviewRequest'));
       expect(biopayService, contains('resolvePreviewToken'));
       expect(biopayService, contains('createFaceMatchPaymentRequest'));
-      expect(biopayService, contains('rpc_create_biopay_face_match_request'));
+      expect(
+        biopayService,
+        contains('rpc_create_verified_biopay_face_match_request'),
+      );
+      expect(biopayService, contains('p_match_session_id'));
       expect(biopayService, contains('markUserPaid'));
       expect(biopayService, contains('rpc_mark_biopay_ussd_user_paid'));
       expect(biopayService, contains('recordDialerOpened'));
@@ -396,7 +400,11 @@ void main() {
       expect(biopayFaceService, contains('enrollment_challenges'));
       expect(biopayFaceService, contains('provider_liveness_not_required'));
       expect(biopayFaceService, contains('provider_face_id'));
-      expect(biopayFaceService, contains('rpc_record_biopay_face_enrollment'));
+      expect(
+        biopayFaceService,
+        isNot(contains('rpc_record_biopay_face_enrollment')),
+      );
+      expect(biopayFaceService, contains('server_verified_at'));
       expect(biopayFaceService, contains('provider_face_id'));
       expect(biopayFaceService, contains('provider_collection_id'));
       expect(biopayFaceService, contains('provider_collection_id'));
@@ -603,8 +611,8 @@ void main() {
       expect(biopayModel, contains('required this.token'));
       expect(biopayModel, contains("'token': token"));
       expect(iosEntitlements, contains('com.apple.developer.nfc'));
-      expect(iosEntitlements, contains('NDEF'));
       expect(iosEntitlements, contains('TAG'));
+      expect(iosEntitlements, isNot(contains('<string>NDEF</string>')));
       expect(liveReadinessScript, contains('REQUIRE_BIOPAY_AWS_LIVE'));
       expect(liveReadinessScript, contains('REQUIRE_BIOPAY_SUPABASE_LIVE'));
       expect(liveReadinessScript, contains('REQUIRE_BIOPAY_DEVICE_LIVE'));
@@ -795,6 +803,15 @@ void main() {
           (line) => RegExp(r'^\s*-?\s*uses:').hasMatch(line),
         );
         for (final line in usesLines) {
+          final localWorkflow = RegExp(
+            r'uses:\s+(\./\.github/workflows/[A-Za-z0-9._-]+\.ya?ml)\s*$',
+          ).firstMatch(line);
+          if (localWorkflow != null) {
+            // A local reusable workflow is resolved at the caller's exact
+            // commit; external actions still require a full immutable SHA.
+            expect(File(localWorkflow.group(1)!).existsSync(), isTrue);
+            continue;
+          }
           expect(line, matches(RegExp(r'uses:\s+\S+@[0-9a-f]{40}\b')));
         }
       }

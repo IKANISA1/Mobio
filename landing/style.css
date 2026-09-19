@@ -19,6 +19,7 @@
 :root {
   --ink: #191c1f;
   --muted: #717173;
+  --copy: #58585b;
   --canvas: #fff;
   --widget: #f7f7f7;
   --blue: #1326fd;
@@ -296,7 +297,7 @@ section {
 .section-heading p:not(.eyebrow) {
   max-width: 500px;
   margin: 0 auto 28px;
-  color: #58585b;
+  color: var(--copy);
 }
 .discovery-stage {
   border-radius: 32px;
@@ -354,7 +355,6 @@ section {
 .city-orbit span:nth-child(3) {
   transform: translate(-70px, 94px);
   background: #805cff;
-  color: #fff;
 }
 .city-orbit span:nth-child(4) {
   position: absolute;
@@ -384,7 +384,7 @@ section {
   letter-spacing: -0.035em;
 }
 .feature-story p {
-  color: var(--muted);
+  color: var(--copy);
   max-width: 330px;
 }
 .journey-section {
@@ -763,9 +763,35 @@ section {
     padding: 8px 16px;
     font-size: 14px;
   }
-  .nav-toggle {
+  .nav.menu-ready .nav-toggle {
     display: block;
     flex-shrink: 0;
+  }
+  .nav:not(.menu-ready) {
+    position: absolute;
+    background: #fff;
+    color: var(--ink);
+  }
+  .legal-body .nav:not(.menu-ready) {
+    position: sticky;
+  }
+  .nav:not(.menu-ready) + main .hero-content {
+    padding-top: 148px;
+  }
+  .nav:not(.menu-ready) .nav-inner {
+    flex-wrap: wrap;
+  }
+  .nav:not(.menu-ready) .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    order: 3;
+    width: 100%;
+    gap: 0 24px;
+  }
+  .nav:not(.menu-ready) .nav-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
   }
   .nav-links {
     display: none;
@@ -794,6 +820,11 @@ section {
     position: fixed;
     background: #fff;
     color: #191c1f;
+  }
+  .menu-open .nav .btn-primary,
+  .nav:not(.menu-ready) .btn-primary {
+    background: #191c1f;
+    color: #fff;
   }
   .nav-toggle.active span:first-child {
     transform: translateY(4px) rotate(45deg);

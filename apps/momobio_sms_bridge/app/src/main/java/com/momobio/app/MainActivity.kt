@@ -4,6 +4,8 @@ import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Typeface
@@ -59,6 +61,14 @@ class MainActivity : Activity() {
                 addView(panel())
                 addView(spacer(18))
                 addView(enableButton)
+                addView(spacer(12))
+                addView(actionButton("Copy enrollment request", neutralPanel).apply {
+                    setOnClickListener {
+                        val enrollment = CollectorIdentity(applicationContext).enrollmentRequest()
+                        getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("Mo Mobio enrollment", enrollment))
+                        upload.text = "Public enrollment request copied. Ask your administrator to register this phone."
+                    }
+                })
             },
         )
         BridgeSupervisor.schedule(applicationContext)
@@ -101,7 +111,7 @@ class MainActivity : Activity() {
                 runOnUiThread {
                     upload.text = "Queued: ${messages.size}"
                 }
-                UploadClient().upload(messages) { uploadedHashes ->
+                UploadClient(CollectorIdentity(applicationContext)).upload(messages) { uploadedHashes ->
                     uploadedCount += uploadedHashes.size
                     queue.markUploaded(uploadedHashes)
                     runOnUiThread {

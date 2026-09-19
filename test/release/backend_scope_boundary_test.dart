@@ -286,15 +286,30 @@ void main() {
         );
         expect(sendAdminOtp, contains('.neq("id", insertedOtp.id)'));
 
+        for (final predicate in [
+          '.eq("phone", input.phone)',
+          '.eq("purpose", input.purpose)',
+          '.eq("attempts", input.expectedAttempts)',
+          '.eq("verified", false)',
+          '.gt("expires_at", new Date().toISOString())',
+          '.select("id")',
+        ]) {
+          expect(otpSecurity, contains(predicate));
+        }
+
         for (final source in [verifyLoginOtp, verifyAdminOtp]) {
-          expect(source, contains('const { error: attemptError }'));
-          expect(source, contains('throw attemptError'));
+          expect(source, contains('await claimOtpVerificationAttempt'));
+          expect(source, contains('if (!claimed)'));
+          expect(
+            source.indexOf('dependencies.createSession ??'),
+            greaterThan(source.indexOf('await claimOtpVerificationAttempt')),
+          );
           expect(
             source,
             contains('await hashOtpCode(code, { phone, purpose })'),
           );
           expect(source, contains('const legacyCodeHash'));
-          expect(source, contains('const { error: verifyError }'));
+          expect(source, isNot(contains('const { error: verifyError }')));
           expect(source, contains('.eq("phone", phone)'));
           expect(source, contains('.eq("purpose", purpose)'));
         }

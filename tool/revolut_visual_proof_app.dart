@@ -8,10 +8,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/app/launch_screen.dart';
 import 'package:mobi_app/app/router/error_screens.dart';
+import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/features/admin/presentation/admin_audit_log_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_auth_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_broadcasts_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_dashboard_screen.dart';
+import 'package:mobi_app/features/admin/presentation/admin_ev_chargers_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_operational_health_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_reports_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_subscriptions_screen.dart';
@@ -28,16 +30,20 @@ import 'package:mobi_app/features/biopay/presentation/biopay_home_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_nfc_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_nfc_write_card_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_qr_screen.dart';
+import 'package:mobi_app/features/biopay/presentation/biopay_request_payment_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_scan_screen.dart';
 import 'package:mobi_app/features/bookings/presentation/bookings_screen.dart';
 import 'package:mobi_app/features/bookings/presentation/schedule_trip_screen.dart';
 import 'package:mobi_app/features/bookings/presentation/trip_details_screen.dart';
 import 'package:mobi_app/features/chat/presentation/chat_screen.dart';
+import 'package:mobi_app/features/ev_chargers/presentation/ev_charger_locator_screen.dart';
 import 'package:mobi_app/features/home/presentation/home_screen.dart';
 import 'package:mobi_app/features/nearby/presentation/nearby_screen.dart';
 import 'package:mobi_app/features/notifications/presentation/notifications_screen.dart';
+import 'package:mobi_app/features/profile/presentation/driver_plus_screen.dart';
 import 'package:mobi_app/features/profile/presentation/edit_profile_screen.dart';
 import 'package:mobi_app/features/profile/presentation/profile_screen.dart';
+import 'package:mobi_app/features/profile/presentation/wallet_screen.dart';
 import 'package:mobi_app/shared/widgets/mobi_bottom_nav.dart';
 import 'package:mobi_design_system/theme/app_theme.dart';
 
@@ -45,6 +51,20 @@ import 'revolut_preview_services.dart';
 import 'revolut_whatsapp_preview_service.dart';
 
 void main() {
+  if (!SupabaseConfig.isVisualProofMode) {
+    runApp(
+      const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: Text(
+              'Build this fixture with scripts/web/build_visual_proof.sh. Production release builds do not enable previews.',
+            ),
+          ),
+        ),
+      ),
+    );
+    return;
+  }
   GoogleFonts.config.allowRuntimeFetching = false;
   runApp(
     ProviderScope(
@@ -55,7 +75,9 @@ void main() {
 }
 
 class RevolutVisualProofApp extends StatelessWidget {
-  const RevolutVisualProofApp({super.key});
+  const RevolutVisualProofApp({super.key, this.initialScreen});
+
+  final String? initialScreen;
 
   static const _screenFromDefine = String.fromEnvironment(
     'MOBI_VISUAL_PROOF_SCREEN',
@@ -64,9 +86,11 @@ class RevolutVisualProofApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final queryScreen = Uri.base.queryParameters['screen'];
-    final screen = _screenFromDefine.isNotEmpty
-        ? _screenFromDefine
-        : queryScreen ?? 'home_shell';
+    final screen =
+        initialScreen ??
+        (_screenFromDefine.isNotEmpty
+            ? _screenFromDefine
+            : queryScreen ?? 'home_shell');
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -75,7 +99,10 @@ class RevolutVisualProofApp extends StatelessWidget {
           : AppTheme.darkTheme,
       home: _VisualProofHost(
         initialScreen: screen,
-        allowInitialLink: _screenFromDefine.isEmpty && queryScreen == null,
+        allowInitialLink:
+            initialScreen == null &&
+            _screenFromDefine.isEmpty &&
+            queryScreen == null,
       ),
     );
   }
@@ -119,10 +146,14 @@ class _VisualProofHostState extends State<_VisualProofHost> {
     'profile',
     'edit_profile',
     'profile_setup',
+    'wallet',
+    'mobio_plus',
     'notifications',
     'chat',
     'nearby',
+    'ev_locator',
     'biopay_home',
+    'biopay_request',
     'biopay_qr',
     'biopay_scan',
     'biopay_face_scan',
@@ -133,6 +164,7 @@ class _VisualProofHostState extends State<_VisualProofHost> {
     'admin_dashboard',
     'admin_users',
     'admin_trips',
+    'admin_ev',
     'admin_biopay_ops',
     'admin_vehicle_types',
     'admin_subscriptions',
@@ -153,6 +185,10 @@ class _VisualProofHostState extends State<_VisualProofHost> {
   ];
 
   late String _screen = widget.initialScreen;
+  String _tripId = 't1';
+  final List<({String screen, String tripId})> _history = [];
+  String _mode = 'passenger';
+  bool _isDarkMode = Uri.base.queryParameters['theme'] != 'light';
   late int _nextIndex;
   Timer? _timer;
   StreamSubscription<Uri>? _linkSub;
@@ -181,8 +217,37 @@ class _VisualProofHostState extends State<_VisualProofHost> {
     }
   }
 
+  void _navigate(String destination) {
+    setState(() {
+      if (destination.endsWith('_shell')) {
+        _history.clear();
+      } else {
+        _history.add((screen: _screen, tripId: _tripId));
+      }
+      if (destination.startsWith('trip_details:')) {
+        _tripId = destination.substring('trip_details:'.length);
+        _screen = 'trip_details';
+      } else {
+        _screen = destination;
+      }
+    });
+  }
+
+  void _back(String fallback) {
+    setState(() {
+      if (_history.isEmpty) {
+        _screen = fallback;
+        return;
+      }
+      final previous = _history.removeLast();
+      _screen = previous.screen;
+      _tripId = previous.tripId;
+    });
+  }
+
   void _advanceScreen() {
     setState(() {
+      _history.clear();
       _screen = _screens[_nextIndex % _screens.length];
       _nextIndex += 1;
     });
@@ -205,6 +270,7 @@ class _VisualProofHostState extends State<_VisualProofHost> {
       return;
     }
     setState(() {
+      _history.clear();
       _screen = linkedScreen;
     });
   }
@@ -218,14 +284,42 @@ class _VisualProofHostState extends State<_VisualProofHost> {
 
   @override
   Widget build(BuildContext context) {
-    return _VisualProofSurface(screen: _screen);
+    return Theme(
+      data: _isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme,
+      child: _VisualProofSurface(
+        screen: _screen,
+        tripId: _tripId,
+        onBack: _back,
+        mode: _mode,
+        isDarkMode: _isDarkMode,
+        onModeChanged: (mode) => setState(() => _mode = mode),
+        onDarkModeChanged: (dark) => setState(() => _isDarkMode = dark),
+        onNavigate: _navigate,
+      ),
+    );
   }
 }
 
 class _VisualProofSurface extends StatelessWidget {
-  const _VisualProofSurface({required this.screen});
+  const _VisualProofSurface({
+    required this.screen,
+    required this.tripId,
+    required this.onBack,
+    required this.onNavigate,
+    required this.mode,
+    required this.isDarkMode,
+    required this.onModeChanged,
+    required this.onDarkModeChanged,
+  });
 
   final String screen;
+  final String tripId;
+  final ValueChanged<String> onBack;
+  final ValueChanged<String> onNavigate;
+  final String mode;
+  final bool isDarkMode;
+  final ValueChanged<String> onModeChanged;
+  final ValueChanged<bool> onDarkModeChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +331,16 @@ class _VisualProofSurface extends StatelessWidget {
       'profile_shell' => 3,
       _ => null,
     };
-    var child = _screenFor(baseScreen);
+    var child = _screenFor(
+      baseScreen,
+      onNavigate,
+      back: onBack,
+      tripId: tripId,
+      mode: mode,
+      isDarkMode: isDarkMode,
+      onModeChanged: onModeChanged,
+      onDarkModeChanged: onDarkModeChanged,
+    );
     final scrollOffset = _scrollOffsetFor(screen);
     if (scrollOffset != null) {
       child = _ScrollProofFrame(offset: scrollOffset, child: child);
@@ -253,66 +356,116 @@ class _VisualProofSurface extends StatelessWidget {
       body: Stack(
         children: [
           SafeArea(bottom: false, child: child),
-          MobiBottomNav(currentIndex: shellIndex, onTap: (_) {}),
+          MobiBottomNav(
+            currentIndex: shellIndex,
+            onTap: (index) {
+              onNavigate(
+                const [
+                  'home_shell',
+                  'bookings_shell',
+                  'biopay_shell',
+                  'profile_shell',
+                ][index],
+              );
+            },
+          ),
         ],
       ),
     );
   }
 }
 
-Widget _screenFor(String screen) {
+Widget _screenFor(
+  String screen,
+  ValueChanged<String> go, {
+  required ValueChanged<String> back,
+  required String tripId,
+  required String mode,
+  required bool isDarkMode,
+  required ValueChanged<String> onModeChanged,
+  required ValueChanged<bool> onDarkModeChanged,
+}) {
   return switch (screen) {
     'home' || 'home_shell' => HomeScreen(
-      mode: 'passenger',
-      onModeChanged: (_) {},
-      onChat: (_) {},
-      onViewNearby: () {},
-      onViewBookings: () {},
-      onSchedule: () {},
+      mode: mode,
+      onModeChanged: onModeChanged,
+      onChat: (_) => go('chat'),
+      onViewNearby: () => go('nearby'),
+      onViewBookings: () => go('bookings_shell'),
+      onSchedule: () => go('schedule'),
+      onNotifications: () => go('notifications'),
+      onEvChargers: () => go('ev_locator'),
     ),
     'bookings' || 'bookings_shell' => BookingsScreen(
-      mode: 'passenger',
-      onModeChanged: (_) {},
-      onSchedule: () {},
-      onTripDetails: (_) {},
+      mode: mode,
+      onModeChanged: onModeChanged,
+      onSchedule: () => go('schedule'),
+      onTripDetails: (id) => go('trip_details:$id'),
     ),
     'biopay_shell' || 'biopay_home' => BioPayScreen(
-      onQr: () {},
-      onScan: () {},
-      onFace: () {},
-      onNfc: () {},
-      onRequestPayment: () {},
+      onQr: () => go('biopay_qr'),
+      onScan: () => go('biopay_scan'),
+      onFace: () => go('biopay_face_scan'),
+      onNfc: () => go('biopay_nfc'),
+      onRequestPayment: () => go('biopay_request'),
     ),
     'schedule' => ScheduleTripScreen(
-      mode: 'passenger',
-      onModeChanged: (_) {},
-      onBack: () {},
+      mode: mode,
+      onModeChanged: onModeChanged,
+      onBack: () => back('home_shell'),
     ),
-    'trip_details' => TripDetailsScreen(tripId: 't1', onBack: () {}),
+    'trip_details' => TripDetailsScreen(
+      tripId: tripId,
+      onBack: () => back('home_shell'),
+    ),
     'trip_edit' => ScheduleTripScreen(
       mode: 'driver',
       onModeChanged: (_) {},
-      onBack: () {},
+      onBack: () => back('home_shell'),
       editingTripId: 't1',
     ),
     'profile' || 'profile_shell' => ProfileScreen(
-      isDarkMode: true,
-      onDarkModeChanged: (_) {},
-      onEditProfile: () {},
-      onAdminGateway: () {},
+      isDarkMode: isDarkMode,
+      onDarkModeChanged: onDarkModeChanged,
+      onEditProfile: () => go('edit_profile'),
+      onWallet: () => go('wallet'),
+      onInviteAndEarn: () => go('wallet'),
+      onMobioPlus: () => go('mobio_plus'),
+      onBioPayEnroll: () => go('biopay_face_enroll'),
+      onNfcWriteCard: () => go('biopay_nfc_write'),
+      onAdminGateway: () => go('admin_auth'),
     ),
-    'edit_profile' ||
-    'edit_profile_large_text' => EditProfileScreen(onBack: () {}),
-    'profile_setup' => EditProfileScreen(isFirstRun: true, onBack: () {}),
-    'notifications' => NotificationsScreen(onBack: () {}),
-    'chat' => TripChatScreen(onBack: () {}),
-    'nearby' => NearbyScreen(onChat: (_) {}, onTripDetails: (_) {}),
-    'biopay_qr' => BioPayQrScreen(onBack: () {}),
-    'biopay_scan' => BioPayScanScreen(onBack: () {}),
-    'biopay_face_scan' => BioPayFaceScanScreen(onBack: () {}),
-    'biopay_face_enroll' => BioPayFaceEnrollScreen(onBack: () {}),
-    'biopay_nfc' => BioPayNfcScreen(onBack: () {}),
-    'biopay_nfc_write' => BioPayNfcWriteCardScreen(onBack: () {}),
+    'edit_profile' || 'edit_profile_large_text' => EditProfileScreen(
+      onBack: () => back('home_shell'),
+    ),
+    'profile_setup' => EditProfileScreen(
+      isFirstRun: true,
+      onBack: () => back('home_shell'),
+    ),
+    'wallet' => WalletScreen(onBack: () => back('profile_shell')),
+    'mobio_plus' => DriverPlusScreen(onBack: () => back('profile_shell')),
+    'notifications' => NotificationsScreen(onBack: () => back('home_shell')),
+    'chat' => TripChatScreen(onBack: () => back('home_shell')),
+    'nearby' => NearbyScreen(
+      onChat: (_) => go('chat'),
+      onTripDetails: (id) => go('trip_details:$id'),
+    ),
+    'ev_locator' => EvChargerLocatorScreen(onBack: () => back('home_shell')),
+    'biopay_request' => BioPayRequestPaymentScreen(
+      onBack: () => back('biopay_shell'),
+    ),
+    'biopay_qr' => BioPayQrScreen(onBack: () => back('home_shell')),
+    'biopay_scan' => BioPayScanScreen(onBack: () => back('home_shell')),
+    'biopay_face_scan' => BioPayFaceScanScreen(
+      onBack: () => back('home_shell'),
+    ),
+    'biopay_face_enroll' => BioPayFaceEnrollScreen(
+      onBack: () => back('home_shell'),
+    ),
+    'biopay_nfc' => BioPayNfcScreen(onBack: () => back('home_shell')),
+    'biopay_nfc_write' => BioPayNfcWriteCardScreen(
+      onBack: () => back('home_shell'),
+    ),
     'splash' => const MobiLaunchScreen(),
     'login' || 'login_large_text' => ProviderScope(
       overrides: [
@@ -320,24 +473,40 @@ Widget _screenFor(String screen) {
           (ref) => PreviewWhatsAppLoginService(),
         ),
       ],
-      child: WhatsAppLoginScreen(onBack: () {}, onSuccess: (_) {}),
+      child: WhatsAppLoginScreen(
+        onBack: () => back('home_shell'),
+        onSuccess: (_) => go('home_shell'),
+      ),
     ),
-    'admin_auth' => AdminAuthScreen(onBack: () {}, onSuccess: () {}),
+    'admin_auth' => AdminAuthScreen(
+      onBack: () => back('home_shell'),
+      onSuccess: () => go('admin_dashboard'),
+    ),
     'admin_dashboard' => const AdminDashboardScreen(),
     'admin_users' => const AdminUsersScreen(),
-    'admin_trips' => AdminTripsScreen(onBack: () {}),
+    'admin_trips' => AdminTripsScreen(onBack: () => back('home_shell')),
+    'admin_ev' => AdminEvChargersScreen(onBack: () => back('admin_dashboard')),
     'admin_biopay_ops' => const BioPayAdminConsoleScreen(),
-    'admin_vehicle_types' => AdminVehicleTypesScreen(onBack: () {}),
-    'admin_subscriptions' => AdminSubscriptionsScreen(onBack: () {}),
-    'admin_reports' ||
-    'admin_reports_large_text' => AdminReportsScreen(onBack: () {}),
-    'admin_health' => AdminOperationalHealthScreen(onBack: () {}),
-    'admin_audit' => AdminAuditLogScreen(onBack: () {}),
-    'admin_broadcasts' => AdminBroadcastsScreen(onBack: () {}),
+    'admin_vehicle_types' => AdminVehicleTypesScreen(
+      onBack: () => back('home_shell'),
+    ),
+    'admin_subscriptions' => AdminSubscriptionsScreen(
+      onBack: () => back('home_shell'),
+    ),
+    'admin_reports' || 'admin_reports_large_text' => AdminReportsScreen(
+      onBack: () => back('home_shell'),
+    ),
+    'admin_health' => AdminOperationalHealthScreen(
+      onBack: () => back('home_shell'),
+    ),
+    'admin_audit' => AdminAuditLogScreen(onBack: () => back('home_shell')),
+    'admin_broadcasts' => AdminBroadcastsScreen(
+      onBack: () => back('home_shell'),
+    ),
     'schedule_keyboard' => ScheduleTripScreen(
       mode: 'passenger',
       onModeChanged: (_) {},
-      onBack: () {},
+      onBack: () => back('home_shell'),
     ),
     'config_error' => const ConfigErrorScreen(),
     'not_found' => const NotFoundScreen(),

@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission tools:node="removeAll" />
+
+    <!-- No launcher, receivers, services or WorkManager initializer in this
+         isolated component-test package. Production manifests are unchanged. -->
+    <application
+        android:allowBackup="false"
+        android:label="Mo Mobio component QA"
+        android:usesCleartextTraffic="false"
+        tools:node="replace" />
+</manifest>

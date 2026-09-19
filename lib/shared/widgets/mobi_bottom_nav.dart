@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/shared/widgets/glass_container.dart';
+import 'package:mobi_design_system/theme/app_colors.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
@@ -45,11 +45,7 @@ class MobiBottomNav extends StatelessWidget {
       right: 16,
       child: isAdmin
           ? _AdminNavContainer(child: navRow)
-          : GlassCard(
-              customBorderRadius: BorderRadius.circular(42),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: navRow,
-            ),
+          : _ConsumerNavContainer(child: navRow),
     );
   }
 
@@ -68,6 +64,27 @@ class MobiBottomNav extends StatelessWidget {
     _NavItem(LucideIcons.scanFace, 'BioPay'),
     _NavItem(LucideIcons.user, 'Account'),
   ];
+}
+
+class _ConsumerNavContainer extends StatelessWidget {
+  final Widget child;
+
+  const _ConsumerNavContainer({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.navigationSurface,
+        borderRadius: BorderRadius.circular(42),
+        border: Border.all(color: AppColors.navigationOutline, width: 1.1),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: child,
+      ),
+    );
+  }
 }
 
 class _AdminNavContainer extends StatelessWidget {
@@ -126,6 +143,11 @@ class _TappableNavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final foreground = isAdmin
+        ? (isActive ? cs.onSurface : cs.onSurfaceVariant)
+        : (isActive
+              ? AppColors.navigationForeground
+              : AppColors.navigationSecondaryForeground);
     return Semantics(
       button: true,
       selected: isActive,
@@ -135,7 +157,11 @@ class _TappableNavItem extends StatelessWidget {
         excludeFromSemantics: true,
         message: label,
         child: Material(
-          color: isActive ? cs.surfaceContainerHigh : Colors.transparent,
+          color: isActive
+              ? (isAdmin
+                    ? cs.surfaceContainerHigh
+                    : AppColors.navigationSelection)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(AppRadii.pill),
           child: InkWell(
             onTap: onTap,
@@ -148,18 +174,14 @@ class _TappableNavItem extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        icon,
-                        size: 22,
-                        color: isActive ? cs.onSurface : cs.onSurfaceVariant,
-                      ),
+                      Icon(icon, size: 22, color: foreground),
                       const SizedBox(height: 3),
                       Text(
                         label,
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         style: AppTypography.labelSm.copyWith(
-                          color: isActive ? cs.onSurface : cs.onSurfaceVariant,
+                          color: foreground,
                         ),
                       ),
                     ],

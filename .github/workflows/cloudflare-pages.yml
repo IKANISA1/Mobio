@@ -7,48 +7,15 @@ on:
         description: Cloudflare Pages branch/environment to deploy to
         required: true
         default: main
-      directory:
-        description: Static directory to deploy
-        required: true
-        default: landing
 
 permissions:
   contents: read
 
 jobs:
   deploy-pages:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment: Mobio
-
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-
-      - name: Validate Cloudflare Pages configuration
-        env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          test -n "$CLOUDFLARE_ACCOUNT_ID"
-          test -n "$CLOUDFLARE_PAGES_PROJECT_NAME"
-          test -n "$CLOUDFLARE_API_TOKEN"
-          test -d "${{ inputs.directory }}"
-
-      - name: Verify public site scope
-        run: ./scripts/web/verify_public_site.sh "${{ inputs.directory }}"
-
-      - name: Verify Cloudflare API token
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: npx wrangler whoami
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-          command: >-
-            pages deploy ${{ inputs.directory }}
-            --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}
-            --branch=${{ inputs.branch }}
+    # Both manual entrypoints must deploy the verified combined site. Deploying
+    # landing/ alone to this Pages project removes consumer and Admin runtimes.
+    uses: ./.github/workflows/cloudflare-pwa.yml
+    with:
+      branch: ${{ inputs.branch }}
+    secrets: inherit

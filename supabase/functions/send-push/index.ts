@@ -28,7 +28,9 @@ const fcmScope = "https://www.googleapis.com/auth/firebase.messaging";
 const tokenAudience = "https://oauth2.googleapis.com/token";
 
 function base64Url(input: string | Uint8Array): string {
-  const bytes = typeof input === "string" ? new TextEncoder().encode(input) : input;
+  const bytes = typeof input === "string"
+    ? new TextEncoder().encode(input)
+    : input;
   let binary = "";
   for (const byte of bytes) {
     binary += String.fromCharCode(byte);
@@ -59,10 +61,9 @@ function normalizePrivateKey(value: string): string {
 }
 
 function firebaseConfig() {
-  const serviceAccountJson =
-    (Deno.env.get("FIREBASE_SERVICE_ACCOUNT_JSON") ??
-      Deno.env.get("FCM_SERVICE_ACCOUNT_JSON"))
-      ?.trim();
+  const serviceAccountJson = (Deno.env.get("FIREBASE_SERVICE_ACCOUNT_JSON") ??
+    Deno.env.get("FCM_SERVICE_ACCOUNT_JSON"))
+    ?.trim();
   if (serviceAccountJson) {
     const parsed = JSON.parse(serviceAccountJson) as {
       client_email?: string;
@@ -109,9 +110,11 @@ async function googleAccessToken(): Promise<string> {
     iat: now,
     exp: now + 3600,
   };
-  const unsigned = `${base64Url(JSON.stringify(header))}.${base64Url(
-    JSON.stringify(claims),
-  )}`;
+  const unsigned = `${base64Url(JSON.stringify(header))}.${
+    base64Url(
+      JSON.stringify(claims),
+    )
+  }`;
   const key = await crypto.subtle.importKey(
     "pkcs8",
     pemToArrayBuffer(config.privateKey),
@@ -182,10 +185,58 @@ function isInvalidTokenResponse(status: number, body: JsonRecord): boolean {
     statusText === "INVALID_ARGUMENT" && message.includes("registration token");
 }
 
-Deno.serve(async (request) => {
+async function authorizePushInvocation(
+  request: Request,
+): Promise<Response | null> {
+  // fn_send_push_on_notification sends the Vault-held service credential.
+  // Gateway JWT validation alone also accepts public/user JWTs and does not
+  // authorize privileged notification reads or delivery on behalf of others.
+  const expected = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim() ||
+    Deno.env.get("COOL_PROJECT_SUPABASE_SERVICE_ROLE_KEY")?.trim();
+  if (!expected) {
+    return errorResponse(
+      "Push invocation is not configured",
+      503,
+      undefined,
+      request,
+    );
+  }
+  const authorization = request.headers.get("authorization") ?? "";
+  const token = /^Bearer\s+(\S+)$/i.exec(authorization)?.[1];
+  if (!token || token.length > 16384) {
+    return errorResponse(
+      "Unauthorized push invocation",
+      401,
+      undefined,
+      request,
+    );
+  }
+  const encoder = new TextEncoder();
+  const [suppliedHash, expectedHash] = await Promise.all(
+    [token, expected].map(async (value) =>
+      new Uint8Array(
+        await crypto.subtle.digest("SHA-256", encoder.encode(value)),
+      )
+    ),
+  );
+  let difference = 0;
+  for (let index = 0; index < expectedHash.length; index++) {
+    difference |= suppliedHash[index] ^ expectedHash[index];
+  }
+  return difference === 0
+    ? null
+    : errorResponse("Unauthorized push invocation", 401, undefined, request);
+}
+
+export async function handleSendPushRequest(
+  request: Request,
+): Promise<Response> {
   const cors = handleCors(request);
   if (cors) return cors;
   if (request.method !== "POST") return methodNotAllowed("POST", request);
+
+  const authorizationError = await authorizePushInvocation(request);
+  if (authorizationError) return authorizationError;
 
   const supabase = createAdminClient();
 
@@ -200,7 +251,12 @@ Deno.serve(async (request) => {
     ? payload.notification_id
     : null;
   if (!notificationId) {
-    return errorResponse("notification_id is required", 400, undefined, request);
+    return errorResponse(
+      "notification_id is required",
+      400,
+      undefined,
+      request,
+    );
   }
 
   const { data: notification, error: notificationError } = await supabase
@@ -405,4 +461,6 @@ Deno.serve(async (request) => {
     failed > 0 && sent === 0 ? 502 : 200,
     request,
   );
-});
+}
+
+if (import.meta.main) Deno.serve(handleSendPushRequest);

@@ -1,6 +1,12 @@
-name: Cloudflare PWA
+name: Cloudflare Website, Consumer App and Admin
 
 on:
+  workflow_call:
+    inputs:
+      branch:
+        description: Cloudflare Pages branch/environment to deploy to
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
       branch:
@@ -10,6 +16,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: mobio-pages-${{ inputs.branch }}
+  cancel-in-progress: false
 
 jobs:
   deploy-pwas:
@@ -67,12 +77,20 @@ jobs:
           SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY || secrets.SUPABASE_ANON_KEY }}
           PRIVACY_POLICY_URL: ${{ vars.PRIVACY_POLICY_URL || secrets.PRIVACY_POLICY_URL }}
           ACCOUNT_DELETION_URL: ${{ vars.ACCOUNT_DELETION_URL }}
-        run: ./scripts/web/prepare_pwa_bundles.sh
+        run: |
+          python3 scripts/web/fetch_previous_assets.py build/previous-public-site
+          PREVIOUS_SITE_DIR=build/previous-public-site ./scripts/web/prepare_pwa_bundles.sh
 
       - name: Verify generated PWA bundles
         run: ./scripts/web/verify_pwa_bundles.sh build/pwa
 
+      - name: Exercise Pages route and recovery behavior
+        run: |
+          node --test scripts/tests/pages_worker.test.mjs scripts/tests/admin_service_worker.test.mjs
+          python3 -m unittest discover -s scripts/tests
+
       - name: Deploy combined Pages site
+        id: deploy
         uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -81,3 +99,14 @@ jobs:
             pages deploy build/pwa/site
             --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME || vars.CLOUDFLARE_PAGES_CLIENT_PROJECT_NAME }}
             --branch=${{ inputs.branch }}
+
+      - name: Verify the deployed public release
+        env:
+          MOBIO_DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          MOBIO_DEPLOYMENT_BRANCH: ${{ inputs.branch }}
+        run: |
+          python3 scripts/web/verify_public_release.py --site build/pwa/site --origin "$MOBIO_DEPLOYMENT_URL" --output build/qa/pages-deployment.json
+          if [[ "$MOBIO_DEPLOYMENT_BRANCH" == "main" ]]; then
+            python3 scripts/web/verify_public_release.py --site build/pwa/site --origin https://mobio.ikanisa.com --output build/qa/pages-website.json
+            python3 scripts/web/verify_public_release.py --site build/pwa/site --origin https://mobioadmin.ikanisa.com --output build/qa/pages-admin.json
+          fi

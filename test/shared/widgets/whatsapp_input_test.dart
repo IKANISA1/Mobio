@@ -10,38 +10,50 @@ import 'package:mobi_shared_types/models/country.dart';
 void main() {
   testWidgets('WhatsApp input uses native phone text entry', (tester) async {
     var phone = '';
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          countryServiceProvider.overrideWithValue(_TestCountryService()),
-        ],
-        child: MaterialApp(
-          theme: AppTheme.darkTheme,
-          home: Scaffold(
-            body: WhatsAppInput(
-              value: phone,
-              onChanged: (value) => phone = value,
-              countryCode: '+250',
-              onCountryCodeChanged: (_) {},
+    final semantics = tester.ensureSemantics();
+    try {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            countryServiceProvider.overrideWithValue(_TestCountryService()),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: Scaffold(
+              body: WhatsAppInput(
+                value: phone,
+                onChanged: (value) => phone = value,
+                countryCode: '+250',
+                onCountryCodeChanged: (_) {},
+              ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.pump();
+      );
+      await tester.pump();
 
-    final phoneField = tester.widget<TextField>(find.byType(TextField).first);
-    expect(phoneField.keyboardType, TextInputType.phone);
-    expect(phoneField.autofillHints, contains(AutofillHints.telephoneNumber));
-    expect(find.byType(TextButton), findsNothing);
-    expect(find.byIcon(Icons.backspace_outlined), findsNothing);
+      final phoneField = tester.widget<TextField>(find.byType(TextField).first);
+      expect(phoneField.keyboardType, TextInputType.phone);
+      expect(phoneField.autofillHints, contains(AutofillHints.telephoneNumber));
+      expect(find.byType(TextButton), findsNothing);
+      expect(find.byIcon(Icons.backspace_outlined), findsNothing);
+      expect(
+        tester.getSemantics(find.byType(EditableText)).getSemanticsData().label,
+        contains('WhatsApp Number phone number, +250'),
+      );
 
-    await tester.enterText(find.byType(TextField).first, '0788 123 456');
-    await tester.pump();
+      await tester.enterText(find.byType(TextField).first, '0788 123 456');
+      await tester.pump();
 
-    expect(phone, '0788123456');
-    expect(find.text('0788123456'), findsOneWidget);
+      expect(phone, '0788123456');
+      expect(find.text('0788123456'), findsOneWidget);
+      expect(
+        tester.getSemantics(find.byType(EditableText)).getSemanticsData().label,
+        contains('WhatsApp Number phone number, +250'),
+      );
+    } finally {
+      semantics.dispose();
+    }
   });
 }
 

@@ -46,7 +46,7 @@ drop trigger if exists set_ev_chargers_updated_at on public.ev_chargers;
 create trigger set_ev_chargers_updated_at
   before update on public.ev_chargers
   for each row
-  execute function public.set_updated_at();
+  execute function public.handle_updated_at();
 
 alter table public.ev_chargers enable row level security;
 

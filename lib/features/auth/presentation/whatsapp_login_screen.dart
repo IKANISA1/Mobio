@@ -298,7 +298,10 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
                           maxWidth: 560,
-                          minHeight: constraints.maxHeight - 132,
+                          minHeight: (constraints.maxHeight - 132).clamp(
+                            0.0,
+                            double.infinity,
+                          ),
                         ),
                         child: Column(
                           children: [

@@ -24,7 +24,7 @@
   toggle.addEventListener("click", () =>
     setMenu(toggle.getAttribute("aria-expanded") !== "true"),
   );
-  links.addEventListener("click", (event) => {
+  nav.addEventListener("click", (event) => {
     if (event.target.closest("a")) setMenu(false);
   });
   window.closeMenu = () => setMenu(false);
@@ -36,17 +36,13 @@
     }
     if (event.key === "Tab") {
       const focusable = [...nav.querySelectorAll("a,button")].filter(
-        (el) => el.getClientRects().length,
+        (el) => el.getClientRects().length && getComputedStyle(el).visibility !== "hidden",
       );
-      const first = focusable[0],
-        last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
+      const current = focusable.indexOf(document.activeElement);
+      const next = current < 0 ? 0 :
+        (current + (event.shiftKey ? -1 : 1) + focusable.length) % focusable.length;
+      event.preventDefault();
+      focusable[next]?.focus();
     }
   });
   mobile.addEventListener("change", () => {
@@ -59,4 +55,6 @@
     );
   window.addEventListener("scroll", updateNav, { passive: true });
   updateNav();
+  // Keep ordinary navigation visible if this script cannot initialize.
+  nav.classList.add("menu-ready");
 })();

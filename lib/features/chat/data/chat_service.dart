@@ -7,10 +7,12 @@ import 'package:mobi_app/features/chat/domain/chat_message.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
 class ChatService {
-  ChatService({SupabaseClient? supabase})
-    : _supabase = supabase ?? Supabase.instance.client;
+  ChatService({SupabaseClient? supabase, DateTime Function()? now})
+    : _supabase = supabase ?? Supabase.instance.client,
+      _now = now ?? DateTime.now;
 
   final SupabaseClient _supabase;
+  final DateTime Function() _now;
   static const _queryTimeout = Duration(seconds: 15);
 
   String? get currentUserId => _supabase.auth.currentUser?.id;
@@ -229,8 +231,12 @@ class ChatService {
     RealtimeChannel? channel;
     var isRefreshing = false;
     var refreshQueued = false;
+    var isCancelled = false;
 
     Future<void> refreshMessages() async {
+      if (isCancelled || controller.isClosed) {
+        return;
+      }
       if (isRefreshing) {
         refreshQueued = true;
         return;
@@ -241,15 +247,15 @@ class ChatService {
         refreshQueued = false;
         try {
           final messages = await getRecentMessages(conversationId);
-          if (!controller.isClosed) {
+          if (!isCancelled && !controller.isClosed) {
             controller.add(messages);
           }
         } on Object catch (error, stackTrace) {
-          if (!controller.isClosed) {
+          if (!isCancelled && !controller.isClosed) {
             controller.addError(error, stackTrace);
           }
         }
-      } while (refreshQueued && !controller.isClosed);
+      } while (refreshQueued && !isCancelled && !controller.isClosed);
       isRefreshing = false;
     }
 
@@ -269,9 +275,16 @@ class ChatService {
               ),
               callback: (_) => unawaited(refreshMessages()),
             )
-            .subscribe();
+            .subscribe((status, _) {
+              // Changes committed before the first join or during an outage
+              // are recovered from history when the subscription is ready.
+              if (status == RealtimeSubscribeStatus.subscribed) {
+                unawaited(refreshMessages());
+              }
+            });
       },
       onCancel: () async {
+        isCancelled = true;
         final activeChannel = channel;
         channel = null;
         if (activeChannel != null) {
@@ -286,7 +299,7 @@ class ChatService {
 
   /// Minimum interval between message sends (prevents spam / double-tap).
   static const _sendCooldown = Duration(seconds: 1);
-  static DateTime? _lastSendTime;
+  DateTime? _lastSendTime;
 
   Future<void> sendMessage({
     required String conversationId,
@@ -298,11 +311,14 @@ class ChatService {
       return;
     }
 
-    // Debounce: reject rapid duplicate sends
-    final now = DateTime.now();
+    // A successful Future tells the composer it can clear the submitted draft.
+    // Rejected sends must therefore surface an error instead of being skipped.
+    final now = _now();
     if (_lastSendTime != null &&
         now.difference(_lastSendTime!) < _sendCooldown) {
-      return; // silently skip — UI handles "sending" state
+      throw const ValidationException(
+        message: 'Please wait a moment before sending another message.',
+      );
     }
     final previousSendTime = _lastSendTime;
     _lastSendTime = now;
@@ -315,10 +331,14 @@ class ChatService {
           )
           .timeout(_queryTimeout);
     } on AppException {
-      _lastSendTime = previousSendTime;
+      if (_lastSendTime == now) {
+        _lastSendTime = previousSendTime;
+      }
       rethrow;
     } on Object catch (error, stackTrace) {
-      _lastSendTime = previousSendTime;
+      if (_lastSendTime == now) {
+        _lastSendTime = previousSendTime;
+      }
       throw AppExceptionMapper.mapAndLog(
         error,
         stackTrace,

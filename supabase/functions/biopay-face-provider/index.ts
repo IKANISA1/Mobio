@@ -6,9 +6,18 @@ import {
   jsonResponse,
   methodNotAllowed,
 } from "../_shared/http.ts";
+import { type AppUser, requireAppUser } from "../_shared/app-user.ts";
+import { BioPayAuthority } from "../_shared/biopay-authority.ts";
+import { HttpError } from "../_shared/validation.ts";
 
 type JsonRecord = Record<string, unknown>;
 type FaceProviderMode = "aws_rekognition" | "not_configured";
+type Authority = Pick<BioPayAuthority,
+  "reserve" | "bindLiveness" | "requireLiveness" | "enroll" | "match" | "verifiedOwner">;
+type Dependencies = {
+  authenticate?: (request: Request) => Promise<AppUser>;
+  authority?: Authority;
+};
 
 const awsModelVersion = "aws-rekognition-face-liveness-v1";
 const awsModuleVersions = {
@@ -37,6 +46,7 @@ export function faceProviderMode(): FaceProviderMode {
 
 export async function handleBiopayFaceProviderRequest(
   request: Request,
+  dependencies: Dependencies = {},
 ): Promise<Response> {
   const corsResponse = handleCors(request);
   if (corsResponse) return corsResponse;
@@ -49,6 +59,7 @@ export async function handleBiopayFaceProviderRequest(
         success: true,
         provider: mode,
         production_ready: mode === "aws_rekognition",
+        readiness_basis: "configuration_only",
         provider_collection_id: mode === "aws_rekognition"
           ? requiredAwsEnv("AWS_REKOGNITION_COLLECTION_ID")
           : "",
@@ -65,7 +76,9 @@ export async function handleBiopayFaceProviderRequest(
 
   if (request.method !== "POST") return methodNotAllowed("POST", request);
 
-  if (faceProviderMode() !== "aws_rekognition") {
+  try {
+    const user = await (dependencies.authenticate ?? requireAppUser)(request);
+    if (faceProviderMode() !== "aws_rekognition") {
     return errorResponse(
       "AWS Rekognition face provider is not configured.",
       503,
@@ -75,13 +88,15 @@ export async function handleBiopayFaceProviderRequest(
       },
       request,
     );
-  }
-
-  const body = await request.json().catch(() => ({})) as JsonRecord;
-  const action = stringValue(body.action);
-
-  try {
-    const result = await handleAwsAction(action, body);
+    }
+    const body = await readBody(request);
+    const action = stringValue(body.action);
+    if (!["create_liveness_session", "get_liveness_result", "enroll_face", "match_face"].includes(action)) {
+      throw new HttpError("Unsupported BioPay action", 400);
+    }
+    const authority = dependencies.authority ?? new BioPayAuthority();
+    const operationId = await authority.reserve(user.id, action);
+    const result = await handleAwsAction(action, body, user.id, operationId, authority);
     return jsonResponse(
       {
         success: true,
@@ -93,29 +108,47 @@ export async function handleBiopayFaceProviderRequest(
       request,
     );
   } catch (error) {
+    if (error instanceof HttpError) {
+      return errorResponse(error.message, error.status, undefined, request);
+    }
     return errorResponse(
       "BioPay face provider request failed.",
       502,
       {
         code: "aws_face_provider_failed",
-        action,
-        message: error instanceof Error ? error.message : "Unknown error",
       },
       request,
     );
   }
 }
 
-async function handleAwsAction(action: string, body: JsonRecord) {
+async function handleAwsAction(action: string, body: JsonRecord, userId: string, operationId: string, authority: Authority): Promise<JsonRecord> {
   switch (action) {
-    case "create_liveness_session":
-      return await createLivenessSession(body);
-    case "get_liveness_result":
+    case "create_liveness_session": {
+      const result = await createLivenessSession({ client_request_token: operationId });
+      if (!result.session_id) throw new Error("provider_session_missing");
+      await authority.bindLiveness(operationId, userId, result.session_id);
+      return result;
+    }
+    case "get_liveness_result": {
+      await authority.requireLiveness(userId, stringValue(body.session_id), false);
       return await getLivenessResult(body);
-    case "enroll_face":
-      return await enrollFace(body);
-    case "match_face":
-      return await matchFace(body);
+    }
+    case "enroll_face": {
+      await authority.requireLiveness(userId, stringValue(body.liveness_session_id), true);
+      const result = await enrollFace({
+        ...body, face_profile_id: userId,
+        // A client may request stricter liveness but cannot disable server policy.
+        liveness_required: Deno.env.get("BIOPAY_REQUIRE_LIVENESS") === "true" || body.liveness_required === true,
+      }, userId, authority);
+      if (result.status === "enrolled") await authority.enroll(userId, operationId, result);
+      return { ...result, session_id: operationId };
+    }
+    case "match_face": {
+      const result = await matchFace(body);
+      await authority.match(userId, operationId, result);
+      return { ...result, session_id: operationId };
+    }
     default:
       throw new Error(`unsupported_action:${action}`);
   }
@@ -153,7 +186,7 @@ async function getLivenessResult(body: JsonRecord) {
   };
 }
 
-async function enrollFace(body: JsonRecord) {
+async function enrollFace(body: JsonRecord, userId: string, authority: Authority) {
   const imageB64 = stringValue(body.image_b64);
   if (!imageB64) return rejectedEnrollment(body, "image_required");
 
@@ -183,15 +216,25 @@ async function enrollFace(body: JsonRecord) {
     livenessStatus = "provider_liveness_verified";
   }
 
+  const detected = await awsRekognition("DetectFaces", {
+    Image: { Bytes: imageB64 }, Attributes: ["DEFAULT"],
+  });
+  const details = Array.isArray(detected.FaceDetails) ? detected.FaceDetails.filter(isRecord) : [];
+  if (details.length !== 1) return rejectedEnrollment(body, "single_face_required");
+  const qualityScore = awsQualityScore(details[0]);
+  if (qualityScore < minFaceQuality()) return rejectedEnrollment(body, "quality_below_threshold");
+
   const duplicate = firstAwsFaceMatch(
-    await searchFacesByImage(imageB64, 1).catch(() => null),
+    await searchFacesByImage(imageB64, 1),
   );
+  let faceId = "";
   if (duplicate && numberValue(duplicate.Similarity, 0) >= 99) {
-    return rejectedEnrollment(body, "duplicate_face_profile", {
-      duplicate_provider_face_id: stringValue(awsFaceRecord(duplicate)?.FaceId),
-    });
+    faceId = stringValue(awsFaceRecord(duplicate)?.FaceId);
+    const owner = await authority.verifiedOwner(faceId, requiredAwsEnv("AWS_REKOGNITION_COLLECTION_ID"));
+    if (owner && owner !== userId) return rejectedEnrollment(body, "duplicate_face_profile");
   }
 
+  if (!faceId) {
   const indexed = await awsRekognition("IndexFaces", {
     CollectionId: requiredAwsEnv("AWS_REKOGNITION_COLLECTION_ID"),
     Image: { Bytes: imageB64 },
@@ -207,19 +250,13 @@ async function enrollFace(body: JsonRecord) {
     : undefined;
   const face = isRecord(faceRecord?.Face) ? faceRecord.Face : null;
   if (!face?.FaceId) return rejectedEnrollment(body, "face_not_indexed");
-
-  const detail = isRecord(faceRecord?.FaceDetail)
-    ? faceRecord.FaceDetail
-    : null;
-  const qualityScore = awsQualityScore(detail);
-  if (qualityScore < minFaceQuality()) {
-    return rejectedEnrollment(body, "quality_below_threshold");
+  faceId = stringValue(face.FaceId);
   }
 
   return {
     status: "enrolled",
     face_profile_id: stringValue(body.face_profile_id),
-    provider_face_id: stringValue(face.FaceId),
+    provider_face_id: faceId,
     provider_collection_id: requiredAwsEnv("AWS_REKOGNITION_COLLECTION_ID"),
     quality_score: qualityScore,
     model_version: awsModelVersion,
@@ -249,7 +286,7 @@ async function matchFace(body: JsonRecord) {
   const matches = Array.isArray(search.FaceMatches)
     ? search.FaceMatches.filter(isRecord).map((match) => ({
       provider_face_id: stringValue(awsFaceRecord(match)?.FaceId),
-      provider_collection_id: stringValue(awsFaceRecord(match)?.CollectionId),
+      provider_collection_id: requiredAwsEnv("AWS_REKOGNITION_COLLECTION_ID"),
       similarity: round4(numberValue(match.Similarity, 0) / 100),
       external_image_id: stringValue(awsFaceRecord(match)?.ExternalImageId),
     }))
@@ -296,7 +333,7 @@ async function searchFacesByImage(imageB64: string, maxFaces: number) {
       Deno.env.get("AWS_REKOGNITION_FACE_MATCH_THRESHOLD"),
       99,
     ),
-    MaxFaces: Math.max(1, Math.min(4096, Math.trunc(maxFaces))),
+    MaxFaces: Math.max(1, Math.min(3, Math.trunc(maxFaces))),
     QualityFilter: "AUTO",
   });
 }
@@ -484,6 +521,31 @@ function isRecord(value: unknown): value is JsonRecord {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
+async function readBody(request: Request): Promise<JsonRecord> {
+  const reader = request.body?.getReader();
+  if (!reader) throw new HttpError("JSON object body required", 400);
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > 8 * 1024 * 1024) {
+      await reader.cancel();
+      throw new HttpError("Image request is too large", 413);
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+  try {
+    const body = JSON.parse(new TextDecoder().decode(bytes));
+    if (!isRecord(body)) throw new Error("object_required");
+    return body;
+  } catch { throw new HttpError("Invalid JSON object", 400); }
+}
+
 if (import.meta.main) {
-  Deno.serve(handleBiopayFaceProviderRequest);
+  Deno.serve((request) => handleBiopayFaceProviderRequest(request));
 }

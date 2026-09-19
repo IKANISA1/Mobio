@@ -1,6 +1,7 @@
 package com.momobio.app
 
 import android.util.Log
+import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -10,11 +11,21 @@ data class UploadResult(
     val message: String,
 )
 
-class UploadClient(
-    private val supabaseUrl: String = BuildConfig.SUPABASE_URL,
-    private val anonKey: String = BuildConfig.SUPABASE_ANON_KEY,
+class UploadClient internal constructor(
+    private val signHeaders: (ByteArray) -> Map<String, String>,
+    private val supabaseUrl: String,
+    private val anonKey: String,
+    private val openConnection: (String) -> HttpURLConnection,
+    private val logFailure: (String) -> Unit,
 ) {
-    private val logTag = "MoMobioBridge"
+    constructor(
+        identity: CollectorIdentity,
+        supabaseUrl: String = BuildConfig.SUPABASE_URL,
+        anonKey: String = BuildConfig.SUPABASE_ANON_KEY,
+    ) : this(identity::headers, supabaseUrl, anonKey,
+        { URL(it).openConnection() as HttpURLConnection },
+        { Log.e("MoMobioBridge", it) })
+
     private val batchSize = 50
 
     fun upload(
@@ -31,8 +42,17 @@ class UploadClient(
         for (chunk in messages.chunked(batchSize)) {
             val result = uploadBatch(endpoint, chunk)
             uploaded += result.uploadedHashes
-            if (result.ok && result.uploadedHashes.isNotEmpty()) {
-                onUploaded?.invoke(result.uploadedHashes)
+            if (result.uploadedHashes.isNotEmpty()) {
+                try {
+                    onUploaded?.invoke(result.uploadedHashes)
+                } catch (error: Exception) {
+                    logFailure("Queue acknowledgement failed: ${error.javaClass.simpleName}")
+                    return UploadResult(
+                        ok = false,
+                        uploadedHashes = uploaded.toSet(),
+                        message = "Server acknowledged ${uploaded.size}/${messages.size}; local queue save failed",
+                    )
+                }
             }
             if (!result.ok) {
                 return result.copy(
@@ -50,39 +70,60 @@ class UploadClient(
 
     private fun uploadBatch(endpoint: String, messages: List<MomoSms>): UploadResult {
         val body = """{"messages":[${messages.joinToString(",") { it.toJson() }}]}"""
-        val connection = (URL(endpoint).openConnection() as HttpURLConnection).apply {
-            requestMethod = "POST"
-            connectTimeout = 15_000
-            readTimeout = 60_000
-            doOutput = true
-            setRequestProperty("content-type", "application/json")
-            setRequestProperty("apikey", anonKey)
-            setRequestProperty("authorization", "Bearer $anonKey")
-        }
-
+        val bytes = body.toByteArray(Charsets.UTF_8)
+        var connection: HttpURLConnection? = null
         return try {
-            connection.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
-            val responseCode = connection.responseCode
+            val activeConnection = openConnection(endpoint)
+            // Keep the opened connection before configuration/signing can fail.
+            connection = activeConnection
+            activeConnection.apply {
+                requestMethod = "POST"
+                connectTimeout = 15_000
+                readTimeout = 60_000
+                doOutput = true
+                setRequestProperty("content-type", "application/json")
+                setRequestProperty("apikey", anonKey)
+                setRequestProperty("authorization", "Bearer $anonKey")
+                for ((name, value) in signHeaders(bytes)) setRequestProperty(name, value)
+            }
+            activeConnection.outputStream.use { it.write(bytes) }
+            val responseCode = activeConnection.responseCode
             val responseText = if (responseCode in 200..299) {
-                connection.inputStream.bufferedReader().use { it.readText() }
+                activeConnection.inputStream.bufferedReader().use { it.readText() }
             } else {
-                connection.errorStream?.bufferedReader()?.use { it.readText() }.orEmpty()
+                activeConnection.errorStream?.bufferedReader()?.use { it.readText() }.orEmpty()
             }
             if (responseCode in 200..299) {
+                val response = JSONObject(responseText)
+                val results = response.optJSONArray("results")
+                val expected = messages.map { it.messageHash }.toSet()
+                val acknowledged = mutableSetOf<String>()
+                if (response.optBoolean("success") && results != null) {
+                    for (index in 0 until results.length()) {
+                        val row = results.optJSONObject(index) ?: continue
+                        val hash = row.optString("message_hash")
+                        if (hash in expected && row.optString("status") in setOf("matched", "duplicate", "unmatched", "ambiguous", "ignored", "accepted")) acknowledged += hash
+                    }
+                }
                 UploadResult(
-                    ok = true,
-                    uploadedHashes = messages.map { it.messageHash }.toSet(),
-                    message = "Uploaded ${messages.size}",
+                    ok = acknowledged == expected,
+                    uploadedHashes = acknowledged,
+                    message = if (acknowledged == expected) "Uploaded ${acknowledged.size}" else "Incomplete server acknowledgement",
                 )
             } else {
-                Log.e(logTag, "Upload failed $responseCode: ${responseText.take(500)}")
-                UploadResult(ok = false, message = "Upload failed $responseCode: ${responseText.take(120)}")
+                logFailure("Upload failed $responseCode")
+                UploadResult(ok = false, message = when (responseCode) {
+                    401, 403 -> "Collector enrollment required"
+                    409 -> "Retrying collector request"
+                    429 -> "Sync limit reached; retrying later"
+                    else -> "Upload failed $responseCode"
+                })
             }
         } catch (error: Exception) {
-            Log.e(logTag, "Upload exception", error)
-            UploadResult(ok = false, message = "${error.javaClass.simpleName}: ${error.message ?: "Upload failed"}")
+            logFailure("Upload failed: ${error.javaClass.simpleName}")
+            UploadResult(ok = false, message = "Sync unavailable; messages remain queued")
         } finally {
-            connection.disconnect()
+            connection?.disconnect()
         }
     }
 }

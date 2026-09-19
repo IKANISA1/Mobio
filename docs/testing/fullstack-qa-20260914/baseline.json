@@ -1,0 +1,43 @@
+{
+  "recorded_at": "2026-09-14T15:05:54.704120+00:00",
+  "root": "/Users/jeanbosco/Projects/Recovered-PRO-G40/Mobio",
+  "branch": "codex/recovered-pro-g40-2026-09-10",
+  "head": "d94c4edb11a7496753a28f906b2f397fe06d6b12",
+  "working_tree_source_fingerprint": "343247903f434553443b2833de9e7c0c4135eda9b04df6d4ad3b4633471f2e22",
+  "source_manifest": "build/qa/fullstack-qa-20260914/source-manifest.json",
+  "source_files_hashed": 1925,
+  "fingerprint_exclusions": [
+    "QA plan, progress registers and raw QA artifacts",
+    "ignored runtime/signing configuration and generated caches"
+  ],
+  "flutter": {
+    "path": "/Users/jeanbosco/Developer/flutter/bin/flutter",
+    "observed_version": "3.44.4",
+    "dart_version": "3.12.2",
+    "repository_pin": "3.44.3",
+    "pin_equivalence": "unverified"
+  },
+  "configuration": {
+    "root_env_present": false,
+    "android_key_properties_present": true,
+    "contents_validated": false
+  },
+  "disk_free_gib": 2.66,
+  "counts": {
+    "expanded_route_patterns": 48,
+    "flutter_root_test_files": 86,
+    "deno_test_files": 10,
+    "edge_entrypoints": 16,
+    "migration_files": 96
+  },
+  "design_bundle_integrity": {
+    "result": "pass",
+    "command": "python3 scripts/verify_bundle.py",
+    "cwd": "/Users/jeanbosco/.codex/skills/revolut-design",
+    "full_private_collection_checked": false,
+    "proves_product_fidelity": false
+  },
+  "historical_qa": "docs/testing/fullstack-qa-uat-20260906.md",
+  "recovery_report": "../RESTORATION-REPORT.md",
+  "product_qa_result": "unverified"
+}

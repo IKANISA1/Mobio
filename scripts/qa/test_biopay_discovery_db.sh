@@ -22,7 +22,7 @@ create extension pgcrypto with schema extensions;
 create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
 create function auth.jwt() returns jsonb language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb $$;
 create table public.profiles(id uuid primary key, name text default '', phone text default '', member_id text, whatsapp_verified_at timestamptz, role text default 'passenger', momo_number text, momo_pay_code text);
-create table public.admin_whatsapp_numbers(phone_e164 text,is_active boolean);
+create table public.admin_whatsapp_numbers(phone_e164 text,country_code text not null,is_active boolean);
 '''
 legacy=Path('supabase/migrations/20260612133000_biopay_ussd_aws_reactivation.sql').read_text()
 fixture+=legacy[legacy.index('create table if not exists public.biopay_profiles'):legacy.index('alter table public.biopay_profiles enable')]

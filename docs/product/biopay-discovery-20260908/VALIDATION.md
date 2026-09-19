@@ -1,5 +1,7 @@
 # BioPay discovery validation — 8 September 2026
 
+Historical implementation record. See [10 September release follow-up](RELEASE-VALIDATION-20260910.md) for the full-schema rehearsal, live migrations, installed Android checks and hosting correction. The remaining acceptance gates are recorded there; this document's dated observations remain unchanged.
+
 All 24 recommendations have implementation coverage. `requirements.json` maps each recommendation to its code and separates implementation, automated checks, rendered evidence, physical-device testing and owner acceptance.
 
 ## Verified locally

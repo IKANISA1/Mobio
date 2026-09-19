@@ -5,6 +5,7 @@ import {
   adminDisplayName,
   adminEmailForPhone,
   type AdminWhatsappNumberRow,
+  findAdminAuthUserByPhone,
   localWhatsappNumber,
   resolveAdminWhatsappNumberByPhone,
 } from "../_shared/admin-whatsapp.ts";
@@ -14,7 +15,10 @@ import {
   jsonResponse,
   methodNotAllowed,
 } from "../_shared/http.ts";
-import { hashOtpCode } from "../_shared/otp-security.ts";
+import {
+  claimOtpVerificationAttempt,
+  hashOtpCode,
+} from "../_shared/otp-security.ts";
 import { normalizePhoneWithCountry } from "../_shared/phone.ts";
 import { createAdminClient, createAnonClient } from "../_shared/supabase.ts";
 
@@ -124,18 +128,7 @@ async function ensureAdminUserSession(
   const email = adminEmailForPhone(normalizedPhone);
   const password = `${crypto.randomUUID()}${crypto.randomUUID()}`;
 
-  let authUser = null;
-
-  const { data: usersData } = await supabase.auth.admin.listUsers({
-    page: 1,
-    perPage: 1000,
-  });
-
-  authUser =
-    (usersData?.users ?? []).find((user) =>
-      user.phone == normalizedPhone ||
-      user.email?.toLowerCase() == email.toLowerCase()
-    ) ?? null;
+  let authUser = await findAdminAuthUserByPhone(supabase, normalizedPhone);
 
   if (!authUser) {
     const { data, error } = await supabase.auth.admin.createUser({
@@ -231,7 +224,10 @@ async function ensureAdminUserSession(
   };
 }
 
-Deno.serve(async (req: Request) => {
+export async function handleVerifyAdminOtp(
+  req: Request,
+  dependencies: { createSession?: typeof ensureAdminUserSession } = {},
+): Promise<Response> {
   const corsResponse = handleCors(req);
   if (corsResponse) {
     return corsResponse;
@@ -242,7 +238,17 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const body = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return errorResponse(
+        "Valid JSON request body required",
+        400,
+        undefined,
+        req,
+      );
+    }
     const phone = normalizePhoneWithCountry(
       body?.phone,
       body?.countryCode,
@@ -334,15 +340,6 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { error: attemptError } = await supabase
-      .from("otp_codes")
-      .update({ attempts: otpRecord.attempts + 1 })
-      .eq("id", otpRecord.id);
-
-    if (attemptError) {
-      throw attemptError;
-    }
-
     const codeHash = otpRecord.code_hash
       ? await hashOtpCode(code, { phone, purpose })
       : null;
@@ -350,6 +347,22 @@ Deno.serve(async (req: Request) => {
     const isValidCode = otpRecord.code_hash
       ? codeHash == otpRecord.code_hash || legacyCodeHash == otpRecord.code_hash
       : otpRecord.code == code;
+
+    const claimed = await claimOtpVerificationAttempt(supabase, {
+      id: otpRecord.id,
+      phone,
+      purpose,
+      expectedAttempts: otpRecord.attempts,
+      valid: isValidCode,
+    });
+    if (!claimed) {
+      return errorResponse(
+        "This code changed or was already used. Try again or request a new code.",
+        409,
+        undefined,
+        req,
+      );
+    }
 
     if (!isValidCode) {
       const remaining = Math.max(0, 4 - otpRecord.attempts);
@@ -380,23 +393,13 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { error: verifyError } = await supabase
-      .from("otp_codes")
-      .update({ verified: true })
-      .eq("phone", phone)
-      .eq("purpose", purpose)
-      .eq("verified", false);
-
-    if (verifyError) {
-      throw verifyError;
-    }
-
-    const { userId, session } = await ensureAdminUserSession(
-      supabase,
-      anonClient,
-      adminNumber,
-      phone,
-    );
+    const { userId, session } =
+      await (dependencies.createSession ?? ensureAdminUserSession)(
+        supabase,
+        anonClient,
+        adminNumber,
+        phone,
+      );
 
     await tryRecordAdminAccessAttempt({
       supabase,
@@ -439,4 +442,6 @@ Deno.serve(async (req: Request) => {
     console.error("verify-otp error:", error);
     return errorResponse("Internal error", 500, undefined, req);
   }
-});
+}
+
+if (import.meta.main) Deno.serve((request) => handleVerifyAdminOtp(request));

@@ -1,0 +1,328 @@
+{
+  "plan": "docs/testing/fullstack-qa-plan-20260914.md",
+  "plan_sha256": "a76d44557724f4e045aed993afc386c02c744cd6735da3ae7a9998587d971263",
+  "goal_status": "active",
+  "goal_created_after_plan": true,
+  "updated_at": "2026-09-15T01:18:09.579437+00:00",
+  "current_phase": "M1",
+  "milestones": [
+    {
+      "id": "M0",
+      "name": "Baseline established",
+      "status": "completed"
+    },
+    {
+      "id": "M1",
+      "name": "Inventory and test environment ready",
+      "status": "in_progress"
+    },
+    {
+      "id": "M2",
+      "name": "Trust boundaries reviewed",
+      "status": "in_progress"
+    },
+    {
+      "id": "M3",
+      "name": "Journeys executed",
+      "status": "in_progress"
+    },
+    {
+      "id": "M4",
+      "name": "Visual and accessibility reviewed",
+      "status": "in_progress"
+    },
+    {
+      "id": "M5",
+      "name": "Platform performance and recovery executed",
+      "status": "in_progress"
+    },
+    {
+      "id": "M6",
+      "name": "Remediations regressed",
+      "status": "in_progress"
+    },
+    {
+      "id": "M7",
+      "name": "Report and remaining acceptance handoff delivered",
+      "status": "planned"
+    }
+  ],
+  "next_actions": [
+    "Qualify remaining Realtime cold-start/notification recovery and lifecycle/order behavior; resolve FQA-035 on the designated Storage service; continue remaining identity/argument, OTP send/recovery, hosted Edge and jobs paths.",
+    "Finish remaining Admin/consumer traces and qualify configured app integration; two unused legacy helpers do not justify feature restoration",
+    "Complete collector operational worker/service/broadcast recovery, simultaneous upload and physical-device cases",
+    "Qualify legitimate service configuration, then configured app/Admin/installed-PWA/native journeys with exact artifacts",
+    "Finish website source comparison, actual zoom/reader/field performance and remaining design criteria",
+    "Deliver final per-surface report after every executable review check; keep deployment, device/provider and independent/owner acceptance separate"
+  ],
+  "readiness": "NO-GO: review incomplete and required runtime/device/acceptance evidence missing",
+  "qa_complete": false,
+  "human_acceptance": "unverified",
+  "baseline_checks": "docs/testing/fullstack-qa-20260914/baseline-checks.json",
+  "confirmed_findings": [
+    "FQA-001",
+    "FQA-002",
+    "FQA-003",
+    "FQA-004",
+    "FQA-005",
+    "FQA-006",
+    "FQA-007",
+    "FQA-008",
+    "FQA-009",
+    "FQA-010",
+    "FQA-011",
+    "FQA-012",
+    "FQA-013",
+    "FQA-014",
+    "FQA-015",
+    "FQA-016",
+    "FQA-017",
+    "FQA-018",
+    "FQA-019",
+    "FQA-020",
+    "FQA-021",
+    "FQA-022",
+    "FQA-023",
+    "FQA-024",
+    "FQA-025",
+    "FQA-026",
+    "FQA-027",
+    "FQA-028",
+    "FQA-029",
+    "FQA-030",
+    "FQA-031",
+    "FQA-032",
+    "FQA-033",
+    "FQA-034",
+    "FQA-035",
+    "FQA-036",
+    "FQA-037",
+    "FQA-038"
+  ],
+  "current_sdk": {
+    "path": "/Users/jeanbosco/Developer/flutter_3_44_codex/bin/flutter",
+    "flutter": "3.44.3",
+    "dart": "3.12.2",
+    "framework_revision": "e1fd963c6f6922bd32afde2e9698a363cd0406d2",
+    "note": "Pinned SDK discovered and executed; initial Flutter 3.44.4 evidence is retained separately"
+  },
+  "current_source_fingerprint": "2b6dbce43afd00bee575fa5df163c98f098367ca278be6c4265a7f8c6d8884cb",
+  "checkpoint": "Chat join/reconnect history repair qualified through actual Dart SDK and services;648 Flutter tests;38 findings; goal active",
+  "latest_results": {
+    "flutter": {
+      "passed": 648,
+      "failed": 0,
+      "sdk": "3.44.3",
+      "evidence": "build/qa/fullstack-qa-20260914/chat-recovery-final-flutter-test.log",
+      "source_fingerprint": "2b6dbce43afd00bee575fa5df163c98f098367ca278be6c4265a7f8c6d8884cb",
+      "note": "Full648 tests passed after chat history reconciliation; five new SDK lifecycle regressions.",
+      "later_focused_passed": 17,
+      "later_focused_evidence": "build/qa/fullstack-qa-20260914/flutter-authority-final-focused.log"
+    },
+    "backend": {
+      "passed": 109,
+      "failed": 0,
+      "ignored": 1,
+      "linked_sql": "not_run; cloud project not available; isolated SQL is separate",
+      "evidence": "build/qa/fullstack-qa-20260914/realtime-deno-test.log",
+      "note": "109 passed,0 failed,1 ignored on the current source;16 Edge entrypoints type checked.",
+      "source_fingerprint": "dec8969777c8cee28f691d3b2d9f0d23b0dc4780f225c131949fbf4feebf63b5"
+    },
+    "node_workers": {
+      "passed": 69,
+      "failed": 0,
+      "evidence": "build/qa/fullstack-qa-20260914/web-workers-home-routing.log",
+      "source_fingerprint": "c103ec1caedde919164404c746297c15e5bb35a603847b11daa9dcf44819cc15"
+    },
+    "deno_payment_worker": {
+      "passed": 2,
+      "failed": 0
+    },
+    "python_helpers": {
+      "passed": 27,
+      "failed": 0
+    },
+    "website_browser": {
+      "passed": 104,
+      "failed": 0,
+      "browsers": {
+        "chromium": "151.0.7922.34",
+        "webkit": "26.5"
+      },
+      "surfaces": 5,
+      "evidence": "build/qa/fullstack-qa-20260914/website-final-4/results.json"
+    },
+    "website_resilience": {
+      "passed": 10,
+      "failed": 0,
+      "webkit_cls": "unavailable; not zero"
+    },
+    "website_accessibility": {
+      "local_lighthouse_audits": 6,
+      "accessibility_score": 100,
+      "human_acceptance": "unverified"
+    },
+    "chat": {
+      "new_regressions_passed": 10,
+      "focused_batch_passed": 17,
+      "synthetic_local_chat_messages_sent": 8,
+      "new_recovery_regressions_passed": 5,
+      "focused_recovery_batch_passed": 16,
+      "actual_dart_service_recovery_cases": 6,
+      "actual_service_evidence": "build/qa/fullstack-qa-20260914/chat-service-live-green.json",
+      "source_fingerprint": "2b6dbce43afd00bee575fa5df163c98f098367ca278be6c4265a7f8c6d8884cb",
+      "external_messages_sent": 0
+    },
+    "inventory": {
+      "routes": 49,
+      "supabase_call_sites": 141,
+      "unique_rpc_names": 94,
+      "dio_call_sites": 5,
+      "overlay_call_sites": 66,
+      "sql_migrations_parsed": 103,
+      "sql_statements": 2393,
+      "runtime_authority": "Selected actual Auth/REST/Storage/Realtime and SQL identity boundaries qualified. Open Storage concurrency, cold-start/reconnect/client behavior and remaining actor/deployed paths persist.",
+      "reference_rows": 54,
+      "operational_procedures": 60,
+      "product_procedures_unverified": 52,
+      "skill_maintenance_not_applicable": 8,
+      "design_rules_unverified": 100,
+      "admin_state_data_traces": 9,
+      "collector_state_data_traces": 14
+    },
+    "routing": {
+      "focused_passed": 27,
+      "new_behavioral_regressions": 5,
+      "capture_variants": 3,
+      "full_suite_after_routing": "643 passed",
+      "proof_harness": "two actual widget-host journeys passed; compiled browser/native/PWA still unverified",
+      "actual_browser_native_pwa": "unverified"
+    },
+    "admin_users": {
+      "initial_reproduction": {
+        "passed": 1,
+        "failed": 8
+      },
+      "first_repair": {
+        "passed": 9,
+        "failed": 0
+      },
+      "extended_intermediate": {
+        "passed": 12,
+        "failed": 1
+      },
+      "final_repair": "fixed_locally",
+      "current_tests": "13 controller and 2 directory widgets passed; 45 focused and 643 full suite passed",
+      "ui_outcome_tests": "two actual-screen fixtures passed",
+      "state_data_trace_rows": 9,
+      "real_database_mutations": 0
+    },
+    "collector": {
+      "jvm_unique_tests": 35,
+      "gradle_unit_passed": 35,
+      "android_unique_tests": 6,
+      "android_lifecycle_runs": 3,
+      "android_test_executions": 18,
+      "isolated_qa_apks": "built and verified; no permissions or target app components",
+      "state_data_trace_rows": 14,
+      "operational_collection": "unverified; not activated",
+      "physical_devices": "unverified",
+      "upload_cases": 16,
+      "multipart_cases": 6,
+      "actual_android_multipart_parser": "passed synthetic PDUs through real API; no broadcast",
+      "worker_service_retry": "source compiled; OS behavior unverified"
+    },
+    "database": {
+      "fresh_migrations_passed": 102,
+      "application_bootstrap_fixture": false,
+      "sql_suites_passed": 9,
+      "rate_limit_tests": 8,
+      "http_mocked_push_assertions": 15,
+      "notification_publication_sql_role_assertions": 11,
+      "otp_claim_sql_cases": 3,
+      "otp_claim_observed_lock_races": 6,
+      "routine_check_contexts": 166,
+      "routine_check_unique": 142,
+      "routine_errors": 0,
+      "routine_warnings": 4,
+      "catalog_audit_rows": 0,
+      "public_storage_relations": 90,
+      "policies": 133,
+      "non_extension_public_routines": 168,
+      "direct_table_grant_rows": 1790,
+      "storage_buckets": 4,
+      "realtime_publication_tables": 4,
+      "full_cli_rehearsal": "passed locally with CLI2.84.2 and official mirrored PostgreSQL17.6.1.095 image; hosted CI not executed",
+      "service_runtime": "Actual isolated GoTrue2.195.0 and PostgREST16.1 HTTP.24 extended,13 core and6 expiry checks pass with overlapping coverage; local Auth fixture provisioning is not WhatsApp/Admin OTP acceptance.",
+      "production_writes": 0,
+      "evidence": "build/qa/fullstack-qa-20260914/db-admin-purpose-cli-rehearsal.json",
+      "retained_fixture": "mobio_fullstack_qa_authority_final_20260914",
+      "fixture_cleanup_evidence": "build/qa/fullstack-qa-20260914/edge-session-retained-environment.json",
+      "identity_sql_assertions": 40,
+      "permission_expiry_sql_assertions": 9,
+      "http_core_checks": 13,
+      "http_extended_checks": 24,
+      "http_permission_timezone_checks": 6,
+      "admin_login_sql_assertions": 29,
+      "admin_login_http_checks": 22
+    },
+    "edge_sessions": {
+      "passed": 30,
+      "failed": 0,
+      "evidence": "build/qa/fullstack-qa-20260914/edge-otp-session-final-regression.json",
+      "source_fingerprint": "382b3d0ca57ca423339afa22fd706f906e4e331dc2717673545afdca716bc447",
+      "runtime": "Deno2.9.6 exported handlers with actual GoTrue2.195.0/PostgREST16.1/PostgreSQL17.6",
+      "provider_delivery": "not_executed",
+      "hosted_edge_runtime_parity": "unverified"
+    },
+    "storage": {
+      "service": "Storage1.68.10",
+      "original_checks": 53,
+      "initial_passes": 48,
+      "corrected_error_envelope_retests": 4,
+      "followup_checks": 14,
+      "followup_passes": 14,
+      "explicit_concurrency_checks": 8,
+      "explicit_concurrency_passes": 2,
+      "open_finding": "FQA-035",
+      "evidence": "build/qa/fullstack-qa-20260914/storage-promo-harness-qualification.json",
+      "deployed_version": "unverified",
+      "s3_cdn_transforms": "unverified"
+    },
+    "promo_generation": {
+      "unit_passes": 8,
+      "actual_local_storage_rest_scenarios": 3,
+      "provider_output": "synthetic; no provider call",
+      "evidence": "build/qa/fullstack-qa-20260914/promo-storage-handler-regression.json",
+      "source_fingerprint": "4793f13aa2c1cafc4098fae9ecaf8b5d738135d23e8f12f3006ef6a47a5fc718"
+    },
+    "realtime": {
+      "service": "2.124.4",
+      "sdk": "2.105.4",
+      "authority_checks": 23,
+      "authority_passes_after_correct_contract_retest": 23,
+      "unsubscribe_checks_passed": 3,
+      "chat_verified_logout_checks_after_contract_retest": 13,
+      "permanent_driver_sql_assertions": 25,
+      "repaired_finding": "FQA-037",
+      "source_fingerprint": "dec8969777c8cee28f691d3b2d9f0d23b0dc4780f225c131949fbf4feebf63b5",
+      "evidence": "build/qa/fullstack-qa-20260914/realtime-harness-qualification.json",
+      "cold_start": "Initial notification miss remains unqualified; warm delivery does not close it",
+      "reconnect_order_loss_client_lifecycle": "unverified",
+      "hosted_version_and_parity": "unverified",
+      "chat_client_join_reconnect": "FQA-038 fixed locally; actual Dart service catches up after join/reconnect; five permanent mocked SDK regressions. Other lifecycle/order/notification paths remain unverified."
+    },
+    "database_realtime_rehearsal": {
+      "migrations": 103,
+      "sql_suites": 10,
+      "otp_rate_cases": 8,
+      "cli": "2.84.2",
+      "database": "17.6.1.095",
+      "exit_code": 0,
+      "owned_replay_container_remaining": false,
+      "evidence": "build/qa/fullstack-qa-20260914/realtime-cli-rehearsal.json",
+      "source_fingerprint": "dec8969777c8cee28f691d3b2d9f0d23b0dc4780f225c131949fbf4feebf63b5"
+    }
+  },
+  "open_user_question": "Path to approved QA configuration or existing non-production Supabase project requested asynchronously; no reply yet"
+}

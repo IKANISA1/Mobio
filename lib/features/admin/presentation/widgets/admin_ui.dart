@@ -174,10 +174,16 @@ class AdminWorkspaceFrame extends StatelessWidget {
                                 height: 32,
                               ),
                               const SizedBox(width: 10),
-                              Text(
-                                'Mobio',
-                                style: AppTypography.headlineLg.copyWith(
-                                  color: cs.onSurface,
+                              Expanded(
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    'Mobio',
+                                    style: AppTypography.headlineLg.copyWith(
+                                      color: cs.onSurface,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],

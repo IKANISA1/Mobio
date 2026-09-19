@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
+import android.util.Log
 
 class SmsReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -11,20 +12,15 @@ class SmsReceiver : BroadcastReceiver() {
         val pending = goAsync()
         Thread {
             try {
-                val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
-                    .map {
-                        MomoSms(
-                            sender = it.displayOriginatingAddress ?: it.originatingAddress ?: "",
-                            body = it.messageBody ?: "",
-                            receivedAtMillis = it.timestampMillis,
-                        )
-                    }
+                val messages = decodeIncomingSms(intent)
+                if (messages.isEmpty()) return@Thread
                 val queue = SmsQueue(context.applicationContext)
                 queue.enqueue(messages)
                 BridgeSupervisor.enqueueImmediate(context.applicationContext)
                 BridgeSupervisor.start(context.applicationContext)
-                val result = UploadClient().upload(queue.all())
-                queue.markUploaded(result.uploadedHashes)
+                // The service/worker uploads outside the broadcast's time limit.
+            } catch (error: Exception) {
+                Log.e("MoMobioBridge", "SMS queue/scheduling failed: ${error.javaClass.simpleName}")
             } finally {
                 pending.finish()
             }

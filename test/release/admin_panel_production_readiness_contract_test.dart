@@ -12,6 +12,9 @@ void main() {
       final preparePwa = File(
         'scripts/web/prepare_pwa_bundles.sh',
       ).readAsStringSync();
+      final pagesWorker = File(
+        'scripts/web/pages_worker.mjs',
+      ).readAsStringSync();
       final router = File('lib/app/router/app_router.dart').readAsStringSync();
 
       expect(
@@ -24,20 +27,19 @@ void main() {
       expect(main, contains("return 'Mobio Admin';"));
       expect(preparePwa, contains('start_url="/admin-auth"'));
       expect(preparePwa, contains(r'site_dir="$output_root/site"'));
-      expect(preparePwa, contains(r'cat > "$site_dir/_worker.js"'));
       expect(
         preparePwa,
+        contains(
+          r'cp "$repo_root/scripts/web/pages_worker.mjs" "$site_dir/_worker.js"',
+        ),
+      );
+      expect(
+        pagesWorker,
         contains(r'Response.redirect(`${url.origin}/admin-auth`, 302)'),
       );
-      expect(
-        preparePwa,
-        contains('const response = await serveAsset(env, request, shellPath);'),
-      );
-      expect(
-        preparePwa,
-        contains('headers.set("content-type", "text/html; charset=utf-8");'),
-      );
-      expect(preparePwa, contains('mobioadmin.ikanisa.com'));
+      expect(pagesWorker, contains('env.ASSETS.fetch'));
+      expect(pagesWorker, contains('text/html; charset=utf-8'));
+      expect(pagesWorker, contains('mobioadmin.ikanisa.com'));
       expect(router, contains("path: '/admin-auth'"));
       expect(router, contains("path: '/admin'"));
       expect(router, contains("path: '/admin/vehicle-types'"));
@@ -90,7 +92,10 @@ void main() {
         verifyPwa,
         contains('Redirects must delegate route control to the Pages worker'),
       );
-      expect(verifyPwa, contains('Pages worker missing'));
+      expect(
+        verifyPwa,
+        contains('Packaged Pages worker differs from the tested source module'),
+      );
       expect(
         verifyPwa,
         contains(
@@ -98,6 +103,30 @@ void main() {
         ),
       );
     });
+
+    test(
+      'legacy Pages deployment delegates to the verified combined build',
+      () {
+        final legacy = File(
+          '.github/workflows/cloudflare-pages.yml',
+        ).readAsStringSync();
+        final combined = File(
+          '.github/workflows/cloudflare-pwa.yml',
+        ).readAsStringSync();
+
+        expect(
+          legacy,
+          contains('uses: ./.github/workflows/cloudflare-pwa.yml'),
+        );
+        expect(legacy, contains(r'branch: ${{ inputs.branch }}'));
+        expect(legacy, contains('secrets: inherit'));
+        expect(legacy, isNot(contains('pages deploy')));
+        expect(legacy, isNot(contains('inputs.directory')));
+        expect(combined, contains('workflow_call:'));
+        expect(combined, contains('environment: Mobio'));
+        expect(combined, contains('pages deploy build/pwa/site'));
+      },
+    );
 
     test('keeps admin catalog writes behind audited RPCs', () {
       final service = File(
@@ -179,9 +208,6 @@ void main() {
     });
 
     test('admin workspaces use backend pagination for scalable queues', () {
-      final usersProvider = File(
-        'lib/features/admin/application/admin_users_provider.dart',
-      ).readAsStringSync();
       final usersState = File(
         'lib/features/admin/application/admin_users_state.dart',
       ).readAsStringSync();
@@ -215,8 +241,9 @@ void main() {
         expect(source, isNot(contains('limit: 200')));
       }
 
-      expect(usersProvider, contains('offset: safePage * safeRowsPerPage'));
-      expect(usersProvider, contains('limit: safeRowsPerPage + 1'));
+      // User request arguments, next-page detection and retained filters are
+      // exercised behaviorally in admin_users_provider_test.dart. Local
+      // variable names are not part of the pagination contract.
       expect(usersState, contains('hasNextPage'));
       expect(usersState, contains('paginationTotal'));
       expect(usersScreen, isNot(contains('_pageUsers')));

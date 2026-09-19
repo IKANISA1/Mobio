@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobi_app/shared/widgets/mobi_bottom_nav.dart';
 import 'package:mobi_design_system/theme/app_theme.dart';
@@ -10,13 +11,18 @@ void main() {
     required ValueChanged<int> onTap,
     bool isAdmin = false,
     bool disableAnimations = false,
+    double textScale = 1,
   }) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
       home: MediaQuery(
-        data: MediaQueryData.fromView(
-          WidgetsBinding.instance.platformDispatcher.views.first,
-        ).copyWith(disableAnimations: disableAnimations),
+        data:
+            MediaQueryData.fromView(
+              WidgetsBinding.instance.platformDispatcher.views.first,
+            ).copyWith(
+              disableAnimations: disableAnimations,
+              textScaler: TextScaler.linear(textScale),
+            ),
         child: Scaffold(
           body: Stack(
             children: [
@@ -99,5 +105,38 @@ void main() {
 
     await tester.tap(find.bySemanticsLabel('Users tab'));
     expect(tappedIndex, 1);
+  });
+
+  testWidgets('consumer tabs remain operable with keyboard and enlarged text', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final selected = <int>[];
+    await tester.pumpWidget(
+      buildSubject(currentIndex: 0, onTap: selected.add, textScale: 2),
+    );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyEvent(LogicalKeyboardKey.space);
+    await tester.pump();
+
+    expect(selected, [0, 1]);
+    for (final label in [
+      'Home tab',
+      'Trips tab',
+      'BioPay tab',
+      'Profile tab',
+    ]) {
+      final target = find.bySemanticsLabel(label);
+      expect(target, findsOneWidget);
+      expect(tester.getSize(target).shortestSide, greaterThanOrEqualTo(48));
+    }
+    expect(tester.takeException(), isNull);
   });
 }

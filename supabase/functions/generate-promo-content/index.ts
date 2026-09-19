@@ -1,5 +1,3 @@
-// deno-lint-ignore no-import-prefix
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import {
   errorResponse,
   handleCors,
@@ -223,13 +221,14 @@ async function recordPromoAudit(
   details: Record<string, unknown>,
 ) {
   try {
-    await supabaseClient.from("admin_audit_log").insert({
+    const { error } = await supabaseClient.from("admin_audit_log").insert({
       admin_id: null,
       action,
       target_type: "promo_media",
       target_id: null,
       details,
     });
+    if (error) throw new Error(error.message);
   } catch (error) {
     console.error(
       "[promo-generation] audit insert failed",
@@ -299,7 +298,9 @@ async function generateMediaWithGoogle(
   throw new Error(`Invalid media type requested: ${type}`);
 }
 
-serve(async (req: Request) => {
+export async function handleGeneratePromoContent(
+  req: Request,
+): Promise<Response> {
   const corsResponse = handleCors(req);
   if (corsResponse) {
     return corsResponse;
@@ -343,7 +344,7 @@ serve(async (req: Request) => {
         try {
           const mediaBytes = await generateMediaWithGoogle(prompt, "image");
 
-          await supabaseClient
+          const { error: uploadError } = await supabaseClient
             .storage
             .from("promo-media")
             .upload(fileName, mediaBytes, {
@@ -351,6 +352,7 @@ serve(async (req: Request) => {
               upsert: true,
               metadata,
             });
+          if (uploadError) throw uploadError;
 
           generatedCount++;
           console.log(`[SUCCESS] Uploaded ${fileName}`);
@@ -379,7 +381,7 @@ serve(async (req: Request) => {
             "video",
           );
 
-          await supabaseClient
+          const { error: uploadError } = await supabaseClient
             .storage
             .from("promo-media")
             .upload(fileName, mediaBytes, {
@@ -387,6 +389,7 @@ serve(async (req: Request) => {
               upsert: true,
               metadata,
             });
+          if (uploadError) throw uploadError;
 
           generatedCount++;
           console.log(`[SUCCESS] Uploaded ${fileName}`);
@@ -409,12 +412,14 @@ serve(async (req: Request) => {
 
     return jsonResponse(
       {
-        success: true,
-        message: "Generation pipeline completed.",
+        success: generatedCount > 0,
+        message: generatedCount > 0
+          ? "Generation pipeline completed."
+          : "No promotional assets were generated.",
         generatedCount,
         failedCount,
       },
-      200,
+      generatedCount > 0 ? 200 : 502,
       req,
     );
   } catch (error: unknown) {
@@ -437,4 +442,8 @@ serve(async (req: Request) => {
       req,
     );
   }
-});
+}
+
+if (import.meta.main) {
+  Deno.serve(handleGeneratePromoContent);
+}

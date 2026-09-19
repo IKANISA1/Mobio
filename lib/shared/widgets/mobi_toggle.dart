@@ -26,7 +26,7 @@ class MobiToggle extends StatelessWidget {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.xs),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
       decoration: BoxDecoration(
         color: cs.onSurface.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(AppRadii.pill),
@@ -46,38 +46,43 @@ class MobiToggle extends StatelessWidget {
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadii.pill),
                 onTap: () => onChanged(index),
-                child: AnimatedContainer(
-                  duration: MediaQuery.disableAnimationsOf(context)
-                      ? Duration.zero
-                      : const Duration(milliseconds: 220),
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? cs.onSurface.withValues(alpha: 0.16)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(AppRadii.pill),
-                    border: isSelected
-                        ? Border.all(
-                            color: cs.outlineVariant.withValues(
-                              alpha: ext.cardBorderAlpha,
-                            ),
-                          )
-                        : null,
-                  ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        labels[index],
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        softWrap: false,
-                        textAlign: TextAlign.center,
-                        style: AppTypography.labelLg.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: isSelected
-                              ? cs.onSurface
-                              : cs.onSurfaceVariant,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                  child: AnimatedContainer(
+                    duration: MediaQuery.disableAnimationsOf(context)
+                        ? Duration.zero
+                        : const Duration(milliseconds: 220),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.sm,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? cs.onSurface.withValues(alpha: 0.16)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(AppRadii.pill),
+                      border: isSelected
+                          ? Border.all(
+                              color: cs.outlineVariant.withValues(
+                                alpha: ext.cardBorderAlpha,
+                              ),
+                            )
+                          : null,
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          labels[index],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: false,
+                          textAlign: TextAlign.center,
+                          style: AppTypography.labelLg.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: isSelected
+                                ? cs.onSurface
+                                : cs.onSurfaceVariant,
+                          ),
                         ),
                       ),
                     ),

@@ -30,6 +30,7 @@ void main() {
       'confirmed_count': 5,
       'last_request_at': '2026-06-12T10:00:00Z',
       'enrolled_at': '2026-06-11T10:00:00Z',
+      'server_verified_at': '2026-09-06T10:00:00Z',
     });
 
     expect(payee.isEnrolled, isTrue);
@@ -63,11 +64,29 @@ void main() {
       'liveness_status': 'provider_liveness_not_required',
       'status': 'active',
       'consent_granted_at': '2026-06-12T10:00:00Z',
+      'server_verified_at': '2026-09-06T10:00:00Z',
     });
 
     expect(status.isEnrolled, isTrue);
     expect(status.label, 'Ready');
     expect(status.subtitle, 'AWS face identity ready');
     expect(status.providerCollectionId, 'mobio-biopay-prod');
+  });
+
+  test('legacy or consentless profiles are never ready in app or Admin', () {
+    final profile = <String, dynamic>{
+      'provider': 'aws_rekognition',
+      'provider_subject_id': 'legacy-face',
+      'status': 'active',
+      'consent_granted_at': '2026-06-12T10:00:00Z',
+      'enrolled_at': '2026-06-12T10:00:00Z',
+    };
+    expect(BioPayEnrollmentStatus.fromJson(profile).isEnrolled, isFalse);
+    expect(BioPayAdminPayee.fromJson(profile).isEnrolled, isFalse);
+    profile['server_verified_at'] = '2026-09-06T10:00:00Z';
+    profile['consent_granted_at'] = null;
+    profile['enrolled_at'] = null;
+    expect(BioPayEnrollmentStatus.fromJson(profile).isEnrolled, isFalse);
+    expect(BioPayAdminPayee.fromJson(profile).isEnrolled, isFalse);
   });
 }

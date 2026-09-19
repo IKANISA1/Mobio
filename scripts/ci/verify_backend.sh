@@ -29,31 +29,9 @@ for script in "${admin_scripts[@]}"; do
   deno check "${deno_args[@]}" "$script"
 done
 
-if [[ -f "supabase/functions/biopay-api/index_test.ts" ]]; then
-  deno test "${deno_args[@]}" --allow-env supabase/functions/biopay-api/index_test.ts
-fi
-
-if [[ -f "supabase/functions/biopay-face-provider/index_test.ts" ]]; then
-  deno test "${deno_args[@]}" --allow-env supabase/functions/biopay-face-provider/index_test.ts
-fi
-
-if [[ -f "supabase/functions/maps-gateway/index_test.ts" ]]; then
-  deno test "${deno_args[@]}" --allow-env supabase/functions/maps-gateway/index_test.ts
-fi
-
-if [[ -f "supabase/functions/_shared/otp-security_test.ts" ]]; then
-  deno test "${deno_args[@]}" --allow-env supabase/functions/_shared/otp-security_test.ts
-fi
-
-if [[ -f "supabase/functions/_shared/phone_test.ts" ]]; then
-  deno test "${deno_args[@]}" --allow-env supabase/functions/_shared/phone_test.ts
-fi
-
-if [[ -f "supabase/functions/_shared/whatsapp-cloud_test.ts" ]]; then
-  deno test "${deno_args[@]}" --allow-env supabase/functions/_shared/whatsapp-cloud_test.ts
-fi
-
-deno test "${deno_args[@]}" supabase/functions/_shared/play-review-login_test.ts
+# Discover the full tree so newly added security tests cannot be silently omitted.
+# Local/CI unit verification must not activate the optional paid-provider test.
+env -u OPENAI_API_KEY deno test "${deno_args[@]}" --allow-env supabase/functions
 
 if [[ -n "${SUPABASE_PROJECT_REF:-}" ]]; then
   mkdir -p "$supabase_workdir/supabase/.temp"
@@ -71,6 +49,10 @@ if [[ "$has_linked_auth" == "true" && -f "$supabase_workdir/supabase/.temp/proje
   supabase --workdir "$supabase_workdir" db query \
     --linked \
     --file "$repo_root/supabase/tests/backend_security_assertions.sql" \
+    --output table
+  supabase --workdir "$supabase_workdir" db query \
+    --linked \
+    --file "$repo_root/supabase/tests/provider_authority_assertions.sql" \
     --output table
 else
   if [[ "${REQUIRE_LINKED_SUPABASE:-false}" == "true" ]]; then

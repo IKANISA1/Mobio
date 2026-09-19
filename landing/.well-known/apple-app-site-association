@@ -14,6 +14,10 @@
           {
             "/": "/biopay/nfc*",
             "comment": "Mobio BioPay NFC card links"
+          },
+          {
+            "/": "/biopay/pay/*",
+            "comment": "Mobio scoped payment requests"
           }
         ]
       }

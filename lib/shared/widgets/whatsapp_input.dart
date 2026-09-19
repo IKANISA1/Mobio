@@ -188,35 +188,39 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
               ),
               // Phone input
               Expanded(
-                child: TextField(
-                  controller: _controller,
-                  onChanged: widget.onChanged,
-                  enabled: widget.enabled,
-                  keyboardType: TextInputType.phone,
-                  textInputAction: TextInputAction.next,
-                  autofillHints: const [AutofillHints.telephoneNumber],
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(15),
-                  ],
-                  style: AppTypography.titleMd.copyWith(
-                    fontSize: 20,
-                    color: cs.onSurface,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: selected.phonePlaceholder,
-                    hintStyle: AppTypography.titleMd.copyWith(
+                child: Semantics(
+                  label:
+                      '${widget.label} phone number, ${selected.dialingCode}',
+                  child: TextField(
+                    controller: _controller,
+                    onChanged: widget.onChanged,
+                    enabled: widget.enabled,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: const [AutofillHints.telephoneNumber],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(15),
+                    ],
+                    style: AppTypography.titleMd.copyWith(
                       fontSize: 20,
-                      color: cs.onSurfaceVariant,
+                      color: cs.onSurface,
                     ),
-                    filled: false,
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    disabledBorder: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.md,
-                      vertical: 16,
+                    decoration: InputDecoration(
+                      hintText: selected.phonePlaceholder,
+                      hintStyle: AppTypography.titleMd.copyWith(
+                        fontSize: 20,
+                        color: cs.onSurfaceVariant,
+                      ),
+                      filled: false,
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: 16,
+                      ),
                     ),
                   ),
                 ),

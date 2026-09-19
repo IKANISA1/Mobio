@@ -8,6 +8,8 @@ import {
 } from "../_shared/http.ts";
 import { parseMomoSmsWithOpenAi } from "../_shared/momo-sms.ts";
 import { createAdminClient } from "../_shared/supabase.ts";
+import { type CollectorRegistry, verifyCollectorRequest } from "../_shared/sms-collector.ts";
+import { HttpError } from "../_shared/validation.ts";
 
 type SmsPayload = {
   sender?: unknown;
@@ -18,7 +20,13 @@ type SmsPayload = {
   message_hash?: unknown;
 };
 
-Deno.serve(async (request: Request) => {
+type Dependencies = {
+  registry?: CollectorRegistry;
+  parse?: typeof parseMomoSmsWithOpenAi;
+  admin?: ReturnType<typeof createAdminClient>;
+};
+
+export async function handleMomoBioSmsIngest(request: Request, dependencies: Dependencies = {}) {
   const corsResponse = handleCors(request);
   if (corsResponse) return corsResponse;
 
@@ -27,23 +35,23 @@ Deno.serve(async (request: Request) => {
   }
 
   try {
-    const body = await request.json();
-    const messages = Array.isArray(body?.messages)
-      ? body.messages.slice(0, 50)
-      : [body];
-    if (messages.length === 0) {
+    const verified = await verifyCollectorRequest(request, dependencies.registry);
+    let body;
+    try { body = JSON.parse(verified.rawBody); } catch { throw new HttpError("Invalid JSON batch", 400); }
+    const messages = Array.isArray(body?.messages) ? body.messages : [body];
+    if (messages.length === 0 || messages.length > 50) {
       return errorResponse(
-        "messages must contain at least one SMS",
+        "messages must contain between 1 and 50 SMS",
         400,
         undefined,
         request,
       );
     }
 
-    const supabase = createAdminClient();
+    const normalized = messages.map(normalizeSms);
+    const supabase = dependencies.admin ?? createAdminClient();
     const results = [];
-    for (const item of messages) {
-      const sms = normalizeSms(item);
+    for (const sms of normalized) {
       // Server-side RPC stores rows in driver_subscription_momo_sms_receipts
       // and decides unmatched, ambiguous, matched, duplicate, or ignored.
       const { data, error } = await supabase.rpc(
@@ -52,10 +60,10 @@ Deno.serve(async (request: Request) => {
           p_raw_sms: sms.rawSms,
           p_sender: sms.sender,
           p_received_at: sms.receivedAt,
-          p_parsed: await parseMomoSmsWithOpenAi(sms.rawSms, {
+          p_parsed: { ...await (dependencies.parse ?? parseMomoSmsWithOpenAi)(sms.rawSms, {
             sender: sms.sender,
             receivedAt: sms.receivedAt,
-          }),
+          }), verified_collector_id: verified.collectorId },
         },
       );
 
@@ -64,33 +72,37 @@ Deno.serve(async (request: Request) => {
       results.push({
         message_hash: sms.messageHash,
         status: data?.status ?? "accepted",
-        receipt: data,
       });
     }
 
     return jsonResponse({ success: true, results }, 202, request);
   } catch (error) {
-    console.error("momobio-sms-ingest error:", error);
-    const message = error instanceof Error ? error.message : String(error);
+    if (error instanceof HttpError) return errorResponse(error.message, error.status, undefined, request);
+    console.error("momobio-sms-ingest: provider or storage operation failed");
     return errorResponse(
       "Unable to ingest Mo Mobio SMS",
-      400,
-      { message },
+      503,
+      undefined,
       request,
     );
   }
-});
+}
+
+if (import.meta.main) Deno.serve((request) => handleMomoBioSmsIngest(request));
 
 function normalizeSms(value: unknown) {
   const object = value && typeof value === "object" ? value as SmsPayload : {};
   const rawSms = stringValue(object.body ?? object.raw_sms);
   if (!rawSms) {
-    throw new Error("RAW_SMS_REQUIRED");
+    throw new HttpError("SMS body required", 400);
   }
 
   const sender = stringValue(object.sender);
   const receivedAt = receivedAtValue(object);
   const messageHash = stringValue(object.message_hash);
+  if (rawSms.length > 10_000 || !sender || sender.length > 100 || !messageHash || !/^[a-f0-9]{64}$/.test(messageHash)) {
+    throw new HttpError("Invalid SMS envelope", 400);
+  }
 
   return {
     rawSms,
@@ -102,11 +114,15 @@ function normalizeSms(value: unknown) {
 
 function receivedAtValue(object: SmsPayload): string | null {
   const millis = Number(object.received_at_millis);
-  if (Number.isFinite(millis) && millis > 0) {
-    return new Date(millis).toISOString();
+  const raw = object.received_at_millis == null
+    ? stringValue(object.received_at)
+    : millis;
+  if (raw == null) throw new HttpError("SMS timestamp required", 400);
+  const date = new Date(raw);
+  if (!Number.isFinite(date.getTime()) || date.getTime() <= 0) {
+    throw new HttpError("Invalid SMS timestamp", 400);
   }
-
-  return stringValue(object.received_at);
+  return date.toISOString();
 }
 
 function stringValue(value: unknown): string | null {

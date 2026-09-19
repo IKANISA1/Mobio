@@ -58,7 +58,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Route name constants for type-safe navigation.
 abstract class AppRoutes {
-  static const String discover = '/';
+  static const String discover = '/home';
   static const String login = '/login';
   static const String biopay = '/biopay';
   static const String ledger = '/ledger';
@@ -283,6 +283,16 @@ GoRouter createRouter() {
     redirect: (context, state) =>
         _adminRouteGuard(state) ?? _appRouteGuard(state),
     routes: [
+      // Keep old app links usable while Home has a reloadable app URL.
+      // The combined web deployment serves its public website at '/'.
+      GoRoute(
+        path: '/',
+        redirect: (context, state) => Uri(
+          path: AppRoutes.discover,
+          query: state.uri.hasQuery ? state.uri.query : null,
+          fragment: state.uri.hasFragment ? state.uri.fragment : null,
+        ).toString(),
+      ),
       // ── Config error (no nav bar) ──
       GoRoute(
         path: '/config-error',
@@ -311,7 +321,7 @@ GoRouter createRouter() {
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: '/',
+                path: '/home',
                 builder: (context, state) => const HomeScreenWrapper(),
               ),
               GoRoute(

@@ -60,6 +60,11 @@ if not aasa_path.exists():
 else:
     aasa = json.loads(aasa_path.read_text(encoding="utf-8"))
     details = aasa.get("applinks", {}).get("details", [])
+    payment_paths = [component.get("/") for detail in details
+                     for component in detail.get("components", [])
+                     if not component.get("exclude", False)]
+    if "/biopay/pay/*" not in payment_paths:
+        fail("apple-app-site-association scoped payment path missing")
     app_ids = []
     for detail in details:
         if "appIDs" in detail and isinstance(detail["appIDs"], list):

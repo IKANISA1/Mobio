@@ -1,6 +1,8 @@
 package com.momobio.app
 
 import java.security.MessageDigest
+import org.json.JSONException
+import org.json.JSONObject
 
 data class MomoSms(
     val sender: String,
@@ -13,12 +15,22 @@ data class MomoSms(
 
     companion object {
         fun fromJson(value: String): MomoSms? {
-            val sender = Regex(""""sender"\s*:\s*"((?:\\.|[^"])*)"""").find(value)?.groupValues?.get(1)?.unescapeJson()
-            val body = Regex(""""body"\s*:\s*"((?:\\.|[^"])*)"""").find(value)?.groupValues?.get(1)?.unescapeJson()
-            val receivedAt = Regex(""""received_at_millis"\s*:\s*(\d+)""").find(value)?.groupValues?.get(1)?.toLongOrNull()
-            val messageHash = Regex(""""message_hash"\s*:\s*"((?:\\.|[^"])*)"""").find(value)?.groupValues?.get(1)?.unescapeJson()
-            if (sender.isNullOrBlank() || body.isNullOrBlank() || receivedAt == null || messageHash.isNullOrBlank()) return null
-            return MomoSms(sender, body, receivedAt, messageHash)
+            return try {
+                val record = JSONObject(value)
+                val sender = record.opt("sender") as? String
+                val body = record.opt("body") as? String
+                val timestamp = record.opt("received_at_millis") as? Number
+                val receivedAt = timestamp?.toString()?.toLongOrNull()
+                val messageHash = record.opt("message_hash") as? String
+                if (sender.isNullOrBlank() || body.isNullOrBlank() ||
+                    receivedAt == null || receivedAt < 0 || messageHash.isNullOrBlank()) {
+                    null
+                } else {
+                    MomoSms(sender, body, receivedAt, messageHash)
+                }
+            } catch (_: JSONException) {
+                null
+            }
         }
     }
 }
@@ -46,10 +58,3 @@ fun String.json(): String = buildString {
     }
     append('"')
 }
-
-private fun String.unescapeJson(): String =
-    replace("\\n", "\n")
-        .replace("\\r", "\r")
-        .replace("\\t", "\t")
-        .replace("\\\"", "\"")
-        .replace("\\\\", "\\")

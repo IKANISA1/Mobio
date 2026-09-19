@@ -3,8 +3,8 @@ import 'package:mobi_app/app/router/app_router.dart';
 
 void main() {
   group('AppRoutes constants', () {
-    test('discover route is root', () {
-      expect(AppRoutes.discover, '/');
+    test('discover route uses the reloadable consumer app path', () {
+      expect(AppRoutes.discover, '/home');
     });
 
     test('biopay route', () {

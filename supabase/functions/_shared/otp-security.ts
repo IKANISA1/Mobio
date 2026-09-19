@@ -100,6 +100,39 @@ export async function hashOtpCode(
   return await sha256Hex(normalized);
 }
 
+/**
+ * Claim the exact OTP revision before reporting a guess or issuing a session.
+ * Postgres rechecks every UPDATE predicate under the row lock, so concurrent
+ * guesses cannot share an attempt and only one correct request consumes a code.
+ */
+export async function claimOtpVerificationAttempt(
+  supabase: SupabaseAdminClient,
+  input: OtpHashContext & {
+    id: string;
+    expectedAttempts: number;
+    valid: boolean;
+  },
+): Promise<boolean> {
+  if (
+    !Number.isInteger(input.expectedAttempts) || input.expectedAttempts < 0 ||
+    input.expectedAttempts >= 5
+  ) return false;
+
+  const { data, error } = await supabase
+    .from("otp_codes")
+    .update({ attempts: input.expectedAttempts + 1, verified: input.valid })
+    .eq("id", input.id)
+    .eq("phone", input.phone)
+    .eq("purpose", input.purpose)
+    .eq("attempts", input.expectedAttempts)
+    .eq("verified", false)
+    .gt("expires_at", new Date().toISOString())
+    .select("id");
+
+  if (error) throw error;
+  return Array.isArray(data) && data.length === 1;
+}
+
 export async function consumeOtpRateLimits(
   supabase: SupabaseAdminClient,
   checks: OtpRateLimitCheck[],

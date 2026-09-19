@@ -26,10 +26,11 @@ if [[ "${SKIP_FLUTTER_BUILD:-false}" != "true" ]]; then
   fi
 fi
 
-test -f build/web/manifest.json
+web_build_dir="${WEB_BUILD_DIR:-build/web}"
+test -f "$web_build_dir/manifest.json"
 
 mkdir -p "$site_dir"
-cp -R build/web/. "$site_dir/"
+cp -R "$web_build_dir/." "$site_dir/"
 cp "$site_dir/index.html" "$site_dir/__app_shell"
 cp "$site_dir/manifest.json" "$site_dir/app-manifest.json"
 mv "$site_dir/index.html" "$site_dir/__admin_shell"
@@ -40,53 +41,7 @@ cat > "$site_dir/_redirects" <<'EOF'
 # Routing is handled by _worker.js so admin URLs keep their public path.
 EOF
 
-cat > "$site_dir/_worker.js" <<'EOF'
-const ADMIN_HOST = "mobioadmin.ikanisa.com";
-
-function isAdminPath(pathname) {
-  return pathname === "/admin-auth" ||
-    pathname === "/admin" ||
-    pathname.startsWith("/admin/");
-}
-
-async function serveAsset(env, request, pathname) {
-  const url = new URL(request.url);
-  url.pathname = pathname;
-  return env.ASSETS.fetch(new Request(url, request));
-}
-
-async function serveFlutterShell(env, request, shellPath) {
-  const response = await serveAsset(env, request, shellPath);
-  const headers = new Headers(response.headers);
-  headers.set("Referrer-Policy", "no-referrer");
-  headers.set("Permissions-Policy", "camera=(self), geolocation=(), microphone=(), payment=()");
-  headers.set("content-type", "text/html; charset=utf-8");
-  return new Response(response.body, {
-    status: response.status,
-    headers,
-  });
-}
-
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-
-    if (url.hostname === ADMIN_HOST && url.pathname === "/") {
-      return Response.redirect(`${url.origin}/admin-auth`, 302);
-    }
-
-    if (isAdminPath(url.pathname)) {
-      return serveFlutterShell(env, request, "/__admin_shell");
-    }
-    if (["/login", "/biopay", "/profile", "/home", "/bookings", "/nearby"]
-        .some(path => url.pathname === path || url.pathname.startsWith(`${path}/`))) {
-      return serveFlutterShell(env, request, "/__app_shell");
-    }
-
-    return env.ASSETS.fetch(request);
-  },
-};
-EOF
+cp "$repo_root/scripts/web/pages_worker.mjs" "$site_dir/_worker.js"
 
 cat > "$site_dir/_headers" <<'EOF'
 /*
@@ -121,10 +76,10 @@ cat > "$site_dir/_headers" <<'EOF'
   Cache-Control: no-store
 
 /main.dart.js
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: no-cache
 
 /assets/*
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=0, must-revalidate
 
 /canvaskit/*
   Cache-Control: public, max-age=31536000, immutable
@@ -138,7 +93,7 @@ cat > "$site_dir/_headers" <<'EOF'
 /*.css
   Cache-Control: public, max-age=86400
 
-/*.js
+/script.js
   Cache-Control: public, max-age=86400
 EOF
 
@@ -232,6 +187,8 @@ html = html.replace("</head>", admin_host_script + "</head>")
 landing_index.write_text(html)
 PY
 
+cp "$repo_root/scripts/web/admin_service_worker.js" "$site_dir/flutter_service_worker.js"
+python3 "$repo_root/scripts/web/stamp_bundle.py" "$site_dir"
 "$repo_root/scripts/web/verify_pwa_bundles.sh" "$output_root"
 
 printf 'Prepared combined Pages bundle at %s\n' "$site_dir"

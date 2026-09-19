@@ -62,8 +62,70 @@ void main() {
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(find.byType(BookingsScreen), findsNothing);
       expect(selectedTab(), 0);
+      expect(
+        router.routeInformationProvider.value.uri.path,
+        '/home',
+        reason:
+            'A Home reload must request the app path; / serves the website.',
+      );
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
     });
   }
+
+  testWidgets('direct /home entry opens the consumer Home screen', (
+    tester,
+  ) async {
+    tester.view
+      ..devicePixelRatio = 1
+      ..physicalSize = const Size(390, 844);
+    addTearDown(tester.view.reset);
+    final router = createRouter();
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp.router(
+          theme: AppTheme.darkTheme,
+          routerConfig: router,
+        ),
+      ),
+    );
+    router.go('/home');
+    await tester.pumpAndSettle();
+    expect(find.byType(HomeScreen), findsOneWidget);
+    expect(router.routeInformationProvider.value.uri.path, '/home');
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
+  testWidgets('legacy app root preserves query and fragment on Home', (
+    tester,
+  ) async {
+    tester.view
+      ..devicePixelRatio = 1
+      ..physicalSize = const Size(390, 844);
+    addTearDown(tester.view.reset);
+    final router = createRouter();
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp.router(
+          theme: AppTheme.darkTheme,
+          routerConfig: router,
+        ),
+      ),
+    );
+    router.go('/?ref=012345&label=Kigali%20Heights#nearby');
+    await tester.pumpAndSettle();
+    expect(find.byType(HomeScreen), findsOneWidget);
+    final location = router.routeInformationProvider.value.uri;
+    expect(location.path, '/home');
+    expect(location.queryParameters, {
+      'ref': '012345',
+      'label': 'Kigali Heights',
+    });
+    expect(location.fragment, 'nearby');
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
 }

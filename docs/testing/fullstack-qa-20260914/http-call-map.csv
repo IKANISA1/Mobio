@@ -1,0 +1,6 @@
+id,source,line,class,method,verb,path_literal,resolved_client,base_url_and_authority,runtime_result
+HTTP-001,lib/core/auth/play_integrity_service.dart,98,PlayIntegrityService,_requestChallenge,post,/play-integrity,Dio,Source-bound Supabase Edge path; verify client setup and designated handler separately,unverified
+HTTP-002,lib/features/admin/data/otp_service.dart,52,OtpService,sendOtp,post,/send-otp,Dio,Source-bound Supabase Edge path; verify client setup and designated handler separately,unverified
+HTTP-003,lib/features/admin/data/otp_service.dart,97,OtpService,verifyOtp,post,/verify-otp,Dio,Source-bound Supabase Edge path; verify client setup and designated handler separately,unverified
+HTTP-004,lib/features/auth/data/whatsapp_login_service.dart,68,WhatsAppLoginService,sendLoginOtp,post,/send-login-otp,Dio,Source-bound Supabase Edge path; verify client setup and designated handler separately,unverified
+HTTP-005,lib/features/auth/data/whatsapp_login_service.dart,124,WhatsAppLoginService,verifyLoginOtp,post,/verify-login-otp,Dio,Source-bound Supabase Edge path; verify client setup and designated handler separately,unverified

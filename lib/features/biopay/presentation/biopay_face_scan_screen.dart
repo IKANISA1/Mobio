@@ -76,7 +76,7 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen> {
       final amountMinor = amountMinorFromController(_amountController);
       final request = SupabaseConfig.isConfigured
           ? await ussdService.createFaceMatchPaymentRequest(
-              providerFaceId: faceResult.providerFaceId,
+              matchSessionId: faceResult.sessionId,
               amountMinor: amountMinor,
             )
           : ussdService.createPreviewRequest(

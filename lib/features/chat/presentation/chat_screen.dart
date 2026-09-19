@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
@@ -143,7 +142,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       _error = null;
     });
 
-    if (SupabaseConfig.isLocalUiPreview) {
+    if (ref.read(chatUiPreviewProvider)) {
       _loadLocalPreviewChat();
       return;
     }
@@ -395,6 +394,9 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   }
 
   Future<void> _sendMessage() async {
+    if (_isSending) {
+      return;
+    }
     final conversation = _conversation;
     if (conversation == null) {
       return;
@@ -410,12 +412,13 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       return;
     }
 
-    final text = _composerController.text.trim();
+    final draft = _composerController.text;
+    final text = draft.trim();
     if (text.isEmpty) {
       return;
     }
 
-    if (SupabaseConfig.isLocalUiPreview) {
+    if (ref.read(chatUiPreviewProvider)) {
       setState(() {
         _localPreviewMessages = [
           ..._localPreviewMessages,
@@ -441,11 +444,14 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
         body: text,
       );
 
-      _composerController.clear();
-
-      if (mounted) {
-        setState(() => _isSending = false);
+      if (!mounted) {
+        return;
       }
+      if (_conversation?.id == conversation.id &&
+          _composerController.text == draft) {
+        _composerController.clear();
+      }
+      setState(() => _isSending = false);
     } on Object catch (error) {
       if (!mounted) {
         return;
@@ -630,7 +636,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       return;
     }
 
-    if (SupabaseConfig.isLocalUiPreview) {
+    if (ref.read(chatUiPreviewProvider)) {
       _showSnackBar('Report preview recorded.');
       return;
     }
@@ -670,7 +676,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       return;
     }
 
-    if (SupabaseConfig.isLocalUiPreview) {
+    if (ref.read(chatUiPreviewProvider)) {
       setState(() => _isPeerBlocked = !_isPeerBlocked);
       _showSnackBar(_isPeerBlocked ? 'User blocked.' : 'User unblocked.');
       return;
@@ -821,7 +827,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     if (conversation == null) {
       return const SizedBox.shrink();
     }
-    final isLocalPreview = SupabaseConfig.isLocalUiPreview;
+    final isLocalPreview = ref.watch(chatUiPreviewProvider);
     final messagesStream = isLocalPreview
         ? Stream<List<ChatMessageModel>>.value(_localPreviewMessages)
         : _chatService.streamMessages(conversation.id);

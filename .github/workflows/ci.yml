@@ -100,6 +100,9 @@ jobs:
       - name: Check public payment-link routing
         run: deno test --allow-read test/web/payment_link_worker_test.ts
 
+      - name: Rehearse BioPay against the complete database schema
+        run: ./scripts/qa/test_biopay_full_schema.sh
+
       - name: Verify backend contract
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

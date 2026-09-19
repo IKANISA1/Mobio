@@ -7,7 +7,10 @@ import {
   jsonResponse,
   methodNotAllowed,
 } from "../_shared/http.ts";
-import { hashOtpCode } from "../_shared/otp-security.ts";
+import {
+  claimOtpVerificationAttempt,
+  hashOtpCode,
+} from "../_shared/otp-security.ts";
 import {
   inferCountryCode,
   internalEmailForPhone,
@@ -249,7 +252,10 @@ async function ensureAppUserSession(
   };
 }
 
-Deno.serve(async (req: Request) => {
+export async function handleVerifyLoginOtp(
+  req: Request,
+  dependencies: { createSession?: typeof ensureAppUserSession } = {},
+): Promise<Response> {
   const corsResponse = handleCors(req);
   if (corsResponse) {
     return corsResponse;
@@ -263,7 +269,17 @@ Deno.serve(async (req: Request) => {
   let requestedRole: AppLoginRole = "passenger";
 
   try {
-    const body = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return errorResponse(
+        "Valid JSON request body required",
+        400,
+        undefined,
+        req,
+      );
+    }
     phone = normalizePhoneWithCountry(
       body?.phone,
       body?.countryCode,
@@ -343,15 +359,6 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { error: attemptError } = await supabase
-      .from("otp_codes")
-      .update({ attempts: otpRecord.attempts + 1 })
-      .eq("id", otpRecord.id);
-
-    if (attemptError) {
-      throw attemptError;
-    }
-
     const codeHash = otpRecord.code_hash
       ? await hashOtpCode(code, { phone, purpose })
       : null;
@@ -361,6 +368,22 @@ Deno.serve(async (req: Request) => {
         legacyCodeHash == otpRecord.code_hash ||
         isReviewLogin
       : otpRecord.code == code;
+
+    const claimed = await claimOtpVerificationAttempt(supabase, {
+      id: otpRecord.id,
+      phone,
+      purpose,
+      expectedAttempts: otpRecord.attempts,
+      valid: isValidCode,
+    });
+    if (!claimed) {
+      return errorResponse(
+        "This code changed or was already used. Try again or request a new code.",
+        409,
+        undefined,
+        req,
+      );
+    }
 
     if (!isValidCode) {
       const remaining = Math.max(0, 4 - otpRecord.attempts);
@@ -391,25 +414,15 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { userId, role, session } = await ensureAppUserSession(
-      supabase,
-      anonClient,
-      requestedRole,
-      phone,
-      countryCode,
-      isReviewLogin,
-    );
-
-    const { error: verifyError } = await supabase
-      .from("otp_codes")
-      .update({ verified: true })
-      .eq("phone", phone)
-      .eq("purpose", purpose)
-      .eq("verified", false);
-
-    if (verifyError) {
-      throw verifyError;
-    }
+    const { userId, role, session } =
+      await (dependencies.createSession ?? ensureAppUserSession)(
+        supabase,
+        anonClient,
+        requestedRole,
+        phone,
+        countryCode,
+        isReviewLogin,
+      );
 
     await tryRecordAppAuthAttempt({
       supabase,
@@ -469,4 +482,6 @@ Deno.serve(async (req: Request) => {
     console.error("verify-login-otp error:", error);
     return errorResponse("Internal error", 500, undefined, req);
   }
-});
+}
+
+if (import.meta.main) Deno.serve((request) => handleVerifyLoginOtp(request));

@@ -20,8 +20,9 @@ void main() {
     ValueChanged<AppRole>? onSuccess,
     double scale = 1,
     double keyboardInset = 0,
+    Size size = const Size(390, 844),
   }) async {
-    await tester.binding.setSurfaceSize(const Size(390, 844));
+    await tester.binding.setSurfaceSize(size);
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       ProviderScope(
@@ -33,7 +34,7 @@ void main() {
           theme: AppTheme.darkTheme,
           home: MediaQuery(
             data: MediaQueryData(
-              size: const Size(390, 844),
+              size: size,
               textScaler: TextScaler.linear(scale),
               viewInsets: EdgeInsets.only(bottom: keyboardInset),
             ),

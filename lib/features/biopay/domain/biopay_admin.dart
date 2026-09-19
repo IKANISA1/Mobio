@@ -57,6 +57,7 @@ class BioPayAdminPayee {
     required this.confirmedCount,
     required this.lastRequestAt,
     required this.enrolledAt,
+    this.serverVerifiedAt,
   });
 
   factory BioPayAdminPayee.fromJson(Map<String, dynamic> json) {
@@ -75,6 +76,9 @@ class BioPayAdminPayee {
         json['last_request_at']?.toString() ?? '',
       ),
       enrolledAt: DateTime.tryParse(json['enrolled_at']?.toString() ?? ''),
+      serverVerifiedAt: DateTime.tryParse(
+        json['server_verified_at']?.toString() ?? '',
+      ),
     );
   }
 
@@ -99,6 +103,7 @@ class BioPayAdminPayee {
       confirmedCount: confirmedCount,
       lastRequestAt: lastRequestAt,
       enrolledAt: lastRequestAt.subtract(const Duration(days: 18)),
+      serverVerifiedAt: lastRequestAt.subtract(const Duration(days: 18)),
     );
   }
 
@@ -114,8 +119,13 @@ class BioPayAdminPayee {
   final int confirmedCount;
   final DateTime? lastRequestAt;
   final DateTime? enrolledAt;
+  final DateTime? serverVerifiedAt;
 
-  bool get isEnrolled => providerSubjectId.isNotEmpty && status == 'active';
+  bool get isEnrolled =>
+      providerSubjectId.isNotEmpty &&
+      serverVerifiedAt != null &&
+      enrolledAt != null &&
+      status == 'active';
   String get enrollmentLabel => isEnrolled ? 'Enrolled' : 'Pending';
 }
 

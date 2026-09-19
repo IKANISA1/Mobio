@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
+import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/admin/application/admin_services.dart';
 import 'package:mobi_app/features/admin/application/admin_users_state.dart';
 import 'package:mobi_app/features/admin/data/admin_service.dart';
@@ -13,131 +15,159 @@ final adminUsersProvider =
 class AdminUsersController extends AsyncNotifier<AdminUsersState> {
   AdminService get _adminService => ref.read(adminServiceProvider);
   Timer? _searchDebounce;
+  int _requestVersion = 0;
 
   @override
   FutureOr<AdminUsersState> build() async {
     ref.onDispose(() {
       _searchDebounce?.cancel();
     });
-
-    return _fetchUsers();
+    return _fetchUsers(const AdminUsersState());
   }
 
-  Future<AdminUsersState> _fetchUsers({
-    String? roleFilter,
-    String? searchQuery,
-    int? page,
-    int? rowsPerPage,
-  }) async {
-    final role = roleFilter ?? state.value?.roleFilter ?? 'all';
-    final query = searchQuery ?? state.value?.searchQuery ?? '';
-    final sortKey = state.value?.sortKey ?? 'online';
-    final safeRowsPerPage = rowsPerPage ?? state.value?.rowsPerPage ?? 25;
-    final safePage = page ?? state.value?.page ?? 0;
-
+  Future<AdminUsersState> _fetchUsers(AdminUsersState request) async {
     try {
       final users = await _adminService.listUsers(
-        role: role == 'all' ? null : role,
-        search: query.trim().isEmpty ? null : query.trim(),
-        limit: safeRowsPerPage + 1,
-        offset: safePage * safeRowsPerPage,
+        role: request.roleFilter == 'all' ? null : request.roleFilter,
+        search: request.searchQuery.trim().isEmpty
+            ? null
+            : request.searchQuery.trim(),
+        limit: request.rowsPerPage + 1,
+        offset: request.page * request.rowsPerPage,
       );
-
-      final hasNextPage = users.length > safeRowsPerPage;
-      final sortedUsers = users.take(safeRowsPerPage).toList()
-        ..sort((a, b) => _sortUsers(a, b, sortKey));
-      final currentSelectedIds = state.value?.selectedIds ?? <String>{};
-
-      return AdminUsersState(
-        users: sortedUsers,
-        selectedIds: currentSelectedIds.intersection(
-          sortedUsers.map((u) => u.id).toSet(),
+      final pageUsers = users.take(request.rowsPerPage).toList()
+        ..sort((a, b) => _sortUsers(a, b, request.sortKey));
+      return request.copyWith(
+        users: pageUsers,
+        selectedIds: request.selectedIds.intersection(
+          pageUsers.map((user) => user.id).toSet(),
         ),
         isLoading: false,
-        roleFilter: role,
-        searchQuery: query,
-        sortKey: sortKey,
-        page: safePage,
-        rowsPerPage: safeRowsPerPage,
-        hasNextPage: hasNextPage,
+        loadError: null,
+        hasNextPage: users.length > request.rowsPerPage,
       );
     } on Object catch (error) {
-      return AdminUsersState(
+      AppLogger.warning('Admin user list failed (${error.runtimeType}).');
+      return request.copyWith(
+        users: [],
+        selectedIds: {},
         isLoading: false,
-        loadError: error.toString(),
-        roleFilter: role,
-        searchQuery: query,
-        sortKey: sortKey,
-        page: safePage,
-        rowsPerPage: safeRowsPerPage,
+        loadError: 'Unable to load users. Check your connection and try again.',
+        hasNextPage: false,
       );
     }
   }
 
+  Future<void> _loadUsers([AdminUsersState? request]) async {
+    if (!ref.mounted) return;
+    final snapshot = request ?? state.value ?? const AdminUsersState();
+    final version = ++_requestVersion;
+    state = AsyncValue.data(
+      snapshot.copyWith(isLoading: true, loadError: null),
+    );
+    state = const AsyncValue.loading();
+    final loaded = await _fetchUsers(snapshot);
+    if (!ref.mounted || version != _requestVersion) return;
+
+    // Selection, local sort and operation indicators may change while loading.
+    // Apply the fetched records only to the still-current query and page.
+    final current = state.value ?? snapshot;
+    final users = [...loaded.users]
+      ..sort((a, b) => _sortUsers(a, b, current.sortKey));
+    state = AsyncValue.data(
+      loaded.copyWith(
+        users: users,
+        sortKey: current.sortKey,
+        selectedIds: current.selectedIds.intersection(
+          users.map((user) => user.id).toSet(),
+        ),
+        updatingUserId: current.updatingUserId,
+        bulkUpdatingRole: current.bulkUpdatingRole,
+      ),
+    );
+  }
+
   void onSearchChanged(String query) {
-    final currentState = state.value;
-    if (currentState == null) return;
-
-    state = AsyncValue.data(currentState.copyWith(searchQuery: query, page: 0));
-
+    final current = state.value;
+    if (current == null) return;
     _searchDebounce?.cancel();
-    _searchDebounce = Timer(const Duration(milliseconds: 280), () async {
-      state = const AsyncValue.loading();
-      state = await AsyncValue.guard(
-        () => _fetchUsers(searchQuery: query, page: 0),
-      );
+    // Invalidate an in-flight result as soon as the query changes, including
+    // the debounce interval before the replacement request starts.
+    _requestVersion++;
+    state = AsyncValue.data(
+      current.copyWith(
+        searchQuery: query,
+        page: 0,
+        selectedIds: {},
+        isLoading: false,
+        loadError: null,
+      ),
+    );
+    _searchDebounce = Timer(const Duration(milliseconds: 280), () {
+      unawaited(_loadUsers());
     });
   }
 
   Future<void> onRoleFilterChanged(String role) async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(
-      () => _fetchUsers(roleFilter: role, page: 0),
+    _searchDebounce?.cancel();
+    final current = state.value ?? const AdminUsersState();
+    await _loadUsers(
+      current.copyWith(roleFilter: role, page: 0, selectedIds: {}),
     );
   }
 
   void setSortKey(String sortKey) {
-    final currentState = state.value;
-    if (currentState == null || currentState.sortKey == sortKey) return;
-
-    final sortedUsers = [...currentState.users]
-      ..sort((a, b) => _sortUsers(a, b, sortKey));
-    state = AsyncValue.data(
-      currentState.copyWith(users: sortedUsers, sortKey: sortKey, page: 0),
-    );
+    final current = state.value;
+    if (current == null || current.sortKey == sortKey) return;
+    final users = [...current.users]..sort((a, b) => _sortUsers(a, b, sortKey));
+    state = AsyncValue.data(current.copyWith(users: users, sortKey: sortKey));
   }
 
   Future<void> setPage(int page) async {
-    final currentState = state.value;
-    if (currentState == null) return;
-
-    final nextPage = page < 0 ? 0 : page;
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _fetchUsers(page: nextPage));
+    final current = state.value;
+    if (current == null) return;
+    _searchDebounce?.cancel();
+    await _loadUsers(
+      current.copyWith(page: page < 0 ? 0 : page, selectedIds: {}),
+    );
   }
 
   Future<void> setRowsPerPage(int rowsPerPage) async {
-    final currentState = state.value;
-    if (currentState == null || rowsPerPage <= 0) return;
-
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(
-      () => _fetchUsers(rowsPerPage: rowsPerPage, page: 0),
+    final current = state.value;
+    if (current == null || rowsPerPage <= 0) return;
+    _searchDebounce?.cancel();
+    await _loadUsers(
+      current.copyWith(rowsPerPage: rowsPerPage, page: 0, selectedIds: {}),
     );
   }
 
   Future<void> refresh() async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(_fetchUsers);
+    _searchDebounce?.cancel();
+    await _loadUsers();
+  }
+
+  void _requireIdle(AdminUsersState current) {
+    if (state.isLoading) {
+      throw const ValidationException(
+        message: 'Wait for users to finish loading.',
+      );
+    }
+    if (current.updatingUserId != null || current.bulkUpdatingRole != null) {
+      throw const ValidationException(
+        message: 'A user update is already in progress.',
+      );
+    }
   }
 
   void toggleSelection(String userId, bool isSelected) {
     final currentState = state.value;
-    if (currentState == null) return;
+    if (currentState == null || state.isLoading) return;
 
     final newSelectedIds = Set<String>.from(currentState.selectedIds);
     if (isSelected) {
-      newSelectedIds.add(userId);
+      if (currentState.users.any((user) => user.id == userId)) {
+        newSelectedIds.add(userId);
+      }
     } else {
       newSelectedIds.remove(userId);
     }
@@ -147,7 +177,7 @@ class AdminUsersController extends AsyncNotifier<AdminUsersState> {
 
   void toggleSelectAll(bool isSelected) {
     final currentState = state.value;
-    if (currentState == null) return;
+    if (currentState == null || state.isLoading) return;
 
     final newSelectedIds = isSelected
         ? currentState.users.map((u) => u.id).toSet()
@@ -158,11 +188,12 @@ class AdminUsersController extends AsyncNotifier<AdminUsersState> {
 
   void toggleSelectionFor(Iterable<String> userIds, bool isSelected) {
     final currentState = state.value;
-    if (currentState == null) return;
+    if (currentState == null || state.isLoading) return;
 
     final newSelectedIds = Set<String>.from(currentState.selectedIds);
     if (isSelected) {
-      newSelectedIds.addAll(userIds);
+      final visibleIds = currentState.users.map((user) => user.id).toSet();
+      newSelectedIds.addAll(userIds.where(visibleIds.contains));
     } else {
       newSelectedIds.removeAll(userIds);
     }
@@ -178,19 +209,25 @@ class AdminUsersController extends AsyncNotifier<AdminUsersState> {
     if (currentState == null) return;
     if (_adminService.currentUserId == user.id || user.role == nextRole) return;
 
+    _requireIdle(currentState);
     state = AsyncValue.data(currentState.copyWith(updatingUserId: user.id));
 
     try {
       await _adminService.updateUserRole(userId: user.id, role: nextRole);
-      final newState = await _fetchUsers();
-      state = AsyncValue.data(newState.copyWith(updatingUserId: null));
-    } on Object catch (error) {
+      if (!ref.mounted) return;
+      await _loadUsers();
+      if (!ref.mounted) return;
+      state = AsyncValue.data(
+        (state.value ?? currentState).copyWith(updatingUserId: null),
+      );
+    } on Object {
+      if (!ref.mounted) rethrow;
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(
           finalState.copyWith(
             updatingUserId: null,
-            loadError: error.toString(),
+            loadError: 'Unable to update the user. Refresh and try again.',
           ),
         );
       }
@@ -202,6 +239,7 @@ class AdminUsersController extends AsyncNotifier<AdminUsersState> {
     final currentState = state.value;
     if (currentState == null) return;
 
+    _requireIdle(currentState);
     state = AsyncValue.data(currentState.copyWith(updatingUserId: user.id));
 
     try {
@@ -210,15 +248,20 @@ class AdminUsersController extends AsyncNotifier<AdminUsersState> {
         amountTokens: 3000,
         note: 'Motor insurance purchase reward',
       );
-      final newState = await _fetchUsers();
-      state = AsyncValue.data(newState.copyWith(updatingUserId: null));
-    } on Object catch (error) {
+      if (!ref.mounted) return;
+      await _loadUsers();
+      if (!ref.mounted) return;
+      state = AsyncValue.data(
+        (state.value ?? currentState).copyWith(updatingUserId: null),
+      );
+    } on Object {
+      if (!ref.mounted) rethrow;
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(
           finalState.copyWith(
             updatingUserId: null,
-            loadError: error.toString(),
+            loadError: 'Unable to update the user. Refresh and try again.',
           ),
         );
       }
@@ -226,35 +269,66 @@ class AdminUsersController extends AsyncNotifier<AdminUsersState> {
     }
   }
 
-  Future<void> applyRoleToSelected(String role) async {
-    final currentState = state.value;
-    if (currentState == null) return;
-
-    final currentUserId = _adminService.currentUserId;
-    final targetIds = currentState.selectedIds
-        .where((id) => id != currentUserId)
-        .toList();
-    if (targetIds.isEmpty) return;
-
-    state = AsyncValue.data(currentState.copyWith(bulkUpdatingRole: role));
-
-    try {
-      await Future.wait(
-        targetIds.map(
-          (id) => _adminService.updateUserRole(userId: id, role: role),
-        ),
-      );
-      final newState = await _fetchUsers();
-      state = AsyncValue.data(
-        newState.copyWith(bulkUpdatingRole: null, selectedIds: {}),
-      );
-    } on Object {
-      final finalState = state.value;
-      if (finalState != null) {
-        state = AsyncValue.data(finalState.copyWith(bulkUpdatingRole: null));
-      }
-      rethrow;
+  Future<AdminRoleUpdateResult> applyRoleToSelected(String role) async {
+    final current = state.value;
+    if (current == null) {
+      throw const ValidationException(message: 'Wait for users to load.');
     }
+    _requireIdle(current);
+    final selected = Set<String>.of(current.selectedIds);
+    final currentUserId = _adminService.currentUserId;
+    final targetIds = current.users
+        .where(
+          (user) =>
+              selected.contains(user.id) &&
+              user.id != currentUserId &&
+              user.role != role,
+        )
+        .map((user) => user.id)
+        .toSet();
+    final skipped = selected.length - targetIds.length;
+    if (targetIds.isEmpty) {
+      state = AsyncValue.data(current.copyWith(selectedIds: {}));
+      return AdminRoleUpdateResult(
+        updatedCount: 0,
+        failedIds: const {},
+        skippedCount: skipped,
+      );
+    }
+
+    state = AsyncValue.data(current.copyWith(bulkUpdatingRole: role));
+    final failedIds = <String>{};
+    await Future.wait(
+      targetIds.map((id) async {
+        try {
+          await _adminService.updateUserRole(userId: id, role: role);
+        } on Object {
+          failedIds.add(id);
+        }
+      }),
+    );
+    final result = AdminRoleUpdateResult(
+      updatedCount: targetIds.length - failedIds.length,
+      failedIds: Set.unmodifiable(failedIds),
+      skippedCount: skipped,
+    );
+    if (!ref.mounted) return result;
+    final latest = state.value ?? current;
+    state = AsyncValue.data(
+      latest.copyWith(
+        selectedIds: latest.selectedIds.difference(
+          selected.difference(failedIds),
+        ),
+      ),
+    );
+    // Refresh even on partial failure: some independent RPCs may have committed.
+    await _loadUsers();
+    if (ref.mounted) {
+      state = AsyncValue.data(
+        (state.value ?? latest).copyWith(bulkUpdatingRole: null),
+      );
+    }
+    return result;
   }
 
   int _sortUsers(AdminUserListItem a, AdminUserListItem b, String sortKey) {

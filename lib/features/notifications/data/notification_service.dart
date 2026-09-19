@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:mobi_app/core/errors/app_exception.dart' as app;
+import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -104,11 +106,40 @@ class NotificationService {
   RealtimeChannel? _channel;
   String? _listeningUserId;
   final _notificationController = StreamController<AppNotification>.broadcast();
+  late final StreamSubscription<AuthState> _authSubscription;
+  String? _observedUserId;
+  int _accountGeneration = 0;
+  bool _disposed = false;
 
   NotificationService({SupabaseClient? supabase})
-    : _supabase = supabase ?? Supabase.instance.client;
+    : _supabase = supabase ?? Supabase.instance.client {
+    _observedUserId = _currentUserId;
+    _authSubscription = _supabase.auth.onAuthStateChange.listen((state) {
+      final userId = state.session?.user.id;
+      if (_observedUserId != userId) {
+        _observedUserId = userId;
+        _accountGeneration++;
+      }
+    });
+  }
 
   String? get _currentUserId => _supabase.auth.currentUser?.id;
+
+  String _requireUserId() {
+    final userId = _currentUserId;
+    if (_disposed || userId == null) throw const app.AuthException();
+    return userId;
+  }
+
+  void _verifyAccount(String userId, int generation) {
+    if (_disposed ||
+        _currentUserId != userId ||
+        _accountGeneration != generation) {
+      throw const app.AuthException(
+        message: 'Your account changed. Refresh to continue.',
+      );
+    }
+  }
 
   /// Stream of incoming notifications (realtime).
   Stream<AppNotification> get onNotification => _notificationController.stream;
@@ -121,6 +152,7 @@ class NotificationService {
   Future<List<AppNotification>> getNotifications({int limit = 50}) async {
     final userId = _currentUserId;
     if (userId == null) return [];
+    final generation = _accountGeneration;
 
     try {
       final rows = await _supabase
@@ -131,10 +163,14 @@ class NotificationService {
           .order('created_at', ascending: false)
           .limit(limit);
 
+      _verifyAccount(userId, generation);
       return rows.map<AppNotification>(AppNotification.fromJson).toList();
-    } on Object catch (e) {
-      AppLogger.error('Error fetching notifications: $e');
-      return [];
+    } on Object catch (e, st) {
+      throw AppExceptionMapper.mapAndLog(
+        e,
+        st,
+        context: 'NotificationService.getNotifications',
+      );
     }
   }
 
@@ -142,6 +178,7 @@ class NotificationService {
   Future<List<AppNotification>> getUnreadNotifications() async {
     final userId = _currentUserId;
     if (userId == null) return [];
+    final generation = _accountGeneration;
 
     try {
       final rows = await _supabase
@@ -152,10 +189,14 @@ class NotificationService {
           .eq('visible_in_app', true)
           .order('created_at', ascending: false);
 
+      _verifyAccount(userId, generation);
       return rows.map<AppNotification>(AppNotification.fromJson).toList();
-    } on Object catch (e) {
-      AppLogger.error('Error fetching unread notifications: $e');
-      return [];
+    } on Object catch (e, st) {
+      throw AppExceptionMapper.mapAndLog(
+        e,
+        st,
+        context: 'NotificationService.getUnreadNotifications',
+      );
     }
   }
 
@@ -163,6 +204,7 @@ class NotificationService {
   Future<int> getUnreadCount() async {
     final userId = _currentUserId;
     if (userId == null) return 0;
+    final generation = _accountGeneration;
 
     try {
       final result = await _supabase
@@ -172,10 +214,14 @@ class NotificationService {
           .eq('is_read', false)
           .eq('visible_in_app', true)
           .count(CountOption.exact);
+      _verifyAccount(userId, generation);
       return result.count;
-    } on Object catch (e) {
-      AppLogger.error('Error fetching unread count: $e');
-      return 0;
+    } on Object catch (e, st) {
+      throw AppExceptionMapper.mapAndLog(
+        e,
+        st,
+        context: 'NotificationService.getUnreadCount',
+      );
     }
   }
 
@@ -185,20 +231,36 @@ class NotificationService {
 
   /// Marks a single notification as read.
   Future<void> markAsRead(String notificationId) async {
+    final userId = _requireUserId();
+    final generation = _accountGeneration;
     try {
-      await _supabase
+      final rows = await _supabase
           .from('notifications')
           .update({'is_read': true})
-          .eq('id', notificationId);
-    } on Object catch (e) {
-      AppLogger.error('Error marking notification as read: $e');
+          .eq('id', notificationId)
+          .eq('user_id', userId)
+          .eq('visible_in_app', true)
+          .select('id');
+      _verifyAccount(userId, generation);
+      if (rows.isEmpty) {
+        throw const app.NotFoundException(
+          message:
+              'This notification is no longer available. Refresh to continue.',
+        );
+      }
+    } on Object catch (e, st) {
+      throw AppExceptionMapper.mapAndLog(
+        e,
+        st,
+        context: 'NotificationService.markAsRead',
+      );
     }
   }
 
   /// Marks all unread notifications as read for the current user.
   Future<void> markAllAsRead() async {
-    final userId = _currentUserId;
-    if (userId == null) return;
+    final userId = _requireUserId();
+    final generation = _accountGeneration;
 
     try {
       await _supabase
@@ -207,8 +269,13 @@ class NotificationService {
           .eq('user_id', userId)
           .eq('is_read', false)
           .eq('visible_in_app', true);
-    } on Object catch (e) {
-      AppLogger.error('Error marking all notifications as read: $e');
+      _verifyAccount(userId, generation);
+    } on Object catch (e, st) {
+      throw AppExceptionMapper.mapAndLog(
+        e,
+        st,
+        context: 'NotificationService.markAllAsRead',
+      );
     }
   }
 
@@ -267,6 +334,9 @@ class NotificationService {
 
   /// Disposes of resources.
   void dispose() {
+    if (_disposed) return;
+    _disposed = true;
+    unawaited(_authSubscription.cancel());
     stopListening();
     _notificationController.close();
   }

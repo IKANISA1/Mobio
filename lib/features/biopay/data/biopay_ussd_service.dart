@@ -33,14 +33,14 @@ class BioPayUssdService {
   }
 
   Future<BioPayUssdPaymentRequest> createFaceMatchPaymentRequest({
-    required String providerFaceId,
+    required String matchSessionId,
     required int amountMinor,
     String providerCode = 'mtn_rw',
   }) async {
     final response = await _requireSupabase().rpc<dynamic>(
-      'rpc_create_biopay_face_match_request',
+      'rpc_create_verified_biopay_face_match_request',
       params: {
-        'p_provider_face_id': providerFaceId,
+        'p_match_session_id': matchSessionId,
         'p_amount_minor': amountMinor,
         'p_provider_code': providerCode,
       },

@@ -46,9 +46,9 @@ class BridgeForegroundService : Service() {
         executor.execute {
             val result = try {
                 syncOnce()
-            } catch (error: Throwable) {
-                Log.e(logTag, "Foreground sync failed", error)
-                UploadResult(false, message = "${error.javaClass.simpleName}: ${error.message ?: "Sync failed"}")
+            } catch (error: Exception) {
+                Log.e(logTag, "Foreground sync failed: ${error.javaClass.simpleName}")
+                UploadResult(false, message = "Sync unavailable; queued messages will be retried")
             } finally {
                 syncInFlight = false
             }
@@ -61,7 +61,7 @@ class BridgeForegroundService : Service() {
     private fun syncOnce(): UploadResult {
         val queue = SmsQueue(applicationContext)
         val messages = queue.all()
-        return UploadClient().upload(messages) { uploadedHashes ->
+        return UploadClient(CollectorIdentity(applicationContext)).upload(messages) { uploadedHashes ->
             queue.markUploaded(uploadedHashes)
         }
     }

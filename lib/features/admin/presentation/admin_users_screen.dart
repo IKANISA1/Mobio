@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/admin/application/admin_services.dart';
 import 'package:mobi_app/features/admin/application/admin_users_provider.dart';
 import 'package:mobi_app/features/admin/application/admin_users_state.dart';
@@ -66,7 +67,12 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                 .updateSingleUserRole(user, nextRole);
             _showSnackBar('${user.name} is now ${nextRole.toUpperCase()}.');
           } on Object catch (e) {
-            _showSnackBar(e.toString(), isError: true);
+            _showSnackBar(
+              e is AppException
+                  ? e.message
+                  : 'Unable to update this user. Refresh and try again.',
+              isError: true,
+            );
           }
         },
         onAddInsuranceReward: () async {
@@ -76,7 +82,12 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
                 .addInsuranceRewardTokens(user);
             _showSnackBar('3000 TOKENS added to ${user.name}.');
           } on Object catch (e) {
-            _showSnackBar(e.toString(), isError: true);
+            _showSnackBar(
+              e is AppException
+                  ? e.message
+                  : 'Unable to update this user. Refresh and try again.',
+              isError: true,
+            );
           }
         },
       ),
@@ -108,7 +119,8 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
           children: [
             AdminEmptyState(
               title: 'Users unavailable',
-              message: err.toString(),
+              message:
+                  'Unable to load users. Check your connection and try again.',
               icon: LucideIcons.alertTriangle,
               action: AdminActionChip(
                 label: 'Retry',
@@ -140,10 +152,27 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
             bulkUpdatingRole: state.bulkUpdatingRole,
             onApplyRole: (role) async {
               try {
-                await controller.applyRoleToSelected(role);
-                _showSnackBar('Updated ${state.selectedIds.length} users.');
+                final result = await controller.applyRoleToSelected(role);
+                final parts = [
+                  result.updatedCount == 0
+                      ? 'No users updated.'
+                      : 'Updated ${result.updatedCount} ${result.updatedCount == 1 ? 'user' : 'users'}.',
+                  if (result.failedIds.isNotEmpty)
+                    '${result.failedIds.length} failed.',
+                  if (result.skippedCount > 0)
+                    '${result.skippedCount} skipped.',
+                ];
+                _showSnackBar(
+                  parts.join(' '),
+                  isError: result.failedIds.isNotEmpty,
+                );
               } on Object catch (e) {
-                _showSnackBar(e.toString(), isError: true);
+                _showSnackBar(
+                  e is AppException
+                      ? e.message
+                      : 'Unable to update users. Refresh and try again.',
+                  isError: true,
+                );
               }
             },
             onClear: () => controller.toggleSelectAll(false),

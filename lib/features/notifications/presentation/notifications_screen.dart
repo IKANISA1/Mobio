@@ -1,8 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_app/features/notifications/application/notification_services.dart';
 import 'package:mobi_app/features/notifications/data/notification_service.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
@@ -25,8 +27,10 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   late Future<List<AppNotification>> _future;
+  bool _writing = false;
 
   NotificationService get _service => ref.read(notificationServiceProvider);
+  bool get _isPreview => ref.read(notificationUiPreviewProvider);
 
   @override
   void initState() {
@@ -35,7 +39,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   }
 
   Future<List<AppNotification>> _load() {
-    if (SupabaseConfig.isLocalUiPreview) {
+    if (_isPreview) {
       return Future.value(_previewNotifications);
     }
 
@@ -43,28 +47,53 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   }
 
   Future<void> _refresh() async {
+    if (!mounted) return;
     setState(() => _future = _load());
-    await _future;
+    try {
+      await _future;
+    } on Object catch (_) {
+      // FutureBuilder owns the error state; gesture callbacks must not rethrow.
+    }
   }
 
   Future<void> _markAllRead() async {
-    if (!SupabaseConfig.isLocalUiPreview) {
-      await _service.markAllAsRead();
+    if (_writing) return;
+    setState(() => _writing = true);
+    try {
+      if (!_isPreview) await _service.markAllAsRead();
+      await _refresh();
+    } on Object catch (error) {
+      _showWriteError(error);
+    } finally {
+      if (mounted) setState(() => _writing = false);
     }
-    await _refresh();
   }
 
   Future<void> _open(AppNotification notification) async {
-    if (!SupabaseConfig.isLocalUiPreview && !notification.isRead) {
-      await _service.markAsRead(notification.id);
+    if (_writing) return;
+    setState(() => _writing = true);
+    try {
+      if (!_isPreview && !notification.isRead) {
+        await _service.markAsRead(notification.id);
+      }
+      if (!mounted) return;
+      unawaited(_refresh());
+      final route = notification.route;
+      if (route != '/notifications') context.push(route);
+    } on Object catch (error) {
+      _showWriteError(error);
+    } finally {
+      if (mounted) setState(() => _writing = false);
     }
+  }
+
+  void _showWriteError(Object error) {
     if (!mounted) return;
-    final route = notification.route;
-    if (route != '/notifications') {
-      context.push(route);
-    } else {
-      await _refresh();
-    }
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+    messenger.showSnackBar(
+      SnackBar(content: Text(AppExceptionMapper.map(error).message)),
+    );
   }
 
   @override
@@ -79,7 +108,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               onBack: widget.onBack,
               trailing: IconButton(
                 tooltip: 'Mark all read',
-                onPressed: _markAllRead,
+                onPressed: _writing ? null : _markAllRead,
                 icon: const Icon(LucideIcons.checkCheck),
               ),
             ),
@@ -89,6 +118,48 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    final cs = Theme.of(context).colorScheme;
+                    return ListView(
+                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      children: [
+                        Semantics(
+                          liveRegion: true,
+                          child: Column(
+                            children: [
+                              Icon(
+                                LucideIcons.alertTriangle,
+                                color: cs.error,
+                                size: 32,
+                              ),
+                              const SizedBox(height: AppSpacing.md),
+                              Text(
+                                'Couldn’t load notifications',
+                                textAlign: TextAlign.center,
+                                style: AppTypography.titleLg.copyWith(
+                                  color: cs.onSurface,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.sm),
+                              Text(
+                                AppExceptionMapper.map(snapshot.error!).message,
+                                textAlign: TextAlign.center,
+                                style: AppTypography.bodyMd.copyWith(
+                                  color: cs.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.lg),
+                              MobiButton(
+                                onPressed: _refresh,
+                                child: const Text('Try again'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
                   }
 
                   final notifications = snapshot.data ?? const [];
@@ -131,7 +202,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                         final notification = notifications[index];
                         return _NotificationTile(
                           notification: notification,
-                          onTap: () => _open(notification),
+                          onTap: _writing ? null : () => _open(notification),
                         );
                       },
                     ),
@@ -193,7 +264,7 @@ class _NotificationTile extends StatelessWidget {
   const _NotificationTile({required this.notification, required this.onTap});
 
   final AppNotification notification;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

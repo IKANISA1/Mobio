@@ -62,6 +62,15 @@ class AppColors {
   static const mintDepth = Color(0xFF021920);
   static const orangeDepth = Color(0xFF330E0C);
 
+  // Persistent consumer navigation stays neutral above every route family.
+  // DESK-003/007 support the opaque capsule; these values are Mobio adapters.
+  // The same high-contrast treatment in Light mode is an explicit adaptation.
+  static const navigationSurface = Color(0xFF161618);
+  static const navigationSelection = Color(0xFF303033);
+  static const navigationForeground = Color(0xFFF4F4F4);
+  static const navigationSecondaryForeground = Color(0xFFA1A1A3);
+  static const navigationOutline = Color(0xFF555558);
+
   // ═══ Dark palette ═══
   static const dark = _DarkPalette();
 

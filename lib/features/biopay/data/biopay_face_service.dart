@@ -37,7 +37,7 @@ class BioPayFaceService {
         .from('biopay_profiles')
         .select(
           'handle, provider, provider_subject_id, provider_collection_id, '
-          'liveness_status, status, consent_granted_at',
+          'liveness_status, status, consent_granted_at, server_verified_at',
         )
         .eq('user_id', userId)
         .maybeSingle();
@@ -93,9 +93,6 @@ class BioPayFaceService {
         'enrollment_challenges': challengeIds,
       },
     );
-    if (result.status == 'enrolled') {
-      await _recordEnrollment(result, livenessSessionId: livenessSessionId);
-    }
     return result;
   }
 
@@ -108,6 +105,7 @@ class BioPayFaceService {
         'match_status': 'matched',
         'provider': 'aws_rekognition',
         'provider_face_id': 'preview-aws-face',
+        'session_id': 'preview-face-match-session',
         'confidence': 0.93,
       },
     );
@@ -129,26 +127,6 @@ class BioPayFaceService {
     return BioPayFaceActionResult.fromJson(_mapResponse(response.data));
   }
 
-  Future<void> _recordEnrollment(
-    BioPayFaceActionResult result, {
-    String? livenessSessionId,
-  }) async {
-    final client = supabase;
-    if (client == null) return;
-
-    await client.rpc<dynamic>(
-      'rpc_record_biopay_face_enrollment',
-      params: {
-        'p_provider_session_id': livenessSessionId ?? result.sessionId,
-        'p_provider_face_id': result.providerFaceId,
-        'p_provider_collection_id': result.providerCollectionId,
-        'p_liveness_status': result.livenessStatus,
-        'p_quality_score': result.qualityScore,
-        'p_provider_metadata': result.values,
-      },
-    );
-  }
-
   Map<String, dynamic> _mapResponse(Object? data) {
     if (data is Map) return Map<String, dynamic>.from(data);
     return const <String, dynamic>{};
@@ -167,6 +145,7 @@ class BioPayEnrollmentStatus {
     this.livenessStatus = 'not_started',
     this.status = 'not_started',
     this.enrolledAt,
+    this.serverVerifiedAt,
   });
 
   factory BioPayEnrollmentStatus.fromJson(Map<String, dynamic> json) {
@@ -180,6 +159,9 @@ class BioPayEnrollmentStatus {
       enrolledAt: DateTime.tryParse(
         json['consent_granted_at']?.toString() ?? '',
       ),
+      serverVerifiedAt: DateTime.tryParse(
+        json['server_verified_at']?.toString() ?? '',
+      ),
     );
   }
 
@@ -192,6 +174,7 @@ class BioPayEnrollmentStatus {
       livenessStatus: 'provider_liveness_not_required',
       status: 'active',
       enrolledAt: DateTime.utc(2026, 6, 12),
+      serverVerifiedAt: DateTime.utc(2026, 6, 12),
     );
   }
 
@@ -202,9 +185,12 @@ class BioPayEnrollmentStatus {
   final String livenessStatus;
   final String status;
   final DateTime? enrolledAt;
+  final DateTime? serverVerifiedAt;
 
   bool get isEnrolled =>
       providerSubjectId.isNotEmpty &&
+      serverVerifiedAt != null &&
+      enrolledAt != null &&
       provider == 'aws_rekognition' &&
       status == 'active';
 

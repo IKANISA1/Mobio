@@ -1,5 +1,19 @@
 import 'package:mobi_shared_types/models/admin/admin_models.dart';
 
+const Object _unset = Object();
+
+class AdminRoleUpdateResult {
+  const AdminRoleUpdateResult({
+    required this.updatedCount,
+    required this.failedIds,
+    required this.skippedCount,
+  });
+
+  final int updatedCount;
+  final Set<String> failedIds;
+  final int skippedCount;
+}
+
 class AdminUsersState {
   final List<AdminUserListItem> users;
   final Set<String> selectedIds;
@@ -33,9 +47,9 @@ class AdminUsersState {
     List<AdminUserListItem>? users,
     Set<String>? selectedIds,
     bool? isLoading,
-    String? loadError,
-    String? updatingUserId,
-    String? bulkUpdatingRole,
+    Object? loadError = _unset,
+    Object? updatingUserId = _unset,
+    Object? bulkUpdatingRole = _unset,
     String? roleFilter,
     String? searchQuery,
     String? sortKey,
@@ -47,9 +61,15 @@ class AdminUsersState {
       users: users ?? this.users,
       selectedIds: selectedIds ?? this.selectedIds,
       isLoading: isLoading ?? this.isLoading,
-      loadError: loadError ?? this.loadError,
-      updatingUserId: updatingUserId ?? this.updatingUserId,
-      bulkUpdatingRole: bulkUpdatingRole ?? this.bulkUpdatingRole,
+      loadError: identical(loadError, _unset)
+          ? this.loadError
+          : loadError as String?,
+      updatingUserId: identical(updatingUserId, _unset)
+          ? this.updatingUserId
+          : updatingUserId as String?,
+      bulkUpdatingRole: identical(bulkUpdatingRole, _unset)
+          ? this.bulkUpdatingRole
+          : bulkUpdatingRole as String?,
       roleFilter: roleFilter ?? this.roleFilter,
       searchQuery: searchQuery ?? this.searchQuery,
       sortKey: sortKey ?? this.sortKey,
