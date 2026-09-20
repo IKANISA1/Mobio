@@ -1,9 +1,9 @@
 {
   "plan": "docs/testing/fullstack-qa-plan-20260914.md",
-  "plan_sha256": "a76d44557724f4e045aed993afc386c02c744cd6735da3ae7a9998587d971263",
-  "goal_status": "active",
+  "plan_sha256": "16a7fae57b53c1778c27a122c563b7bc35ff7f5ebbc6980c5826d19d46f04b0c",
+  "goal_status": "usageLimited",
   "goal_created_after_plan": true,
-  "updated_at": "2026-09-15T01:18:09.579437+00:00",
+  "updated_at": "2026-09-19T18:39:38.979561+00:00",
   "current_phase": "M1",
   "milestones": [
     {
@@ -48,14 +48,14 @@
     }
   ],
   "next_actions": [
-    "Qualify remaining Realtime cold-start/notification recovery and lifecycle/order behavior; resolve FQA-035 on the designated Storage service; continue remaining identity/argument, OTP send/recovery, hosted Edge and jobs paths.",
-    "Finish remaining Admin/consumer traces and qualify configured app integration; two unused legacy helpers do not justify feature restoration",
-    "Complete collector operational worker/service/broadcast recovery, simultaneous upload and physical-device cases",
-    "Qualify legitimate service configuration, then configured app/Admin/installed-PWA/native journeys with exact artifacts",
-    "Finish website source comparison, actual zoom/reader/field performance and remaining design criteria",
-    "Deliver final per-surface report after every executable review check; keep deployment, device/provider and independent/owner acceptance separate"
+    "REM-001: reconcile current source/tools/owned environment; native usage-limited resumption remains controlled by user/system.",
+    "REM-002\u2013006: fix notification compile error, qualify service/UI/account lifecycle repairs, then focused/full regression and evidence binding.",
+    "REM-007\u2013020: complete inventory, QF-01\u201307 crosswalk, legitimate config, trust boundaries, FQA-035 Storage repair, realtime/jobs and security/operations.",
+    "REM-021\u2013034: complete all configured consumer, Admin, collector and website journeys with actual persisted outcomes.",
+    "REM-035\u2013051: complete reference/visual/accessibility acceptance, native/browser/installed PWA matrix, data extremes and performance/recovery.",
+    "REM-052\u2013057: finish finding closure, final regression/evidence integrity, per-surface report and separate release/human gates; audit entire original objective."
   ],
-  "readiness": "NO-GO: review incomplete and required runtime/device/acceptance evidence missing",
+  "readiness": "NO-GO: unfinished notification patch, open Storage P1 and incomplete required system/runtime/acceptance evidence",
   "qa_complete": false,
   "human_acceptance": "unverified",
   "baseline_checks": "docs/testing/fullstack-qa-20260914/baseline-checks.json",
@@ -106,8 +106,8 @@
     "framework_revision": "e1fd963c6f6922bd32afde2e9698a363cd0406d2",
     "note": "Pinned SDK discovered and executed; initial Flutter 3.44.4 evidence is retained separately"
   },
-  "current_source_fingerprint": "2b6dbce43afd00bee575fa5df163c98f098367ca278be6c4265a7f8c6d8884cb",
-  "checkpoint": "Chat join/reconnect history repair qualified through actual Dart SDK and services;648 Flutter tests;38 findings; goal active",
+  "current_source_fingerprint": "6ad4bb0e87fa30224bcb681d86574d42dd3e9bc31f251222e158b466487d30ec",
+  "checkpoint": "19 September remaining-work update; 57 open work packages; unfinished notification patch still has a retained compiler failure; no fresh QA pass",
   "latest_results": {
     "flutter": {
       "passed": 648,
@@ -115,7 +115,7 @@
       "sdk": "3.44.3",
       "evidence": "build/qa/fullstack-qa-20260914/chat-recovery-final-flutter-test.log",
       "source_fingerprint": "2b6dbce43afd00bee575fa5df163c98f098367ca278be6c4265a7f8c6d8884cb",
-      "note": "Full648 tests passed after chat history reconciliation; five new SDK lifecycle regressions.",
+      "note": "Last fully validated chat-recovery checkpoint:648 passes. Not a pass for the later notification patch; retain original source binding.",
       "later_focused_passed": 17,
       "later_focused_evidence": "build/qa/fullstack-qa-20260914/flutter-authority-final-focused.log"
     },
@@ -322,7 +322,31 @@
       "owned_replay_container_remaining": false,
       "evidence": "build/qa/fullstack-qa-20260914/realtime-cli-rehearsal.json",
       "source_fingerprint": "dec8969777c8cee28f691d3b2d9f0d23b0dc4780f225c131949fbf4feebf63b5"
+    },
+    "notification_draft": {
+      "state": "in_progress_compile_failure",
+      "source_fingerprint": "6ad4bb0e87fa30224bcb681d86574d42dd3e9bc31f251222e158b466487d30ec",
+      "evidence": "build/qa/fullstack-qa-20260914/notification-focused-green-attempt.log",
+      "error": "Five named context arguments do not match AppExceptionMapper.mapAndLog positional signature",
+      "behavioral_suites_executed_in_attempt": 0,
+      "source_contract_tests_passed": 6,
+      "full_current_source_regression": "not_passed"
     }
   },
-  "open_user_question": "Path to approved QA configuration or existing non-production Supabase project requested asynchronously; no reply yet"
+  "open_user_question": "Path to approved QA configuration or existing non-production Supabase project requested asynchronously; no reply yet",
+  "original_plan_sha256": "a76d44557724f4e045aed993afc386c02c744cd6735da3ae7a9998587d971263",
+  "original_plan_archive": "build/qa/fullstack-qa-20260914/goal-refresh-20260919-original-plan.md",
+  "last_verified_source_fingerprint": "2b6dbce43afd00bee575fa5df163c98f098367ca278be6c4265a7f8c6d8884cb",
+  "remaining_tasks": "docs/testing/fullstack-qa-20260914/remaining-tasks-20260919.md",
+  "remaining_task_register": "docs/testing/fullstack-qa-20260914/remaining-tasks-20260919.csv",
+  "remaining_task_count": 57,
+  "goal_update": {
+    "requested_by": "user",
+    "recorded_at": "2026-09-19T18:39:38.979561+00:00",
+    "mechanism": "Update the existing native goal referenced plan and execution registers; native objective text unchanged",
+    "native_status_observed": "usageLimited",
+    "native_snapshot": "build/qa/fullstack-qa-20260914/goal-refresh-20260919-native-snapshot.json",
+    "usage_limit_changed": false,
+    "goal_completed": false
+  }
 }
