@@ -8,7 +8,7 @@ const APP_PATHS = new Set([
   "/wallet", "/mobio-plus", "/profile", "/biopay",
 ]);
 const STABLE_CONTROLS = new Set([
-  "/release.json", "/flutter_bootstrap.js", "/flutter_service_worker.js",
+  "/release.json", "/flutter.js", "/flutter_bootstrap.js", "/flutter_service_worker.js",
   "/admin-manifest.json", "/app-manifest.json", "/manifest.json",
 ]);
 const APP_CSP = "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: blob: https:; font-src 'self' data:; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https: wss:; worker-src 'self' blob:; manifest-src 'self'; media-src 'self' blob: data:; upgrade-insecure-requests";
@@ -33,7 +33,8 @@ function identify(response, surface, pathname = "", head = false) {
   headers.set("referrer-policy", surface === "asset" || surface === "website"
     ? "strict-origin-when-cross-origin" : "no-referrer");
   const versioned = /^\/releases\/[0-9a-f]{64}\/.+/.test(pathname);
-  headers.set("cache-control", surface === "asset" && response.status < 400 && !STABLE_CONTROLS.has(pathname)
+  const mutableRuntime = pathname.startsWith("/main.dart.js") || STABLE_CONTROLS.has(pathname);
+  headers.set("cache-control", surface === "asset" && response.status < 400 && !mutableRuntime
     ? (versioned ? "public, max-age=31536000, immutable" : "no-cache, must-revalidate")
     : "no-store");
   return new Response(head ? null : response.body, {

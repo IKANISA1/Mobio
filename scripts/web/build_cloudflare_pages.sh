@@ -27,6 +27,9 @@ fi
 
 source "$repo_root/scripts/lib/flutter.sh"
 export PATH="$(dirname "$FLUTTER_BIN"):$PATH"
+# A fresh SDK emits bootstrap/download output before its first version result.
+# Warm it before parsing machine JSON so clean Linux builders work as well.
+"$FLUTTER_BIN" --version >/dev/null
 "$FLUTTER_BIN" --version --machine | python3 -c \
   'import json,sys; v=json.load(sys.stdin); assert v["frameworkVersion"]=="3.44.3", "Unexpected Flutter SDK"'
 "$repo_root/scripts/ci/bootstrap_flutter.sh"

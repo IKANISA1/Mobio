@@ -6,6 +6,8 @@ This is the remaining-work addendum to the [original full-system plan](../fullst
 
 The user requested this scope update. It does not independently authorize deployment, production data changes, store upload, external messages or paid provider/biometric work. Current authorizations and product boundaries remain in force.
 
+**20 September update:** REM-002 is complete locally: the compiler error and a refresh callback assertion were repaired; 28 focused checks and 670 full Flutter tests pass. The register contains 57 packages, 56 still open. See [main integration](main-integration-20260920.md). The dated starting-point notes below are retained as history.
+
 ## Verified starting point and immediate order
 
 - Current branch: `codex/recovered-pro-g40-2026-09-10`; HEAD: `a77efb1e0a78a22c092151a0153468a495adb060`. Source: 1,967 files; fingerprint `6ad4bb0e87fa30224bcb681d86574d42dd3e9bc31f251222e158b466487d30ec`. The checkout was clean before this documentation update.
@@ -16,7 +18,7 @@ The user requested this scope update. It does not independently authorize deploy
 
 ## Ordered remaining work packages
 
-The [CSV register](remaining-tasks-20260919.csv) contains the same 57 task IDs with owners, dependencies, completion evidence and linked cases. Every task below remains open; several contain multiple platform/role executions. Counts are not a completion percentage.
+The [CSV register](remaining-tasks-20260919.csv) contains the same 57 task IDs with owners, dependencies, completion evidence and linked cases. REM-002 is complete locally; the other 56 packages remain open and several contain multiple platform/role executions. Counts are not a completion percentage.
 
 ### M0 refresh
 
@@ -25,7 +27,7 @@ The [CSV register](remaining-tasks-20260919.csv) contains the same 57 task IDs w
 
 ### M6 immediate
 
-- [ ] **REM-002 — Fix the unfinished notification patch compiler error.** Correct all five named context arguments to match AppExceptionMapper.mapAndLog; compile the two behavioral test files and obtain focused results. Retain the original compiler failure.
+- [x] **REM-002 — Fix the unfinished notification patch compiler error.** Correct all five named context arguments to match AppExceptionMapper.mapAndLog; compile the two behavioral test files and obtain focused results. Retain the original compiler failure.
   Owner: Codex / QA. Dependencies: None for local work. Linked IDs: notification-focused-green-attempt.log.
 
 - [ ] **REM-003 — Finish truthful API errors, read-update confirmation and stale-account result protection.** Prove rejected inbox/unread/count/write calls report errors; valid retries succeed; single read updates target the current visible row and confirm affected rows; signed-out writes fail; late account/logout/dispose results cannot update current state. Qualify rapid A-B-A switching and token refresh separately.
@@ -351,4 +353,4 @@ Dependency observations above retain their historical dates and must be rechecke
 
 Archive prior evidence; preserve recovered work and original failures. Reuse pinned tools and existing frameworks. Every new result records actual command, version, source/artifact/reference hashes, case/role/state and limits. Only actual evidence closes a requirement. Record prerequisites separately from product defects, use no fabricated credentials/results/approvals, and keep device/provider/deployed/human acceptance distinct.
 
-The original 14 September plan is preserved byte-for-byte in `build/qa/fullstack-qa-20260914/goal-refresh-20260919-original-plan.md`; its SHA-256 is `a76d44557724f4e045aed993afc386c02c744cd6735da3ae7a9998587d971263`. All 34 prior registers are archived alongside it. This update changes documentation only, not application code or a QA result.
+The original 14 September plan is preserved byte-for-byte in `build/qa/fullstack-qa-20260914/goal-refresh-20260919-original-plan.md`; its SHA-256 is `a76d44557724f4e045aed993afc386c02c744cd6735da3ae7a9998587d971263`. All 34 prior registers are archived alongside it. The 19 September update changed documentation only, not application code or a QA result.

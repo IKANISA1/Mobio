@@ -169,7 +169,7 @@ class NotificationService {
       throw AppExceptionMapper.mapAndLog(
         e,
         st,
-        context: 'NotificationService.getNotifications',
+        'NotificationService.getNotifications',
       );
     }
   }
@@ -195,7 +195,7 @@ class NotificationService {
       throw AppExceptionMapper.mapAndLog(
         e,
         st,
-        context: 'NotificationService.getUnreadNotifications',
+        'NotificationService.getUnreadNotifications',
       );
     }
   }
@@ -220,7 +220,7 @@ class NotificationService {
       throw AppExceptionMapper.mapAndLog(
         e,
         st,
-        context: 'NotificationService.getUnreadCount',
+        'NotificationService.getUnreadCount',
       );
     }
   }
@@ -252,7 +252,7 @@ class NotificationService {
       throw AppExceptionMapper.mapAndLog(
         e,
         st,
-        context: 'NotificationService.markAsRead',
+        'NotificationService.markAsRead',
       );
     }
   }
@@ -274,7 +274,7 @@ class NotificationService {
       throw AppExceptionMapper.mapAndLog(
         e,
         st,
-        context: 'NotificationService.markAllAsRead',
+        'NotificationService.markAllAsRead',
       );
     }
   }

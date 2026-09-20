@@ -76,7 +76,7 @@ cat > "$site_dir/_headers" <<'EOF'
   Cache-Control: no-store
 
 /main.dart.js
-  Cache-Control: no-cache
+  Cache-Control: no-store
 
 /assets/*
   Cache-Control: public, max-age=0, must-revalidate

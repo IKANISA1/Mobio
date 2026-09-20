@@ -8,6 +8,8 @@ Our Actions runs fail at startup before any job or checkout step is created. Thi
 
 Evidence captured 10 September 2026:
 
+- Latest release-fix push [34461180656](https://github.com/IKANISA1/Mobio/actions/runs/34461180656), commit `d722604dd8d9305d9c7bb23f554d16c87672c23b`: `startup_failure`, path `BuildFailed`, zero jobs. Independent Cloudflare builds and local Flutter/backend checks run successfully for the release work.
+
 - Manual dispatch [34456043645](https://github.com/IKANISA1/Mobio/actions/runs/34456043645), workflow ID `252559748`, path `.github/workflows/ci.yml`, commit `d94c4edb11a7496753a28f906b2f397fe06d6b12`: `completed`, conclusion `startup_failure`, zero jobs; check suite `93338623063`.
 - Implementation push [34205083702](https://github.com/IKANISA1/Mobio/actions/runs/34205083702), commit `07323dde2b3663bfdac97edb921f517fa642c391`: same zero-job startup failure, reported path `BuildFailed`.
 - Earlier baseline push [34031158771](https://github.com/IKANISA1/Mobio/actions/runs/34031158771), commit `499e0069ab3fe9a06f0919bc996c22ed62a7b8e4`: same failure before this feature change.

@@ -5,6 +5,8 @@ Created: 14 September 2026. Scope: the Mobio system in this repository. Executio
 
 **Remaining-work update, 19 September 2026:** The execution goal now follows the complete [remaining-task addendum](fullstack-qa-20260914/remaining-tasks-20260919.md) and its [57-task register](fullstack-qa-20260914/remaining-tasks-20260919.csv), in addition to every original requirement below. Start with the unfinished notification compiler/behavior batch and source reconciliation, then continue all phases. Native goal status was observed as `usageLimited`; this documentation update neither resumes nor completes it. The original plan and prior registers are archived with their hashes.
 
+**Integration update, 20 September 2026:** REM-002 is complete locally, with 28 focused checks, 670 full Flutter tests and clean analysis. Continue the other 56 packages in the [remaining register](fullstack-qa-20260914/remaining-tasks-20260919.md); all original acceptance gates remain open until their own evidence is complete. See [main integration](fullstack-qa-20260914/main-integration-20260920.md).
+
 ## Objective and execution order
 
 Review every implemented Mobio surface and its supporting services, reproduce defects, repair failures within approved product scope, and deliver a traceable QA and readiness decision. Preserve Mobio's identity, routes, capabilities, data contracts and workflows while assessing fidelity to the selected Revolut visual system.

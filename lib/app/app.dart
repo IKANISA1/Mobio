@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobi_app/app/app_providers.dart';
 import 'package:mobi_app/app/router/app_router.dart';
+import 'package:mobi_app/features/biopay/domain/payment_entry.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_nfc_foreground_listener.dart';
 import 'package:mobi_app/l10n/app_localizations.dart';
 import 'package:mobi_app/l10n/platform_localization_fallbacks.dart';
@@ -63,6 +64,13 @@ class MobiMainApp extends ConsumerWidget {
               return ConnectivityOverlay(
                 child: BioPayNfcForegroundListener(
                   onPaymentEntry: (value) async {
+                    final token = parsePaymentEntry(value)?.token;
+                    if (token != null) {
+                      // Preserve the public preview on cold and warm launches.
+                      // Authentication begins only when the payer continues.
+                      router.go(bioPayShareUri(token).path);
+                      return;
+                    }
                     router.go('/biopay');
                     await router.push(
                       Uri(

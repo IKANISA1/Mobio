@@ -48,9 +48,12 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
 
   Future<void> _refresh() async {
     if (!mounted) return;
-    setState(() => _future = _load());
+    final future = _load();
+    setState(() {
+      _future = future;
+    });
     try {
-      await _future;
+      await future;
     } on Object catch (_) {
       // FutureBuilder owns the error state; gesture callbacks must not rethrow.
     }
@@ -89,11 +92,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
 
   void _showWriteError(Object error) {
     if (!mounted) return;
-    final messenger = ScaffoldMessenger.of(context);
-    messenger.hideCurrentSnackBar();
-    messenger.showSnackBar(
-      SnackBar(content: Text(AppExceptionMapper.map(error).message)),
-    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(AppExceptionMapper.map(error).message)),
+      );
   }
 
   @override

@@ -39,12 +39,12 @@ test("Admin hostname root redirects while website root remains marketing", async
   assert.equal(site.headers.get("x-mobio-surface"), "website");
   assert.equal(site.headers.get("cache-control"), "no-store");
 });
-test("stable JavaScript is revalidated and preserves its content identity", async () => {
+test("mutable JavaScript is not stored and preserves its content identity", async () => {
   const env = { ASSETS: { fetch: async () => new Response("version two", {
     headers: { "content-type": "text/javascript", etag: '"v2"', "cache-control": "public, max-age=31536000, immutable" },
   }) } };
   const response = await worker.fetch(new Request("https://mobio.ikanisa.com/main.dart.js"), env);
-  assert.equal(response.headers.get("cache-control"), "no-cache, must-revalidate");
+  assert.equal(response.headers.get("cache-control"), "no-store");
   assert.equal(response.headers.get("etag"), '"v2"');
   assert.equal(await response.text(), "version two");
 });
