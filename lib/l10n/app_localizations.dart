@@ -1275,6 +1275,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add this bank account’s login phone in Payment methods, then compare again.'**
   String get bpMissingLogin;
+
+  /// No description provided for @faceRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Register my face'**
+  String get faceRegister;
+
+  /// No description provided for @faceScanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan to pay'**
+  String get faceScanTitle;
+
+  /// No description provided for @faceScanInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the person you want to pay.'**
+  String get faceScanInstruction;
+
+  /// No description provided for @faceRegisterInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Place your face in the frame.'**
+  String get faceRegisterInstruction;
+
+  /// No description provided for @faceConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Let people find your receiving MoMo number by scanning your face. You can remove this at any time.'**
+  String get faceConsent;
+
+  /// No description provided for @faceReceivingMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiving MoMo number'**
+  String get faceReceivingMethod;
+
+  /// No description provided for @faceManageMethods.
+  ///
+  /// In en, this message translates to:
+  /// **'Add or edit receiving numbers'**
+  String get faceManageMethods;
+
+  /// No description provided for @faceStartCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Open camera'**
+  String get faceStartCamera;
+
+  /// No description provided for @faceCapture.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture once'**
+  String get faceCapture;
+
+  /// No description provided for @faceScanAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan recipient'**
+  String get faceScanAction;
+
+  /// No description provided for @faceUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update face'**
+  String get faceUpdate;
+
+  /// No description provided for @facePause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause face lookup'**
+  String get facePause;
+
+  /// No description provided for @faceResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume face lookup'**
+  String get faceResume;
+
+  /// No description provided for @faceRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove my face'**
+  String get faceRemove;
+
+  /// No description provided for @faceReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Face setup saved'**
+  String get faceReady;
+
+  /// No description provided for @faceProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your face setup…'**
+  String get faceProcessing;
+
+  /// No description provided for @facePaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Face lookup is paused'**
+  String get facePaused;
+
+  /// No description provided for @faceRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Your face setup is removed'**
+  String get faceRemoved;
+
+  /// No description provided for @faceReenroll.
+  ///
+  /// In en, this message translates to:
+  /// **'Update your face setup to continue using Scan to pay.'**
+  String get faceReenroll;
+
+  /// No description provided for @faceOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening MoMo…'**
+  String get faceOpening;
+
+  /// No description provided for @faceOpened.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue in your dialer. MoMo handles the amount and PIN.'**
+  String get faceOpened;
+
+  /// No description provided for @faceManualPlatform.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic USSD opening is available on Android. Copy this code and use a supported phone.'**
+  String get faceManualPlatform;
+
+  /// No description provided for @faceCopyCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy USSD code'**
+  String get faceCopyCode;
+
+  /// No description provided for @faceCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied'**
+  String get faceCopied;
+
+  /// No description provided for @faceNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching recipient. Try again or use a number or QR.'**
+  String get faceNoMatch;
+
+  /// No description provided for @faceAmbiguous.
+  ///
+  /// In en, this message translates to:
+  /// **'No clear match. Try another capture or use a number or QR.'**
+  String get faceAmbiguous;
+
+  /// No description provided for @faceNoFace.
+  ///
+  /// In en, this message translates to:
+  /// **'No face found. Keep the face inside the frame.'**
+  String get faceNoFace;
+
+  /// No description provided for @faceMultiple.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep only one face in the frame.'**
+  String get faceMultiple;
+
+  /// No description provided for @facePoorCapture.
+  ///
+  /// In en, this message translates to:
+  /// **'Use more light and hold the camera steady.'**
+  String get facePoorCapture;
+
+  /// No description provided for @faceUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Face lookup is unavailable. Try again or use a number or QR.'**
+  String get faceUnavailable;
+
+  /// No description provided for @faceRecipientUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This recipient has no available receiving number. Use a number or QR.'**
+  String get faceRecipientUnavailable;
+
+  /// No description provided for @faceCameraError.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera unavailable. Check permission, then try again.'**
+  String get faceCameraError;
+
+  /// No description provided for @faceTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'This is taking too long. Try again.'**
+  String get faceTimeout;
+
+  /// No description provided for @faceSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in again to continue.'**
+  String get faceSignIn;
+
+  /// No description provided for @faceSelectMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a receiving MoMo number first.'**
+  String get faceSelectMethod;
+
+  /// No description provided for @faceDialFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The dialer could not open. Copy the code or try another method.'**
+  String get faceDialFailed;
+
+  /// No description provided for @faceManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a number'**
+  String get faceManual;
+
+  /// No description provided for @faceQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR'**
+  String get faceQr;
+
+  /// No description provided for @faceTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get faceTryAgain;
+
+  /// No description provided for @faceDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get faceDone;
+
+  /// No description provided for @faceWorking.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait…'**
+  String get faceWorking;
+
+  /// No description provided for @faceSetUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up'**
+  String get faceSetUp;
+
+  /// No description provided for @faceRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Check setup status'**
+  String get faceRefresh;
 }
 
 class _AppLocalizationsDelegate

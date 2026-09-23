@@ -1,6 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mobi_app/shared/widgets/mobi_button.dart';
+import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 
 class PlatformFeatureNoticeScreen extends StatelessWidget {
   const PlatformFeatureNoticeScreen({
@@ -21,72 +20,68 @@ class PlatformFeatureNoticeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    const platformLabel = kIsWeb ? 'web' : 'this platform';
-
     return Scaffold(
       backgroundColor: colorScheme.surface,
       body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                child: Padding(
+        child: Column(
+          children: [
+            MobiPageHeader(title: title, onBack: onBack),
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.headlineSmall,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 520),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(32),
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        message,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          height: 1.45,
-                        ),
-                      ),
-                      if (showPlatformNote) ...[
-                        const SizedBox(height: 12),
-                        Text(
-                          'Mobio is keeping the Flutter app available on mobile, but this flow is intentionally disabled on $platformLabel to avoid broken camera, gallery, or on-device ML behavior.',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                                height: 1.4,
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              message,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                    height: 1.45,
+                                  ),
+                            ),
+                            if (showPlatformNote) ...[
+                              const SizedBox(height: 12),
+                              Text(
+                                'This feature is unavailable on this device. You can continue using the other features in Mobio.',
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                      height: 1.4,
+                                    ),
                               ),
-                        ),
-                      ],
-                      if (note != null) ...[
-                        const SizedBox(height: 12),
-                        Text(
-                          note!,
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                                height: 1.4,
+                            ],
+                            if (note != null) ...[
+                              const SizedBox(height: 12),
+                              Text(
+                                note!,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                      height: 1.4,
+                                    ),
                               ),
+                            ],
+                          ],
                         ),
-                      ],
-                      const SizedBox(height: 24),
-                      MobiButton(
-                        onPressed: onBack,
-                        child: const Text('Go Back'),
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );

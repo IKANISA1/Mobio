@@ -11,14 +11,17 @@ import 'package:mobi_shared_types/models/trip.dart';
 
 class ScheduledTripCard extends StatelessWidget {
   final Trip trip;
+  final VoidCallback? onTap;
 
-  const ScheduledTripCard({super.key, required this.trip});
+  const ScheduledTripCard({super.key, required this.trip, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
     return ClayCard(
+      onTap: onTap,
+      semanticLabel: 'View trip details',
       padding: const EdgeInsets.all(AppSpacing.lg),
       borderRadius: AppRadii.hero,
       child: Row(
@@ -70,26 +73,28 @@ class ScheduledTripCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              const MobiStatusBadge(
-                label: 'Upcoming',
-                tone: MobiStatusBadgeTone.positive,
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                trip.authorId.isNotEmpty
-                    ? AppConstants.getDriverId(trip.authorId)
-                    : trip.vehicleTypeStr.toUpperCase(),
-                style: AppTypography.labelMd.copyWith(
-                  color: cs.onSurfaceVariant,
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const MobiStatusBadge(
+                  label: 'Upcoming',
+                  tone: MobiStatusBadgeTone.positive,
                 ),
-              ),
-            ],
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  trip.authorId.isNotEmpty
+                      ? AppConstants.getDriverId(trip.authorId)
+                      : trip.vehicleTypeStr.toUpperCase(),
+                  style: AppTypography.labelMd.copyWith(
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(width: AppSpacing.xs),
-          const Icon(LucideIcons.chevronRight, size: 18),
+          if (onTap != null) const Icon(LucideIcons.chevronRight, size: 18),
         ],
       ),
     );

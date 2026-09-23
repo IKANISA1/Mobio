@@ -40,7 +40,7 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         initialMomoNumber: '0788767816',
         initialMomoPayCode: '123456',
         initialVehicleNumberPlate: 'RAB 204 T',
-        initialBusAgencyName: 'Volcano Express',
+        initialBusAgencyName: 'VOLCANO',
         initialBusPassengerCapacity: '58',
         initialRentalVehicleModel: 'SUV',
       );

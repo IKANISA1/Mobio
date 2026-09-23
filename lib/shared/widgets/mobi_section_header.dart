@@ -31,11 +31,12 @@ class MobiSectionHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTypography.titleLg.copyWith(color: cs.onSurface),
+              Semantics(
+                header: true,
+                child: Text(
+                  title,
+                  style: AppTypography.titleLg.copyWith(color: cs.onSurface),
+                ),
               ),
               if (showCaption) ...[
                 const SizedBox(height: 2),
@@ -55,7 +56,7 @@ class MobiSectionHeader extends StatelessWidget {
           TextButton.icon(
             onPressed: onAction,
             style: TextButton.styleFrom(
-              foregroundColor: cs.primary,
+              foregroundColor: cs.onSurface,
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.sm,
                 vertical: AppSpacing.xs,

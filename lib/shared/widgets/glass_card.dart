@@ -90,36 +90,32 @@ class _ClayCardState extends State<ClayCard>
     return Semantics(
       button: true,
       label: widget.semanticLabel,
-      child: GestureDetector(
-        onTap: widget.onTap,
-        onTapDown: _handleTapDown,
-        onTapUp: _handleTapUp,
-        onTapCancel: _handleTapCancel,
-        behavior: HitTestBehavior.opaque,
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: MediaQuery.disableAnimationsOf(context)
-                  ? 1
-                  : _scaleAnimation.value,
-              child: Opacity(
-                opacity: _opacityAnimation.value,
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: widget.onTap,
-                    borderRadius: radius,
-                    splashColor: cs.primary.withValues(alpha: 0.12),
-                    highlightColor: Colors.transparent,
-                    child: child,
-                  ),
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: MediaQuery.disableAnimationsOf(context)
+                ? 1
+                : _scaleAnimation.value,
+            child: Opacity(
+              opacity: _opacityAnimation.value,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: widget.onTap,
+                  onTapDown: _handleTapDown,
+                  onTapUp: _handleTapUp,
+                  onTapCancel: _handleTapCancel,
+                  borderRadius: radius,
+                  splashColor: cs.primary.withValues(alpha: 0.12),
+                  highlightColor: Colors.transparent,
+                  child: child,
                 ),
               ),
-            );
-          },
-          child: card,
-        ),
+            ),
+          );
+        },
+        child: card,
       ),
     );
   }

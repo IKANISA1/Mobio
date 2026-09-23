@@ -18,6 +18,7 @@ class MobiInputField extends StatelessWidget {
   final IconData? prefixIcon;
   final IconData? suffixIcon;
   final VoidCallback? onSuffixTap;
+  final String? suffixSemanticLabel;
   final VoidCallback? onTap;
   final bool readOnly;
   final bool obscureText;
@@ -41,6 +42,7 @@ class MobiInputField extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.onSuffixTap,
+    this.suffixSemanticLabel,
     this.onTap,
     this.readOnly = false,
     this.obscureText = false,
@@ -54,7 +56,7 @@ class MobiInputField extends StatelessWidget {
     this.onFieldSubmitted,
     this.inputFormatters,
     this.errorText,
-  });
+  }) : assert(onSuffixTap == null || suffixSemanticLabel != null);
 
   @override
   Widget build(BuildContext context) {
@@ -71,91 +73,96 @@ class MobiInputField extends StatelessWidget {
               left: AppSpacing.xxs,
               bottom: AppSpacing.xs,
             ),
-            child: Text(
-              label!,
-              style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
+            child: ExcludeSemantics(
+              child: Text(
+                label!,
+                style: AppTypography.labelMd.copyWith(
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
             ),
           ),
         ],
-        TextFormField(
-          controller: controller,
-          focusNode: focusNode,
-          readOnly: readOnly,
-          obscureText: obscureText,
-          enabled: enabled,
-          maxLines: maxLines,
-          maxLength: maxLength,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          validator: validator,
-          onChanged: onChanged,
-          onFieldSubmitted: onFieldSubmitted,
-          onTap: onTap,
-          inputFormatters: inputFormatters,
-          style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: AppTypography.bodySm.copyWith(
-              color: cs.onSurfaceVariant.withValues(alpha: 0.6),
-            ),
-            errorText: errorText,
-            errorStyle: AppTypography.labelSm.copyWith(color: cs.error),
-            filled: true,
-            fillColor: ext.surfaceContainerLow,
-            isDense: true,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.lg,
-              vertical: AppSpacing.md,
-            ),
-            prefixIcon: prefixIcon != null
-                ? Padding(
-                    padding: const EdgeInsets.only(left: AppSpacing.md),
-                    child: Icon(
-                      prefixIcon,
-                      size: 20,
-                      color: cs.onSurfaceVariant,
-                    ),
-                  )
-                : null,
-            prefixIconConstraints: prefixIcon != null
-                ? const BoxConstraints(minWidth: 48)
-                : null,
-            suffixIcon: suffixIcon != null
-                ? GestureDetector(
-                    onTap: onSuffixTap,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: AppSpacing.sm),
+        Semantics(
+          label: label,
+          child: TextFormField(
+            controller: controller,
+            focusNode: focusNode,
+            readOnly: readOnly,
+            obscureText: obscureText,
+            enabled: enabled,
+            maxLines: maxLines,
+            maxLength: maxLength,
+            keyboardType: keyboardType,
+            textInputAction: textInputAction,
+            validator: validator,
+            onChanged: onChanged,
+            onFieldSubmitted: onFieldSubmitted,
+            onTap: onTap,
+            inputFormatters: inputFormatters,
+            style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: AppTypography.bodySm.copyWith(
+                color: cs.onSurfaceVariant,
+              ),
+              errorText: errorText,
+              errorStyle: AppTypography.labelSm.copyWith(color: cs.error),
+              filled: true,
+              fillColor: ext.surfaceContainerLow,
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.md,
+              ),
+              prefixIcon: prefixIcon != null
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: AppSpacing.md),
                       child: Icon(
+                        prefixIcon,
+                        size: 20,
+                        color: cs.onSurfaceVariant,
+                      ),
+                    )
+                  : null,
+              prefixIconConstraints: prefixIcon != null
+                  ? const BoxConstraints(minWidth: 48)
+                  : null,
+              suffixIcon: suffixIcon != null
+                  ? IconButton(
+                      onPressed: enabled ? onSuffixTap : null,
+                      tooltip: suffixSemanticLabel,
+                      icon: Icon(
                         suffixIcon,
                         size: 20,
                         color: cs.onSurfaceVariant,
                       ),
-                    ),
-                  )
-                : null,
-            suffixIconConstraints: suffixIcon != null
-                ? const BoxConstraints(minWidth: 44)
-                : null,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadii.md),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadii.md),
-              borderSide: BorderSide(color: cs.primary),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadii.md),
-              borderSide: BorderSide(color: cs.error),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadii.md),
-              borderSide: BorderSide(color: cs.error),
-            ),
-            disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadii.md),
-              borderSide: BorderSide(
-                color: cs.outlineVariant.withValues(alpha: 0.4),
+                    )
+                  : null,
+              suffixIconConstraints: suffixIcon != null
+                  ? const BoxConstraints(minWidth: 48, minHeight: 48)
+                  : null,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadii.md),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadii.md),
+                borderSide: BorderSide(color: cs.primary),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadii.md),
+                borderSide: BorderSide(color: cs.error),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadii.md),
+                borderSide: BorderSide(color: cs.error),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadii.md),
+                borderSide: BorderSide(
+                  color: cs.outlineVariant.withValues(alpha: 0.4),
+                ),
               ),
             ),
           ),

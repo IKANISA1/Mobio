@@ -1,14 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/domain/payment_entry.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_flow_shared.dart';
 import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 
 class BioPayScanScreen extends ConsumerStatefulWidget {
   const BioPayScanScreen({super.key, required this.onBack, this.onEntry});
@@ -51,42 +48,6 @@ class _BioPayScanScreenState extends ConsumerState<BioPayScanScreen> {
     }
   }
 
-  Future<void> _paste() async {
-    final data = await Clipboard.getData(Clipboard.kTextPlain);
-    if (mounted) await _resolve(data?.text ?? '');
-  }
-
-  Future<void> _gallery() async {
-    if (_busy) return;
-    try {
-      final path = await ref
-          .read(paymentDiscoveryServiceProvider)
-          .pickQrImage();
-      if (!mounted || path == null) return;
-      final scanner = MobileScannerController(autoStart: false);
-      try {
-        final capture = await scanner.analyzeImage(path);
-        final values =
-            capture?.barcodes
-                .map((b) => b.rawValue)
-                .whereType<String>()
-                .where((v) => parsePaymentEntry(v) != null)
-                .toSet()
-                .toList() ??
-            const <String>[];
-        if (values.length != 1) {
-          if (mounted) setState(() => _error = true);
-          return;
-        }
-        if (mounted) await _resolve(values.single);
-      } finally {
-        await scanner.dispose();
-      }
-    } on Object {
-      if (mounted) setState(() => _error = true);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l = paymentCopy(context);
@@ -104,21 +65,6 @@ class _BioPayScanScreenState extends ConsumerState<BioPayScanScreen> {
             _error = false;
             _revision++;
           }),
-        ),
-        PaymentAction(
-          label: l.bpManual,
-          secondary: true,
-          onPressed: _busy ? null : () => context.push('/biopay/send'),
-        ),
-        PaymentAction(
-          label: l.bpPaste,
-          secondary: true,
-          onPressed: _busy ? null : _paste,
-        ),
-        PaymentAction(
-          label: l.bpGallery,
-          secondary: true,
-          onPressed: _busy ? null : _gallery,
         ),
       ],
     );

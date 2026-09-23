@@ -51,7 +51,6 @@ class BioPayAdminPayee {
     required this.provider,
     required this.providerSubjectId,
     required this.providerCollectionId,
-    required this.livenessStatus,
     required this.status,
     required this.requestCount,
     required this.confirmedCount,
@@ -65,10 +64,9 @@ class BioPayAdminPayee {
       userId: json['user_id']?.toString() ?? '',
       handle: json['handle']?.toString() ?? '',
       displayName: json['display_name']?.toString() ?? 'BioPay payee',
-      provider: json['provider']?.toString() ?? 'aws_rekognition',
+      provider: json['provider']?.toString() ?? 'opencv_sface_v1',
       providerSubjectId: json['provider_subject_id']?.toString() ?? '',
       providerCollectionId: json['provider_collection_id']?.toString() ?? '',
-      livenessStatus: json['liveness_status']?.toString() ?? 'not_started',
       status: json['status']?.toString() ?? 'active',
       requestCount: (json['request_count'] as num?)?.toInt() ?? 0,
       confirmedCount: (json['confirmed_count'] as num?)?.toInt() ?? 0,
@@ -94,10 +92,9 @@ class BioPayAdminPayee {
       userId: userId,
       handle: handle,
       displayName: displayName,
-      provider: 'aws_rekognition',
-      providerSubjectId: 'aws-face-$handle',
-      providerCollectionId: 'mobio-biopay-prod',
-      livenessStatus: 'provider_liveness_not_required',
+      provider: 'opencv_sface_v1',
+      providerSubjectId: 'preview-face-$handle',
+      providerCollectionId: 'yunet2023mar-sface2021dec-opencv4.11-v1',
       status: 'active',
       requestCount: requestCount,
       confirmedCount: confirmedCount,
@@ -113,7 +110,6 @@ class BioPayAdminPayee {
   final String provider;
   final String providerSubjectId;
   final String providerCollectionId;
-  final String livenessStatus;
   final String status;
   final int requestCount;
   final int confirmedCount;
@@ -125,8 +121,18 @@ class BioPayAdminPayee {
       providerSubjectId.isNotEmpty &&
       serverVerifiedAt != null &&
       enrolledAt != null &&
+      provider == 'opencv_sface_v1' &&
       status == 'active';
-  String get enrollmentLabel => isEnrolled ? 'Enrolled' : 'Pending';
+  String get enrollmentLabel => isEnrolled
+      ? 'Enrolled'
+      : switch (status) {
+          'paused' => 'Paused',
+          'deleted' => 'Removed',
+          'reenrollment_required' => 'Update required',
+          'processing' => 'Processing',
+          'rejected' => 'Try again',
+          _ => 'Not set up',
+        };
 }
 
 class BioPayAdminSystemStatus {
@@ -139,12 +145,17 @@ class BioPayAdminSystemStatus {
     required this.ussdHandoffStatus,
     required this.pendingConfirmations,
     required this.lastAuditAt,
+    this.configured = false,
+    this.modelLoaded = false,
+    this.indexCompatible = false,
+    this.databaseContract = false,
+    this.lastAcceptanceAt,
   });
 
   factory BioPayAdminSystemStatus.fromJson(Map<String, dynamic> json) {
     return BioPayAdminSystemStatus(
       overallStatus: json['overall_status']?.toString() ?? 'unknown',
-      faceProvider: json['face_provider']?.toString() ?? 'aws_rekognition',
+      faceProvider: json['face_provider']?.toString() ?? 'opencv_sface_v1',
       faceProviderReady: json['face_provider_ready'] == true,
       collectionId: json['collection_id']?.toString() ?? '',
       databaseStatus: json['database_status']?.toString() ?? 'available',
@@ -157,10 +168,10 @@ class BioPayAdminSystemStatus {
 
   factory BioPayAdminSystemStatus.preview() {
     return BioPayAdminSystemStatus(
-      overallStatus: 'operational',
-      faceProvider: 'aws_rekognition',
-      faceProviderReady: true,
-      collectionId: 'mobio-biopay-prod',
+      overallStatus: 'acceptance_required',
+      faceProvider: 'opencv_sface_v1',
+      faceProviderReady: false,
+      collectionId: 'yunet2023mar-sface2021dec-opencv4.11-v1',
       databaseStatus: 'available',
       ussdHandoffStatus: 'external_ussd_only',
       pendingConfirmations: 3,
@@ -168,6 +179,8 @@ class BioPayAdminSystemStatus {
     );
   }
 
+  final bool configured, modelLoaded, indexCompatible, databaseContract;
+  final String? lastAcceptanceAt;
   final String overallStatus;
   final String faceProvider;
   final bool faceProviderReady;
@@ -178,6 +191,11 @@ class BioPayAdminSystemStatus {
   final DateTime? lastAuditAt;
 
   BioPayAdminSystemStatus copyWith({
+    bool? configured,
+    bool? modelLoaded,
+    bool? indexCompatible,
+    bool? databaseContract,
+    String? lastAcceptanceAt,
     String? overallStatus,
     String? faceProvider,
     bool? faceProviderReady,
@@ -188,6 +206,11 @@ class BioPayAdminSystemStatus {
     DateTime? lastAuditAt,
   }) {
     return BioPayAdminSystemStatus(
+      configured: configured ?? this.configured,
+      modelLoaded: modelLoaded ?? this.modelLoaded,
+      indexCompatible: indexCompatible ?? this.indexCompatible,
+      databaseContract: databaseContract ?? this.databaseContract,
+      lastAcceptanceAt: lastAcceptanceAt ?? this.lastAcceptanceAt,
       overallStatus: overallStatus ?? this.overallStatus,
       faceProvider: faceProvider ?? this.faceProvider,
       faceProviderReady: faceProviderReady ?? this.faceProviderReady,

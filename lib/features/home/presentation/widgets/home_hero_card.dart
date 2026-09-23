@@ -18,8 +18,8 @@ class HomeHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: isDriver ? 'Passenger scheduled requests' : 'Nearby drivers',
-      child: GestureDetector(
+      label: isDriver ? 'Passenger requests' : 'Nearby drivers',
+      child: InkWell(
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
@@ -27,7 +27,7 @@ class HomeHeroCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                isDriver ? 'Scheduled passenger requests' : 'Drivers nearby',
+                isDriver ? 'Passenger requests' : 'Drivers nearby',
                 textAlign: TextAlign.center,
                 style: AppTypography.bodyLg.copyWith(
                   color: Theme.of(context).colorScheme.onSurface,

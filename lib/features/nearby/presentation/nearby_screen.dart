@@ -18,11 +18,13 @@ import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
 import 'package:mobi_app/shared/widgets/driver_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
+import 'package:mobi_app/shared/widgets/mobi_motion.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_top_command_bar.dart';
 import 'package:mobi_app/shared/widgets/mobi_visual_theme.dart';
 import 'package:mobi_app/shared/widgets/permission_access_dialog.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
+import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
@@ -293,48 +295,59 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen>
                 sliver: SliverMainAxisGroup(
                   slivers: [
                     SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.screenPadding,
-                          AppSpacing.md,
-                          AppSpacing.screenPadding,
-                          0,
-                        ),
-                        child: Column(
-                          children: [
-                            MobiTopCommandBar(
-                              searchHint: 'Search nearby',
-                              showSearch: false,
-                              actions: [
-                                MobiTopCommandBarAction(
-                                  icon: LucideIcons.map,
-                                  label: 'Drivers map',
-                                  onTap: _openDriversInGoogleMaps,
+                      child:
+                          Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  AppSpacing.screenPadding,
+                                  AppSpacing.md,
+                                  AppSpacing.screenPadding,
+                                  0,
                                 ),
-                                MobiTopCommandBarAction(
-                                  icon: widget.onBack == null
-                                      ? LucideIcons.slidersHorizontal
-                                      : LucideIcons.arrowLeft,
-                                  label: widget.onBack == null
-                                      ? 'Filters'
-                                      : 'Back',
-                                  onTap: widget.onBack,
+                                child: Column(
+                                  children: [
+                                    MobiTopCommandBar(
+                                      searchHint: 'Search nearby',
+                                      showSearch: false,
+                                      avatar: TappableIconButton(
+                                        icon: LucideIcons.arrowLeft,
+                                        semanticLabel: 'Back',
+                                        onTap:
+                                            widget.onBack ??
+                                            () => Navigator.maybePop(context),
+                                        backgroundColor:
+                                            cs.surfaceContainerHigh,
+                                        iconColor: cs.onSurface,
+                                        borderRadius: AppRadii.pill,
+                                      ),
+                                      actions: [
+                                        MobiTopCommandBarAction(
+                                          icon: LucideIcons.map,
+                                          label: 'Drivers map',
+                                          onTap: _openDriversInGoogleMaps,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: AppSpacing.xl),
+                                    Semantics(
+                                      header: true,
+                                      child: Text(
+                                        'Find a ride nearby',
+                                        textAlign: TextAlign.center,
+                                        style: AppTypography.displayLg.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
+                                          fontSize: 40,
+                                          height: 1.08,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: AppSpacing.xl),
-                            Text(
-                              'Find a ride nearby',
-                              textAlign: TextAlign.center,
-                              style: AppTypography.displayLg.copyWith(
-                                color: Colors.white,
-                                fontSize: 40,
-                                height: 1.08,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ).animate().fade(duration: 400.ms).slideY(begin: -0.1),
+                              )
+                              .animateAccessible(context)
+                              .fade(duration: 400.ms)
+                              .slideY(begin: -0.1),
                     ),
                     const SliverToBoxAdapter(
                       child: SizedBox(height: AppSpacing.md),
@@ -352,11 +365,15 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen>
                           AppSpacing.md,
                         ),
                         sliver: SliverToBoxAdapter(
-                          child: NearbyLocationNotice(
-                            accessState: _locationState,
-                            onEnableLocation: _requestLocationAndReload,
-                            onRetry: _loadLocationAndDrivers,
-                          ).animate(delay: 50.ms).fade().slideX(begin: 1.0),
+                          child:
+                              NearbyLocationNotice(
+                                    accessState: _locationState,
+                                    onEnableLocation: _requestLocationAndReload,
+                                    onRetry: _loadLocationAndDrivers,
+                                  )
+                                  .animateAccessible(context, delay: 50.ms)
+                                  .fade()
+                                  .slideX(begin: 1.0),
                         ),
                       ),
 
@@ -366,18 +383,22 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen>
                         horizontal: AppSpacing.screenPadding,
                       ),
                       sliver: SliverToBoxAdapter(
-                        child: MobiSurfacePanel(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.sm,
-                            vertical: AppSpacing.sm,
-                          ),
-                          borderRadius: AppRadii.xxl,
-                          child: VehicleFilterChips(
-                            selectedId: _vehicleId,
-                            onSelected: _switchVehicle,
-                            vehicleTypes: _vehicleTypes,
-                          ),
-                        ).animate(delay: 100.ms).fade().slideX(begin: 0.1),
+                        child:
+                            MobiSurfacePanel(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: AppSpacing.sm,
+                                    vertical: AppSpacing.sm,
+                                  ),
+                                  borderRadius: AppRadii.xxl,
+                                  child: VehicleFilterChips(
+                                    selectedId: _vehicleId,
+                                    onSelected: _switchVehicle,
+                                    vehicleTypes: _vehicleTypes,
+                                  ),
+                                )
+                                .animateAccessible(context, delay: 100.ms)
+                                .fade()
+                                .slideX(begin: 0.1),
                       ),
                     ),
                     const SliverToBoxAdapter(
@@ -436,7 +457,10 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen>
                                     bottom: AppSpacing.md,
                                   ),
                                   child: card
-                                      .animate(delay: (150 + index * 50).ms)
+                                      .animateAccessible(
+                                        context,
+                                        delay: (150 + index * 50).ms,
+                                      )
                                       .fade()
                                       .slideY(begin: 0.1),
                                 );

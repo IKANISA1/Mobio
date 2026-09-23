@@ -635,7 +635,7 @@ class _PhoneAnchor extends StatelessWidget {
             Text(
               role,
               style: AppTypography.labelLg.copyWith(
-                color: cs.onSurface.withValues(alpha: 0.58),
+                color: cs.onSurfaceVariant,
                 fontWeight: FontWeight.w700,
               ),
             ),

@@ -151,7 +151,7 @@ class _BioPayAdminConsoleScreenState
     return AdminWorkspaceFrame(
       currentTab: AdminWorkspaceTab.biopayOps,
       title: 'BioPay Ops',
-      subtitle: 'AWS face identity and external USSD handoff.',
+      subtitle: 'Face lookup and external USSD handoff.',
       actions: [
         AdminActionChip(
           label: paymentCopy(context).bpRoutes,
@@ -326,15 +326,7 @@ class _BioPayAdminMetrics extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final columns = MediaQuery.sizeOf(context).width >= 980 ? 4 : 2;
-
-    return GridView.count(
-      crossAxisCount: columns,
-      crossAxisSpacing: AppSpacing.md,
-      mainAxisSpacing: AppSpacing.md,
-      childAspectRatio: columns == 4 ? 1.3 : 0.85,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+    return AdminMetricGrid(
       children: [
         AdminMetricCard(
           label: 'Payees',
@@ -358,9 +350,9 @@ class _BioPayAdminMetrics extends StatelessWidget {
           tone: MobiStatusBadgeTone.warning,
         ),
         AdminMetricCard(
-          label: 'Match rate',
+          label: 'Shortcut rate',
           value: summary.matchRateLabel,
-          hint: '${summary.confirmedRequests} confirmed',
+          hint: 'Receiving routes prepared',
           icon: LucideIcons.scanFace,
           tone: MobiStatusBadgeTone.positive,
         ),
@@ -499,7 +491,7 @@ class _BioPayAdminPayeeSummary extends StatelessWidget {
         children: [
           AdminSectionHeader(
             title: 'Payee Directory',
-            subtitle: 'AWS-enrolled BioPay recipients.',
+            subtitle: 'Face-enrolled BioPay recipients.',
             trailing: AdminActionChip(
               label: 'Open',
               icon: LucideIcons.arrowRight,
@@ -523,7 +515,7 @@ class _BioPayAdminPayeeSummary extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTypography.titleMd.copyWith(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -577,7 +569,7 @@ class _BioPayAdminPayees extends StatelessWidget {
             children: [
               AdminSectionHeader(
                 title: 'Payees',
-                subtitle: 'Search enrolled AWS BioPay profiles.',
+                subtitle: 'Search enrolled BioPay profiles.',
                 trailing: MobiStatusBadge(label: '${payees.length} shown'),
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -590,7 +582,7 @@ class _BioPayAdminPayees extends StatelessWidget {
               if (payees.isEmpty)
                 const AdminEmptyState(
                   title: 'No matching payees',
-                  message: 'Try a different name, handle, or AWS subject.',
+                  message: 'Try a different name, handle, or template ID.',
                   icon: LucideIcons.search,
                 )
               else
@@ -666,7 +658,7 @@ class _BioPayAdminPayeeTile extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTypography.titleMd.copyWith(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -707,7 +699,7 @@ class _BioPayAdminPayeeDetail extends StatelessWidget {
     if (selected == null) {
       return const AdminEmptyState(
         title: 'Select a payee',
-        message: 'Open an enrolled BioPay profile to review AWS status.',
+        message: 'Open an enrolled BioPay profile to review face setup.',
         icon: LucideIcons.search,
       );
     }
@@ -729,7 +721,7 @@ class _BioPayAdminPayeeDetail extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           _AdminDetailRow(label: 'Provider', value: selected.provider),
           _AdminDetailRow(
-            label: 'AWS face id',
+            label: 'Face template ID',
             value: selected.providerSubjectId.isEmpty
                 ? 'Not enrolled'
                 : selected.providerSubjectId,
@@ -740,7 +732,6 @@ class _BioPayAdminPayeeDetail extends StatelessWidget {
                 ? 'Not assigned'
                 : selected.providerCollectionId,
           ),
-          _AdminDetailRow(label: 'Liveness', value: selected.livenessStatus),
           _AdminDetailRow(label: 'Requests', value: '${selected.requestCount}'),
           _AdminDetailRow(
             label: 'Confirmed',
@@ -792,14 +783,34 @@ class _BioPayAdminStatusPanel extends StatelessWidget {
           const SizedBox(height: AppSpacing.lg),
           _AdminDetailRow(label: 'Face provider', value: status.faceProvider),
           _AdminDetailRow(
-            label: 'AWS ready',
+            label: 'Acceptance ready',
             value: status.faceProviderReady ? 'Ready' : 'Not ready',
           ),
           _AdminDetailRow(
             label: 'Collection',
             value: status.collectionId.isEmpty
-                ? 'Configured in AWS'
+                ? 'Not configured'
                 : status.collectionId,
+          ),
+          _AdminDetailRow(
+            label: 'Configured',
+            value: status.configured ? 'Yes' : 'No',
+          ),
+          _AdminDetailRow(
+            label: 'Model loaded',
+            value: status.modelLoaded ? 'Yes' : 'Not observed',
+          ),
+          _AdminDetailRow(
+            label: 'Index compatible',
+            value: status.indexCompatible ? 'Yes' : 'Not observed',
+          ),
+          _AdminDetailRow(
+            label: 'Database contract',
+            value: status.databaseContract ? 'Pass' : 'Not observed',
+          ),
+          _AdminDetailRow(
+            label: 'Last acceptance',
+            value: status.lastAcceptanceAt ?? 'Not recorded',
           ),
           _AdminDetailRow(label: 'Database', value: status.databaseStatus),
           const _AdminDetailRow(label: 'Payment', value: 'External USSD only'),
@@ -944,7 +955,7 @@ class _AdminDetailRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.end,
               style: AppTypography.labelLg.copyWith(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w700,
               ),
             ),

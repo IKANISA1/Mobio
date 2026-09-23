@@ -99,6 +99,25 @@ void main() {
         expect(busWithAgency.validateForSubmit(now), isNull);
         expect(busWithAgency.canSubmit(now), isTrue);
 
+        final busWithAnyAgency = busWithoutAgency.copyWith(
+          busAgencyName: ' any ',
+        );
+        expect(busWithAnyAgency.normalizedBusAgencyName, 'Any');
+        expect(busWithAnyAgency.validateForSubmit(now), isNull);
+        expect(busWithAnyAgency.canSubmit(now), isTrue);
+        expect(
+          busWithAnyAgency
+              .copyWith(transportAgencyNames: const [])
+              .canSubmit(now),
+          isTrue,
+        );
+        expect(
+          busWithoutAgency
+              .copyWith(busAgencyName: 'Unknown agency')
+              .canSubmit(now),
+          isFalse,
+        );
+
         final rentalWithoutModel = withDestination.copyWith(
           vehicleId: 'rentals',
         );
@@ -246,36 +265,49 @@ void main() {
       expect(state.normalizedRentalVehicleModel, 'SUV');
     });
 
-    test('prefills bus agency from a scheduled trip note', () {
-      final trip = Trip.fromJson({
-        'id': 'trip-3',
-        'author_id': 'user-1',
-        'origin': 'Kigali Heights',
-        'origin_lat': -1.95,
-        'origin_lng': 30.06,
-        'origin_place_id': 'origin-place',
-        'destination': 'Kigali Arena',
-        'dest_lat': -1.94,
-        'dest_lng': 30.1,
-        'destination_place_id': 'destination-place',
-        'departure_date': '2026-06-09',
-        'departure_time': '03:45 PM',
-        'role': 'passenger',
-        'vehicle_type': 'bus',
-        'is_recurring': false,
-        'recurring_days': [],
-        'client_request_id': 'trip-request-3',
-        'note': 'Bus agency: Ritco\nWindow seat',
+    for (final agency in ['Ritco', 'Any']) {
+      test('prefills bus agency $agency from a scheduled trip note', () {
+        final trip = Trip.fromJson({
+          'id': 'trip-3',
+          'author_id': 'user-1',
+          'origin': 'Kigali Heights',
+          'origin_lat': -1.95,
+          'origin_lng': 30.06,
+          'origin_place_id': 'origin-place',
+          'destination': 'Kigali Arena',
+          'dest_lat': -1.94,
+          'dest_lng': 30.1,
+          'destination_place_id': 'destination-place',
+          'departure_date': '2026-06-09',
+          'departure_time': '03:45 PM',
+          'role': 'passenger',
+          'vehicle_type': 'bus',
+          'is_recurring': false,
+          'recurring_days': [],
+          'client_request_id': 'trip-request-3',
+          'note': 'Bus agency: $agency\nWindow seat',
+        });
+
+        final state = ScheduleTripState.fromTrip(
+          trip,
+          transportAgencyNames: const ['Volcano Express', 'Ritco'],
+        );
+
+        expect(state.vehicleId, 'bus');
+        expect(state.busAgencyName, agency);
+        expect(state.normalizedBusAgencyName, agency);
       });
+    }
+  });
 
-      final state = ScheduleTripState.fromTrip(
-        trip,
-        transportAgencyNames: const ['Volcano Express', 'Ritco'],
-      );
-
-      expect(state.vehicleId, 'bus');
-      expect(state.busAgencyName, 'Ritco');
-      expect(state.normalizedBusAgencyName, 'Ritco');
-    });
+  test('Any is first and unique without adding it to the agency catalog', () {
+    final agencies = ['Volcano Express', 'Ritco', 'any', 'Any'];
+    expect(normalizedBusAgencyNames(agencies), [
+      'Any',
+      'Ritco',
+      'Volcano Express',
+    ]);
+    expect(normalizedBusAgencyNames(const []), ['Any']);
+    expect(agencies, ['Volcano Express', 'Ritco', 'any', 'Any']);
   });
 }

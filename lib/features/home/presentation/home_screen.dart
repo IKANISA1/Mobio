@@ -26,6 +26,7 @@ import 'package:mobi_app/shared/widgets/driver_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_action_row.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
+import 'package:mobi_app/shared/widgets/mobi_motion.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_visual_theme.dart';
@@ -43,6 +44,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final String mode;
   final ValueChanged<String> onModeChanged;
   final ValueChanged<Trip> onChat;
+  final ValueChanged<String> onTripDetails;
   final VoidCallback onViewNearby;
   final VoidCallback? onViewBookings;
   final VoidCallback? onSchedule;
@@ -54,6 +56,7 @@ class HomeScreen extends ConsumerStatefulWidget {
     required this.mode,
     required this.onModeChanged,
     required this.onChat,
+    required this.onTripDetails,
     required this.onViewNearby,
     this.onViewBookings,
     this.onSchedule,
@@ -420,19 +423,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                     AppSpacing.screenPadding,
                     0,
                   ),
-                  child: Column(
-                    children: [
-                      HomeHeader(
-                        isDriver: isDriver,
-                        unreadCount: _unreadCount,
-                        onModeChanged: widget.onModeChanged,
-                        isDriverOnline: _isDriverOnline,
-                        onDriverOnlineToggle: (value) =>
-                            unawaited(_toggleDriverOnline(value)),
-                        onNotifications: widget.onNotifications,
-                      ),
-                    ],
-                  ).animate().fade(duration: 400.ms).slideY(begin: -0.1),
+                  child:
+                      Column(
+                            children: [
+                              HomeHeader(
+                                isDriver: isDriver,
+                                unreadCount: _unreadCount,
+                                onModeChanged: widget.onModeChanged,
+                                isDriverOnline: _isDriverOnline,
+                                onDriverOnlineToggle: (value) =>
+                                    unawaited(_toggleDriverOnline(value)),
+                                onNotifications: widget.onNotifications,
+                              ),
+                            ],
+                          )
+                          .animateAccessible(context)
+                          .fade(duration: 400.ms)
+                          .slideY(begin: -0.1),
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 Padding(
@@ -448,7 +455,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 : _nearbyCount,
                             onTap: discoverAction,
                           )
-                          .animate(delay: 100.ms)
+                          .animateAccessible(context, delay: 100.ms)
                           .fade()
                           .scale(begin: const Offset(0.95, 0.95)),
                 ),
@@ -457,48 +464,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.screenPadding,
                   ),
-                  child: MobiActionRow(
-                    items: [
-                      MobiActionItem(
-                        icon: isDriver
-                            ? LucideIcons.calendarSearch
-                            : LucideIcons.mapPin,
-                        label: isDriver ? 'Requests' : 'Nearby',
-                        accent: Theme.of(context).colorScheme.primary,
-                        onTap: discoverAction,
-                      ),
-                      MobiActionItem(
-                        icon: LucideIcons.calendarCheck,
-                        label: 'Schedule',
-                        accent: Theme.of(context).colorScheme.secondary,
-                        onTap: () => widget.onSchedule?.call(),
-                      ),
-                      MobiActionItem(
-                        icon: LucideIcons.plugZap,
-                        label: 'EV Charger',
-                        accent: Theme.of(context).colorScheme.tertiary,
-                        onTap: () => widget.onEvChargers?.call(),
-                      ),
-                    ],
-                  ).animate(delay: 200.ms).fade().slideY(begin: 0.1),
+                  child:
+                      MobiActionRow(
+                            items: [
+                              MobiActionItem(
+                                icon: isDriver
+                                    ? LucideIcons.calendarSearch
+                                    : LucideIcons.mapPin,
+                                label: isDriver ? 'Requests' : 'Nearby',
+                                accent: Theme.of(context).colorScheme.primary,
+                                onTap: discoverAction,
+                              ),
+                              MobiActionItem(
+                                icon: LucideIcons.calendarCheck,
+                                label: 'Schedule',
+                                accent: Theme.of(context).colorScheme.secondary,
+                                onTap: () => widget.onSchedule?.call(),
+                              ),
+                              MobiActionItem(
+                                icon: LucideIcons.plugZap,
+                                label: 'EV Charger',
+                                accent: Theme.of(context).colorScheme.tertiary,
+                                onTap: () => widget.onEvChargers?.call(),
+                              ),
+                            ],
+                          )
+                          .animateAccessible(context, delay: 200.ms)
+                          .fade()
+                          .slideY(begin: 0.1),
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.screenPadding,
                   ),
-                  child: MobiSurfacePanel(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.sm,
-                      vertical: AppSpacing.sm,
-                    ),
-                    borderRadius: AppRadii.xxl,
-                    child: VehicleFilterChips(
-                      selectedId: _vehicleId,
-                      onSelected: _switchVehicle,
-                      vehicleTypes: _vehicleTypes,
-                    ),
-                  ).animate(delay: 300.ms).fade().slideX(begin: 0.1),
+                  child:
+                      MobiSurfacePanel(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.sm,
+                              vertical: AppSpacing.sm,
+                            ),
+                            borderRadius: AppRadii.xxl,
+                            child: VehicleFilterChips(
+                              selectedId: _vehicleId,
+                              onSelected: _switchVehicle,
+                              vehicleTypes: _vehicleTypes,
+                            ),
+                          )
+                          .animateAccessible(context, delay: 300.ms)
+                          .fade()
+                          .slideX(begin: 0.1),
                 ),
                 const SizedBox(height: AppSpacing.sectionGap),
                 Padding(
@@ -570,7 +585,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                                 ),
                               )
                               .toList()
-                              .animate(interval: 100.ms)
+                              .animateAccessible(context, interval: 100.ms)
                               .fade()
                               .slideY(begin: 0.1),
                         )
@@ -620,11 +635,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                               .map(
                                 (trip) => Padding(
                                   padding: const EdgeInsets.only(bottom: 16),
-                                  child: ScheduledTripCard(trip: trip),
+                                  child: ScheduledTripCard(
+                                    trip: trip,
+                                    onTap: trip.id?.isNotEmpty == true
+                                        ? () => widget.onTripDetails(trip.id!)
+                                        : null,
+                                  ),
                                 ),
                               )
                               .toList()
-                              .animate(interval: 100.ms)
+                              .animateAccessible(context, interval: 100.ms)
                               .fade()
                               .slideY(begin: 0.1),
                         )

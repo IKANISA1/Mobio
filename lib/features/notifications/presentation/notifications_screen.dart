@@ -275,7 +275,7 @@ class _NotificationTile extends StatelessWidget {
     final unread = !notification.isRead;
 
     return Material(
-      color: Colors.white.withValues(alpha: unread ? 0.10 : 0.06),
+      color: unread ? cs.surfaceContainerHigh : cs.surfaceContainerLow,
       borderRadius: BorderRadius.circular(AppRadii.xl),
       child: InkWell(
         onTap: onTap,
@@ -302,7 +302,7 @@ class _NotificationTile extends StatelessWidget {
                   ),
                   child: Icon(
                     _iconFor(notification.type),
-                    color: Colors.white,
+                    color: cs.onSurface,
                     size: 21,
                   ),
                 ),
@@ -317,7 +317,7 @@ class _NotificationTile extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: AppTypography.titleMd.copyWith(
-                        color: Colors.white,
+                        color: cs.onSurface,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -328,7 +328,7 @@ class _NotificationTile extends StatelessWidget {
                         maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.bodyMd.copyWith(
-                          color: Colors.white.withValues(alpha: 0.72),
+                          color: cs.onSurfaceVariant,
                           height: 1.25,
                         ),
                       ),

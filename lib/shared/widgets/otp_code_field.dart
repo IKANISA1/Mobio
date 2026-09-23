@@ -150,83 +150,93 @@ class _MobiOtpCodeFieldState extends State<MobiOtpCodeField> {
           label: widget.hasError
               ? '${widget.label}, invalid code'
               : widget.label,
-          child: Row(
-            children: List.generate(_digitCount, (index) {
-              final isFocused = _focusNodes[index].hasFocus;
-              final isFilled = _controllers[index].text.isNotEmpty;
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final columns = constraints.maxWidth >= 6 * 48 + 5 * AppSpacing.xs
+                  ? 6
+                  : 3;
+              final width =
+                  (constraints.maxWidth - (columns - 1) * AppSpacing.xs) /
+                  columns;
+              return Wrap(
+                spacing: AppSpacing.xs,
+                runSpacing: AppSpacing.sm,
+                children: List.generate(_digitCount, (index) {
+                  final isFocused = _focusNodes[index].hasFocus;
+                  final isFilled = _controllers[index].text.isNotEmpty;
 
-              return Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    right: index == _digitCount - 1 ? 0 : AppSpacing.xs,
-                  ),
-                  child: Focus(
-                    onKeyEvent: (_, event) => _handleKeyEvent(index, event),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 140),
-                      height: 64,
-                      decoration: BoxDecoration(
-                        color: widget.hasError
-                            ? cs.errorContainer
-                            : ext.surfaceContainerLowest.withValues(
-                                alpha: 0.92,
-                              ),
-                        borderRadius: BorderRadius.circular(AppRadii.lg),
-                        border: Border.all(
+                  return SizedBox(
+                    width: width,
+                    child: Focus(
+                      onKeyEvent: (_, event) => _handleKeyEvent(index, event),
+                      child: AnimatedContainer(
+                        duration: MediaQuery.disableAnimationsOf(context)
+                            ? Duration.zero
+                            : const Duration(milliseconds: 140),
+                        height: 64,
+                        decoration: BoxDecoration(
                           color: widget.hasError
-                              ? cs.error
-                              : isFocused
-                              ? cs.primary
-                              : isFilled
-                              ? cs.onSurface.withValues(alpha: 0.42)
-                              : Colors.transparent,
+                              ? cs.errorContainer
+                              : ext.surfaceContainerLowest.withValues(
+                                  alpha: 0.92,
+                                ),
+                          borderRadius: BorderRadius.circular(AppRadii.lg),
+                          border: Border.all(
+                            color: widget.hasError
+                                ? cs.error
+                                : isFocused
+                                ? cs.primary
+                                : isFilled
+                                ? cs.onSurface.withValues(alpha: 0.42)
+                                : Colors.transparent,
+                          ),
                         ),
-                      ),
-                      child: Semantics(
-                        label: 'Digit ${index + 1} of $_digitCount',
-                        child: Center(
-                          child: TextField(
-                            key: ValueKey('mobi_otp_digit_$index'),
-                            controller: _controllers[index],
-                            focusNode: _focusNodes[index],
-                            enabled: widget.enabled,
-                            textAlign: TextAlign.center,
-                            textAlignVertical: TextAlignVertical.center,
-                            keyboardType: TextInputType.number,
-                            textInputAction: index == _digitCount - 1
-                                ? TextInputAction.done
-                                : TextInputAction.next,
-                            maxLines: 1,
-                            autofillHints: index == 0
-                                ? const [AutofillHints.oneTimeCode]
-                                : null,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              LengthLimitingTextInputFormatter(_digitCount),
-                            ],
-                            style: AppTypography.titleLg.copyWith(
-                              color: cs.onSurface,
-                              fontWeight: FontWeight.w600,
+                        child: Semantics(
+                          label: 'Digit ${index + 1} of $_digitCount',
+                          child: Center(
+                            child: TextField(
+                              key: ValueKey('mobi_otp_digit_$index'),
+                              controller: _controllers[index],
+                              focusNode: _focusNodes[index],
+                              enabled: widget.enabled,
+                              textAlign: TextAlign.center,
+                              textAlignVertical: TextAlignVertical.center,
+                              keyboardType: TextInputType.number,
+                              textInputAction: index == _digitCount - 1
+                                  ? TextInputAction.done
+                                  : TextInputAction.next,
+                              maxLines: 1,
+                              autofillHints: index == 0
+                                  ? const [AutofillHints.oneTimeCode]
+                                  : null,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(_digitCount),
+                              ],
+                              style: AppTypography.titleLg.copyWith(
+                                color: cs.onSurface,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              decoration: const InputDecoration(
+                                filled: false,
+                                counterText: '',
+                                contentPadding: EdgeInsets.zero,
+                                border: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
+                              ),
+                              onChanged: (value) =>
+                                  _handleDigitChanged(index, value),
                             ),
-                            decoration: const InputDecoration(
-                              filled: false,
-                              counterText: '',
-                              contentPadding: EdgeInsets.zero,
-                              border: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
-                            ),
-                            onChanged: (value) =>
-                                _handleDigitChanged(index, value),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                }),
               );
-            }),
+            },
           ),
         ),
       ],

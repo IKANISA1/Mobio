@@ -1,6 +1,6 @@
 # Mobio design system
 
-Version 6 · 6 September 2026. This contract includes the 5 September follow-up for missing launch/auth states and the full applicable colour families. Product scope, permissions and server contracts remain governed by `AGENTS.md` and the dated product approvals.
+Version 6 · 6 September 2026. Accessibility amendments · 20 September 2026. This contract includes the 5 September follow-up for missing launch/auth states and the full applicable colour families. Product scope, permissions and server contracts remain governed by `AGENTS.md` and the dated product approvals.
 
 ## Reference and identity
 
@@ -25,9 +25,11 @@ The dark canvas is black; grouped widgets use #161618 with #222224 and #303033 f
 
 Inter is the bundled native typography adapter; the installed reference app's exact font/build were not exposed. Display is 30–36, pushed-page title 24, section title 18–20, row title 16, body 14–16, labels 11–13. Headings use 600, labels 500, body 400. Avoid heavy 800/900 headings and shrink-to-fit text. Allow enlarged text to wrap; a constrained pushed title can scroll while its back control stays available.
 
+The 20 September contrast audit caps the brightest BioPay teal and Wallet wash stops at their existing second-stop colours. Text uses semantic foreground roles in both themes; tinted surfaces must not inherit hard-coded white headings in Light mode.
+
 Use a 4-point spacing grid, 16 horizontal page insets, 24-radius grouped mobile panels, and 48 minimum icon targets. Primary buttons are contrasting pills, at least 52 high, with stable loading geometry. Ordinary surfaces are opaque and flat. Home uses royal blue, BioPay teal, Trips/Nearby purple, Wallet muted slate blue-violet, Profile/Mobio Plus vivid violet and WhatsApp login slate-indigo. Their wash scrolls away into a matching lower canvas. Pushed tasks, chat and admin retain quiet neutral surfaces. Do not spread decorative gradients, borders and shadows across every card.
 
-Quick actions use 48 circles with labels inside the entire tap target. Bottom navigation uses a fully opaque neutral near-black capsule, a subtle neutral outline and a grey selected pill across the coloured route families (DESK-003, 5 September 2026, 408×857 phone capture). It has no backdrop blur or translucent white gradient. The semantic navigation roles are Mobio adapters: surface #161618, selection #303033, selected foreground #F4F4F4, secondary foreground #A1A1A3. The same high-contrast capsule in Light mode is an explicit Mobio adaptation pending matching source Light evidence. It floats above system safe areas and exposes selected semantics, keyboard activation and four real destinations. Secondary routes use a back control. Native UI and browser previews respect reduced motion.
+Quick actions use 48 circles with labels inside the entire tap target. Bottom navigation uses a fully opaque neutral near-black capsule, a subtle neutral outline and a grey selected pill across the coloured route families (DESK-003, 5 September 2026, 408×857 phone capture). It has no backdrop blur or translucent white gradient. The semantic navigation roles are Mobio adapters: surface #161618, selection #303033, selected foreground #F4F4F4, secondary foreground #A1A1A3. The same high-contrast capsule in Light mode is an explicit Mobio adaptation pending matching source Light evidence. It floats above system safe areas and exposes selected semantics, keyboard activation and four real destinations. Secondary routes use a named, 48-point back control at the leading edge, including loading and unavailable-feature states. Direct entry falls back to the relevant parent destination. Native UI and browser previews respect reduced motion; decorative entry effects reveal their completed state immediately and repeating shimmer/pulse effects stop.
 
 ## Screen patterns
 
@@ -39,7 +41,7 @@ Profile leads with identity and groups settings. Wallet and Mobio Plus preserve 
 
 Preserve operational information architecture and permissions. At 1000 logical pixels and above, use a 216-wide sidebar with all existing modules, a quiet heading/action area, and content constrained to 1360. Below that width, use scrollable module tabs; the mobile shell retains its four destinations. The wide shell does not duplicate the workspace sidebar.
 
-Use 16-radius tonal panels, structured filters, status chips, tables/cards and detail sheets. Keep selection visible through Material ink, support keyboard focus, and keep destructive confirmations. Always reduce headline intensity and use the same chip and spacing language across operational screens. Business promotional images support composition only; they do not establish a live desktop breakpoint or full table specification.
+Use 16-radius tonal panels, structured filters, status chips, tables/cards and detail sheets. Keep selection visible through Material ink, support keyboard focus, and keep destructive confirmations. Action chips and pagination controls have at least 48-point targets. Enlarged metrics and row actions wrap naturally; crowded headers scroll independently so the content remains reachable. Always reduce headline intensity and use the same chip and spacing language across operational screens. Business promotional images support composition only; they do not establish a live desktop breakpoint or full table specification.
 
 ## Public website
 

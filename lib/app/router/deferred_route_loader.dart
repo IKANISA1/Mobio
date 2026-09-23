@@ -3,6 +3,7 @@ import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/core/utils/navigation_utils.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
+import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 
 class DeferredRouteLoader extends StatefulWidget {
   const DeferredRouteLoader({
@@ -61,7 +62,9 @@ class _DeferredRouteLoaderState extends State<DeferredRouteLoader> {
         }
 
         return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 150),
+          duration: MediaQuery.disableAnimationsOf(context)
+              ? Duration.zero
+              : const Duration(milliseconds: 150),
           switchInCurve: Curves.easeOutCubic,
           child: Builder(
             key: const ValueKey('loaded'),
@@ -82,27 +85,34 @@ class _DeferredRouteLoadingScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: cs.surface,
-      body: const SafeArea(
+      body: SafeArea(
         bottom: false,
-        child: SingleChildScrollView(
-          physics: NeverScrollableScrollPhysics(),
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(24, 24, 24, 40),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                LoadingSkeleton(width: 52, height: 52, borderRadius: 18),
-                SizedBox(height: 28),
-                LoadingSkeleton(width: 180, height: 30, borderRadius: 14),
-                SizedBox(height: 18),
-                LoadingSkeleton(height: 112, borderRadius: 28),
-                SizedBox(height: 14),
-                LoadingSkeleton(height: 180, borderRadius: 32),
-                SizedBox(height: 14),
-                LoadingSkeleton(height: 96, borderRadius: 28),
-              ],
+        child: Column(
+          children: [
+            MobiPageHeader(title: 'Loading', onBack: () => safePop(context)),
+            const Expanded(
+              child: SingleChildScrollView(
+                physics: NeverScrollableScrollPhysics(),
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(24, 24, 24, 40),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      LoadingSkeleton(width: 52, height: 52, borderRadius: 18),
+                      SizedBox(height: 28),
+                      LoadingSkeleton(width: 180, height: 30, borderRadius: 14),
+                      SizedBox(height: 18),
+                      LoadingSkeleton(height: 112, borderRadius: 28),
+                      SizedBox(height: 14),
+                      LoadingSkeleton(height: 180, borderRadius: 32),
+                      SizedBox(height: 14),
+                      LoadingSkeleton(height: 96, borderRadius: 28),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

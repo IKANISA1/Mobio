@@ -165,7 +165,6 @@ void main() {
     expect(adminUserSheet, contains('Add 3000 TOKENS'));
     expect(adminUserSheet, contains('Motor insurance purchase reward'));
     expect(appRouter, contains('_safePopToProfile'));
-    expect(appRouter, contains('context.go(AppRoutes.profile)'));
   });
 
   test('driver subscriptions use tokens or MoMo USSD only', () {
@@ -313,7 +312,8 @@ void main() {
     ).readAsStringSync();
 
     expect(appRouter, contains('void _safePopToProfile(BuildContext context)'));
-    expect(appRouter, contains('context.go(AppRoutes.profile)'));
+    // Push and direct-entry return behavior is exercised through the real
+    // router in app/router/return_navigation_test.dart.
     expect(appRouter, isNot(contains('if (Navigator.of(context).canPop())')));
     expect(walletScreen, contains('SupabaseConfig.canRunWithoutBackend'));
     expect(driverPlusScreen, contains('SupabaseConfig.canRunWithoutBackend'));

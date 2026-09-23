@@ -84,9 +84,10 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
   }
 
   Trip? _previewTrip(String id) {
-    final trips = AppConstants.mockTrips;
-    if (trips.isEmpty) return null;
-    return trips.firstWhere((trip) => trip.id == id, orElse: () => trips.first);
+    for (final trip in AppConstants.mockTrips) {
+      if (trip.id == id) return trip;
+    }
+    return null;
   }
 
   Future<void> _handleCancel() async {
@@ -260,9 +261,6 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
     final currentUserId = _currentUserIdForChat();
     final isTripOwner = currentUserId != null && trip.authorId == currentUserId;
     final canChat = currentUserId != null && trip.id?.isNotEmpty == true;
-    final fareLabel = trip.price?.trim().isNotEmpty == true
-        ? trip.price!.trim()
-        : 'Agree in chat';
     final contactLabel = trip.whatsapp.trim().isNotEmpty
         ? trip.whatsapp.trim()
         : 'In-app chat';
@@ -283,7 +281,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
               '${trip.origin} → ${trip.destination}',
               textAlign: TextAlign.center,
               style: AppTypography.displayMd.copyWith(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontSize: 34,
                 height: 1.1,
               ),
@@ -294,12 +292,11 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
               runSpacing: AppSpacing.xs,
               alignment: WrapAlignment.center,
               children: [
-                MobiStatusBadge(
-                  label: trip.status ?? 'active',
-                  tone: isCancelled
-                      ? MobiStatusBadgeTone.danger
-                      : MobiStatusBadgeTone.positive,
-                ),
+                if (isCancelled)
+                  const MobiStatusBadge(
+                    label: 'Cancelled',
+                    tone: MobiStatusBadgeTone.danger,
+                  ),
                 MobiInfoChip(
                   label: trip.vehicleTypeStr,
                   icon: _vehicleIcon(trip.vehicleTypeStr),
@@ -344,12 +341,6 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
                     icon: LucideIcons.armchair,
                     label: 'Seats',
                     value: trip.seats.toString(),
-                  ),
-                  const Divider(height: AppSpacing.lg),
-                  _TripDetailFactRow(
-                    icon: LucideIcons.badgeDollarSign,
-                    label: 'Fare',
-                    value: fareLabel,
                   ),
                   const Divider(height: AppSpacing.lg),
                   _TripDetailFactRow(
@@ -431,7 +422,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
-                      'Coordinate pick up, timing, luggage, fare, and seats, directly via chat',
+                      'Coordinate pick up, timing, luggage, and seats directly via chat.',
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: AppTypography.bodySm.copyWith(

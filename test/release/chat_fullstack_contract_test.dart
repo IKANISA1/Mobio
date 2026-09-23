@@ -67,6 +67,6 @@ void main() {
     expect(tripDetails, contains('canChat ? _openChat : null'));
     expect(tripDetails, contains("label: 'Pick up'"));
     expect(tripDetails, contains("label: 'Drop off'"));
-    expect(tripDetails, contains("label: 'Fare'"));
+    expect(tripDetails, isNot(contains("label: 'Fare'")));
   });
 }

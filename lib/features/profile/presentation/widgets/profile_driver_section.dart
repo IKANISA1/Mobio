@@ -63,7 +63,7 @@ class ProfileDriverSection extends StatelessWidget {
                       ),
                     ),
                   ),
-                  _buildToggleSwitch(cs, ext),
+                  _buildToggleSwitch(context, cs, ext),
                 ],
               ),
             ),
@@ -73,9 +73,15 @@ class ProfileDriverSection extends StatelessWidget {
     );
   }
 
-  Widget _buildToggleSwitch(ColorScheme cs, MobiThemeExtension ext) {
+  Widget _buildToggleSwitch(
+    BuildContext context,
+    ColorScheme cs,
+    MobiThemeExtension ext,
+  ) {
     return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 200),
       width: 50,
       height: 28,
       padding: const EdgeInsets.all(4),
@@ -84,7 +90,9 @@ class ProfileDriverSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
       ),
       child: AnimatedAlign(
-        duration: const Duration(milliseconds: 200),
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 200),
         alignment: isDriver ? Alignment.centerRight : Alignment.centerLeft,
         child: Container(
           width: 20,

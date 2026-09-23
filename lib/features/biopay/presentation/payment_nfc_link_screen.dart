@@ -17,13 +17,27 @@ class PaymentNfcLinkScreen extends ConsumerStatefulWidget {
 
 class _PaymentNfcLinkScreenState extends ConsumerState<PaymentNfcLinkScreen> {
   final _nfc = const BioPayNfcService();
+  late final BioPayNfcForegroundSuspendedNotifier _foreground;
+  bool _suspendedForeground = false;
   List<Map<String, dynamic>> _links = const [];
   Map<String, dynamic>? _selected;
   bool _busy = false, _error = false, _written = false, _locked = false;
   @override
   void initState() {
     super.initState();
+    _foreground = ref.read(bioPayNfcForegroundSuspendedProvider.notifier);
     unawaited(_load());
+  }
+
+  void _suspendForeground() {
+    _suspendedForeground = true;
+    _foreground.setSuspended(true);
+  }
+
+  void _resumeForeground() {
+    if (!_suspendedForeground) return;
+    _suspendedForeground = false;
+    _foreground.setSuspended(false);
   }
 
   Future<void> _load() async {
@@ -58,7 +72,7 @@ class _PaymentNfcLinkScreenState extends ConsumerState<PaymentNfcLinkScreen> {
       _written = false;
       _locked = false;
     });
-    ref.read(bioPayNfcForegroundSuspendedProvider.notifier).setSuspended(true);
+    _suspendForeground();
     try {
       final preview = await ref
           .read(paymentDiscoveryServiceProvider)
@@ -73,9 +87,7 @@ class _PaymentNfcLinkScreenState extends ConsumerState<PaymentNfcLinkScreen> {
     } finally {
       await _nfc.cancelActiveSession();
       if (mounted) {
-        ref
-            .read(bioPayNfcForegroundSuspendedProvider.notifier)
-            .setSuspended(false);
+        _resumeForeground();
         setState(() => _busy = false);
       }
     }
@@ -107,7 +119,7 @@ class _PaymentNfcLinkScreenState extends ConsumerState<PaymentNfcLinkScreen> {
       _busy = true;
       _error = false;
     });
-    ref.read(bioPayNfcForegroundSuspendedProvider.notifier).setSuspended(true);
+    _suspendForeground();
     try {
       await _nfc.lockVerifiedCard(
         BioPayNfcCardPayload.paymentLink(link['token'] as String),
@@ -118,9 +130,7 @@ class _PaymentNfcLinkScreenState extends ConsumerState<PaymentNfcLinkScreen> {
     } finally {
       await _nfc.cancelActiveSession();
       if (mounted) {
-        ref
-            .read(bioPayNfcForegroundSuspendedProvider.notifier)
-            .setSuspended(false);
+        _resumeForeground();
         setState(() => _busy = false);
       }
     }
@@ -128,9 +138,17 @@ class _PaymentNfcLinkScreenState extends ConsumerState<PaymentNfcLinkScreen> {
 
   @override
   void dispose() {
-    unawaited(_nfc.cancelActiveSession());
-    ref.read(bioPayNfcForegroundSuspendedProvider.notifier).setSuspended(false);
+    unawaited(_cancelAndResumeForeground());
     super.dispose();
+  }
+
+  Future<void> _cancelAndResumeForeground() async {
+    try {
+      await _nfc.cancelActiveSession();
+    } finally {
+      // Defer the provider notification until the route has finished disposal.
+      _resumeForeground();
+    }
   }
 
   @override

@@ -79,9 +79,7 @@ class MobiToggle extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: AppTypography.labelLg.copyWith(
                             fontWeight: FontWeight.w500,
-                            color: isSelected
-                                ? cs.onSurface
-                                : cs.onSurfaceVariant,
+                            color: cs.onSurface,
                           ),
                         ),
                       ),

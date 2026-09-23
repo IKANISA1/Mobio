@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/features/chat/domain/chat_message.dart';
+import 'package:mobi_app/shared/widgets/mobi_motion.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 
@@ -50,7 +51,7 @@ class ChatMessageBubble extends StatelessWidget {
               ),
             ),
           )
-          .animate()
+          .animateAccessible(context)
           .fade(duration: 300.ms)
           .scale(
             begin: const Offset(0.9, 0.9),
@@ -128,7 +129,7 @@ class ChatMessageBubble extends StatelessWidget {
             ),
           ],
         )
-        .animate()
+        .animateAccessible(context)
         .fade(duration: 300.ms)
         .slideX(
           begin: isMine ? 0.2 : -0.2,

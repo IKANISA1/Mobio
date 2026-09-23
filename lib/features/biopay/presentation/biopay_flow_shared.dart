@@ -25,17 +25,11 @@ class BioPayCameraFrame extends StatelessWidget {
   const BioPayCameraFrame({
     super.key,
     required this.controller,
-    this.capturedCount = 0,
-    this.totalSteps = 0,
-    this.currentStepId = 'straight_1',
     this.showFaceGuide = false,
     this.height,
   });
 
   final CameraController controller;
-  final int capturedCount;
-  final int totalSteps;
-  final String currentStepId;
   final bool showFaceGuide;
   final double? height;
 
@@ -65,11 +59,7 @@ class BioPayCameraFrame extends StatelessWidget {
                   ),
                 ),
               ),
-              BioPayFaceOvalGuide(
-                capturedCount: capturedCount,
-                totalSteps: totalSteps,
-                currentStepId: currentStepId,
-              ),
+              const BioPayFaceOvalGuide(),
             ],
           ],
         ),
@@ -137,203 +127,43 @@ double _cameraPreviewCoverScale({
 }
 
 class BioPayFaceOvalGuide extends StatelessWidget {
-  const BioPayFaceOvalGuide({
-    super.key,
-    required this.capturedCount,
-    required this.totalSteps,
-    required this.currentStepId,
-  });
-
-  final int capturedCount;
-  final int totalSteps;
-  final String currentStepId;
-
+  const BioPayFaceOvalGuide({super.key});
   @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: CustomPaint(
-        painter: _BioPayFaceGuidePainter(
-          capturedCount: capturedCount,
-          totalSteps: totalSteps,
-          currentStepId: currentStepId,
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => const IgnorePointer(
+    child: CustomPaint(painter: _BioPayFaceGuidePainter()),
+  );
 }
 
 class _BioPayFaceGuidePainter extends CustomPainter {
-  const _BioPayFaceGuidePainter({
-    required this.capturedCount,
-    required this.totalSteps,
-    required this.currentStepId,
-  });
-
-  final int capturedCount;
-  final int totalSteps;
-  final String currentStepId;
-
+  const _BioPayFaceGuidePainter();
   @override
   void paint(Canvas canvas, Size size) {
-    final guideWidth = math.min(size.width * 0.72, 280.0);
-    final guideHeight = math.min(size.height * 0.58, guideWidth * 1.28);
-    final guideRect = Rect.fromCenter(
+    final width = math.min(size.width * 0.72, 280.0);
+    final height = math.min(size.height * 0.58, width * 1.28);
+    final oval = Rect.fromCenter(
       center: Offset(size.width / 2, size.height * 0.46),
-      width: guideWidth,
-      height: guideHeight,
+      width: width,
+      height: height,
     );
-    final ringRect = guideRect.inflate(8);
-    final basePaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.2
-      ..strokeCap = StrokeCap.round
-      ..color = Colors.white.withValues(alpha: 0.88);
-    final glowPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 13
-      ..strokeCap = StrokeCap.round
-      ..color = Colors.white.withValues(alpha: 0.10);
-    final progressPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 7
-      ..strokeCap = StrokeCap.round
-      ..color = AppColors.success;
-
     canvas
-      ..drawOval(ringRect, glowPaint)
-      ..drawOval(guideRect, basePaint);
-
-    final segments = math.max(1, totalSteps);
-    final sweep = (math.pi * 2 / segments) - 0.18;
-    for (var i = 0; i < segments; i += 1) {
-      if (i >= capturedCount) continue;
-      canvas.drawArc(
-        ringRect,
-        -math.pi / 2 + (math.pi * 2 / segments * i),
-        sweep,
-        false,
-        progressPaint,
+      ..drawOval(
+        oval.inflate(8),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 13
+          ..color = Colors.white.withValues(alpha: 0.10),
+      )
+      ..drawOval(
+        oval,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2.2
+          ..color = Colors.white.withValues(alpha: 0.88),
       );
-    }
-
-    final cuePaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round
-      ..color = Colors.white.withValues(alpha: 0.28);
-    final cueOffset = currentStepId == 'turn_pose' ? guideWidth * 0.10 : 0.0;
-    final center = guideRect.center.translate(cueOffset, -guideHeight * 0.04);
-    canvas
-      ..drawCircle(center, 3.5, cuePaint)
-      ..drawLine(center.translate(0, 12), center.translate(0, 36), cuePaint);
   }
 
   @override
-  bool shouldRepaint(covariant _BioPayFaceGuidePainter oldDelegate) {
-    return oldDelegate.capturedCount != capturedCount ||
-        oldDelegate.totalSteps != totalSteps ||
-        oldDelegate.currentStepId != currentStepId;
-  }
-}
-
-class BioPayPoseCueStrip extends StatelessWidget {
-  const BioPayPoseCueStrip({
-    super.key,
-    required this.capturedCount,
-    required this.totalSteps,
-    required this.currentStepId,
-    this.hasError = false,
-  });
-
-  final int capturedCount;
-  final int totalSteps;
-  final String currentStepId;
-  final bool hasError;
-
-  @override
-  Widget build(BuildContext context) {
-    const stepIds = ['straight_1', 'turn_pose', 'straight_2'];
-    final cs = Theme.of(context).colorScheme;
-
-    return Align(
-      alignment: Alignment.center,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: cs.surfaceContainerHighest.withValues(alpha: 0.58),
-          borderRadius: BorderRadius.circular(AppRadii.pill),
-          border: Border.all(
-            color: hasError
-                ? cs.error.withValues(alpha: 0.54)
-                : cs.outlineVariant.withValues(alpha: 0.52),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (var i = 0; i < totalSteps; i += 1) ...[
-                _PoseCueDot(
-                  id: stepIds[i],
-                  completed: i < capturedCount,
-                  active: stepIds[i] == currentStepId,
-                  hasError: hasError,
-                ),
-                if (i != totalSteps - 1) const SizedBox(width: 8),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _PoseCueDot extends StatelessWidget {
-  const _PoseCueDot({
-    required this.id,
-    required this.completed,
-    required this.active,
-    required this.hasError,
-  });
-
-  final String id;
-  final bool completed;
-  final bool active;
-  final bool hasError;
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final color = completed
-        ? AppColors.success
-        : active && hasError
-        ? cs.error
-        : active
-        ? cs.onSurface
-        : cs.onSurfaceVariant.withValues(alpha: 0.50);
-    final icon = completed
-        ? LucideIcons.check
-        : id == 'turn_pose'
-        ? LucideIcons.rotateCw
-        : LucideIcons.scanFace;
-
-    return SizedBox.square(
-      dimension: active ? 38 : 34,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: color.withValues(alpha: completed ? 1 : 0.12),
-          border: Border.all(color: color, width: active ? 1.8 : 1.2),
-        ),
-        child: Icon(
-          icon,
-          color: completed ? Colors.white : color,
-          size: active ? 19 : 17,
-        ),
-      ),
-    );
-  }
+  bool shouldRepaint(covariant _BioPayFaceGuidePainter oldDelegate) => false;
 }
 
 class BioPayFaceEnrollmentStandby extends StatelessWidget {
@@ -428,97 +258,6 @@ class _BioPayStandbyOvalPainter extends CustomPainter {
   }
 }
 
-class BioPayFaceEnrollmentStatusPanel extends StatelessWidget {
-  const BioPayFaceEnrollmentStatusPanel({
-    super.key,
-    required this.title,
-    required this.body,
-    required this.capturedCount,
-    required this.totalSteps,
-    required this.sessionReady,
-  });
-
-  final String title;
-  final String body;
-  final int capturedCount;
-  final int totalSteps;
-  final bool sessionReady;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: bioPayDarkPanel.withValues(alpha: 0.76),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-        boxShadow: [
-          BoxShadow(
-            color: bioPayBlue.withValues(alpha: 0.07),
-            blurRadius: 26,
-            offset: const Offset(0, 14),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
-              sessionReady ? LucideIcons.scanFace : LucideIcons.camera,
-              color: sessionReady
-                  ? bioPayBlue
-                  : Colors.white.withValues(alpha: 0.58),
-              size: 24,
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTypography.labelLg.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Text(
-                        '${capturedCount.clamp(0, totalSteps)}/$totalSteps',
-                        style: AppTypography.labelLg.copyWith(
-                          color: bioPayBlue,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    body,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.bodySm.copyWith(
-                      color: Colors.white.withValues(alpha: 0.70),
-                      height: 1.2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class BioPayFlowScreen extends StatelessWidget {
   const BioPayFlowScreen({
     super.key,
@@ -559,12 +298,15 @@ class BioPayFlowScreen extends StatelessWidget {
                       BioPayBackAvatar(onTap: onBack),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
-                          title,
-                          textAlign: TextAlign.start,
-                          style: AppTypography.headlineLg.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontWeight: FontWeight.w600,
+                        child: Semantics(
+                          header: true,
+                          child: Text(
+                            title,
+                            textAlign: TextAlign.start,
+                            style: AppTypography.headlineLg.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
@@ -795,35 +537,38 @@ class BioPayReceiverField extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.10),
               ),
             ),
-            SizedBox(
-              height: 80,
-              child: TextField(
-                controller: controller,
-                enabled: enabled,
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.next,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                onChanged: onChanged,
-                style: AppTypography.displayMd.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0,
-                ),
-                decoration: InputDecoration(
-                  hintText: usesCode ? 'MoMo Pay code' : 'MoMo number',
-                  hintStyle: AppTypography.titleLg.copyWith(
-                    color: Colors.white.withValues(alpha: 0.36),
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 80),
+              child: Semantics(
+                label: usesCode ? 'MoMo Pay code' : 'MoMo number',
+                child: TextField(
+                  controller: controller,
+                  enabled: enabled,
+                  keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.next,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  onChanged: onChanged,
+                  style: AppTypography.displayMd.copyWith(
+                    color: Colors.white,
                     fontWeight: FontWeight.w600,
+                    letterSpacing: 0,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.xl,
-                    vertical: AppSpacing.lg,
+                  decoration: InputDecoration(
+                    hintText: usesCode ? 'MoMo Pay code' : 'MoMo number',
+                    hintStyle: AppTypography.titleLg.copyWith(
+                      color: Colors.white.withValues(alpha: 0.70),
+                      fontWeight: FontWeight.w600,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xl,
+                      vertical: AppSpacing.lg,
+                    ),
+                    filled: true,
+                    fillColor: Colors.transparent,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
                   ),
-                  filled: true,
-                  fillColor: Colors.transparent,
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
                 ),
               ),
             ),
@@ -850,11 +595,13 @@ class _QrReceiverModeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+      child: InkWell(
         onTap: enabled ? onTap : null,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
+          duration: MediaQuery.disableAnimationsOf(context)
+              ? Duration.zero
+              : const Duration(milliseconds: 180),
+          constraints: const BoxConstraints(minHeight: 48),
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: selected ? Colors.white : null,
@@ -961,53 +708,61 @@ class BioPayReceiveAmountFieldState extends State<BioPayReceiveAmountField> {
           ),
           const SizedBox(height: AppSpacing.md),
         ],
-        SizedBox(
-          height: 88,
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 88),
           child: Stack(
             alignment: Alignment.center,
             children: [
-              TextField(
-                controller: widget.controller,
-                focusNode: _focusNode,
-                enabled: widget.enabled,
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                textInputAction: TextInputAction.done,
-                inputFormatters: const [GroupedWholeNumberTextInputFormatter()],
-                onChanged: widget.onChanged,
-                style: AppTypography.displayMd.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0,
-                ),
-                decoration: InputDecoration(
-                  prefixText: widget.controller.text.isEmpty ? null : 'RWF ',
-                  prefixStyle: AppTypography.displayMd.copyWith(
-                    color: Colors.white.withValues(alpha: 0.70),
+              Semantics(
+                label: 'Amount in Rwandan francs',
+                child: TextField(
+                  controller: widget.controller,
+                  focusNode: _focusNode,
+                  enabled: widget.enabled,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  textInputAction: TextInputAction.done,
+                  inputFormatters: const [
+                    GroupedWholeNumberTextInputFormatter(),
+                  ],
+                  onChanged: widget.onChanged,
+                  style: AppTypography.displayMd.copyWith(
+                    color: Colors.white,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.xl,
-                    vertical: AppSpacing.lg,
-                  ),
-                  filled: true,
-                  fillColor: bioPayDarkPanel.withValues(alpha: 0.74),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide(
-                      color: Colors.white.withValues(alpha: 0.12),
+                  decoration: InputDecoration(
+                    prefixText: widget.controller.text.isEmpty ? null : 'RWF ',
+                    prefixStyle: AppTypography.displayMd.copyWith(
+                      color: Colors.white.withValues(alpha: 0.70),
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0,
                     ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: BorderSide(
-                      color: Colors.white.withValues(alpha: 0.12),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xl,
+                      vertical: AppSpacing.lg,
                     ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: bioPayBlue, width: 1.4),
+                    filled: true,
+                    fillColor: bioPayDarkPanel.withValues(alpha: 0.74),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide(
+                        color: Colors.white.withValues(alpha: 0.12),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: BorderSide(
+                        color: Colors.white.withValues(alpha: 0.12),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(
+                        color: bioPayBlue,
+                        width: 1.4,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -1027,7 +782,7 @@ class BioPayReceiveAmountFieldState extends State<BioPayReceiveAmountField> {
                       Text(
                         '0.00',
                         style: AppTypography.displayMd.copyWith(
-                          color: Colors.white.withValues(alpha: 0.38),
+                          color: Colors.white.withValues(alpha: 0.70),
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0,
                         ),
@@ -1661,11 +1416,14 @@ class BioPayDetailRow extends StatelessWidget {
               ),
             ),
           ),
-          Text(
-            value,
-            style: AppTypography.titleMd.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: AppTypography.titleMd.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

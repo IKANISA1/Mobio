@@ -51,25 +51,28 @@ class ChatComposer extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Expanded(
-                          child: TextField(
-                            controller: controller,
-                            focusNode: focusNode,
-                            minLines: 1,
-                            maxLines: 4,
-                            textCapitalization: TextCapitalization.sentences,
-                            style: AppTypography.bodyMd,
-                            decoration: InputDecoration(
-                              hintText:
-                                  'Message about fare, pickup, time, or luggage',
-                              hintStyle: AppTypography.bodyMd.copyWith(
-                                color: cs.onSurfaceVariant,
+                          child: Semantics(
+                            label: 'Message',
+                            child: TextField(
+                              controller: controller,
+                              focusNode: focusNode,
+                              minLines: 1,
+                              maxLines: 4,
+                              textCapitalization: TextCapitalization.sentences,
+                              style: AppTypography.bodyMd,
+                              decoration: InputDecoration(
+                                hintText:
+                                    'Message about pickup, time, or luggage',
+                                hintStyle: AppTypography.bodyMd.copyWith(
+                                  color: cs.onSurfaceVariant,
+                                ),
+                                border: InputBorder.none,
+                                isCollapsed: true,
                               ),
-                              border: InputBorder.none,
-                              isCollapsed: true,
+                              onSubmitted: isSending
+                                  ? null
+                                  : (_) => onSendMessage(),
                             ),
-                            onSubmitted: isSending
-                                ? null
-                                : (_) => onSendMessage(),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -94,6 +97,7 @@ class ChatComposer extends StatelessWidget {
                                       )
                                     : Icon(
                                         LucideIcons.send,
+                                        semanticLabel: 'Send message',
                                         size: 18,
                                         color: cs.onPrimary,
                                       ),

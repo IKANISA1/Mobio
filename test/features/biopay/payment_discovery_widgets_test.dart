@@ -8,6 +8,7 @@ import 'package:mobi_app/features/biopay/presentation/payment_composer_screen.da
 import 'package:mobi_app/features/biopay/presentation/payment_library_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/payment_link_arrival_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/payment_methods_screen.dart';
+import 'package:mobi_app/features/biopay/presentation/payment_nfc_link_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/payment_provider_routes_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
 import 'package:mobi_app/l10n/app_localizations.dart';
@@ -81,6 +82,9 @@ void main() {
     'method_editor': const PaymentMethodEditor(),
     'requests': const PaymentLibraryScreen(),
     'activity': const PaymentLibraryScreen(section: 'activity'),
+    'recents': const PaymentLibraryScreen(section: 'recents'),
+    'templates': const PaymentLibraryScreen(section: 'templates'),
+    'nfc_links': const PaymentNfcLinkScreen(),
     'request_editor': PaymentRequestEditor(now: () => DateTime.utc(2026, 9, 8)),
     'public_link': const PaymentLinkArrivalScreen(
       token: '0123456789abcdef0123456789abcdef0123456789abcdef',
@@ -91,26 +95,42 @@ void main() {
       testWidgets('${e.key} supports $language at 320px and 200 percent text', (
         tester,
       ) async {
-        await open(
-          tester,
-          e.value,
-          PaymentDiscoveryFixture(),
-          language: language,
-          size: const Size(320, 740),
-          scale: 2,
-        );
-        expect(tester.takeException(), isNull);
-        final task = tester.widget<PaymentTaskScaffold>(
-          find.byType(PaymentTaskScaffold).first,
-        );
-        expect(task.title, isNotEmpty);
-        if (find.byType(Scrollable).evaluate().isNotEmpty) {
-          await tester.drag(
-            find.byType(Scrollable).first,
-            const Offset(0, -1500),
+        final semantics = tester.ensureSemantics();
+        try {
+          await open(
+            tester,
+            e.value,
+            PaymentDiscoveryFixture(),
+            language: language,
+            size: const Size(320, 740),
+            scale: 2,
           );
-          await tester.pumpAndSettle();
           expect(tester.takeException(), isNull);
+          await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+          await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+          final task = tester.widget<PaymentTaskScaffold>(
+            find.byType(PaymentTaskScaffold).first,
+          );
+          expect(task.title, isNotEmpty);
+          if (find.byType(Scrollable).evaluate().isNotEmpty) {
+            await tester.drag(
+              find.byType(Scrollable).first,
+              const Offset(0, -1500),
+            );
+            await tester.pumpAndSettle();
+            expect(tester.takeException(), isNull);
+            await expectLater(
+              tester,
+              meetsGuideline(labeledTapTargetGuideline),
+            );
+            await expectLater(
+              tester,
+              meetsGuideline(androidTapTargetGuideline),
+            );
+          }
+        } finally {
+          await tester.pumpWidget(const SizedBox.shrink());
+          semantics.dispose();
         }
       });
     }

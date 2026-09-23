@@ -66,7 +66,9 @@ class _MobiBottomSheetContent extends StatelessWidget {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
     return AnimatedPadding(
-      duration: const Duration(milliseconds: 180),
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : const Duration(milliseconds: 180),
       curve: Curves.easeOutCubic,
       padding: EdgeInsets.only(
         bottom: includeViewInsets ? MediaQuery.viewInsetsOf(context).bottom : 0,

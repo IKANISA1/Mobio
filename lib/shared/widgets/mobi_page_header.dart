@@ -59,12 +59,15 @@ class MobiPageHeader extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        title,
-                        style: AppTypography.headlineLg.copyWith(
-                          color: cs.onSurface,
-                          fontWeight: FontWeight.w600,
-                          decoration: TextDecoration.none,
+                      Semantics(
+                        header: true,
+                        child: Text(
+                          title,
+                          style: AppTypography.headlineLg.copyWith(
+                            color: cs.onSurface,
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.none,
+                          ),
                         ),
                       ),
                       if (showSubtitle) ...[

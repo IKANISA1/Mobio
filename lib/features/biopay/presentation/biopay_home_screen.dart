@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_style.dart';
-import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
 import 'package:mobi_app/shared/widgets/mobi_action_row.dart';
-import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_visual_theme.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
@@ -80,16 +77,18 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: AppSpacing.xl),
-                  Text(
-                    'BioPay',
-                    textAlign: TextAlign.center,
-                    style: AppTypography.bodyLg.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
+                  Center(
+                    child: Text(
+                      'BioPay',
+                      textAlign: TextAlign.center,
+                      style: AppTypography.bodyLg.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   Text(
-                    'Your identity.\nYour connection.',
+                    'Pay & Get Paid\nInstant & Secure',
                     textAlign: TextAlign.center,
                     style: AppTypography.displayLg.copyWith(
                       color: Theme.of(context).colorScheme.onSurface,
@@ -99,11 +98,6 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
                     ),
                   ),
                   const SizedBox(height: 40),
-                  PaymentAction(
-                    label: paymentCopy(context).bpPay,
-                    onPressed: () => context.push('/biopay/send'),
-                  ),
-                  const SizedBox(height: 12),
                   MobiActionRow(
                     items: [
                       MobiActionItem(
@@ -129,64 +123,7 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
                     ],
                   ),
                   const SizedBox(height: 32),
-                  MobiSurfacePanel(
-                    child: Row(
-                      children: [
-                        Icon(
-                          LucideIcons.smartphone,
-                          color: Theme.of(context).colorScheme.onSurface,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Connect to a recipient',
-                                style: AppTypography.titleMd.copyWith(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                'Use face, QR or NFC, then continue with your mobile network.',
-                                style: AppTypography.bodySm.copyWith(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
                   _BioPayRequestPaymentButton(onTap: widget.onRequestPayment),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      TextButton(
-                        onPressed: () =>
-                            context.push('/biopay/send?resume=true'),
-                        child: Text(paymentCopy(context).bpResume),
-                      ),
-                      TextButton(
-                        onPressed: () => context.push('/biopay/requests'),
-                        child: Text(paymentCopy(context).bpRequests),
-                      ),
-                      TextButton(
-                        onPressed: () => context.push('/biopay/activity'),
-                        child: Text(paymentCopy(context).bpActivity),
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: AppSpacing.md),
                   _BioPayInsuranceBanner(
                     isBusy: _isOpeningInsurance,
@@ -213,6 +150,11 @@ class _BioPayInsuranceBanner extends StatelessWidget {
     return Semantics(
       button: true,
       label: 'Get motor insurance and earn 3000 tokens',
+      enabled: !isBusy,
+      value: isBusy ? 'Loading' : null,
+      liveRegion: isBusy,
+      excludeSemantics: true,
+      onTap: isBusy ? null : onTap,
       child: Material(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadii.xl),
@@ -260,8 +202,6 @@ class _BioPayInsuranceBanner extends StatelessWidget {
                     children: [
                       Text(
                         'Motor insurance',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                         style: AppTypography.titleMd.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
@@ -270,8 +210,6 @@ class _BioPayInsuranceBanner extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         'Get covered and earn 3000 TOKENS.',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                         style: AppTypography.bodySm.copyWith(
                           color: Colors.white.withValues(alpha: 0.78),
                         ),
@@ -304,6 +242,8 @@ class _BioPayRequestPaymentButton extends StatelessWidget {
     return Semantics(
       button: true,
       label: 'Get Payment Link',
+      excludeSemantics: true,
+      onTap: onTap,
       child: Material(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadii.pill),
@@ -313,7 +253,10 @@ class _BioPayRequestPaymentButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadii.pill),
           onTap: onTap,
           child: Ink(
-            height: 64,
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.lg,
+            ),
             decoration: BoxDecoration(
               color: bioPayDarkPanelAlt.withValues(alpha: 0.96),
               borderRadius: BorderRadius.circular(AppRadii.pill),
@@ -334,8 +277,7 @@ class _BioPayRequestPaymentButton extends StatelessWidget {
                 Flexible(
                   child: Text(
                     'Get Payment Link',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
                     style: AppTypography.titleMd.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,

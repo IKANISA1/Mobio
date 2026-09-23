@@ -20,6 +20,7 @@ void main() {
               mode: 'passenger',
               onModeChanged: (_) {},
               onChat: (_) {},
+              onTripDetails: (_) {},
               onViewNearby: () {},
               onViewBookings: () {},
               onSchedule: () {},

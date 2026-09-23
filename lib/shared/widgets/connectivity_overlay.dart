@@ -87,7 +87,9 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay>
       _isOffline = isOffline;
     });
 
-    if (_isOffline) {
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _animController.value = _isOffline ? 1 : 0;
+    } else if (_isOffline) {
       _animController.forward();
     } else {
       _animController.reverse();

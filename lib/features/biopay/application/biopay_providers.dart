@@ -4,6 +4,7 @@ import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/features/biopay/data/biopay_admin_service.dart';
 import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
 import 'package:mobi_app/features/biopay/data/biopay_ussd_service.dart';
+import 'package:mobi_app/features/biopay/data/face_capture.dart';
 import 'package:mobi_app/features/biopay/data/payment_discovery_service.dart';
 
 final paymentDiscoveryServiceProvider = Provider(
@@ -35,4 +36,8 @@ final biopayFaceServiceProvider = Provider(
         ? ref.read(supabaseClientProvider)
         : null,
   ),
+);
+
+final faceCaptureFactoryProvider = Provider<FaceCapture Function()>(
+  (ref) => CameraFaceCapture.new,
 );

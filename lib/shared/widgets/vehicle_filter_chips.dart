@@ -88,6 +88,8 @@ class VehicleFilterChips extends StatelessWidget {
               selected: isSelected,
               button: true,
               label: '${vt.label} vehicle filter',
+              excludeSemantics: true,
+              onTap: () => onSelected(vt.id),
               child: _TappableChip(
                 isSelected: isSelected,
                 onTap: () => onSelected(vt.id),
@@ -174,24 +176,31 @@ class _TappableChipState extends State<_TappableChip>
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
-    return GestureDetector(
+    return InkWell(
       onTap: widget.onTap,
       onTapDown: (_) => _controller.forward(),
       onTapUp: (_) => _controller.reverse(),
       onTapCancel: () => _controller.reverse(),
-      behavior: HitTestBehavior.opaque,
+      borderRadius: BorderRadius.circular(AppRadii.pill),
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
-          final scale = 1.0 - (_controller.value * 0.05);
-          final opacity = 1.0 - (_controller.value * 0.15);
+          final scale = MediaQuery.disableAnimationsOf(context)
+              ? 1.0
+              : 1.0 - (_controller.value * 0.05);
+          final opacity = MediaQuery.disableAnimationsOf(context)
+              ? 1.0
+              : 1.0 - (_controller.value * 0.15);
           return Transform.scale(
             scale: scale,
             child: Opacity(opacity: opacity, child: child),
           );
         },
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+          constraints: const BoxConstraints(minHeight: 48),
+          duration: MediaQuery.disableAnimationsOf(context)
+              ? Duration.zero
+              : const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
             vertical: AppSpacing.sm,

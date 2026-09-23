@@ -63,6 +63,17 @@ class MobiInfoChip extends StatelessWidget {
 
     if (onTap == null) return chip;
 
-    return GestureDetector(onTap: onTap, child: chip);
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadii.pill),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+          child: Center(widthFactor: 1, heightFactor: 1, child: chip),
+        ),
+      ),
+    );
   }
 }

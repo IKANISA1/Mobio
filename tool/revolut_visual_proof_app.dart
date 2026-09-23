@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/app/launch_screen.dart';
@@ -17,12 +18,15 @@ import 'package:mobi_app/features/admin/presentation/admin_ev_chargers_screen.da
 import 'package:mobi_app/features/admin/presentation/admin_operational_health_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_reports_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_subscriptions_screen.dart';
+import 'package:mobi_app/features/admin/presentation/admin_transport_agencies_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_trips_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_users_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_vehicle_types_screen.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
 import 'package:mobi_app/features/auth/application/auth_providers.dart';
 import 'package:mobi_app/features/auth/presentation/whatsapp_login_screen.dart';
+import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
+import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_admin_console_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_face_enroll_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_face_scan_screen.dart';
@@ -32,6 +36,7 @@ import 'package:mobi_app/features/biopay/presentation/biopay_nfc_write_card_scre
 import 'package:mobi_app/features/biopay/presentation/biopay_qr_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_request_payment_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_scan_screen.dart';
+import 'package:mobi_app/features/biopay/presentation/payment_methods_screen.dart';
 import 'package:mobi_app/features/bookings/presentation/bookings_screen.dart';
 import 'package:mobi_app/features/bookings/presentation/schedule_trip_screen.dart';
 import 'package:mobi_app/features/bookings/presentation/trip_details_screen.dart';
@@ -47,6 +52,7 @@ import 'package:mobi_app/features/profile/presentation/wallet_screen.dart';
 import 'package:mobi_app/shared/widgets/mobi_bottom_nav.dart';
 import 'package:mobi_design_system/theme/app_theme.dart';
 
+import 'face_receiving_preview_service.dart';
 import 'revolut_preview_services.dart';
 import 'revolut_whatsapp_preview_service.dart';
 
@@ -68,48 +74,112 @@ void main() {
   GoogleFonts.config.allowRuntimeFetching = false;
   runApp(
     ProviderScope(
-      overrides: revolutPreviewOverrides,
+      overrides: [
+        ...revolutPreviewOverrides,
+        paymentDiscoveryServiceProvider.overrideWith(
+          (ref) => FaceReceivingPreviewService(),
+        ),
+        biopayFaceServiceProvider.overrideWithValue(BioPayFaceService()),
+      ],
       child: const RevolutVisualProofApp(),
     ),
   );
 }
 
-class RevolutVisualProofApp extends StatelessWidget {
+class RevolutVisualProofApp extends StatefulWidget {
   const RevolutVisualProofApp({super.key, this.initialScreen});
 
   final String? initialScreen;
 
+  @override
+  State<RevolutVisualProofApp> createState() => _RevolutVisualProofAppState();
+}
+
+class _RevolutVisualProofAppState extends State<RevolutVisualProofApp> {
   static const _screenFromDefine = String.fromEnvironment(
     'MOBI_VISUAL_PROOF_SCREEN',
   );
+  // Real route destinations used by the workspace navigation also work in the
+  // isolated proof host. No production authentication guard is changed here.
+  static const _destinations = {
+    '/': 'home_shell',
+    '/home': 'home_shell',
+    '/bookings': 'bookings_shell',
+    '/biopay': 'biopay_shell',
+    '/profile': 'profile_shell',
+    '/profile/payment-methods': 'payment_methods',
+    '/admin': 'admin_dashboard',
+    '/admin/users': 'admin_users',
+    '/admin/vehicle-types': 'admin_vehicle_types',
+    '/admin/agencies': 'admin_agencies',
+    '/admin/ev-chargers': 'admin_ev',
+    '/admin/subscriptions': 'admin_subscriptions',
+    '/admin/trips': 'admin_trips',
+    '/admin/reports': 'admin_reports',
+    '/admin/biopay': 'admin_biopay_ops',
+    '/admin/finance': 'admin_biopay_ops',
+    '/admin/health': 'admin_health',
+    '/admin/audit': 'admin_audit',
+    '/admin/broadcasts': 'admin_broadcasts',
+    '/admin/profile': 'profile_shell',
+  };
+  late final GoRouter _router;
+  late final bool _allowInitialLink;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     final queryScreen = Uri.base.queryParameters['screen'];
     final screen =
-        initialScreen ??
+        widget.initialScreen ??
         (_screenFromDefine.isNotEmpty
             ? _screenFromDefine
             : queryScreen ?? 'home_shell');
-
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: Uri.base.queryParameters['theme'] == 'light'
-          ? AppTheme.lightTheme
-          : AppTheme.darkTheme,
-      home: _VisualProofHost(
-        initialScreen: screen,
-        allowInitialLink:
-            initialScreen == null &&
-            _screenFromDefine.isEmpty &&
-            queryScreen == null,
-      ),
+    _allowInitialLink =
+        widget.initialScreen == null &&
+        _screenFromDefine.isEmpty &&
+        queryScreen == null;
+    _router = GoRouter(
+      initialLocation: '/preview/$screen',
+      overridePlatformDefaultLocation: true,
+      routerNeglect: true,
+      routes: [
+        GoRoute(
+          path: '/preview/:screen',
+          builder: (_, state) => _host(state.pathParameters['screen']!),
+        ),
+        for (final entry in _destinations.entries)
+          GoRoute(path: entry.key, builder: (_, _) => _host(entry.value)),
+      ],
+      errorBuilder: (_, _) => const NotFoundScreen(),
     );
   }
+
+  Widget _host(String screen) => _VisualProofHost(
+    key: ValueKey(screen),
+    initialScreen: screen,
+    allowInitialLink: _allowInitialLink,
+  );
+
+  @override
+  void dispose() {
+    _router.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => MaterialApp.router(
+    debugShowCheckedModeBanner: false,
+    theme: Uri.base.queryParameters['theme'] == 'light'
+        ? AppTheme.lightTheme
+        : AppTheme.darkTheme,
+    routerConfig: _router,
+  );
 }
 
 class _VisualProofHost extends StatefulWidget {
   const _VisualProofHost({
+    super.key,
     required this.initialScreen,
     required this.allowInitialLink,
   });
@@ -168,6 +238,7 @@ class _VisualProofHostState extends State<_VisualProofHost> {
     'admin_biopay_ops',
     'admin_vehicle_types',
     'admin_subscriptions',
+    'admin_agencies',
     'admin_reports',
     'admin_health',
     'admin_audit',
@@ -390,6 +461,7 @@ Widget _screenFor(
       mode: mode,
       onModeChanged: onModeChanged,
       onChat: (_) => go('chat'),
+      onTripDetails: (id) => go('trip_details:$id'),
       onViewNearby: () => go('nearby'),
       onViewBookings: () => go('bookings_shell'),
       onSchedule: () => go('schedule'),
@@ -436,7 +508,7 @@ Widget _screenFor(
       onAdminGateway: () => go('admin_auth'),
     ),
     'edit_profile' || 'edit_profile_large_text' => EditProfileScreen(
-      onBack: () => back('home_shell'),
+      onBack: () => back('profile_shell'),
     ),
     'profile_setup' => EditProfileScreen(
       isFirstRun: true,
@@ -449,22 +521,24 @@ Widget _screenFor(
     'nearby' => NearbyScreen(
       onChat: (_) => go('chat'),
       onTripDetails: (id) => go('trip_details:$id'),
+      onBack: () => back('home_shell'),
     ),
     'ev_locator' => EvChargerLocatorScreen(onBack: () => back('home_shell')),
     'biopay_request' => BioPayRequestPaymentScreen(
       onBack: () => back('biopay_shell'),
     ),
-    'biopay_qr' => BioPayQrScreen(onBack: () => back('home_shell')),
-    'biopay_scan' => BioPayScanScreen(onBack: () => back('home_shell')),
+    'biopay_qr' => BioPayQrScreen(onBack: () => back('biopay_shell')),
+    'biopay_scan' => BioPayScanScreen(onBack: () => back('biopay_shell')),
     'biopay_face_scan' => BioPayFaceScanScreen(
-      onBack: () => back('home_shell'),
+      onBack: () => back('biopay_shell'),
     ),
     'biopay_face_enroll' => BioPayFaceEnrollScreen(
-      onBack: () => back('home_shell'),
+      onBack: () => back('biopay_shell'),
     ),
-    'biopay_nfc' => BioPayNfcScreen(onBack: () => back('home_shell')),
+    'payment_methods' => const PaymentMethodsScreen(),
+    'biopay_nfc' => BioPayNfcScreen(onBack: () => back('biopay_shell')),
     'biopay_nfc_write' => BioPayNfcWriteCardScreen(
-      onBack: () => back('home_shell'),
+      onBack: () => back('profile_shell'),
     ),
     'splash' => const MobiLaunchScreen(),
     'login' || 'login_large_text' => ProviderScope(
@@ -484,24 +558,27 @@ Widget _screenFor(
     ),
     'admin_dashboard' => const AdminDashboardScreen(),
     'admin_users' => const AdminUsersScreen(),
-    'admin_trips' => AdminTripsScreen(onBack: () => back('home_shell')),
+    'admin_trips' => AdminTripsScreen(onBack: () => back('admin_dashboard')),
     'admin_ev' => AdminEvChargersScreen(onBack: () => back('admin_dashboard')),
     'admin_biopay_ops' => const BioPayAdminConsoleScreen(),
     'admin_vehicle_types' => AdminVehicleTypesScreen(
-      onBack: () => back('home_shell'),
+      onBack: () => back('admin_dashboard'),
+    ),
+    'admin_agencies' => AdminTransportAgenciesScreen(
+      onBack: () => back('admin_dashboard'),
     ),
     'admin_subscriptions' => AdminSubscriptionsScreen(
-      onBack: () => back('home_shell'),
+      onBack: () => back('admin_dashboard'),
     ),
     'admin_reports' || 'admin_reports_large_text' => AdminReportsScreen(
-      onBack: () => back('home_shell'),
+      onBack: () => back('admin_dashboard'),
     ),
     'admin_health' => AdminOperationalHealthScreen(
-      onBack: () => back('home_shell'),
+      onBack: () => back('admin_dashboard'),
     ),
-    'admin_audit' => AdminAuditLogScreen(onBack: () => back('home_shell')),
+    'admin_audit' => AdminAuditLogScreen(onBack: () => back('admin_dashboard')),
     'admin_broadcasts' => AdminBroadcastsScreen(
-      onBack: () => back('home_shell'),
+      onBack: () => back('admin_dashboard'),
     ),
     'schedule_keyboard' => ScheduleTripScreen(
       mode: 'passenger',

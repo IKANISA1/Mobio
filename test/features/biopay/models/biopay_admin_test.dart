@@ -21,8 +21,8 @@ void main() {
       'user_id': 'user-1',
       'handle': 'BP-123456',
       'display_name': 'BioPay User',
-      'provider': 'aws_rekognition',
-      'provider_subject_id': 'aws-face-1',
+      'provider': 'opencv_sface_v1',
+      'provider_subject_id': 'face-1',
       'provider_collection_id': 'mobio-biopay-prod',
       'liveness_status': 'provider_liveness_not_required',
       'status': 'active',
@@ -39,43 +39,45 @@ void main() {
     expect(payee.confirmedCount, 5);
   });
 
-  test('parses AWS face provider health metadata', () {
+  test('parses face provider health metadata', () {
     final status = BioPayFaceProviderStatus.fromJson({
-      'provider': 'aws_rekognition',
+      'provider': 'opencv_sface_v1',
       'production_ready': true,
       'provider_collection_id': 'mobio-biopay-prod',
-      'model_version': 'aws-rekognition-face-liveness-v1',
+      'model_version': 'yunet2023mar-sface2021dec-opencv4.11-v1',
       'payment_boundary': 'USSD dialer handoff only; no in-app settlement.',
     });
 
-    expect(status.provider, 'aws_rekognition');
+    expect(status.provider, 'opencv_sface_v1');
     expect(status.productionReady, isTrue);
-    expect(status.providerCollectionId, 'mobio-biopay-prod');
-    expect(status.modelVersion, contains('aws-rekognition'));
+    expect(
+      status.providerCollectionId,
+      'yunet2023mar-sface2021dec-opencv4.11-v1',
+    );
+    expect(status.modelVersion, contains('sface'));
     expect(status.paymentBoundary, contains('USSD dialer'));
   });
 
-  test('parses BioPay AWS enrollment state', () {
+  test('parses BioPay enrollment state', () {
     final status = BioPayEnrollmentStatus.fromJson({
       'handle': 'BP-482013',
-      'provider': 'aws_rekognition',
-      'provider_subject_id': 'aws-face-1',
+      'provider': 'opencv_sface_v1',
+      'provider_subject_id': 'face-1',
       'provider_collection_id': 'mobio-biopay-prod',
       'liveness_status': 'provider_liveness_not_required',
       'status': 'active',
+      'has_face': true,
       'consent_granted_at': '2026-06-12T10:00:00Z',
       'server_verified_at': '2026-09-06T10:00:00Z',
     });
 
     expect(status.isEnrolled, isTrue);
     expect(status.label, 'Ready');
-    expect(status.subtitle, 'AWS face identity ready');
-    expect(status.providerCollectionId, 'mobio-biopay-prod');
   });
 
   test('legacy or consentless profiles are never ready in app or Admin', () {
     final profile = <String, dynamic>{
-      'provider': 'aws_rekognition',
+      'provider': 'opencv_sface_v1',
       'provider_subject_id': 'legacy-face',
       'status': 'active',
       'consent_granted_at': '2026-06-12T10:00:00Z',

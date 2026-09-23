@@ -29,11 +29,24 @@ function getSupabaseServiceRoleKey() {
   );
 }
 
-export function createAdminClient() {
+function boundedFetch(timeoutMs: number): typeof fetch {
+  return (input, init) => {
+    const inherited = init?.signal ??
+      (input instanceof Request ? input.signal : undefined);
+    const timeout = AbortSignal.timeout(timeoutMs);
+    return fetch(input, {
+      ...init,
+      signal: inherited ? AbortSignal.any([inherited, timeout]) : timeout,
+    });
+  };
+}
+
+export function createAdminClient(timeoutMs?: number) {
   return createClient(
     getSupabaseUrl(),
     getSupabaseServiceRoleKey(),
     {
+      ...(timeoutMs ? { global: { fetch: boundedFetch(timeoutMs) } } : {}),
       auth: {
         autoRefreshToken: false,
         persistSession: false,
@@ -42,11 +55,12 @@ export function createAdminClient() {
   );
 }
 
-export function createAnonClient() {
+export function createAnonClient(timeoutMs?: number) {
   return createClient(
     getSupabaseUrl(),
     getSupabaseAnonKey(),
     {
+      ...(timeoutMs ? { global: { fetch: boundedFetch(timeoutMs) } } : {}),
       auth: {
         autoRefreshToken: false,
         persistSession: false,

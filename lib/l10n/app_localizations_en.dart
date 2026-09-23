@@ -623,4 +623,143 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get bpMissingLogin =>
       'Add this bank account’s login phone in Payment methods, then compare again.';
+
+  @override
+  String get faceRegister => 'Register my face';
+
+  @override
+  String get faceScanTitle => 'Scan to pay';
+
+  @override
+  String get faceScanInstruction => 'Scan the person you want to pay.';
+
+  @override
+  String get faceRegisterInstruction => 'Place your face in the frame.';
+
+  @override
+  String get faceConsent =>
+      'Let people find your receiving MoMo number by scanning your face. You can remove this at any time.';
+
+  @override
+  String get faceReceivingMethod => 'Receiving MoMo number';
+
+  @override
+  String get faceManageMethods => 'Add or edit receiving numbers';
+
+  @override
+  String get faceStartCamera => 'Open camera';
+
+  @override
+  String get faceCapture => 'Capture once';
+
+  @override
+  String get faceScanAction => 'Scan recipient';
+
+  @override
+  String get faceUpdate => 'Update face';
+
+  @override
+  String get facePause => 'Pause face lookup';
+
+  @override
+  String get faceResume => 'Resume face lookup';
+
+  @override
+  String get faceRemove => 'Remove my face';
+
+  @override
+  String get faceReady => 'Face setup saved';
+
+  @override
+  String get faceProcessing => 'Saving your face setup…';
+
+  @override
+  String get facePaused => 'Face lookup is paused';
+
+  @override
+  String get faceRemoved => 'Your face setup is removed';
+
+  @override
+  String get faceReenroll =>
+      'Update your face setup to continue using Scan to pay.';
+
+  @override
+  String get faceOpening => 'Opening MoMo…';
+
+  @override
+  String get faceOpened =>
+      'Continue in your dialer. MoMo handles the amount and PIN.';
+
+  @override
+  String get faceManualPlatform =>
+      'Automatic USSD opening is available on Android. Copy this code and use a supported phone.';
+
+  @override
+  String get faceCopyCode => 'Copy USSD code';
+
+  @override
+  String get faceCopied => 'Code copied';
+
+  @override
+  String get faceNoMatch =>
+      'No matching recipient. Try again or use a number or QR.';
+
+  @override
+  String get faceAmbiguous =>
+      'No clear match. Try another capture or use a number or QR.';
+
+  @override
+  String get faceNoFace => 'No face found. Keep the face inside the frame.';
+
+  @override
+  String get faceMultiple => 'Keep only one face in the frame.';
+
+  @override
+  String get facePoorCapture => 'Use more light and hold the camera steady.';
+
+  @override
+  String get faceUnavailable =>
+      'Face lookup is unavailable. Try again or use a number or QR.';
+
+  @override
+  String get faceRecipientUnavailable =>
+      'This recipient has no available receiving number. Use a number or QR.';
+
+  @override
+  String get faceCameraError =>
+      'Camera unavailable. Check permission, then try again.';
+
+  @override
+  String get faceTimeout => 'This is taking too long. Try again.';
+
+  @override
+  String get faceSignIn => 'Sign in again to continue.';
+
+  @override
+  String get faceSelectMethod => 'Choose a receiving MoMo number first.';
+
+  @override
+  String get faceDialFailed =>
+      'The dialer could not open. Copy the code or try another method.';
+
+  @override
+  String get faceManual => 'Use a number';
+
+  @override
+  String get faceQr => 'Scan QR';
+
+  @override
+  String get faceTryAgain => 'Try again';
+
+  @override
+  String get faceDone => 'Done';
+
+  @override
+  String get faceWorking => 'Please wait…';
+
+  @override
+  String get faceSetUp => 'Set up';
+
+  @override
+  String get faceRefresh => 'Check setup status';
 }

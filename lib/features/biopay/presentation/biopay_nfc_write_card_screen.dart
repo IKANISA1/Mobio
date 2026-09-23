@@ -374,37 +374,42 @@ class _NfcReceiverTypePicker extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.10),
               ),
             ),
-            SizedBox(
-              height: 80,
-              child: TextField(
-                controller: controller,
-                enabled: enabled,
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.next,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                onChanged: onTextChanged,
-                style: AppTypography.displayMd.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0,
-                ),
-                decoration: InputDecoration(
-                  hintText: selected == BioPayNfcReceiverType.momoNumber
-                      ? 'MoMo number'
-                      : 'MoMo Pay code',
-                  hintStyle: AppTypography.titleLg.copyWith(
-                    color: Colors.white.withValues(alpha: 0.36),
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 80),
+              child: Semantics(
+                label: selected == BioPayNfcReceiverType.momoNumber
+                    ? 'MoMo number'
+                    : 'MoMo Pay code',
+                child: TextField(
+                  controller: controller,
+                  enabled: enabled,
+                  keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.next,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  onChanged: onTextChanged,
+                  style: AppTypography.displayMd.copyWith(
+                    color: Colors.white,
                     fontWeight: FontWeight.w600,
+                    letterSpacing: 0,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.xl,
-                    vertical: AppSpacing.lg,
+                  decoration: InputDecoration(
+                    hintText: selected == BioPayNfcReceiverType.momoNumber
+                        ? 'MoMo number'
+                        : 'MoMo Pay code',
+                    hintStyle: AppTypography.titleLg.copyWith(
+                      color: Colors.white.withValues(alpha: 0.70),
+                      fontWeight: FontWeight.w600,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xl,
+                      vertical: AppSpacing.lg,
+                    ),
+                    filled: true,
+                    fillColor: Colors.transparent,
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
                   ),
-                  filled: true,
-                  fillColor: Colors.transparent,
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
                 ),
               ),
             ),
@@ -441,14 +446,15 @@ class _NfcReceiverModeButton extends StatelessWidget {
         button: true,
         selected: selected,
         label: label,
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
+        child: InkWell(
           onTap: enabled ? onTap : null,
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 180),
             opacity: enabled ? 1 : 0.48,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
+              duration: MediaQuery.disableAnimationsOf(context)
+                  ? Duration.zero
+                  : const Duration(milliseconds: 180),
               height: 48,
               alignment: Alignment.center,
               decoration: BoxDecoration(

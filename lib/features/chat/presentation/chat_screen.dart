@@ -834,12 +834,6 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 8, 24, 12),
-          child: Column(
-            children: [if (_trip != null) TripContextCard(trip: _trip!)],
-          ),
-        ),
         Expanded(
           child: StreamBuilder<List<ChatMessageModel>>(
             stream: messagesStream,
@@ -854,10 +848,13 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
                 controller: _scrollController,
                 padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
                 physics: const BouncingScrollPhysics(),
-                itemCount: messages.length,
+                itemCount: messages.length + (_trip == null ? 0 : 1),
                 separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
-                  final message = messages[index];
+                  if (_trip != null && index == 0) {
+                    return TripContextCard(trip: _trip!);
+                  }
+                  final message = messages[index - (_trip == null ? 0 : 1)];
                   return ChatMessageBubble(
                     message: message,
                     isMine:
@@ -987,7 +984,7 @@ class _ChatContactAction extends StatelessWidget {
               onTap: onTap,
               borderRadius: BorderRadius.circular(999),
               child: Container(
-                height: 44,
+                constraints: const BoxConstraints(minHeight: 48),
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(999),

@@ -32,25 +32,6 @@ class BioPayUssdService {
     );
   }
 
-  Future<BioPayUssdPaymentRequest> createFaceMatchPaymentRequest({
-    required String matchSessionId,
-    required int amountMinor,
-    String providerCode = 'mtn_rw',
-  }) async {
-    final response = await _requireSupabase().rpc<dynamic>(
-      'rpc_create_verified_biopay_face_match_request',
-      params: {
-        'p_match_session_id': matchSessionId,
-        'p_amount_minor': amountMinor,
-        'p_provider_code': providerCode,
-      },
-    );
-
-    return BioPayUssdPaymentRequest.fromJson(
-      Map<String, dynamic>.from(response as Map),
-    );
-  }
-
   BioPayUssdPaymentRequest createPreviewRequest({
     required BioPayRequestChannel channel,
     int amountMinor = 150000,

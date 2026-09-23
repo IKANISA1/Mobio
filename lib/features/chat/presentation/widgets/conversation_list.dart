@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/features/chat/domain/chat_conversation.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_motion.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_shared_types/models/trip.dart';
 
@@ -144,7 +145,7 @@ class ConversationList extends StatelessWidget {
                 ],
               ),
             )
-            .animate()
+            .animateAccessible(context)
             .fade(duration: 300.ms, delay: (50 * index).ms)
             .slideY(begin: 0.1, duration: 300.ms, curve: Curves.easeOutQuad);
       },

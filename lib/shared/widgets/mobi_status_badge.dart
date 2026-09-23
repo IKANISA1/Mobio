@@ -65,11 +65,13 @@ class MobiStatusBadge extends StatelessWidget {
             Icon(icon, size: 12, color: colors.fg),
             const SizedBox(width: AppSpacing.xs),
           ],
-          Text(
-            label,
-            style: AppTypography.labelMd.copyWith(
-              color: colors.fg,
-              fontWeight: FontWeight.w700,
+          Flexible(
+            child: Text(
+              label,
+              style: AppTypography.labelMd.copyWith(
+                color: colors.fg,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],

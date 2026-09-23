@@ -38,23 +38,28 @@ class ProfileContactSection extends StatelessWidget {
                   ),
                 ),
               ),
-              child: TextField(
-                controller: whatsAppController,
-                readOnly: true,
-                canRequestFocus: false,
-                enableInteractiveSelection: false,
-                showCursor: false,
-                keyboardType: TextInputType.none,
-                style: AppTypography.titleMd.copyWith(color: cs.onSurface),
-                decoration: InputDecoration(
-                  hintText: verifiedNumber.isEmpty ? 'Verified WhatsApp' : null,
-                  hintStyle: AppTypography.titleMd.copyWith(
-                    color: cs.onSurfaceVariant.withValues(alpha: 0.3),
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
+              child: Semantics(
+                label: 'Verified WhatsApp number',
+                child: TextField(
+                  controller: whatsAppController,
+                  readOnly: true,
+                  canRequestFocus: false,
+                  enableInteractiveSelection: false,
+                  showCursor: false,
+                  keyboardType: TextInputType.none,
+                  style: AppTypography.titleMd.copyWith(color: cs.onSurface),
+                  decoration: InputDecoration(
+                    hintText: verifiedNumber.isEmpty
+                        ? 'Verified WhatsApp'
+                        : null,
+                    hintStyle: AppTypography.titleMd.copyWith(
+                      color: cs.onSurfaceVariant,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
+                    ),
                   ),
                 ),
               ),

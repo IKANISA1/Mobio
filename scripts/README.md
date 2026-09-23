@@ -47,11 +47,11 @@ BioPay feature proof:
   restored BioPay QR, NFC, face enrollment, face scan, admin Ops, and USSD-only
   payment boundary as one feature of Mobio. It writes evidence under
   `docs/release/evidence`.
-- Set `REQUIRE_BIOPAY_AWS_LIVE=true` to require AWS Rekognition provider env:
-  `FACE_PROVIDER=aws_rekognition`, `AWS_REGION`, `AWS_ACCESS_KEY_ID`,
-  `AWS_SECRET_ACCESS_KEY`, and `AWS_REKOGNITION_COLLECTION_ID`.
-- Set `REQUIRE_BIOPAY_SUPABASE_LIVE=true` with `BIOPAY_FACE_HEALTH_URL` and
-  `SUPABASE_ANON_KEY` to prove the deployed edge-function health endpoint.
+- Set `REQUIRE_BIOPAY_FACE_LIVE=true` with `BIOPAY_FACE_HEALTH_URL`, a verified
+  `BIOPAY_AUTH_TOKEN`, and `SUPABASE_ANON_KEY` to inspect authenticated model,
+  index, database, route and acceptance readiness. Server-only configuration is
+  `FACE_SERVICE_URL` and `FACE_SERVICE_TOKEN`; no face-related AWS secrets.
+- See `docs/product/face-ussd-20260920/APPROVAL.md` for the current scope.
 - Set `REQUIRE_BIOPAY_DEVICE_LIVE=true` with an unlocked authorized Android
   device to prove installed camera/NFC permissions and tel: USSD dialer
   capability.

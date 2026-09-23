@@ -103,7 +103,7 @@ abstract class AppRoutes {
 }
 
 void _safePopToProfile(BuildContext context) {
-  context.go(AppRoutes.profile);
+  safePop(context, fallback: AppRoutes.profile);
 }
 
 /// Admin route guard — validates role before allowing admin UI.
@@ -475,7 +475,7 @@ GoRouter createRouter() {
           DeferredRouteLoader(
             loadLibrary: edit_profile_route.loadLibrary,
             builder: (context) => edit_profile_route.EditProfileScreen(
-              onBack: () => safePop(context),
+              onBack: () => safePop(context, fallback: AppRoutes.profile),
             ),
           ),
         ),
@@ -504,7 +504,8 @@ GoRouter createRouter() {
           DeferredRouteLoader(
             loadLibrary: admin_ev_chargers_route.loadLibrary,
             builder: (context) => admin_ev_chargers_route.AdminEvChargersScreen(
-              onBack: () => safePop(context),
+              onBack: () =>
+                  safePop(context, fallback: AppRoutes.adminDashboard),
             ),
           ),
         ),
@@ -538,7 +539,8 @@ GoRouter createRouter() {
             loadLibrary: admin_vehicle_types_route.loadLibrary,
             builder: (context) =>
                 admin_vehicle_types_route.AdminVehicleTypesScreen(
-                  onBack: () => safePop(context),
+                  onBack: () =>
+                      safePop(context, fallback: AppRoutes.adminDashboard),
                 ),
           ),
         ),
@@ -552,7 +554,8 @@ GoRouter createRouter() {
             loadLibrary: admin_transport_agencies_route.loadLibrary,
             builder: (context) =>
                 admin_transport_agencies_route.AdminTransportAgenciesScreen(
-                  onBack: () => safePop(context),
+                  onBack: () =>
+                      safePop(context, fallback: AppRoutes.adminDashboard),
                 ),
           ),
         ),
@@ -566,7 +569,8 @@ GoRouter createRouter() {
             loadLibrary: admin_subscriptions_route.loadLibrary,
             builder: (context) =>
                 admin_subscriptions_route.AdminSubscriptionsScreen(
-                  onBack: () => safePop(context),
+                  onBack: () =>
+                      safePop(context, fallback: AppRoutes.adminDashboard),
                 ),
           ),
         ),
@@ -579,7 +583,8 @@ GoRouter createRouter() {
           DeferredRouteLoader(
             loadLibrary: admin_trips_route.loadLibrary,
             builder: (context) => admin_trips_route.AdminTripsScreen(
-              onBack: () => safePop(context),
+              onBack: () =>
+                  safePop(context, fallback: AppRoutes.adminDashboard),
             ),
           ),
         ),
@@ -592,7 +597,8 @@ GoRouter createRouter() {
           DeferredRouteLoader(
             loadLibrary: admin_reports_route.loadLibrary,
             builder: (context) => admin_reports_route.AdminReportsScreen(
-              onBack: () => safePop(context),
+              onBack: () =>
+                  safePop(context, fallback: AppRoutes.adminDashboard),
             ),
           ),
         ),
@@ -606,7 +612,8 @@ GoRouter createRouter() {
             loadLibrary: admin_health_route.loadLibrary,
             builder: (context) =>
                 admin_health_route.AdminOperationalHealthScreen(
-                  onBack: () => safePop(context),
+                  onBack: () =>
+                      safePop(context, fallback: AppRoutes.adminDashboard),
                 ),
           ),
         ),
@@ -619,7 +626,8 @@ GoRouter createRouter() {
           DeferredRouteLoader(
             loadLibrary: admin_audit_log_route.loadLibrary,
             builder: (context) => admin_audit_log_route.AdminAuditLogScreen(
-              onBack: () => safePop(context),
+              onBack: () =>
+                  safePop(context, fallback: AppRoutes.adminDashboard),
               initialSearch: state.uri.queryParameters['search'],
             ),
           ),
@@ -633,7 +641,8 @@ GoRouter createRouter() {
           DeferredRouteLoader(
             loadLibrary: admin_broadcasts_route.loadLibrary,
             builder: (context) => admin_broadcasts_route.AdminBroadcastsScreen(
-              onBack: () => safePop(context),
+              onBack: () =>
+                  safePop(context, fallback: AppRoutes.adminDashboard),
             ),
           ),
         ),
@@ -739,7 +748,7 @@ GoRouter createRouter() {
           DeferredRouteLoader(
             loadLibrary: biopay_scan_route.loadLibrary,
             builder: (context) => biopay_scan_route.BioPayScanScreen(
-              onBack: () => safePop(context),
+              onBack: () => safePop(context, fallback: AppRoutes.biopay),
             ),
           ),
         ),
@@ -752,7 +761,7 @@ GoRouter createRouter() {
           DeferredRouteLoader(
             loadLibrary: biopay_face_scan_route.loadLibrary,
             builder: (context) => biopay_face_scan_route.BioPayFaceScanScreen(
-              onBack: () => safePop(context),
+              onBack: () => safePop(context, fallback: AppRoutes.biopay),
             ),
           ),
         ),
@@ -766,7 +775,7 @@ GoRouter createRouter() {
             loadLibrary: biopay_face_enroll_route.loadLibrary,
             builder: (context) =>
                 biopay_face_enroll_route.BioPayFaceEnrollScreen(
-                  onBack: () => safePop(context),
+                  onBack: () => safePop(context, fallback: AppRoutes.biopay),
                 ),
           ),
         ),
@@ -779,7 +788,7 @@ GoRouter createRouter() {
           DeferredRouteLoader(
             loadLibrary: biopay_nfc_route.loadLibrary,
             builder: (context) => biopay_nfc_route.BioPayNfcScreen(
-              onBack: () => safePop(context),
+              onBack: () => safePop(context, fallback: AppRoutes.biopay),
             ),
           ),
         ),

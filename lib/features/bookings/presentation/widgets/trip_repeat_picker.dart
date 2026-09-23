@@ -77,15 +77,16 @@ class TripRepeatPicker extends StatelessWidget {
                       ],
                     ),
                   ),
-                  _buildToggleSwitch(cs, ext),
+                  _buildToggleSwitch(context, cs, ext),
                 ],
               ),
               if (isRecurring) ...[
                 const SizedBox(height: 16),
                 Divider(color: ext.surfaceContainer, height: 1),
                 const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Wrap(
+                  spacing: AppSpacing.xs,
+                  runSpacing: AppSpacing.xs,
                   children: List.generate(
                     7,
                     (idx) => _buildDayBubble(context, idx, cs, ext),
@@ -99,7 +100,11 @@ class TripRepeatPicker extends StatelessWidget {
     );
   }
 
-  Widget _buildToggleSwitch(ColorScheme cs, MobiThemeExtension ext) {
+  Widget _buildToggleSwitch(
+    BuildContext context,
+    ColorScheme cs,
+    MobiThemeExtension ext,
+  ) {
     return Semantics(
       label: 'Toggle recurring trip',
       toggled: isRecurring,
@@ -109,26 +114,36 @@ class TripRepeatPicker extends StatelessWidget {
           HapticFeedback.lightImpact();
           onToggleRecurring();
         },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+        child: SizedBox(
           width: 48,
-          height: 24,
-          decoration: BoxDecoration(
-            color: isRecurring ? cs.primary : ext.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: AnimatedAlign(
-            duration: const Duration(milliseconds: 200),
-            alignment: isRecurring
-                ? Alignment.centerRight
-                : Alignment.centerLeft,
-            child: Container(
-              width: 16,
-              height: 16,
-              margin: const EdgeInsets.all(4),
+          height: 48,
+          child: Center(
+            child: AnimatedContainer(
+              duration: MediaQuery.disableAnimationsOf(context)
+                  ? Duration.zero
+                  : const Duration(milliseconds: 200),
+              width: 48,
+              height: 24,
               decoration: BoxDecoration(
-                color: ext.surfaceContainerLowest,
-                shape: BoxShape.circle,
+                color: isRecurring ? cs.primary : ext.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: AnimatedAlign(
+                duration: MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero
+                    : const Duration(milliseconds: 200),
+                alignment: isRecurring
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft,
+                child: Container(
+                  width: 16,
+                  height: 16,
+                  margin: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: ext.surfaceContainerLowest,
+                    shape: BoxShape.circle,
+                  ),
+                ),
               ),
             ),
           ),
@@ -155,7 +170,11 @@ class TripRepeatPicker extends StatelessWidget {
     ];
 
     return Semantics(
-      label: '${dayNames[idx]}${isSelected ? ", selected" : ""}',
+      label: dayNames[idx],
+      selected: isSelected,
+      button: true,
+      excludeSemantics: true,
+      onTap: () => onToggleDay(idx),
       child: InkWell(
         borderRadius: BorderRadius.circular(24),
         onTap: () {
@@ -163,9 +182,11 @@ class TripRepeatPicker extends StatelessWidget {
           onToggleDay(idx);
         },
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          width: 40,
-          height: 40,
+          duration: MediaQuery.disableAnimationsOf(context)
+              ? Duration.zero
+              : const Duration(milliseconds: 200),
+          width: 48,
+          height: 48,
           decoration: BoxDecoration(
             color: isSelected ? cs.primary : ext.surfaceContainer,
             shape: BoxShape.circle,

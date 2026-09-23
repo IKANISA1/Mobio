@@ -299,33 +299,34 @@ class _PlaceAutocompleteFieldState
                             ),
                           ),
                           const SizedBox(height: 8),
-                          SizedBox(
-                            height: 46,
-                            child: TextField(
-                              controller: controller,
-                              focusNode: focusNode,
-                              textInputAction: TextInputAction.search,
-                              onSubmitted: (_) => unawaited(
-                                _resolveTypedAddress(showFeedback: true),
-                              ),
-                              textAlignVertical: TextAlignVertical.center,
-                              style: AppTypography.titleLg.copyWith(
-                                color: cs.onSurface,
-                                height: 1.12,
-                              ),
-                              decoration: InputDecoration(
-                                hintText: widget.placeholder,
-                                hintStyle: AppTypography.titleLg.copyWith(
-                                  color: cs.onSurfaceVariant.withValues(
-                                    alpha: 0.38,
-                                  ),
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(minHeight: 48),
+                            child: Semantics(
+                              label: widget.label,
+                              child: TextField(
+                                controller: controller,
+                                focusNode: focusNode,
+                                textInputAction: TextInputAction.search,
+                                onSubmitted: (_) => unawaited(
+                                  _resolveTypedAddress(showFeedback: true),
+                                ),
+                                textAlignVertical: TextAlignVertical.center,
+                                style: AppTypography.titleLg.copyWith(
+                                  color: cs.onSurface,
                                   height: 1.12,
                                 ),
-                                border: InputBorder.none,
-                                isDense: false,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 9,
+                                decoration: InputDecoration(
+                                  hintText: widget.placeholder,
+                                  hintStyle: AppTypography.titleLg.copyWith(
+                                    color: cs.onSurfaceVariant,
+                                    height: 1.12,
+                                  ),
+                                  border: InputBorder.none,
+                                  isDense: false,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 9,
+                                  ),
                                 ),
                               ),
                             ),
@@ -337,13 +338,17 @@ class _PlaceAutocompleteFieldState
                   if (widget.trailing != null && !_showClear) widget.trailing!,
                   if (_showClear)
                     IconButton(
+                      tooltip: 'Clear location',
                       onPressed: _clearData,
                       icon: Icon(
                         LucideIcons.x,
                         size: 20,
                         color: cs.onSurfaceVariant,
                       ),
-                      visualDensity: VisualDensity.compact,
+                      constraints: const BoxConstraints(
+                        minWidth: 48,
+                        minHeight: 48,
+                      ),
                     ),
                 ],
               ),

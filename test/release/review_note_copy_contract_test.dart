@@ -21,7 +21,7 @@ void main() {
     expect(
       tripDetailsScreen,
       contains(
-        'Coordinate pick up, timing, luggage, fare, and seats, directly via chat',
+        'Coordinate pick up, timing, luggage, and seats directly via chat.',
       ),
     );
   });

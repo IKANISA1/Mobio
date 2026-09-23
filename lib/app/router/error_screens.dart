@@ -73,9 +73,9 @@ class ConfigErrorScreen extends StatelessWidget {
                                 color: Colors.white.withValues(alpha: 0.14),
                               ),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               LucideIcons.shieldAlert,
-                              color: Colors.white,
+                              color: cs.onSurface,
                               size: 24,
                             ),
                           ),
@@ -83,7 +83,7 @@ class ConfigErrorScreen extends StatelessWidget {
                           Text(
                             'Unable to start Mobio',
                             style: AppTypography.headlineLg.copyWith(
-                              color: Colors.white,
+                              color: cs.onSurface,
                             ),
                           ),
                           const SizedBox(height: AppSpacing.sm),
@@ -143,11 +143,13 @@ class _ConfigValuePill extends StatelessWidget {
           children: [
             Icon(LucideIcons.keyRound, size: 15, color: cs.onSurfaceVariant),
             const SizedBox(width: AppSpacing.xs),
-            Text(
-              label,
-              style: AppTypography.labelMd.copyWith(
-                color: cs.onSurface,
-                fontWeight: FontWeight.w800,
+            Flexible(
+              child: Text(
+                label,
+                style: AppTypography.labelMd.copyWith(
+                  color: cs.onSurface,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
           ],
@@ -192,9 +194,9 @@ class NotFoundScreen extends StatelessWidget {
                           color: Colors.white.withValues(alpha: 0.14),
                         ),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         LucideIcons.map,
-                        color: Colors.white,
+                        color: cs.onSurface,
                         size: 25,
                       ),
                     ),
@@ -202,7 +204,7 @@ class NotFoundScreen extends StatelessWidget {
                     Text(
                       '404',
                       style: AppTypography.heroNumber.copyWith(
-                        color: cs.onSurface.withValues(alpha: 0.15),
+                        color: cs.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xs),

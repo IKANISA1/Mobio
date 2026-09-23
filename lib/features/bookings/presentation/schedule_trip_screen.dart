@@ -263,7 +263,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                               state.isEditMode ? 'Edit trip' : 'Schedule ride',
                               textAlign: TextAlign.center,
                               style: AppTypography.displayMd.copyWith(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 fontSize: 36,
                                 height: 1.08,
                               ),
@@ -519,7 +519,9 @@ class _NoteDisclosure extends StatelessWidget {
           ),
         ),
         AnimatedSwitcher(
-          duration: const Duration(milliseconds: 180),
+          duration: MediaQuery.disableAnimationsOf(context)
+              ? Duration.zero
+              : const Duration(milliseconds: 180),
           switchInCurve: Curves.easeOut,
           switchOutCurve: Curves.easeIn,
           child: isExpanded
@@ -561,10 +563,13 @@ String _submissionNote(ScheduleTripState? state, String rawNote) {
 
 String _noteWithoutScheduleMetadata(String note) {
   return note
-      .replaceAll(RegExp(r'^Bus agency:\s*.+?\s*\n?', caseSensitive: false), '')
+      .replaceAll(
+        RegExp(r'^Bus agency:[^\r\n]*(?:\r?\n|$)', caseSensitive: false),
+        '',
+      )
       .replaceAll(
         RegExp(
-          r'^(?:Rental model|Vehicle model):\s*(SUV|Sedan|Truck|Van|Bus)\s*\n?',
+          r'^(?:Rental model|Vehicle model):[ \t]*(SUV|Sedan|Truck|Van|Bus)[ \t]*(?:\r?\n|$)',
           caseSensitive: false,
         ),
         '',
@@ -634,7 +639,7 @@ class _BusAgencySelector extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.titleMd.copyWith(
                           color: selected.isEmpty
-                              ? cs.onSurfaceVariant.withValues(alpha: 0.38)
+                              ? cs.onSurfaceVariant
                               : cs.onSurface,
                         ),
                       ),
@@ -709,7 +714,11 @@ class _BusAgencyPickerSheetState extends State<_BusAgencyPickerSheet> {
     final cs = Theme.of(context).colorScheme;
     final query = _query.toLowerCase();
     final filtered = widget.agencies
-        .where((agency) => agency.toLowerCase().contains(query))
+        .where(
+          (agency) =>
+              agency == anyBusAgencyOption ||
+              agency.toLowerCase().contains(query),
+        )
         .toList();
 
     return Padding(
@@ -718,84 +727,72 @@ class _BusAgencyPickerSheetState extends State<_BusAgencyPickerSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            controller: _searchController,
-            autofocus: true,
-            textCapitalization: TextCapitalization.words,
-            onChanged: (value) => setState(() => _query = value.trim()),
-            style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
-            decoration: InputDecoration(
-              hintText: 'Search agencies',
-              prefixIcon: const Icon(LucideIcons.search, size: 20),
-              filled: true,
-              fillColor: Theme.of(
-                context,
-              ).extension<MobiThemeExtension>()!.surfaceContainerLow,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(22),
-                borderSide: BorderSide(
-                  color: cs.outlineVariant.withValues(alpha: 0.35),
+          Semantics(
+            label: 'Search agencies',
+            child: TextField(
+              controller: _searchController,
+              autofocus: true,
+              textCapitalization: TextCapitalization.words,
+              onChanged: (value) => setState(() => _query = value.trim()),
+              style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
+              decoration: InputDecoration(
+                hint: const ExcludeSemantics(child: Text('Search agencies')),
+                prefixIcon: const Icon(LucideIcons.search, size: 20),
+                filled: true,
+                fillColor: Theme.of(
+                  context,
+                ).extension<MobiThemeExtension>()!.surfaceContainerLow,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(22),
+                  borderSide: BorderSide(
+                    color: cs.outlineVariant.withValues(alpha: 0.35),
+                  ),
                 ),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(22),
-                borderSide: BorderSide(
-                  color: cs.outlineVariant.withValues(alpha: 0.35),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(22),
+                  borderSide: BorderSide(
+                    color: cs.outlineVariant.withValues(alpha: 0.35),
+                  ),
                 ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(22),
-                borderSide: BorderSide(color: cs.primary),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(22),
+                  borderSide: BorderSide(color: cs.primary),
+                ),
               ),
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 360),
-            child: filtered.isEmpty
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.lg),
-                      child: Text(
-                        'No agencies found',
-                        style: AppTypography.bodyMd.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
+          Flexible(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 360),
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: filtered.length,
+                separatorBuilder: (context, index) => Divider(
+                  height: 1,
+                  color: cs.outlineVariant.withValues(alpha: 0.18),
+                ),
+                itemBuilder: (context, index) {
+                  final agency = filtered[index];
+                  final selected = agency == widget.selectedAgency;
+                  return ListTile(
+                    selected: selected,
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      agency,
+                      style: AppTypography.bodyMd.copyWith(
+                        color: cs.onSurface,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  )
-                : ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: filtered.length,
-                    separatorBuilder: (context, index) => Divider(
-                      height: 1,
-                      color: cs.outlineVariant.withValues(alpha: 0.18),
-                    ),
-                    itemBuilder: (context, index) {
-                      final agency = filtered[index];
-                      final selected = agency == widget.selectedAgency;
-                      return ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          agency,
-                          style: AppTypography.bodyMd.copyWith(
-                            color: cs.onSurface,
-                            fontWeight: selected
-                                ? FontWeight.w600
-                                : FontWeight.w600,
-                          ),
-                        ),
-                        trailing: selected
-                            ? Icon(
-                                LucideIcons.check,
-                                color: cs.primary,
-                                size: 20,
-                              )
-                            : null,
-                        onTap: () => widget.onSelected(agency),
-                      );
-                    },
-                  ),
+                    trailing: selected
+                        ? Icon(LucideIcons.check, color: cs.primary, size: 20)
+                        : null,
+                    onTap: () => widget.onSelected(agency),
+                  );
+                },
+              ),
+            ),
           ),
         ],
       ),
@@ -852,7 +849,9 @@ class _RentalVehicleModelPicker extends StatelessWidget {
                       borderRadius: BorderRadius.circular(18),
                       onTap: () => onSelected(model),
                       child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 180),
+                        duration: MediaQuery.disableAnimationsOf(context)
+                            ? Duration.zero
+                            : const Duration(milliseconds: 180),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,

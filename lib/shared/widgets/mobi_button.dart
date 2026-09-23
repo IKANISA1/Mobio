@@ -12,6 +12,9 @@ class MobiButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final MobiButtonVariant variant;
   final bool isLoading;
+
+  /// Preserve multicolour brand artwork when the button is disabled.
+  final bool preserveDisabledChildColors;
   final double? width;
   final EdgeInsetsGeometry? padding;
 
@@ -21,6 +24,7 @@ class MobiButton extends StatelessWidget {
     this.onPressed,
     this.variant = MobiButtonVariant.primary,
     this.isLoading = false,
+    this.preserveDisabledChildColors = false,
     this.width,
     this.padding,
   });
@@ -86,7 +90,7 @@ class MobiButton extends StatelessWidget {
                             color: foregroundColor,
                           ),
                           textAlign: TextAlign.center,
-                          child: isInactive
+                          child: isInactive && !preserveDisabledChildColors
                               ? ColorFiltered(
                                   colorFilter: ColorFilter.mode(
                                     foregroundColor,

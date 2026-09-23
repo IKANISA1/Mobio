@@ -509,26 +509,10 @@ class _AdminTransportAgenciesScreenState
 
 class _AgencyMetricGrid extends StatelessWidget {
   const _AgencyMetricGrid({required this.children});
-
   final List<Widget> children;
-
   @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 900 ? 3 : 1;
-        return GridView.count(
-          crossAxisCount: columns,
-          crossAxisSpacing: AppSpacing.md,
-          mainAxisSpacing: AppSpacing.md,
-          childAspectRatio: columns == 1 ? 2.35 : 2.25,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          children: children,
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context) =>
+      AdminMetricGrid(maxColumns: 3, children: children);
 }
 
 class _AgencyRow extends StatelessWidget {

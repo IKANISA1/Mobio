@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:mobi_app/features/bookings/domain/transport_agency_catalog.dart';
 import 'package:mobi_app/shared/models/vehicle_type_model.dart';
 import 'package:mobi_shared_types/models/favorite_address.dart';
 import 'package:mobi_shared_types/models/place.dart';
 import 'package:mobi_shared_types/models/trip.dart';
 
 const Object _unset = Object();
+
+/// An explicit scheduling preference, never an entry in the agency catalog.
+const String anyBusAgencyOption = 'Any';
 
 const List<String> rentalVehicleModelOptions = [
   'SUV',
@@ -260,18 +264,26 @@ class ScheduleTripState {
 String? normalizeBusAgencyName(String value, List<String> agencies) {
   final normalized = value.replaceAll(RegExp(r'\s+'), ' ').trim();
   if (normalized.isEmpty) return null;
+  if (normalized.toLowerCase() == anyBusAgencyOption.toLowerCase()) {
+    return anyBusAgencyOption;
+  }
   final options = _normalizedAgencyNames(agencies);
   if (options.isEmpty) return normalized;
   for (final agency in options) {
-    if (agency.toLowerCase() == normalized.toLowerCase()) {
+    if (transportAgencyIdentity(agency) ==
+        transportAgencyIdentity(normalized)) {
       return agency;
     }
   }
   return null;
 }
 
-List<String> normalizedBusAgencyNames(List<String> agencies) =>
-    _normalizedAgencyNames(agencies);
+List<String> normalizedBusAgencyNames(List<String> agencies) => [
+  anyBusAgencyOption,
+  ..._normalizedAgencyNames(
+    agencies,
+  ).where((name) => name.toLowerCase() != anyBusAgencyOption.toLowerCase()),
+];
 
 String _newClientRequestId() {
   return 'trip-${DateTime.now().microsecondsSinceEpoch}';

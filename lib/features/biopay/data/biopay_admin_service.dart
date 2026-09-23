@@ -81,9 +81,12 @@ class BioPayAdminService {
       final faceStatus = await faceService.health();
       final providerReady = faceStatus.productionReady;
       return databaseStatus.copyWith(
-        overallStatus: providerReady
-            ? databaseStatus.overallStatus
-            : 'configuration_required',
+        overallStatus: providerReady ? 'operational' : 'configuration_required',
+        configured: faceStatus.configured,
+        modelLoaded: faceStatus.modelLoaded,
+        indexCompatible: faceStatus.indexCompatible,
+        databaseContract: faceStatus.databaseContract,
+        lastAcceptanceAt: faceStatus.lastAcceptanceAt,
         faceProvider: faceStatus.provider,
         faceProviderReady: providerReady,
         collectionId: faceStatus.providerCollectionId.isEmpty

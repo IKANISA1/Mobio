@@ -58,6 +58,7 @@ class HomeScreenWrapper extends ConsumerWidget {
       onModeChanged: (m) =>
           ref.read(modeProvider.notifier).set(AppMode.fromString(m)),
       onChat: (t) => context.push(chatPathForTrip(t)),
+      onTripDetails: (id) => context.push('/trip/$id'),
       onViewNearby: () => context.push('/nearby'),
       onViewBookings: () => context.go('/bookings'),
       onSchedule: () => context.push('/schedule'),

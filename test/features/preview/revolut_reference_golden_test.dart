@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/app/launch_screen.dart';
 import 'package:mobi_app/app/router/error_screens.dart';
+import 'package:mobi_app/app/router/screen_wrappers.dart';
 import 'package:mobi_app/core/localization/country_providers.dart';
 import 'package:mobi_app/core/localization/country_service.dart';
 import 'package:mobi_app/features/admin/application/admin_services.dart';
@@ -66,10 +68,18 @@ import 'package:mobi_shared_types/models/subscription_plan_model.dart';
 import 'package:mobi_shared_types/models/trip.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../tool/face_receiving_preview_service.dart';
 import '../../helpers/mobile_scanner_test_channel.dart';
+import '../../helpers/scrolled_tap_target_guideline.dart';
 import '../../helpers/whatsapp_login_fixture.dart';
 
 void main() {
+  registerVisualSurfaceTests();
+}
+
+/// Reuses real screen fixtures for functional accessibility checks, without
+/// regenerating or accepting historical visual baselines.
+void registerVisualSurfaceTests({bool accessibilityAudit = false}) {
   TestWidgetsFlutterBinding.ensureInitialized();
   final captureDirectory = Platform.environment['MOBIO_CAPTURE_DIR'];
   if (captureDirectory != null && captureDirectory.isNotEmpty) {
@@ -174,6 +184,7 @@ void main() {
         mode: 'passenger',
         onModeChanged: (_) {},
         onChat: (_) {},
+        onTripDetails: (_) {},
         onViewNearby: () {},
         onViewBookings: () {},
         onSchedule: () {},
@@ -271,7 +282,14 @@ void main() {
     ),
     _GoldenCase(
       name: 'biopay_face_enroll',
-      builder: () => BioPayFaceEnrollScreen(onBack: () {}),
+      builder: () => ProviderScope(
+        overrides: [
+          paymentDiscoveryServiceProvider.overrideWith(
+            (ref) => FaceReceivingPreviewService(),
+          ),
+        ],
+        child: BioPayFaceEnrollScreen(onBack: () {}),
+      ),
     ),
     _GoldenCase(
       name: 'biopay_nfc',
@@ -411,6 +429,101 @@ void main() {
   ];
   cases.addAll(shellCases);
 
+  if (accessibilityAudit) {
+    cases.add(
+      _GoldenCase(
+        name: 'scope_unavailable',
+        builder: () => ScopeUnavailableScreen(onBack: () {}),
+      ),
+    );
+    for (final (size, scale, light) in [
+      (compact, 1.0, false),
+      (const Size(320, 640), 2.0, false),
+      (desktop, 2.0, false),
+      (compact, 1.0, true),
+    ]) {
+      for (final item in cases) {
+        if (size == desktop && !item.includeDesktop) continue;
+        testWidgets(
+          'accessibility ${item.name} ${size.width.toInt()}px ${scale}x${light ? ' light' : ''}',
+          (tester) async {
+            final semantics = tester.ensureSemantics();
+            final onError = FlutterError.onError;
+            FlutterError.onError = (details) {
+              FlutterError.dumpErrorToConsole(details, forceReport: true);
+              onError?.call(details);
+            };
+            try {
+              await _pumpGolden(
+                tester,
+                size,
+                item.builder(),
+                textScale: scale,
+                light: light,
+              );
+              await item.prepare?.call(tester);
+              expect(tester.takeException(), isNull);
+              _expectNamedEditableFields(tester);
+              await expectLater(
+                tester,
+                meetsGuideline(labeledTapTargetGuideline),
+              );
+              await expectLater(
+                tester,
+                meetsGuideline(androidTapTargetGuideline),
+              );
+              // Check the underlying pages separately; fixed shell chrome can
+              // occlude text. This does not certify the overlay's contrast.
+              if (scale == 1 && !item.name.endsWith('_shell')) {
+                await expectLater(
+                  tester,
+                  meetsGuideline(textContrastGuideline),
+                );
+              }
+              final scrollables = tester
+                  .stateList<ScrollableState>(find.byType(Scrollable))
+                  .toList();
+              for (final scrollable in scrollables) {
+                if (!scrollable.mounted) continue;
+                final position = scrollable.position;
+                final step = position.viewportDimension * 0.8;
+                if (step <= 0) continue;
+                for (
+                  var page = 0;
+                  page < 12 && position.pixels < position.maxScrollExtent;
+                  page++
+                ) {
+                  position.jumpTo(
+                    (position.pixels + step).clamp(
+                      position.minScrollExtent,
+                      position.maxScrollExtent,
+                    ),
+                  );
+                  await tester.pump(const Duration(milliseconds: 300));
+                  expect(tester.takeException(), isNull);
+                  _expectNamedEditableFields(tester);
+                  await expectLater(
+                    tester,
+                    meetsGuideline(labeledTapTargetGuideline),
+                  );
+                  await expectLater(
+                    tester,
+                    meetsGuideline(ScrolledTapTargetGuideline()),
+                  );
+                }
+              }
+            } finally {
+              FlutterError.onError = onError;
+              await tester.pumpWidget(const SizedBox.shrink());
+              semantics.dispose();
+            }
+          },
+        );
+      }
+    }
+    return;
+  }
+
   for (final name in [
     'splash',
     'login',
@@ -474,11 +587,43 @@ void main() {
   }
 }
 
+void _expectNamedEditableFields(WidgetTester tester) {
+  final fields = find.byType(EditableText);
+  for (var i = 0; i < fields.evaluate().length; i++) {
+    final editable = tester
+        .state<EditableTextState>(fields.at(i))
+        .renderEditable;
+    expect(
+      editable.size.height + 1,
+      greaterThanOrEqualTo(editable.preferredLineHeight),
+      reason: 'An input must have room for a complete enlarged-text line.',
+    );
+  }
+  void visit(SemanticsNode node) {
+    if (node.flagsCollection.isTextField) {
+      expect(
+        node.label.trim(),
+        isNotEmpty,
+        reason: 'Editable fields need a name separate from their value: $node',
+      );
+    }
+    node.visitChildren((child) {
+      visit(child);
+      return true;
+    });
+  }
+
+  final root =
+      tester.binding.renderViews.first.owner?.semanticsOwner?.rootSemanticsNode;
+  if (root != null) visit(root);
+}
+
 Future<void> _pumpGolden(
   WidgetTester tester,
   Size size,
   Widget child, {
   bool light = false,
+  double textScale = 1,
 }) async {
   await const AssetImage('icon/mobi_logo_transparent.png').evict();
   PaintingBinding.instance.imageCache
@@ -498,7 +643,7 @@ Future<void> _pumpGolden(
           data: MediaQueryData(
             size: size,
             disableAnimations: true,
-            textScaler: TextScaler.noScaling,
+            textScaler: TextScaler.linear(textScale),
           ),
           child: Scaffold(body: child),
         ),

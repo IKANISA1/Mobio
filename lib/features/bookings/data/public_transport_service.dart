@@ -1,6 +1,7 @@
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/errors/app_exception_mapper.dart';
+import 'package:mobi_app/features/bookings/domain/transport_agency_catalog.dart';
 import 'package:mobi_shared_types/models/public_transport.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
@@ -9,16 +10,7 @@ class PublicTransportService {
 
   final SupabaseClient? supabase;
   static const _networkTimeout = Duration(seconds: 15);
-  static const fallbackAgencyNames = [
-    'Volcano Express',
-    'Ritco',
-    'Horizon Express',
-    'Trinity Express',
-    'Virunga Express',
-    'Kigali Bus Services',
-    'Royal Express',
-    'Stella Express',
-  ];
+  static const fallbackAgencyNames = rwandaTransportAgencyNames;
 
   List<TransportAgency>? _cachedAgencies;
   List<TransportAgency>? _cachedAllAgencies;

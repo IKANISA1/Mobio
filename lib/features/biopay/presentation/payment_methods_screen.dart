@@ -1,8 +1,10 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobi_app/core/utils/navigation_utils.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/data/payment_discovery_service.dart';
 import 'package:mobi_app/features/biopay/domain/payment_discovery.dart';
@@ -324,7 +326,7 @@ class _PaymentMethodEditorState extends ConsumerState<PaymentMethodEditor> {
         remove ? 'remove_method' : 'save_method',
         method.toJson(),
       );
-      if (mounted) Navigator.pop(context);
+      if (mounted) safePop(context, fallback: '/profile/payment-methods');
     } on Object {
       if (mounted) setState(() => _error = true);
     } finally {
@@ -337,7 +339,7 @@ class _PaymentMethodEditorState extends ConsumerState<PaymentMethodEditor> {
     final l = paymentCopy(context);
     return PaymentTaskScaffold(
       title: widget.method == null ? l.bpAddMethod : l.bpMethods,
-      onBack: () => Navigator.pop(context),
+      onBack: () => safePop(context, fallback: '/profile/payment-methods'),
       busy: _busy,
       action: PaymentAction(label: l.bpSave, onPressed: _busy ? null : _save),
       children: [

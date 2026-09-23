@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobi_app/core/utils/navigation_utils.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/domain/payment_entry.dart';
 import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
@@ -48,7 +49,7 @@ class _PaymentLinkArrivalScreenState
     return PaymentTaskScaffold(
       title: l.bpRequests,
       busy: _loading,
-      onBack: () => context.go('/biopay'),
+      onBack: () => safePop(context, fallback: '/biopay'),
       action: !available
           ? null
           : PaymentAction(

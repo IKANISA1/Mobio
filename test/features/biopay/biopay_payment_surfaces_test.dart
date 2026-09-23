@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobi_app/features/biopay/data/biopay_ussd_service.dart';
@@ -28,61 +29,81 @@ void main() {
   testWidgets('BioPay overview connects every identity action to its flow', (
     tester,
   ) async {
-    final invoked = <String>[];
-    await tester.binding.setSurfaceSize(const Size(390, 844));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final semantics = tester.ensureSemantics();
+    try {
+      final invoked = <String>[];
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          theme: AppTheme.darkTheme,
-          home: BioPayScreen(
-            onQr: () => invoked.add('Get QR'),
-            onScan: () => invoked.add('Scan QR'),
-            onFace: () => invoked.add('Face Scan'),
-            onNfc: () => invoked.add('NFC Tap'),
-            onRequestPayment: () => invoked.add('Get Payment Link'),
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: BioPayScreen(
+              onQr: () => invoked.add('Get QR'),
+              onScan: () => invoked.add('Scan QR'),
+              onFace: () => invoked.add('Face Scan'),
+              onNfc: () => invoked.add('NFC Tap'),
+              onRequestPayment: () => invoked.add('Get Payment Link'),
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    expect(find.text('BioPay'), findsOneWidget);
-    expect(find.text('Your identity.\nYour connection.'), findsOneWidget);
-    expect(find.text('Face Scan'), findsOneWidget);
-    expect(find.text('NFC Tap'), findsOneWidget);
-    expect(find.text('Get QR'), findsOneWidget);
-    expect(find.text('Scan QR'), findsOneWidget);
-    expect(find.text('Get Payment Link'), findsOneWidget);
-    expect(find.text('Motor insurance'), findsOneWidget);
-    expect(find.text('Get covered and earn 3000 TOKENS.'), findsOneWidget);
-    expect(find.text('Request Payment'), findsNothing);
-    final paymentLinkInk = tester.widget<Ink>(
-      find
-          .ancestor(
-            of: find.text('Get Payment Link'),
-            matching: find.byType(Ink),
-          )
-          .first,
-    );
-    final paymentLinkDecoration = paymentLinkInk.decoration! as BoxDecoration;
-    expect(
-      paymentLinkDecoration.color,
-      bioPayDarkPanelAlt.withValues(alpha: 0.96),
-    );
-    for (final label in [
-      'Face Scan',
-      'NFC Tap',
-      'Get QR',
-      'Scan QR',
-      'Get Payment Link',
-    ]) {
-      await tester.tap(find.text(label));
-      await tester.pump();
-      expect(invoked.last, label);
+      expect(find.text('BioPay'), findsOneWidget);
+      expect(find.text('Pay & Get Paid\nInstant & Secure'), findsOneWidget);
+      expect(find.text('Face Scan'), findsOneWidget);
+      expect(find.text('NFC Tap'), findsOneWidget);
+      expect(find.text('Get QR'), findsOneWidget);
+      expect(find.text('Scan QR'), findsOneWidget);
+      expect(find.text('Get Payment Link'), findsOneWidget);
+      final paymentLinkSemantics = tester.getSemantics(
+        find.bySemanticsLabel('Get Payment Link'),
+      );
+      expect(paymentLinkSemantics.label, 'Get Payment Link');
+      expect(
+        paymentLinkSemantics.getSemanticsData().hasAction(SemanticsAction.tap),
+        isTrue,
+      );
+      expect(find.text('Motor insurance'), findsOneWidget);
+      expect(find.text('Get covered and earn 3000 TOKENS.'), findsOneWidget);
+      expect(find.text('Request Payment'), findsNothing);
+      final paymentLinkInk = tester.widget<Ink>(
+        find
+            .ancestor(
+              of: find.text('Get Payment Link'),
+              matching: find.byType(Ink),
+            )
+            .first,
+      );
+      final paymentLinkDecoration = paymentLinkInk.decoration! as BoxDecoration;
+      expect(
+        paymentLinkDecoration.color,
+        bioPayDarkPanelAlt.withValues(alpha: 0.96),
+      );
+      for (final label in [
+        'Face Scan',
+        'NFC Tap',
+        'Get QR',
+        'Scan QR',
+        'Get Payment Link',
+      ]) {
+        if (label == 'Get Payment Link') {
+          tester.binding.renderViews.first.owner!.semanticsOwner!.performAction(
+            paymentLinkSemantics.id,
+            SemanticsAction.tap,
+          );
+        } else {
+          await tester.tap(find.text(label));
+        }
+        await tester.pump();
+        expect(invoked.last, label);
+      }
+      expect(find.text('BioPay identity'), findsNothing);
+      expect(find.text('Ready to receive'), findsNothing);
+    } finally {
+      semantics.dispose();
     }
-    expect(find.text('BioPay identity'), findsNothing);
-    expect(find.text('Ready to receive'), findsNothing);
   });
 
   testWidgets('QR surface generates a receiver QR code from entered details', (
@@ -110,6 +131,18 @@ void main() {
 
     await tester.enterText(find.byType(TextField).at(0), '0788767816');
     await tester.enterText(find.byType(TextField).at(1), '2500');
+    final semantics = tester.ensureSemantics();
+    try {
+      await tester.pump();
+      final receiver = tester.getSemantics(find.byType(EditableText).at(0));
+      final amount = tester.getSemantics(find.byType(EditableText).at(1));
+      expect(receiver.label, contains('MoMo number'));
+      expect(receiver.value, '0788767816');
+      expect(amount.label, contains('Amount in Rwandan francs'));
+      expect(amount.value, '2,500');
+    } finally {
+      semantics.dispose();
+    }
     await tester.ensureVisible(find.text('Generate QR Code'));
     await tester.tap(find.text('Generate QR Code'));
     await tester.pumpAndSettle();
@@ -410,15 +443,15 @@ void main() {
       ),
     );
 
-    expect(find.text('Face scan'), findsOneWidget);
-    expect(find.text('Start Face Scan'), findsOneWidget);
+    expect(find.text('Scan to pay'), findsOneWidget);
+    expect(find.text('Open camera'), findsOneWidget);
     expect(
-      tester.getRect(find.text('Start Face Scan')).top,
+      tester.getRect(find.text('Open camera')).top,
       greaterThan(
         tester.getRect(find.byType(BioPayFaceEnrollmentStandby)).bottom,
       ),
     );
-    expect(tester.getRect(find.text('Start Face Scan')).bottom, lessThan(844));
+    expect(tester.getRect(find.text('Open camera')).bottom, lessThan(844));
     expect(find.text('AMOUNT'), findsNothing);
     expect(find.text('Amount (RWF, optional)'), findsNothing);
     expect(find.text('AWS face match'), findsNothing);
@@ -441,27 +474,23 @@ void main() {
         ),
       );
 
-      expect(find.text('Face enroll'), findsOneWidget);
-      expect(find.text('Start Enrollment'), findsOneWidget);
+      expect(find.text('Register my face'), findsOneWidget);
+      expect(find.text('Open camera'), findsOneWidget);
       expect(find.byType(MobiButton), findsOneWidget);
       expect(
-        tester.getRect(find.text('Start Enrollment')).top,
+        tester.getRect(find.text('Open camera')).top,
         greaterThan(
           tester.getRect(find.byType(BioPayFaceEnrollmentStandby)).bottom,
         ),
       );
-      expect(
-        tester.getRect(find.text('Start Enrollment')).bottom,
-        lessThan(844),
-      );
+      await tester.ensureVisible(find.text('Open camera'));
+      expect(tester.getRect(find.text('Open camera')).bottom, lessThan(844));
       expect(find.text('AWS liveness session'), findsNothing);
       expect(find.byType(BioPayIconBox), findsNothing);
     },
   );
 
-  testWidgets('Scan surface includes task-preserving manual and import recovery', (
-    tester,
-  ) async {
+  testWidgets('Scan surface focuses on the camera', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
@@ -474,23 +503,26 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Scan QR'), findsOneWidget);
     expect(find.byType(MobileScanner), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('Enter receiving details'), 150, scrollable: find.byType(Scrollable).first);
-    expect(find.text('Enter receiving details'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('Choose QR image'), 100, scrollable: find.byType(Scrollable).first);
-    expect(find.text('Choose QR image'), findsOneWidget);
-    expect(find.text('Paste a payment link'), findsOneWidget);
+    expect(find.text('Enter receiving details'), findsNothing);
+    expect(find.text('Choose QR image'), findsNothing);
+    expect(find.text('Paste a payment link'), findsNothing);
     expect(find.text('Preview scan'), findsNothing);
     expect(find.text('Scanning'), findsNothing);
     expect(find.byType(BioPayIconBox), findsNothing);
   });
 
   test('QR payload is an opaque own-domain link with legacy token support', () {
-    final request = BioPayUssdService().createPreviewRequest(channel: BioPayRequestChannel.qr);
+    final request = BioPayUssdService().createPreviewRequest(
+      channel: BioPayRequestChannel.qr,
+    );
     final qr = buildBioPayQrPayload(request);
     expect(qr, 'https://mobio.ikanisa.com/biopay/pay/${request.token}');
     expect(bioPayTokenFromPayload(qr), request.token);
     expect(bioPayUssdCodeFromPayload(qr), isEmpty);
-    expect(bioPayTokenFromPayload('https://evil.example/?token=${request.token}'), isEmpty);
+    expect(
+      bioPayTokenFromPayload('https://evil.example/?token=${request.token}'),
+      isEmpty,
+    );
     expect(bioPayTokenFromPayload(request.token), request.token);
   });
 
@@ -512,7 +544,9 @@ void main() {
         request,
         receiverLabel: 'MoMo number 0788767816',
       ),
-      contains('Review this Mobio payment request: https://mobio.ikanisa.com/biopay/pay/'),
+      contains(
+        'Review this Mobio payment request: https://mobio.ikanisa.com/biopay/pay/',
+      ),
     );
   });
 }

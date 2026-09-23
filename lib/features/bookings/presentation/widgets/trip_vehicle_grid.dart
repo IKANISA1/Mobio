@@ -41,7 +41,7 @@ class TripVehicleGrid extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             if (useGrid)
               GridView.count(
-                crossAxisCount: 3,
+                crossAxisCount: textScale >= 1.8 ? 2 : 3,
                 childAspectRatio: mobileTileAspectRatio,
                 mainAxisSpacing: AppSpacing.sm,
                 crossAxisSpacing: AppSpacing.sm,
@@ -92,7 +92,9 @@ class TripVehicleGrid extends StatelessWidget {
                 onSelected(vt.id);
               },
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
+                duration: MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero
+                    : const Duration(milliseconds: 200),
                 clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),

@@ -38,6 +38,7 @@ class TappableIconButton extends StatelessWidget {
       button: true,
       enabled: onTap != null,
       label: semanticLabel ?? 'Icon button',
+      onTap: onTap,
       excludeSemantics: true,
       child: MouseRegion(
         cursor: onTap == null

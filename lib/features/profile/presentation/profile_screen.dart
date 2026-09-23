@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
@@ -10,13 +11,16 @@ import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/utils/mobio_member_id.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
+import 'package:mobi_app/features/biopay/presentation/face_copy.dart';
 import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
 import 'package:mobi_app/features/profile/application/profile_services.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_feature_tile.dart';
+import 'package:mobi_app/shared/widgets/mobi_motion.dart';
 import 'package:mobi_app/shared/widgets/mobi_visual_theme.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
+import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
@@ -32,7 +36,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
   final VoidCallback? onWallet;
   final VoidCallback? onInviteAndEarn;
   final VoidCallback? onMobioPlus;
-  final VoidCallback? onBioPayEnroll;
+  final FutureOr<void> Function()? onBioPayEnroll;
   final VoidCallback? onNfcWriteCard;
 
   final VoidCallback onAdminGateway;
@@ -82,9 +86,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       }
       final profileService = ref.read(profileServiceProvider);
       final profile = await profileService.getMyProfile();
-      final bioPayEnrollment = await ref
-          .read(biopayFaceServiceProvider)
-          .enrollmentStatus();
+      BioPayEnrollmentStatus bioPayEnrollment;
+      try {
+        bioPayEnrollment = await ref
+            .read(biopayFaceServiceProvider)
+            .enrollmentStatus();
+      } on Object {
+        // Optional face-service downtime must not hide the rest of Profile.
+        bioPayEnrollment = const BioPayEnrollmentStatus();
+      }
       if (profile != null && mounted) {
         setState(() {
           final memberId = profile.memberId;
@@ -351,11 +361,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ),
                           _ProfileActionRow(
-                            onTap: widget.onBioPayEnroll,
+                            onTap: widget.onBioPayEnroll == null
+                                ? null
+                                : () async {
+                                    await widget.onBioPayEnroll!();
+                                    if (mounted) await _loadProfile();
+                                  },
                             icon: LucideIcons.scanFace,
-                            title: 'BioPay Face',
+                            title: paymentCopy(context).faceRegister,
                             badge: _ProfileStatusPill(
-                              label: _bioPayEnrollment.label,
+                              label: faceStatusCopy(context, _bioPayEnrollment),
                               accent: _bioPayEnrollment.isEnrolled
                                   ? ext.aqua
                                   : cs.primary,
@@ -393,7 +408,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             : LucideIcons.moon,
                         title: 'Theme',
                         trailing: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
+                          duration: MediaQuery.disableAnimationsOf(context)
+                              ? Duration.zero
+                              : const Duration(milliseconds: 200),
                           width: 48,
                           height: 24,
                           decoration: BoxDecoration(
@@ -403,7 +420,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: AnimatedAlign(
-                            duration: const Duration(milliseconds: 200),
+                            duration: MediaQuery.disableAnimationsOf(context)
+                                ? Duration.zero
+                                : const Duration(milliseconds: 200),
                             alignment: widget.isDarkMode
                                 ? Alignment.centerRight
                                 : Alignment.centerLeft,
@@ -482,26 +501,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     if (widget.onExitAdmin == null)
                       Align(
                         alignment: Alignment.center,
-                        child: GestureDetector(
+                        child: TappableIconButton(
+                          icon: LucideIcons.lock,
+                          semanticLabel: 'Admin sign in',
                           onTap: widget.onAdminGateway,
-                          child: Opacity(
-                            opacity: 0.16,
-                            child: SizedBox(
-                              width: 28,
-                              height: 28,
-                              child: Center(
-                                child: Icon(
-                                  LucideIcons.lock,
-                                  size: 12,
-                                  color: cs.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                          ),
+                          iconColor: cs.onSurfaceVariant,
                         ),
                       ),
                   ]
-                  .animate(interval: 50.ms)
+                  .animateAccessible(context, interval: 50.ms)
                   .fade(duration: 400.ms)
                   .slideY(
                     begin: 0.1,
@@ -596,9 +604,7 @@ class _ProfileSignal extends StatelessWidget {
                     label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTypography.labelSm.copyWith(
-                      color: cs.onSurfaceVariant,
-                    ),
+                    style: AppTypography.labelSm.copyWith(color: cs.onSurface),
                   ),
                   Text(
                     value,
@@ -658,18 +664,23 @@ class _ProfileActionRow extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
-                child: Text(
-                  title,
-                  style: AppTypography.bodyMd.copyWith(
-                    color: cs.onSurface,
-                    fontWeight: FontWeight.w500,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: AppTypography.bodyMd.copyWith(
+                        color: cs.onSurface,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    if (badge != null) ...[
+                      const SizedBox(height: AppSpacing.xs),
+                      badge!,
+                    ],
+                  ],
                 ),
               ),
-              if (badge != null) ...[
-                const SizedBox(width: AppSpacing.xs),
-                badge!,
-              ],
               if (onTap != null) ...[
                 const SizedBox(width: AppSpacing.xs),
                 Icon(
@@ -705,8 +716,6 @@ class _ProfileStatusPill extends StatelessWidget {
       child: Text(
         label,
         textAlign: TextAlign.center,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
         style: AppTypography.labelSm.copyWith(
           color: cs.onSurface,
           fontWeight: FontWeight.w600,

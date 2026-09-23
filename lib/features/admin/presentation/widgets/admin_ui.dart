@@ -72,72 +72,82 @@ class AdminWorkspaceFrame extends StatelessWidget {
           final inset = wide ? 32.0 : 16.0;
           final workspace = Column(
             children: [
-              Padding(
-                padding: EdgeInsets.fromLTRB(inset, 24, inset, 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: constraints.maxHeight * 0.55,
+                ),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(inset, 24, inset, 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (onBack != null) ...[
-                          AdminIconButton(
-                            icon: LucideIcons.chevronLeft,
-                            label: 'Back',
-                            onPressed: onBack,
-                          ),
-                          const SizedBox(width: 12),
-                        ],
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Mobio Business',
-                                style: AppTypography.labelMd.copyWith(
-                                  color: cs.onSurfaceVariant,
-                                ),
+                        Row(
+                          children: [
+                            if (onBack != null) ...[
+                              AdminIconButton(
+                                icon: LucideIcons.chevronLeft,
+                                label: 'Back',
+                                onPressed: onBack,
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                title,
-                                style: AppTypography.displayMd.copyWith(
-                                  color: cs.onSurface,
+                              const SizedBox(width: 12),
+                            ],
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Mobio Business',
+                                    style: AppTypography.labelMd.copyWith(
+                                      color: cs.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Semantics(
+                                    header: true,
+                                    child: Text(
+                                      title,
+                                      style: AppTypography.displayMd.copyWith(
+                                        color: cs.onSurface,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (wide && actions.isNotEmpty) ...[
+                              const SizedBox(width: 24),
+                              Flexible(
+                                child: Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  alignment: WrapAlignment.end,
+                                  children: actions,
                                 ),
                               ),
                             ],
-                          ),
+                          ],
                         ),
-                        if (wide && actions.isNotEmpty) ...[
-                          const SizedBox(width: 24),
-                          Flexible(
-                            child: Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              alignment: WrapAlignment.end,
-                              children: actions,
+                        if (subtitle.trim().isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            subtitle,
+                            style: AppTypography.bodySm.copyWith(
+                              color: cs.onSurfaceVariant,
                             ),
                           ),
                         ],
+                        if (!wide) ...[
+                          if (actions.isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            Wrap(spacing: 8, runSpacing: 8, children: actions),
+                          ],
+                          const SizedBox(height: 20),
+                          _AdminWorkspaceTabs(currentTab: currentTab),
+                        ],
                       ],
                     ),
-                    if (subtitle.trim().isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        subtitle,
-                        style: AppTypography.bodySm.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                    if (!wide) ...[
-                      if (actions.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        Wrap(spacing: 8, runSpacing: 8, children: actions),
-                      ],
-                      const SizedBox(height: 20),
-                      _AdminWorkspaceTabs(currentTab: currentTab),
-                    ],
-                  ],
+                  ),
                 ),
               ),
               Expanded(
@@ -292,11 +302,14 @@ class AdminSectionHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: AppTypography.titleMd.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.w700,
+              Semantics(
+                header: true,
+                child: Text(
+                  title,
+                  style: AppTypography.titleMd.copyWith(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               if (showSubtitle) ...[
@@ -320,6 +333,37 @@ class AdminSectionHeader extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Metrics grow vertically instead of clipping enlarged text into fixed cells.
+class AdminMetricGrid extends StatelessWidget {
+  const AdminMetricGrid({
+    super.key,
+    required this.children,
+    this.maxColumns = 4,
+  });
+  final List<Widget> children;
+  final int maxColumns;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final scale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
+      final columns = (constraints.maxWidth / (180 * scale)).floor().clamp(
+        1,
+        maxColumns,
+      );
+      final width =
+          (constraints.maxWidth - (columns - 1) * AppSpacing.md) / columns;
+      return Wrap(
+        spacing: AppSpacing.md,
+        runSpacing: AppSpacing.md,
+        children: [
+          for (final child in children) SizedBox(width: width, child: child),
+        ],
+      );
+    },
+  );
 }
 
 class AdminMetricCard extends StatelessWidget {
@@ -349,16 +393,15 @@ class AdminMetricCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Expanded(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.labelMd.copyWith(
-                    color: cs.onSurfaceVariant,
-                  ),
+              Text(
+                label,
+                style: AppTypography.labelMd.copyWith(
+                  color: cs.onSurfaceVariant,
                 ),
               ),
               Container(
@@ -375,8 +418,6 @@ class AdminMetricCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(
             value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
             style: AppTypography.headlineLg.copyWith(
               color: Theme.of(context).colorScheme.onSurface,
               fontSize: 26,
@@ -387,8 +428,6 @@ class AdminMetricCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.xs),
             Text(
               hint!,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
               style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
             ),
           ],
@@ -415,46 +454,54 @@ class AdminSearchField extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
-    return TextField(
-      controller: controller,
-      onChanged: onChanged,
-      textInputAction: TextInputAction.search,
-      autocorrect: false,
-      enableSuggestions: false,
-      style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: AppTypography.bodyMd.copyWith(color: cs.onSurfaceVariant),
-        prefixIcon: Icon(
-          LucideIcons.search,
-          size: 18,
-          color: cs.onSurfaceVariant,
-        ),
-        suffixIcon: controller.text.isEmpty
-            ? null
-            : IconButton(
-                onPressed: () {
-                  controller.clear();
-                  onChanged?.call('');
-                },
-                icon: Icon(LucideIcons.x, size: 16, color: cs.onSurfaceVariant),
-              ),
-        filled: true,
-        fillColor: ext.surfaceContainerLow,
-        isDense: true,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadii.pill),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadii.pill),
-          borderSide: BorderSide(
-            color: cs.outlineVariant.withValues(alpha: 0.6),
+    return Semantics(
+      label: hintText,
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        textInputAction: TextInputAction.search,
+        autocorrect: false,
+        enableSuggestions: false,
+        style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: AppTypography.bodyMd.copyWith(color: cs.onSurfaceVariant),
+          prefixIcon: Icon(
+            LucideIcons.search,
+            size: 18,
+            color: cs.onSurfaceVariant,
           ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppRadii.pill),
-          borderSide: BorderSide(color: cs.primary.withValues(alpha: 0.5)),
+          suffixIcon: controller.text.isEmpty
+              ? null
+              : IconButton(
+                  tooltip: 'Clear search',
+                  onPressed: () {
+                    controller.clear();
+                    onChanged?.call('');
+                  },
+                  icon: Icon(
+                    LucideIcons.x,
+                    size: 16,
+                    color: cs.onSurfaceVariant,
+                  ),
+                ),
+          filled: true,
+          fillColor: ext.surfaceContainerLow,
+          isDense: true,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppRadii.pill),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppRadii.pill),
+            borderSide: BorderSide(
+              color: cs.outlineVariant.withValues(alpha: 0.6),
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppRadii.pill),
+            borderSide: BorderSide(color: cs.primary.withValues(alpha: 0.5)),
+          ),
         ),
       ),
     );
@@ -483,12 +530,14 @@ class AdminFilterChip extends StatelessWidget {
     return Semantics(
       button: true,
       selected: isSelected,
-      label: label,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadii.pill),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+          duration: MediaQuery.disableAnimationsOf(context)
+              ? Duration.zero
+              : const Duration(milliseconds: 180),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
             vertical: 10,
@@ -515,10 +564,16 @@ class AdminFilterChip extends StatelessWidget {
                 ),
                 const SizedBox(width: AppSpacing.xs),
               ],
-              Text(
-                label,
-                style: AppTypography.labelMd.copyWith(
-                  color: isSelected ? cs.primary : cs.onSurfaceVariant,
+              Flexible(
+                child: Text(
+                  label,
+                  style: AppTypography.labelMd.copyWith(
+                    color: isSelected
+                        ? (cs.brightness == Brightness.light
+                              ? cs.onSurface
+                              : cs.primary)
+                        : cs.onSurfaceVariant,
+                  ),
                 ),
               ),
             ],
@@ -554,17 +609,14 @@ class AdminActionChip extends StatelessWidget {
     return Semantics(
       button: true,
       enabled: onTap != null && !isBusy,
-      label: label,
+      value: isBusy ? 'Loading' : null,
+      liveRegion: isBusy,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: isBusy ? null : onTap,
           borderRadius: BorderRadius.circular(AppRadii.pill),
           child: Ink(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: 10,
-            ),
             decoration: BoxDecoration(
               color: tone == MobiStatusBadgeTone.neutral
                   ? ext.surfaceContainerLow
@@ -576,27 +628,42 @@ class AdminActionChip extends StatelessWidget {
                     : accent.withValues(alpha: 0.24),
               ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isBusy)
-                  SizedBox(
-                    width: 14,
-                    height: 14,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1.8,
-                      color: accent,
-                    ),
-                  )
-                else if (icon != null)
-                  Icon(icon, size: 14, color: accent),
-                if (isBusy || icon != null)
-                  const SizedBox(width: AppSpacing.xs),
-                Text(
-                  label,
-                  style: AppTypography.labelMd.copyWith(color: accent),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: 10,
                 ),
-              ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isBusy)
+                      SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 1.8,
+                          color: accent,
+                        ),
+                      )
+                    else if (icon != null)
+                      Icon(icon, size: 14, color: accent),
+                    if (isBusy || icon != null)
+                      const SizedBox(width: AppSpacing.xs),
+                    Flexible(
+                      child: Text(
+                        label,
+                        style: AppTypography.labelMd.copyWith(
+                          color: cs.brightness == Brightness.light
+                              ? cs.onSurface
+                              : accent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -627,7 +694,6 @@ class AdminEmptyState extends StatelessWidget {
     return Semantics(
       container: true,
       liveRegion: true,
-      label: '$title. $message',
       child: AdminPanel(
         child: Column(
           children: [
@@ -723,7 +789,9 @@ class AdminSortMenu extends StatelessWidget {
       child: Semantics(
         button: true,
         label: 'Sort by ${selected.label}',
-        child: DecoratedBox(
+        excludeSemantics: true,
+        child: Container(
+          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
           decoration: BoxDecoration(
             color: ext.surfaceContainerLow,
             borderRadius: BorderRadius.circular(AppRadii.pill),
@@ -803,8 +871,10 @@ class AdminPaginationBar extends StatelessWidget {
             '$start-$end of $totalItems',
             style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
           ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
+          Wrap(
+            spacing: AppSpacing.xs,
+            runSpacing: AppSpacing.xs,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               if (onRowsPerPageChanged != null) ...[
                 Text(
@@ -816,6 +886,9 @@ class AdminPaginationBar extends StatelessWidget {
                 const SizedBox(width: AppSpacing.xs),
                 DropdownButton<int>(
                   value: safeRowsPerPage,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                  ),
                   underline: const SizedBox.shrink(),
                   borderRadius: BorderRadius.circular(AppRadii.lg),
                   items: [
@@ -1046,8 +1119,8 @@ class AdminIconButton extends StatelessWidget {
         onTap: onPressed,
         borderRadius: BorderRadius.circular(16),
         child: Ink(
-          width: 44,
-          height: 44,
+          width: 48,
+          height: 48,
           decoration: BoxDecoration(
             color: ext.surfaceContainerLow,
             borderRadius: BorderRadius.circular(14),

@@ -194,7 +194,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       widget.isFirstRun ? 'Set up profile' : 'Edit profile',
                       textAlign: TextAlign.center,
                       style: AppTypography.displayMd.copyWith(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 36,
                         height: 1.08,
                       ),

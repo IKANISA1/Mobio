@@ -84,7 +84,7 @@ void main() {
     );
 
     expect(find.text('482013'), findsWidgets);
-    expect(find.text('BioPay Face'), findsOneWidget);
+    expect(find.text('Register my face'), findsOneWidget);
     expect(find.text('Write NFC Card'), findsOneWidget);
     expect(find.text('Enroll AWS face identity'), findsNothing);
     expect(find.text('Set up'), findsWidgets);
@@ -102,7 +102,7 @@ void main() {
 
     expect(find.text('Set up profile'), findsWidgets);
     expect(find.text('Bus details'), findsOneWidget);
-    expect(find.text('Volcano Express'), findsOneWidget);
+    expect(find.text('VOLCANO'), findsOneWidget);
     expect(find.text('58'), findsOneWidget);
     expect(find.textContaining('Supabase'), findsNothing);
     expect(tester.takeException(), isNull);
@@ -132,7 +132,7 @@ void main() {
 
     expect(
       find.text(
-        'Coordinate pick up, timing, luggage, fare, and seats, directly via chat',
+        'Coordinate pick up, timing, luggage, and seats directly via chat.',
       ),
       findsOneWidget,
     );
@@ -140,7 +140,7 @@ void main() {
     expect(find.text('Drop off'), findsOneWidget);
     expect(find.text('Timing'), findsOneWidget);
     expect(find.text('Seats'), findsOneWidget);
-    expect(find.text('Fare'), findsOneWidget);
+    expect(find.text('Fare'), findsNothing);
     expect(find.text('Contact'), findsOneWidget);
     final chatButton = tester.widget<MobiButton>(
       find.widgetWithText(MobiButton, 'Chat'),

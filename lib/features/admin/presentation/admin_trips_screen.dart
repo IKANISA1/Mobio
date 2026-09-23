@@ -694,8 +694,10 @@ class _TripRow extends StatelessWidget {
               const SizedBox(height: AppSpacing.sm),
               routeWidget,
               const SizedBox(height: AppSpacing.sm),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
                 children: [typeWidget, actionsWidget],
               ),
             ],

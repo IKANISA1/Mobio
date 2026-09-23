@@ -87,6 +87,7 @@ class PermissionAccessDialog extends StatelessWidget {
             );
           },
           transitionBuilder: (context, animation, secondaryAnimation, child) {
+            if (MediaQuery.disableAnimationsOf(context)) return child;
             final curved = CurvedAnimation(
               parent: animation,
               curve: Curves.easeOutCubic,

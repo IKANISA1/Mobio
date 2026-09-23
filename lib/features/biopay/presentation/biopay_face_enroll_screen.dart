@@ -1,256 +1,352 @@
 import 'dart:async';
-
-import 'package:camera/camera.dart';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
+import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
+import 'package:mobi_app/features/biopay/data/face_capture.dart';
+import 'package:mobi_app/features/biopay/data/payment_discovery_service.dart';
+import 'package:mobi_app/features/biopay/domain/payment_discovery.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_flow_shared.dart';
+import 'package:mobi_app/features/biopay/presentation/face_copy.dart';
+import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
-import 'package:mobi_design_system/theme/app_spacing.dart';
 
 class BioPayFaceEnrollScreen extends ConsumerStatefulWidget {
   const BioPayFaceEnrollScreen({super.key, required this.onBack});
-
   final VoidCallback onBack;
-
   @override
   ConsumerState<BioPayFaceEnrollScreen> createState() =>
       _BioPayFaceEnrollScreenState();
 }
 
-class _BioPayFaceEnrollScreenState
-    extends ConsumerState<BioPayFaceEnrollScreen> {
-  static const _enrollmentChallenges = <_FaceEnrollmentChallenge>[
-    _FaceEnrollmentChallenge(
-      id: 'straight_1',
-      title: 'Center',
-      body: 'Place your face in the oval.',
-      action: 'Capture center',
-    ),
-    _FaceEnrollmentChallenge(
-      id: 'turn_pose',
-      title: 'Turn',
-      body: 'Turn your head slightly, then hold.',
-      action: 'Capture turn',
-    ),
-    _FaceEnrollmentChallenge(
-      id: 'straight_2',
-      title: 'Hold',
-      body: 'Face forward again.',
-      action: 'Finish enrollment',
-    ),
-  ];
-
-  CameraController? _camera;
-  final List<List<int>> _capturedFrames = [];
-  String? _sessionId;
-  String? _error;
-  int _captureStepIndex = 0;
-  bool _busy = false;
-  bool _enrolled = false;
+class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
+    with WidgetsBindingObserver {
+  late final FaceCapture _capture;
+  BioPayEnrollmentStatus _status = const BioPayEnrollmentStatus();
+  List<PaymentMethod> _methods = [];
+  String? _methodId;
+  Object? _error;
+  bool _busy = false, _consent = false, _foreground = true;
+  int _generation = 0;
+  Timer? _poll;
+  @override
+  void initState() {
+    super.initState();
+    _capture = ref.read(faceCaptureFactoryProvider)();
+    WidgetsBinding.instance.addObserver(this);
+    unawaited(_load());
+  }
 
   @override
   void dispose() {
-    _camera?.dispose();
+    _generation++;
+    _poll?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    unawaited(_capture.stop().catchError((Object _) {}));
     super.dispose();
   }
 
-  Future<void> _start() async {
-    setState(() {
-      _busy = true;
-      _error = null;
-      _sessionId = null;
-      _captureStepIndex = 0;
-      _capturedFrames.clear();
-      _enrolled = false;
-    });
-    try {
-      final faceService = ref.read(biopayFaceServiceProvider);
-      final result = await faceService.createLivenessSession();
-      await _ensureCamera();
-      if (!mounted) return;
-      setState(() {
-        _sessionId = result.sessionId;
-      });
-    } on Object catch (error) {
-      if (!mounted) return;
-      setState(() => _error = _friendlyCameraMessage(error));
-    } finally {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _foreground = state == AppLifecycleState.resumed;
+    if (!_foreground) {
+      _generation++;
+      _poll?.cancel();
+      unawaited(_capture.stop().catchError((Object _) {}));
       if (mounted) setState(() => _busy = false);
     }
+    // Returning requires an explicit capture/status action; never recapture.
   }
 
-  Future<void> _captureEnroll() async {
-    final camera = _camera;
-    if (camera == null || !camera.value.isInitialized) return;
-    setState(() {
-      _busy = true;
-      _error = null;
-    });
+  Future<void> _load() async {
+    if (_busy || !_foreground) return;
+    final generation = ++_generation;
+    final face = ref.read(biopayFaceServiceProvider);
+    final owner = face.ownerId;
+    setState(() => _busy = true);
     try {
-      final file = await camera.takePicture();
-      final imageBytes = await file.readAsBytes();
-      _capturedFrames.add(imageBytes);
-      if (_captureStepIndex < _enrollmentChallenges.length - 1) {
-        if (!mounted) return;
-        setState(() => _captureStepIndex += 1);
+      final status = await face.enrollmentStatus();
+      if (face.ownerId != owner) return;
+      final methods =
+          workspaceMethods(
+                await ref
+                    .read(paymentDiscoveryServiceProvider)
+                    .call('workspace', {}),
+              )
+              .where(
+                (m) =>
+                    m.active &&
+                    m.canReceive &&
+                    m.kind == PaymentMethodKind.mobileWallet,
+              )
+              .toList();
+      if (!mounted || generation != _generation || face.ownerId != owner) {
         return;
       }
-      final result = await ref
-          .read(biopayFaceServiceProvider)
-          .enrollFace(
-            faceProfileId:
-                'mobio-face-${DateTime.now().microsecondsSinceEpoch}',
-            imageBytes: _capturedFrames.last,
-            challengeIds: _enrollmentChallenges
-                .map((challenge) => challenge.id)
-                .toList(growable: false),
-            sampleCount: _capturedFrames.length,
-            livenessSessionId: _sessionId,
-          );
-      if (!mounted) return;
       setState(() {
-        _enrolled = result.status == 'enrolled';
-        if (!_enrolled) {
-          _sessionId = null;
-          _error = 'Face enrollment was not accepted. Start again to retry.';
-          _capturedFrames.clear();
-          _captureStepIndex = 0;
-        }
+        _status = status;
+        _methods = methods;
+        _methodId = methods.any((m) => m.id == status.receivingMethodId)
+            ? status.receivingMethodId
+            : null;
+        _error = null;
       });
-    } on Object catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _error = 'Face enrollment was not accepted.';
-        _sessionId = null;
-        _capturedFrames.clear();
-        _captureStepIndex = 0;
-      });
+      _poll?.cancel();
+      if (status.pending) {
+        _poll = Timer(const Duration(seconds: 3), () => unawaited(_load()));
+      }
+    } on Object catch (error) {
+      if (mounted && generation == _generation) setState(() => _error = error);
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted && generation == _generation) setState(() => _busy = false);
     }
   }
 
-  Future<void> _ensureCamera() async {
-    if (_camera?.value.isInitialized == true) return;
-    final cameras = await availableCameras().timeout(
-      const Duration(seconds: 8),
-    );
-    if (cameras.isEmpty) {
-      throw StateError('No camera is available on this device.');
-    }
-    CameraDescription? front;
-    for (final camera in cameras) {
-      if (camera.lensDirection == CameraLensDirection.front) {
-        front = camera;
-        break;
+  Future<void> _action(Future<void> Function() action) async {
+    if (_busy) return;
+    final generation = ++_generation;
+    var succeeded = false;
+    setState(() => _busy = true);
+    try {
+      await action();
+      succeeded = true;
+      if (mounted && generation == _generation) setState(() => _error = null);
+    } on Object catch (error) {
+      if (mounted && generation == _generation) {
+        setState(() {
+          _error = error;
+          _methodId = _status.receivingMethodId;
+        });
+      }
+    } finally {
+      if (mounted && generation == _generation) {
+        setState(() => _busy = false);
+        if (succeeded) await _load();
       }
     }
-    final controller = CameraController(
-      front ?? cameras.first,
-      ResolutionPreset.medium,
-      enableAudio: false,
-      imageFormatGroup: ImageFormatGroup.jpeg,
-    );
-    await controller.initialize().timeout(const Duration(seconds: 8));
-    _camera = controller;
   }
 
-  String _friendlyCameraMessage(Object error) {
-    if (error is CameraException) {
-      final code = error.code.toLowerCase();
-      if (code.contains('access') || code.contains('permission')) {
-        return 'Camera permission is required to enroll your face.';
+  Future<void> _captureFace() async {
+    if (_busy || !_foreground || !_consent || _methodId == null) return;
+    final service = ref.read(biopayFaceServiceProvider);
+    final account = service.ownerId;
+    if (account == null) {
+      setState(() => _error = const FaceServiceException('AUTH_EXPIRED'));
+      return;
+    }
+    final generation = ++_generation;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    Uint8List? bytes;
+    bool submitted = false;
+    bool current() =>
+        mounted &&
+        _foreground &&
+        generation == _generation &&
+        service.ownerId == account;
+    try {
+      if (!_capture.isReady) {
+        await _capture.start(front: true);
+        return;
       }
-      if (code.contains('inuse') || code.contains('in_use')) {
-        return 'Camera is in use by another app. Close it and try again.';
+      bytes = await _capture.capture();
+      await _capture.stop();
+      if (!current()) return;
+      final result = await service.enrollFace(
+        imageBytes: bytes,
+        methodId: _methodId!,
+        idempotencyKey: newBioPayUuid(),
+        consent: _consent,
+      );
+      if (!current()) return;
+      submitted = true;
+      setState(() {
+        _status = BioPayEnrollmentStatus(
+          status: result,
+          hasFace: result == 'active',
+          pending: result == 'processing',
+          receivingMethodId: _methodId,
+        );
+        _consent = false;
+      });
+    } on Object catch (error) {
+      if (current()) setState(() => _error = error);
+    } finally {
+      bytes?.fillRange(0, bytes.length, 0);
+      if (mounted && generation == _generation) {
+        setState(() => _busy = false);
+        if (submitted) await _load();
       }
     }
-    if (error is StateError && error.message.contains('No camera')) {
-      return 'No camera is available on this device.';
-    }
-    if (error is TimeoutException) {
-      return 'Camera is still opening. Hold steady or retry.';
-    }
-    return 'Face provider or camera unavailable.';
   }
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final readyForCapture =
-        _camera?.value.isInitialized == true && _sessionId != null;
-    final currentChallenge = _enrollmentChallenges[_captureStepIndex];
-    final capturedCount = _enrolled
-        ? _enrollmentChallenges.length
-        : _capturedFrames.length;
-    final primaryLabel = _enrolled
-        ? 'Done'
-        : readyForCapture
-        ? currentChallenge.action
-        : 'Start Enrollment';
-    final primaryAction = _enrolled
-        ? widget.onBack
-        : readyForCapture
-        ? _captureEnroll
-        : _start;
-
+    final l = paymentCopy(context);
+    final camera = _capture.controller;
+    final ready = camera?.value.isInitialized == true;
     return BioPayFlowScreen(
-      title: 'Face enroll',
+      title: l.faceRegister,
       primaryLabel: '',
-      isPrimaryLoading: _busy,
       onBack: widget.onBack,
+      headerSpacing: 20,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (readyForCapture)
-            BioPayCameraFrame(
-              controller: _camera!,
-              capturedCount: capturedCount,
-              totalSteps: _enrollmentChallenges.length,
-              currentStepId: currentChallenge.id,
-              showFaceGuide: true,
-            )
-          else
-            BioPayFaceEnrollmentStandby(iconColor: cs.primary),
-          const SizedBox(height: AppSpacing.md),
-          MobiButton(
-            onPressed: _busy ? null : primaryAction,
-            isLoading: _busy,
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.lg,
-              vertical: 19,
+          if (_status.status != 'not_started') ...[
+            Semantics(
+              liveRegion: true,
+              child: Text(faceStatusCopy(context, _status)),
             ),
-            child: Text(primaryLabel),
+            const SizedBox(height: 20),
+          ],
+          DropdownButtonFormField<String>(
+            key: ValueKey(_methodId),
+            initialValue: _methodId,
+            isExpanded: true,
+            icon: const Icon(LucideIcons.chevronDown),
+            decoration: InputDecoration(labelText: l.faceReceivingMethod),
+            items: _methods
+                .map(
+                  (m) => DropdownMenuItem(
+                    value: m.id,
+                    child: Text(
+                      '${m.label} · ${m.maskedIdentifier}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                )
+                .toList(),
+            onChanged: _busy
+                ? null
+                : (id) {
+                    setState(() => _methodId = id);
+                    if (id != null && _status.hasFace) {
+                      unawaited(
+                        _action(
+                          () => ref
+                              .read(biopayFaceServiceProvider)
+                              .changeMethod(id),
+                        ),
+                      );
+                    }
+                  },
           ),
-          const SizedBox(height: AppSpacing.md),
-          BioPayPoseCueStrip(
-            capturedCount: capturedCount,
-            totalSteps: _enrollmentChallenges.length,
-            currentStepId: currentChallenge.id,
-            hasError: _error != null,
+          TextButton(
+            onPressed: _busy
+                ? null
+                : () async {
+                    _generation++;
+                    _poll?.cancel();
+                    setState(() => _busy = true);
+                    try {
+                      await _capture.stop();
+                      if (!context.mounted) return;
+                      await context.push('/profile/payment-methods');
+                      if (!mounted) return;
+                      setState(() => _busy = false);
+                      await _load();
+                    } on Object catch (error) {
+                      if (mounted) setState(() => _error = error);
+                    } finally {
+                      if (mounted) setState(() => _busy = false);
+                    }
+                  },
+            child: Text(l.faceManageMethods),
           ),
+          const SizedBox(height: 8),
+          if (!_status.pending) ...[
+            Material(
+              color: Colors.transparent,
+              child: CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                value: _consent,
+                onChanged: _busy
+                    ? null
+                    : (value) => setState(() => _consent = value ?? false),
+                title: Text(l.faceConsent),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(l.faceRegisterInstruction),
+            const SizedBox(height: 12),
+            if (ready)
+              BioPayCameraFrame(
+                controller: camera!,
+                height: 260,
+                showFaceGuide: true,
+              )
+            else
+              BioPayFaceEnrollmentStandby(
+                iconColor: Theme.of(context).colorScheme.primary,
+                height: 260,
+                guideSize: const Size(138, 188),
+              ),
+            const SizedBox(height: 20),
+            MobiButton(
+              onPressed: _busy || !_consent || _methodId == null
+                  ? null
+                  : _captureFace,
+              isLoading: _busy,
+              child: Text(
+                _capture.isReady
+                    ? l.faceCapture
+                    : _status.hasFace
+                    ? l.faceUpdate
+                    : l.faceStartCamera,
+              ),
+            ),
+          ],
+          if (_status.hasFace) ...[
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: _busy
+                  ? null
+                  : () => _action(
+                      () => ref
+                          .read(biopayFaceServiceProvider)
+                          .setEnrollmentAction(
+                            _status.status == 'paused' ? 'resume' : 'pause',
+                          ),
+                    ),
+              child: Text(
+                _status.status == 'paused' ? l.faceResume : l.facePause,
+              ),
+            ),
+          ],
+          if (_status.hasFace || _status.pending)
+            TextButton(
+              onPressed: _busy
+                  ? null
+                  : () => _action(
+                      () => ref
+                          .read(biopayFaceServiceProvider)
+                          .setEnrollmentAction('remove'),
+                    ),
+              child: Text(l.faceRemove),
+            ),
+          if (_status.pending || _error != null)
+            TextButton(
+              onPressed: _busy ? null : _load,
+              child: Text(l.faceRefresh),
+            ),
           if (_error != null) ...[
-            const SizedBox(height: AppSpacing.md),
-            BioPayInlineError(message: _error!),
+            const SizedBox(height: 16),
+            Semantics(
+              liveRegion: true,
+              child: BioPayInlineError(
+                message: faceErrorCopy(context, _error!),
+              ),
+            ),
           ],
         ],
       ),
     );
   }
-}
-
-class _FaceEnrollmentChallenge {
-  const _FaceEnrollmentChallenge({
-    required this.id,
-    required this.title,
-    required this.body,
-    required this.action,
-  });
-
-  final String id;
-  final String title;
-  final String body;
-  final String action;
 }

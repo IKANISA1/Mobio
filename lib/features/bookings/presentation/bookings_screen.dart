@@ -12,6 +12,7 @@ import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_confirm_dialog.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
+import 'package:mobi_app/shared/widgets/mobi_motion.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/mobi_surface_panel.dart';
 import 'package:mobi_app/shared/widgets/mobi_toggle.dart';
@@ -392,7 +393,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                   return content;
                 }
                 return content
-                    .animate(delay: (100 + index * 50).ms)
+                    .animateAccessible(context, delay: (100 + index * 50).ms)
                     .fade(duration: 350.ms)
                     .slideY(
                       begin: 0.1,
@@ -507,7 +508,12 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                           InkWell(
                             onTap: () => _cancelTrip(trip),
                             borderRadius: BorderRadius.circular(AppRadii.pill),
-                            child: Padding(
+                            child: Container(
+                              constraints: const BoxConstraints(
+                                minWidth: 48,
+                                minHeight: 48,
+                              ),
+                              alignment: Alignment.center,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: AppSpacing.xs,
                                 vertical: 6,
@@ -515,7 +521,9 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                               child: Text(
                                 'Cancel',
                                 style: AppTypography.labelMd.copyWith(
-                                  color: Theme.of(context).colorScheme.error,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                               ),
                             ),

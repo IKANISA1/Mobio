@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mobio-face-service",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-20",
+  "workers_dev": true,
+  "preview_urls": false,
+  "observability": {"enabled": false},
+  "containers": [{"class_name":"FaceContainer","image":"../../services/face-inference/Dockerfile","image_build_context":"../../services/face-inference","max_instances":1,"instance_type":"standard-2"}],
+  "durable_objects":{"bindings":[{"name":"INFERENCE","class_name":"FaceContainer"}]},
+  "migrations":[{"tag":"v1","new_sqlite_classes":["FaceContainer"]}],
+  "vectorize":[{"binding":"FACE_INDEX","index_name":"mobio-face-sface-v1-128-cosine"}]
+}

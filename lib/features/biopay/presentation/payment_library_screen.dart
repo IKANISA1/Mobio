@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobi_app/core/utils/navigation_utils.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/data/biopay_qr_export.dart';
 import 'package:mobi_app/features/biopay/data/payment_discovery_service.dart';
@@ -499,7 +500,7 @@ class _PaymentRequestEditorState extends ConsumerState<PaymentRequestEditor> {
           });
       if (!mounted) return;
       await showPaymentLink(context, link, methods: _methods);
-      if (mounted) Navigator.pop(context);
+      if (mounted) safePop(context, fallback: '/biopay');
     } on Object {
       if (mounted) setState(() => _error = true);
     } finally {
@@ -513,7 +514,7 @@ class _PaymentRequestEditorState extends ConsumerState<PaymentRequestEditor> {
     return PaymentTaskScaffold(
       title: l.bpCreateRequest,
       busy: _busy,
-      onBack: () => Navigator.pop(context),
+      onBack: () => safePop(context, fallback: '/biopay'),
       action: PaymentAction(
         label: l.bpCreateRequest,
         onPressed: _busy ? null : _create,

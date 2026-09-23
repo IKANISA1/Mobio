@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/location/google_maps_deep_link_service.dart';
 import 'package:mobi_app/core/location/location_providers.dart';
+import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:mobi_app/features/ev_chargers/application/ev_charger_providers.dart';
 import 'package:mobi_app/features/ev_chargers/domain/ev_charger.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
@@ -19,6 +21,7 @@ import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 import 'package:mobi_shared_types/models/place.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EvChargerLocatorScreen extends ConsumerStatefulWidget {
   const EvChargerLocatorScreen({super.key, required this.onBack});
@@ -256,6 +259,18 @@ class _EvChargerLocatorScreenState
     );
   }
 
+  Future<void> _openChargerChat(Uri uri) async {
+    try {
+      if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
+    } on Object {
+      // A missing external app must leave the charger list usable.
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Unable to open WhatsApp right now.')),
+    );
+  }
+
   GoogleMapsLocation _mapsLocationForCharger(EvCharger charger) {
     return GoogleMapsLocation(
       latitude: charger.latitude,
@@ -334,7 +349,12 @@ class _EvChargerLocatorScreenState
                         children: [
                           Icon(LucideIcons.map),
                           SizedBox(width: AppSpacing.sm),
-                          Text('Open on Google Maps'),
+                          Flexible(
+                            child: Text(
+                              'Open on Google Maps',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -372,13 +392,21 @@ class _EvChargerLocatorScreenState
     return Column(
       children: [
         for (final charger in _chargers) ...[
-          _EvChargerCard(
-            charger: charger,
-            onMaps: () => unawaited(_openChargerInMaps(charger)),
-          ),
+          _buildChargerCard(charger),
           const SizedBox(height: AppSpacing.md),
         ],
       ],
+    );
+  }
+
+  Widget _buildChargerCard(EvCharger charger) {
+    final chatUri = _chargerChatUri(charger);
+    return _EvChargerCard(
+      charger: charger,
+      onMaps: () => unawaited(_openChargerInMaps(charger)),
+      onChat: chatUri == null
+          ? null
+          : () => unawaited(_openChargerChat(chatUri)),
     );
   }
 }
@@ -426,25 +454,28 @@ class _SearchCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            TextField(
-              controller: controller,
-              onChanged: onChanged,
-              textInputAction: TextInputAction.search,
-              style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
-              decoration: InputDecoration(
-                hintText: 'Search address or location',
-                prefixIcon: Icon(LucideIcons.search, color: cs.primary),
-                suffixIcon: isResolving
-                    ? const Padding(
-                        padding: EdgeInsets.all(14),
-                        child: SizedBox.square(
-                          dimension: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      )
-                    : selectedPlace == null
-                    ? null
-                    : Icon(LucideIcons.checkCircle2, color: cs.primary),
+            Semantics(
+              label: 'Search address or location',
+              child: TextField(
+                controller: controller,
+                onChanged: onChanged,
+                textInputAction: TextInputAction.search,
+                style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
+                decoration: InputDecoration(
+                  hintText: 'Search address or location',
+                  prefixIcon: Icon(LucideIcons.search, color: cs.primary),
+                  suffixIcon: isResolving
+                      ? const Padding(
+                          padding: EdgeInsets.all(14),
+                          child: SizedBox.square(
+                            dimension: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        )
+                      : selectedPlace == null
+                      ? null
+                      : Icon(LucideIcons.checkCircle2, color: cs.primary),
+                ),
               ),
             ),
             if (predictions.isNotEmpty) ...[
@@ -482,10 +513,15 @@ class _SearchCard extends StatelessWidget {
 }
 
 class _EvChargerCard extends StatelessWidget {
-  const _EvChargerCard({required this.charger, required this.onMaps});
+  const _EvChargerCard({
+    required this.charger,
+    required this.onMaps,
+    required this.onChat,
+  });
 
   final EvCharger charger;
   final VoidCallback onMaps;
+  final VoidCallback? onChat;
 
   @override
   Widget build(BuildContext context) {
@@ -494,9 +530,6 @@ class _EvChargerCard extends StatelessWidget {
     final distance = charger.distanceKm == null
         ? null
         : '${charger.distanceKm!.toStringAsFixed(1)} km';
-    final connectorLabel = charger.connectorTypes.isEmpty
-        ? 'Connector details pending'
-        : charger.connectorTypes.join(' • ');
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -555,41 +588,107 @@ class _EvChargerCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.md),
-            Wrap(
-              spacing: AppSpacing.sm,
-              runSpacing: AppSpacing.sm,
-              children: [
-                MobiStatusBadge(
-                  label: connectorLabel,
-                  icon: LucideIcons.plug,
-                  tone: MobiStatusBadgeTone.neutral,
-                ),
-                if (charger.powerKw != null)
-                  MobiStatusBadge(
-                    label: '${charger.powerKw!.toStringAsFixed(0)} kW',
-                    icon: LucideIcons.zap,
-                    tone: MobiStatusBadgeTone.positive,
-                  ),
-              ],
-            ),
-            const SizedBox(height: AppSpacing.md),
-            MobiButton(
-              variant: MobiButtonVariant.ghost,
-              onPressed: onMaps,
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(LucideIcons.navigation),
-                  SizedBox(width: AppSpacing.sm),
-                  Text('Open in Google Maps'),
-                ],
-              ),
-            ),
+            _buildActions(context),
           ],
         ),
       ),
     );
   }
+
+  Widget _buildActions(BuildContext context) {
+    final maps = Semantics(
+      label: 'Open in Google Maps, ${charger.name}',
+      child: MobiButton(
+        variant: MobiButtonVariant.ghost,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        onPressed: onMaps,
+        child: const ExcludeSemantics(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(LucideIcons.navigation, size: 20),
+              SizedBox(width: AppSpacing.sm),
+              Flexible(child: Text('Open in Google Maps')),
+            ],
+          ),
+        ),
+      ),
+    );
+    final chat = Semantics(
+      label: 'Chat with ${charger.name} on WhatsApp',
+      hint: onChat == null ? 'No WhatsApp number available' : null,
+      child: Tooltip(
+        message: onChat == null
+            ? 'No WhatsApp number available'
+            : 'Chat on WhatsApp',
+        excludeFromSemantics: true,
+        child: MobiButton(
+          variant: MobiButtonVariant.ghost,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          onPressed: onChat,
+          preserveDisabledChildColors: true,
+          child: ExcludeSemantics(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  'assets/icons/whatsapp.svg',
+                  width: 20,
+                  height: 20,
+                  excludeFromSemantics: true,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                const Flexible(child: Text('Chat')),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 280 ||
+            MediaQuery.textScalerOf(context).scale(1) > 1.3) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              maps,
+              const SizedBox(height: AppSpacing.sm),
+              chat,
+            ],
+          );
+        }
+        return IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(flex: 2, child: maps),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(child: chat),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+Uri? _chargerChatUri(EvCharger charger) {
+  final phone = charger.phone?.trim();
+  if (phone == null ||
+      phone.isEmpty ||
+      !RegExp(r'^\+?[\d\s()-]+$').hasMatch(phone)) {
+    return null;
+  }
+  final result = PhoneNumberNormalizer.validateForCountry(
+    phone: phone,
+    countryCode: '+250',
+  );
+  if (!result.isValid) return null;
+  return Uri.https('wa.me', '/${result.normalized.substring(1)}', {
+    'text': 'Hi, I am contacting you from Mobio about ${charger.name}.',
+  });
 }
 
 const _previewPlaces = [

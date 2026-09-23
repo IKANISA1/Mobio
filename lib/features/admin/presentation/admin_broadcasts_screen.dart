@@ -384,7 +384,7 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
                 labelText: 'Title',
                 hintText: 'Maintenance notice',
                 hintStyle: AppTypography.titleMd.copyWith(
-                  color: cs.onSurfaceVariant.withValues(alpha: 0.3),
+                  color: cs.onSurfaceVariant,
                 ),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(
@@ -408,7 +408,7 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
                 labelText: 'Body',
                 hintText: 'Message body',
                 hintStyle: AppTypography.bodyMd.copyWith(
-                  color: cs.onSurfaceVariant.withValues(alpha: 0.3),
+                  color: cs.onSurfaceVariant,
                 ),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(
@@ -1438,7 +1438,9 @@ class _BroadcastTypeCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected

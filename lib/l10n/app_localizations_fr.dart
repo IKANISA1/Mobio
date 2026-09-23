@@ -629,4 +629,147 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get bpMissingLogin =>
       'Ajoutez le numéro de connexion de ce compte bancaire dans Moyens de paiement, puis comparez à nouveau.';
+
+  @override
+  String get faceRegister => 'Enregistrer mon visage';
+
+  @override
+  String get faceScanTitle => 'Scanner pour payer';
+
+  @override
+  String get faceScanInstruction =>
+      'Scannez la personne que vous voulez payer.';
+
+  @override
+  String get faceRegisterInstruction => 'Placez votre visage dans le cadre.';
+
+  @override
+  String get faceConsent =>
+      'Permettez aux autres de trouver votre numéro de réception MoMo en scannant votre visage. Vous pouvez le supprimer à tout moment.';
+
+  @override
+  String get faceReceivingMethod => 'Numéro de réception MoMo';
+
+  @override
+  String get faceManageMethods => 'Ajouter ou modifier les numéros';
+
+  @override
+  String get faceStartCamera => 'Ouvrir la caméra';
+
+  @override
+  String get faceCapture => 'Prendre une photo';
+
+  @override
+  String get faceScanAction => 'Scanner le destinataire';
+
+  @override
+  String get faceUpdate => 'Actualiser le visage';
+
+  @override
+  String get facePause => 'Suspendre la recherche par visage';
+
+  @override
+  String get faceResume => 'Réactiver la recherche par visage';
+
+  @override
+  String get faceRemove => 'Supprimer mon visage';
+
+  @override
+  String get faceReady => 'Visage enregistré';
+
+  @override
+  String get faceProcessing => 'Enregistrement du visage…';
+
+  @override
+  String get facePaused => 'Recherche par visage suspendue';
+
+  @override
+  String get faceRemoved => 'Votre visage a été supprimé';
+
+  @override
+  String get faceReenroll =>
+      'Actualisez votre visage pour continuer à utiliser Scanner pour payer.';
+
+  @override
+  String get faceOpening => 'Ouverture de MoMo…';
+
+  @override
+  String get faceOpened =>
+      'Continuez dans le composeur. MoMo gère le montant et le code PIN.';
+
+  @override
+  String get faceManualPlatform =>
+      'L’ouverture automatique USSD est disponible sur Android. Copiez ce code et utilisez un téléphone compatible.';
+
+  @override
+  String get faceCopyCode => 'Copier le code USSD';
+
+  @override
+  String get faceCopied => 'Code copié';
+
+  @override
+  String get faceNoMatch =>
+      'Aucun destinataire trouvé. Réessayez ou utilisez un numéro ou un QR.';
+
+  @override
+  String get faceAmbiguous =>
+      'Résultat incertain. Reprenez une photo ou utilisez un numéro ou un QR.';
+
+  @override
+  String get faceNoFace =>
+      'Aucun visage détecté. Gardez le visage dans le cadre.';
+
+  @override
+  String get faceMultiple => 'Gardez un seul visage dans le cadre.';
+
+  @override
+  String get facePoorCapture =>
+      'Éclairez mieux le visage et stabilisez la caméra.';
+
+  @override
+  String get faceUnavailable =>
+      'La recherche par visage est indisponible. Réessayez ou utilisez un numéro ou un QR.';
+
+  @override
+  String get faceRecipientUnavailable =>
+      'Ce destinataire n’a pas de numéro de réception disponible. Utilisez un numéro ou un QR.';
+
+  @override
+  String get faceCameraError =>
+      'Caméra indisponible. Vérifiez l’autorisation, puis réessayez.';
+
+  @override
+  String get faceTimeout => 'Cela prend trop de temps. Réessayez.';
+
+  @override
+  String get faceSignIn => 'Reconnectez-vous pour continuer.';
+
+  @override
+  String get faceSelectMethod =>
+      'Choisissez d’abord un numéro de réception MoMo.';
+
+  @override
+  String get faceDialFailed =>
+      'Le composeur n’a pas pu s’ouvrir. Copiez le code ou utilisez une autre méthode.';
+
+  @override
+  String get faceManual => 'Utiliser un numéro';
+
+  @override
+  String get faceQr => 'Scanner un QR';
+
+  @override
+  String get faceTryAgain => 'Réessayer';
+
+  @override
+  String get faceDone => 'Terminé';
+
+  @override
+  String get faceWorking => 'Veuillez patienter…';
+
+  @override
+  String get faceSetUp => 'Configurer';
+
+  @override
+  String get faceRefresh => 'Vérifier l’enregistrement';
 }

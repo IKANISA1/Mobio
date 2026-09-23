@@ -17,7 +17,10 @@ class BioPayNfcForegroundSuspendedNotifier extends Notifier<bool> {
   @override
   bool build() => false;
 
-  void setSuspended(bool suspended) => state = suspended;
+  void setSuspended(bool suspended) {
+    // A route may finish cancelling an NFC session as its scope is torn down.
+    if (ref.mounted) state = suspended;
+  }
 }
 
 final bioPayNfcForegroundSuspendedProvider =

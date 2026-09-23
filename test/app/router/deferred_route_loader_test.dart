@@ -143,4 +143,40 @@ void main() {
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });
+  testWidgets('a pending direct route has an immediate return action', (
+    tester,
+  ) async {
+    final download = Completer<void>();
+    final router = GoRouter(
+      initialLocation: '/pending',
+      routes: [
+        GoRoute(
+          path: '/home',
+          builder: (_, _) => const Scaffold(body: Text('Home fixture')),
+        ),
+        GoRoute(
+          path: '/pending',
+          builder: (_, _) => DeferredRouteLoader(
+            loadLibrary: () => download.future,
+            builder: (_) => const Text('Loaded later'),
+          ),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      MaterialApp.router(theme: AppTheme.darkTheme, routerConfig: router),
+    );
+    await tester.pump();
+    await tester.tap(find.bySemanticsLabel('Back'));
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 1));
+
+    expect(find.text('Home fixture'), findsOneWidget);
+    download.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Loaded later'), findsNothing);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
 }

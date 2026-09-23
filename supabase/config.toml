@@ -399,3 +399,10 @@ entrypoint = "./functions/generate-promo-content/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/generate-promo-content/*.html" ]
+
+# Public app endpoint validates the exact bearer at Auth and its SQL session.
+[functions.biopay-face-provider]
+verify_jwt = false
+# Scheduled processor uses its own server-only secret, not a public anon key.
+[functions.biopay-face-maintenance]
+verify_jwt = false

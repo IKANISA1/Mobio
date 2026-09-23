@@ -292,6 +292,18 @@ class _DeviceNfcListeningViewState extends State<_DeviceNfcListeningView>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _controller
+        ..stop()
+        ..value = 0.5;
+    } else if (!_controller.isAnimating) {
+      _controller.repeat();
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -351,7 +363,7 @@ class _DeviceNfcListeningViewState extends State<_DeviceNfcListeningView>
           'Listening',
           textAlign: TextAlign.center,
           style: AppTypography.headlineLg.copyWith(
-            color: Colors.white,
+            color: cs.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -360,7 +372,7 @@ class _DeviceNfcListeningViewState extends State<_DeviceNfcListeningView>
           widget.request.amountLabel,
           textAlign: TextAlign.center,
           style: AppTypography.titleMd.copyWith(
-            color: Colors.white.withValues(alpha: 0.78),
+            color: cs.onSurfaceVariant,
             fontWeight: FontWeight.w600,
           ),
         ),

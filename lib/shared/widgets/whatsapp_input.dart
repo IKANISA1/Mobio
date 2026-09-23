@@ -258,20 +258,23 @@ class _WhatsAppInputState extends ConsumerState<WhatsAppInput> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-                    child: TextField(
-                      autofocus: true,
-                      onChanged: (value) => setSheetState(() {
-                        query = value.trim().toLowerCase();
-                      }),
-                      textInputAction: TextInputAction.search,
-                      decoration: InputDecoration(
-                        hintText: 'Search country or code',
-                        prefixIcon: const Icon(Icons.search),
-                        filled: true,
-                        fillColor: ext.surfaceContainerLow,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide.none,
+                    child: Semantics(
+                      label: 'Search country or code',
+                      child: TextField(
+                        autofocus: true,
+                        onChanged: (value) => setSheetState(() {
+                          query = value.trim().toLowerCase();
+                        }),
+                        textInputAction: TextInputAction.search,
+                        decoration: InputDecoration(
+                          hintText: 'Search country or code',
+                          prefixIcon: const Icon(Icons.search),
+                          filled: true,
+                          fillColor: ext.surfaceContainerLow,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide.none,
+                          ),
                         ),
                       ),
                     ),

@@ -282,7 +282,7 @@ class _BioPayRequestPaymentScreenState
               validationHint,
               textAlign: TextAlign.center,
               style: AppTypography.labelMd.copyWith(
-                color: Colors.white.withValues(alpha: 0.58),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
               ),
             ),

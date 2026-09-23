@@ -625,4 +625,146 @@ class AppLocalizationsRw extends AppLocalizations {
   @override
   String get bpMissingLogin =>
       'Shyira nimero yinjira kuri iyi konti ya banki mu buryo bwo kwishyura, wongere ugereranye.';
+
+  @override
+  String get faceRegister => 'Andikisha isura yanjye';
+
+  @override
+  String get faceScanTitle => 'Sikana wishyure';
+
+  @override
+  String get faceScanInstruction => 'Sikana uwo ushaka kwishyura.';
+
+  @override
+  String get faceRegisterInstruction =>
+      'Shyira isura yawe mu mwanya wabugenewe.';
+
+  @override
+  String get faceConsent =>
+      'Emera ko abantu babona nimero yawe yo kwakiriraho MoMo basikanye isura yawe. Ushobora kubikuraho igihe cyose.';
+
+  @override
+  String get faceReceivingMethod => 'Nimero yo kwakiriraho MoMo';
+
+  @override
+  String get faceManageMethods => 'Ongeraho cyangwa uhindure nimero';
+
+  @override
+  String get faceStartCamera => 'Fungura kamera';
+
+  @override
+  String get faceCapture => 'Fata ifoto imwe';
+
+  @override
+  String get faceScanAction => 'Sikana uwo wishyura';
+
+  @override
+  String get faceUpdate => 'Hindura isura';
+
+  @override
+  String get facePause => 'Hagarika gushakwa n’isura';
+
+  @override
+  String get faceResume => 'Ongera wemerere gushakwa n’isura';
+
+  @override
+  String get faceRemove => 'Kuraho isura yanjye';
+
+  @override
+  String get faceReady => 'Isura yabitswe';
+
+  @override
+  String get faceProcessing => 'Isura irabikwa…';
+
+  @override
+  String get facePaused => 'Gushakwa n’isura byahagaritswe';
+
+  @override
+  String get faceRemoved => 'Isura yawe yakuweho';
+
+  @override
+  String get faceReenroll =>
+      'Ongera wandikishe isura yawe kugira ngo ukomeze gukoresha Sikana wishyure.';
+
+  @override
+  String get faceOpening => 'MoMo irafunguka…';
+
+  @override
+  String get faceOpened =>
+      'Komereza aho uhamagara. MoMo ni yo yakira amafaranga na PIN.';
+
+  @override
+  String get faceManualPlatform =>
+      'USSD yifungura kuri Android. Kopora iyi kode uyikoreshe kuri telefoni iyemera.';
+
+  @override
+  String get faceCopyCode => 'Kopora kode ya USSD';
+
+  @override
+  String get faceCopied => 'Kode yakoporowe';
+
+  @override
+  String get faceNoMatch =>
+      'Nta muntu wabonetse. Gerageza cyangwa ukoreshe nimero cyangwa QR.';
+
+  @override
+  String get faceAmbiguous =>
+      'Isura ntisobanutse. Ongera ufate ifoto cyangwa ukoreshe nimero cyangwa QR.';
+
+  @override
+  String get faceNoFace =>
+      'Nta sura yabonetse. Shyira isura mu mwanya wabugenewe.';
+
+  @override
+  String get faceMultiple => 'Hashyiremo isura imwe gusa.';
+
+  @override
+  String get facePoorCapture =>
+      'Koresha urumuri ruhagije kandi ufate kamera neza.';
+
+  @override
+  String get faceUnavailable =>
+      'Gushaka n’isura ntibikora ubu. Gerageza cyangwa ukoreshe nimero cyangwa QR.';
+
+  @override
+  String get faceRecipientUnavailable =>
+      'Uyu muntu nta nimero yo kwakiriraho ihari. Koresha nimero cyangwa QR.';
+
+  @override
+  String get faceCameraError =>
+      'Kamera ntiboneka. Reba uburenganzira wayihaye wongere ugerageze.';
+
+  @override
+  String get faceTimeout => 'Byatinze. Ongera ugerageze.';
+
+  @override
+  String get faceSignIn => 'Ongera winjire kugira ngo ukomeze.';
+
+  @override
+  String get faceSelectMethod => 'Banza uhitemo nimero yo kwakiriraho MoMo.';
+
+  @override
+  String get faceDialFailed =>
+      'Aho uhamagara ntihafungutse. Kopora kode cyangwa ukoreshe ubundi buryo.';
+
+  @override
+  String get faceManual => 'Koresha nimero';
+
+  @override
+  String get faceQr => 'Sikana QR';
+
+  @override
+  String get faceTryAgain => 'Ongera ugerageze';
+
+  @override
+  String get faceDone => 'Byarangiye';
+
+  @override
+  String get faceWorking => 'Tegereza…';
+
+  @override
+  String get faceSetUp => 'Tangira';
+
+  @override
+  String get faceRefresh => 'Reba uko kubika isura bigeze';
 }

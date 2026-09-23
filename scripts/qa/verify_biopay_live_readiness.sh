@@ -9,7 +9,7 @@ warnings=0
 checked=0
 evidence_dir="${BIOPAY_EVIDENCE_DIR:-docs/release/evidence}"
 evidence_file="${BIOPAY_EVIDENCE_FILE:-$evidence_dir/biopay-live-readiness-$(date +%F).md}"
-require_aws_live="${REQUIRE_BIOPAY_AWS_LIVE:-false}"
+require_face_live="${REQUIRE_BIOPAY_FACE_LIVE:-false}"
 require_supabase_live="${REQUIRE_BIOPAY_SUPABASE_LIVE:-false}"
 require_device_live="${REQUIRE_BIOPAY_DEVICE_LIVE:-false}"
 require_live="${REQUIRE_BIOPAY_LIVE:-false}"
@@ -25,7 +25,7 @@ if [[ -f .env ]]; then
 fi
 
 if [[ "$require_live" == "true" ]]; then
-  require_aws_live=true
+  require_face_live=true
   require_supabase_live=true
   require_device_live=true
 fi
@@ -107,8 +107,8 @@ prove_live_biopay_health() {
   local name="$1"
   local health_url
   health_url="$(biopay_health_url)"
-  # The deployed health payload proves FACE_PROVIDER=aws_rekognition and
-  # AWS_REKOGNITION_COLLECTION_ID without exposing local AWS credentials.
+  # Configuration alone is not acceptance. This endpoint requires a real app session.
+  require_env BIOPAY_AUTH_TOKEN
   require_env SUPABASE_ANON_KEY
   if [[ -z "$health_url" ]]; then
     record FAIL "$name" "BIOPAY_FACE_HEALTH_URL or SUPABASE_URL is required"
@@ -123,20 +123,20 @@ prove_live_biopay_health() {
   health_body="$(mktemp)"
   health_code="$(
     curl -sS \
-      -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+      -H "Authorization: Bearer ${BIOPAY_AUTH_TOKEN:-}" \
       -H "apikey: $SUPABASE_ANON_KEY" \
       -o "$health_body" \
       -w "%{http_code}" \
       "$health_url" || true
   )"
   if [[ "$health_code" == "200" ]] &&
-    rg -q '"provider"[[:space:]]*:[[:space:]]*"aws_rekognition"' "$health_body" &&
+    rg -q '"provider"[[:space:]]*:[[:space:]]*"opencv_sface_v1"' "$health_body" &&
     rg -q '"production_ready"[[:space:]]*:[[:space:]]*true' "$health_body" &&
-    rg -q '"provider_collection_id"[[:space:]]*:[[:space:]]*"[^"]+"' "$health_body" &&
+    rg -q '"model_version"[[:space:]]*:[[:space:]]*"[^"]+"' "$health_body" &&
     rg -q '"payment_boundary"' "$health_body"; then
-    record PASS "$name" "HTTP 200 FACE_PROVIDER=aws_rekognition health at $health_url"
+    record PASS "$name" "HTTP 200 model/index/database/acceptance health at $health_url"
   else
-    record FAIL "$name" "HTTP $health_code did not prove AWS provider health at $health_url"
+    record FAIL "$name" "HTTP $health_code did not prove face service readiness at $health_url"
   fi
   rm -f "$health_body"
 }
@@ -171,23 +171,17 @@ require_static_contains "QR share uses safe payload" "lib/features/biopay/presen
 require_static_absent "No visible raw USSD display" "lib/features/biopay/presentation/biopay_flow_shared.dart" "request.ussdCode"
 require_static_absent "No payment-intents dependency" "lib/features/biopay/data/biopay_ussd_service.dart" "payment_intents"
 require_static_absent "No in-app Pay command" "lib/features/biopay/presentation/biopay_flow_shared.dart" "'Pay'"
-require_static_absent "Face scan does not auto-open USSD" "lib/features/biopay/presentation/biopay_face_scan_screen.dart" "openedRequest = await ussdService.openUssdDialer"
+require_static_absent "No legacy amount-bearing face handoff" "lib/features/biopay/presentation/biopay_face_scan_screen.dart" "openedRequest = await ussdService.openUssdDialer"
 
-section "AWS face provider boundary"
+section "Face shortcut boundary"
 require_static_contains "Edge function slug" "lib/features/biopay/data/biopay_face_service.dart" "biopay-face-provider"
-require_static_contains "Liveness action" "lib/features/biopay/data/biopay_face_service.dart" "create_liveness_session"
-require_static_contains "Enroll action" "lib/features/biopay/data/biopay_face_service.dart" "enroll_face"
-require_static_contains "Match action" "lib/features/biopay/data/biopay_face_service.dart" "match_face"
-require_static_contains "AWS provider edge" "supabase/functions/biopay-face-provider/index.ts" "aws_rekognition"
-require_static_contains "AWS Rekognition API" "supabase/functions/biopay-face-provider/index.ts" "rekognition"
-require_static_contains "AWS collection status" "supabase/functions/biopay-face-provider/index.ts" "provider_collection_id"
-require_static_contains "AWS module versions" "supabase/functions/biopay-face-provider/index.ts" "module_versions"
-require_static_contains "Enrollment challenge metadata" "supabase/functions/biopay-face-provider/index.ts" "enrollment_challenges"
-require_static_contains "Enrollment sample metadata" "lib/features/biopay/data/biopay_face_service.dart" "enrollment_sample_count"
-require_static_contains "Explicit liveness status" "lib/features/biopay/data/biopay_face_service.dart" "provider_liveness_not_required"
-require_static_contains "Enrollment persistence RPC" "supabase/migrations/20260612133000_biopay_ussd_aws_reactivation.sql" "rpc_record_biopay_face_enrollment"
-require_static_absent "No Google ML Kit dependency" "pubspec.yaml" "google_mlkit_face_detection"
-require_static_absent "No TFLite dependency" "pubspec.yaml" "tflite_flutter"
+require_static_contains "Single capture enrollment" "lib/features/biopay/data/biopay_face_service.dart" "consent_version"
+require_static_contains "Typed shortcut" "lib/features/biopay/data/biopay_face_service.dart" "resolveShortcut"
+require_static_contains "Private provider adapter" "supabase/functions/_shared/face-provider.ts" "FACE_SERVICE_TOKEN"
+require_static_contains "Session authority" "supabase/functions/_shared/biopay-authority.ts" "p_auth_session_id"
+require_static_absent "No active liveness" "lib/features/biopay/data/biopay_face_service.dart" "liveness"
+require_static_absent "No active Rekognition" "supabase/functions/biopay-face-provider/index.ts" "rekognition"
+require_static_absent "No face amount" "lib/features/biopay/presentation/biopay_face_scan_screen.dart" "amountMinor"
 
 section "Native permission surface"
 require_static_contains "Android camera permission" "android/app/src/main/AndroidManifest.xml" "android.permission.CAMERA"
@@ -211,7 +205,7 @@ else
   record FAIL "Deno edge tests" "see /tmp/biopay-deno-test.log"
 fi
 
-if /Volumes/PRO-G40/flutter_3_44/bin/flutter test \
+if "${FLUTTER_BIN:-flutter}" test \
   test/features/biopay \
   test/app/router/app_router_test.dart \
   test/release/scope_boundary_test.dart \
@@ -222,11 +216,11 @@ else
   record FAIL "Focused Flutter BioPay tests" "see /tmp/biopay-flutter-focused.log"
 fi
 
-section "Optional live AWS proof"
-if [[ "$require_aws_live" == "true" ]]; then
-  prove_live_biopay_health "Live AWS provider proof"
+section "Optional live face proof"
+if [[ "$require_face_live" == "true" ]]; then
+  prove_live_biopay_health "Live face service proof"
 else
-  record WARN "Live AWS provider proof" "skipped; set REQUIRE_BIOPAY_AWS_LIVE=true to require AWS env/config proof"
+  record WARN "Live face service proof" "skipped; set REQUIRE_BIOPAY_FACE_LIVE=true to require authenticated face readiness"
 fi
 
 section "Optional live Supabase edge proof"
@@ -296,7 +290,7 @@ fi
   echo "- Checks run: $checked"
   echo "- Failures: $failures"
   echo "- Warnings: $warnings"
-  echo "- Live AWS required: $require_aws_live"
+  echo "- Live face required: $require_face_live"
   echo "- Live Supabase required: $require_supabase_live"
   echo "- Live Android device required: $require_device_live"
   echo "- Strict live proof required: $require_live"

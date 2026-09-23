@@ -31,7 +31,7 @@ class MobiFamilyPalette {
         0xFF00043C,
       ],
       MobiVisualFamily.teal => [
-        0xFF36A9BE,
+        0xFF1E7389,
         0xFF1E7389,
         0xFF125063,
         0xFF0D3442,
@@ -51,7 +51,7 @@ class MobiFamilyPalette {
         0xFF16133A,
       ],
       MobiVisualFamily.value => [
-        0xFF8398EF,
+        0xFF5F6EBA,
         0xFF5F6EBA,
         0xFF405093,
         0xFF27336C,
