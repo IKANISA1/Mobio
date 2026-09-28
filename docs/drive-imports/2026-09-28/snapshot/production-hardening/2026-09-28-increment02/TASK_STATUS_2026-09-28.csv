@@ -1,0 +1,29 @@
+task_id,status,implementation_evidence
+M003,partial,Auth-owned verified phone identity implemented locally; handler fixtures pass; live Auth collision/race and deployed RPC not tested.
+M004,partial,Identity/member-id authority guard candidate prepared; database grants/RLS effective state not executed.
+M005,partial,Canonical unique six-digit member-ID forward body + assertions implemented; database reconciliation not executed.
+M006,partial,Production UUID/hash member-ID fallbacks removed; source-contract tests pass; Flutter runtime/goldens not run.
+M007,partial,Ordinary sign-out and finally-safe cleanup implemented; account-switch/device tests not run.
+M008,partial,FCM registration/unregister now owner-bound; real two-account push test not run.
+M012,implemented_local,Production OTP dry-run guard/redaction implementation locally tested; deployment pending.
+M015,partial,Direct booking-write containment body prepared; database/PostgREST authorization matrix not run.
+M016,partial,Strong SMS receipt eligibility implemented in Edge/SQL candidate; operator evidence and DB activation tests pending.
+M017,partial,Idempotent holds and durable expiry/release implemented in forward SQL body; concurrency DB test pending.
+M018,partial,Receipt-to-booking binding and cross-booking reuse rejection implemented; real DB concurrency/payment tests pending.
+M019,partial,Entitlement serialization candidate exists in strict receipt body; real two-session DB test pending.
+M020,partial,Explicit merchant/sender policy structure implemented; approved live operator configuration not supplied.
+M031,implemented_local,Legacy global-secret SMS POST routes return controlled retirement; local handler fixtures pass; deployment/caller inventory pending.
+M042,partial,Inference HTTP service bounded/draining behavior implemented and 16 tests pass; real Linux model/image and load acceptance pending.
+M044,partial,Consumer targetSdk set to 36; signed Android 16 build/device/Play preflight not run.
+M047,partial,NFC native expiry/APDU policy implemented and 20 JVM scenarios pass; hardware/process/device acceptance pending.
+M056,partial,Nearby RPC freshness/10km/50 cap and direct-read restriction body prepared; real DB/geospatial/load/device test pending.
+M057,partial,Face-service outage represented as unavailable rather than not-started; Flutter UI runtime test pending.
+M074,implemented_local,Actions pin checker repaired and 29 source/fixture tests plus repo check pass; remote CI run pending.
+M075,implemented_local,Integrated gate rejects disabled/invalid required checks; fixture tests pass; promotion workflow execution pending.
+M077,partial,CI coverage expanded for changed ecosystems; hosted CI run and required-branch configuration pending.
+M078,partial,"Ordered migration preparer, manifest and post-install assertions implemented; PostgreSQL/Supabase rehearsal pending."
+M079,partial,"Adversarial fixtures added, but live database/Auth/PostgREST authorization matrix pending."
+M081,partial,Exact version-evidence parser and checks strengthened; complete artifact-bound release manifest still pending.
+M082,partial,Additional dependency/toolchain pinning and update coverage added; complete advisory/SBOM review pending.
+M090,partial,Versioned hardening manifest/evidence package produced; canonical repository/source-scope cleanup remains.
+M091,partial,Bounded external-fetch helper and tests added; durable shared rate/cost control remains pending.

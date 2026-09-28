@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "increment": "06",
+  "as_of": "2026-09-28",
+  "new_executable_tooling_checks": 21,
+  "new_static_assertions": 18,
+  "prior_checks_rerun": 455,
+  "total_counted_local_checks": 494,
+  "new_chat_dart_behavior_checks_executed": 0,
+  "new_chat_sql_behavior_checks_executed": 0,
+  "qualification": "Do not interpret local tooling/static checks or rerun prior regressions as execution or acceptance of the new chat runtime. Authored Dart and SQL tests remain unexecuted.",
+  "lanes": [
+    {
+      "name": "New delta-applier tests",
+      "status": "PASS",
+      "count": 11,
+      "boundary": "Executable tooling: actual temporary files, unsafe-path/drift rejection and repeated application.",
+      "evidence": "evidence/new_applier.txt",
+      "classification": "new"
+    },
+    {
+      "name": "New Docker-image input guards",
+      "status": "PASS",
+      "count": 10,
+      "boundary": "Executable tooling: image-string validation only, not Docker or SQL behavior.",
+      "evidence": "evidence/new_contracts_final.txt",
+      "classification": "new"
+    },
+    {
+      "name": "New source assertions",
+      "status": "PASS",
+      "count": 18,
+      "boundary": "STATIC: exact source contracts, not Dart/SQL compilation or runtime behavior.",
+      "evidence": "evidence/new_contracts_final.txt",
+      "classification": "new_static"
+    },
+    {
+      "name": "Existing Python regressions rerun",
+      "status": "PASS",
+      "count": 177,
+      "boundary": "Mixed executable fixtures and static assertions; final identity manifest expectation includes body10.",
+      "evidence": "evidence/python_regressions_results_final.json",
+      "classification": "regression"
+    },
+    {
+      "name": "Existing Node pure-module regressions rerun",
+      "status": "PASS",
+      "count": 66,
+      "boundary": "Existing module logic; not new chat Dart state machine.",
+      "evidence": "evidence/node_pure.txt",
+      "classification": "regression"
+    },
+    {
+      "name": "Existing Node handler regressions rerun",
+      "status": "PASS",
+      "count": 138,
+      "boundary": "Existing real TypeScript logic under explicit Auth/database/SDK substitutes.",
+      "evidence": "evidence/node_handlers_final.txt",
+      "classification": "regression"
+    },
+    {
+      "name": "Existing inference HTTP tests rerun",
+      "status": "PASS",
+      "count": 16,
+      "boundary": "Real bounded HTTP service with a fake inference model.",
+      "evidence": "evidence/http_regressions.txt",
+      "classification": "regression"
+    },
+    {
+      "name": "Existing NFC policy tests rerun",
+      "status": "PASS",
+      "count": 20,
+      "boundary": "Compiled JVM policy, no Android hardware.",
+      "evidence": "evidence/nfc_results.txt",
+      "classification": "regression"
+    },
+    {
+      "name": "Existing collector Kotlin policies/leases rerun",
+      "status": "PASS",
+      "count": 38,
+      "boundary": "Compiled pure Kotlin and real OS/cross-process leases, no WorkManager/device acceptance.",
+      "evidence": "evidence/collector_results.txt",
+      "classification": "regression"
+    }
+  ],
+  "uncounted_checks": [
+    {
+      "name": "Affected-source package applier and independent Git patch",
+      "status": "PASS",
+      "evidence": "evidence/package_integration.json",
+      "matched_files": 29,
+      "complete_upstream_checkout": false
+    },
+    {
+      "name": "Action pin validation",
+      "status": "PASS",
+      "evidence": "evidence/action_pins.txt"
+    },
+    {
+      "name": "All ten forward SQL bodies source hashes and preparation plan",
+      "status": "PASS",
+      "evidence": "evidence/migration_plan.txt",
+      "database_executed": false
+    },
+    {
+      "name": "Python/shell/YAML/JSON source checks",
+      "status": "PASS",
+      "evidence": "evidence/source_syntax.json"
+    },
+    {
+      "name": "Git patch whitespace",
+      "status": "PASS",
+      "evidence": "evidence/package_whitespace.txt"
+    }
+  ],
+  "unexecuted": [
+    {
+      "name": "PostgreSQL17 chat component and concurrent sessions",
+      "status": "UNAVAILABLE",
+      "reason": "Docker absent; runner returned exit2. Synthetic prerequisite fixture, not full application schema.",
+      "evidence": "evidence/chat_postgres_check.txt"
+    },
+    {
+      "name": "New Dart/Flutter delivery, history, service, realtime and widget suites",
+      "status": "NOT_RUN",
+      "reason": "Flutter/Dart runtime unavailable; tests authored, not compiled/executed."
+    },
+    {
+      "name": "Full schema and actual Auth/PostgREST role/transaction matrix",
+      "status": "NOT_RUN"
+    },
+    {
+      "name": "Deno and complete SDK compatibility",
+      "status": "NOT_RUN"
+    },
+    {
+      "name": "Hosted required CI",
+      "status": "NOT_RUN"
+    },
+    {
+      "name": "Signed native artifacts and physical SMS/NFC/USSD/face acceptance",
+      "status": "NOT_RUN"
+    },
+    {
+      "name": "Production deployment, database mutation, provider messaging or financial operations",
+      "status": "NOT_RUN"
+    }
+  ],
+  "intermediate_failures_retained": [
+    {
+      "evidence": "evidence/regression_test_identity_lifecycle_contracts.py.txt",
+      "resolution": "Updated the expected forward-body sequence to include body10, retained exact source hash checks, then reran successfully.",
+      "final_evidence": "evidence/regression_test_identity_lifecycle_contracts_final.txt"
+    },
+    {
+      "evidence": "evidence/node_handlers.txt",
+      "resolution": "Restored eight unchanged mounted original dependencies into the partial reconstruction and matched their supplied current-index blob hashes. Final handler lane passed.",
+      "final_evidence": "evidence/node_handlers_final.txt"
+    }
+  ],
+  "production_accepted_tasks": 0,
+  "source_files_changed": 29,
+  "cumulative_overlay_files": 163
+}

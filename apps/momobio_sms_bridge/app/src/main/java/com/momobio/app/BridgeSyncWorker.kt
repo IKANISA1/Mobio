@@ -10,12 +10,10 @@ class BridgeSyncWorker(
     workerParams: WorkerParameters,
 ) : Worker(context, workerParams) {
     override fun doWork(): Result = try {
-        val queue = SmsQueue(applicationContext)
-        val result = UploadClient(CollectorIdentity(applicationContext)).upload(queue.all()) { uploadedHashes ->
-            queue.markUploaded(uploadedHashes)
-        }
+        val result = CollectorSync.run(applicationContext)
 
-        if (result.ok) Result.success() else Result.retry()
+        if (result.ok && DurableSmsQueue(applicationContext).count() == 0) Result.success()
+        else Result.retry() // Continue draining bounded batches without replacing active work.
     } catch (error: Exception) {
         Log.e("MoMobioBridge", "Background sync failed: ${error.javaClass.simpleName}")
         Result.retry()

@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/auth/admin_session_boundary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -79,7 +80,8 @@ class MobiMainApp extends ConsumerWidget {
                       ).toString(),
                     );
                   },
-                  child: child ?? const SizedBox.shrink(),
+                  child: AdminSessionBoundary(router:router,
+                    child:child ?? const SizedBox.shrink()),
                 ),
               );
             },

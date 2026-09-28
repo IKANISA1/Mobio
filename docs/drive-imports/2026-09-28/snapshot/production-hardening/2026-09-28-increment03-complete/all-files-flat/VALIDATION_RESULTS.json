@@ -1,0 +1,73 @@
+{
+  "generated_at_utc": "2026-09-28T06:54:16.250117+00:00",
+  "source_scope": "Reconstructed supplied Git-index snapshot plus verified Increment02 overlay and current local Increment03 edits; not upstream or production state",
+  "behavioral_tests_and_scenarios_passed": 330,
+  "breakdown": {
+    "release_gate_python": 29,
+    "migration_preparer_python": 12,
+    "play_version_parser_python": 8,
+    "identity_lifecycle_source_contracts_python": 22,
+    "sqlite_schema_dml_and_certificate_parser": 21,
+    "edge_shared_module_node": 66,
+    "edge_handler_node_fixtures": 22,
+    "fake_model_inference_http_python": 16,
+    "native_nfc_policy_jvm": 20,
+    "collector_policy_and_os_lease_jvm": 38,
+    "existing_pages_admin_node": 69,
+    "existing_face_worker_node": 7
+  },
+  "aggregate_hardening_exit_code": 0,
+  "pages_admin_exit_code": 0,
+  "face_worker_exit_code": 0,
+  "syntax_checks_count": 21,
+  "patch_application": [
+    {
+      "base": "audit-baseline",
+      "patch": "MOBIO_HARDENING_CUMULATIVE_03.patch",
+      "applied_in_isolated_copy": true,
+      "exact_after_files": 86
+    },
+    {
+      "base": "increment02",
+      "patch": "MOBIO_INCREMENT02_TO_03.patch",
+      "applied_in_isolated_copy": true,
+      "exact_after_files": 28
+    }
+  ],
+  "database_scope": "Python SQLite executes the actual collector schema/DML; NOT Android SQLiteOpenHelper and NOT PostgreSQL/RLS",
+  "migration_gate": {
+    "result": "incomplete_expected",
+    "exit_code": 2,
+    "six_forward_bodies_applied": false
+  },
+  "not_run": [
+    "Android Gradle/JUnit/full app compilation",
+    "Android QA instrumentation (including eight newly authored queue tests)",
+    "Signed Android/iOS builds and devices",
+    "Flutter full/golden suite",
+    "Actual Deno Edge runtime",
+    "PostgreSQL/PostgREST/Auth/concurrency rehearsal",
+    "Live operator/payment/WhatsApp/AI/vector-provider calls",
+    "Real face-model inference and accuracy",
+    "Production deployment",
+    "Credential rotation and Drive permission containment"
+  ],
+  "runtime": {
+    "python3": "Python 3.13.5",
+    "node": "v22.16.0",
+    "java": "openjdk version \"21.0.11\" 2026-04-21\nOpenJDK Runtime Environment (build 21.0.11+10-1-deb13u2-Debian)\nOpenJDK 64-Bit Server VM (build 21.0.11+10-1-deb13u2-Debian, mixed mode, sharing)",
+    "kotlinc": "info: kotlinc-jvm 1.9.0 (JRE 21.0.11+10-1-deb13u2-Debian)",
+    "sqlite3": "3.46.1",
+    "not_found": [
+      "flutter",
+      "dart",
+      "deno",
+      "adb",
+      "psql",
+      "postgres",
+      "docker"
+    ]
+  },
+  "supabase_projects_visible_to_current_connection": 0,
+  "production_ready": false
+}

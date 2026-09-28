@@ -36,25 +36,15 @@ export async function findAdminAuthUserByPhone(
   supabase: ReturnType<typeof createAdminClient>,
   phone: string,
 ) {
-  const phoneDigits = phone.replace(/\D/g, "");
-  const email = adminEmailForPhone(phone).toLowerCase();
-  const perPage = 1000;
-
-  for (let page = 1;; page += 1) {
-    const { data, error } = await supabase.auth.admin.listUsers({
-      page,
-      perPage,
-    });
-    if (error) throw error;
-
-    // Auth returns an E.164 number without the leading plus sign.
-    const user = data.users.find((candidate) =>
-      candidate.phone?.replace(/\D/g, "") === phoneDigits ||
-      candidate.email?.toLowerCase() === email
-    );
-    if (user) return user;
-    if (data.users.length < perPage) return null;
-  }
+  const {data:owner,error:lookupError}=await supabase.rpc('rpc_lookup_verified_phone_owner',{p_phone:phone});
+  if(lookupError)throw new Error('PHONE_DIRECTORY_UNAVAILABLE');
+  if(owner===null)return null;
+  if(typeof owner!=='string')throw new Error('PHONE_IDENTITY_UNAVAILABLE');
+  const {data,error}=await supabase.auth.admin.getUserById(owner);
+  const user=data?.user;
+  if(error||!user||user.id!==owner||user.is_anonymous||!user.phone_confirmed_at||
+    user.phone?.replace(/\D/g,'')!==phone.replace(/\D/g,''))throw new Error('PHONE_IDENTITY_UNAVAILABLE');
+  return user;
 }
 
 export function adminDisplayName(adminNumber: AdminWhatsappNumberRow): string {

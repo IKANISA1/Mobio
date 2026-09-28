@@ -7,6 +7,7 @@ class ChatComposer extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final bool isSending;
+  final bool enabled;
   final VoidCallback onSendMessage;
 
   const ChatComposer({
@@ -14,6 +15,7 @@ class ChatComposer extends StatelessWidget {
     required this.controller,
     required this.focusNode,
     required this.isSending,
+    this.enabled = true,
     required this.onSendMessage,
   });
 
@@ -69,7 +71,7 @@ class ChatComposer extends StatelessWidget {
                                 border: InputBorder.none,
                                 isCollapsed: true,
                               ),
-                              onSubmitted: isSending
+                              onSubmitted: isSending || !enabled
                                   ? null
                                   : (_) => onSendMessage(),
                             ),
@@ -80,7 +82,7 @@ class ChatComposer extends StatelessWidget {
                           color: cs.primary,
                           shape: const CircleBorder(),
                           child: InkWell(
-                            onTap: isSending ? null : onSendMessage,
+                            onTap: isSending || !enabled || value.text.trim().isEmpty ? null : onSendMessage,
                             customBorder: const CircleBorder(),
                             child: SizedBox(
                               width: 48,

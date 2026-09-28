@@ -50,6 +50,8 @@
         android:label="Mobio"
         android:name="${applicationName}"
         android:allowBackup="false"
+        android:fullBackupContent="@xml/auth_backup_rules"
+        android:dataExtractionRules="@xml/auth_data_extraction_rules"
         android:extractNativeLibs="false"
         android:networkSecurityConfig="@xml/network_security_config"
         android:icon="@mipmap/ic_launcher">

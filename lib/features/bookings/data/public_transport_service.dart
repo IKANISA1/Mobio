@@ -227,7 +227,16 @@ class PublicTransportService {
           )
           .timeout(_networkTimeout);
 
-      return BusBookingConfirmation.fromJson(_firstRpcRow(rows as Object));
+      final confirmation = BusBookingConfirmation.fromJson(
+        _firstRpcRow(rows as Object),
+      );
+      if (confirmation.status != 'confirmed' ||
+          confirmation.paymentStatus != 'paid') {
+        throw const ValidationException(
+          message: 'This booking hold expired. Choose seats again.',
+        );
+      }
+      return confirmation;
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {

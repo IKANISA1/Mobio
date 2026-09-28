@@ -13,6 +13,9 @@ class FakeWhatsAppLoginService implements WhatsAppLoginService {
   AppRole? lastRole;
 
   @override
+  Future<void> cancelVerification({required Object owner}) async {}
+
+  @override
   Future<WhatsAppLoginResult> sendLoginOtp({
     required String phone,
     required String countryCode,
@@ -28,6 +31,7 @@ class FakeWhatsAppLoginService implements WhatsAppLoginService {
 
   @override
   Future<WhatsAppLoginResult> verifyLoginOtp({
+    Object? owner,
     required String phone,
     required String code,
     required String countryCode,

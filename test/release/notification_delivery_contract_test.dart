@@ -12,6 +12,9 @@ void main() {
     late final String migration;
     late final String vaultMigration;
     late final String sendPush;
+    late final String pushWorker;
+    late final String pushProvider;
+    late final String pushOutbox;
     late final String pushService;
     late final String notificationService;
     late final String router;
@@ -25,6 +28,9 @@ void main() {
       sendPush = File(
         'supabase/functions/send-push/index.ts',
       ).readAsStringSync();
+      pushWorker = File('supabase/functions/push-outbox-worker/index.ts').readAsStringSync();
+      pushProvider = File('supabase/functions/_shared/push-provider.ts').readAsStringSync();
+      pushOutbox = File('supabase/functions/_shared/push-outbox.ts').readAsStringSync();
       pushService = File(
         'lib/features/notifications/data/push_notification_service.dart',
       ).readAsStringSync();
@@ -99,18 +105,18 @@ void main() {
       );
     });
 
-    test('Edge Function sends through FCM v1 and prunes invalid tokens', () {
-      expect(sendPush, contains('FIREBASE_SERVICE_ACCOUNT_JSON'));
-      expect(sendPush, contains('FCM_SERVICE_ACCOUNT_JSON'));
-      expect(
-        sendPush,
-        contains('https://www.googleapis.com/auth/firebase.messaging'),
-      );
-      expect(sendPush, contains('messages:send'));
-      expect(sendPush, contains('mobio_default'));
-      expect(sendPush, contains('invalid_token'));
-      expect(sendPush, contains('revoked_at'));
-      expect(sendPush, contains('notification_delivery_attempts'));
+    test('legacy dispatch is retired and durable worker uses FCM v1', () {
+      expect(sendPush, contains('legacy_push_dispatch_retired'));
+      expect(sendPush, contains('status:410'));
+      expect(pushWorker, contains('handlePushWorker'));
+      expect(pushWorker, contains('MOBIO_PUSH_WORKER_SECRET'));
+      expect(pushProvider, contains('FIREBASE_SERVICE_ACCOUNT_JSON'));
+      expect(pushProvider, contains('FCM_SERVICE_ACCOUNT_JSON'));
+      expect(pushProvider, contains('firebase.messaging'));
+      expect(pushProvider, contains('messages:send'));
+      expect(pushProvider, contains('mobio_default'));
+      expect(pushProvider, contains("outcome:'invalid_token'"));
+      expect(pushOutbox, contains('invalid_token'));
     });
 
     test('Flutter handles foreground, background, and killed-state opens', () {
@@ -120,9 +126,9 @@ void main() {
         contains('FirebaseMessaging.onMessageOpenedApp.listen'),
       );
       expect(pushService, contains('getInitialMessage'));
-      expect(pushService, contains('_safeRoute'));
+      expect(pushService, contains('_binding!.accepts(envelope)'));
       expect(pushService, contains("'/notifications'"));
-      expect(pushService, contains("path.startsWith('/trip/')"));
+      expect(pushService, isNot(contains("path.startsWith('/trip/')")));
     });
 
     test(

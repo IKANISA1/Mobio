@@ -1,0 +1,2 @@
+# Preserve byte-exact uploaded evidence; generated source copies may use CRLF.
+docs/drive-imports/2026-09-28/snapshot/** -diff

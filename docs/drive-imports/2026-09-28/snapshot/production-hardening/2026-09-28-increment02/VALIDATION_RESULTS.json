@@ -1,0 +1,30 @@
+{
+  "generated_at_utc": "2026-09-28T05:22:57.446489+00:00",
+  "source_state": "local reconstructed Mobio working tree; not a production deployment",
+  "targeted_hardening_scenarios_passed": 187,
+  "breakdown": {
+    "release_gate_python": 29,
+    "migration_preparer_python": 12,
+    "play_version_parser_python": 8,
+    "identity_lifecycle_transport_discovery_python": 22,
+    "edge_shared_module_node": 66,
+    "edge_handler_fixture_node": 14,
+    "face_inference_http_python": 16,
+    "nfc_policy_jvm": 20
+  },
+  "git_diff_check": "passed",
+  "actions_pin_check": "passed",
+  "database_migrations_applied": false,
+  "supabase_projects_visible_to_connector": 0,
+  "flutter_runtime_suite_current_increment": "not run: Flutter SDK/device acceptance unavailable in this execution environment",
+  "postgresql_postgrest_auth_concurrency": "not run: no connected Supabase project/PostgreSQL staging target",
+  "deno_edge_runtime": "not run: Node fixture coverage only for changed handler contracts",
+  "android_signed_device": "not run: JVM policy tests are not Android framework/NFC hardware acceptance",
+  "ios_signed_device": "not run",
+  "face_model_accuracy_and_real_vector_index": "not run",
+  "production_ready": false,
+  "notes": [
+    "The aggregate wrapper was externally timed out after the Python/Node/inference sections; the NFC JVM component was rerun separately and passed 20/20.",
+    "Do not sum prior increment test totals with this source state as if they were one current full regression run."
+  ]
+}

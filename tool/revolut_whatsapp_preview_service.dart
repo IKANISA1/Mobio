@@ -5,6 +5,9 @@ import 'package:mobi_app/features/auth/data/whatsapp_login_service.dart';
 /// The preview code is 123456. It never creates or restores an account session.
 class PreviewWhatsAppLoginService implements WhatsAppLoginService {
   @override
+  Future<void> cancelVerification({required Object owner}) async {}
+
+  @override
   Future<WhatsAppLoginResult> sendLoginOtp({
     required String phone,
     required String countryCode,
@@ -16,6 +19,7 @@ class PreviewWhatsAppLoginService implements WhatsAppLoginService {
 
   @override
   Future<WhatsAppLoginResult> verifyLoginOtp({
+    Object? owner,
     required String phone,
     required String code,
     required String countryCode,

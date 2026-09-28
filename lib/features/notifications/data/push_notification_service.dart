@@ -1,432 +1,305 @@
 import 'dart:async';
+import 'dart:collection';
+import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/firebase/firebase_bootstrap_service.dart';
 import 'package:mobi_app/core/firebase/firebase_remote_config_service.dart';
 import 'package:mobi_app/core/platform/platform_io.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
+import 'package:mobi_app/features/notifications/domain/push_binding.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Top-level handler for background/killed-state messages.
-///
-/// This MUST be a top-level function — not a method or closure —
-/// because it runs in an isolate separate from the main app.
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // Background OS payloads contain generic copy only. Never log payloads/tokens.
   await FirebaseBootstrapService.instance.ensureBackgroundInitialized();
-
-  if (kDebugMode) {
-    debugPrint('[push] Background message: ${message.messageId}');
-  }
 }
 
-/// Full push notification service for Mobio.
-///
-/// Handles:
-/// - FCM token registration + refresh
-/// - Foreground notification display via local notifications
-/// - Background/killed-state message handling
-/// - Permission request (Android 13+)
-/// - Token storage in Supabase `fcm_tokens` table
 class PushNotificationService {
   PushNotificationService._();
   static final instance = PushNotificationService._();
-
+  static const _bindingKey = 'mobio.push.binding.v1';
+  static const _deadline = Duration(seconds: 4);
   final _localNotifications = FlutterLocalNotificationsPlugin();
-
+  final _seen = <String>{};
+  final _seenOrder = Queue<String>();
   StreamSubscription<RemoteMessage>? _foregroundSub;
   StreamSubscription<RemoteMessage>? _openedSub;
   StreamSubscription<String>? _tokenRefreshSub;
-
+  int _lifecycle = 0;
   bool _initialized = false;
+  bool _listeningAccount = false;
+  Future<void>? _initializing;
+  Future<void> _tokenWork = Future<void>.value();
   GlobalKey<NavigatorState>? _navigatorKey;
-  String? _pendingRoute;
+  Map<String, dynamic>? _pendingEnvelope;
+  PushBinding? _binding;
 
   FirebaseMessaging get _messaging => FirebaseMessaging.instance;
-
-  bool get _isSupportedPlatform => Platform.isAndroid || Platform.isIOS;
-
-  /// The default Android notification channel.
-  static const _androidChannel = AndroidNotificationChannel(
-    'mobio_default',
-    'Mobio Notifications',
+  SupabaseClient get _client => Supabase.instance.client;
+  bool get _supported => Platform.isAndroid || Platform.isIOS;
+  static const _channel = AndroidNotificationChannel('mobio_default', 'Mobio Notifications',
     description: 'Messages, scheduled trip posts, and account alerts',
-    importance: Importance.high,
-    showBadge: true,
-  );
+    importance: Importance.high, showBadge: true);
 
-  /// Initialize the push notification system.
-  ///
-  /// Call once after Firebase.initializeApp() in main().
-  Future<void> initialize() async {
-    if (_initialized) return;
-    if (!FirebaseBootstrapService.instance.isReady) {
-      AppLogger.warning('[push] Firebase is not ready; skipping push init.');
-      return;
-    }
-    if (!_isSupportedPlatform) {
-      if (kDebugMode) {
-        debugPrint('[push] Push notifications are mobile-only in this repo.');
+  Future<void> initialize() {
+    final pending = _initializing;
+    if (pending != null) return pending;
+    final lifecycle = _lifecycle;
+    final work = _initialize(lifecycle).whenComplete(() {
+      if (lifecycle == _lifecycle) _initializing = null;
+    });
+    _initializing = work;
+    return work;
+  }
+  void _requireLifecycle(int lifecycle) {
+    if (lifecycle != _lifecycle) throw StateError('PUSH_SERVICE_DISPOSED');
+  }
+  Future<void> _initialize(int lifecycle) async {
+    if (_initialized || !_supported || !FirebaseBootstrapService.instance.isReady ||
+        !FirebaseRemoteConfigService.instance.pushNotificationsEnabled) return;
+    try {
+      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+      await _localNotifications.initialize(
+        settings: const InitializationSettings(android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+          iOS: DarwinInitializationSettings(requestAlertPermission: false,
+            requestBadgePermission: false, requestSoundPermission: false)),
+        onDidReceiveNotificationResponse: _onLocalTap,
+      ).timeout(_deadline);
+      _requireLifecycle(lifecycle);
+      await _localNotifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(_channel).timeout(_deadline);
+      _requireLifecycle(lifecycle);
+      // The local checked handler owns foreground presentation on BOTH platforms.
+      await _messaging.setForegroundNotificationPresentationOptions(alert: false, badge: false, sound: false).timeout(_deadline);
+      _requireLifecycle(lifecycle);
+      final restoredBinding = await _readBinding().timeout(_deadline);
+      _requireLifecycle(lifecycle);
+      _binding = restoredBinding;
+      if (!_listeningAccount) {
+        AccountContext.changes.addListener(_onAccountChanged);
+        _listeningAccount = true;
       }
-      return;
-    }
-    if (!FirebaseRemoteConfigService.instance.pushNotificationsEnabled) {
-      if (kDebugMode) {
-        debugPrint('[push] Push notifications disabled by Remote Config.');
+      _foregroundSub = FirebaseMessaging.onMessage.listen(_onForeground);
+      _openedSub = FirebaseMessaging.onMessageOpenedApp.listen(_openEnvelope);
+      _tokenRefreshSub = _messaging.onTokenRefresh.listen((token) {
+        unawaited(_registerToken(token));
+      });
+      _initialized = true;
+      _onAccountChanged();
+      try {
+        final initial = await _messaging.getInitialMessage().timeout(_deadline);
+        _requireLifecycle(lifecycle);
+        if (initial != null) _openEnvelope(initial);
+      } on Object {
+        // A missing initial envelope must not tear down working foreground handlers.
+        AppLogger.warning('[push] Initial notification envelope unavailable.');
       }
-      return;
-    }
-
-    _initialized = true;
-
-    // Register the background handler
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
-    // Initialize local notifications for foreground display
-    await _initLocalNotifications();
-
-    // Create the Android notification channel
-    final androidPlugin = _localNotifications
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >();
-    await androidPlugin?.createNotificationChannel(_androidChannel);
-
-    // Listen for foreground messages
-    _foregroundSub = FirebaseMessaging.onMessage.listen(
-      _handleForegroundMessage,
-    );
-    _openedSub = FirebaseMessaging.onMessageOpenedApp.listen(
-      _handleOpenedMessage,
-    );
-
-    final initialMessage = await _messaging.getInitialMessage();
-    if (initialMessage != null) {
-      _handleOpenedMessage(initialMessage);
-    }
-
-    // Listen for token refresh
-    _tokenRefreshSub = _messaging.onTokenRefresh.listen(_onTokenRefresh);
-
-    // Set foreground notification presentation (iOS)
-    await _messaging.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    if (kDebugMode) {
-      debugPrint('[push] PushNotificationService initialized');
+    } on Object {
+      if (lifecycle == _lifecycle) dispose();
+      AppLogger.warning('[push] Initialization unavailable; in-app inbox remains available.');
     }
   }
 
-  Future<void> _initLocalNotifications() async {
-    const androidSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
-    const iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false,
-    );
-
-    await _localNotifications.initialize(
-      settings: const InitializationSettings(
-        android: androidSettings,
-        iOS: iosSettings,
-      ),
-      onDidReceiveNotificationResponse: _onNotificationTapped,
-    );
-  }
-
-  /// Key to the root navigator — must be set by the app before notifications
-  /// can route via taps. Set once in `main.dart` after router is created.
   set navigatorKey(GlobalKey<NavigatorState>? key) {
     _navigatorKey = key;
-    _flushPendingRoute();
+    _flushPending();
   }
-
-  void _onNotificationTapped(NotificationResponse response) {
-    final payload = response.payload;
-    if (kDebugMode) {
-      debugPrint('[push] Notification tapped: $payload');
+  bool get _bindingIsCurrent {
+    if (!SupabaseConfig.isConfigured || _binding == null) return false;
+    try {
+      final account = AccountContext.capture();
+      return _binding!.belongsTo(account.userId, account.sessionId);
+    } on Object { return false; }
+  }
+  void _onAccountChanged() {
+    if (_bindingIsCurrent) return;
+    _pendingEnvelope = null;
+    _seen.clear();
+    _seenOrder.clear();
+    // Retain the opaque binding in memory for owning-session logout revocation.
+    // It cannot present or navigate because _bindingIsCurrent is false.
+    unawaited(_localNotifications.cancelAll().catchError((Object _) {
+      AppLogger.warning('[push] Local notification cleanup unavailable.');
+    }));
+    if (_initialized) {
+      try {
+        AccountContext.capture();
+        // No permission prompt: only register an already-authorized, fresh account.
+        unawaited(registerToken());
+      } on Object { /* Signed out or switching; wait for a verified account. */ }
     }
-
-    if (payload == null || payload.isEmpty) return;
-
-    _openRoute(payload);
   }
-
-  void _handleOpenedMessage(RemoteMessage message) {
-    final route = _routeFromMessage(message);
-    if (route == null) return;
-
-    if (kDebugMode) {
-      debugPrint('[push] Opened notification route: $route');
-    }
-
-    _openRoute(route);
+  void _onLocalTap(NotificationResponse response) {
+    try {
+      final raw = response.payload;
+      if (raw == null || raw.length > 1024) return;
+      final decoded = jsonDecode(raw);
+      if (decoded is Map<String, dynamic>) _navigate(decoded);
+    } on Object { /* Ignore stale or malformed notification envelopes. */ }
   }
-
-  String? _routeFromMessage(RemoteMessage message) {
-    final data = message.data;
-    return _safeRoute(
-      data['route'] as String? ??
-          data['notification_route'] as String? ??
-          data['click_action_route'] as String?,
-    );
-  }
-
-  String? _safeRoute(String? raw) {
-    if (raw == null || raw.trim().isEmpty) return null;
-
-    final uri = Uri.tryParse(raw.trim());
-    if (uri == null || uri.hasScheme || uri.hasAuthority) return null;
-
-    final route = uri.toString();
-    if (!route.startsWith('/') || route.startsWith('//')) return null;
-
-    final path = uri.path;
-    const exactAllowed = {
-      '/',
-      '/bookings',
-      '/chat',
-      '/nearby',
-      '/notifications',
-      '/profile',
-      '/profile/setup',
-      '/schedule',
-      '/admin/audit',
-    };
-    if (exactAllowed.contains(path) ||
-        path.startsWith('/trip/') && path.length > '/trip/'.length) {
-      return route;
-    }
-
-    return '/notifications';
-  }
-
-  void _openRoute(String route) {
-    final safeRoute = _safeRoute(route);
-    if (safeRoute == null) return;
-
-    final ctx = _navigatorKey?.currentContext;
-    if (ctx == null) {
-      _pendingRoute = safeRoute;
-      if (kDebugMode) {
-        debugPrint('[push] No navigator context — queued $safeRoute');
-      }
+  void _openEnvelope(RemoteMessage message) => _navigate(message.data);
+  void _navigate(Map<String, dynamic> envelope) {
+    if (!_bindingIsCurrent || !_binding!.accepts(envelope)) return;
+    final context = _navigatorKey?.currentContext;
+    if (context == null) {
+      _pendingEnvelope = Map<String, dynamic>.from(envelope);
       return;
     }
-
-    try {
-      GoRouter.of(ctx).push(safeRoute);
-    } on Object catch (e) {
-      AppLogger.error('[push] Failed to open notification route: $e');
-    }
+    _pendingEnvelope = null;
+    try { GoRouter.of(context).push('/notifications'); }
+    on Object { AppLogger.warning('[push] Inbox navigation unavailable.'); }
   }
-
-  void _flushPendingRoute() {
-    final route = _pendingRoute;
-    if (route == null) return;
-    if (_navigatorKey?.currentContext == null) return;
-
-    _pendingRoute = null;
-    _openRoute(route);
+  void _flushPending() {
+    final envelope = _pendingEnvelope;
+    if (envelope != null && _navigatorKey?.currentContext != null) _navigate(envelope);
   }
-
-  int _notificationId(RemoteMessage message) {
-    final raw = message.data['notification_id'] as String?;
-    if (raw == null || raw.isEmpty) {
-      return message.hashCode;
-    }
-
-    return raw.hashCode;
-  }
-
-  // ─── Foreground Message Handling ──────────────────────────────────────
-
-  void _handleForegroundMessage(RemoteMessage message) {
-    final data = message.data;
-    final notification = message.notification;
-    final title = notification?.title ?? data['title'] as String? ?? 'Mobio';
-    final body = notification?.body ?? data['body'] as String? ?? '';
-    final notifType = data['type'] as String? ?? '';
-
-    if (kDebugMode) {
-      debugPrint(
-        '[push] Foreground: $title — $body '
-        '(type: $notifType)',
-      );
-    }
-
-    // Build a payload route for tap navigation
-    final payload = _routeFromMessage(message) ?? '/notifications';
-
-    // Show a local notification since FCM won't display in foreground
-    _localNotifications.show(
-      id: _notificationId(message),
-      title: title,
-      body: body,
+  void _onForeground(RemoteMessage message) {
+    if (!_bindingIsCurrent || !_binding!.accepts(message.data)) return;
+    final notificationId = message.data['notification_id'] as String;
+    if (!_seen.add(notificationId)) return;
+    _seenOrder.addLast(notificationId);
+    if (_seenOrder.length > 256) _seen.remove(_seenOrder.removeFirst());
+    // Do not trust title/body/route strings received over push. The inbox loads
+    // real content under current Auth/RLS. Dedupe is bounded and process-local.
+    unawaited(_localNotifications.show(
+      id: int.parse(notificationId.replaceAll('-', '').substring(0, 7), radix: 16),
+      title: 'Mobio', body: 'You have an update. Open Mobio to view it.',
       notificationDetails: NotificationDetails(
-        android: AndroidNotificationDetails(
-          _androidChannel.id,
-          _androidChannel.name,
-          channelDescription: _androidChannel.description,
-          importance: Importance.high,
-          priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
-        ),
-        iOS: const DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
-      ),
-      payload: payload,
-    );
+        android: AndroidNotificationDetails(_channel.id, _channel.name,
+          channelDescription: _channel.description, importance: Importance.high,
+          priority: Priority.high, icon: '@mipmap/ic_launcher'),
+        iOS: const DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true)),
+      payload: jsonEncode({'protocol': 'mobio.push.v1', 'binding_id': _binding!.bindingId,
+        'notification_id': notificationId, 'route': '/notifications'}),
+    ).catchError((Object _) { AppLogger.warning('[push] Foreground presentation unavailable.'); }));
   }
 
-  /// Request notification permission.
-  ///
-  /// On Android 13+ this triggers the system dialog.
-  /// On older Android, returns granted automatically.
-  /// On iOS, requests alert/badge/sound permission.
   Future<bool> requestPermission() async {
-    if (!_isSupportedPlatform) {
-      return false;
-    }
-
+    if (!_supported) return false;
     if (Platform.isAndroid) {
       final status = await Permission.notification.request();
       return status.isGranted || status.isLimited;
     }
-
-    // iOS uses Firebase's own permission request
-    final settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-      provisional: false,
-    );
-
+    final settings = await _messaging.requestPermission(alert: true, badge: true,
+      sound: true, provisional: false);
     return settings.authorizationStatus == AuthorizationStatus.authorized ||
-        settings.authorizationStatus == AuthorizationStatus.provisional;
+      settings.authorizationStatus == AuthorizationStatus.provisional;
   }
-
-  /// Check if notification permission is already granted.
   Future<bool> hasPermission() async {
-    if (!_isSupportedPlatform) {
-      return false;
-    }
-
-    if (Platform.isAndroid) {
-      return (await Permission.notification.status).isGranted;
-    }
-
+    if (!_supported) return false;
+    if (Platform.isAndroid) return (await Permission.notification.status).isGranted;
     final settings = await _messaging.getNotificationSettings();
     return settings.authorizationStatus == AuthorizationStatus.authorized ||
-        settings.authorizationStatus == AuthorizationStatus.provisional;
+      settings.authorizationStatus == AuthorizationStatus.provisional;
   }
-
-  // ─── Token Management ────────────────────────────────────────────────
-
-  /// Register the FCM token for the current user.
-  ///
-  /// Call after authentication is established.
-  Future<void> registerToken() async {
-    if (!SupabaseConfig.isConfigured ||
-        !FirebaseBootstrapService.instance.isReady ||
-        !_isSupportedPlatform ||
-        !FirebaseRemoteConfigService.instance.pushNotificationsEnabled) {
-      return;
-    }
-
-    final userId = Supabase.instance.client.auth.currentUser?.id;
-    if (userId == null) return;
-
+  Future<void> _serialize(Future<void> Function() action) {
+    final task = _tokenWork.then((_) => action());
+    _tokenWork = task.catchError((Object _) {});
+    return task;
+  }
+  Future<PushBinding?> _readBinding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.reload();
+    final raw = prefs.getString(_bindingKey);
+    if (raw == null) return null;
+    if (raw.length > 1024) throw const FormatException('Invalid stored push binding');
+    return PushBinding.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+  }
+  Future<void> registerToken() => _registerToken(null);
+  Future<void> _registerToken(String? suppliedToken) async {
+    if (!SupabaseConfig.isConfigured || !FirebaseBootstrapService.instance.isReady || !_supported ||
+      !FirebaseRemoteConfigService.instance.pushNotificationsEnabled) return;
     try {
-      final token = await _messaging.getToken();
-      if (token == null || token.isEmpty) {
-        AppLogger.warning('[push] FCM token is null or empty');
-        return;
-      }
-
-      await _upsertToken(userId, token);
-
-      if (kDebugMode) {
-        debugPrint('[push] FCM token registered: ${token.substring(0, 20)}...');
-      }
-    } on Object catch (e) {
-      AppLogger.error('[push] Failed to register FCM token: $e');
+      final account = AccountContext.capture();
+      final lifecycle = _lifecycle;
+      await _serialize(() async {
+        _requireLifecycle(lifecycle);
+        AccountContext.requireCurrent(account);
+        final granted = await hasPermission().timeout(_deadline);
+        _requireLifecycle(lifecycle);
+        AccountContext.requireCurrent(account);
+        if (!granted) { await _revokeBinding(account.userId, account.sessionId); return; }
+        final token = suppliedToken ?? await _messaging.getToken().timeout(_deadline);
+        _requireLifecycle(lifecycle);
+        AccountContext.requireCurrent(account);
+        if (token == null || token.isEmpty) return;
+        final result = await _client.rpc('rpc_push_register', params: {
+          'p_token': token, 'p_platform': Platform.isIOS ? 'ios' : 'android',
+          'p_session_id': account.sessionId,
+        }).timeout(_deadline);
+        _requireLifecycle(lifecycle);
+        AccountContext.requireCurrent(account);
+        final binding = PushBinding.fromJson(Map<String, dynamic>.from(result as Map));
+        if (!binding.belongsTo(account.userId, account.sessionId)) {
+          throw const FormatException('Push binding ownership mismatch');
+        }
+        final prefs = await SharedPreferences.getInstance();
+        _requireLifecycle(lifecycle);
+        AccountContext.requireCurrent(account);
+        if (!await prefs.setString(_bindingKey, jsonEncode(binding.toJson()))) {
+          throw StateError('PUSH_BINDING_SAVE_FAILED');
+        }
+        _requireLifecycle(lifecycle);
+        AccountContext.requireCurrent(account);
+        _binding = binding;
+        _flushPending();
+      });
+    } on Object {
+      AppLogger.warning('[push] Registration not confirmed; inbox access is unaffected.');
     }
   }
-
-  /// Remove the FCM token for the current device (e.g., on logout).
   Future<void> unregisterToken() async {
-    if (!SupabaseConfig.isConfigured || !_isSupportedPlatform) return;
-
+    if (!SupabaseConfig.isConfigured || !_supported) return;
+    final owner = _client.auth.currentUser?.id;
+    final session = AccountContext.sessionId(_client.auth.currentSession);
+    if (owner == null || session == null) return;
+    // Logout has already raised the local exit fence. Capture the still-owning
+    // SDK session here; the server checks this exact session again on the RPC.
+    try { await _serialize(() => _revokeBinding(owner, session)); }
+    on Object { AppLogger.warning('[push] Remote revocation not confirmed.'); }
+  }
+  Future<void> _revokeBinding(String owner, String session) async {
+    final binding = _binding ?? await _readBinding();
+    _pendingEnvelope = null;
+    _seen.clear(); _seenOrder.clear();
+    if (binding == null || !binding.belongsTo(owner, session)) return;
+    _binding = null;
+    bool localCleanupFailed = false;
+    try { await _localNotifications.cancelAll().timeout(_deadline); }
+    on Object { localCleanupFailed = true; }
     try {
-      final token = await _messaging.getToken();
-      if (token == null || token.isEmpty) return;
-
-      await Supabase.instance.client
-          .from('fcm_tokens')
-          .delete()
-          .eq('token', token);
-
-      if (kDebugMode) {
-        debugPrint('[push] FCM token unregistered');
-      }
-    } on Object catch (e) {
-      AppLogger.error('[push] Failed to unregister FCM token: $e');
+      final prefs = await SharedPreferences.getInstance().timeout(_deadline);
+      // Registration/revocation are serialized; never remove a newer B binding.
+      if (!await prefs.remove(_bindingKey)) localCleanupFailed = true;
+    } on Object { localCleanupFailed = true; }
+    // Native/storage cleanup failure does not prevent attempting server revocation.
+    if (_client.auth.currentUser?.id == owner && AccountContext.sessionId(_client.auth.currentSession) == session) {
+      await _client.rpc('rpc_push_unregister', params: {
+        'p_binding_id': binding.bindingId, 'p_session_id': session,
+      }).timeout(_deadline);
     }
+    if (localCleanupFailed) throw StateError('PUSH_LOCAL_CLEANUP_INCOMPLETE');
   }
-
-  void _onTokenRefresh(String newToken) {
-    if (!SupabaseConfig.isConfigured ||
-        !_isSupportedPlatform ||
-        !FirebaseRemoteConfigService.instance.pushNotificationsEnabled) {
-      return;
-    }
-
-    final userId = Supabase.instance.client.auth.currentUser?.id;
-    if (userId == null) return;
-
-    _upsertToken(userId, newToken).catchError((Object e) {
-      AppLogger.error('[push] Failed to refresh FCM token: $e');
-    });
-  }
-
-  Future<void> _upsertToken(String userId, String token) async {
-    final platform = Platform.isIOS ? 'ios' : 'android';
-
-    await Supabase.instance.client.from('fcm_tokens').upsert({
-      'user_id': userId,
-      'token': token,
-      'platform': platform,
-      'device_label': 'mobio-$platform',
-      'last_seen_at': DateTime.now().toUtc().toIso8601String(),
-      'revoked_at': null,
-      'updated_at': DateTime.now().toUtc().toIso8601String(),
-    }, onConflict: 'token');
-  }
-
-  // ─── Lifecycle ────────────────────────────────────────────────────────
-
   void dispose() {
-    _foregroundSub?.cancel();
-    _foregroundSub = null;
-    _openedSub?.cancel();
-    _openedSub = null;
-    _tokenRefreshSub?.cancel();
-    _tokenRefreshSub = null;
+    _lifecycle++;
+    _initializing = null;
+    _binding = null;
+    unawaited(_foregroundSub?.cancel()); _foregroundSub = null;
+    unawaited(_openedSub?.cancel()); _openedSub = null;
+    unawaited(_tokenRefreshSub?.cancel()); _tokenRefreshSub = null;
+    if (_listeningAccount) AccountContext.changes.removeListener(_onAccountChanged);
+    _listeningAccount = false;
     _initialized = false;
+    _pendingEnvelope = null;
+    _seen.clear(); _seenOrder.clear();
   }
 }

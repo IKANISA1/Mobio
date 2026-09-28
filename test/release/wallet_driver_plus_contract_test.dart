@@ -45,6 +45,9 @@ void main() {
     final walletService = File(
       'lib/features/profile/data/wallet_service.dart',
     ).readAsStringSync();
+    final walletJournal = File(
+      'lib/features/profile/data/wallet_operation_journal.dart',
+    ).readAsStringSync();
     final adminService = File(
       'lib/features/admin/data/admin_service.dart',
     ).readAsStringSync();
@@ -125,7 +128,8 @@ void main() {
     expect(walletScreen, contains('_confirmAndTransferTokens'));
     expect(walletScreen, contains('Confirm transfer'));
     expect(walletScreen, contains('Transfer sent'));
-    expect(walletScreen, contains('SharedPreferences.getInstance'));
+    expect(walletScreen, contains('WalletOperationJournal.newOperationId()'));
+    expect(walletJournal, contains('SharedPreferences.getInstance'));
     expect(walletService, contains('idempotencyKey'));
     expect(
       walletService,
@@ -142,8 +146,9 @@ void main() {
     expect(walletScreen, contains('Redeem'));
     expect(walletScreen, contains('_minimumRedemptionTokens = 5000'));
     expect(walletScreen, contains('_confirmAndRedeemTokens'));
-    expect(walletScreen, contains('redeemTokens('));
-    expect(walletService, contains('rpc_redeem_wallet_tokens'));
+    expect(walletScreen, contains('.redemptionOperation('));
+    expect(walletService, contains('rpc_prepare_wallet_operation'));
+    expect(walletService, contains('rpc_execute_wallet_operation'));
     expect(walletRedemptionSql, contains('token_redemption_requests'));
     expect(
       walletRedemptionSql,

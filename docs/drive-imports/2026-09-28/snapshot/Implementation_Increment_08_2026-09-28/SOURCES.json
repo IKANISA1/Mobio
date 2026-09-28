@@ -1,0 +1,664 @@
+{
+  "previous_delivery": {
+    "folder": "https://drive.google.com/drive/folders/1UilSPU-LXRZ9iyRGbA1pYIpk0_r9pcOW",
+    "file_id": "17wui8IV15uN42AjHwg1lxpdxxxhkIirK",
+    "local_zip_sha256": "c3d09488b6dca370a3af1c29be99b06fc90f6838681ed0868d48c9f18089a315"
+  },
+  "fetched_originals": [
+    {
+      "path": "lib/features/auth/data/whatsapp_login_service.dart",
+      "drive_id": "1YbSdYLwGJo3y8WeeemftoyFREwblR40F",
+      "before_sha256": "0b8a6e5f19d2e8afb6ae2ce516818615c9002f2c3d4e7fa25883133d22566316"
+    },
+    {
+      "path": "ios/Runner/AppDelegate.swift",
+      "drive_id": "1JaFCcJfh3jLCgfdNu6JCJe9FMv6bGmzC",
+      "before_sha256": "86ffdd6efe054e5d726889b19f92259008da1c323b71ca749603f83a7f9e35b0"
+    }
+  ],
+  "current_index_recovered": [
+    {
+      "path": "android/app/src/main/AndroidManifest.xml",
+      "git_blob": "401bd434a52d956a0e72ecca98e398eb5315a238",
+      "sha256": "fbf846a8fac7f8c5a64da28c0c90f677c924ccd613d21e8c9adfa09adbb67efa"
+    },
+    {
+      "path": "ios/Runner/Info.plist",
+      "git_blob": "c8b052b44b377d2bedf9d4123611391b53bafe93",
+      "sha256": "bbf10e5815907e586fd6d9199d8c970593757a57cbf1c2031ac2567bf76c937f"
+    },
+    {
+      "path": "ios/Runner/Runner.entitlements",
+      "git_blob": "936593d667a43f1cb18616d0863f3a78249bc1fe",
+      "sha256": "6708163ec7d98bce395f4c35fdc6d335253cafe4d541352d7264132b8c5b05ba"
+    },
+    {
+      "path": "lib/app/router/deferred_route_loader.dart",
+      "git_blob": "ac503382cf7462f3acd3f7d830dbe6f42fafcaaf",
+      "sha256": "3a9f5615f200955afe29f878717099fafc8864be0b35eea67db4c693bb5b3a9a"
+    },
+    {
+      "path": "lib/app/router/error_screens.dart",
+      "git_blob": "3d482691e0b256d0947c294d14b2c76896adc955",
+      "sha256": "9ecd586028a77aec5abd90a71a2b6cc52aa82ce35f4a40c787aac164406a1681"
+    },
+    {
+      "path": "lib/core/utils/navigation_utils.dart",
+      "git_blob": "f11f74ff39fb88ce5199357cdc0645e89b768d79",
+      "sha256": "83d6a283d21c38d16e6cc021001aa262731da63c26899cbf4f04aa4b72e3988b"
+    },
+    {
+      "path": "lib/features/admin/application/admin_users_provider.dart",
+      "git_blob": "3b3eeb0e032aa07388f774dd31ea92d5b452c798",
+      "sha256": "68d4263d9f169e9938e7be1fc89030ab9417b265a51fe0a92e4ced7423526ab2"
+    },
+    {
+      "path": "lib/features/admin/application/admin_users_state.dart",
+      "git_blob": "d83507a5c677c869c20c159a00eae87170dd84c5",
+      "sha256": "acf0e71971468592fec6f8f968020cf0e92c232390c4de40edda7827d3bf8cc9"
+    },
+    {
+      "path": "lib/features/admin/presentation/admin_broadcasts_screen.dart",
+      "git_blob": "19f2e01541f6d93c3de3f9916e81d3c5f3af6d64",
+      "sha256": "bcae0fd6f515b5f69a1fab908dc12135b210247e5d8e2983b6cd38ebcbf8b2a3"
+    },
+    {
+      "path": "lib/features/admin/presentation/admin_transport_agencies_screen.dart",
+      "git_blob": "cd96d28c14d5d841d2c53938a030ed393d889610",
+      "sha256": "08bff9a93fecb1dee4bcabe964f911352fb31a74fa88ef6b7779003cf49f30d6"
+    },
+    {
+      "path": "lib/features/admin/presentation/admin_trips_screen.dart",
+      "git_blob": "3d7d1796c4409a8e966e90c0dc2bae633d17a49a",
+      "sha256": "fbf7bd11a1c7bd4051aad042326e49204d510a4cbd9257502ac4d9162eff4490"
+    },
+    {
+      "path": "lib/features/admin/presentation/admin_users_screen.dart",
+      "git_blob": "514fb15cc9bf43e313fb4b7355919768f2940645",
+      "sha256": "da148e7d461ea3cae279eae8144efcd448659d3281b0f38f1dbe02c9d319a687"
+    },
+    {
+      "path": "lib/features/admin/presentation/widgets/admin_ui.dart",
+      "git_blob": "faec4a28c39089bffc03733ef837616cd3dea65f",
+      "sha256": "eeb5255d50cf75a470cb932a5c42c3c5ca114c581d009367dcc2c78bc979439e"
+    },
+    {
+      "path": "lib/features/admin/presentation/widgets/admin_user_widgets.dart",
+      "git_blob": "b1da5356c6194c3ef8ea7af9d645a2f79565400a",
+      "sha256": "3ecd88a4e477aac511ba61f96799ef033db93107cfb8f13a7d4fc3ebb0ad2f95"
+    },
+    {
+      "path": "lib/features/biopay/application/biopay_providers.dart",
+      "git_blob": "33a21e70966df31197b056e6bc8f14fba53b291b",
+      "sha256": "e91a5d05bf0a7362363f7609a0e03c34711906db82e866cfe58e0cb1e3764965"
+    },
+    {
+      "path": "lib/features/biopay/data/biopay_admin_service.dart",
+      "git_blob": "b9b197dd10a07f1a2f27e36be677e989c8d6e208",
+      "sha256": "07f89bd5f077ecacffdcedf934c08b40963840e4fb98ce078e1636b67c5c11f0"
+    },
+    {
+      "path": "lib/features/biopay/data/biopay_ussd_service.dart",
+      "git_blob": "70a27098ba133c52939e9bacc3b9cc3094164bd2",
+      "sha256": "b2f280a2f115ae8ec8f086e25752cb2b82f7fb61058981ca12267d55ef67a8b6"
+    },
+    {
+      "path": "lib/features/biopay/data/face_capture.dart",
+      "git_blob": "06da9b36a8c3456fe6c6d4b660cf5869d3ae318e",
+      "sha256": "00788a9e72dbbf450278767254bb7c3a42b46901343e93ea6874fd9f9ad3de59"
+    },
+    {
+      "path": "lib/features/biopay/data/face_capture_file.dart",
+      "git_blob": "e62048b442f9dcd5da6ea1c06ea02204a9bcafcf",
+      "sha256": "c367a962d34b80186a55027f7bbc808e52f5c674a675e3341479a3c8c9d49bd2"
+    },
+    {
+      "path": "lib/features/biopay/data/face_capture_file_io.dart",
+      "git_blob": "9eb6bd60be3f81c724d9c5a5862f29f2177ec8a2",
+      "sha256": "2248228d2fe34bbf078e00c983461584bd5272342da1273eb5cfaa90f4e6c0c0"
+    },
+    {
+      "path": "lib/features/biopay/data/face_capture_file_stub.dart",
+      "git_blob": "cd85fcf264acab1cb336f07c0e956547bd3b7859",
+      "sha256": "427618f9f45c1d09d79837835af8731cabada0ff2a4bae9618c3e60f1ba8e1ae"
+    },
+    {
+      "path": "lib/features/biopay/domain/biopay_admin.dart",
+      "git_blob": "e6244309c907a56313669966ca6e93a7f1c84f04",
+      "sha256": "9e5e0a00765638350d5e4329820335bc594f08651a3eeee7702670e44cba6734"
+    },
+    {
+      "path": "lib/features/biopay/domain/face_shortcut.dart",
+      "git_blob": "50e72474d856e1b452722dfac95be0d3e40340fd",
+      "sha256": "cd3e0450d14daaf6471c160457c6d1477449f048e3739b8b832ba0d4893e0b4d"
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_admin_console_screen.dart",
+      "git_blob": "580dbfdd72b3445434c9a33c6ff58eec539f6641",
+      "sha256": "10b52fa73fccba33bbd21b370fbfc6ff534e6c23ee67467404d14e3f6fadf0ac"
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_face_enroll_screen.dart",
+      "git_blob": "435254d04fe75ddc8c388b9a7bd6fd733c245355",
+      "sha256": "7902a68b4e8fe0499b454167a9af5f791626a3373ceedc33a1dbd012e30756d6"
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_face_scan_screen.dart",
+      "git_blob": "0d842bd79234bbdead6ee8eeb8943af196686b26",
+      "sha256": "a000defb376fd361d6a638c2eea52781852fa0875c8aea15ee3b6c8596d99507"
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_flow_shared.dart",
+      "git_blob": "867031097ad04b4c255de2d87280ceb49ba614b1",
+      "sha256": "3f6b0de57c39dd42709461deffc6f23acdf87b09b327c9877954d5bc3d69764c"
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_home_screen.dart",
+      "git_blob": "7e0e8557092399661fd1174712d303cb1e9acda3",
+      "sha256": "be8c41dd6b1517f5b5a0e31c393bcb2ac3612929468508f60b566217ad857381"
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_nfc_foreground_listener.dart",
+      "git_blob": "254295f3889dc2f9e17fa7634b75d3ad3fd6b7b8",
+      "sha256": "e033aca3b74adcf4aa3a318b75cba893a5d03cbb25b0a8c3289d5a738e845407"
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_nfc_screen.dart",
+      "git_blob": "6d6f10218be6d5d5703d8cf799e9d59b2eeb5a03",
+      "sha256": "216e26776aa8dc59865cbfc06c824a69feeb8e2a93555345906e426e463297b2"
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_nfc_write_card_screen.dart",
+      "git_blob": "d61ae7c5e887a279ace9bebf213ea3483d0d9472",
+      "sha256": "836507316e1f63059dab16170b77b021c61419a6d9119311affbfe9489b20097"
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_request_payment_screen.dart",
+      "git_blob": "8d283eb4c090bd3b6d31fbd0c0ddcceb58762055",
+      "sha256": "95daaac0fcb7520a2f9a25b71c9b1c5b160405fd6d0887d4db20f909136de5f7"
+    },
+    {
+      "path": "lib/features/biopay/presentation/biopay_scan_screen.dart",
+      "git_blob": "c9c302213fbe45053a2eb752d4185588c89645f1",
+      "sha256": "30146c0d7943f4f4cb52dbaa8cb96a8c940988d364f9cd2ead5d7c8b2e0b5307"
+    },
+    {
+      "path": "lib/features/biopay/presentation/payment_library_screen.dart",
+      "git_blob": "918e8e0ac5ac016c2ec2fc9f67a26cc6031376db",
+      "sha256": "59e87d58956a6d41f6078647c8540f37b374c488ed1bed0d33e073deb87030d6"
+    },
+    {
+      "path": "lib/features/biopay/presentation/payment_link_arrival_screen.dart",
+      "git_blob": "84878df4d96bf20f04db14f8df78242cc7fe6a19",
+      "sha256": "46f557b2edd77b965b713b1999a1cb8baf8872f26b98e9396801f73b72caecd6"
+    },
+    {
+      "path": "lib/features/biopay/presentation/payment_methods_screen.dart",
+      "git_blob": "b1a2ef9c68d2e9415e452dc19f17247a7c2c5d28",
+      "sha256": "0f4564d62971d53cb986edd6f8b8a4892a2e93aa86a0f2f11ae7cfe72fd2429b"
+    },
+    {
+      "path": "lib/features/biopay/presentation/payment_nfc_link_screen.dart",
+      "git_blob": "23f720a2543349847fb87a9cdcaee4bdd21b0a02",
+      "sha256": "bd222780b118b0385f07e837f0b54cc99bb07286ce5b34e7e457d33b9bfb4498"
+    },
+    {
+      "path": "lib/features/bookings/application/schedule_trip_state.dart",
+      "git_blob": "41fcc95c7685527a60b9cd24baf8b9c634ca5cca",
+      "sha256": "0f82192530c02b7a8a834d7e22969513d56f28cd5735bd3825da813eb50401ae"
+    },
+    {
+      "path": "lib/features/bookings/domain/transport_agency_catalog.dart",
+      "git_blob": "25c601a03dc1f3b49c5afd2e40c6bae66c0ff0c3",
+      "sha256": "2feb0efe77f902a66c91b8b4e6ccbb454c365ed7971f78a9cf41090a92904b81"
+    },
+    {
+      "path": "lib/features/bookings/presentation/schedule_trip_screen.dart",
+      "git_blob": "af34989645093abd2f302ff1f8b81a473513eb48",
+      "sha256": "7a1c38a30782d13c4e1b39f77c6225a5bf9f5ee6bb93bf683a3a31abba9bd02a"
+    },
+    {
+      "path": "lib/features/bookings/presentation/trip_details_screen.dart",
+      "git_blob": "e5f4b6035e236d0e47d3b110fafc7369c56adffb",
+      "sha256": "2af3f7f5bd889216c114eb4dec00f79ecf2bbc7428f059c56a536844bc74c84f"
+    },
+    {
+      "path": "lib/features/bookings/presentation/widgets/trip_repeat_picker.dart",
+      "git_blob": "54cb9f5549bda34c74ef58d49b80091aa8bf49b8",
+      "sha256": "9a8f28e9d764ee3e13b1ce2dba6842ace1a4fda87caa0f0365e16af09a8dee1e"
+    },
+    {
+      "path": "lib/features/bookings/presentation/widgets/trip_vehicle_grid.dart",
+      "git_blob": "b28c3159cf9691aff14e4193c6404d269eb81107",
+      "sha256": "52de62f3f19c25eb8a535c861da3906b575fee6b7c14aad97363430c43db0898"
+    },
+    {
+      "path": "lib/features/chat/application/chat_providers.dart",
+      "git_blob": "19cc893dccb2389c6aa2e0e82551688bccdd1c69",
+      "sha256": "137e8ac0c6590b54f6de039a23cad0ebf0eb8ca779e6c79537be49d3dafd2221"
+    },
+    {
+      "path": "lib/features/chat/presentation/widgets/chat_message_bubble.dart",
+      "git_blob": "83b5b7cf1959824b1165acdbde31d9945a25f482",
+      "sha256": "49fc2cff0e98658e4aa43ec1babe45456dc376fc39d78b25cf10311e7ff2e43e"
+    },
+    {
+      "path": "lib/features/chat/presentation/widgets/conversation_list.dart",
+      "git_blob": "4f6a1fd8643978bbe89d00794cdaea7bfa9478d9",
+      "sha256": "ae347c4970e582826b52f11f3827f21deadbad068a8db0f504a49321b24ae9fb"
+    },
+    {
+      "path": "lib/features/ev_chargers/presentation/ev_charger_locator_screen.dart",
+      "git_blob": "33c390bb9727f5b4cdfb5fbe60500a7e8ed79eac",
+      "sha256": "3bfbcfae5b5ef2a1a5d3858b164db12eecdf7d4e8e208259ee9217bb682e7b2f"
+    },
+    {
+      "path": "lib/features/home/presentation/home_screen.dart",
+      "git_blob": "bd034870fc20795545e3d4fb59cd2d79d8b5a9de",
+      "sha256": "e7c4da68637f84ce48974e198b84b5948b01402da6a7e0729b5f6296dbcc906f"
+    },
+    {
+      "path": "lib/features/home/presentation/widgets/home_header.dart",
+      "git_blob": "d203e6b14a5ae0708c23b0f5c4de530897d394fb",
+      "sha256": "23deb491c4be19c82de2b126fb39395983aa4fd8e5984591cda26f30433c2723"
+    },
+    {
+      "path": "lib/features/home/presentation/widgets/home_hero_card.dart",
+      "git_blob": "93157345f5b16af967a2a0ec5d3a24a3f6bb65b9",
+      "sha256": "9ca89c44ce13c451c088034cb20b07e732fcd9b9f29dd7530c730145d769565c"
+    },
+    {
+      "path": "lib/features/nearby/presentation/nearby_screen.dart",
+      "git_blob": "18bfb3888afe4a4809c6baea8bf64d2036a809c7",
+      "sha256": "9d8d62c17789f603db2ce13c0fa6bdb93f173085cb83aa3003d14d1192840e22"
+    },
+    {
+      "path": "lib/features/notifications/application/notification_services.dart",
+      "git_blob": "1eb7fa990e621737fad8b6d5098c85a6a1e2cbc6",
+      "sha256": "62ade47f08aed272dee14d9c405061b2654499d4f2e4dff4f4ebccca25b0409f"
+    },
+    {
+      "path": "lib/features/notifications/data/notification_service.dart",
+      "git_blob": "925f2d10db60ebc3d2185fde8d66b27881a285d2",
+      "sha256": "5de4858517abd38b72983cf97452a6c035cd75ca5cc1a8cc06703f7b0f521e4b"
+    },
+    {
+      "path": "lib/features/notifications/presentation/notifications_screen.dart",
+      "git_blob": "320c62ee34d6ab2e0a2061e32499065ea58382b7",
+      "sha256": "e6c49097c3e522e530dd49eb3d725a4ff4df3a2281f7d19270ffa7ae88effafb"
+    },
+    {
+      "path": "lib/features/profile/application/edit_profile_provider.dart",
+      "git_blob": "06ff28cadbef807d7fc6f65d6b7378098871fa2f",
+      "sha256": "47121f4d0dbe51e8ced5b9cbb1cf3c135cffd7d0998523f20fcf6c01baa8d283"
+    },
+    {
+      "path": "lib/features/profile/presentation/edit_profile_screen.dart",
+      "git_blob": "17a253afc6d8f8f840c3454577290a93bea0d161",
+      "sha256": "74d29cc500e731d48297e5655b4a6616bacad38ba051edcee514ea83fcec1829"
+    },
+    {
+      "path": "lib/features/profile/presentation/widgets/profile_contact_section.dart",
+      "git_blob": "a494ebe23bcea68bc0abdd945cea52093847f877",
+      "sha256": "645d1e28a45421be866caf4a0dabec1bd55fe942dfef78d6c821b3fe35d1f172"
+    },
+    {
+      "path": "lib/features/profile/presentation/widgets/profile_driver_section.dart",
+      "git_blob": "dcadf08ca48a2bcaad32ed24dcdfec8b644d691a",
+      "sha256": "52268025f97883a83ac53aa259f3d15f8be565a768a955ef7d067bd0d36eba06"
+    },
+    {
+      "path": "lib/features/profile/presentation/widgets/profile_vehicle_section.dart",
+      "git_blob": "c6520098c4e875392f629a014ac630105dded57e",
+      "sha256": "832a7589c8a50856007629f58441418f2f682e6dcefea7079d08c9e958d49094"
+    },
+    {
+      "path": "lib/l10n/app_en.arb",
+      "git_blob": "b20ba04c54001c11fb30f06bf95cd51e14f345d9",
+      "sha256": "ca961ef03a15fd26855afa9c5b02494d63004eee12448587b1e5abfcd558c85d"
+    },
+    {
+      "path": "lib/l10n/app_fr.arb",
+      "git_blob": "e23513606a14022516c70c9741919a324ced8eef",
+      "sha256": "db491d4b586c66226092d7389fa5c1e2c3c0e31a28be51835e5b924da8534ada"
+    },
+    {
+      "path": "lib/l10n/app_localizations.dart",
+      "git_blob": "a7a0b834260b3fc612964cd06b78d8d9d2167cd0",
+      "sha256": "3212b7398d2bbfbdc058ebe3bdcbd7383388d6164ca893cea98345e567c6142f"
+    },
+    {
+      "path": "lib/l10n/app_localizations_en.dart",
+      "git_blob": "2a426d67b10afcb6ef5fe2509192d9358789cd1b",
+      "sha256": "7441cc56ce531ad5e4e943236f6a069a0bcc0307a031038a6ad47bfec877a4c4"
+    },
+    {
+      "path": "lib/l10n/app_localizations_fr.dart",
+      "git_blob": "93b5973b3751cd819baf3846966eca5bc35fdbb1",
+      "sha256": "f7d9371e8fe3f53d1076e38ed86e2ec20277bddf80794a943429c816915b2309"
+    },
+    {
+      "path": "lib/l10n/app_localizations_rw.dart",
+      "git_blob": "a7f64f31a09cc97c261b9ef0c5a126243e95d175",
+      "sha256": "eb6eed6f3d3e38f0a578148ccc7d4863192fb91130280bf7e9f27fda41fef6c4"
+    },
+    {
+      "path": "lib/l10n/app_rw.arb",
+      "git_blob": "4e739c7228a4c5b97c7f8c995fdf23074e369887",
+      "sha256": "80994c89ea0abc19b699f36e875b1531bebb0fdb771422578f1e1d72361eebd0"
+    },
+    {
+      "path": "lib/shared/widgets/connectivity_overlay.dart",
+      "git_blob": "caaef6815804d3f7442c8006ed004972453e9dbe",
+      "sha256": "17043c7477b418164534d7ca97db56ada17beba075066a60d918ec5db26d3acd"
+    },
+    {
+      "path": "lib/shared/widgets/glass_card.dart",
+      "git_blob": "9032171cec434b25a6c5790b9e6a3a367e2cde7b",
+      "sha256": "a902f6197facc24da18855fd0bc4cd7d3b20e8af4f43d70854c41cf1e0053fe5"
+    },
+    {
+      "path": "lib/shared/widgets/loading_skeleton.dart",
+      "git_blob": "880a3e18f1e9386eb4bbd3230d5bf0d41aa3b052",
+      "sha256": "d7caa15f160e8a9fc69883ff24a59979791998c702c73f5222bc593189fb3597"
+    },
+    {
+      "path": "lib/shared/widgets/mobi_bottom_nav.dart",
+      "git_blob": "6600037089613cff05a62f2fd8d6e7e679751a75",
+      "sha256": "be5e994fa55c0321cd5986a271517afd8c70c88221faaaff37f9ba4372943665"
+    },
+    {
+      "path": "lib/shared/widgets/mobi_bottom_sheet.dart",
+      "git_blob": "27a0ad613012334dc5b2cfcc6af64c056a76563a",
+      "sha256": "680e8205a72146a51c0e3ea2321dda43f374bf6f4cedd3b7d74aeb45eb3e68fd"
+    },
+    {
+      "path": "lib/shared/widgets/mobi_button.dart",
+      "git_blob": "acde9386ca2b497d9e6dc005d6b422d0fb46e5ae",
+      "sha256": "16cabd15274fa1b778dc213deca5db64fdeb13c861e70b32a2de6fb09469b5ab"
+    },
+    {
+      "path": "lib/shared/widgets/mobi_info_chip.dart",
+      "git_blob": "53349d7aff9eb3de48cb25dc8f7310085929715f",
+      "sha256": "bacd667575ab0f429bb1be23d1e45dae213bd26f90994cfdcfc7e4c21cc9a1ab"
+    },
+    {
+      "path": "lib/shared/widgets/mobi_input_field.dart",
+      "git_blob": "84cf7580c182f0eec1c8b891b6ab045fdeda2f80",
+      "sha256": "fa037c54dfd13eb4e3c786f2a24d5db2e0f0b97200bb1fa0bea440da0aab7815"
+    },
+    {
+      "path": "lib/shared/widgets/mobi_motion.dart",
+      "git_blob": "fa02d0ec42d2445785afc966b84100198d65a39a",
+      "sha256": "f47c585c04dbc90108e0b1262bddb2d06ce52e90c018d059eedef51f9a868fef"
+    },
+    {
+      "path": "lib/shared/widgets/mobi_page_header.dart",
+      "git_blob": "b4091a09fc8be3c822c26c69464bcd8b4e0fd1c2",
+      "sha256": "19f663a9c1b8aa5c4bd59cc8782afd28f76f9cc1c789e36a2e0c0f9ee988803e"
+    },
+    {
+      "path": "lib/shared/widgets/mobi_section_header.dart",
+      "git_blob": "f982de5331935ecdf7bc612f0ba09f91b4897763",
+      "sha256": "dc2c10e8e45663f1d6db40e13f3cb294314311d1aae1ac37ae6bd652e1544bb4"
+    },
+    {
+      "path": "lib/shared/widgets/mobi_status_badge.dart",
+      "git_blob": "96228284d83029357aadef4820b6b69370f4dc6c",
+      "sha256": "808ed75e9dce4b828b9bcfe7d74ed6a32628722aa15c158541729c64692df442"
+    },
+    {
+      "path": "lib/shared/widgets/mobi_toggle.dart",
+      "git_blob": "e960f2dcc80f207186d649c8548aad419c685faf",
+      "sha256": "60e3e09e02863c7a8e5f51c072c8812c0fafde4fb7822853577bd3d7734bf89f"
+    },
+    {
+      "path": "lib/shared/widgets/otp_code_field.dart",
+      "git_blob": "4d2e9ead770c5c02c54f9e8292417663dd420001",
+      "sha256": "e4a3c7b05beb64e80d6ca3723d8b94b377164d12b704bc834184f3f11f723068"
+    },
+    {
+      "path": "lib/shared/widgets/permission_access_dialog.dart",
+      "git_blob": "3977abd78f51be199e93a5c1707fa265b838128e",
+      "sha256": "f4e69e92e753b83c5286dff029aec96e07a38655a55d27d2e43c5952f010f99b"
+    },
+    {
+      "path": "lib/shared/widgets/place_autocomplete_field.dart",
+      "git_blob": "57db3ac3efcbaea917739389a7b6e1a34021fa6a",
+      "sha256": "0b091dfb68d73e6980917a7014974360daecba141037b88b7f016964730e1c11"
+    },
+    {
+      "path": "lib/shared/widgets/platform_feature_notice_screen.dart",
+      "git_blob": "c1d8527f3326bc472b30696e47f1054d08c0e390",
+      "sha256": "55cee6cdec0b718d0959143f7d2ba4234293aaa46783f18d2c304fb9bbc813e0"
+    },
+    {
+      "path": "lib/shared/widgets/tappable_icon_button.dart",
+      "git_blob": "9b26b3b0373070c7d933af563f24071191a3a4d8",
+      "sha256": "a5289680030f2aee675b5353101edc3538c48aed90cfab3282b6dd122124077b"
+    },
+    {
+      "path": "lib/shared/widgets/vehicle_filter_chips.dart",
+      "git_blob": "320bd985a1aff2df47928c87077458f888df3c6e",
+      "sha256": "9ca49de4d4e9da373d479c51d92f6110c1f3c069af5a04b62628f24238de0f6a"
+    },
+    {
+      "path": "lib/shared/widgets/whatsapp_input.dart",
+      "git_blob": "9aea73133b3adefe98610f87330a1bafbb3b7fb2",
+      "sha256": "44696559d960377ae0e73ee15e46d996b93e510fe3b20fe4009a98c90fe5930a"
+    },
+    {
+      "path": "scripts/ci/verify_backend.sh",
+      "git_blob": "a3c0ad8f751314d7ab8005bc2cabe325a6e87a93",
+      "sha256": "f92edb5a6e1624c033dc0bbea2ba6cfdaca2b8be61b4d459bb506518126d4ccc"
+    },
+    {
+      "path": "scripts/tests/admin_service_worker.test.mjs",
+      "git_blob": "4988d9cb6b7df23f0b45f3147d390d690672ade4",
+      "sha256": "638516356e3c4684135786966db1350415eabad9116fc8397ba75198809bcc5a"
+    },
+    {
+      "path": "scripts/tests/pages_worker.test.mjs",
+      "git_blob": "74733fab63f50bc06ff9419e71e9f3225ec2338c",
+      "sha256": "6b6f3dfba2397118d54800c0dbd2ff77cf966acb2aa8faba9be2fb56ec6059f9"
+    },
+    {
+      "path": "scripts/tests/test_pwa_packaging.py",
+      "git_blob": "cff44b3984b86c61e5a0c0a32285efe4971760ea",
+      "sha256": "2b1f302f134db421a53a33b8906ac9e75418f51272ff4bc0d67fe14894d69de4"
+    },
+    {
+      "path": "scripts/tests/test_version_assets.py",
+      "git_blob": "d22a6889060ad0e326462be64e81fd433718ce9b",
+      "sha256": "afb0b6f7432324425feb3c1d3077dcd546cc644fbe9240002c6e5160a94fd7c0"
+    },
+    {
+      "path": "scripts/web/admin_service_worker.js",
+      "git_blob": "a147ea14e50270c3f65724808bc7ac6bb6480891",
+      "sha256": "c32a1e705ca6bf08085a7c34b93cb8ab9473cafb590d91c6cc00f0815fb52d37"
+    },
+    {
+      "path": "scripts/web/build_cloudflare_pages.sh",
+      "git_blob": "a315ac44a1bb430dc90a67ef48b66194a7802f6a",
+      "sha256": "b9792167d14fff0b396c71d3f1585355c2183553915128f41c9e24a126933422"
+    },
+    {
+      "path": "scripts/web/build_visual_proof.sh",
+      "git_blob": "58cfa8fb050de5251dc9a22e233e46bc5e254705",
+      "sha256": "68caacc17c82e0f30524f03fc9ea9126608ceed9826ce008c52229ae18bdb752"
+    },
+    {
+      "path": "scripts/web/fetch_previous_assets.py",
+      "git_blob": "2f1953e063b19c7efe8e237a238daf1cc37cae65",
+      "sha256": "f4b74ef8b8eabc169886e0548dd5341cb1515d92748f59c60a102575e7d3b5a3"
+    },
+    {
+      "path": "scripts/web/pages_worker.mjs",
+      "git_blob": "0ac3002a39bc1d8d233d73789afbef036ba04ff7",
+      "sha256": "39d9363a29b5f770a1599356eb41ef7483a44b5ed40292a086378f10e611a14a"
+    },
+    {
+      "path": "scripts/web/prepare_pwa_bundles.sh",
+      "git_blob": "07511b2a88f4bcad8dba8b0ddf450f3b569b8e7c",
+      "sha256": "7a726cf91cdd4db9bf56cab14cdd1d255151eeb140c849c7a6513c8aaefe8e6f"
+    },
+    {
+      "path": "scripts/web/stamp_bundle.py",
+      "git_blob": "984a5704af7cbd5278fcc822c93f8b68a8756893",
+      "sha256": "6201f2fb3ddd5a015d866bb931647d9e75cd634091c1ea679faa854d3f62724b"
+    },
+    {
+      "path": "scripts/web/verify_public_release.py",
+      "git_blob": "9bb976465ab8169187cf361a77595ebed792367d",
+      "sha256": "2d5c304997e1eb8720afefb1388684d80ac60b14b74e910c4f7d46c63cd46a70"
+    },
+    {
+      "path": "scripts/web/verify_public_site.sh",
+      "git_blob": "fd16bec986b5f2781f88f822801ac4c93214c4f2",
+      "sha256": "ea22e0d5cf0b4e40793dec69ce2437ea40233530c08ac24e3323e640cb11aa80"
+    },
+    {
+      "path": "scripts/web/verify_pwa_bundles.sh",
+      "git_blob": "afbd46ae745920b40af100395db992a854300c07",
+      "sha256": "bd5723db93673154d0aac7565c9b744fd23403438798e488182ff7e73df0233f"
+    },
+    {
+      "path": "scripts/web/version_assets.py",
+      "git_blob": "c3448dec7c3ea78f75734eb15fa21af89528a86a",
+      "sha256": "f75bcc1e8cee860be8880c3af920b7ac61ebcb43c4676c7841c727ad2cfb7969"
+    }
+  ],
+  "regression_dependencies": [
+    {
+      "path": "supabase/functions/_shared/app-auth-audit.ts",
+      "git_blob": "4d9d3ee963ecf2e87a99c9889b01f25c16563963",
+      "sha256": "d991c0fa496647adf648aa0b79cd74eaf45aeb482b2f9b3a07ef6af78323323a",
+      "origin": "existing mounted Drive source; exact current-index match"
+    },
+    {
+      "path": "supabase/functions/_shared/http.ts",
+      "git_blob": "c92917315ca58087db0ba829e2a2e78d6c35fc2f",
+      "sha256": "da285e38feee47a7a977162485741e01e47f5ce03ab59028216e1f04157b961a",
+      "origin": "existing mounted Drive source; exact current-index match"
+    },
+    {
+      "path": "supabase/functions/_shared/phone.ts",
+      "git_blob": "a3813c228f8f8d06d7114d0eae6775ca22b41ef3",
+      "sha256": "113c9e9863330c50a57689c89d8a5beb3790e59475e4274988cf96aa5cf8b8f3",
+      "origin": "existing mounted Drive source; exact current-index match"
+    },
+    {
+      "path": "supabase/functions/_shared/play-integrity.ts",
+      "git_blob": "1b557d8e93211d94b245e79cf5544acfd71b35e3",
+      "sha256": "7c0a27792601fce40675cedf26d24ae636d9fec1bd522a1f6e774043fdda66e9",
+      "origin": "existing mounted Drive source; exact current-index match"
+    },
+    {
+      "path": "supabase/functions/_shared/play-review-login.ts",
+      "git_blob": "35fc9f2d34f4453c0e5be66a917373085b5ddc5b",
+      "sha256": "c8eefb3f2ec19173ff809d407b212202c2b4a97030201536fcdff722bf429279",
+      "origin": "existing mounted Drive source; exact current-index match"
+    },
+    {
+      "path": "supabase/functions/_shared/sms-collector.ts",
+      "git_blob": "a4c523be4296cf6039e81541b7c0c71a4ce253bd",
+      "sha256": "44643fc91aa1e86a7bb9d81f733af0de6a3a6ce0aa4bfa539a09d0e7c9add949",
+      "origin": "existing mounted Drive source; exact current-index match"
+    },
+    {
+      "path": "supabase/functions/_shared/supabase.ts",
+      "git_blob": "6d5b9a899060c7e38ee8d4a38ce5c8c2c231ea5c",
+      "sha256": "5ad341631e1f069c000fe66c3b2191bc3935785b580884014098d0f852ab9c6a",
+      "origin": "existing mounted Drive source; exact current-index match"
+    },
+    {
+      "path": "supabase/functions/_shared/validation.ts",
+      "git_blob": "31c7c5327c08ba8664922d82d68b4dfa544013fd",
+      "sha256": "b8ed51e8bd962d25b7fc7e15ee42e5cd526a21a764d49482f3ddce253351858a",
+      "origin": "existing mounted Drive source; exact current-index match"
+    },
+    {
+      "path": "supabase/functions/_shared/app-user.ts",
+      "git_blob": "496b774e7801b736dc9d9cc60fef715701166533",
+      "sha256": "9aef9b1d13743852dacc4944d419af39e1517e88dd72a1f960efde74600b2b73",
+      "origin": "unchanged current-index blob from available original pack"
+    },
+    {
+      "path": "supabase/functions/_shared/app-user_test.ts",
+      "git_blob": "b1c3a103fca0037604f7f2c423257ad42229d2cc",
+      "sha256": "aa5c4e4841c50e1de0999239d18f61d8c46e07ca11871faf31b1227c5db40582",
+      "origin": "unchanged current-index blob from available original pack"
+    },
+    {
+      "path": "supabase/functions/_shared/biopay-authority.ts",
+      "git_blob": "b20606cff6c76ee843009ca15a4ff3539778a102",
+      "sha256": "b459d73f79643132c91190a27ca15d47e938204cb3f78bd75755d5cfe472cedb",
+      "origin": "unchanged current-index blob from available original pack"
+    },
+    {
+      "path": "supabase/functions/_shared/face-provider.ts",
+      "git_blob": "bbae074d73b7dfeb136169cb18baf059212bec9d",
+      "sha256": "460b4c2cb954b66aac3e5340a73b94fe9a493a6f178797c270f829c950e2a45b",
+      "origin": "unchanged current-index blob from available original pack"
+    },
+    {
+      "path": "supabase/functions/_shared/otp-security.ts",
+      "git_blob": "e25d743d3ee87371326a293cf2f7095fe45ca80a",
+      "sha256": "2f71d4123fb8d9d9c020a8ebd178989d3e2cf97bf3579578cfa5a88f0822590c",
+      "origin": "unchanged current-index blob from available original pack"
+    },
+    {
+      "path": "supabase/functions/_shared/otp-verification_test.ts",
+      "git_blob": "9848746e49ff4f11a7d844212c91bc17c62d8d17",
+      "sha256": "982b0e5d8c6eb9f377e8b40a33495ef541d0325b2f5f5405ca10efcce63ab49b",
+      "origin": "unchanged current-index blob from available original pack"
+    },
+    {
+      "path": "supabase/functions/_shared/sms-collector_test.ts",
+      "git_blob": "e4b7272888511aa2afd8781350518934e5cc424d",
+      "sha256": "94f91a7dbf0edf444fe8c00cddfc10b47a2177b7fdccf5b2ea6d52cab592442a",
+      "origin": "unchanged current-index blob from available original pack"
+    }
+  ],
+  "technical_primary_sources": [
+    {
+      "url": "https://pub.dev/packages/supabase_flutter/versions/2.12.0",
+      "use": "Existing locked LocalStorage methods and default SDK key; no package upgrade."
+    },
+    {
+      "url": "https://supabase.com/changelog",
+      "use": "Current change review; project/provider behavior not inferred from changelog."
+    },
+    {
+      "url": "https://developer.android.com/privacy-and-security/keystore",
+      "use": "Nonexportable AndroidKeyStore AES key API; hardware backing not assumed."
+    },
+    {
+      "url": "https://developer.android.com/identity/data/autobackup",
+      "use": "No-backup storage and backup/transfer rules."
+    },
+    {
+      "url": "https://developer.apple.com/documentation/Security/kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly",
+      "use": "Device-only nonsynchronizable accessibility policy; background access after first unlock is deliberate."
+    },
+    {
+      "url": "https://api.dart.dev/dart-core/String/operator_multiply.html",
+      "use": "Test fixture string repetition language API."
+    }
+  ],
+  "skills_used": [
+    "Google Drive",
+    "Supabase",
+    "Android emulator QA",
+    "spreadsheet artifact_tool"
+  ],
+  "source_boundary": "Partial indexed recovery plus previous overlay. No complete main revision established. Prior Mobio Supabase permission denial was respected; no live changes.",
+  "source_root": "https://drive.google.com/drive/folders/120JIOTyeNX6nHaHPDqS3UgbaTWyJAE57",
+  "delivery_folder": "https://drive.google.com/drive/folders/16uKtJ0pDmn_uVnlo7Tpt-ittYxnwhvrC",
+  "source_access_readback": {
+    "anyone_role": "writer",
+    "allowFileDiscovery": false,
+    "permissions_changed": false,
+    "as_of": "2026-09-28"
+  }
+}

@@ -57,6 +57,7 @@ def main():
         app / "app/src/main/java/com/momobio/app/SmsQueue.kt",
         app / "app/src/test/java/com/momobio/app/SmsQueueTest.kt",
         app / "app/src/main/java/com/momobio/app/UploadClient.kt",
+        app / "app/src/main/java/com/momobio/app/CollectorPolicy.kt",
         app / "app/src/test/java/com/momobio/app/UploadClientTest.kt",
         app / "app/src/main/java/com/momobio/app/CollectorIdentity.kt",
         app / "app/src/main/java/com/momobio/app/SmsReceiptDecoder.kt",

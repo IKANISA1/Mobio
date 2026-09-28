@@ -1,3 +1,5 @@
+import 'package:mobi_app/features/privacy/presentation/privacy_request_screen.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'dart:async';
 import 'dart:developer';
 
@@ -41,6 +43,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
   final VoidCallback onAdminGateway;
   final VoidCallback? onExitAdmin;
+  final FutureOr<void> Function()? onSignOut;
 
   const ProfileScreen({
     super.key,
@@ -55,6 +58,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
     required this.onAdminGateway,
     this.onExitAdmin,
+    this.onSignOut,
   });
 
   @override
@@ -66,52 +70,61 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   String? _error;
   BioPayEnrollmentStatus _bioPayEnrollment = const BioPayEnrollmentStatus();
 
-  String _userCode = '482013';
+  String? _userCode;
+  int _profileRevision=0;
+  void _onAccountChanged() {
+    if(!mounted)return;
+    setState(() { _userCode=null; _bioPayEnrollment=const BioPayEnrollmentStatus(status:'unavailable'); });
+    unawaited(_loadProfile());
+  }
+  @override void dispose() { _profileRevision++; AccountContext.changes.removeListener(_onAccountChanged); super.dispose(); }
 
   @override
   void initState() {
     super.initState();
+    AccountContext.changes.addListener(_onAccountChanged);
     _loadProfile();
   }
 
   Future<void> _loadProfile() async {
+    final revision=++_profileRevision;
+    AccountSnapshot? account;
     if (!SupabaseConfig.isConfigured) {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted && revision==_profileRevision) setState(() => _isLoading = false);
       return;
     }
     try {
       if (Supabase.instance.client.auth.currentSession == null) {
-        if (mounted) setState(() => _isLoading = false);
+        if (mounted && revision==_profileRevision) setState(() => _isLoading = false);
         return;
       }
+      account=AccountContext.capture();
       final profileService = ref.read(profileServiceProvider);
-      final profile = await profileService.getMyProfile();
+      final profile = await profileService.getMyProfile().timeout(const Duration(seconds:12));
       BioPayEnrollmentStatus bioPayEnrollment;
       try {
         bioPayEnrollment = await ref
             .read(biopayFaceServiceProvider)
-            .enrollmentStatus();
+            .enrollmentStatus().timeout(const Duration(seconds:6));
       } on Object {
         // Optional face-service downtime must not hide the rest of Profile.
-        bioPayEnrollment = const BioPayEnrollmentStatus();
+        bioPayEnrollment = const BioPayEnrollmentStatus(status: 'unavailable');
       }
+      AccountContext.requireCurrent(account);
+      if (revision!=_profileRevision) return;
       if (profile != null && mounted) {
         setState(() {
-          final memberId = profile.memberId;
-          _userCode = displayMobioMemberId(
-            memberId: memberId,
-            stableSeed: profile.id,
-          );
+          _userCode = displayMobioMemberId(profile.memberId);
           _bioPayEnrollment = bioPayEnrollment;
         });
       } else if (mounted) {
         setState(() => _bioPayEnrollment = bioPayEnrollment);
       }
-    } on Object catch (e, st) {
-      log('Error loading profile: $e', stackTrace: st);
-      if (mounted) setState(() => _error = 'Unable to load profile.');
+    } on Object {
+      log('PROFILE_LOAD_UNAVAILABLE');
+      if (mounted && revision==_profileRevision && (account==null || AccountContext.isCurrent(account))) setState(() => _error = 'Unable to load profile.');
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted && revision==_profileRevision) setState(() => _isLoading = false);
     }
   }
 
@@ -282,7 +295,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         Text(
-                          _userCode,
+                          _userCode ?? 'Member ID unavailable',
                           textAlign: TextAlign.center,
                           style: AppTypography.displayLg.copyWith(
                             color: cs.onSurface,
@@ -473,14 +486,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       title: 'Terms and Conditions',
                       compact: true,
                     ),
+                    if (widget.onSignOut != null) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      MobiFeatureTile(
+                        onTap: widget.onSignOut,
+                        icon: LucideIcons.logOut,
+                        title: 'Sign out',
+                        compact: true,
+                      ),
+                    ],
                     const SizedBox(height: AppSpacing.sm),
                     MobiFeatureTile(
-                      onTap: () => _launchExternalUri(
-                        Uri.parse(SupabaseConfig.accountDeletionUrl),
-                        'Could not open account deletion.',
-                      ),
+                      onTap: () {
+                        if (!AccountContext.hasVerifiedSession) {
+                          _launchExternalUri(Uri.parse(SupabaseConfig.accountDeletionUrl), 'Could not open account deletion.');
+                          return;
+                        }
+                        final account = AccountContext.capture();
+                        Navigator.of(context).push(MaterialPageRoute<void>(
+                          builder: (_) => PrivacyRequestScreen(account: account)));
+                      },
                       icon: LucideIcons.userX,
-                      title: 'Delete Account',
+                      title: 'Request account deletion',
                       accent: cs.error,
                       accentBackground: cs.error.withValues(alpha: 0.12),
                       compact: true,
@@ -528,7 +555,7 @@ class _ProfileIdentityStrip extends StatelessWidget {
     required this.bioPayEnrollment,
   });
 
-  final String memberId;
+  final String? memberId;
   final BioPayEnrollmentStatus bioPayEnrollment;
 
   @override
@@ -545,7 +572,7 @@ class _ProfileIdentityStrip extends StatelessWidget {
             child: _ProfileSignal(
               icon: LucideIcons.badgeCheck,
               label: 'Member',
-              value: memberId,
+              value: memberId ?? 'Unavailable',
               accent: cs.primary,
             ),
           ),

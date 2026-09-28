@@ -176,7 +176,12 @@ void registerVisualSurfaceTests({bool accessibilityAudit = false}) {
       ),
     _GoldenCase(
       name: 'login',
-      builder: () => WhatsAppLoginScreen(onBack: () {}, onSuccess: (_) {}),
+      builder: () => ProviderScope(
+        overrides: [
+          whatsappLoginServiceProvider.overrideWithValue(FakeWhatsAppLoginService()),
+        ],
+        child: WhatsAppLoginScreen(onBack: () {}, onSuccess: (_) {}),
+      ),
     ),
     _GoldenCase(
       name: 'home',

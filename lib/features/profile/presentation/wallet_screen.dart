@@ -1,4 +1,9 @@
-import 'dart:math';
+import 'dart:async';
+import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/auth/account_bound_view.dart';
+import 'package:mobi_app/features/profile/data/wallet_operation_journal.dart';
+import 'package:mobi_app/features/profile/domain/wallet_operation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,7 +29,6 @@ import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 import 'package:mobi_design_system/theme/mobi_visual_family.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class WalletScreen extends ConsumerStatefulWidget {
   const WalletScreen({super.key, required this.onBack});
@@ -38,6 +42,9 @@ class WalletScreen extends ConsumerStatefulWidget {
 class _WalletScreenState extends ConsumerState<WalletScreen> {
   static const int _minimumRedemptionTokens = 5000;
 
+  WalletOperationRecord? _activeOperation;
+  int _loadRevision=0;
+  StreamSubscription<AuthState>? _authChanges;
   WalletSummary? _summary;
   List<TokenLedgerEntry> _ledger = const [];
   bool _isLoading = true;
@@ -49,26 +56,37 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
   @override
   void initState() {
     super.initState();
+    if (SupabaseConfig.isConfigured) {
+      _authChanges=Supabase.instance.client.auth.onAuthStateChange.listen((_) {
+        if (!mounted) return;
+        setState(() { _summary=null; _ledger=const []; _activeOperation=null; _isBusy=false; });
+        unawaited(_load());
+      });
+    }
     _load();
   }
+  @override void dispose() { _loadRevision++; unawaited(_authChanges?.cancel()); super.dispose(); }
 
   Future<void> _load() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+    if (!mounted) return;
+    final revision=++_loadRevision;
+    setState(() { _isLoading=true; _error=null; });
     try {
+      final account = AccountContext.capture();
       final wallet = ref.read(walletServiceProvider);
       final summary = await wallet.getSummary();
       final ledger = await wallet.listLedger();
-      if (!mounted) return;
+      final operation = await wallet.activeOperation();
+      AccountContext.requireCurrent(account);
+      if (!mounted || revision!=_loadRevision) return;
       setState(() {
         _summary = summary;
         _ledger = ledger;
+        _activeOperation=operation;
         _isLoading = false;
       });
     } on Object {
-      if (!mounted) return;
+      if (!mounted || revision!=_loadRevision) return;
       if (SupabaseConfig.canRunWithoutBackend) {
         setState(() {
           _summary = _previewWalletSummary;
@@ -123,6 +141,8 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
   }
 
   Future<void> _redeemInviteCode() async {
+    if (!AccountContext.hasVerifiedSession || _isBusy) return;
+    final sheetAccount = AccountContext.capture();
     final codeController = TextEditingController();
 
     await MobiBottomSheet.show<void>(
@@ -134,7 +154,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             final code = codeController.text.trim().toUpperCase();
             final canApply = code.length >= 4;
 
-            return Padding(
+            return AccountBoundView(account:sheetAccount, child:Padding(
               padding: EdgeInsets.fromLTRB(
                 24,
                 24,
@@ -228,7 +248,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                   ),
                 ],
               ),
-            );
+            ));
           },
         );
       },
@@ -238,6 +258,8 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
   }
 
   Future<void> _showTransferSheet() async {
+    if (!AccountContext.hasVerifiedSession || _isBusy) return;
+    final sheetAccount = AccountContext.capture();
     final memberController = TextEditingController();
     final amountController = TextEditingController();
     final noteController = TextEditingController();
@@ -253,7 +275,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             final amount = int.tryParse(amountController.text);
             final canSend = memberId != null && amount != null && amount > 0;
 
-            return Padding(
+            return AccountBoundView(account:sheetAccount, child:Padding(
               padding: EdgeInsets.fromLTRB(
                 24,
                 24,
@@ -401,7 +423,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                   ),
                 ],
               ),
-            );
+            ));
           },
         );
       },
@@ -413,6 +435,8 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
   }
 
   Future<void> _showRedeemSheet() async {
+    if (!AccountContext.hasVerifiedSession || _isBusy) return;
+    final sheetAccount = AccountContext.capture();
     final balance = _summary?.balanceTokens ?? 0;
     final amountController = TextEditingController(
       text: balance > 0 ? balance.toString() : '',
@@ -426,7 +450,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
           builder: (context, setSheetState) {
             final amount = int.tryParse(amountController.text);
 
-            return Padding(
+            return AccountBoundView(account:sheetAccount, child:Padding(
               padding: EdgeInsets.fromLTRB(
                 24,
                 24,
@@ -548,7 +572,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                   ),
                 ],
               ),
-            );
+            ));
           },
         );
       },
@@ -558,9 +582,12 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
   }
 
   Future<void> _confirmAndRedeemTokens({required int amountTokens}) async {
+    if (_isBusy || !mounted || !AccountContext.hasVerifiedSession) return;
+    final account=AccountContext.capture();
+    setState(() => _isBusy = true);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AccountBoundView(account:account,child:AlertDialog(
         title: const Text('Confirm redemption'),
         content: Text(
           'Redeem ${_format.format(amountTokens)} TOKENS for MoMo cash. The TOKENS will move to the admin wallet and the payout will be sent manually to your registered MoMo number.',
@@ -575,39 +602,43 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             child: const Text('Redeem'),
           ),
         ],
-      ),
+      )),
     );
 
-    if (confirmed != true || !mounted) return;
+    if (confirmed != true || !mounted || !AccountContext.isCurrent(account)) {
+      if (mounted && AccountContext.isCurrent(account)) setState(() => _isBusy = false);
+      return;
+    }
 
-    final keyScope = 'wallet-redeem:$amountTokens';
     setState(() => _isBusy = true);
     try {
       final receipt = await ref
           .read(walletServiceProvider)
-          .redeemTokens(
+          .redemptionOperation(
             amountTokens: amountTokens,
-            idempotencyKey: await _pendingOperationKey(
-              scope: keyScope,
-              prefix: 'wallet-redeem',
-            ),
+            idempotencyKey: WalletOperationJournal.newOperationId(),
           );
-      await _clearPendingOperationKey(keyScope);
       await _load();
-      if (!mounted) return;
-      await _showRedemptionReceipt(receipt);
+      if (!mounted || !AccountContext.isCurrent(account)) return;
+      if (await _showRedemptionReceipt(receipt.value)) {
+        AccountContext.requireCurrent(account);
+        await ref.read(walletServiceProvider).closeOperation(receipt.operation,cancel:false);
+        await _load();
+      }
     } on Object catch (error) {
-      _showSnackBar(_redemptionError(error));
+      if (AccountContext.isCurrent(account)) _showSnackBar(_redemptionError(error));
     } finally {
-      if (mounted) setState(() => _isBusy = false);
+      if (mounted && AccountContext.isCurrent(account)) setState(() => _isBusy = false);
     }
   }
 
-  Future<void> _showRedemptionReceipt(WalletRedemptionReceipt receipt) async {
-    if (!mounted) return;
-    await showDialog<void>(
+  Future<bool> _showRedemptionReceipt(WalletRedemptionReceipt receipt) async {
+    if (!mounted) return false;
+    final account=AccountContext.capture();
+    final acknowledged=await showDialog<bool>(
+      barrierDismissible:false,
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AccountBoundView(account:account,child:AlertDialog(
         title: const Text('Redemption sent'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -628,12 +659,13 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
         ),
         actions: [
           FilledButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pop(true),
             child: const Text('Done'),
           ),
         ],
-      ),
+      )),
     );
+    return acknowledged==true && AccountContext.isCurrent(account);
   }
 
   Future<void> _confirmAndTransferTokens({
@@ -641,6 +673,8 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     required int amountTokens,
     String? note,
   }) async {
+    if (_isBusy || !mounted || !AccountContext.hasVerifiedSession) return;
+    final account=AccountContext.capture();
     setState(() => _isBusy = true);
     final normalizedNote = note?.trim() ?? '';
     late final WalletTransferRecipient recipient;
@@ -649,17 +683,15 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
           .read(walletServiceProvider)
           .lookupTransferRecipient(receiverMemberId: receiverMemberId);
     } on Object catch (error) {
-      _showSnackBar(_transferError(error));
-      if (mounted) setState(() => _isBusy = false);
+      if (AccountContext.isCurrent(account)) _showSnackBar(_transferError(error));
+      if (mounted && AccountContext.isCurrent(account)) setState(() => _isBusy = false);
       return;
     }
 
-    if (!mounted) return;
-    setState(() => _isBusy = false);
-
+    if (!mounted || !AccountContext.isCurrent(account)) return;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AccountBoundView(account:account,child:AlertDialog(
         title: const Text('Confirm transfer'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -692,54 +724,51 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             child: const Text('Send'),
           ),
         ],
-      ),
+      )),
     );
 
-    if (confirmed != true || !mounted) return;
+    if (confirmed != true || !mounted || !AccountContext.isCurrent(account)) {
+      if (mounted && AccountContext.isCurrent(account)) setState(() => _isBusy = false);
+      return;
+    }
 
-    final keyScope = _transferKeyScope(
-      receiverMemberId: receiverMemberId,
-      amountTokens: amountTokens,
-      note: normalizedNote,
-    );
+
 
     setState(() => _isBusy = true);
     try {
       final receipt = await ref
           .read(walletServiceProvider)
-          .transferTokens(
+          .transferOperation(
             receiverMemberId: receiverMemberId,
             amountTokens: amountTokens,
-            idempotencyKey: await _pendingOperationKey(
-              scope: keyScope,
-              prefix: 'wallet-transfer',
-            ),
+            idempotencyKey: WalletOperationJournal.newOperationId(),
             note: normalizedNote,
           );
-      await _clearPendingOperationKey(keyScope);
       await _load();
-      if (!mounted) return;
-      await _showTransferReceipt(
-        receipt: receipt,
-        recipient: recipient,
-        amountTokens: amountTokens,
-      );
+      if (!mounted || !AccountContext.isCurrent(account)) return;
+      if (await _showTransferReceipt(receipt:receipt.value,recipient:recipient,amountTokens:amountTokens)) {
+        AccountContext.requireCurrent(account);
+        await ref.read(walletServiceProvider).closeOperation(receipt.operation,cancel:false);
+        await _load();
+      }
     } on Object catch (error) {
-      _showSnackBar(_transferError(error));
+      if (AccountContext.isCurrent(account)) _showSnackBar(_transferError(error));
     } finally {
-      if (mounted) setState(() => _isBusy = false);
+      if (mounted && AccountContext.isCurrent(account)) setState(() => _isBusy = false);
     }
   }
 
-  Future<void> _showTransferReceipt({
+  Future<bool> _showTransferReceipt({
     required WalletTransferReceipt receipt,
     required WalletTransferRecipient recipient,
     required int amountTokens,
   }) async {
-    if (!mounted) return;
-    await showDialog<void>(
+    if (!mounted) return false;
+    final account=AccountContext.capture();
+    final acknowledged=await showDialog<bool>(
+      barrierDismissible:false,
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AccountBoundView(account:account,child:AlertDialog(
         title: const Text('Transfer sent'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -754,16 +783,20 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
         ),
         actions: [
           FilledButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pop(true),
             child: const Text('Done'),
           ),
         ],
-      ),
+      )),
     );
+    return acknowledged==true && AccountContext.isCurrent(account);
   }
 
   String _transferError(Object error) {
     final value = error.toString();
+    if (value.contains('LEGACY_WALLET_REVIEW_REQUIRED')) {
+      return 'An older wallet request needs support review before a new request can be sent. No new request was submitted.';
+    }
     if (value.contains('RECEIVER_NOT_FOUND')) {
       return 'No wallet was found for that 6-digit member ID.';
     }
@@ -779,11 +812,14 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     if (value.contains('INVALID_MEMBER_ID')) {
       return 'Enter a valid 6-digit member ID.';
     }
-    return 'Unable to transfer TOKENS. You can retry without being charged twice.';
+    return 'Transfer outcome is not confirmed. Refresh and review the pending request before retrying.';
   }
 
   String _redemptionError(Object error) {
     final value = error.toString();
+    if (value.contains('LEGACY_WALLET_REVIEW_REQUIRED')) {
+      return 'An older wallet request needs support review before a new request can be sent. No new request was submitted.';
+    }
     if (value.contains('MINIMUM_REDEMPTION_TOKENS')) {
       return 'Redeem at least ${_format.format(_minimumRedemptionTokens)} TOKENS.';
     }
@@ -796,36 +832,31 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     if (value.contains('INSUFFICIENT_TOKENS')) {
       return 'Your wallet does not have enough TOKENS for this redemption.';
     }
-    return 'Unable to redeem TOKENS. You can retry without being charged twice.';
+    return 'Redemption outcome is not confirmed. Refresh and review the pending request before retrying.';
   }
 
-  String _transferKeyScope({
-    required String receiverMemberId,
-    required int amountTokens,
-    required String note,
-  }) {
-    return 'wallet-transfer:$receiverMemberId:$amountTokens:$note';
-  }
-
-  Future<String> _pendingOperationKey({
-    required String scope,
-    required String prefix,
-  }) async {
-    final prefs = await SharedPreferences.getInstance();
-    final prefKey = 'mobio.pending.$scope';
-    final existing = prefs.getString(prefKey);
-    if (existing != null && existing.isNotEmpty) return existing;
-
-    final key =
-        '$prefix-${DateTime.now().microsecondsSinceEpoch}-'
-        '${Random.secure().nextInt(1 << 32).toRadixString(36)}';
-    await prefs.setString(prefKey, key);
-    return key;
-  }
-
-  Future<void> _clearPendingOperationKey(String scope) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('mobio.pending.$scope');
+  Future<void> _reviewPendingOperation() async {
+    final operation=_activeOperation;
+    if(operation==null||_isBusy)return;
+    final account=AccountContext.capture();
+    final confirmed=await showDialog<bool>(context:context,barrierDismissible:false,
+      builder:(context)=>AccountBoundView(account:account,child:AlertDialog(
+        title:Text(operation.committed?'Recorded wallet request':'Unresolved wallet request'),
+        content:Text('${operation.kind}: ${_format.format(operation.amountTokens)} TOKENS\n'
+          'Request ${operation.operationId}\n'
+          '${operation.committed ? "The request was recorded. Redemption does not confirm a MoMo payout." : "Execution is not confirmed by this snapshot. Cancellation locks and rechecks against any in-flight execution."}'),
+        actions:[TextButton(onPressed:()=>Navigator.of(context).pop(false),child:const Text('Keep open')),
+          FilledButton(onPressed:()=>Navigator.of(context).pop(true),
+            child:Text(operation.committed?'Acknowledge receipt':'Cancel unsubmitted request'))],
+      )));
+    if(confirmed!=true||!mounted||!AccountContext.isCurrent(account))return;
+    setState(()=>_isBusy=true);
+    try{
+      await ref.read(walletServiceProvider).closeOperation(operation,cancel:!operation.committed);
+      await _load();
+    } on Object {
+      if(mounted&&AccountContext.isCurrent(account))_showSnackBar('Request state changed or is unavailable. Refresh to reconcile.');
+    } finally {if(mounted&&AccountContext.isCurrent(account))setState(()=>_isBusy=false);}
   }
 
   static String _shortId(String value) {
@@ -885,6 +916,12 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                           height: 260,
                         ),
                       ] else ...[
+                        if (_activeOperation != null) ...[
+                          ListTile(title:const Text('Wallet request needs review'),
+                            subtitle:const Text('Reconcile the existing request before starting a different one.'),
+                            trailing:const Icon(Icons.receipt_long),onTap:_reviewPendingOperation),
+                          const SizedBox(height:AppSpacing.md),
+                        ],
                         _WalletBalanceCard(summary: _summary!, format: _format),
                         const SizedBox(height: AppSpacing.md),
                         _WalletActionRail(

@@ -1,6 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/features/chat/domain/chat_delivery.dart';
+import 'package:mobi_app/features/chat/presentation/widgets/chat_history_view.dart';
+import 'package:mobi_app/features/chat/presentation/widgets/chat_delivery_controls.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -68,6 +72,22 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   final _scrollController = ScrollController();
   final Map<String, Map<String, dynamic>?> _profileCache = {};
 
+  AccountSnapshot? _account;
+  bool _accountLost = false;
+  int _viewRevision = 0;
+  int _deliveryRevision = 0;
+  bool get _active => mounted && !_accountLost && (_account == null || AccountContext.isCurrent(_account!));
+  void _accountChanged() {
+    if (_account == null || AccountContext.isCurrent(_account!)) return;
+    _viewRevision++;
+    _composerController.clear();
+    _profileCache.clear();
+    if (mounted) setState(() {
+      _accountLost = true; _conversation = null; _trip = null;
+      _tripConversations = const []; _localPreviewMessages = const [];
+      _currentUserId = null; _isSending = false;
+    });
+  }
   ChatConversation? _conversation;
   Trip? _trip;
   String? _currentUserId;
@@ -85,11 +105,17 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   @override
   void initState() {
     super.initState();
-    _bootstrap();
+    if (!ref.read(chatUiPreviewProvider)) {
+      try { _account = AccountContext.capture(); } on Object { _accountLost = true; }
+      AccountContext.changes.addListener(_accountChanged);
+    }
+    if (!_accountLost) _bootstrap();
   }
 
   @override
   void dispose() {
+    AccountContext.changes.removeListener(_accountChanged);
+    _viewRevision++;
     _composerController.dispose();
     _composerFocusNode.dispose();
     _scrollController.dispose();
@@ -137,6 +163,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   }
 
   Future<void> _bootstrap() async {
+    if (!_active) return;
     setState(() {
       _isLoading = true;
       _error = null;
@@ -157,7 +184,9 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       _selectedConversationId = widget.conversationId;
 
       if (widget.tripId != null) {
-        _trip = await _tripService.getTripById(widget.tripId!);
+        final trip = await _tripService.getTripById(widget.tripId!);
+        if (!_active) return;
+        _trip = trip;
       }
 
       if (_selectedConversationId != null) {
@@ -167,12 +196,14 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
         if (conversation == null) {
           throw const NotFoundException(message: 'Conversation not found.');
         }
+        if (!_active) return;
         await _openConversation(conversation, showLoader: false);
       } else if (widget.peerId != null) {
         final conversation = await _chatService.getOrCreateConversation(
           peerId: widget.peerId!,
           tripId: widget.tripId,
         );
+        if (!_active) return;
         await _openConversation(conversation, showLoader: false);
       } else if (_isTripAuthor && widget.tripId != null) {
         await _loadTripConversations(showLoader: false);
@@ -181,6 +212,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
           peerId: _trip!.authorId,
           tripId: _trip!.id,
         );
+        if (!_active) return;
         await _openConversation(conversation, showLoader: false);
       } else {
         throw const ValidationException(
@@ -188,11 +220,11 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
         );
       }
 
-      if (mounted) {
+      if (_active) {
         setState(() => _isLoading = false);
       }
     } on Object catch (error) {
-      if (!mounted) {
+      if (!_active) {
         return;
       }
 
@@ -242,7 +274,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       lastMessageAt: now.subtract(const Duration(minutes: 4)),
     );
 
-    if (!mounted) {
+    if (!_active) {
       return;
     }
 
@@ -281,7 +313,10 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   }
 
   Future<void> _loadTripConversations({bool showLoader = true}) async {
-    if (showLoader && mounted) {
+    if (!_active || _currentUserId == null) return;
+    final revision = ++_viewRevision;
+    final owner = _currentUserId!;
+    if (showLoader && _active) {
       setState(() => _isLoading = true);
     }
 
@@ -292,11 +327,13 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
     try {
       final conversations = await _chatService.listTripConversations(tripId);
+      if (!_active || revision != _viewRevision) return;
       for (final conversation in conversations) {
-        await _loadPeerProfile(conversation.peerIdFor(_currentUserId!));
+        await _loadPeerProfile(conversation.peerIdFor(owner));
+        if (!_active || revision != _viewRevision) return;
       }
 
-      if (!mounted) {
+      if (!_active || revision != _viewRevision) {
         return;
       }
 
@@ -305,17 +342,21 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
         _selectedConversationId = null;
         _conversation = null;
         _isLoading = false;
+        _isSending = false;
+        _isModerating = false;
         _error = null;
       });
 
       _composerController.clear();
     } on Object catch (error) {
-      if (!mounted) {
+      if (!_active || revision != _viewRevision) {
         return;
       }
 
       setState(() {
         _isLoading = false;
+        _isSending = false;
+        _isModerating = false;
         _error = userMessageForError(
           error,
           fallback: 'Unable to load trip chats right now.',
@@ -328,7 +369,9 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     ChatConversation conversation, {
     bool showLoader = true,
   }) async {
-    if (showLoader && mounted) {
+    if (!_active) return;
+    final revision = ++_viewRevision;
+    if (showLoader && _active) {
       setState(() => _isLoading = true);
     }
 
@@ -339,20 +382,23 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
     final peerId = conversation.peerIdFor(currentUserId);
     final peerProfile = await _loadPeerProfile(peerId);
+    if (!_active || revision != _viewRevision) return;
     final trip =
         _trip ??
         (conversation.tripId == null
             ? null
             : await _tripService.getTripById(conversation.tripId!));
+    if (!_active || revision != _viewRevision) return;
     final isPeerBlocked = await _chatService.isPeerBlocked(peerId);
+    if (!_active || revision != _viewRevision) return;
     final gatedDriverId = _plusGatedDriverIdForTrip(trip, currentUserId);
     final driverPlusStatus = gatedDriverId == null
         ? null
         : await _driverPlusService.getStatus(driverId: gatedDriverId);
 
-    await _chatService.markConversationRead(conversation.id);
+    if (revision != _viewRevision) return;
 
-    if (!mounted) {
+    if (!_active) {
       return;
     }
 
@@ -363,6 +409,9 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       _tripDriverPlusStatus = driverPlusStatus;
       _profileCache[peerId] = peerProfile;
       _isPeerBlocked = isPeerBlocked;
+      _isSending = false;
+      _isModerating = false;
+      _deliveryRevision++;
       _isLoading = false;
     });
 
@@ -388,12 +437,15 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     }
 
     final profile = await _profileService.getProfileById(peerId);
+    if (!_active) return null;
     final profileMap = profile?.toJson();
     _profileCache[peerId] = profileMap;
     return profileMap;
   }
 
   Future<void> _sendMessage() async {
+    if (!_active) return;
+    final revision = _viewRevision;
     if (_isSending) {
       return;
     }
@@ -444,26 +496,26 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
         body: text,
       );
 
-      if (!mounted) {
+      if (!_active || revision != _viewRevision) {
         return;
       }
       if (_conversation?.id == conversation.id &&
           _composerController.text == draft) {
         _composerController.clear();
       }
-      setState(() => _isSending = false);
+      setState(() { _isSending = false; _deliveryRevision++; });
     } on Object catch (error) {
-      if (!mounted) {
+      if (!_active || revision != _viewRevision) {
         return;
       }
 
-      setState(() => _isSending = false);
+      setState(() { _isSending = false; _deliveryRevision++; });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             userMessageForError(
               error,
-              fallback: 'Failed to send message. Please try again.',
+              fallback: 'Delivery is not confirmed. Check the previous send before changing the message.',
             ),
           ),
         ),
@@ -472,6 +524,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   }
 
   void _handleBack() {
+    if (!_active) { widget.onBack(); return; }
     if (_showConversationList) {
       widget.onBack();
       return;
@@ -492,7 +545,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
     _lastRenderedMessageCount = messageCount;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_scrollController.hasClients) {
+      if (!_active || !_scrollController.hasClients) {
         return;
       }
       _scrollController.animateTo(
@@ -570,10 +623,12 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   }
 
   void _focusInAppChat() {
+    if (!_active) return;
     _composerFocusNode.requestFocus();
   }
 
   Future<void> _openWhatsappChat() async {
+    if (!_active) return;
     if (_externalDriverContactLocked) {
       _showSnackBar('WhatsApp is available with Mobio Plus.');
       return;
@@ -595,6 +650,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   }
 
   Future<void> _openPhoneCall() async {
+    if (!_active) return;
     if (_externalDriverContactLocked) {
       _showSnackBar('External contact is available with Mobio Plus.');
       return;
@@ -623,13 +679,15 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
   }
 
   void _showSnackBar(String message) {
-    if (!mounted) return;
+    if (!_active) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _showReportDialog() async {
+    if (!_active) return;
+    final revision = _viewRevision;
     final peerId = _activePeerId;
     final conversation = _conversation;
     if (peerId == null || conversation == null || _isModerating) {
@@ -642,7 +700,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     }
 
     final draft = await showChatReportSheet(context);
-    if (draft == null) {
+    if (!_active || revision != _viewRevision || draft == null) {
       return;
     }
 
@@ -655,8 +713,10 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
         category: draft.category,
         details: draft.details,
       );
+      if (!_active || revision != _viewRevision) return;
       _showSnackBar('Report submitted for admin review.');
     } on Object catch (error) {
+      if (!_active || revision != _viewRevision) return;
       _showSnackBar(
         userMessageForError(
           error,
@@ -664,13 +724,15 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
         ),
       );
     } finally {
-      if (mounted) {
+      if (_active && revision == _viewRevision) {
         setState(() => _isModerating = false);
       }
     }
   }
 
   Future<void> _toggleBlockPeer() async {
+    if (!_active) return;
+    final revision = _viewRevision;
     final peerId = _activePeerId;
     if (peerId == null || _isModerating) {
       return;
@@ -686,9 +748,11 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       setState(() => _isModerating = true);
       try {
         await _chatService.unblockUser(peerId);
+        if (!_active || revision != _viewRevision) return;
         setState(() => _isPeerBlocked = false);
         _showSnackBar('User unblocked.');
       } on Object catch (error) {
+      if (!_active || revision != _viewRevision) return;
         _showSnackBar(
           userMessageForError(
             error,
@@ -696,7 +760,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
           ),
         );
       } finally {
-        if (mounted) {
+        if (_active && revision == _viewRevision) {
           setState(() => _isModerating = false);
         }
       }
@@ -712,16 +776,18 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       isDestructive: true,
     );
 
-    if (confirmed != true) {
+    if (!_active || revision != _viewRevision || confirmed != true) {
       return;
     }
 
     setState(() => _isModerating = true);
     try {
       await _chatService.blockUser(peerId: peerId, reason: 'Blocked from chat');
+      if (!_active || revision != _viewRevision) return;
       setState(() => _isPeerBlocked = true);
       _showSnackBar('User blocked.');
     } on Object catch (error) {
+      if (!_active || revision != _viewRevision) return;
       _showSnackBar(
         userMessageForError(
           error,
@@ -729,7 +795,7 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
         ),
       );
     } finally {
-      if (mounted) {
+      if (_active && revision == _viewRevision) {
         setState(() => _isModerating = false);
       }
     }
@@ -772,6 +838,12 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_accountLost || (_account != null && !AccountContext.isCurrent(_account!))) {
+      return Scaffold(body: SafeArea(child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
+        const Text('Account changed. Close this chat and sign in again.'),
+        TextButton(onPressed: widget.onBack, child: const Text('Close chat')),
+      ]))));
+    }
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final subtitle = _screenSubtitle();
     return Scaffold(
@@ -830,12 +902,20 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
     final isLocalPreview = ref.watch(chatUiPreviewProvider);
     final messagesStream = isLocalPreview
         ? Stream<List<ChatMessageModel>>.value(_localPreviewMessages)
-        : _chatService.streamMessages(conversation.id);
+        : const Stream<List<ChatMessageModel>>.empty();
 
     return Column(
       children: [
         Expanded(
-          child: StreamBuilder<List<ChatMessageModel>>(
+          child: !isLocalPreview ? ChatHistoryView(
+            key: ValueKey('history-${_account?.identity}-${conversation.id}'),
+            service: _chatService, conversationId: conversation.id,
+                  requireCurrent: () => AccountContext.requireCurrent(_account!),
+            scrollController: _scrollController,
+            contextCard: _trip == null ? null : TripContextCard(trip: _trip!),
+            messageBuilder: (message) => ChatMessageBubble(message: message,
+              isMine: _currentUserId != null && message.isFrom(_currentUserId!), formatTime: _timeLabel),
+          ) : StreamBuilder<List<ChatMessageModel>>(
             stream: messagesStream,
             builder: (context, snapshot) {
               final messages = snapshot.data ?? const <ChatMessageModel>[];
@@ -889,12 +969,22 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
                 !_externalDriverContactLocked &&
                 _contactNumber(preferWhatsapp: false) != null,
           ),
-          ChatComposer(
-            controller: _composerController,
-            focusNode: _composerFocusNode,
-            isSending: _isSending,
-            onSendMessage: _sendMessage,
-          ),
+          if (isLocalPreview)
+            ChatComposer(controller: _composerController, focusNode: _composerFocusNode,
+              isSending: _isSending, onSendMessage: _sendMessage)
+          else
+            ChatDeliveryControls(key: ValueKey('delivery-${_account?.identity}-${conversation.id}'),
+              service: _chatService, conversationId: conversation.id, revision: _deliveryRevision,
+              requireCurrent: () => AccountContext.requireCurrent(_account!),
+              onResolved: (receipt) {
+                if (!_active || _conversation?.id != conversation.id) return;
+                if (ChatSendPointer.bodyHash(_composerController.text.trim()) == receipt.pointer.bodySha256) {
+                  _composerController.clear();
+                }
+              },
+              composer: (enabled) => ChatComposer(controller: _composerController,
+                focusNode: _composerFocusNode, isSending: _isSending, enabled: enabled,
+                onSendMessage: _sendMessage)),
         ],
       ],
     );

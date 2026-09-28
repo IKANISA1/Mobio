@@ -72,7 +72,8 @@ class BioPayDeviceNfcStatus {
   final DateTime? expiresAt;
   final String? reason;
 
-  bool get canAdvertise => supported && enabled;
+  bool get canAdvertise =>
+      supported && enabled && expiresAt != null && expiresAt!.isAfter(DateTime.now());
 
   static BioPayDeviceNfcStatus fromMap(Map<Object?, Object?>? raw) {
     if (raw == null) {

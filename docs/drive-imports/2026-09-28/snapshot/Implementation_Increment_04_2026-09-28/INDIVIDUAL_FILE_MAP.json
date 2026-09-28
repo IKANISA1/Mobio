@@ -1,0 +1,127 @@
+[
+  {
+    "drive_filename": ".github__workflows__ci.yml",
+    "repository_path": ".github/workflows/ci.yml",
+    "sha256": "ee34ff8d406ba5cabe955f152d9b76c6ea453e06bc7bf4097df881132083cc45"
+  },
+  {
+    "drive_filename": "docs__production-readiness__INCREMENT04_SMS_INTAKE.md",
+    "repository_path": "docs/production-readiness/INCREMENT04_SMS_INTAKE.md",
+    "sha256": "3df7164bbc7680cb76b148f6049b9bc5d83e34c2897ef89b38b09604779039ef"
+  },
+  {
+    "drive_filename": "scripts__ci__apply_increment04.py",
+    "repository_path": "scripts/ci/apply_increment04.py",
+    "sha256": "bfc9363774db0161333c005e38dd723226a3c6c781a15071a0ca191764e53be3"
+  },
+  {
+    "drive_filename": "scripts__ci__run_hardening_tests.sh",
+    "repository_path": "scripts/ci/run_hardening_tests.sh",
+    "sha256": "c51a896c279f5acec0e766c334d9389feb9915b127e2221d0ffd16f4baba3a17"
+  },
+  {
+    "drive_filename": "scripts__ci__run_sms_intake_tests.sh",
+    "repository_path": "scripts/ci/run_sms_intake_tests.sh",
+    "sha256": "fce0f3fdcf3c91ac69d5666b9cd821026fdff701952fcfa2152f0b5cc431dbb0"
+  },
+  {
+    "drive_filename": "scripts__operations__run_sms_intake_worker.py",
+    "repository_path": "scripts/operations/run_sms_intake_worker.py",
+    "sha256": "e5478ed81753e8bdd7b32b10075d244851e961f3f8323acac4bf289b44f14b7f"
+  },
+  {
+    "drive_filename": "scripts__operations__systemd__mobio-sms-intake.service",
+    "repository_path": "scripts/operations/systemd/mobio-sms-intake.service",
+    "sha256": "f2fd3789bf806eab6348301131a574f9d2bea26e7d0a82f926ec6c7fb04b4b96"
+  },
+  {
+    "drive_filename": "scripts__operations__systemd__mobio-sms-intake.timer",
+    "repository_path": "scripts/operations/systemd/mobio-sms-intake.timer",
+    "sha256": "0c1d7af5a845322ea665911d7e9fb8ba513b68f55cda6203e5c36b6008cb8e91"
+  },
+  {
+    "drive_filename": "scripts__qa__test_sms_intake_postgres.py",
+    "repository_path": "scripts/qa/test_sms_intake_postgres.py",
+    "sha256": "9f28692a1b2f85784b26a0354c1bc3b43825205a25e0303e449b3c1c86f38571"
+  },
+  {
+    "drive_filename": "scripts__tests__edge__handlers.test.mjs",
+    "repository_path": "scripts/tests/edge/handlers.test.mjs",
+    "sha256": "e1009e49702acf3fb6cc1f86c469f9fcb35c1a4541d96ec83acc909d02e1e3c9"
+  },
+  {
+    "drive_filename": "scripts__tests__edge__intake-runtime.fixture.d.ts",
+    "repository_path": "scripts/tests/edge/intake-runtime.fixture.d.ts",
+    "sha256": "b67b9c555fee90f305e8dbf4921e0965a47890373ed1fb5aee57b614402dd5cd"
+  },
+  {
+    "drive_filename": "scripts__tests__edge__intake.test.mjs",
+    "repository_path": "scripts/tests/edge/intake.test.mjs",
+    "sha256": "38384b45d1e9099bb2d435cf50c940b6cc2c3f7cc120365f1a2fd945cb2c9922"
+  },
+  {
+    "drive_filename": "scripts__tests__sql__intake_component.sql",
+    "repository_path": "scripts/tests/sql/intake_component.sql",
+    "sha256": "e21f7c551e59470e11b42dd44369aca494e6792617331a2f5e2617c7b7246dbb"
+  },
+  {
+    "drive_filename": "scripts__tests__sql__intake_fixture_bootstrap.sql",
+    "repository_path": "scripts/tests/sql/intake_fixture_bootstrap.sql",
+    "sha256": "7d29bc6a9d10211dc871c990dfd25328e5c2768a21db222fa1edc112085ef587"
+  },
+  {
+    "drive_filename": "scripts__tests__test_increment04_applier.py",
+    "repository_path": "scripts/tests/test_increment04_applier.py",
+    "sha256": "412c5a9401c1976e7e71bc147d42fc04e15dee802160c88c14eb1da7fb8239e6"
+  },
+  {
+    "drive_filename": "scripts__tests__test_sms_intake_contracts.py",
+    "repository_path": "scripts/tests/test_sms_intake_contracts.py",
+    "sha256": "6ea28f2b3f5707ffcfc20229877b4ba80709aae65cf09737369aaed52c2d858d"
+  },
+  {
+    "drive_filename": "supabase__config.toml",
+    "repository_path": "supabase/config.toml",
+    "sha256": "c31ca4510cb0983c0456b3f75f19a6b780afc70a4ff11ffabb9478db95d99851"
+  },
+  {
+    "drive_filename": "supabase__functions___shared__momobio-intake.ts",
+    "repository_path": "supabase/functions/_shared/momobio-intake.ts",
+    "sha256": "be0938c4be7c03908f916ed104985e6507406eb58c81a8c88e4faac6185ca2bd"
+  },
+  {
+    "drive_filename": "supabase__functions___shared__momobio-worker.ts",
+    "repository_path": "supabase/functions/_shared/momobio-worker.ts",
+    "sha256": "1e894e7430316c00bb5a025538a580960380e8a60193f159c2a98cfe12e5af88"
+  },
+  {
+    "drive_filename": "supabase__functions__momobio-sms-ingest__index.ts",
+    "repository_path": "supabase/functions/momobio-sms-ingest/index.ts",
+    "sha256": "3f8f4dce1a10ffaa77e027334651f3a2fb2514c37cce168605cc62162c97dd9d"
+  },
+  {
+    "drive_filename": "supabase__functions__momobio-sms-process__index.ts",
+    "repository_path": "supabase/functions/momobio-sms-process/index.ts",
+    "sha256": "87889e7aa569402a6b62255c0020160dae085257d758f821de08bb40eeddc273"
+  },
+  {
+    "drive_filename": "supabase__hardening__2026-09-28__07_durable_sms_intake.sql",
+    "repository_path": "supabase/hardening/2026-09-28/07_durable_sms_intake.sql",
+    "sha256": "d393634f47686034862361568de6530fc832cbed1a80506718533019224fd0d7"
+  },
+  {
+    "drive_filename": "supabase__hardening__2026-09-28__README.md",
+    "repository_path": "supabase/hardening/2026-09-28/README.md",
+    "sha256": "5d36a56ac73de0e9131be24f910c4e394d0c66b2c1cca51290219156c9b57ce5"
+  },
+  {
+    "drive_filename": "supabase__hardening__2026-09-28__manifest.json",
+    "repository_path": "supabase/hardening/2026-09-28/manifest.json",
+    "sha256": "0cbe8b23d1acdb9d045b628671473ccb62856a6f00e37e13e3f2fd8b6237948f"
+  },
+  {
+    "drive_filename": "supabase__hardening__2026-09-28__post_install_assertions.sql",
+    "repository_path": "supabase/hardening/2026-09-28/post_install_assertions.sql",
+    "sha256": "fe60668692e402b7c56b2131f9b1195359bca5982b47cf02e22cf065b04dbcab"
+  }
+]

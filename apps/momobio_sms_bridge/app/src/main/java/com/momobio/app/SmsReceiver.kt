@@ -12,10 +12,16 @@ class SmsReceiver : BroadcastReceiver() {
         val pending = goAsync()
         Thread {
             try {
-                val messages = decodeIncomingSms(intent)
+                if (!CollectorRuntime.ready(context.applicationContext)) return@Thread
+                val messages = decodeIncomingSms(intent).filter {
+                    CollectorRuntime.policy.accepts(it.sender, it.body, it.receivedAtMillis)
+                }
                 if (messages.isEmpty()) return@Thread
-                val queue = SmsQueue(context.applicationContext)
-                queue.enqueue(messages)
+                val queue = DurableSmsQueue(context.applicationContext)
+                val admitted = queue.enqueue(messages)
+                if (admitted.blocked > 0) {
+                    Log.e("MoMobioBridge", "Queue capacity blocked eligible receipts; reconciliation required")
+                }
                 BridgeSupervisor.enqueueImmediate(context.applicationContext)
                 BridgeSupervisor.start(context.applicationContext)
                 // The service/worker uploads outside the broadcast's time limit.

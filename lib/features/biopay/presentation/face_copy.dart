@@ -35,6 +35,7 @@ String faceStatusCopy(BuildContext context, BioPayEnrollmentStatus status) {
     'reenrollment_required' => l.faceReenroll,
     'processing' => l.faceProcessing,
     'receiving_method_required' => l.faceSelectMethod,
+    'unavailable' => l.faceUnavailable,
     _ => l.faceSetUp,
   };
 }

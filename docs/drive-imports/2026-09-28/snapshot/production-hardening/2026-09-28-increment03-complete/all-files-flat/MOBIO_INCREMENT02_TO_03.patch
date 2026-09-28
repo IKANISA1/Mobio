@@ -1,0 +1,2236 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 4b48ded5c6e8619168f2a86a593304507bb8d753..fcbf7c80059266a187237b2d40b31922bd833adf 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -137,6 +137,8 @@ jobs:
+           python3 -m unittest discover -s scripts/tests -p test_production_gates.py -v
+           python3 -m unittest discover -s scripts/tests -p test_hardening_preparation.py -v
+           python3 -m unittest discover -s scripts/tests -p test_play_version_evidence.py -v
++          python3 -m unittest discover -s scripts/tests -p test_identity_lifecycle_contracts.py -v
++          python3 -m unittest discover -s scripts/tests -p test_collector_queue_contracts.py -v
+           python3 scripts/ci/check_github_actions_pinned.py
+       - name: Pure Edge modules and actual handler fixtures (not live Deno)
+         run: |
+@@ -152,6 +154,8 @@ jobs:
+           trap 'rm -rf "$scratch"' EXIT
+           kotlinc android/app/src/main/kotlin/rw/mobi/app/BioPayNfcPolicy.kt scripts/tests/kotlin/BioPayNfcPolicyTest.kt -include-runtime -d "$scratch/nfc-policy-tests.jar"
+           java -jar "$scratch/nfc-policy-tests.jar"
++          kotlinc apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorPolicy.kt apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorLease.kt scripts/tests/kotlin/CollectorPolicyCheck.kt -include-runtime -d "$scratch/collector-policy-tests.jar"
++          java -jar "$scratch/collector-policy-tests.jar"
+       - name: Existing Pages and Worker fixtures
+         run: |
+           node --test scripts/tests/*.test.mjs
+@@ -161,3 +165,26 @@ jobs:
+         run: |
+           echo 'These unit/fixture jobs do not replace the real Deno/SQL, Kotlin/Android, signed iOS or real-model acceptance gates.'
+           echo 'Do not promote a release based on this job alone. Protected branch requirements must be configured separately.'
++
++  collector-components:
++    runs-on: ubuntu-24.04
++    timeout-minutes: 20
++    permissions:
++      contents: read
++    steps:
++      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # existing reviewed v4 pin
++      - name: Assert Android/JDK tools and install explicit platform
++        run: |
++          export JAVA_HOME="${JAVA_HOME_17_X64:?Hosted runner must provide JDK 17}"
++          export PATH="$JAVA_HOME/bin:$PATH"
++          java -version
++          sdkmanager="${ANDROID_HOME:?Hosted runner must provide Android command-line tools}/cmdline-tools/latest/bin/sdkmanager"
++          test -x "$sdkmanager"
++          "$sdkmanager" "platforms;android-36" "build-tools;36.0.0"
++      - name: Build permission-free QA and run native component unit tests
++        run: |
++          export JAVA_HOME="${JAVA_HOME_17_X64:?}"
++          export PATH="$JAVA_HOME/bin:$PATH"
++          android/gradlew -p apps/momobio_sms_bridge --no-daemon :app:testQaUnitTest :app:assembleQa :app:assembleQaAndroidTest
++          python3 apps/momobio_sms_bridge/scripts/verify_qa_apks.py --output build/qa/collector-apks
++          echo 'Compilation/JVM and package-isolation checks only; instrumentation/device runs require their own evidence.'
+diff --git a/apps/momobio_sms_bridge/README.md b/apps/momobio_sms_bridge/README.md
+index 6caa6277cecffa740d50a7883eeb4886cb63a826..c47064cbf8227890a837e6a23b18fdc477ca8643 100644
+--- a/apps/momobio_sms_bridge/README.md
++++ b/apps/momobio_sms_bridge/README.md
+@@ -1,95 +1,152 @@
+-# Mo Mobio
++# Mo Mobio institutional receipt collector
++
++This Android application collects **new, explicitly configured institutional receipt
++notifications**, not the historical inbox. It is a separate application from the
++consumer Mobio app. A sender/marker match only minimizes collection; it does not
++prove a payment. Supabase remains the allocation authority.
++
++## Current implementation
++
++Before collection, a custodian accepts the in-app notice and grants SMS access.
++The stored notice is bound to a SHA-256 fingerprint of the complete filter policy;
++changing senders or markers requires renewed acceptance. There are no production
++sender or marker defaults. Use a dedicated institutional device and SIM. The code
++does not authenticate the SIM owner or cryptographically authenticate an SMS sender.
++
++Eligible messages are encoded and admitted to a private SQLite queue. All three
++sync callers (UI, foreground service and WorkManager) use one OS-backed file lock.
++Retries persist their next-attempt time and honor bounded Retry-After guidance.
++An empty queue does not prove service health: a signed health request must confirm
++that the server recognizes the collector. Enrollment health and automatic allocation
++are displayed separately. Pausing collection revokes local notice acceptance and
++stops future scheduled collection/upload attempts; a request already in flight may
++finish. Revoking Android SMS permission also stops further capture.
++
++The receiver does not request READ_SMS. Force-stop, device loss, an unreceived
++broadcast, disk failure or a capacity refusal can leave missing receipts that need
++operator reconciliation. There is no claim of guaranteed always-on collection.
++
++## Queue limits and recovery
++
++These are engineering defaults, not approved legal retention periods:
++
++| Control | Source value / behavior |
++|---|---|
++| Sender/marker entries | 1–20 of each, literal case-insensitive comparisons |
++| Raw SMS body | At most 8,192 UTF-8 bytes |
++| Encoded local record | At most 12,288 bytes |
++| Pending + quarantined records | At most 10,000 records and 16 MiB of payload |
++| Per request | At most 50 records, bounded by a 400,000-byte envelope budget |
++| Response | At most 262,144 bytes |
++| Acknowledged raw bodies | Removed transactionally; this is not cryptographic erasure |
++| Acknowledgment hash history | At most 100,000 entries / 90 days |
++| Unresolved pending receipts | After 30 days move to quarantine, not silent deletion |
++| Empty healthy probe | No more frequently than five minutes through the shared lease |
++| UI health freshness | Prior server acknowledgment expires after 15 minutes |
++| Retry | Exponential 30 seconds to one hour plus up to 25% jitter; server Retry-After capped at seven days |
++
++Queue capacity never evicts pending evidence to accept a newer record. It refuses
++new admission and records a visible reconciliation warning. Oversized or malformed
++legacy storage is not cleared: upgrade stops for supervised recovery. Parseable
++legacy messages and acknowledgment history migrate in one transaction; malformed
++rows are quarantined. Legacy preferences are cleared only after the database commit.
++The SQLite corruption handler preserves evidence rather than accepting automatic
++file deletion. The dedicated fleet still needs an authorized, tested recovery and
++quarantine-resolution procedure before operational rollout; no raw export or
++release-from-quarantine UI is shipped in this increment.
++
++## Build operational release
++
++Use an approved signing identity and supply configuration through the build
++host's protected environment/secret store. Do not commit secret values or put
++passwords in shell history. Required variable names:
+ 
+-Mo Mobio is a private in-house Android SMS collector for Mobio driver subscription MoMo payments.
+-
+-It is intentionally minimal:
+-
+-- listens only to new incoming SMS delivered after SMS access is enabled
+-- queues raw SMS locally
+-- combines the ordered parts of a completed incoming SMS before hashing and queuing
+-- uploads raw SMS to MOBI Supabase through `momobio-sms-ingest`
+-- keeps an always-on foreground service notification while the phone is running
+-- schedules WorkManager network recovery so queued SMS sync resumes when internet is available
+-- starts recovery after boot and after app updates
+-- retries automatically until the queue is empty
+-- does not parse, match, or validate subscriptions on the device
+-- does not request `READ_SMS` and does not scan pre-install inbox messages
+-- does not include service-role, Postgres, OpenAI, or SMS bridge secrets
+-
+-The backend parses each raw SMS through OpenAI inside Supabase Edge Functions, stores the receipt and transaction rows, and decides whether each SMS is unmatched, ambiguous, matched, duplicate, ignored, or confirms a driver subscription using `rpc_ingest_driver_subscription_momo_sms`.
+-
+-Duplicate delivery is handled server-side. The receipt table is unique by SMS hash and provider transaction reference, and the transaction table is unique by receipt and provider transaction reference, so app retries or duplicate incoming SMS broadcasts do not create a second payment record.
+-
+-## Build
+-
+-```bash
+-SUPABASE_URL=https://<mobio-project>.supabase.co \
+-SUPABASE_ANON_KEY=<public-anon-key> \
+-../../android/gradlew :app:assembleRelease
+ ```
+-
+-From the repo root:
+-
+-```bash
+-SUPABASE_URL=$SUPABASE_URL \
+-SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
+-android/gradlew -p apps/momobio_sms_bridge :app:assembleRelease
++SUPABASE_URL
++SUPABASE_ANON_KEY
++COLLECTOR_POLICY_VERSION
++COLLECTOR_ALLOWED_SENDERS
++COLLECTOR_RECEIPT_MARKERS
++COLLECTOR_KEYSTORE_PATH
++COLLECTOR_KEY_ALIAS
++COLLECTOR_KEYSTORE_PASSWORD
++COLLECTOR_KEY_PASSWORD
+ ```
+ 
+-## Device UAT
++The backend URL must be one HTTPS origin, without credentials, path, query or
++fragment. The public client key is not a service-role key. Sender/marker CSV values
++must come from reviewed operator receipt fixtures, not the synthetic test examples.
++Backend allocation configuration is separate and must also be reviewed.
+ 
+-This operational UAT script grants SMS access and starts collection. Component
+-regressions should use the isolated QA package below.
++From the repository root:
+ 
+ ```bash
+-SUPABASE_URL=$SUPABASE_URL \
+-SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
+-apps/momobio_sms_bridge/scripts/device_uat.sh
++android/gradlew -p apps/momobio_sms_bridge --no-daemon :app:assembleRelease
+ ```
+ 
+-## Isolated component tests
+-
+-Run JVM codec, queue, multipart-decoding and upload-orchestration tests from the repository root:
++Release tasks reject missing managed signing/filter configuration. The source
++version is 1.0.1 / code 2: the release owner must reconcile it with the installed
++fleet and bump it when necessary; no deployed version was inspected here.
+ 
+-```bash
+-android/gradlew -p apps/momobio_sms_bridge :app:testDebugUnitTest --offline
+-```
++## Non-destructive installation check
+ 
+-The small cached-compiler runner is available when a Gradle build is impractical:
++Set `ANDROID_SERIAL` for an explicitly selected authorized device and
++`COLLECTOR_EXPECTED_CERT_SHA256` to the independently approved certificate digest.
++Set `ADB` and `APKSIGNER` only when these executables are not on PATH. Then:
+ 
+ ```bash
+-python3 apps/momobio_sms_bridge/scripts/test_jvm.py --output build/qa/collector-jvm
++apps/momobio_sms_bridge/scripts/device_uat.sh
+ ```
+ 
+-It reads the generated constants from an actual QA build. If that file is absent,
+-run `android/gradlew -p apps/momobio_sms_bridge :app:generateQaBuildConfig --offline`
+-once. The runner does not create a substitute runtime configuration. Upload tests
+-use a synthetic connection and signer; they never open a socket or create a key.
++This builds with managed signing, verifies the exact certificate, and installs
++with `adb install -r`. It does not use a debug signing key, grant SMS permissions,
++clear data, uninstall, force-stop, enroll a collector or assert a paid result.
++A signing mismatch is a stop condition, not permission to uninstall the old app.
++The generated receipt proves only installation steps, never functional UAT.
+ 
+-Both use synthetic messages. The preference double tests concurrency and error
+-handling, but cannot establish Android disk persistence.
++## Testing boundaries
+ 
+-The `qa` build type uses `com.momobio.app.qa`, blank backend configuration and a
+-manifest without permissions, application components or automatic initialization.
+-Its instrumentation APK also requests no permissions. It has no collector UI and
+-cannot receive SMS or upload. Build both APKs without operational configuration:
++Portable tests run locally without an Android SDK or live provider:
+ 
+ ```bash
+-android/gradlew -p apps/momobio_sms_bridge :app:assembleQa :app:assembleQaAndroidTest --offline
++python3 -m unittest discover -s scripts/tests -p test_collector_queue_contracts.py -v
++node --experimental-transform-types --loader ./scripts/tests/edge/fixture-loader.mjs --test scripts/tests/edge/handlers.test.mjs
++bash scripts/ci/run_hardening_tests.sh
+ ```
+ 
+-Verify and copy both built APKs before installing them on a fresh, dedicated emulator:
++The SQLite tests execute the actual shipped schema and DML via Python SQLite.
++The JVM policy/lease tests compile production pure Kotlin and exercise real file
++locks, including contention from a separate JVM. Neither substitutes for Android
++SQLiteOpenHelper, WorkManager, Keystore, telephony, permissions or OEM behavior.
++
++The permission-free QA package remains `com.momobio.app.qa`. It uses blank backend
++and filter configuration and has no activities, providers, receivers or services:
+ 
+ ```bash
++android/gradlew -p apps/momobio_sms_bridge --no-daemon :app:testQaUnitTest :app:assembleQa :app:assembleQaAndroidTest
+ python3 apps/momobio_sms_bridge/scripts/verify_qa_apks.py --output build/qa/collector-apks
+ ```
+ 
+-Use an explicit adb serial for every action. Run
+-`com.momobio.app.qa.test/androidx.test.runner.AndroidJUnitRunner` with
+-`adb -s SERIAL shell am instrument -w -r`. The six component tests check package
+-isolation, Android JSON and multipart PDU parsing, Keystore signatures, queue
+-concurrency and stored acknowledgements. Synthetic PDUs are parsed directly;
+-no SMS broadcast is sent. Run again after stopping the QA process and replacing
+-the QA APK without clearing its data to check continuity. These component checks
+-do not establish operational collection, backend matching, device power behavior
+-or release acceptance.
++Run instrumentation only on the verified QA package and an explicit adb serial.
++`DurableQueueDeviceTest` adds actual-adapter checks for migration, partial/unknown
++acknowledgments, quarantine, expiry, concurrent admission, bounded batch size and
++persisted backoff. These tests are authored but were not run in this increment's
++execution environment. The cached-compiler helper still covers the legacy
++preference-queue implementation; do not present those legacy tests as SQLite tests.
++
++## Server rollout and unresolved gates
++
++The signed `{ "action": "health" }` operation uses the existing collector
++signature, registry, replay and rate gates. It parses no SMS and allocates nothing.
++Disabled allocation, unapproved senders and missing merchant configuration are
++held for server review **before** calling the AI parser. This does not implement
++a new asynchronous durable intake worker: valid batch parsing is still sequential.
++Large valid batches, partial completion and lost acknowledgments therefore still
++need M032/provider-latency work. A connect/read timeout is not an overall deadline.
++
++Do not deploy this collector over the original unsafe booking/identity/receipt
++schema. Integrate the cumulative hardening patch, generate and review the six
++forward migration bodies, rehearse the full schema, then deploy compatible Edge
++functions before accepting an operational collector upgrade. All live financial,
++Auth, device, store, privacy and signing-rotation acceptance remains separate.
++See `docs/operations/collector-acceptance-2026-09-28.md`.
+diff --git a/apps/momobio_sms_bridge/app/build.gradle.kts b/apps/momobio_sms_bridge/app/build.gradle.kts
+index ec1a8752291c12b896291dddf2328d7131cabb06..e76ac6b6d4e37e76b950739b7b55d8d1d5976a42 100644
+--- a/apps/momobio_sms_bridge/app/build.gradle.kts
++++ b/apps/momobio_sms_bridge/app/build.gradle.kts
+@@ -8,6 +8,37 @@ fun propOrEnv(name: String): String =
+         ?: System.getenv(name)
+         ?: ""
+ 
++// Never embed unescaped configuration into generated Java source.
++fun configLiteral(value: String): String = "\"" + value.replace("\\", "\\\\")
++    .replace("\"", "\\\"").replace("\r", "\\r").replace("\n", "\\n") + "\""
++val releaseRequested = gradle.startParameter.taskNames.any {
++    it.contains("Release", ignoreCase = true) || it.substringAfterLast(':') in setOf("assemble", "build", "bundle")
++}
++val signingPath = propOrEnv("COLLECTOR_KEYSTORE_PATH")
++val keyAliasValue = propOrEnv("COLLECTOR_KEY_ALIAS")
++val storePass = propOrEnv("COLLECTOR_KEYSTORE_PASSWORD")
++val keyPass = propOrEnv("COLLECTOR_KEY_PASSWORD")
++val policyVersion = propOrEnv("COLLECTOR_POLICY_VERSION")
++val senderAllowlist = propOrEnv("COLLECTOR_ALLOWED_SENDERS")
++val receiptMarkers = propOrEnv("COLLECTOR_RECEIPT_MARKERS")
++if (releaseRequested) {
++    require(signingPath.isNotBlank() && file(signingPath).isFile && keyAliasValue.isNotBlank() &&
++        storePass.isNotBlank() && keyPass.isNotBlank()) { "Managed collector release signing is required; no debug signing fallback" }
++    val senders = senderAllowlist.split(',').map { it.trim() }.filter { it.isNotBlank() }.toSet()
++    val markers = receiptMarkers.split(',').map { it.trim() }.filter { it.isNotBlank() }.toSet()
++    require(policyVersion.matches(Regex("[A-Za-z0-9._-]{1,64}")) && senders.size in 1..20 && markers.size in 1..20 &&
++        senders.all { it.length in 1..64 && it.none { c -> c < ' ' } } &&
++        markers.all { it.length in 3..100 && it.none { c -> c < ' ' } }) {
++        "Approved collector receipt-filter configuration is required"
++    }
++    val endpoint = java.net.URI(propOrEnv("SUPABASE_URL"))
++    require(endpoint.scheme == "https" && !endpoint.host.isNullOrBlank() && endpoint.rawUserInfo == null &&
++        endpoint.rawQuery == null && endpoint.rawFragment == null && endpoint.port in setOf(-1, 443) &&
++        endpoint.rawPath.orEmpty() in setOf("", "/") && propOrEnv("SUPABASE_ANON_KEY").isNotBlank()) {
++        "Public backend configuration is required for an operational release"
++    }
++}
++
+ android {
+     namespace = "com.momobio.app"
+     compileSdk = 36
+@@ -15,13 +46,27 @@ android {
+     defaultConfig {
+         applicationId = "com.momobio.app"
+         minSdk = 26
+-        targetSdk = 35
+-        versionCode = 1
+-        versionName = "1.0.0"
++        targetSdk = 36
++        versionCode = 2
++        versionName = "1.0.1"
+         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
++        buildConfigField("String", "COLLECTOR_POLICY_VERSION", configLiteral(policyVersion))
++        buildConfigField("String", "COLLECTOR_ALLOWED_SENDERS", configLiteral(senderAllowlist))
++        buildConfigField("String", "COLLECTOR_RECEIPT_MARKERS", configLiteral(receiptMarkers))
+ 
+-        buildConfigField("String", "SUPABASE_URL", "\"${propOrEnv("SUPABASE_URL")}\"")
+-        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${propOrEnv("SUPABASE_ANON_KEY")}\"")
++        buildConfigField("String", "SUPABASE_URL", configLiteral(propOrEnv("SUPABASE_URL")))
++        buildConfigField("String", "SUPABASE_ANON_KEY", configLiteral(propOrEnv("SUPABASE_ANON_KEY")))
++    }
++
++    signingConfigs {
++        if (releaseRequested) {
++            create("collectorRelease") {
++                storeFile = file(signingPath)
++                storePassword = storePass
++                keyAlias = keyAliasValue
++                keyPassword = keyPass
++            }
++        }
+     }
+ 
+     buildFeatures {
+@@ -31,9 +76,15 @@ android {
+     // Component tests only: its manifest has no permissions or app components.
+     // It cannot collect SMS, start the bridge UI or contact the backend.
+     buildTypes {
++        getByName("release") {
++            if (releaseRequested) signingConfig = signingConfigs.getByName("collectorRelease")
++        }
+         create("qa") {
+             initWith(getByName("debug"))
+             applicationIdSuffix = ".qa"
++            buildConfigField("String", "COLLECTOR_POLICY_VERSION", "\"\"")
++            buildConfigField("String", "COLLECTOR_ALLOWED_SENDERS", "\"\"")
++            buildConfigField("String", "COLLECTOR_RECEIPT_MARKERS", "\"\"")
+             matchingFallbacks += "debug"
+             buildConfigField("String", "SUPABASE_URL", "\"\"")
+             buildConfigField("String", "SUPABASE_ANON_KEY", "\"\"")
+diff --git a/apps/momobio_sms_bridge/app/src/androidTest/java/com/momobio/app/DurableQueueDeviceTest.kt b/apps/momobio_sms_bridge/app/src/androidTest/java/com/momobio/app/DurableQueueDeviceTest.kt
+new file mode 100644
+index 0000000000000000000000000000000000000000..1cd206c999f4b4e289d4b3aef325db206791f203
+--- /dev/null
++++ b/apps/momobio_sms_bridge/app/src/androidTest/java/com/momobio/app/DurableQueueDeviceTest.kt
+@@ -0,0 +1,100 @@
++package com.momobio.app
++
++import android.content.Context
++import android.database.sqlite.SQLiteDatabase
++import androidx.test.ext.junit.runners.AndroidJUnit4
++import androidx.test.platform.app.InstrumentationRegistry
++import org.junit.After
++import org.junit.Before
++import org.junit.Test
++import org.junit.Assert.*
++import org.junit.runner.RunWith
++import java.util.concurrent.Executors
++
++/** Actual Android adapter tests, intentionally confined to the permission-free QA package. */
++@RunWith(AndroidJUnit4::class)
++class DurableQueueDeviceTest {
++    private lateinit var context: Context
++    private lateinit var db: SQLiteDatabase
++    private lateinit var queue: DurableSmsQueue
++    private val now = 1_800_000_000_000L
++    private fun receipt(i: Int) = MomoSms("QA_ONLY", "Synthetic receipt $i", now+i)
++
++    @Before fun setup() {
++        context = InstrumentationRegistry.getInstrumentation().targetContext
++        check(context.packageName == "com.momobio.app.qa") { "Never run against an operational collector" }
++        queue = DurableSmsQueue(context)
++        db = SQLiteDatabase.openDatabase(context.getDatabasePath("momobio_receipts.db").path, null, SQLiteDatabase.OPEN_READWRITE)
++        // Only synthetic, isolated QA storage is reset. Enrollment keys are not touched.
++        db.execSQL("DELETE FROM receipts")
++        db.execSQL("DELETE FROM queue_metadata")
++        db.execSQL("INSERT INTO queue_metadata(key,value) VALUES ('legacy_imported','1')")
++        assertTrue(context.getSharedPreferences("momo_sms_queue", Context.MODE_PRIVATE).edit().clear().commit())
++    }
++    @After fun close() { if (::db.isInitialized) db.close() }
++
++    @Test fun durableAdmissionPartialAckAndReopen() {
++        assertEquals(2, queue.enqueue(listOf(receipt(1), receipt(2)), now).accepted)
++        queue.markUploaded(setOf(receipt(1).messageHash), now+1)
++        val reopened = DurableSmsQueue(context)
++        assertEquals(listOf(receipt(2)), reopened.batch(now=now+2))
++        assertEquals(1, reopened.enqueue(listOf(receipt(1)), now+2).duplicate)
++        db.rawQuery("SELECT payload,payload_bytes FROM receipts WHERE message_hash=?", arrayOf(receipt(1).messageHash)).use {
++            assertTrue(it.moveToFirst()); assertTrue(it.isNull(0)); assertEquals(0, it.getInt(1))
++        }
++    }
++    @Test fun unknownAckDoesNotClaimObservedReceipt() {
++        queue.enqueue(listOf(receipt(1)), now)
++        queue.markUploaded(setOf("f".repeat(64)), now+1)
++        assertEquals(0L, queue.health().lastAckAt)
++        assertEquals(1, queue.count())
++    }
++    @Test fun policyReviewCannotBeAcknowledgedAccidentally() {
++        queue.enqueue(listOf(receipt(1)), now)
++        queue.quarantine(setOf(receipt(1).messageHash), "policy_review")
++        queue.markUploaded(setOf(receipt(1).messageHash), now+1)
++        assertEquals(1, queue.health().quarantined)
++        assertTrue(queue.batch(now=now+2).isEmpty())
++    }
++    @Test fun pendingAgeMovesToQuarantineWithoutErasing() {
++        queue.enqueue(listOf(receipt(1)), now-DurableSmsQueue.MAX_PENDING_AGE_MS-1)
++        assertTrue(queue.batch(now=now).isEmpty())
++        assertEquals(1, queue.health().quarantined)
++        assertTrue(queue.health().bytes > 0)
++    }
++    @Test fun corruptLegacyRowIsPreservedAndValidRowsMigrateOnce() {
++        db.execSQL("DELETE FROM queue_metadata WHERE key='legacy_imported'")
++        assertTrue(context.getSharedPreferences("momo_sms_queue",Context.MODE_PRIVATE).edit()
++            .putString("pending", receipt(1).toJson()+"\n{corrupt")
++            .putString("uploaded", "invalid-ack-row").commit())
++        val migrated = DurableSmsQueue(context)
++        assertEquals(1, migrated.count()); assertEquals(2, migrated.health().quarantined)
++        assertFalse(context.getSharedPreferences("momo_sms_queue",Context.MODE_PRIVATE).contains("pending"))
++        assertEquals(1, DurableSmsQueue(context).count())
++    }
++    @Test fun concurrentDuplicateAdmissionCreatesOnePendingReceipt() {
++        val executor=Executors.newFixedThreadPool(4)
++        try {
++            val attempts = (1..20).map { executor.submit<Int> { DurableSmsQueue(context).enqueue(listOf(receipt(1)),now).accepted } }
++            assertEquals(1, attempts.sumOf { it.get() })
++            assertEquals(1, queue.count())
++        } finally { executor.shutdownNow() }
++    }
++    @Test fun backoffAndHealthArePersistedIndependentlyOfQueueSize() {
++        queue.recordOutcome(UploadResult(false, message="rate limited", outcome="rate_limited", retryAfterMillis=120_000), now)
++        assertFalse(DurableSmsQueue(context).permittedAttempt(now+60_000))
++        assertEquals(0L, queue.serverAcknowledgedAt())
++        queue.recordOutcome(UploadResult(true,message="healthy",serverAcknowledged=true,automaticAllocationEnabled=false),now+120_000)
++        assertEquals(now+120_000, queue.serverAcknowledgedAt())
++        assertEquals(false, queue.automaticAllocationEnabled())
++        assertFalse(queue.permittedAttempt(now+120_001))
++    }
++    @Test fun byteBoundedBatchCannotExceedTransportBodyBudget() {
++        val messages=(1..50).map { MomoSms("QA_ONLY", "Synthetic "+"x".repeat(8_000),now+it) }
++        assertEquals(50, queue.enqueue(messages,now).accepted)
++        val batch=queue.batch(now=now+1)
++        val bytes=("{\"messages\":["+batch.joinToString(",") { it.toJson() }+"]}").toByteArray(Charsets.UTF_8).size
++        assertTrue(batch.isNotEmpty()); assertTrue(batch.size < 50)
++        assertTrue(bytes <= DurableSmsQueue.MAX_BATCH_BYTES)
++    }
++}
+diff --git a/apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml b/apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml
+index f7115a6a2428a8a95b59f076e95aada52485eb59..c79dfa140e021c02fb747e871039a8749c3d66cb 100644
+--- a/apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml
++++ b/apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml
+@@ -50,7 +50,7 @@
+             android:foregroundServiceType="specialUse">
+             <property
+                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+-                android:value="always_on_sms_payment_bridge" />
++                android:value="institutional_receipt_collection_with_visible_status" />
+         </service>
+     </application>
+ </manifest>
+diff --git a/apps/momobio_sms_bridge/app/src/main/assets/receipt_queue_v1.sql b/apps/momobio_sms_bridge/app/src/main/assets/receipt_queue_v1.sql
+new file mode 100644
+index 0000000000000000000000000000000000000000..b59d5077722d40d8d596b9f2285d59c3dbab4c97
+--- /dev/null
++++ b/apps/momobio_sms_bridge/app/src/main/assets/receipt_queue_v1.sql
+@@ -0,0 +1,23 @@
++-- Shared schema used by Android SQLiteOpenHelper and isolated SQLite tests.
++CREATE TABLE receipts (
++  message_hash TEXT PRIMARY KEY NOT NULL,
++  payload TEXT,
++  payload_bytes INTEGER NOT NULL DEFAULT 0 CHECK (payload_bytes BETWEEN 0 AND 12288),
++  received_at INTEGER NOT NULL,
++  admitted_at INTEGER NOT NULL,
++  state TEXT NOT NULL CHECK (state IN ('pending','quarantined','acknowledged')),
++  reason TEXT,
++  acknowledged_at INTEGER,
++  CHECK ((state = 'acknowledged' AND payload IS NULL AND payload_bytes = 0
++          AND acknowledged_at IS NOT NULL) OR (state != 'acknowledged' AND payload IS NOT NULL AND payload_bytes = length(CAST(payload AS BLOB))))
++);
++-- @statement
++CREATE INDEX receipts_ready ON receipts(state, admitted_at, message_hash);
++-- @statement
++CREATE TABLE queue_metadata (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL);
++-- @statement
++CREATE TRIGGER receipt_capacity_insert BEFORE INSERT ON receipts
++WHEN NEW.state != 'acknowledged' AND (
++ (SELECT count(*) FROM receipts WHERE state != 'acknowledged') >= 10000 OR
++ (SELECT coalesce(sum(payload_bytes),0) FROM receipts) + NEW.payload_bytes > 16777216)
++BEGIN SELECT RAISE(ABORT, 'QUEUE_CAPACITY_REVIEW_REQUIRED'); END;
+diff --git a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeForegroundService.kt b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeForegroundService.kt
+index bb92d0eee90d0244e2bbe07084ebd22e969fc992..5a20adeb4c54478464032e3ff284253ac848805b 100644
+--- a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeForegroundService.kt
++++ b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeForegroundService.kt
+@@ -18,15 +18,20 @@ class BridgeForegroundService : Service() {
+     private val executor = Executors.newSingleThreadExecutor()
+     private val handler = Handler(Looper.getMainLooper())
+     @Volatile private var syncInFlight = false
++    @Volatile private var destroyed = false
+ 
+     override fun onCreate() {
+         super.onCreate()
+         createNotificationChannel()
+-        startForeground(notificationId, notification("Mo Mobio is active", "Watching SMS and syncing payments."))
++        startForeground(notificationId, notification("Mo Mobio collector", "Only approved receipt notifications are collected; checking connection."))
+         BridgeSupervisor.schedule(applicationContext)
+     }
+ 
+     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
++        if (!CollectorRuntime.ready(applicationContext)) {
++            stopSelf()
++            return START_NOT_STICKY
++        }
+         runSync()
+         return START_STICKY
+     }
+@@ -34,6 +39,7 @@ class BridgeForegroundService : Service() {
+     override fun onBind(intent: Intent?): IBinder? = null
+ 
+     override fun onDestroy() {
++        destroyed = true
+         handler.removeCallbacksAndMessages(null)
+         executor.shutdownNow()
+         BridgeSupervisor.enqueueImmediate(applicationContext)
+@@ -41,7 +47,7 @@ class BridgeForegroundService : Service() {
+     }
+ 
+     private fun runSync() {
+-        if (syncInFlight) return
++        if (syncInFlight || destroyed || !CollectorRuntime.ready(applicationContext)) return
+         syncInFlight = true
+         executor.execute {
+             val result = try {
+@@ -53,28 +59,29 @@ class BridgeForegroundService : Service() {
+                 syncInFlight = false
+             }
+ 
+-            updateNotification(result)
+-            handler.postDelayed({ runSync() }, if (result.ok) idleDelayMillis else retryDelayMillis)
++            if (!destroyed) {
++                try {
++                    updateNotification(result)
++                } catch (_: Exception) {
++                    // A queue failure must not silently terminate the sync executor.
++                    getSystemService(NotificationManager::class.java).notify(notificationId,
++                        notification("Mo Mobio recovery required", "Do not clear app data. Contact the fleet administrator."))
++                }
++                handler.postDelayed({ runSync() }, retryDelayMillis)
++            }
+         }
+     }
+ 
+     private fun syncOnce(): UploadResult {
+-        val queue = SmsQueue(applicationContext)
+-        val messages = queue.all()
+-        return UploadClient(CollectorIdentity(applicationContext)).upload(messages) { uploadedHashes ->
+-            queue.markUploaded(uploadedHashes)
+-        }
++        return CollectorSync.run(applicationContext)
+     }
+ 
+     private fun updateNotification(result: UploadResult) {
+         val manager = getSystemService(NotificationManager::class.java)
+-        val queueCount = SmsQueue(applicationContext).count()
+-        val title = if (result.ok && queueCount == 0) "Mo Mobio is active" else "Mo Mobio sync pending"
+-        val body = if (result.ok) {
+-            "${result.message}; queued $queueCount"
+-        } else {
+-            "${result.message}; queued $queueCount"
+-        }
++        val health = DurableSmsQueue(applicationContext).health()
++        val title = if (result.ok && health.pending == 0 && health.quarantined == 0 && health.capacityBlocked == 0L)
++            "Mo Mobio server acknowledged" else "Mo Mobio needs attention"
++        val body = "${result.message}; queued ${health.pending}; review ${health.quarantined}; blocked ${health.capacityBlocked}"
+         manager.notify(notificationId, notification(title, body))
+     }
+ 
+@@ -113,7 +120,6 @@ class BridgeForegroundService : Service() {
+     companion object {
+         private const val notificationId = 31045
+         private const val notificationChannelId = "mo_mobio_sms_bridge_active"
+-        private const val idleDelayMillis = 5 * 60 * 1000L
+         private const val retryDelayMillis = 30 * 1000L
+     }
+ }
+diff --git a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeSupervisor.kt b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeSupervisor.kt
+index cd1529295ded69653f99ef76dd404aadca67ce96..131cad12db3dc6b54a8897ae04b996d0a6acc912 100644
+--- a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeSupervisor.kt
++++ b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeSupervisor.kt
+@@ -3,6 +3,7 @@ package com.momobio.app
+ import android.content.Context
+ import android.content.Intent
+ import android.os.Build
++import androidx.work.BackoffPolicy
+ import androidx.work.Constraints
+ import androidx.work.ExistingPeriodicWorkPolicy
+ import androidx.work.ExistingWorkPolicy
+@@ -18,6 +19,7 @@ object BridgeSupervisor {
+ 
+     fun start(context: Context) {
+         val appContext = context.applicationContext
++        if (!CollectorRuntime.ready(appContext)) return
+         schedule(appContext)
+         val intent = Intent(appContext, BridgeForegroundService::class.java)
+         try {
+@@ -33,12 +35,21 @@ object BridgeSupervisor {
+         }
+     }
+ 
++    fun stop(context: Context) {
++        val app = context.applicationContext
++        WorkManager.getInstance(app).cancelUniqueWork(periodicWorkName)
++        WorkManager.getInstance(app).cancelUniqueWork(immediateWorkName)
++        app.stopService(Intent(app, BridgeForegroundService::class.java))
++    }
++
+     fun schedule(context: Context) {
++        if (!CollectorRuntime.ready(context.applicationContext)) return
+         val constraints = Constraints.Builder()
+             .setRequiredNetworkType(NetworkType.CONNECTED)
+             .build()
+         val request = PeriodicWorkRequestBuilder<BridgeSyncWorker>(15, TimeUnit.MINUTES)
+             .setConstraints(constraints)
++            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
+             .build()
+         WorkManager.getInstance(context.applicationContext).enqueueUniquePeriodicWork(
+             periodicWorkName,
+@@ -48,15 +59,17 @@ object BridgeSupervisor {
+     }
+ 
+     fun enqueueImmediate(context: Context) {
++        if (!CollectorRuntime.ready(context.applicationContext)) return
+         val constraints = Constraints.Builder()
+             .setRequiredNetworkType(NetworkType.CONNECTED)
+             .build()
+         val request = OneTimeWorkRequestBuilder<BridgeSyncWorker>()
+             .setConstraints(constraints)
++            .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
+             .build()
+         WorkManager.getInstance(context.applicationContext).enqueueUniqueWork(
+             immediateWorkName,
+-            ExistingWorkPolicy.REPLACE,
++            ExistingWorkPolicy.KEEP,
+             request,
+         )
+     }
+diff --git a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeSyncWorker.kt b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeSyncWorker.kt
+index 6ed1b65826cc8b656fddc9883136ddcefe7f9df9..2a8092ac3250ca75250fe9b234df2c349bde1caf 100644
+--- a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeSyncWorker.kt
++++ b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeSyncWorker.kt
+@@ -10,12 +10,10 @@ class BridgeSyncWorker(
+     workerParams: WorkerParameters,
+ ) : Worker(context, workerParams) {
+     override fun doWork(): Result = try {
+-        val queue = SmsQueue(applicationContext)
+-        val result = UploadClient(CollectorIdentity(applicationContext)).upload(queue.all()) { uploadedHashes ->
+-            queue.markUploaded(uploadedHashes)
+-        }
++        val result = CollectorSync.run(applicationContext)
+ 
+-        if (result.ok) Result.success() else Result.retry()
++        if (result.ok && DurableSmsQueue(applicationContext).count() == 0) Result.success()
++        else Result.retry() // Continue draining bounded batches without replacing active work.
+     } catch (error: Exception) {
+         Log.e("MoMobioBridge", "Background sync failed: ${error.javaClass.simpleName}")
+         Result.retry()
+diff --git a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorLease.kt b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorLease.kt
+new file mode 100644
+index 0000000000000000000000000000000000000000..5d7b7c216d94e21587d747ee211f4e801a27e4aa
+--- /dev/null
++++ b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorLease.kt
+@@ -0,0 +1,14 @@
++package com.momobio.app
++
++import java.io.File
++import java.io.RandomAccessFile
++import java.nio.channels.OverlappingFileLockException
++
++/** Cross-thread and cross-process exclusion; process exit releases the OS lease. */
++object CollectorLease {
++    fun <T> withLease(path: File, action: () -> T): T? = RandomAccessFile(path, "rw").use { file ->
++        val lease = try { file.channel.tryLock() } catch (_: OverlappingFileLockException) { null }
++        if (lease == null) return null
++        lease.use { action() }
++    }
++}
+diff --git a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorPolicy.kt b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorPolicy.kt
+new file mode 100644
+index 0000000000000000000000000000000000000000..afeb7a2bd42b019c6a905972a052d83482cd07c6
+--- /dev/null
++++ b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorPolicy.kt
+@@ -0,0 +1,74 @@
++package com.momobio.app
++
++import java.net.URI
++import java.time.ZonedDateTime
++import java.time.format.DateTimeFormatter
++import java.security.MessageDigest
++
++/** Local data-minimization policy only. The backend alone allocates payments. */
++data class CollectorPolicy(
++    val version: String,
++    val allowedSenders: Set<String>,
++    val receiptMarkers: Set<String>,
++) {
++    val configured: Boolean get() = version.matches(Regex("[A-Za-z0-9._-]{1,64}")) &&
++        allowedSenders.isNotEmpty() && receiptMarkers.isNotEmpty() &&
++        allowedSenders.size <= 20 && receiptMarkers.size <= 20 &&
++        allowedSenders.all { it.isNotBlank() && it.length <= 64 && it.none { c -> c < ' ' } } &&
++        receiptMarkers.all { it.length in 3..100 && it.none { c -> c < ' ' } }
++
++    // Consent binds the complete policy, not merely a manually bumped label.
++    val fingerprint: String get() {
++        val canonical = (listOf(version) + allowedSenders.sorted().map { "s:" + it } +
++            receiptMarkers.sorted().map { "m:" + it }).joinToString("\n")
++        return MessageDigest.getInstance("SHA-256").digest(canonical.toByteArray(Charsets.UTF_8))
++            .joinToString("") { "%02x".format(it) }
++    }
++
++    fun accepts(sender: String, body: String, receivedAtMillis: Long): Boolean {
++        if (!configured || sender.isBlank() || body.isBlank() || receivedAtMillis <= 0) return false
++        if (sender.toByteArray(Charsets.UTF_8).size > 100 ||
++            body.toByteArray(Charsets.UTF_8).size > MAX_BODY_BYTES || '\u0000' in body) return false
++        return allowedSenders.any { it.equals(sender.trim(), ignoreCase = true) } &&
++            receiptMarkers.any { body.contains(it, ignoreCase = true) }
++    }
++
++    companion object {
++        const val MAX_BODY_BYTES = 8192
++        fun fromCsv(version: String, senders: String, markers: String): CollectorPolicy =
++            CollectorPolicy(version.trim(), split(senders), split(markers))
++        private fun split(raw: String): Set<String> = raw.split(',').map { it.trim() }
++            .filter { it.isNotBlank() }.toSet()
++    }
++}
++
++object CollectorTransportPolicy {
++    fun validEndpoint(baseUrl: String): Boolean = try {
++        val u = URI(baseUrl)
++        u.scheme == "https" && !u.host.isNullOrBlank() && u.rawUserInfo == null &&
++            u.rawQuery == null && u.rawFragment == null && u.port in setOf(-1, 443) &&
++            u.rawPath.orEmpty() in setOf("", "/")
++    } catch (_: Exception) { false }
++
++    // Engineering cap: honor Retry-After up to seven days; longer responses require
++    // operational review. No raw header is logged or used as a URL.
++    fun retryAfterMillis(value: String?, nowMillis: Long): Long? {
++        if (value.isNullOrBlank() || value.length > 128) return null
++        val raw = value.trim()
++        raw.toLongOrNull()?.let {
++            if (it < 0) return null
++            return it.coerceAtMost(7 * 24 * 60 * 60).times(1000L)
++        }
++        return try {
++            (ZonedDateTime.parse(raw, DateTimeFormatter.RFC_1123_DATE_TIME)
++                .toInstant().toEpochMilli() - nowMillis).coerceIn(0, MAX_BACKOFF_MS)
++        } catch (_: Exception) { null }
++    }
++
++    fun backoffMillis(failures: Int, retryAfter: Long? = null, jitter: Double = 0.5): Long {
++        val base = (30_000L * (1L shl (failures - 1).coerceIn(0, 10))).coerceAtMost(3_600_000L)
++        val factor = 1.0 + (if (jitter.isFinite()) jitter.coerceIn(0.0, 1.0) else 0.5) * 0.25
++        return maxOf((base * factor).toLong(), retryAfter?.coerceIn(0, MAX_BACKOFF_MS) ?: 0)
++    }
++    const val MAX_BACKOFF_MS = 7L * 24 * 60 * 60 * 1000
++}
+diff --git a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorRuntime.kt b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorRuntime.kt
+new file mode 100644
+index 0000000000000000000000000000000000000000..62928f6495a8a73552139d00163e32098dfb8e40
+--- /dev/null
++++ b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorRuntime.kt
+@@ -0,0 +1,28 @@
++package com.momobio.app
++
++import android.Manifest
++import android.content.Context
++import android.content.pm.PackageManager
++
++/** Capture is opt-in, versioned and restricted to configured receipt senders. */
++object CollectorRuntime {
++    const val NOTICE_VERSION = "collector-data-use-2026-09-28-v1"
++    private const val PREFS = "momobio_collection_consent"
++    val policy: CollectorPolicy get() = CollectorPolicy.fromCsv(
++        BuildConfig.COLLECTOR_POLICY_VERSION, BuildConfig.COLLECTOR_ALLOWED_SENDERS,
++        BuildConfig.COLLECTOR_RECEIPT_MARKERS,
++    )
++    fun consented(context: Context): Boolean = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
++        .getString("version", null) == NOTICE_VERSION + ":" + policy.fingerprint
++    fun acceptNotice(context: Context) {
++        check(policy.configured) { "Approved receipt-filter configuration is required" }
++        check(context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
++            .putString("version", NOTICE_VERSION + ":" + policy.fingerprint)
++            .putLong("accepted_at", System.currentTimeMillis()).commit()) { "Consent could not be saved" }
++    }
++    fun revokeNotice(context: Context) {
++        check(context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().clear().commit())
++    }
++    fun ready(context: Context): Boolean = policy.configured && consented(context) &&
++        context.checkSelfPermission(Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED
++}
+diff --git a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorSync.kt b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorSync.kt
+new file mode 100644
+index 0000000000000000000000000000000000000000..3ec2a7981c11e8609bae6ecac3a6ef1a95b54d87
+--- /dev/null
++++ b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorSync.kt
+@@ -0,0 +1,31 @@
++package com.momobio.app
++
++import android.content.Context
++
++/** All UI, service and WorkManager upload attempts use the same OS-backed lease. */
++object CollectorSync {
++    fun run(context: Context): UploadResult {
++        val app = context.applicationContext
++        if (!CollectorRuntime.policy.configured) return UploadResult(false,
++            message="Approved sender/receipt policy is missing", outcome="policy_missing")
++        if (!CollectorRuntime.ready(app)) return UploadResult(false,
++            message="Collection notice and SMS permission are required", outcome="consent_or_permission_required")
++        return CollectorLease.withLease(java.io.File(app.noBackupFilesDir,"collector-sync.lock")) {
++            val queue = DurableSmsQueue(app)
++            val now = System.currentTimeMillis()
++            if (!queue.permittedAttempt(now)) {
++                UploadResult(false,message="Retry is scheduled; receipts remain stored",outcome="backoff")
++            } else {
++                val batch = queue.batch()
++                val allowed = batch.filter { CollectorRuntime.policy.accepts(it.sender,it.body,it.receivedAtMillis) }
++                queue.quarantine((batch - allowed.toSet()).map { it.messageHash }.toSet(),"policy_review")
++                // Recheck a notice/permission change after potentially slow disk work.
++                if (!CollectorRuntime.ready(app)) return@withLease UploadResult(false,
++                    message="Collection is paused; stored receipts are unchanged", outcome="collection_paused")
++                val result = UploadClient(CollectorIdentity(app)).upload(allowed) { queue.markUploaded(it) }
++                queue.recordOutcome(result)
++                result
++            }
++        } ?: UploadResult(false,message="Another sync owns the queue",outcome="busy")
++    }
++}
+diff --git a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/DurableSmsQueue.kt b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/DurableSmsQueue.kt
+new file mode 100644
+index 0000000000000000000000000000000000000000..1b28dbf7e4b8edaeb77317a7649f184a02d5141e
+--- /dev/null
++++ b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/DurableSmsQueue.kt
+@@ -0,0 +1,223 @@
++package com.momobio.app
++
++import android.content.ContentValues
++import android.content.Context
++import android.database.sqlite.SQLiteDatabase
++import android.database.sqlite.SQLiteOpenHelper
++import java.security.MessageDigest
++
++/** Bounded, transactional queue. Never evicts an unacknowledged receipt to make space. */
++class DurableSmsQueue(context: Context) {
++    private val app = context.applicationContext
++    private val helper = database(app)
++    private val db: SQLiteDatabase get() = helper.writableDatabase
++
++    data class Admission(val accepted: Int, val duplicate: Int, val blocked: Int)
++    data class Health(val pending: Int, val quarantined: Int, val bytes: Long,
++                      val oldestPendingAt: Long?, val capacityBlocked: Long,
++                      val lastAckAt: Long, val lastError: String?, val nextAttemptAt: Long)
++
++    init { migrateLegacy() }
++
++    fun enqueue(messages: List<MomoSms>, now: Long = System.currentTimeMillis()): Admission = tx { d ->
++        var accepted = 0; var duplicate = 0; var blocked = 0
++        trimAcknowledgements(d, now)
++        for (m in messages) {
++            if (exists(d, m.messageHash)) { duplicate++; continue }
++            val payload = m.toJson()
++            val bytes = payload.toByteArray(Charsets.UTF_8).size
++            if (bytes > MAX_RECORD_BYTES || !m.messageHash.matches(Regex("[a-f0-9]{64}"))) {
++                blocked++; continue
++            }
++            if (scalar(d, "SELECT count(*) FROM receipts WHERE state != 'acknowledged'") >= MAX_ACTIVE_ROWS ||
++                scalar(d, "SELECT coalesce(sum(payload_bytes),0) FROM receipts") + bytes > MAX_ACTIVE_BYTES) {
++                blocked++; continue
++            }
++            insert(d, m.messageHash, payload, bytes, m.receivedAtMillis, now, "pending", null)
++            accepted++
++        }
++        if (blocked > 0) put(d, "capacity_blocked", (getLong(d, "capacity_blocked") + blocked).toString())
++        Admission(accepted, duplicate, blocked)
++    }
++
++    fun batch(limit: Int = 50, now: Long = System.currentTimeMillis()): List<MomoSms> = tx { d ->
++        // Retention is a review boundary, NOT a silent discard of unresolved money evidence.
++        d.execSQL(ReceiptQueueSql.EXPIRE,
++            arrayOf(now - MAX_PENDING_AGE_MS))
++        val result = mutableListOf<MomoSms>()
++        var wireBytes = 32 // Envelope and comma overhead are bounded independently.
++        d.rawQuery(ReceiptQueueSql.BATCH,
++            arrayOf(limit.coerceIn(1, 50).toString())).use { c ->
++            while (c.moveToNext()) {
++                val hash = c.getString(0); val raw = c.getString(1)
++                val parsed = MomoSms.fromJson(raw)
++                if (parsed == null || parsed.messageHash != hash ||
++                    MomoSms(parsed.sender, parsed.body, parsed.receivedAtMillis).messageHash != hash) {
++                    d.execSQL("UPDATE receipts SET state='quarantined',reason='invalid_payload' WHERE message_hash=?", arrayOf(hash))
++                } else {
++                    val messageBytes = raw.toByteArray(Charsets.UTF_8).size + 1
++                    if (wireBytes + messageBytes > MAX_BATCH_BYTES) break
++                    result += parsed
++                    wireBytes += messageBytes
++                }
++            }
++        }
++        result
++    }
++
++    fun quarantine(hashes: Set<String>, reason: String) = tx { d ->
++        require(reason.matches(Regex("[a-z_]{1,64}")))
++        for (hash in hashes) d.execSQL(ReceiptQueueSql.QUARANTINE,
++            arrayOf(reason, hash))
++    }
++
++    fun markUploaded(hashes: Set<String>, now: Long = System.currentTimeMillis()) = tx { d ->
++        var changed = 0
++        d.compileStatement(ReceiptQueueSql.ACKNOWLEDGE).use { statement ->
++            for (hash in hashes) {
++                // Unknown hashes cannot create history or claim a receipt acknowledgement.
++                statement.clearBindings()
++                statement.bindLong(1, now)
++                statement.bindString(2, hash)
++                changed += statement.executeUpdateDelete()
++            }
++        }
++        if (changed > 0) put(d, "last_ack_at", now.toString())
++        trimAcknowledgements(d, now)
++    }
++    fun count(): Int = scalar(db, "SELECT count(*) FROM receipts WHERE state='pending'").toInt()
++    fun health(): Health = tx { d ->
++        Health(count(), scalar(d,"SELECT count(*) FROM receipts WHERE state='quarantined'").toInt(),
++            scalar(d,"SELECT coalesce(sum(payload_bytes),0) FROM receipts"),
++            scalar(d,"SELECT coalesce(min(admitted_at),0) FROM receipts WHERE state='pending'").takeIf { it > 0 },
++            getLong(d,"capacity_blocked"),getLong(d,"last_ack_at"), get(d,"last_error").takeIf { !it.isNullOrBlank() },
++            getLong(d,"next_attempt_at"))
++    }
++    fun permittedAttempt(now: Long): Boolean = getLong(db,"next_attempt_at") <= now
++    fun recordOutcome(result: UploadResult, now: Long = System.currentTimeMillis()) = tx { d ->
++        put(d,"last_attempt_at",now.toString())
++        put(d,"last_error",if (result.ok) "" else result.outcome)
++        if (result.serverAcknowledged) put(d,"last_server_ack_at",now.toString())
++        result.automaticAllocationEnabled?.let { put(d,"automatic_allocation_enabled",it.toString()) }
++        val failures = if (result.ok) 0 else (getLong(d,"failures") + 1).coerceAtMost(30).toInt()
++        put(d,"failures",failures.toString())
++        val next = if (result.ok) {
++            // Drain pending receipts promptly, but do not send repeated empty heartbeats.
++            if (scalar(d, "SELECT count(*) FROM receipts WHERE state='pending'") > 0) 0L
++            else now + HEALTH_INTERVAL_MS
++        } else now + CollectorTransportPolicy.backoffMillis(failures, result.retryAfterMillis, Math.random())
++        put(d,"next_attempt_at",next.toString())
++    }
++    fun serverAcknowledgedAt(): Long = getLong(db,"last_server_ack_at")
++
++    fun automaticAllocationEnabled(): Boolean? = when (get(db,"automatic_allocation_enabled")) {
++        "true" -> true
++        "false" -> false
++        else -> null
++    }
++
++    private fun migrateLegacy() {
++        val prefs = app.getSharedPreferences("momo_sms_queue",Context.MODE_PRIVATE)
++        tx { d ->
++            if (get(d,"legacy_imported") == "1") return@tx
++            val pending = prefs.getString("pending",null).orEmpty()
++            val uploaded = prefs.getString("uploaded",null).orEmpty()
++            // Never truncate or delete an oversized legacy queue. Stop and reconcile explicitly.
++            check(pending.toByteArray(Charsets.UTF_8).size + uploaded.toByteArray(Charsets.UTF_8).size <= MAX_ACTIVE_BYTES) {
++                "Legacy queue requires supervised capacity migration"
++            }
++            val pendingLines = pending.lineSequence().filter { it.isNotBlank() }.toList()
++            val ackLines = uploaded.lineSequence().filter { it.isNotBlank() }.toList()
++            val acked = ackLines.filter { it.matches(Regex("[a-f0-9]{64}")) }.toSet()
++            val invalidAckLines = ackLines.filter { it !in acked }
++            check(pendingLines.size + invalidAckLines.size <= MAX_ACTIVE_ROWS && acked.size <= MAX_ACK_ROWS &&
++                (pendingLines + invalidAckLines).all { it.toByteArray(Charsets.UTF_8).size <= MAX_RECORD_BYTES }) {
++                "Legacy queue requires supervised row migration"
++            }
++            val now = System.currentTimeMillis()
++            for (raw in pendingLines) {
++                val m = MomoSms.fromJson(raw)
++                val valid = m != null && MomoSms(m.sender,m.body,m.receivedAtMillis).messageHash == m.messageHash
++                val hash = if (valid) m!!.messageHash else digest(raw)
++                if (exists(d,hash)) continue
++                if (hash in acked) continue
++                insert(d,hash,raw,raw.toByteArray(Charsets.UTF_8).size,m?.receivedAtMillis ?: 0,now,
++                    if (valid) "pending" else "quarantined",if(valid) null else "legacy_corrupt_payload")
++            }
++            for (hash in acked) if(!exists(d,hash)) {
++                d.execSQL("INSERT INTO receipts(message_hash,payload,payload_bytes,received_at,admitted_at,state,acknowledged_at) VALUES (?,NULL,0,0,?,'acknowledged',?)",arrayOf(hash,now,now))
++            }
++            // Preserve malformed legacy acknowledgement rows for a local review rather than losing them.
++            for (raw in invalidAckLines) {
++                val hash = digest("legacy_ack:" + raw)
++                if (!exists(d,hash)) insert(d,hash,raw,raw.toByteArray(Charsets.UTF_8).size,0,now,"quarantined","legacy_corrupt_ack")
++            }
++            put(d,"legacy_imported","1")
++        }
++        // Erase legacy raw values only AFTER the database commit. A crash before this
++        // cleanup is harmless because the durable imported marker makes retry idempotent.
++        if (get(db,"legacy_imported") == "1" && !prefs.edit().remove("pending").remove("uploaded").commit()) {
++            throw IllegalStateException("Legacy queue imported; preference cleanup pending")
++        }
++    }
++
++    private fun insert(d: SQLiteDatabase, hash: String, payload: String, size: Int, received: Long,
++                       admitted: Long, state: String, reason: String?) {
++        val values = ContentValues().apply {
++            put("message_hash",hash);put("payload",payload);put("payload_bytes",size)
++            put("received_at",received);put("admitted_at",admitted);put("state",state);put("reason",reason)
++        }
++        check(d.insertOrThrow("receipts",null,values) >= 0)
++    }
++    private fun trimAcknowledgements(d: SQLiteDatabase, now: Long) {
++        d.execSQL(ReceiptQueueSql.PRUNE_AGE,arrayOf(now - ACK_RETENTION_MS))
++        d.execSQL(ReceiptQueueSql.PRUNE_ROWS,arrayOf(MAX_ACK_ROWS))
++    }
++    private fun exists(d: SQLiteDatabase, hash: String): Boolean = d.rawQuery(
++        "SELECT 1 FROM receipts WHERE message_hash=?",arrayOf(hash)).use { it.moveToFirst() }
++    private fun scalar(d: SQLiteDatabase, sql: String): Long = d.rawQuery(sql,null).use { it.moveToFirst();it.getLong(0) }
++    private fun get(d: SQLiteDatabase, key: String): String? = d.rawQuery(
++        "SELECT value FROM queue_metadata WHERE key=?",arrayOf(key)).use { if(it.moveToFirst()) it.getString(0) else null }
++    private fun getLong(d: SQLiteDatabase, key: String): Long = get(d,key)?.toLongOrNull() ?: 0
++    private fun put(d: SQLiteDatabase, key: String, value: String) { d.execSQL(
++        "INSERT OR REPLACE INTO queue_metadata(key,value) VALUES (?,?)",arrayOf(key,value)) }
++    private fun <T> tx(action: (SQLiteDatabase) -> T): T {
++        val d=db;d.beginTransaction()
++        try { val result=action(d);d.setTransactionSuccessful();return result } finally { d.endTransaction() }
++    }
++
++    private class QueueDatabase(private val context: Context) : SQLiteOpenHelper(context,"momobio_receipts.db",null,1,
++        android.database.DatabaseErrorHandler {
++            // Android's default handler may delete a corrupt database. Financial
++            // evidence must instead be preserved for a supervised recovery.
++            throw android.database.sqlite.SQLiteDatabaseCorruptException("Receipt queue corruption; preserve for recovery")
++        }) {
++        override fun onConfigure(db: SQLiteDatabase) { db.setForeignKeyConstraintsEnabled(true) }
++        override fun onCreate(db: SQLiteDatabase) {
++            val sql=context.assets.open("receipt_queue_v1.sql").bufferedReader().use { it.readText() }
++            for (block in sql.split("-- @statement")) {
++                val statement = block.lineSequence().filterNot { it.trim().startsWith("--") }.joinToString("\n").trim()
++                if (statement.isNotEmpty()) db.execSQL(statement)
++            }
++        }
++        override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
++            error("Unsupported queue migration; retain the database and perform a supervised upgrade")
++        }
++    }
++    companion object {
++        const val MAX_ACTIVE_ROWS = 10_000
++        const val MAX_ACTIVE_BYTES = 16L * 1024 * 1024
++        const val MAX_RECORD_BYTES = 12 * 1024
++        const val MAX_BATCH_BYTES = 400_000
++        const val HEALTH_INTERVAL_MS = 5L * 60 * 1000
++        const val MAX_ACK_ROWS = 100_000
++        const val MAX_PENDING_AGE_MS = 30L * 24 * 60 * 60 * 1000
++        const val ACK_RETENTION_MS = 90L * 24 * 60 * 60 * 1000
++        @Volatile private var instance: QueueDatabase? = null
++        private fun database(context: Context): QueueDatabase = instance ?: synchronized(this) {
++            instance ?: QueueDatabase(context).also { instance=it }
++        }
++        private fun digest(value:String):String = MessageDigest.getInstance("SHA-256").digest(value.toByteArray(Charsets.UTF_8))
++            .joinToString("") { "%02x".format(it) }
++    }
++}
+diff --git a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/MainActivity.kt b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/MainActivity.kt
+index b58ad51e8177e00bf8769c7588255286c24d60b1..e14c18b12d493c879c828b8b3e9197100c904dd1 100644
+--- a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/MainActivity.kt
++++ b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/MainActivity.kt
+@@ -2,6 +2,7 @@ package com.momobio.app
+ 
+ import android.Manifest
+ import android.app.Activity
++import android.app.AlertDialog
+ import android.content.ActivityNotFoundException
+ import android.content.Intent
+ import android.content.ClipData
+@@ -37,17 +38,16 @@ class MainActivity : Activity() {
+     private lateinit var status: TextView
+     private lateinit var upload: TextView
+     private lateinit var enableButton: Button
+-    private lateinit var queue: SmsQueue
++    private val queue: DurableSmsQueue get() = DurableSmsQueue(applicationContext)
+     @Volatile private var syncInFlight = false
+     private val retryDelayMillis = 15_000L
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+-        queue = SmsQueue(applicationContext)
+         status = statusLine()
+         upload = supportLine()
+         enableButton = actionButton("Enable SMS access", periwinkle).apply {
+-            setOnClickListener { requestPermissions(requiredPermissions(), 7) }
++            setOnClickListener { showCollectionNotice() }
+         }
+ 
+         setContentView(
+@@ -62,6 +62,18 @@ class MainActivity : Activity() {
+                 addView(spacer(18))
+                 addView(enableButton)
+                 addView(spacer(12))
++                addView(actionButton("Pause collection", neutralPanel).apply {
++                    setOnClickListener {
++                        try {
++                            CollectorRuntime.revokeNotice(applicationContext)
++                            BridgeSupervisor.stop(applicationContext)
++                            refreshStatus()
++                        } catch (_: Exception) {
++                            upload.text = "Could not save the pause. Revoke SMS permission in Android settings."
++                        }
++                    }
++                })
++                addView(spacer(12))
+                 addView(actionButton("Copy enrollment request", neutralPanel).apply {
+                     setOnClickListener {
+                         val enrollment = CollectorIdentity(applicationContext).enrollmentRequest()
+@@ -99,47 +111,24 @@ class MainActivity : Activity() {
+     }
+ 
+     private fun syncAutomatically(): Boolean {
+-        if (!hasSmsAccess() || syncInFlight) return false
++        if (isFinishing || isDestroyed || !CollectorRuntime.ready(applicationContext) || syncInFlight) return false
+         syncInFlight = true
+         status.setTextColor(periwinkle)
+         status.text = "Syncing"
+-        upload.text = "Queued: ${queue.count()}"
++        upload.text = "Checking stored receipts…"
+         Thread {
+             val result = try {
+-                val messages = queue.all()
+-                var uploadedCount = 0
+-                runOnUiThread {
+-                    upload.text = "Queued: ${messages.size}"
+-                }
+-                UploadClient(CollectorIdentity(applicationContext)).upload(messages) { uploadedHashes ->
+-                    uploadedCount += uploadedHashes.size
+-                    queue.markUploaded(uploadedHashes)
+-                    runOnUiThread {
+-                        upload.text = "Uploaded $uploadedCount/${messages.size}\nQueued: ${queue.count()}"
+-                    }
+-                }
+-            } catch (error: Throwable) {
+-                Log.e(logTag, "SMS sync failed", error)
+-                UploadResult(
+-                    ok = false,
+-                    message = "${error.javaClass.simpleName}: ${error.message ?: "Sync failed"}",
+-                )
++                CollectorSync.run(applicationContext)
++            } catch (error: Exception) {
++                Log.e(logTag, "SMS sync failed: ${error.javaClass.simpleName}")
++                UploadResult(false, message = "Queue or sync unavailable; receipts need review", outcome = "storage_error")
+             } finally {
+                 syncInFlight = false
+             }
+             runOnUiThread {
+-                val remaining = queue.count()
+-                val fullySynced = result.ok && remaining == 0
+-                status.setTextColor(if (fullySynced) mintGreen else orangeRed)
+-                status.text = if (fullySynced) "Running" else "Upload error"
+-                upload.text = when {
+-                    fullySynced && result.message == "No new SMS" -> "No new SMS\nQueued: $remaining"
+-                    fullySynced -> "${result.message}\nQueued: $remaining"
+-                    result.ok -> "Pending sync\nQueued: $remaining"
+-                    else -> "${result.message}\nQueued: $remaining"
+-                }
+-                enableButton.visibility = View.GONE
+-                if (remaining > 0 && hasSmsAccess()) {
++                if (isFinishing || isDestroyed) return@runOnUiThread
++                refreshStatus(if (!result.ok && result.outcome !in setOf("busy", "backoff")) result.message else null)
++                if (CollectorRuntime.ready(applicationContext)) {
+                     upload.postDelayed({ syncAutomatically() }, retryDelayMillis)
+                 }
+             }
+@@ -147,16 +136,79 @@ class MainActivity : Activity() {
+         return true
+     }
+ 
+-    private fun refreshStatus() {
+-        val ready = hasSmsAccess()
+-        status.setTextColor(if (ready) mintGreen else orangeRed)
+-        status.text = if (ready) {
+-            if (queue.count() == 0) "Running" else "Upload error"
+-        } else {
+-            "Permission needed"
++    private fun showCollectionNotice() {
++        if (!CollectorRuntime.policy.configured) {
++            upload.text = "An administrator must supply the approved sender and receipt-format configuration."
++            return
+         }
+-        upload.text = "Queued: ${queue.count()}"
+-        enableButton.visibility = if (ready) View.GONE else View.VISIBLE
++        AlertDialog.Builder(this)
++            .setTitle("Institutional receipt collection")
++            .setMessage("Use a dedicated institutional phone and SIM, not a personal inbox. " +
++                "Only new notifications from configured senders matching the approved receipt markers are stored. " +
++                "Eligible message bodies, sender, receipt time and a deduplication hash are sent to Mobio's Supabase backend; " +
++                "the backend uses OpenAI to extract receipt fields. The server decides allocation. " +
++                "Acknowledged local bodies are removed. Unresolved receipts are retained locally for review; " +
++                "after 30 days they stop automatic upload. Contact the designated fleet administrator for review or deletion. " +
++                "Revoking SMS permission stops further collection. Do not enable on a personal SIM.")
++            .setNegativeButton("Cancel", null)
++            .setPositiveButton("Enable on institutional device") { _, _ ->
++                try {
++                    CollectorRuntime.acceptNotice(applicationContext)
++                    requestPermissions(requiredPermissions(), 7)
++                } catch (_: Exception) {
++                    upload.text = "The notice decision could not be saved. Collection remains disabled."
++                }
++            }.show()
++    }
++
++    @Volatile private var refreshInFlight = false
++    private fun refreshStatus(syncError: String? = null) {
++        if (isFinishing || isDestroyed || refreshInFlight) return
++        refreshInFlight = true
++        Thread {
++            try {
++                val storage = queue
++                val health = storage.health()
++                val lastServer = storage.serverAcknowledgedAt()
++                val allocation = storage.automaticAllocationEnabled()
++                val state = when {
++                    !CollectorRuntime.policy.configured -> "Configuration needed"
++                    !CollectorRuntime.consented(applicationContext) -> "Notice required"
++                    !hasSmsAccess() -> "Permission needed"
++                    health.capacityBlocked > 0 -> "Receipt reconciliation required"
++                    health.quarantined > 0 -> "Receipts need review"
++                    syncError != null -> "Sync unavailable"
++                    health.lastError != null -> "Sync pending"
++                    lastServer == 0L -> "Server enrollment not verified"
++                    health.pending > 0 -> "Sync pending"
++                    System.currentTimeMillis() - lastServer !in 0..15L * 60 * 1000 -> "Server verification expired"
++                    else -> "Server acknowledged"
++                }
++                runOnUiThread {
++                    if (isFinishing || isDestroyed) return@runOnUiThread
++                    status.text = state
++                    status.setTextColor(if (state == "Server acknowledged") mintGreen else orangeRed)
++                    upload.text = (syncError?.let { it + "\n" } ?: "") + "Allocation policy: ${when (allocation) { true -> "enabled"; false -> "disabled"; else -> "not verified" }}\n" +
++                        "Queued: ${health.pending}; review: ${health.quarantined}; blocked: ${health.capacityBlocked}\n" +
++                        "Oldest pending: ${health.oldestPendingAt?.let { java.util.Date(it).toString() } ?: "none"}\n" +
++                        "Last server acknowledgment: ${lastServer.takeIf { it > 0 }?.let { java.util.Date(it).toString() } ?: "not observed"}"
++                    enableButton.visibility = if (CollectorRuntime.ready(applicationContext)) View.GONE else View.VISIBLE
++                }
++            } catch (_: Exception) {
++                runOnUiThread {
++                    if (!isFinishing && !isDestroyed) {
++                        status.text = "Stored receipts need recovery"
++                        upload.text = "Do not clear app data or reinstall. Contact the fleet administrator."
++                        status.setTextColor(orangeRed)
++                    }
++                }
++            } finally { refreshInFlight = false }
++        }.start()
++    }
++
++    override fun onDestroy() {
++        // Delayed callbacks check isDestroyed before doing work.
++        super.onDestroy()
+     }
+ 
+     private fun hasSmsAccess(): Boolean =
+diff --git a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/ReceiptQueueSql.kt b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/ReceiptQueueSql.kt
+new file mode 100644
+index 0000000000000000000000000000000000000000..61806a7d0dbdbce9d564a9b98d64597a3e91a17b
+--- /dev/null
++++ b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/ReceiptQueueSql.kt
+@@ -0,0 +1,11 @@
++package com.momobio.app
++
++/** Exact DML statements exercised by the portable SQLite contract suite. */
++object ReceiptQueueSql {
++    const val EXPIRE = "UPDATE receipts SET state='quarantined',reason='pending_age_review' WHERE state='pending' AND admitted_at < ?"
++    const val BATCH = "SELECT message_hash,payload FROM receipts WHERE state='pending' ORDER BY admitted_at,message_hash LIMIT ?"
++    const val QUARANTINE = "UPDATE receipts SET state='quarantined',reason=? WHERE message_hash=? AND state='pending'"
++    const val ACKNOWLEDGE = "UPDATE receipts SET state='acknowledged',payload=NULL,payload_bytes=0,acknowledged_at=?,reason=NULL WHERE message_hash=? AND state='pending'"
++    const val PRUNE_AGE = "DELETE FROM receipts WHERE state='acknowledged' AND acknowledged_at < ?"
++    const val PRUNE_ROWS = "DELETE FROM receipts WHERE message_hash IN (SELECT message_hash FROM receipts WHERE state='acknowledged' ORDER BY acknowledged_at DESC,message_hash LIMIT -1 OFFSET ?)"
++}
+diff --git a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/SmsReceiver.kt b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/SmsReceiver.kt
+index 175d8b9bfff6ddfe886b366d797c60efb28d508d..63711901e5ee7235137bc58613a34db32cd49d96 100644
+--- a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/SmsReceiver.kt
++++ b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/SmsReceiver.kt
+@@ -12,10 +12,16 @@ class SmsReceiver : BroadcastReceiver() {
+         val pending = goAsync()
+         Thread {
+             try {
+-                val messages = decodeIncomingSms(intent)
++                if (!CollectorRuntime.ready(context.applicationContext)) return@Thread
++                val messages = decodeIncomingSms(intent).filter {
++                    CollectorRuntime.policy.accepts(it.sender, it.body, it.receivedAtMillis)
++                }
+                 if (messages.isEmpty()) return@Thread
+-                val queue = SmsQueue(context.applicationContext)
+-                queue.enqueue(messages)
++                val queue = DurableSmsQueue(context.applicationContext)
++                val admitted = queue.enqueue(messages)
++                if (admitted.blocked > 0) {
++                    Log.e("MoMobioBridge", "Queue capacity blocked eligible receipts; reconciliation required")
++                }
+                 BridgeSupervisor.enqueueImmediate(context.applicationContext)
+                 BridgeSupervisor.start(context.applicationContext)
+                 // The service/worker uploads outside the broadcast's time limit.
+diff --git a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/UploadClient.kt b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/UploadClient.kt
+index aaee5bba6d6abe52f1f0fb66de583a9550b76acb..1d183248ea30e962009cf654605675d0604ee1d7 100644
+--- a/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/UploadClient.kt
++++ b/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/UploadClient.kt
+@@ -9,6 +9,10 @@ data class UploadResult(
+     val ok: Boolean,
+     val uploadedHashes: Set<String> = emptySet(),
+     val message: String,
++    val outcome: String = if (ok) "acknowledged" else "unavailable",
++    val retryAfterMillis: Long? = null,
++    val serverAcknowledged: Boolean = false,
++    val automaticAllocationEnabled: Boolean? = null,
+ )
+ 
+ class UploadClient internal constructor(
+@@ -32,12 +36,12 @@ class UploadClient internal constructor(
+         messages: List<MomoSms>,
+         onUploaded: ((Set<String>) -> Unit)? = null,
+     ): UploadResult {
+-        if (messages.isEmpty()) return UploadResult(ok = true, message = "No new SMS")
+-        if (supabaseUrl.isBlank() || anonKey.isBlank()) {
+-            return UploadResult(ok = false, message = "Upload config missing")
++        if (!CollectorTransportPolicy.validEndpoint(supabaseUrl) || anonKey.isBlank()) {
++            return UploadResult(ok = false, message = "Secure upload config missing", outcome = "configuration_missing")
+         }
+ 
+         val endpoint = "${supabaseUrl.trimEnd('/')}/functions/v1/momobio-sms-ingest"
++        if (messages.isEmpty()) return uploadBatch(endpoint, emptyList())
+         val uploaded = mutableSetOf<String>()
+         for (chunk in messages.chunked(batchSize)) {
+             val result = uploadBatch(endpoint, chunk)
+@@ -65,18 +69,22 @@ class UploadClient internal constructor(
+             ok = true,
+             uploadedHashes = uploaded,
+             message = "Uploaded ${uploaded.size}",
++            serverAcknowledged = true,
+         )
+     }
+ 
+     private fun uploadBatch(endpoint: String, messages: List<MomoSms>): UploadResult {
+-        val body = """{"messages":[${messages.joinToString(",") { it.toJson() }}]}"""
++        val body = if (messages.isEmpty()) """{"action":"health"}""" else
++            """{"messages":[${messages.joinToString(",") { it.toJson() }}]}"""
+         val bytes = body.toByteArray(Charsets.UTF_8)
++        if (bytes.size > 512_000) return UploadResult(false, message = "Batch exceeds upload limit", outcome = "oversized_batch")
+         var connection: HttpURLConnection? = null
+         return try {
+             val activeConnection = openConnection(endpoint)
+             // Keep the opened connection before configuration/signing can fail.
+             connection = activeConnection
+             activeConnection.apply {
++                instanceFollowRedirects = false
+                 requestMethod = "POST"
+                 connectTimeout = 15_000
+                 readTimeout = 60_000
+@@ -88,13 +96,26 @@ class UploadClient internal constructor(
+             }
+             activeConnection.outputStream.use { it.write(bytes) }
+             val responseCode = activeConnection.responseCode
++            val retryAfter = CollectorTransportPolicy.retryAfterMillis(
++                activeConnection.getHeaderField("Retry-After"), System.currentTimeMillis())
+             val responseText = if (responseCode in 200..299) {
+-                activeConnection.inputStream.bufferedReader().use { it.readText() }
++                readBoundedResponse(activeConnection.inputStream)
+             } else {
+-                activeConnection.errorStream?.bufferedReader()?.use { it.readText() }.orEmpty()
++                // Do not echo provider bodies (which may contain sensitive information).
++                activeConnection.errorStream?.close()
++                ""
+             }
+             if (responseCode in 200..299) {
+                 val response = JSONObject(responseText)
++                if (messages.isEmpty()) {
++                    val healthy = response.optBoolean("success") &&
++                        response.optString("kind") == "collector_health" && response.optBoolean("collector_enrolled") &&
++                        response.opt("automatic_allocation_enabled") is Boolean
++                    return UploadResult(healthy, message = if (healthy) "Server verified collector; no queued receipts"
++                        else "Collector health not acknowledged", outcome = if (healthy) "healthy" else "invalid_acknowledgement",
++                        serverAcknowledged = healthy,
++                        automaticAllocationEnabled = if (healthy) response.optBoolean("automatic_allocation_enabled") else null)
++                }
+                 val results = response.optJSONArray("results")
+                 val expected = messages.map { it.messageHash }.toSet()
+                 val acknowledged = mutableSetOf<String>()
+@@ -109,6 +130,7 @@ class UploadClient internal constructor(
+                     ok = acknowledged == expected,
+                     uploadedHashes = acknowledged,
+                     message = if (acknowledged == expected) "Uploaded ${acknowledged.size}" else "Incomplete server acknowledgement",
++                    serverAcknowledged = acknowledged.isNotEmpty(),
+                 )
+             } else {
+                 logFailure("Upload failed $responseCode")
+@@ -117,7 +139,12 @@ class UploadClient internal constructor(
+                     409 -> "Retrying collector request"
+                     429 -> "Sync limit reached; retrying later"
+                     else -> "Upload failed $responseCode"
+-                })
++                }, outcome = when (responseCode) {
++                    401, 403 -> "enrollment_required"
++                    429 -> "rate_limited"
++                    in 300..399 -> "redirect_rejected"
++                    else -> "http_error"
++                }, retryAfterMillis = retryAfter)
+             }
+         } catch (error: Exception) {
+             logFailure("Upload failed: ${error.javaClass.simpleName}")
+@@ -126,4 +153,16 @@ class UploadClient internal constructor(
+             connection?.disconnect()
+         }
+     }
++    private fun readBoundedResponse(input: java.io.InputStream): String = input.use { stream ->
++        val output = java.io.ByteArrayOutputStream()
++        val buffer = ByteArray(4096)
++        while (true) {
++            val n = stream.read(buffer)
++            if (n < 0) break
++            check(output.size() + n <= 262_144) { "Response size exceeded" }
++            output.write(buffer, 0, n)
++        }
++        output.toString("UTF-8")
++    }
++
+ }
+diff --git a/apps/momobio_sms_bridge/app/src/test/java/com/momobio/app/UploadClientTest.kt b/apps/momobio_sms_bridge/app/src/test/java/com/momobio/app/UploadClientTest.kt
+index adda9f2dfa2cc01eea1d85509fe60d911b5f6a4b..b5c8fde428bce2b23755efa474d96756d3f33f4a 100644
+--- a/apps/momobio_sms_bridge/app/src/test/java/com/momobio/app/UploadClientTest.kt
++++ b/apps/momobio_sms_bridge/app/src/test/java/com/momobio/app/UploadClientTest.kt
+@@ -16,19 +16,45 @@ class UploadClientTest {
+         MomoSms("QA", "Synthetic receipt $it 🚌\nLiteral \\n", 1_780_000_000_000 + it.toLong())
+     }
+ 
+-    @Test fun emptyQueueDoesNotRequireConfigurationOrTouchTransport() {
++    @Test fun emptyQueueStillRequiresSecureConfiguration() {
+         val fixture = UploadFixture()
+-        assertTrue(fixture.client("", "").upload(emptyList()).ok)
++        assertFalse(fixture.client("", "").upload(emptyList()).ok)
+         assertTrue(fixture.endpoints.isEmpty())
+         assertTrue(fixture.signedBytes.isEmpty())
+     }
+ 
++    @Test fun emptyQueueRequiresSignedServerHealth() {
++        val fixture = UploadFixture { FakeConnection().apply {
++            responseBody = { """{"success":true,"kind":"collector_health","collector_enrolled":true,"automatic_allocation_enabled":false}""" }
++        } }
++        val result = fixture.client().upload(emptyList())
++        assertTrue(result.ok)
++        assertTrue(result.serverAcknowledged)
++        assertEquals(false, result.automaticAllocationEnabled)
++        assertEquals(1, fixture.signedBytes.size)
++        assertFalse(fixture.connections.single().instanceFollowRedirects)
++        assertEquals("health", JSONObject(fixture.connections.single().written.toString(Charsets.UTF_8)).getString("action"))
++    }
++
++    @Test fun emptyQueueDoesNotAcceptReceiptEnvelopeAsHealth() {
++        val fixture = UploadFixture { FakeConnection().apply { responseBody = { """{"success":true,"results":[]}""" } } }
++        assertFalse(fixture.client().upload(emptyList()).ok)
++    }
++
++    @Test fun redirectIsNeverFollowed() {
++        val fixture = UploadFixture { FakeConnection().apply { status = 307 } }
++        val result = fixture.client().upload(messages(1))
++        assertFalse(result.ok)
++        assertEquals("redirect_rejected", result.outcome)
++        assertFalse(fixture.connections.single().instanceFollowRedirects)
++    }
++
+     @Test fun missingConfigurationRetainsQueueWithoutSigningOrConnecting() {
+         for ((url, key) in listOf("" to "fixture", "https://collector.invalid" to "")) {
+             val fixture = UploadFixture()
+             val result = fixture.client(url, key).upload(messages(1))
+             assertFalse(result.ok)
+-            assertEquals("Upload config missing", result.message)
++            assertEquals("Secure upload config missing", result.message)
+             assertTrue(fixture.endpoints.isEmpty())
+             assertTrue(fixture.signedBytes.isEmpty())
+         }
+diff --git a/apps/momobio_sms_bridge/scripts/device_uat.sh b/apps/momobio_sms_bridge/scripts/device_uat.sh
+index 3aaca71195aaa4ba2b13e30148181087347b16cc..1cc6fa523874b0138809d7e4861d39083224b6d1 100755
+--- a/apps/momobio_sms_bridge/scripts/device_uat.sh
++++ b/apps/momobio_sms_bridge/scripts/device_uat.sh
+@@ -1,130 +1,33 @@
+ #!/usr/bin/env bash
+ set -euo pipefail
+-
+ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+ APP_DIR="$ROOT_DIR/apps/momobio_sms_bridge"
+-ADB="${ADB:-/Volumes/PRO-G40/AppData/android/sdk/platform-tools/adb}"
+-APKSIGNER="${APKSIGNER:-/Volumes/PRO-G40/AppData/android/sdk/build-tools/36.1.0/apksigner}"
+-SERIAL="${ANDROID_SERIAL:?Set ANDROID_SERIAL to the explicitly selected UAT device}"
+-PKG="com.momobio.app"
+-UNSIGNED="$APP_DIR/app/build/outputs/apk/release/app-release-unsigned.apk"
+-SIGNED="$APP_DIR/app/build/outputs/apk/release/mo-mobio-sms-bridge-internal-release.apk"
+-EVIDENCE_DIR="${1:-$ROOT_DIR/build/qa/momobio-sms-bridge/device-uat-$(date +%Y%m%d-%H%M%S)}"
+-
++ADB="${ADB:-adb}"
++APKSIGNER="${APKSIGNER:-apksigner}"
++SERIAL="${ANDROID_SERIAL:?Select the authorized institutional UAT device with ANDROID_SERIAL}"
++EXPECTED="${COLLECTOR_EXPECTED_CERT_SHA256:?Set the approved release certificate SHA-256; never a private key}"
++APK="$APP_DIR/app/build/outputs/apk/release/app-release.apk"
++EVIDENCE_DIR="${1:-$ROOT_DIR/build/qa/momobio-sms-bridge/$(date -u +%Y%m%dT%H%M%SZ)}"
++for tool in "$ADB" "$APKSIGNER" python3; do command -v "$tool" >/dev/null; done
+ mkdir -p "$EVIDENCE_DIR"
+-
+-run() {
+-  echo "+ $*" | tee -a "$EVIDENCE_DIR/commands.log"
+-  "$@" 2>&1 | tee -a "$EVIDENCE_DIR/commands.log"
+-}
+-
+-capture() {
+-  local name="$1"
+-  run "$ADB" -s "$SERIAL" shell screencap -p "/sdcard/$name.png"
+-  run "$ADB" -s "$SERIAL" pull "/sdcard/$name.png" "$EVIDENCE_DIR/$name.png"
+-}
+-
+-dump_ui() {
+-  local remote="$1"
+-  local local="$2"
+-  local deadline=$((SECONDS + 20))
+-  while (( SECONDS < deadline )); do
+-    echo "+ $ADB -s $SERIAL shell uiautomator dump /sdcard/$remote" | tee -a "$EVIDENCE_DIR/commands.log"
+-    "$ADB" -s "$SERIAL" shell rm -f "/sdcard/$remote" >/dev/null 2>&1 || true
+-    "$ADB" -s "$SERIAL" shell uiautomator dump "/sdcard/$remote" 2>&1 | tee -a "$EVIDENCE_DIR/commands.log" || true
+-    if "$ADB" -s "$SERIAL" shell test -f "/sdcard/$remote"; then
+-      if run "$ADB" -s "$SERIAL" pull "/sdcard/$remote" "$EVIDENCE_DIR/$local"; then
+-        return 0
+-      fi
+-    else
+-      echo "uiautomator dump did not create /sdcard/$remote; retrying" | tee -a "$EVIDENCE_DIR/commands.log"
+-    fi
+-    sleep 2
+-  done
+-  return 1
+-}
+-
+-wait_for_terminal_sync() {
+-  local remote="$1"
+-  local local="$2"
+-  local deadline=$((SECONDS + 120))
+-  while (( SECONDS < deadline )); do
+-    dump_ui "$remote" "$local"
+-    if grep -q 'text="Running"' "$EVIDENCE_DIR/$local" &&
+-      grep -q 'text="Queued: 0"' "$EVIDENCE_DIR/$local"; then
+-      return 0
+-    fi
+-    if grep -q 'text="Upload error"' "$EVIDENCE_DIR/$local"; then
+-      return 1
+-    fi
+-    sleep 5
+-  done
+-  return 1
+-}
+-
+-run "$ADB" devices -l
+-run "$ADB" -s "$SERIAL" shell getprop ro.product.model
+-run "$ADB" -s "$SERIAL" shell getprop ro.build.version.release
+-
+-run "$ROOT_DIR/android/gradlew" -p "$APP_DIR" :app:assembleRelease
+-cp "$UNSIGNED" "$SIGNED"
+-run "$APKSIGNER" sign \
+-  --ks "$HOME/.android/debug.keystore" \
+-  --ks-key-alias androiddebugkey \
+-  --ks-pass pass:android \
+-  --key-pass pass:android \
+-  "$SIGNED"
+-run "$APKSIGNER" verify --print-certs "$SIGNED"
+-
+-run "$ADB" -s "$SERIAL" install -r "$SIGNED"
+-# Preserve pending receipts, acknowledgements and the device signing key across updates.
+-run "$ADB" -s "$SERIAL" shell pm grant "$PKG" android.permission.RECEIVE_SMS
+-run "$ADB" -s "$SERIAL" shell pm grant "$PKG" android.permission.POST_NOTIFICATIONS || true
+-run "$ADB" -s "$SERIAL" shell dumpsys deviceidle whitelist +"$PKG" || true
+-run "$ADB" -s "$SERIAL" shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1
+-sleep 2
+-
+-run "$ADB" -s "$SERIAL" shell pidof "$PKG"
+-run "$ADB" -s "$SERIAL" shell dumpsys package "$PKG"
+-run "$ADB" -s "$SERIAL" shell dumpsys activity services "$PKG"
+-run "$ADB" -s "$SERIAL" shell dumpsys jobscheduler
+-dump_ui "$PKG-uiautomator.xml" "uiautomator-initial.xml"
+-capture "momobio-sms-bridge-initial"
+-
+-wait_for_terminal_sync "$PKG-uiautomator-auto-sync.xml" "uiautomator-after-auto-sync.xml"
+-capture "momobio-sms-bridge-after-auto-sync"
+-
+-run "$ADB" -s "$SERIAL" shell pm revoke "$PKG" android.permission.RECEIVE_SMS
+-run "$ADB" -s "$SERIAL" shell am force-stop "$PKG"
+-run "$ADB" -s "$SERIAL" shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1
+-sleep 2
+-dump_ui "$PKG-uiautomator-permission.xml" "uiautomator-permission-needed.xml"
+-capture "momobio-sms-bridge-permission-needed"
+-
+-run "$ADB" -s "$SERIAL" shell pm grant "$PKG" android.permission.RECEIVE_SMS
+-run "$ADB" -s "$SERIAL" shell pm grant "$PKG" android.permission.POST_NOTIFICATIONS || true
+-run "$ADB" -s "$SERIAL" shell am force-stop "$PKG"
+-run "$ADB" -s "$SERIAL" shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1
+-wait_for_terminal_sync "$PKG-uiautomator-final.xml" "uiautomator-final.xml"
+-capture "momobio-sms-bridge-final"
+-run "$ADB" -s "$SERIAL" shell input keyevent HOME
+-sleep 5
+-run "$ADB" -s "$SERIAL" shell pidof "$PKG"
+-run "$ADB" -s "$SERIAL" shell dumpsys activity services "$PKG"
+-
+-cat > "$EVIDENCE_DIR/manifest.md" <<EOF
+-# Mo Mobio Device UAT
+-
+-- Device serial: $SERIAL
+-- Package: $PKG
+-- APK: $SIGNED
+-- Initial screenshot: momobio-sms-bridge-initial.png
+-- Automatic sync screenshot: momobio-sms-bridge-after-auto-sync.png
+-- Permission screenshot: momobio-sms-bridge-permission-needed.png
+-- Final regrant screenshot: momobio-sms-bridge-final.png
+-- Commands: commands.log
+-- UI dumps: uiautomator-*.xml
+-
+-EOF
+-
+-echo "$EVIDENCE_DIR"
++# Passwords are consumed by Gradle from environment, never echoed or passed on its command line.
++"$ROOT_DIR/android/gradlew" -p "$APP_DIR" --no-daemon :app:assembleRelease > "$EVIDENCE_DIR/build.log" 2>&1
++test -s "$APK"
++"$APKSIGNER" verify --verbose --print-certs "$APK" > "$EVIDENCE_DIR/signature.txt" 2>&1
++python3 "$APP_DIR/scripts/verify_release_certificate.py" "$EVIDENCE_DIR/signature.txt" "$EXPECTED"
++# Updating with a different certificate MUST fail. Never uninstall or clear pending receipts to bypass this.
++"$ADB" -s "$SERIAL" get-state
++"$ADB" -s "$SERIAL" install -r "$APK" > "$EVIDENCE_DIR/install.txt" 2>&1
++"$ADB" -s "$SERIAL" shell am start -n com.momobio.app/.MainActivity > "$EVIDENCE_DIR/launch.txt" 2>&1
++"$ADB" -s "$SERIAL" shell dumpsys package com.momobio.app > "$EVIDENCE_DIR/package.txt"
++# No SMS permission grants, force-stop, battery overrides, or enrollment mutations are automated here.
++python3 - "$APK" "$EVIDENCE_DIR" <<'VERIFY'
++import hashlib,json,sys
++from pathlib import Path
++apk=Path(sys.argv[1]); out=Path(sys.argv[2])
++(out/'installation.json').write_text(json.dumps({'apk_sha256':hashlib.sha256(apk.read_bytes()).hexdigest(),
++  'certificate_verified':True,'installed_update':True,'functional_uat':'not_run',
++  'production_ready':False},indent=2)+'\n')
++VERIFY
++printf '%s\n' 'INSTALLATION ONLY. Complete the receipt-collector device acceptance matrix; do not label empty queue as payment success.'
++printf '%s\n' "$EVIDENCE_DIR"
+diff --git a/apps/momobio_sms_bridge/scripts/test_jvm.py b/apps/momobio_sms_bridge/scripts/test_jvm.py
+index ae0902a88f2317fe222402f82da1ef3f4258c2cf..8740b081f4610d037e0b8a13fc3e8011c12045e1 100644
+--- a/apps/momobio_sms_bridge/scripts/test_jvm.py
++++ b/apps/momobio_sms_bridge/scripts/test_jvm.py
+@@ -57,6 +57,7 @@ def main():
+         app / "app/src/main/java/com/momobio/app/SmsQueue.kt",
+         app / "app/src/test/java/com/momobio/app/SmsQueueTest.kt",
+         app / "app/src/main/java/com/momobio/app/UploadClient.kt",
++        app / "app/src/main/java/com/momobio/app/CollectorPolicy.kt",
+         app / "app/src/test/java/com/momobio/app/UploadClientTest.kt",
+         app / "app/src/main/java/com/momobio/app/CollectorIdentity.kt",
+         app / "app/src/main/java/com/momobio/app/SmsReceiptDecoder.kt",
+diff --git a/apps/momobio_sms_bridge/scripts/verify_release_certificate.py b/apps/momobio_sms_bridge/scripts/verify_release_certificate.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..ab497afc508bedadad72c7e4b1973515fefbac9f
+--- /dev/null
++++ b/apps/momobio_sms_bridge/scripts/verify_release_certificate.py
+@@ -0,0 +1,27 @@
++#!/usr/bin/env python3
++"""Verify apksigner output against an independently approved SHA-256 (no signing)."""
++import re
++import sys
++from pathlib import Path
++
++
++def verify(text: str, expected: str) -> None:
++    digest = expected.replace(":", "").strip().lower()
++    if not re.fullmatch(r"[0-9a-f]{64}", digest):
++        raise ValueError("An exact approved SHA-256 certificate digest is required")
++    found = re.findall(r"^Signer #\d+ certificate SHA-256 digest: ([0-9A-Fa-f]{64})\s*$", text, re.M)
++    if len(found) != 1 or found[0].lower() != digest:
++        raise ValueError("Release certificate mismatch or ambiguous signer set")
++    if re.search(r"^Signer #\d+ certificate DN:.*(?:CN=Android Debug|OU=Android)", text, re.M | re.I):
++        raise ValueError("Debug certificate is forbidden for operational collection")
++
++
++if __name__ == "__main__":
++    try:
++        if len(sys.argv) != 3:
++            raise ValueError("Usage: verify_release_certificate.py apksigner-output expected-sha256")
++        verify(Path(sys.argv[1]).read_text(encoding="utf-8"), sys.argv[2])
++    except (ValueError, OSError) as error:
++        print(str(error), file=sys.stderr)
++        raise SystemExit(1)
++    print("Approved release certificate verified")
+diff --git a/docs/operations/collector-acceptance-2026-09-28.md b/docs/operations/collector-acceptance-2026-09-28.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..f9c769c06acb9c541c3ffb534be955f13695cc80
+--- /dev/null
++++ b/docs/operations/collector-acceptance-2026-09-28.md
+@@ -0,0 +1,100 @@
++# Institutional collector acceptance and recovery — 28 September 2026
++
++**Status: procedure and engineering acceptance criteria; not an executed fleet drill.**
++No production database, signing account, phone, SIM or operator account was changed.
++
++## Preconditions and ownership
++
++Assign a fleet custodian, payments reconciliation owner, release owner and privacy
++contact. Approve dedicated devices/SIMs, the distribution channel, the observed
++receipt format, sender/merchant/currency configuration and retention/recovery rules.
++Do not use personal inboxes. Public-store SMS/foreground-service approvals, where
++applicable, are separate from private source compilation. Do not claim those
++approvals from this document.
++
++Inventory the installed version and certificate, enrolled collector public-key
++fingerprint, server revocation/expiry, pending/review counts and oldest receipt.
++Do not place signing passwords, private device keys, raw receipt bodies, MoMo PINs,
++full account numbers or authentication tokens in ordinary test logs or Drive reports.
++The application must continue using the existing device key across a supported update.
++
++## Version-bound device matrix
++
++Record exact app hash/version/certificate, Android version, device model, SIM/operator,
++filter fingerprint, server build/schema and approved synthetic or consented evidence.
++Every row needs pass/fail/not-run, an evidence reference and accountable reviewer.
++
++| Scenario | Required observation |
++|---|---|
++| Blank/invalid configuration | Collection disabled; no capture or network fallback |
++| Notice declined or revoked | No new admission/upload scheduling; stored unresolved evidence retained |
++| Changed policy with unchanged label | Fingerprint change requires renewed notice acceptance |
++| Unrelated SMS / unapproved sender | No new local row and no outbound request for that body |
++| Genuine supported receipt | Exact multipart content, timestamp and stable hash admitted once |
++| Empty queue / absent enrollment | No false server verification; signed health rejected |
++| Expired/revoked collector key | Server refuses; local evidence retained and enrollment state visible |
++| Allocation disabled | Health distinct from allocation; receipt held for review without AI processing |
++| Offline → online | Original receipt identity retained, bounded batches drain without double credit |
++| Partial server acknowledgment | Only acknowledged known hashes lose local raw bodies |
++| Lost HTTP response after server commit | Repeat submission yields one financial effect; operator reconciliation agrees |
++| Concurrent UI/service/worker | Shared lease permits one uploader; pending work is not replaced |
++| 429 / Retry-After / provider outage | Persisted bounded delay, no rapid resubmission loop or redirect |
++| Crash during migration / acknowledgment | Either before or after transaction state survives, never partial deletion |
++| Corrupt legacy row / database | Review/recovery state; no automatic deletion or clear-data workaround |
++| Queue row/byte/disk capacity | Existing pending evidence preserved; refusal visible and reconciled |
++| Pending age / ack retention | Old pending moves to review; only acknowledged history is pruned |
++| Signed update / restart / reboot | Device identity and unresolved evidence retained; recovery behavior recorded |
++| Force-stop / OEM battery restriction | Limitation visible; reconcile missed broadcasts instead of promising recovery |
++| Dual-SIM / wrong personal SIM | Custodian verifies approved institutional configuration; sender filter is not SIM verification |
++| Notification and accessibility | Meaningful state, TalkBack focus, readable counts/errors; no raw receipt or PIN exposed |
++
++The current in-session tests are portable SQLite/JVM/Node tests, not results for
++these device/operator scenarios. Existing WorkManager constraints do not establish
++timing guarantees under all device states.
++
++## Reconciliation and safe response
++
++Reconcile trusted operator receipts with server admissions, review decisions and
++activated invoices daily for the controlled pilot. Track missing, duplicated,
++rejected, quarantined, ambiguous and matched records separately. A server health
++acknowledgment or a local empty queue is not a payment-settlement receipt.
++
++For a capacity, corrupt-storage, revoked-key or missed-broadcast warning: pause
++collection when necessary; preserve the device and current evidence; notify the
++named payments/fleet owner; reconcile from approved independent operator records.
++Do not uninstall, clear app data, drop queue rows, change hashes or improvise an
++invoice match merely to restore a green status. Do not send raw queue dumps through
++ordinary email or a broadly shared folder. Establish and rehearse an approved
++restricted recovery/quarantine workflow before launch; that UI/workflow is not
++provided by this increment.
++
++An existing exposed signing store must be classified and remediated using its
++actual upload/app-signing role. This code does not rotate a key or attest that an
++existing credential is safe. Preserve the supported update path and stop on a
++certificate mismatch. Device-key enrollment and application signing are distinct.
++
++## Rollout and rollback
++
++1. Rehearse cumulative SQL/RLS/Auth changes on an isolated schema with production-like
++   constraints. All six forward bodies remain unapplied in this delivery.
++2. Exercise parser/allocator and unknown-result behavior with approved operator
++   fixtures; do not enable allocation using synthetic example merchant/sender values.
++3. Deploy compatible registry/health/ingest functions to staging, then verify the
++   registry, configuration and maintained endpoints through authenticated calls.
++4. Compile the exact managed-signing artifact and run the matrix on a small approved
++   fleet. Confirm version monotonicity before replacement; do not allow downgrades.
++5. Promote only with version-bound payments, security, privacy and operations approval.
++
++For rollback, pause/suspend the affected feature and preserve queue/schema evidence.
++Do not downgrade to the old permissive SMS allocator or debug-signed collector. A
++queue-schema change requires a forward-repair or explicitly rehearsed compatible
++reader; no automatic destructive downgrade exists.
++
++## Primary documentation used for implementation review
++
++- Android SQLiteOpenHelper API: https://developer.android.com/reference/android/database/sqlite/SQLiteOpenHelper
++- Android WorkManager unique work/management: https://developer.android.com/develop/background-work/background-tasks/persistent/how-to/manage-work
++- Android application signing: https://developer.android.com/studio/publish/app-signing
++
++These references describe platform behavior; organization-specific policies,
++operator formats, signed artifacts and actual deployments need separate evidence.
+diff --git a/scripts/ci/run_hardening_tests.sh b/scripts/ci/run_hardening_tests.sh
+index ed146b16c43b780d49ae6fa43815406e1f267d76..b58512ce1e8aae9d510b16f971c401e39fb9fea2 100755
+--- a/scripts/ci/run_hardening_tests.sh
++++ b/scripts/ci/run_hardening_tests.sh
+@@ -10,6 +10,7 @@ python3 -m unittest discover -s scripts/tests -p test_production_gates.py -v
+ python3 -m unittest discover -s scripts/tests -p test_hardening_preparation.py -v
+ python3 -m unittest discover -s scripts/tests -p test_play_version_evidence.py -v
+ python3 -m unittest discover -s scripts/tests -p test_identity_lifecycle_contracts.py -v
++python3 -m unittest discover -s scripts/tests -p test_collector_queue_contracts.py -v
+ python3 scripts/ci/check_github_actions_pinned.py
+ node --experimental-strip-types --test scripts/tests/edge/hardening.test.mjs
+ node --experimental-transform-types --loader ./scripts/tests/edge/fixture-loader.mjs \
+@@ -20,4 +21,8 @@ trap 'rm -rf "$scratch"' EXIT
+ kotlinc android/app/src/main/kotlin/rw/mobi/app/BioPayNfcPolicy.kt \
+   scripts/tests/kotlin/BioPayNfcPolicyTest.kt -include-runtime -d "$scratch/nfc-policy-tests.jar"
+ java -jar "$scratch/nfc-policy-tests.jar"
++kotlinc apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorPolicy.kt \
++  apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorLease.kt \
++  scripts/tests/kotlin/CollectorPolicyCheck.kt -include-runtime -d "$scratch/collector-policy-tests.jar"
++java -jar "$scratch/collector-policy-tests.jar"
+ echo 'PASS: hardening local unit/fixture/HTTP/JVM checks. NOT database, Deno, model accuracy, Android or iOS acceptance.'
+diff --git a/scripts/tests/edge/handlers.test.mjs b/scripts/tests/edge/handlers.test.mjs
+index d0376e57ec8eabb805b50e91c55a30e757696770..c38657b54e2a0d907269a392ceca43feb893c68e 100644
+--- a/scripts/tests/edge/handlers.test.mjs
++++ b/scripts/tests/edge/handlers.test.mjs
+@@ -14,8 +14,8 @@ const parsed={amount_rwf:2000,reference_code:'123456-ABCDEFGH',momo_pay_code:'12
+ const policy={enabled:true,allowedSenders:['MTN'],merchantCodes:['12345'],minConfidence:0.95};
+ const keys=await crypto.subtle.generateKey({name:'RSASSA-PKCS1-v1_5',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['sign','verify']);
+ const jwk=await crypto.subtle.exportKey('jwk',keys.publicKey);
+-async function request(){
+-  const body=JSON.stringify({messages:[{sender:'MTN',body:raw,received_at_millis:Date.now(),message_hash:'a'.repeat(64)}]});
++async function request(payload){
++  const body=JSON.stringify(payload ?? {messages:[{sender:'MTN',body:raw,received_at_millis:Date.now(),message_hash:'a'.repeat(64)}]});
+   const timestamp=String(Date.now()),nonce=crypto.randomUUID();
+   const hash=await sha256Hex(new TextEncoder().encode(body));
+   const signature=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',keys.privateKey,new TextEncoder().encode(collectorSigningPayload(id,timestamp,nonce,hash)));
+@@ -98,3 +98,45 @@ test('actual login fails closed on Auth lookup failure',async()=>{
+ test('actual new-user login never inspects an alias-matched profile',async()=>{
+   const f=authFixture({existing:false});await ensureAppUserSession(f.admin,f.anon,'passenger',phone,'RW');assert.equal(f.calls.creates.length,1);assert.equal(f.calls.profileLookups.length,0);
+ });
++
++test('signed collector health verifies enrollment without parsing or allocating',async()=>{
++  const f=intake(); const r=await handleMomoBioSmsIngest(await request({action:'health'}),f.deps);
++  assert.equal(r.status,200); const body=await r.json();assert.equal(body.kind,'collector_health');assert.equal(body.collector_enrolled,true);
++  assert.deepEqual(f.stats(),{allocations:0,admissions:0,claims:1,parseCalls:0});
++});
++test('health remains distinct from automatic allocation enablement',async()=>{
++  const f=intake();f.deps.policy={...policy,enabled:false};
++  const r=await handleMomoBioSmsIngest(await request({action:'health'}),f.deps);
++  assert.equal((await r.json()).automatic_allocation_enabled,false);assert.equal(f.stats().allocations,0);
++});
++test('health rejects extra receipt fields without storing them',async()=>{
++  const f=intake();const r=await handleMomoBioSmsIngest(await request({action:'health',messages:[]}),f.deps);
++  assert.equal(r.status,400);assert.equal(f.stats().parseCalls,0);assert.equal(f.stats().admissions,0);
++});
++test('unsigned health cannot assert enrollment',async()=>{
++  const f=intake();const r=await handleMomoBioSmsIngest(new Request('https://fixture.invalid',{method:'POST',body:'{"action":"health"}'}),f.deps);
++  assert.equal(r.status,401);assert.equal(f.stats().claims,0);
++});
++test('revoked health cannot assert enrollment',async()=>{
++  const f=intake();f.deps.registry.load=async()=>({public_key_jwk:jwk,public_key_fingerprint:'fixture',expires_at:new Date(Date.now()+60000).toISOString(),revoked_at:new Date().toISOString()});
++  const r=await handleMomoBioSmsIngest(await request({action:'health'}),f.deps);assert.equal(r.status,403);assert.equal(f.stats().parseCalls,0);
++});
++
++test('disabled allocation does not disclose receipt bodies to AI',async()=>{
++  const f=intake();f.deps.policy={...policy,enabled:false};
++  const result=await handleMomoBioSmsIngest(await request(),f.deps);
++  assert.equal(result.status,202);assert.equal(f.stats().parseCalls,0);assert.equal(f.stats().admissions,1);
++});
++test('unapproved sender is held for review before AI parsing',async()=>{
++  const f=intake();const result=await handleMomoBioSmsIngest(await request({messages:[{
++    sender:'UNAPPROVED',body:raw,received_at_millis:Date.now(),message_hash:'b'.repeat(64)}]}),f.deps);
++  assert.equal(result.status,202);assert.equal(f.stats().parseCalls,0);assert.equal(f.stats().allocations,0);
++  assert.equal((await result.json()).results[0].review_required,true);
++});
++test('missing merchant configuration cannot advertise active allocation or parse',async()=>{
++  const f=intake();f.deps.policy={...policy,merchantCodes:[]};
++  const health=await handleMomoBioSmsIngest(await request({action:'health'}),f.deps);
++  assert.equal((await health.json()).automatic_allocation_enabled,false);
++  const receipt=await handleMomoBioSmsIngest(await request(),f.deps);
++  assert.equal(receipt.status,202);assert.equal(f.stats().parseCalls,0);assert.equal(f.stats().allocations,0);
++});
+diff --git a/scripts/tests/kotlin/CollectorPolicyCheck.kt b/scripts/tests/kotlin/CollectorPolicyCheck.kt
+new file mode 100644
+index 0000000000000000000000000000000000000000..89f1e68ba3590be479ca22747534710e45ed2ac9
+--- /dev/null
++++ b/scripts/tests/kotlin/CollectorPolicyCheck.kt
+@@ -0,0 +1,73 @@
++import com.momobio.app.CollectorPolicy
++import com.momobio.app.CollectorTransportPolicy
++import com.momobio.app.CollectorLease
++import java.io.File
++import java.nio.file.Files
++import java.util.concurrent.Executors
++
++fun main(args: Array<String>) {
++    if (args.size == 2 && args[0] == "--lease-probe") {
++        val acquired = CollectorLease.withLease(File(args[1])) { true } == true
++        kotlin.system.exitProcess(if (acquired) 0 else 75)
++    }
++    var count=0
++    fun scenario(name:String, test:()->Unit) { test();count++;println("PASS: $name") }
++    val p=CollectorPolicy.fromCsv("fixture-v1","MTN, MobileMoney","You have received,Merchant payment")
++    scenario("configured fixture") { check(p.configured) }
++    scenario("no default collection policy") { check(!CollectorPolicy.fromCsv("","","").configured) }
++    scenario("allowed sender and receipt marker") { check(p.accepts("MTN","You have received 2000 RWF",1)) }
++    scenario("unknown sender excluded") { check(!p.accepts("Friend","You have received 2000 RWF",1)) }
++    scenario("marketing excluded") { check(!p.accepts("MTN","Buy our new bundle",1)) }
++    scenario("case normalization") { check(p.accepts(" mtn ","YOU HAVE RECEIVED 2000 RWF",1)) }
++    scenario("zero timestamp excluded") { check(!p.accepts("MTN","You have received 2 RWF",0)) }
++    scenario("oversized UTF8 excluded") { check(!p.accepts("MTN","You have received"+"🌍".repeat(2500),1)) }
++    scenario("nul excluded") { check(!p.accepts("MTN","You have received\u0000",1)) }
++    scenario("too-short marker configuration rejected") { check(!CollectorPolicy.fromCsv("v1","MTN","a").configured) }
++    for (url in listOf("https://fixture.invalid","https://fixture.invalid/","https://fixture.invalid:443")) {
++        scenario("secure origin $url") { check(CollectorTransportPolicy.validEndpoint(url)) }
++    }
++    for (url in listOf("http://fixture.invalid","https://user:secret@fixture.invalid","https://fixture.invalid/path",
++        "https://fixture.invalid?query=1","https://fixture.invalid#frag","https://fixture.invalid:80","not a url","https:///")) {
++        scenario("reject origin $url") { check(!CollectorTransportPolicy.validEndpoint(url)) }
++    }
++    scenario("retry-after seconds") { check(CollectorTransportPolicy.retryAfterMillis("120",0)==120000L) }
++    scenario("retry-after invalid") { check(CollectorTransportPolicy.retryAfterMillis("bad",0)==null) }
++    scenario("retry-after negative") { check(CollectorTransportPolicy.retryAfterMillis("-2",0)==null) }
++    scenario("retry-after date") { check(CollectorTransportPolicy.retryAfterMillis("Thu, 01 Jan 1970 00:02:00 GMT",0)==120000L) }
++    scenario("bounded exponent") { check(CollectorTransportPolicy.backoffMillis(Int.MAX_VALUE)<=4500000L) }
++    scenario("retry-after controls minimum delay") { check(CollectorTransportPolicy.backoffMillis(1,120000,0.0)==120000L) }
++    scenario("invalid jitter bounded") { check(CollectorTransportPolicy.backoffMillis(1,null,Double.NaN)==33750L) }
++    scenario("consent invalidated by changed senders") { check(p.fingerprint != p.copy(allowedSenders=setOf("Other")).fingerprint) }
++    scenario("consent invalidated by changed markers") { check(p.fingerprint != p.copy(receiptMarkers=setOf("New receipt")).fingerprint) }
++    scenario("policy set order does not change consent") { check(p.fingerprint == p.copy(allowedSenders=p.allowedSenders.reversed().toSet()).fingerprint) }
++    scenario("newline sender policy rejected") { check(!p.copy(allowedSenders=setOf("MTN\nFake")).configured) }
++    scenario("newline marker policy rejected") { check(!p.copy(receiptMarkers=setOf("Receipt\nFake")).configured) }
++    val dir=Files.createTempDirectory("collector-lease-").toFile();val file=File(dir,"sync.lock")
++    fun child(): Int {
++        val process=ProcessBuilder(File(System.getProperty("java.home"),"bin/java").path,
++            "-jar",System.getProperty("java.class.path"),"--lease-probe",file.path).redirectErrorStream(true).start()
++        if (!process.waitFor(10,java.util.concurrent.TimeUnit.SECONDS)) {
++            process.destroyForcibly();error("Lease child timed out")
++        }
++        return process.exitValue()
++    }
++    try {
++        scenario("OS lease blocks a separate JVM process") {
++            CollectorLease.withLease(file) { check(child() == 75) }
++        }
++        scenario("separate JVM can acquire after release") { check(child() == 0) }
++        scenario("actual OS lease blocks simultaneous holder") {
++            CollectorLease.withLease(file) {
++                val executor=Executors.newSingleThreadExecutor()
++                try { check(executor.submit<Boolean> { CollectorLease.withLease(file) { true } == null }.get()) }
++                finally { executor.shutdownNow() }
++            }
++        }
++        scenario("lease releases after exception") {
++            try { CollectorLease.withLease(file) { error("fixture") } } catch (_:IllegalStateException) { }
++            check(CollectorLease.withLease(file) { true } == true)
++        }
++        scenario("lease repeat safe") { repeat(20) { check(CollectorLease.withLease(file) { true } == true) } }
++    } finally { dir.deleteRecursively() }
++    println("Collector policy/OS lease: $count scenarios passed (not Android device acceptance).")
++}
+diff --git a/scripts/tests/test_collector_queue_contracts.py b/scripts/tests/test_collector_queue_contracts.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..90e03a6d37ca00e855fd3c865d61ebb1d191de86
+--- /dev/null
++++ b/scripts/tests/test_collector_queue_contracts.py
+@@ -0,0 +1,197 @@
++"""Actual SQLite schema/DML tests; not Android SQLiteOpenHelper or PostgreSQL acceptance."""
++import ast
++import hashlib
++import importlib.util
++from pathlib import Path
++import re
++import sqlite3
++import tempfile
++import threading
++import unittest
++from concurrent.futures import ThreadPoolExecutor
++
++ROOT = Path(__file__).resolve().parents[2]
++APP = ROOT / "apps/momobio_sms_bridge/app"
++SCHEMA = (APP / "src/main/assets/receipt_queue_v1.sql").read_text()
++KOTLIN = (APP / "src/main/java/com/momobio/app/ReceiptQueueSql.kt").read_text()
++DML = {name: ast.literal_eval(text) for name, text in re.findall(
++    r'const val ([A-Z_]+) = ("[^\n]+")', KOTLIN)}
++
++
++def key(value):
++    return hashlib.sha256(str(value).encode()).hexdigest()
++
++
++def put(db, ident, payload="synthetic", admitted=100):
++    db.execute("INSERT INTO receipts(message_hash,payload,payload_bytes,received_at,admitted_at,state) VALUES (?,?,?,?,?,'pending')",
++               (key(ident), payload, len(payload.encode()), admitted, admitted))
++
++
++class NativeQueueSQLTests(unittest.TestCase):
++    def setUp(self):
++        self.tmp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.tmp.cleanup)
++        self.path = str(Path(self.tmp.name) / "synthetic.db")
++        self.db = sqlite3.connect(self.path, timeout=5)
++        self.addCleanup(lambda: self.db.close())
++        # Exercise the same statement delimiters used by QueueDatabase.onCreate.
++        for block in SCHEMA.split("-- @statement"):
++            sql = "\n".join(x for x in block.splitlines() if not x.strip().startswith("--")).strip()
++            if sql:
++                self.db.execute(sql)
++        self.db.commit()
++
++    def row(self, ident):
++        return self.db.execute("SELECT state,payload,payload_bytes,acknowledged_at,reason FROM receipts WHERE message_hash=?", (key(ident),)).fetchone()
++
++    def test_exact_statement_contract_is_present(self):
++        self.assertEqual(set(DML), {"EXPIRE", "BATCH", "QUARANTINE", "ACKNOWLEDGE", "PRUNE_AGE", "PRUNE_ROWS"})
++        self.assertEqual(self.db.execute("SELECT count(*) FROM sqlite_master WHERE type='trigger'").fetchone()[0], 1)
++
++    def test_pending_receipt_survives_database_reopen(self):
++        put(self.db, 1, "receipt 🚌\nsynthetic")
++        self.db.commit(); self.db.close()
++        self.db = sqlite3.connect(self.path)
++        self.assertEqual(self.row(1)[0:2], ("pending", "receipt 🚌\nsynthetic"))
++
++    def test_partial_acknowledgement_removes_only_acknowledged_raw_body(self):
++        put(self.db, 1); put(self.db, 2)
++        self.assertEqual(self.db.execute(DML["ACKNOWLEDGE"], (500, key(1))).rowcount, 1)
++        self.assertEqual(self.row(1), ("acknowledged", None, 0, 500, None))
++        self.assertEqual(self.row(2)[0], "pending")
++        self.assertIsNotNone(self.row(2)[1])
++
++    def test_unknown_or_repeated_ack_changes_no_rows(self):
++        put(self.db, 1)
++        self.assertEqual(self.db.execute(DML["ACKNOWLEDGE"], (500, key(999))).rowcount, 0)
++        self.db.execute(DML["ACKNOWLEDGE"], (500, key(1)))
++        self.assertEqual(self.db.execute(DML["ACKNOWLEDGE"], (600, key(1))).rowcount, 0)
++        self.assertEqual(self.row(1)[3], 500)
++
++    def test_duplicate_admission_cannot_resurrect_an_acknowledged_receipt(self):
++        put(self.db, 1)
++        self.db.execute(DML["ACKNOWLEDGE"], (500, key(1)))
++        with self.assertRaises(sqlite3.IntegrityError):
++            put(self.db, 1, "changed content")
++        self.assertEqual(self.row(1)[0], "acknowledged")
++
++    def test_policy_quarantine_retains_body_and_cannot_be_silently_acknowledged(self):
++        put(self.db, 1)
++        self.db.execute(DML["QUARANTINE"], ("policy_review", key(1)))
++        self.assertEqual(self.db.execute(DML["ACKNOWLEDGE"], (500, key(1))).rowcount, 0)
++        self.assertEqual(self.row(1)[0:2], ("quarantined", "synthetic"))
++        self.assertEqual(self.row(1)[4], "policy_review")
++
++    def test_pending_age_boundary_moves_to_review_not_deletion(self):
++        put(self.db, 1, admitted=99); put(self.db, 2, admitted=100)
++        self.db.execute(DML["EXPIRE"], (100,))
++        self.assertEqual(self.row(1)[0], "quarantined")
++        self.assertEqual(self.row(2)[0], "pending")
++        self.assertEqual(self.row(1)[1], "synthetic")
++
++    def test_failed_transaction_rolls_back_partial_acknowledgements(self):
++        put(self.db, 1); put(self.db, 2); self.db.commit()
++        with self.assertRaises(RuntimeError):
++            with self.db:
++                self.db.execute(DML["ACKNOWLEDGE"], (500, key(1)))
++                raise RuntimeError("simulated local failure before commit")
++        self.assertEqual(self.row(1)[0], "pending")
++        self.assertEqual(self.row(2)[0], "pending")
++
++    def test_batch_is_ordered_bounded_and_excludes_review(self):
++        put(self.db, 1, admitted=10); put(self.db, 2, admitted=20); put(self.db, 3, admitted=30)
++        self.db.execute(DML["QUARANTINE"], ("policy_review", key(1)))
++        rows = self.db.execute(DML["BATCH"], (1,)).fetchall()
++        self.assertEqual(rows, [(key(2), "synthetic")])
++
++    def test_ack_retention_never_prunes_pending_or_quarantined(self):
++        put(self.db, 1); put(self.db, 2); put(self.db, 3); put(self.db, 4)
++        self.db.execute(DML["ACKNOWLEDGE"], (99, key(1)))
++        self.db.execute(DML["ACKNOWLEDGE"], (100, key(2)))
++        self.db.execute(DML["QUARANTINE"], ("policy_review", key(4)))
++        self.db.execute(DML["PRUNE_AGE"], (100,))
++        self.assertIsNone(self.row(1)); self.assertIsNotNone(self.row(2))
++        self.assertEqual(self.row(3)[0], "pending"); self.assertEqual(self.row(4)[0], "quarantined")
++
++    def test_ack_history_count_bound_prunes_only_oldest_ack_rows(self):
++        for i in range(5):
++            put(self.db, i)
++            self.db.execute(DML["ACKNOWLEDGE"], (100+i, key(i)))
++        put(self.db, 5)
++        self.db.execute(DML["PRUNE_ROWS"], (2,))
++        self.assertEqual(self.db.execute("SELECT count(*) FROM receipts").fetchone()[0], 3)
++        self.assertIsNone(self.row(2)); self.assertIsNotNone(self.row(3)); self.assertIsNotNone(self.row(4))
++        self.assertEqual(self.row(5)[0], "pending")
++
++    def test_row_capacity_blocks_new_receipt_without_evicting_existing(self):
++        for i in range(10000):
++            put(self.db, i, "x")
++        with self.assertRaisesRegex(sqlite3.IntegrityError, "QUEUE_CAPACITY"):
++            put(self.db, 10000, "x")
++        self.assertEqual(self.db.execute("SELECT count(*) FROM receipts").fetchone()[0], 10000)
++        self.assertEqual(self.row(0)[0], "pending")
++
++    def test_byte_capacity_blocks_and_acknowledgement_releases_space(self):
++        cap = 16 * 1024 * 1024
++        size = 12 * 1024
++        whole, rest = divmod(cap, size)
++        for i in range(whole): put(self.db, i, "x" * size)
++        put(self.db, whole, "x" * rest)
++        with self.assertRaisesRegex(sqlite3.IntegrityError, "QUEUE_CAPACITY"):
++            put(self.db, whole + 1, "x")
++        self.db.execute(DML["ACKNOWLEDGE"], (500, key(0)))
++        put(self.db, whole + 1, "x")
++        self.assertEqual(self.row(whole+1)[0], "pending")
++
++    def test_payload_metadata_and_state_constraints(self):
++        put(self.db, 1, "🚌")
++        with self.assertRaises(sqlite3.IntegrityError):
++            self.db.execute("UPDATE receipts SET payload_bytes=1 WHERE message_hash=?", (key(1),))
++        with self.assertRaises(sqlite3.IntegrityError):
++            self.db.execute("UPDATE receipts SET state='acknowledged' WHERE message_hash=?", (key(1),))
++        with self.assertRaises(sqlite3.IntegrityError): put(self.db, 2, "x" * 12289)
++        with self.assertRaises(sqlite3.IntegrityError):
++            self.db.execute("UPDATE receipts SET state='paid' WHERE message_hash=?", (key(1),))
++
++    def test_two_real_sqlite_writers_preserve_unique_receipt(self):
++        barrier = threading.Barrier(2)
++        def writer():
++            conn = sqlite3.connect(self.path, timeout=5)
++            try:
++                barrier.wait(timeout=5)
++                with conn:
++                    try: put(conn, 1); return "inserted"
++                    except sqlite3.IntegrityError: return "duplicate"
++            finally: conn.close()
++        with ThreadPoolExecutor(max_workers=2) as pool:
++            results = list(pool.map(lambda _: writer(), range(2)))
++        self.assertCountEqual(results, ["inserted", "duplicate"])
++        self.assertEqual(self.db.execute("SELECT count(*) FROM receipts").fetchone()[0], 1)
++
++
++spec = importlib.util.spec_from_file_location("certificate_verifier", ROOT / "apps/momobio_sms_bridge/scripts/verify_release_certificate.py")
++CERT = importlib.util.module_from_spec(spec)
++spec.loader.exec_module(CERT)
++
++
++class CertificateParserTests(unittest.TestCase):
++    def test_exact_release_certificate_is_accepted(self):
++        CERT.verify("Signer #1 certificate SHA-256 digest: " + "a" * 64 + "\n", "a" * 64)
++    def test_colon_delimited_fingerprint_is_supported(self):
++        CERT.verify("Signer #1 certificate SHA-256 digest: " + "a" * 64 + "\n", ":".join(["AA"] * 32))
++    def test_wrong_or_missing_certificate_is_rejected(self):
++        for text in ["", "Signer #1 certificate SHA-256 digest: " + "b" * 64]:
++            with self.assertRaises(ValueError): CERT.verify(text, "a" * 64)
++    def test_multiple_signers_require_explicit_new_policy(self):
++        text = "\n".join("Signer #"+str(i)+" certificate SHA-256 digest: "+"a"*64 for i in [1,2])
++        with self.assertRaises(ValueError): CERT.verify(text, "a" * 64)
++    def test_debug_dn_is_rejected_even_when_digest_matches(self):
++        with self.assertRaises(ValueError):
++            CERT.verify("Signer #1 certificate DN: CN=Android Debug, O=Android, C=US\nSigner #1 certificate SHA-256 digest: " + "a" * 64, "a" * 64)
++    def test_invalid_expected_digest_is_rejected(self):
++        for digest in ["", "a" * 63, "x" * 64]:
++            with self.assertRaises(ValueError): CERT.verify("", digest)
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/supabase/functions/momobio-sms-ingest/index.ts b/supabase/functions/momobio-sms-ingest/index.ts
+index 7dd05f0ed3dd65b201b11e012d8b9d5ac18cb310..1a4f3c2fd590a0eb628248723f0c200412323a5f 100644
+--- a/supabase/functions/momobio-sms-ingest/index.ts
++++ b/supabase/functions/momobio-sms-ingest/index.ts
+@@ -40,6 +40,14 @@ export async function handleMomoBioSmsIngest(request: Request, dependencies: Dep
+     const verified = await verifyCollectorRequest(request, dependencies.registry);
+     let body;
+     try { body = JSON.parse(verified.rawBody); } catch { throw new HttpError("Invalid JSON batch", 400); }
++    if (body?.action === "health") {
++      if (Object.keys(body).some((key) => key !== "action")) {
++        throw new HttpError("Invalid collector health request", 400);
++      }
++      const policy = dependencies.policy ?? receiptEvidencePolicy((key) => Deno.env.get(key));
++      return jsonResponse({ success: true, kind: "collector_health", collector_enrolled: true,
++        automatic_allocation_enabled: policy.enabled && policy.allowedSenders.length > 0 && policy.merchantCodes.length > 0 }, 200, request);
++    }
+     const messages = Array.isArray(body?.messages) ? body.messages : [body];
+     if (messages.length === 0 || messages.length > 50) {
+       return errorResponse(
+@@ -55,10 +63,22 @@ export async function handleMomoBioSmsIngest(request: Request, dependencies: Dep
+     const results = [];
+     const policy = dependencies.policy ?? receiptEvidencePolicy((key) => Deno.env.get(key));
+     for (const sms of normalized) {
+-      const parsed = await (dependencies.parse ?? parseMomoSmsWithOpenAi)(sms.rawSms, {
+-        sender: sms.sender, receivedAt: sms.receivedAt,
+-      });
+-      const decision = evaluateReceiptEvidence(sms.rawSms, sms.sender, parsed, policy);
++      // Reject processing-policy failures BEFORE disclosing bodies to the AI provider.
++      // Durable admission for review remains separate from financial allocation.
++      const admissionReasons: string[] = [];
++      if (!policy.enabled) admissionReasons.push("automatic_allocation_disabled");
++      if (!policy.allowedSenders.some(value => value.toLowerCase() === sms.sender?.toLowerCase())) {
++        admissionReasons.push("sender_not_approved");
++      }
++      if (policy.merchantCodes.length === 0) admissionReasons.push("merchant_configuration_missing");
++      let parsed: Awaited<ReturnType<typeof parseMomoSmsWithOpenAi>> | null = null;
++      let decision = { eligible: false, reasons: admissionReasons, version: "receipt-admission-v1" };
++      if (admissionReasons.length === 0) {
++        parsed = await (dependencies.parse ?? parseMomoSmsWithOpenAi)(sms.rawSms, {
++          sender: sms.sender, receivedAt: sms.receivedAt,
++        });
++        decision = evaluateReceiptEvidence(sms.rawSms, sms.sender, parsed, policy);
++      }
+       if (!decision.eligible) {
+         // Persist before acknowledgement. DO NOTHING on duplicates: never overwrite a
+         // matched receipt or promote a quarantined message on a later model response.
+@@ -77,6 +97,7 @@ export async function handleMomoBioSmsIngest(request: Request, dependencies: Dep
+           review_required: stored.metadata?.review_required === true });
+         continue;
+       }
++      if (!parsed) throw new Error("RECEIPT_EVIDENCE_UNAVAILABLE");
+       // Server-side RPC stores rows in driver_subscription_momo_sms_receipts
+       // and decides unmatched, ambiguous, matched, duplicate, or ignored.
+       const { data, error } = await supabase.rpc(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
@@ -29,7 +28,7 @@ class DriverCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-    final driverId = AppConstants.getDriverId(trip.authorId);
+    final driverLabel = trip.authorName.trim().isEmpty ? 'Driver' : trip.authorName.trim();
     final vType = trip.effectiveVehicleType;
     final vehicleTypeId = vType == VehicleType.private_
         ? 'private'
@@ -70,7 +69,7 @@ class DriverCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          driverId,
+                          driverLabel,
                           style: AppTypography.titleLg.copyWith(
                             color: cs.onSurface,
                             fontWeight: FontWeight.w600,
@@ -95,7 +94,7 @@ class DriverCard extends StatelessWidget {
                   ),
                   Semantics(
                     button: true,
-                    label: 'Open in-app chat with $driverId',
+                    label: 'Open in-app chat with $driverLabel',
                     excludeSemantics: true,
                     child: SizedBox(
                       width: 44,

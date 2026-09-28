@@ -1,0 +1,425 @@
+{
+  "date": "2026-09-28",
+  "original_tracked_file_count": 2076,
+  "baseline_type": "Locally reconstructed from supplied Drive Git index, not a verified remote HEAD",
+  "local_baseline_commit": "704512b566074901db25657dae0d7e6a5c194ff0",
+  "original_index_sha256": "d20337cd6edb1e6b6ff9a50e41c39497938f706f185bd85a7fe719004de6bba4",
+  "patch_sha256": "5673b12f6bd16f3c988d267c9d80ec46247793fefb80ce9c2f25a942b98e1696",
+  "changed_file_count": 46,
+  "files": [
+    {
+      "path": ".github/dependabot.yml",
+      "change": "modified",
+      "bytes": 1002,
+      "sha256": "b1d4a7ce63eca85028563448179cfc02ae06449e91ad0eade65422dbf6e5adab",
+      "md5": "c9bb7ebc934aaa13a0fbe91a0bad0c79",
+      "original_sha256": "5da54147994a92461f5b40f82c1673e51b5917ddece088d4475ade9277ddbc39",
+      "original_git_blob": "6df381d9253663a438d170df4ea08939f0d45843"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "change": "modified",
+      "bytes": 6849,
+      "sha256": "3be566f40dbb70786031b835713aff5893e5720afb368091c8761accf416868a",
+      "md5": "f044b108524d06f73a3af2f28f951be5",
+      "original_sha256": "9ec587e51d07689cea48a4a3e20cc636436680d7a018016be37e21629d2960fd",
+      "original_git_blob": "3448556bbc77bdd6d3fc59acd2409326b70047f0"
+    },
+    {
+      "path": ".gitignore",
+      "change": "modified",
+      "bytes": 1417,
+      "sha256": "c321fd0dc31f6aec792db4e156c3a3c665224c24886e6aeaa5eef2e60c823562",
+      "md5": "25b457f5509840ab44c41e59dc70e337",
+      "original_sha256": "554dcd361e71c282941026c755061126e31de8f32666f0d438ec538915f1db44",
+      "original_git_blob": "ebacfcbf5c295497fa5abb5e3f336ae6d7d7aed8"
+    },
+    {
+      "path": "android/app/build.gradle.kts",
+      "change": "modified",
+      "bytes": 3542,
+      "sha256": "1b1875f3f931d3e58c5bd09dc5cae9d8f248c0b4a6dae2446a4095efd74b8a6a",
+      "md5": "6a6d70b92ffddcedd227a8018f49b590",
+      "original_sha256": "252c2766e12a11b1b60bc8e36284d696a5fbf7611b6faab3f507d4a583723268",
+      "original_git_blob": "f937272eb985f77fdcdb3ed8d21ce28afc4ee5f8"
+    },
+    {
+      "path": "android/app/src/main/kotlin/rw/mobi/app/BioPayHostApduService.kt",
+      "change": "modified",
+      "bytes": 2299,
+      "sha256": "bb6c6a69225678877a2c6bca444d7eaad3e89cf44232a731c2e3ba44c8c95b3b",
+      "md5": "d717759492793a1f89b21259fca7c6a4",
+      "original_sha256": "385a73b1b37a76da828476fd905767453e70912bafdaf972610ded63352398cf",
+      "original_git_blob": "4c19cb1e8b5da499453b42b37f81324ddffbbdcb"
+    },
+    {
+      "path": "android/app/src/main/kotlin/rw/mobi/app/BioPayNfcPolicy.kt",
+      "change": "added",
+      "bytes": 2753,
+      "sha256": "8a4d408056dd4e9cfa84d1fd8e98fb636608f1c75d24905ff11a3d3c0e10429c",
+      "md5": "65b60154276e8e9746426f13083bf5f7",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt",
+      "change": "modified",
+      "bytes": 44683,
+      "sha256": "9425443a35b5c89cfd8b46ee5de58b80c233608a01befe647a8e836dfd288ebb",
+      "md5": "b7234cd3c4d1b41caa8af97ccae82ac5",
+      "original_sha256": "6830041adec79c2edc78d0a0811e6f71c90344a8fab7c1009f763fbdfe234c4a",
+      "original_git_blob": "a8e962aa35ee7a1edb70978dfcfe95b3547cea43"
+    },
+    {
+      "path": "lib/features/biopay/data/biopay_device_nfc_service.dart",
+      "change": "modified",
+      "bytes": 3008,
+      "sha256": "b01d44087861b3c5951237a76de8fc091998792dc874c0a7aa9e66520a09f7d9",
+      "md5": "9b6a5d44a66769ee22f17bf6f865e70a",
+      "original_sha256": "0baf919abfd21655a8391c4af6c8b933c508e5213574dd7cfb527fa1980eeac4",
+      "original_git_blob": "e30783ded761a20d73c19c0c936e567579a0f32f"
+    },
+    {
+      "path": "scripts/ci/check_github_actions_pinned.py",
+      "change": "added",
+      "bytes": 5776,
+      "sha256": "828711a367f07221cf30fbfedee2ce475c46b29c0c9e06b82d05123d95ae0781",
+      "md5": "a88a516e51cf6f17fbe2b53f7083e771",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "scripts/ci/check_github_actions_pinned.sh",
+      "change": "modified",
+      "bytes": 195,
+      "sha256": "ad005d85b770b482d0f1d5c9b79745960f0d44a1eb178bba77b566669068e13b",
+      "md5": "5e19ede9999235dffbf698b35900cd3d",
+      "original_sha256": "2123680075d920ab06b59fbc27bf422e4f9f78bb8725dbddeb70670f7ff2d2f2",
+      "original_git_blob": "3de6e1a89afac26fa94e0d1fc37c4ccfeaf41373"
+    },
+    {
+      "path": "scripts/ci/prepare_hardening_migrations.py",
+      "change": "added",
+      "bytes": 7828,
+      "sha256": "68dcff705d83283e04afa15cb1810eb33e5a0d4c686c48c0ce69f18fc112e178",
+      "md5": "20f0ef6d7bb94ab3271647cb59d9fd52",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "scripts/ci/requirements.txt",
+      "change": "added",
+      "bytes": 14,
+      "sha256": "0969da99a0bc2a1b71ed50584560f4588a37567ac63af3ddbaf3c4617ca5621a",
+      "md5": "d20e5228b122c5d5ab4f5b61ebb42be4",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "scripts/ci/run_hardening_tests.sh",
+      "change": "added",
+      "bytes": 1356,
+      "sha256": "c205ad83051da1672c3c42a19ae0dd0deb33d9e3f2b5a3e8f4bf4afad060b57e",
+      "md5": "11e0d892c0ed1a994c37c75be2f395ef",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "scripts/qa/verify_mobio_feature_readiness.sh",
+      "change": "modified",
+      "bytes": 2940,
+      "sha256": "a886010b5f1c7576fe24af44539fd9367d634dc2e9cc07d623462c416e01102c",
+      "md5": "031dd01df69122f398ec74605ae670b8",
+      "original_sha256": "87ddf29cd3a1a3785e724abb1486755c1280c8bd88700dd8017cce4b315638b3",
+      "original_git_blob": "63e7e07cea42126710b2af3ce73cfdee65ea279d"
+    },
+    {
+      "path": "scripts/release/check_play_version_evidence.py",
+      "change": "added",
+      "bytes": 1482,
+      "sha256": "5457b7ab18012ce1aa4aaee6d89601152f2b0bb3c7352579ae8f9cbfd3c18efe",
+      "md5": "7e0c1751a82c80cea93d370b8a8d67bd",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "scripts/release/go_no_go_check.sh",
+      "change": "modified",
+      "bytes": 6537,
+      "sha256": "9d00b602616154881f10f916224dcc9d2680218529c222a4be36f416540079e5",
+      "md5": "fe8d8ad35c7d2950c2f84bf0f255c3f1",
+      "original_sha256": "a1fb66a72a0c55a05e59085d961c0402732793f66b45e2f923656bc731fcf985",
+      "original_git_blob": "e7a6df6003cf292474914523c46218bb7233847d"
+    },
+    {
+      "path": "scripts/tests/edge/deno-env.fixture.d.ts",
+      "change": "added",
+      "bytes": 157,
+      "sha256": "baad36439ebf5ced84e9f366ce180857ed9d8858107e55fd68b3ce85bac19caf",
+      "md5": "4e9c2c82698075eb3344ae014ae7894f",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "scripts/tests/edge/fixture-loader.mjs",
+      "change": "added",
+      "bytes": 573,
+      "sha256": "2b81fd308f31f4ac0f0b4e497aa5fdfa83e891241104e0931f92260695aa9080",
+      "md5": "50b967ae2f5a718ef87dba70cf31de5e",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "scripts/tests/edge/handlers.test.mjs",
+      "change": "added",
+      "bytes": 8785,
+      "sha256": "7a38c324aa8f0233ab17c6cb9a46eb289b766eed7ffccc86da138c242ed2ce7e",
+      "md5": "b3780fe01501f945e9aca958e96577e9",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "scripts/tests/edge/hardening.test.mjs",
+      "change": "added",
+      "bytes": 12667,
+      "sha256": "47455429c1e7536271d7ddbfd775eb6fd54f6bcedd2c38a909b94e29bd12c8e6",
+      "md5": "19f80dce8acebab327c800bc04f0b322",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "scripts/tests/kotlin/BioPayNfcPolicyTest.kt",
+      "change": "added",
+      "bytes": 2800,
+      "sha256": "e340064e707a144d7d89338841ddddcdeb27922d58facfb59933b9cc38b2bce2",
+      "md5": "ddab9ffda14d3d40719c6330579d90d9",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "scripts/tests/test_hardening_preparation.py",
+      "change": "added",
+      "bytes": 5721,
+      "sha256": "68db3ddf7fcdc1fdee944ab7c39a9c46cbd0ecb8cc26e8cb80492a6d51c8971d",
+      "md5": "e88446441b4a7d344a9fa609879066ef",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "scripts/tests/test_play_version_evidence.py",
+      "change": "added",
+      "bytes": 1182,
+      "sha256": "9791a909a08e0c8469afa7350cc0654c65944a680937937b8550e9a989322512",
+      "md5": "6bf2644ccc1c5b217b56bf4a66b02e35",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "scripts/tests/test_production_gates.py",
+      "change": "added",
+      "bytes": 8318,
+      "sha256": "307e45b77974f4056a82234feab0cfc54fdeb7cb9bbac65b28085f3491f42cbf",
+      "md5": "5a1a9a03f45403e2f76ffd34b131d9ef",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "services/face-inference/Dockerfile",
+      "change": "modified",
+      "bytes": 509,
+      "sha256": "ce4d1960fa5614866615f7b23384f5353be85f6a3f7e652914f2d39ffca7f5fc",
+      "md5": "e869d7b44b53bd5b5b481ec8bb4483bb",
+      "original_sha256": "00819102b70d92a5dae19e21802e6b067a9671e9ffdb76f49a87679956f48608",
+      "original_git_blob": "1054113d30045f6f8bf8ba5629b8988d422f2c22"
+    },
+    {
+      "path": "services/face-inference/inference.py",
+      "change": "modified",
+      "bytes": 4344,
+      "sha256": "e57acc3f0cdab8c2ae303024e51cce572d3b06427d7ae1abb4ed13b4037b4f86",
+      "md5": "2b33565b22501ad86fea37ddb7cf7ab6",
+      "original_sha256": "e433ef8eb9b2cabd94396cb8d73ade3ce2e32f731e300be97fefce80808a759b",
+      "original_git_blob": "21dee6e37158ad8153169d5d1e4cb7abcf8da133"
+    },
+    {
+      "path": "services/face-inference/protocol.py",
+      "change": "added",
+      "bytes": 232,
+      "sha256": "5190d0df920ffa8ef898885ae18128ed6478952bd844d3182ade9c5b126b9ee9",
+      "md5": "1eb0b88e8a1a815833697a769656627b",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "services/face-inference/server.py",
+      "change": "modified",
+      "bytes": 7433,
+      "sha256": "d0b86b5435aff6dbd4c3005cd7add36fcafdae05df9cad087518f7214da3f0ea",
+      "md5": "0c8207232490cd04a6935939152205d7",
+      "original_sha256": "48bae55e5731d89fb23d337213b0f1277151034fa60225091577e32e7b76c3da",
+      "original_git_blob": "5f9671476cfd64cdb34a886b4d33e26f653c6f37"
+    },
+    {
+      "path": "services/face-inference/tests/test_http.py",
+      "change": "modified",
+      "bytes": 2262,
+      "sha256": "e7123ea4d54b5ecdd75a02aea67d2e7b7cf74f250fc4847d14f968aadb426976",
+      "md5": "3ad6cc15ad1fdfe80c51ebaacb373584",
+      "original_sha256": "d5bcac6c0c7263a88ffa120d9dd83a88fd331b4504c2c2605ba9afc407e9ee50",
+      "original_git_blob": "f9e4143db74be3c3082d76af54acd2217d27a1c0"
+    },
+    {
+      "path": "services/face-inference/tests/test_server_bounds.py",
+      "change": "added",
+      "bytes": 5382,
+      "sha256": "b7b22b1079002097d38122d1356c12c9719e43306bdbba56e11528b267e5450e",
+      "md5": "c2e1f87e2dc26fe44839f3c9ce7dd422",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "supabase/functions/_shared/bounded-fetch.ts",
+      "change": "added",
+      "bytes": 4015,
+      "sha256": "a328f2afa8ece90671fffa4887826dcd142ac91a60160348df417affe3b4a37b",
+      "md5": "7eedf10cc5274ab84cd3b2bc5240239c",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "supabase/functions/_shared/momo-receipt-evidence.ts",
+      "change": "added",
+      "bytes": 3695,
+      "sha256": "a9f4d8546cf47e76ad4cdd1f6a761fcda57f41952a637f1080d6275542702221",
+      "md5": "0c43c10176c04047e123c54bdbc5c33b",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "supabase/functions/_shared/momo-sms.ts",
+      "change": "modified",
+      "bytes": 8587,
+      "sha256": "2b3e4c22aafa517a361ae067702802668fe3cb33eddd12bed870bb1feb41a755",
+      "md5": "d3bc7af845868d82f9a2ae5ff8296031",
+      "original_sha256": "9fefbcc1c358ad10c50ab23732189d91c543638506b61df645d7168186733720",
+      "original_git_blob": "2b82c7b27cc689d116662c192aa47c0b30bc7899"
+    },
+    {
+      "path": "supabase/functions/_shared/verified-phone-identity.ts",
+      "change": "added",
+      "bytes": 1894,
+      "sha256": "6dbc2d42a5efe85b95cd3ffe2d8445926555a6599919342c988934524e442d91",
+      "md5": "70613961344b723b03791d27d9171516",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "supabase/functions/_shared/whatsapp-cloud.ts",
+      "change": "modified",
+      "bytes": 7214,
+      "sha256": "18877fa47f23e4e16483ca61e0da493e5fffdbe3c670e74102f819cb38c9a6da",
+      "md5": "81bccd0182ec2443c50e0fb3414b53bc",
+      "original_sha256": "d3e37115d425d17c01b430192f6be13442c7aab61743688828b78e14266c8b24",
+      "original_git_blob": "99435e7f6d7b00711ffe7b12f4c0049129e7a0d2"
+    },
+    {
+      "path": "supabase/functions/maps-gateway/index.ts",
+      "change": "modified",
+      "bytes": 23046,
+      "sha256": "eabedcff30e62f1022b1ab0127647ec4252e073f664dfb92a1100647dfa4b08a",
+      "md5": "772bc0f462d97647d8ee196f5ec72d2d",
+      "original_sha256": "3e83cf8c027ae10fb4e018f3c60fe1dd4837003cc4fdeb361c36f18a61adb921",
+      "original_git_blob": "c514c61a94df041675b98ba75a541c2a30917c5b"
+    },
+    {
+      "path": "supabase/functions/momobio-sms-ingest/index.ts",
+      "change": "modified",
+      "bytes": 6007,
+      "sha256": "b2e6de00c4c605b9342555d76550f0b7a9ebdf4eeb5811c10bb389111b65abc6",
+      "md5": "99a3d114d132087cbd380ccee5e89740",
+      "original_sha256": "16babc6ef80babe3a46870aad6eb5cfd5961a0f9385af52d0b997960e6f89bf9",
+      "original_git_blob": "b661dc617ae53bf76cc36522bb2cb3643ff5ba09"
+    },
+    {
+      "path": "supabase/functions/parse-sms/index.ts",
+      "change": "modified",
+      "bytes": 654,
+      "sha256": "7acbe403802bfad206cf3f106c00920c36d1730754ce62ea2d5be8199616d1c3",
+      "md5": "23be4c1f9ebc683972769f9b66a3b25a",
+      "original_sha256": "fd1cf83ce1f454a78cbb08e05ec3df4187acf2721ac59aed6eda4c36eac20eac",
+      "original_git_blob": "435c31321201787cf0d9c13882693446e42bf539"
+    },
+    {
+      "path": "supabase/functions/reconcile-momo-sms/index.ts",
+      "change": "modified",
+      "bytes": 654,
+      "sha256": "7acbe403802bfad206cf3f106c00920c36d1730754ce62ea2d5be8199616d1c3",
+      "md5": "23be4c1f9ebc683972769f9b66a3b25a",
+      "original_sha256": "1cd4bfad5b37589ee79e48e9b24bafd9bb6298b91f0f720bd734198ac8b11b0b",
+      "original_git_blob": "8bcda3180d9d414010a97d867e5e82f45cc2d1e5"
+    },
+    {
+      "path": "supabase/functions/verify-login-otp/index.ts",
+      "change": "modified",
+      "bytes": 12909,
+      "sha256": "bbd5c8c9096c7df30686718bf8930394e47f8f6c6355622d2396551ff26948b7",
+      "md5": "39a8b8be0997613a9cecdb70797e4675",
+      "original_sha256": "f10826c9cea8144da73890a5e23ba352635979290f3ebffef85ac9aba39b6f59",
+      "original_git_blob": "563f47bc2e874c320d74094348f99e778d46fcfb"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/01_booking_write_authority.sql",
+      "change": "added",
+      "bytes": 1521,
+      "sha256": "647f997ea8ec787274b784ed5c0c201ca19f0c05c19ad8590d47b498ad213588",
+      "md5": "fea987b533e8be318e06206ee85baf3a",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/02_verified_phone_authority.sql",
+      "change": "added",
+      "bytes": 8244,
+      "sha256": "38048cdcaa822c25faa35b6b4421305fb3a1765e98fd570ff66fa527561d1be4",
+      "md5": "14bb011b7a4579aa9c936c689b239cfd",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/03_strict_receipt_allocation.sql",
+      "change": "added",
+      "bytes": 12727,
+      "sha256": "5cfdb8ee79eae3071de0c6f8c6330cdd229c211f952ac838f4a99ff3fefffa24",
+      "md5": "2fe7a0999b4a85262730f84b6285a7f7",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/README.md",
+      "change": "added",
+      "bytes": 5548,
+      "sha256": "74b3f4b13626cd9a490527fa7eac2dc9957aa7d6dea66647dc5c2882ea84a6e2",
+      "md5": "0ba672f2c4f47359ec584898fa9f5bec",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/manifest.json",
+      "change": "added",
+      "bytes": 712,
+      "sha256": "b7eb4590f91f1aa5f27027b47c62e7f38f68383424c7ea426fbc930dc4df2e3e",
+      "md5": "4094944eaf43aaee06e2863f19c7405e",
+      "original_sha256": null,
+      "original_git_blob": null
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/post_install_assertions.sql",
+      "change": "added",
+      "bytes": 2131,
+      "sha256": "e6ca793cfb4a44b4c3f99b123a27d27e38f70af5ea4f80932bd143d2e294ff3e",
+      "md5": "ce4fd9eacd77b2a05fb709e286216e70",
+      "original_sha256": null,
+      "original_git_blob": null
+    }
+  ]
+}

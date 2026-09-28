@@ -11,12 +11,9 @@ import numpy as np
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 ROOT = Path(__file__).resolve().parent
-MAX_BYTES = 1_500_000
+from protocol import CaptureError, MAX_BYTES
 MAX_PIXELS = 4_000_000
 Image.MAX_IMAGE_PIXELS = MAX_PIXELS
-
-class CaptureError(Exception):
-    def __init__(self, code): self.code = code
 
 class FaceModel:
     def __init__(self):

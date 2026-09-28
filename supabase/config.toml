@@ -406,3 +406,17 @@ verify_jwt = false
 # Scheduled processor uses its own server-only secret, not a public anon key.
 [functions.biopay-face-maintenance]
 verify_jwt = false
+
+# Server-only scheduled SMS consumer; dedicated bearer token is validated in-handler.
+# Never place MOMO_SMS_WORKER_TOKEN in a mobile/browser build or a repository file.
+[functions.momobio-sms-process]
+verify_jwt = false
+
+# Internal batch worker authenticates a dedicated high-entropy bearer secret in
+# its handler before reading a body or accessing the database/provider.
+[functions.push-outbox-worker]
+verify_jwt = false
+
+# Caller JWT is verified by PostgREST and the live-identity RPC. No service key.
+[functions.privacy-requests]
+verify_jwt = false

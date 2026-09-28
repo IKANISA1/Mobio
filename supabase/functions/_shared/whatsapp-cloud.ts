@@ -1,3 +1,5 @@
+import { boundedFetch } from "./bounded-fetch.ts";
+
 type SendWhatsappCloudOtpInput = {
   code: string;
   recipientPhone: string;
@@ -158,13 +160,13 @@ function parseWhatsappErrorBody(
         ? error.error_subcode
         : undefined,
       error_type: trimMetadataValue(error.type, 80),
-      error_message: trimMetadataValue(error.message),
+      error_message: "Provider rejected the OTP delivery request",
       fbtrace_id: trimMetadataValue(error.fbtrace_id, 120),
     };
   } catch {
     return {
       ...fallback,
-      error_message: trimMetadataValue(errorBody),
+      error_message: "Provider returned a non-JSON delivery error",
     };
   }
 }
@@ -178,9 +180,7 @@ export function whatsappCloudDeliveryErrorMetadata(
 
   return {
     provider: "whatsapp_cloud",
-    error_message: error instanceof Error
-      ? trimMetadataValue(error.message)
-      : trimMetadataValue(String(error)),
+    error_message: "OTP delivery unavailable",
   };
 }
 
@@ -215,8 +215,12 @@ export async function sendWhatsappCloudOtp({
   code,
   recipientPhone,
 }: SendWhatsappCloudOtpInput): Promise<void> {
-  if (Deno.env.get("WHATSAPP_CLOUD_DRY_RUN") == "true") {
-    console.log(`[whatsapp-cloud:dry-run] ${recipientPhone} -> ${code}`);
+  if (!/^\d{6}$/.test(code) || !/^\+?[1-9]\d{7,14}$/.test(recipientPhone)) {
+    throw new Error("INVALID_OTP_DELIVERY_INPUT");
+  }
+  const dryRun = validateOtpDeliveryMode((name) => Deno.env.get(name));
+  if (dryRun) {
+    console.log("[whatsapp-cloud:dry-run] simulated delivery; no message sent");
     return;
   }
 
@@ -227,7 +231,7 @@ export async function sendWhatsappCloudOtp({
   const apiVersion = Deno.env.get("WHATSAPP_CLOUD_API_VERSION")?.trim() ||
     "v22.0";
 
-  const response = await fetch(
+  const response = await boundedFetch(
     `https://graph.facebook.com/${apiVersion}/${config.phoneNumberId}/messages`,
     {
       method: "POST",
@@ -254,4 +258,16 @@ export async function sendWhatsappCloudOtp({
       parseWhatsappErrorBody(response.status, errorBody, config.source),
     );
   }
+}
+
+/** Missing/unknown environment is production-like; dry-run is local-fixture only. */
+export function validateOtpDeliveryMode(env: EnvReader): boolean {
+  const mode = env("WHATSAPP_CLOUD_DRY_RUN")?.trim() ?? "false";
+  if (mode !== "true" && mode !== "false") throw new Error("INVALID_OTP_DRY_RUN_SETTING");
+  if (mode === "false") return false;
+  const environment = env("MOBIO_ENVIRONMENT")?.trim();
+  if (!(["development", "test"].includes(environment ?? "")) || env("DENO_DEPLOYMENT_ID")) {
+    throw new Error("OTP_DRY_RUN_FORBIDDEN");
+  }
+  return true;
 }

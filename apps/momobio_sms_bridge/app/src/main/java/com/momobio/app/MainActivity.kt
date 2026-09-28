@@ -2,6 +2,7 @@ package com.momobio.app
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.ClipData
@@ -37,17 +38,16 @@ class MainActivity : Activity() {
     private lateinit var status: TextView
     private lateinit var upload: TextView
     private lateinit var enableButton: Button
-    private lateinit var queue: SmsQueue
+    private val queue: DurableSmsQueue get() = DurableSmsQueue(applicationContext)
     @Volatile private var syncInFlight = false
     private val retryDelayMillis = 15_000L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        queue = SmsQueue(applicationContext)
         status = statusLine()
         upload = supportLine()
         enableButton = actionButton("Enable SMS access", periwinkle).apply {
-            setOnClickListener { requestPermissions(requiredPermissions(), 7) }
+            setOnClickListener { showCollectionNotice() }
         }
 
         setContentView(
@@ -61,6 +61,18 @@ class MainActivity : Activity() {
                 addView(panel())
                 addView(spacer(18))
                 addView(enableButton)
+                addView(spacer(12))
+                addView(actionButton("Pause collection", neutralPanel).apply {
+                    setOnClickListener {
+                        try {
+                            CollectorRuntime.revokeNotice(applicationContext)
+                            BridgeSupervisor.stop(applicationContext)
+                            refreshStatus()
+                        } catch (_: Exception) {
+                            upload.text = "Could not save the pause. Revoke SMS permission in Android settings."
+                        }
+                    }
+                })
                 addView(spacer(12))
                 addView(actionButton("Copy enrollment request", neutralPanel).apply {
                     setOnClickListener {
@@ -99,47 +111,24 @@ class MainActivity : Activity() {
     }
 
     private fun syncAutomatically(): Boolean {
-        if (!hasSmsAccess() || syncInFlight) return false
+        if (isFinishing || isDestroyed || !CollectorRuntime.ready(applicationContext) || syncInFlight) return false
         syncInFlight = true
         status.setTextColor(periwinkle)
         status.text = "Syncing"
-        upload.text = "Queued: ${queue.count()}"
+        upload.text = "Checking stored receipts…"
         Thread {
             val result = try {
-                val messages = queue.all()
-                var uploadedCount = 0
-                runOnUiThread {
-                    upload.text = "Queued: ${messages.size}"
-                }
-                UploadClient(CollectorIdentity(applicationContext)).upload(messages) { uploadedHashes ->
-                    uploadedCount += uploadedHashes.size
-                    queue.markUploaded(uploadedHashes)
-                    runOnUiThread {
-                        upload.text = "Uploaded $uploadedCount/${messages.size}\nQueued: ${queue.count()}"
-                    }
-                }
-            } catch (error: Throwable) {
-                Log.e(logTag, "SMS sync failed", error)
-                UploadResult(
-                    ok = false,
-                    message = "${error.javaClass.simpleName}: ${error.message ?: "Sync failed"}",
-                )
+                CollectorSync.run(applicationContext)
+            } catch (error: Exception) {
+                Log.e(logTag, "SMS sync failed: ${error.javaClass.simpleName}")
+                UploadResult(false, message = "Queue or sync unavailable; receipts need review", outcome = "storage_error")
             } finally {
                 syncInFlight = false
             }
             runOnUiThread {
-                val remaining = queue.count()
-                val fullySynced = result.ok && remaining == 0
-                status.setTextColor(if (fullySynced) mintGreen else orangeRed)
-                status.text = if (fullySynced) "Running" else "Upload error"
-                upload.text = when {
-                    fullySynced && result.message == "No new SMS" -> "No new SMS\nQueued: $remaining"
-                    fullySynced -> "${result.message}\nQueued: $remaining"
-                    result.ok -> "Pending sync\nQueued: $remaining"
-                    else -> "${result.message}\nQueued: $remaining"
-                }
-                enableButton.visibility = View.GONE
-                if (remaining > 0 && hasSmsAccess()) {
+                if (isFinishing || isDestroyed) return@runOnUiThread
+                refreshStatus(if (!result.ok && result.outcome !in setOf("busy", "backoff")) result.message else null)
+                if (CollectorRuntime.ready(applicationContext)) {
                     upload.postDelayed({ syncAutomatically() }, retryDelayMillis)
                 }
             }
@@ -147,16 +136,79 @@ class MainActivity : Activity() {
         return true
     }
 
-    private fun refreshStatus() {
-        val ready = hasSmsAccess()
-        status.setTextColor(if (ready) mintGreen else orangeRed)
-        status.text = if (ready) {
-            if (queue.count() == 0) "Running" else "Upload error"
-        } else {
-            "Permission needed"
+    private fun showCollectionNotice() {
+        if (!CollectorRuntime.policy.configured) {
+            upload.text = "An administrator must supply the approved sender and receipt-format configuration."
+            return
         }
-        upload.text = "Queued: ${queue.count()}"
-        enableButton.visibility = if (ready) View.GONE else View.VISIBLE
+        AlertDialog.Builder(this)
+            .setTitle("Institutional receipt collection")
+            .setMessage("Use a dedicated institutional phone and SIM, not a personal inbox. " +
+                "Only new notifications from configured senders matching the approved receipt markers are stored. " +
+                "Eligible message bodies, sender, receipt time and a deduplication hash are sent to Mobio's Supabase backend; " +
+                "the backend uses OpenAI to extract receipt fields. The server decides allocation. " +
+                "Acknowledged local bodies are removed. Unresolved receipts are retained locally for review; " +
+                "after 30 days they stop automatic upload. Contact the designated fleet administrator for review or deletion. " +
+                "Revoking SMS permission stops further collection. Do not enable on a personal SIM.")
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Enable on institutional device") { _, _ ->
+                try {
+                    CollectorRuntime.acceptNotice(applicationContext)
+                    requestPermissions(requiredPermissions(), 7)
+                } catch (_: Exception) {
+                    upload.text = "The notice decision could not be saved. Collection remains disabled."
+                }
+            }.show()
+    }
+
+    @Volatile private var refreshInFlight = false
+    private fun refreshStatus(syncError: String? = null) {
+        if (isFinishing || isDestroyed || refreshInFlight) return
+        refreshInFlight = true
+        Thread {
+            try {
+                val storage = queue
+                val health = storage.health()
+                val lastServer = storage.serverAcknowledgedAt()
+                val allocation = storage.automaticAllocationEnabled()
+                val state = when {
+                    !CollectorRuntime.policy.configured -> "Configuration needed"
+                    !CollectorRuntime.consented(applicationContext) -> "Notice required"
+                    !hasSmsAccess() -> "Permission needed"
+                    health.capacityBlocked > 0 -> "Receipt reconciliation required"
+                    health.quarantined > 0 -> "Receipts need review"
+                    syncError != null -> "Sync unavailable"
+                    health.lastError != null -> "Sync pending"
+                    lastServer == 0L -> "Server enrollment not verified"
+                    health.pending > 0 -> "Sync pending"
+                    System.currentTimeMillis() - lastServer !in 0..15L * 60 * 1000 -> "Server verification expired"
+                    else -> "Server acknowledged"
+                }
+                runOnUiThread {
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    status.text = state
+                    status.setTextColor(if (state == "Server acknowledged") mintGreen else orangeRed)
+                    upload.text = (syncError?.let { it + "\n" } ?: "") + "Allocation policy: ${when (allocation) { true -> "enabled"; false -> "disabled"; else -> "not verified" }}\n" +
+                        "Queued: ${health.pending}; review: ${health.quarantined}; blocked: ${health.capacityBlocked}\n" +
+                        "Oldest pending: ${health.oldestPendingAt?.let { java.util.Date(it).toString() } ?: "none"}\n" +
+                        "Last server acknowledgment: ${lastServer.takeIf { it > 0 }?.let { java.util.Date(it).toString() } ?: "not observed"}"
+                    enableButton.visibility = if (CollectorRuntime.ready(applicationContext)) View.GONE else View.VISIBLE
+                }
+            } catch (_: Exception) {
+                runOnUiThread {
+                    if (!isFinishing && !isDestroyed) {
+                        status.text = "Stored receipts need recovery"
+                        upload.text = "Do not clear app data or reinstall. Contact the fleet administrator."
+                        status.setTextColor(orangeRed)
+                    }
+                }
+            } finally { refreshInFlight = false }
+        }.start()
+    }
+
+    override fun onDestroy() {
+        // Delayed callbacks check isDestroyed before doing work.
+        super.onDestroy()
     }
 
     private fun hasSmsAccess(): Boolean =

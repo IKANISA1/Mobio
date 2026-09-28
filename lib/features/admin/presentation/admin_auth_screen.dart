@@ -36,6 +36,7 @@ class AdminAuthScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
+  final Object _verificationOwner = Object();
   static const _defaultResendCooldown = 60;
   static const _supportWhatsapp = String.fromEnvironment(
     'ADMIN_SUPPORT_WHATSAPP',
@@ -84,6 +85,7 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
 
   @override
   void dispose() {
+    unawaited(OtpService.cancelVerification(owner: _verificationOwner).catchError((Object _) {}));
     _resendTimer?.cancel();
     _otpController.dispose();
     super.dispose();
@@ -149,6 +151,7 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
     });
 
     final result = await OtpService.verifyOtp(
+      owner: _verificationOwner,
       phone: _fullPhone,
       code: _otpController.text,
       countryCode: _countryCode,
@@ -167,7 +170,10 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
         return;
       }
 
-      AdminSessionGuard.grant(userId);
+      if (!AdminSessionGuard.isAdmin) {
+        setState(() { _verifyingCode = false; _error = 'Admin session could not be confirmed. Verify again.'; });
+        return;
+      }
       widget.onSuccess();
       return;
     }

@@ -24,6 +24,7 @@ import {
 } from "../_shared/play-review-login.ts";
 import { checkPlayIntegrityEvidence } from "../_shared/play-integrity.ts";
 import { createAdminClient, createAnonClient } from "../_shared/supabase.ts";
+import { assertVerifiedPhoneUser, resolveVerifiedPhoneUser } from "../_shared/verified-phone-identity.ts";
 
 type AppLoginRole = "passenger" | "driver";
 
@@ -68,61 +69,17 @@ function displayNameForRole(role: AppLoginRole): string {
   return role == "driver" ? "Mobi Driver" : "Mobi Passenger";
 }
 
-async function findExistingProfile(
-  supabase: ReturnType<typeof createAdminClient>,
-  phone: string,
+async function findProfileByVerifiedOwner(
+  supabase: ReturnType<typeof createAdminClient>, ownerId: string,
 ): Promise<ExistingProfileRow | null> {
-  const selectClause =
-    "id, name, display_name, phone, role, location, vehicle, category, is_driver, vehicle_type, whatsapp, whatsapp_e164, country_code, momo_number, momo_pay_code, avatar_url, created_at";
-
-  const { data: whatsappProfiles, error: whatsappError } = await supabase
-    .from("profiles")
-    .select(selectClause)
-    .eq("whatsapp_e164", phone)
-    .order("created_at", { ascending: false })
-    .limit(1);
-
-  if (whatsappError) {
-    throw whatsappError;
-  }
-
-  const whatsappProfile =
-    ((whatsappProfiles as ExistingProfileRow[] | null) ?? [])[0] ?? null;
-  if (whatsappProfile) {
-    return whatsappProfile;
-  }
-
-  const { data: phoneProfiles, error: phoneError } = await supabase
-    .from("profiles")
-    .select(selectClause)
-    .eq("phone", phone)
-    .order("created_at", { ascending: false })
-    .limit(1);
-
-  if (phoneError) {
-    throw phoneError;
-  }
-
-  return ((phoneProfiles as ExistingProfileRow[] | null) ?? [])[0] ?? null;
+  const { data, error } = await supabase.from("profiles").select(
+    "id, name, display_name, phone, role, location, vehicle, category, is_driver, vehicle_type, whatsapp, whatsapp_e164, country_code, momo_number, momo_pay_code, avatar_url, created_at",
+  ).eq("id", ownerId).maybeSingle();
+  if (error) throw new Error("PROFILE_LOOKUP_FAILED");
+  return data as ExistingProfileRow | null;
 }
 
-async function loadAuthUserById(
-  supabase: ReturnType<typeof createAdminClient>,
-  userId: string | null,
-) {
-  if (!userId) {
-    return null;
-  }
-
-  const { data, error } = await supabase.auth.admin.getUserById(userId);
-  if (error || !data.user) {
-    return null;
-  }
-
-  return data.user;
-}
-
-async function ensureAppUserSession(
+export async function ensureAppUserSession(
   supabase: ReturnType<typeof createAdminClient>,
   anonClient: ReturnType<typeof createAnonClient>,
   requestedRole: AppLoginRole,
@@ -130,7 +87,20 @@ async function ensureAppUserSession(
   requestedCountryCode: string | null,
   forceRequestedRole = false,
 ) {
-  const profileSeed = await findExistingProfile(supabase, normalizedPhone);
+  const verifiedOwner = await resolveVerifiedPhoneUser({
+    lookupOwner: async (phone) => {
+      const { data, error } = await supabase.rpc("rpc_lookup_verified_phone_owner", { p_phone: phone });
+      if (error) throw new Error("PHONE_DIRECTORY_UNAVAILABLE");
+      return data as string | null;
+    },
+    getUser: async (id) => {
+      const { data, error } = await supabase.auth.admin.getUserById(id);
+      if (error || !data.user) throw new Error("PHONE_IDENTITY_UNAVAILABLE");
+      return data.user;
+    },
+  }, normalizedPhone);
+  const profileSeed = verifiedOwner
+    ? await findProfileByVerifiedOwner(supabase, verifiedOwner.id) : null;
   const existingRole = profileSeed?.role?.trim();
   if (existingRole == "admin") {
     throw new Error("ADMIN_PROFILE_REQUIRES_ADMIN_LOGIN");
@@ -153,7 +123,7 @@ async function ensureAppUserSession(
   const password = `${crypto.randomUUID()}${crypto.randomUUID()}`;
   const fallbackEmail = internalEmailForPhone("whatsapp", normalizedPhone);
 
-  let authUser = await loadAuthUserById(supabase, profileSeed?.id ?? null);
+  let authUser = verifiedOwner;
 
   if (!authUser) {
     const { data, error } = await supabase.auth.admin.createUser({
@@ -180,12 +150,9 @@ async function ensureAppUserSession(
 
     authUser = data.user;
   } else {
-    const email = authUser.email?.trim() || fallbackEmail;
+    // Login never reassigns or confirms another account's phone/email.
+    assertVerifiedPhoneUser(authUser, verifiedOwner!.id, normalizedPhone);
     const { error } = await supabase.auth.admin.updateUserById(authUser.id, {
-      email,
-      email_confirm: true,
-      phone: normalizedPhone,
-      phone_confirm: true,
       password,
       user_metadata: {
         ...(authUser.user_metadata ?? {}),
@@ -206,7 +173,6 @@ async function ensureAppUserSession(
     }
   }
 
-  const authEmail = authUser.email?.trim() || fallbackEmail;
   const now = new Date().toISOString();
   const { error: upsertError } = await supabase.from("profiles").upsert({
     id: authUser.id,
@@ -237,7 +203,7 @@ async function ensureAppUserSession(
 
   const { data: signInData, error: signInError } = await anonClient.auth
     .signInWithPassword({
-      email: authEmail,
+      phone: normalizedPhone,
       password,
     });
 
@@ -245,6 +211,7 @@ async function ensureAppUserSession(
     throw signInError ?? new Error("Unable to create app session.");
   }
 
+  assertVerifiedPhoneUser(signInData.session.user, authUser.id, normalizedPhone);
   return {
     userId: authUser.id,
     role: effectiveRole,
@@ -289,8 +256,8 @@ export async function handleVerifyLoginOtp(
     requestedRole = normalizeRole(body?.role);
     const countryCode = normalizeCountryCode(body?.countryCode);
     const purpose = "app_login";
-    const supabase = createAdminClient();
-    const anonClient = createAnonClient();
+    const supabase = createAdminClient(10_000);
+    const anonClient = createAnonClient(10_000);
     const isReviewLogin = isGooglePlayReviewOtp(phone, code);
     const integrityCheck = await checkPlayIntegrityEvidence(
       body,
@@ -479,7 +446,7 @@ export async function handleVerifyLoginOtp(
       );
     }
 
-    console.error("verify-login-otp error:", error);
+    console.error("verify-login-otp: verification or session operation failed");
     return errorResponse("Internal error", 500, undefined, req);
   }
 }

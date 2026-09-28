@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { boundedFetch, UpstreamRequestError } from "../_shared/bounded-fetch.ts";
 
 import {
   errorResponse,
@@ -130,7 +131,10 @@ export async function handleMapsGatewayRequest(
   deps: MapsGatewayDeps = {},
 ) {
   const authenticate = deps.authenticate ?? requireUser;
-  const fetchImpl = deps.fetchImpl ?? fetch;
+  const upstreamFetch = deps.fetchImpl ?? fetch;
+  const fetchImpl: typeof fetch = (input, init) => boundedFetch(input, init, {
+    fetcher: upstreamFetch, timeoutMs: 8_000, maxResponseBytes: 500_000,
+  });
   const recordFailure = deps.recordFailure ?? defaultRecordFailure;
   const corsResponse = handleCors(request);
   if (corsResponse) {
@@ -221,7 +225,11 @@ export async function handleMapsGatewayRequest(
       return errorResponse(error.message, error.status, error.details, request);
     }
 
-    console.error("maps-gateway failed", error);
+    if (error instanceof UpstreamRequestError) {
+      console.error("maps-gateway: bounded upstream request failed", error.code);
+      return errorResponse("Maps temporarily unavailable. Please try again.", 503, undefined, request);
+    }
+    console.error("maps-gateway: request failed");
     await recordFailure(error, userIdForTelemetry);
     return errorResponse("Maps gateway failed", 500, undefined, request);
   }

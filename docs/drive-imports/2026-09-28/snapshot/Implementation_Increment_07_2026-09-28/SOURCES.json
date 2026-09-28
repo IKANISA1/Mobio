@@ -1,0 +1,114 @@
+{
+  "as_of": "2026-09-28",
+  "destination_folder_id": "1UilSPU-LXRZ9iyRGbA1pYIpk0_r9pcOW",
+  "original_folder_id": "120JIOTyeNX6nHaHPDqS3UgbaTWyJAE57",
+  "baseline_archive": {
+    "drive_id": "1GUdsAiL-D4J1xL7MFFgA2G2-3_8INw3F",
+    "sha256": "8397fa23cffb5471b540a4f821b14401495716b523bb58691ff9ed99fb3ff831",
+    "file": "Mobio_Increment06_2026-09-28.zip",
+    "cumulative_files": 163
+  },
+  "source_boundary": "Partial current-index matching recovery plus prior overlay and selected original dependencies; no complete current upstream main revision established.",
+  "restored_unchanged_indexed_dependencies": [
+    {
+      "path": "supabase/functions/_shared/http.ts",
+      "git_blob": "c92917315ca58087db0ba829e2a2e78d6c35fc2f",
+      "sha256": "da285e38feee47a7a977162485741e01e47f5ce03ab59028216e1f04157b961a",
+      "source": "prior mounted raw Drive download"
+    },
+    {
+      "path": "supabase/functions/_shared/validation.ts",
+      "git_blob": "31c7c5327c08ba8664922d82d68b4dfa544013fd",
+      "sha256": "b8ed51e8bd962d25b7fc7e15ee42e5cd526a21a764d49482f3ddce253351858a",
+      "source": "prior mounted raw Drive download"
+    },
+    {
+      "path": "supabase/functions/_shared/phone.ts",
+      "git_blob": "a3813c228f8f8d06d7114d0eae6775ca22b41ef3",
+      "sha256": "113c9e9863330c50a57689c89d8a5beb3790e59475e4274988cf96aa5cf8b8f3",
+      "source": "prior mounted raw Drive download"
+    },
+    {
+      "path": "supabase/functions/_shared/app-auth-audit.ts",
+      "git_blob": "4d9d3ee963ecf2e87a99c9889b01f25c16563963",
+      "sha256": "d991c0fa496647adf648aa0b79cd74eaf45aeb482b2f9b3a07ef6af78323323a",
+      "source": "prior mounted raw Drive download"
+    },
+    {
+      "path": "supabase/functions/_shared/play-review-login.ts",
+      "git_blob": "35fc9f2d34f4453c0e5be66a917373085b5ddc5b",
+      "sha256": "c8eefb3f2ec19173ff809d407b212202c2b4a97030201536fcdff722bf429279",
+      "source": "prior mounted raw Drive download"
+    },
+    {
+      "path": "supabase/functions/_shared/play-integrity.ts",
+      "git_blob": "1b557d8e93211d94b245e79cf5544acfd71b35e3",
+      "sha256": "7c0a27792601fce40675cedf26d24ae636d9fec1bd522a1f6e774043fdda66e9",
+      "source": "prior mounted raw Drive download"
+    }
+  ],
+  "read_sources": [
+    {
+      "mounted_name": "20260612103000_full_stack_notification_delivery.sql",
+      "drive_id": "1ju-G-afoegFUiUZ3HcdZdZobkUFjz9VI",
+      "sha256": "1409d6d17f2b57ef22c940ab7ecfabe5fa8f7b9e8f2510d419b396a64a68f99e",
+      "url": "https://drive.google.com/file/d/1ju-G-afoegFUiUZ3HcdZdZobkUFjz9VI/view"
+    },
+    {
+      "mounted_name": "index.ts",
+      "drive_id": "16QDr4XE1T00Pm357hzMubBmi_sn1Op11",
+      "sha256": "7ed9943e03c2b1dfbf887312286746326323b4581913802d3fe068adff929165",
+      "url": "https://drive.google.com/file/d/16QDr4XE1T00Pm357hzMubBmi_sn1Op11/view"
+    },
+    {
+      "mounted_name": "index_test.ts",
+      "drive_id": "18BdXoWZnZ2PGcxtzHb1UW__lcOSNYhi0",
+      "sha256": "418ec7d4113451e8ba9ab4e4adbf9aa82ee051d3b91f59681fcfa1c8a0a2d2e0",
+      "url": "https://drive.google.com/file/d/18BdXoWZnZ2PGcxtzHb1UW__lcOSNYhi0/view"
+    },
+    {
+      "mounted_name": "admin_operational_health_screen.dart.bin",
+      "drive_id": "1O4TOFqalcemn3jMk_Li-eJnlDypuDHLc",
+      "sha256": "f4b3698377da2d9750fb94eb4eae1bd54cb69f17161af4cb5fca3e86cf2abe5a",
+      "url": "https://drive.google.com/file/d/1O4TOFqalcemn3jMk_Li-eJnlDypuDHLc/view"
+    },
+    {
+      "mounted_name": "20260501090000_tenant_permissions_storage_realtime_hardening.sql",
+      "drive_id": "1MY2vQm39MY-4B1eibj8tZHwgJfTvrWgL",
+      "sha256": "b8d6c2baa6518a17e56f63696d2cfecd181202518d117924a3f61bb9e5ad0697",
+      "url": "https://drive.google.com/file/d/1MY2vQm39MY-4B1eibj8tZHwgJfTvrWgL/view"
+    },
+    {
+      "mounted_name": "20260501120000_tenant_storage_campaign_final_hardening.sql",
+      "drive_id": "1PtJFYjYhDwaCdjBszG_QSfoiCq-7174E",
+      "sha256": "2e1c538f4242497d39ef6eac4e2eda74e5862221bbf3c3fe3273d4ba4720ccde",
+      "url": "https://drive.google.com/file/d/1PtJFYjYhDwaCdjBszG_QSfoiCq-7174E/view"
+    }
+  ],
+  "supabase_access": {
+    "source_referenced_project_ref": "paysnhuxngsvzdpwlosv",
+    "action": "get_project",
+    "result": "permission denied",
+    "hosted_mutations": false
+  },
+  "drive_permission_readback": {
+    "anyone_role": "writer",
+    "allow_file_discovery": false,
+    "permission_changes": false
+  },
+  "technical_references": [
+    "https://supabase.com/changelog",
+    "https://supabase.com/docs/guides/functions/auth",
+    "https://firebase.google.com/docs/cloud-messaging/manage-tokens",
+    "https://firebase.google.com/docs/cloud-messaging/error-codes",
+    "https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages",
+    "https://www.postgresql.org/docs/17/sql-select.html"
+  ],
+  "skills_used": [
+    "Google Drive workflow",
+    "Supabase development/security workflow",
+    "Supabase/PostgreSQL best practices",
+    "Spreadsheet artifact_tool workflow"
+  ],
+  "external_evidence_qualification": "Documentation informed implementation; real account/provider/full-schema acceptance was not performed."
+}

@@ -1,0 +1,577 @@
+{
+  "scope": "Delivery evidence only, not organization-wide completion",
+  "task_count": 95,
+  "production_accepted_count": 0,
+  "tasks": [
+    {
+      "task_id": "M001",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M002",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M003",
+      "status": "partial",
+      "implementation_evidence": "Auth-owned verified phone identity implemented locally; handler fixtures pass; live Auth collision/race and deployed RPC not tested.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M004",
+      "status": "partial",
+      "implementation_evidence": "Identity/member-id authority guard candidate prepared; database grants/RLS effective state not executed.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M005",
+      "status": "partial",
+      "implementation_evidence": "Canonical unique six-digit member-ID forward body + assertions implemented; database reconciliation not executed.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M006",
+      "status": "partial",
+      "implementation_evidence": "Production UUID/hash member-ID fallbacks removed; source-contract tests pass; Flutter runtime/goldens not run.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M007",
+      "status": "partial",
+      "implementation_evidence": "Ordinary sign-out and finally-safe cleanup implemented; account-switch/device tests not run.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M008",
+      "status": "partial",
+      "implementation_evidence": "FCM registration/unregister now owner-bound; real two-account push test not run.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M009",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M010",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M011",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M012",
+      "status": "implemented_local",
+      "implementation_evidence": "Production OTP dry-run guard/redaction implementation locally tested; deployment pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M013",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M014",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M015",
+      "status": "partial",
+      "implementation_evidence": "Direct booking-write containment body prepared; database/PostgREST authorization matrix not run.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M016",
+      "status": "partial",
+      "implementation_evidence": "Strong SMS receipt eligibility implemented in Edge/SQL candidate; operator evidence and DB activation tests pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M017",
+      "status": "partial",
+      "implementation_evidence": "Idempotent holds and durable expiry/release implemented in forward SQL body; concurrency DB test pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M018",
+      "status": "partial",
+      "implementation_evidence": "Receipt-to-booking binding and cross-booking reuse rejection implemented; real DB concurrency/payment tests pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M019",
+      "status": "partial",
+      "implementation_evidence": "Entitlement serialization candidate exists in strict receipt body; real two-session DB test pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M020",
+      "status": "partial",
+      "implementation_evidence": "Explicit merchant/sender policy structure implemented; approved live operator configuration not supplied.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M021",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M022",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M023",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M024",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M025",
+      "status": "partial",
+      "implementation_evidence": "Managed collector signing guard; non-destructive installer verifies independently approved certificate. Six parser tests pass; no signed APK/key rotation/fleet update observed.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M026",
+      "status": "partial",
+      "implementation_evidence": "Literal on-device sender/marker filter, opt-in fingerprinted notice and pause control implemented. Pure policy tests pass; Android permission/device behavior and actual operator formats not accepted.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M027",
+      "status": "procedure_only",
+      "implementation_evidence": "Private-fleet/public-store boundary documented. No channel approval, SMS exception or FGS approval obtained.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M028",
+      "status": "partial",
+      "implementation_evidence": "Bounded transactional SQLite adapter with legacy migration/quarantine and raw-body removal on acknowledgement implemented. Fifteen actual SQLite schema/DML tests pass; Android adapter tests authored but not run; supervised recovery still required.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M029",
+      "status": "partial",
+      "implementation_evidence": "Shared OS file lease including separate-process tests, persisted jitter/backoff, bounded batches and KEEP scheduling implemented. Android/WorkManager lifecycle acceptance not run.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M030",
+      "status": "procedure_and_tests_authored",
+      "implementation_evidence": "Version-bound device/OEM/reboot/update acceptance matrix and isolated QA tests added. No physical-device result.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M031",
+      "status": "implemented_local",
+      "implementation_evidence": "Legacy global-secret SMS POST routes return controlled retirement; local handler fixtures pass; deployment/caller inventory pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M032",
+      "status": "open",
+      "implementation_evidence": "Full asynchronous durable backend intake/worker is NOT implemented. Eligible batch parsing remains sequential; health/admission preflight does not close this task.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M033",
+      "status": "procedure_only",
+      "implementation_evidence": "Fleet custodian/enrollment/revocation/recovery responsibilities documented; actual organizational inventory and exercises remain open.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M034",
+      "status": "partial",
+      "implementation_evidence": "Signed server-health handshake, separate allocation state, freshness, queue/review/capacity status and safe UI failure state implemented. Actual handler fixtures pass; Android UI not run.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M035",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M036",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M037",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M038",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M039",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M040",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M041",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M042",
+      "status": "partial",
+      "implementation_evidence": "Inference HTTP service bounded/draining behavior implemented and 16 tests pass; real Linux model/image and load acceptance pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M043",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M044",
+      "status": "partial",
+      "implementation_evidence": "Consumer targetSdk set to 36; signed Android 16 build/device/Play preflight not run.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M045",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M046",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M047",
+      "status": "partial",
+      "implementation_evidence": "NFC native expiry/APDU policy implemented and 20 JVM scenarios pass; hardware/process/device acceptance pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M048",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M049",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M050",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M051",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M052",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M053",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M054",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M055",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M056",
+      "status": "partial",
+      "implementation_evidence": "Nearby RPC freshness/10km/50 cap and direct-read restriction body prepared; real DB/geospatial/load/device test pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M057",
+      "status": "partial",
+      "implementation_evidence": "Face-service outage represented as unavailable rather than not-started; Flutter UI runtime test pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M058",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M059",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M060",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M061",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M062",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M063",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M064",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M065",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M066",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M067",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M068",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M069",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M070",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M071",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M072",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M073",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M074",
+      "status": "implemented_local",
+      "implementation_evidence": "Actions pin checker repaired and 29 source/fixture tests plus repo check pass; remote CI run pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M075",
+      "status": "implemented_local",
+      "implementation_evidence": "Integrated gate rejects disabled/invalid required checks; fixture tests pass; promotion workflow execution pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M076",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M077",
+      "status": "partial",
+      "implementation_evidence": "Native collector QA compilation/JUnit/package-isolation job and portable SQLite/JVM checks added to CI. Local portable tests pass; hosted CI and Android build have not run.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M078",
+      "status": "partial",
+      "implementation_evidence": "Ordered migration preparer, manifest and post-install assertions implemented; PostgreSQL/Supabase rehearsal pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M079",
+      "status": "partial",
+      "implementation_evidence": "Adversarial fixtures added, but live database/Auth/PostgREST authorization matrix pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M080",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M081",
+      "status": "partial",
+      "implementation_evidence": "Exact version-evidence parser and checks strengthened; complete artifact-bound release manifest still pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M082",
+      "status": "partial",
+      "implementation_evidence": "Additional dependency/toolchain pinning and update coverage added; complete advisory/SBOM review pending.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M083",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M084",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M085",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M086",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M087",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M088",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M089",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M090",
+      "status": "partial",
+      "implementation_evidence": "Versioned hardening manifest/evidence package produced; canonical repository/source-scope cleanup remains.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M091",
+      "status": "partial",
+      "implementation_evidence": "Unapproved sender, missing merchant policy and disabled allocation stop AI parsing before provider disclosure. Retry/response/connect/read bounds added; overall wall-clock deadline and full durable provider budget work remain open.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M092",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M093",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M094",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    },
+    {
+      "task_id": "M095",
+      "status": "not_addressed_in_cumulative_delivery",
+      "implementation_evidence": "No completion claimed by these increments. Original audit acceptance criteria remain applicable.",
+      "production_accepted": false
+    }
+  ]
+}

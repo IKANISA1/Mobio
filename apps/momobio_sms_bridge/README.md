@@ -1,95 +1,152 @@
-# Mo Mobio
+# Mo Mobio institutional receipt collector
 
-Mo Mobio is a private in-house Android SMS collector for Mobio driver subscription MoMo payments.
+This Android application collects **new, explicitly configured institutional receipt
+notifications**, not the historical inbox. It is a separate application from the
+consumer Mobio app. A sender/marker match only minimizes collection; it does not
+prove a payment. Supabase remains the allocation authority.
 
-It is intentionally minimal:
+## Current implementation
 
-- listens only to new incoming SMS delivered after SMS access is enabled
-- queues raw SMS locally
-- combines the ordered parts of a completed incoming SMS before hashing and queuing
-- uploads raw SMS to MOBI Supabase through `momobio-sms-ingest`
-- keeps an always-on foreground service notification while the phone is running
-- schedules WorkManager network recovery so queued SMS sync resumes when internet is available
-- starts recovery after boot and after app updates
-- retries automatically until the queue is empty
-- does not parse, match, or validate subscriptions on the device
-- does not request `READ_SMS` and does not scan pre-install inbox messages
-- does not include service-role, Postgres, OpenAI, or SMS bridge secrets
+Before collection, a custodian accepts the in-app notice and grants SMS access.
+The stored notice is bound to a SHA-256 fingerprint of the complete filter policy;
+changing senders or markers requires renewed acceptance. There are no production
+sender or marker defaults. Use a dedicated institutional device and SIM. The code
+does not authenticate the SIM owner or cryptographically authenticate an SMS sender.
 
-The backend parses each raw SMS through OpenAI inside Supabase Edge Functions, stores the receipt and transaction rows, and decides whether each SMS is unmatched, ambiguous, matched, duplicate, ignored, or confirms a driver subscription using `rpc_ingest_driver_subscription_momo_sms`.
+Eligible messages are encoded and admitted to a private SQLite queue. All three
+sync callers (UI, foreground service and WorkManager) use one OS-backed file lock.
+Retries persist their next-attempt time and honor bounded Retry-After guidance.
+An empty queue does not prove service health: a signed health request must confirm
+that the server recognizes the collector. Enrollment health and automatic allocation
+are displayed separately. Pausing collection revokes local notice acceptance and
+stops future scheduled collection/upload attempts; a request already in flight may
+finish. Revoking Android SMS permission also stops further capture.
 
-Duplicate delivery is handled server-side. The receipt table is unique by SMS hash and provider transaction reference, and the transaction table is unique by receipt and provider transaction reference, so app retries or duplicate incoming SMS broadcasts do not create a second payment record.
+The receiver does not request READ_SMS. Force-stop, device loss, an unreceived
+broadcast, disk failure or a capacity refusal can leave missing receipts that need
+operator reconciliation. There is no claim of guaranteed always-on collection.
 
-## Build
+## Queue limits and recovery
 
-```bash
-SUPABASE_URL=https://<mobio-project>.supabase.co \
-SUPABASE_ANON_KEY=<public-anon-key> \
-../../android/gradlew :app:assembleRelease
+These are engineering defaults, not approved legal retention periods:
+
+| Control | Source value / behavior |
+|---|---|
+| Sender/marker entries | 1–20 of each, literal case-insensitive comparisons |
+| Raw SMS body | At most 8,192 UTF-8 bytes |
+| Encoded local record | At most 12,288 bytes |
+| Pending + quarantined records | At most 10,000 records and 16 MiB of payload |
+| Per request | At most 50 records, bounded by a 400,000-byte envelope budget |
+| Response | At most 262,144 bytes |
+| Acknowledged raw bodies | Removed transactionally; this is not cryptographic erasure |
+| Acknowledgment hash history | At most 100,000 entries / 90 days |
+| Unresolved pending receipts | After 30 days move to quarantine, not silent deletion |
+| Empty healthy probe | No more frequently than five minutes through the shared lease |
+| UI health freshness | Prior server acknowledgment expires after 15 minutes |
+| Retry | Exponential 30 seconds to one hour plus up to 25% jitter; server Retry-After capped at seven days |
+
+Queue capacity never evicts pending evidence to accept a newer record. It refuses
+new admission and records a visible reconciliation warning. Oversized or malformed
+legacy storage is not cleared: upgrade stops for supervised recovery. Parseable
+legacy messages and acknowledgment history migrate in one transaction; malformed
+rows are quarantined. Legacy preferences are cleared only after the database commit.
+The SQLite corruption handler preserves evidence rather than accepting automatic
+file deletion. The dedicated fleet still needs an authorized, tested recovery and
+quarantine-resolution procedure before operational rollout; no raw export or
+release-from-quarantine UI is shipped in this increment.
+
+## Build operational release
+
+Use an approved signing identity and supply configuration through the build
+host's protected environment/secret store. Do not commit secret values or put
+passwords in shell history. Required variable names:
+
+```
+SUPABASE_URL
+SUPABASE_ANON_KEY
+COLLECTOR_POLICY_VERSION
+COLLECTOR_ALLOWED_SENDERS
+COLLECTOR_RECEIPT_MARKERS
+COLLECTOR_KEYSTORE_PATH
+COLLECTOR_KEY_ALIAS
+COLLECTOR_KEYSTORE_PASSWORD
+COLLECTOR_KEY_PASSWORD
 ```
 
-From the repo root:
+The backend URL must be one HTTPS origin, without credentials, path, query or
+fragment. The public client key is not a service-role key. Sender/marker CSV values
+must come from reviewed operator receipt fixtures, not the synthetic test examples.
+Backend allocation configuration is separate and must also be reviewed.
+
+From the repository root:
 
 ```bash
-SUPABASE_URL=$SUPABASE_URL \
-SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
-android/gradlew -p apps/momobio_sms_bridge :app:assembleRelease
+android/gradlew -p apps/momobio_sms_bridge --no-daemon :app:assembleRelease
 ```
 
-## Device UAT
+Release tasks reject missing managed signing/filter configuration. The source
+version is 1.0.1 / code 2: the release owner must reconcile it with the installed
+fleet and bump it when necessary; no deployed version was inspected here.
 
-This operational UAT script grants SMS access and starts collection. Component
-regressions should use the isolated QA package below.
+## Non-destructive installation check
+
+Set `ANDROID_SERIAL` for an explicitly selected authorized device and
+`COLLECTOR_EXPECTED_CERT_SHA256` to the independently approved certificate digest.
+Set `ADB` and `APKSIGNER` only when these executables are not on PATH. Then:
 
 ```bash
-SUPABASE_URL=$SUPABASE_URL \
-SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
 apps/momobio_sms_bridge/scripts/device_uat.sh
 ```
 
-## Isolated component tests
+This builds with managed signing, verifies the exact certificate, and installs
+with `adb install -r`. It does not use a debug signing key, grant SMS permissions,
+clear data, uninstall, force-stop, enroll a collector or assert a paid result.
+A signing mismatch is a stop condition, not permission to uninstall the old app.
+The generated receipt proves only installation steps, never functional UAT.
 
-Run JVM codec, queue, multipart-decoding and upload-orchestration tests from the repository root:
+## Testing boundaries
+
+Portable tests run locally without an Android SDK or live provider:
 
 ```bash
-android/gradlew -p apps/momobio_sms_bridge :app:testDebugUnitTest --offline
+python3 -m unittest discover -s scripts/tests -p test_collector_queue_contracts.py -v
+node --experimental-transform-types --loader ./scripts/tests/edge/fixture-loader.mjs --test scripts/tests/edge/handlers.test.mjs
+bash scripts/ci/run_hardening_tests.sh
 ```
 
-The small cached-compiler runner is available when a Gradle build is impractical:
+The SQLite tests execute the actual shipped schema and DML via Python SQLite.
+The JVM policy/lease tests compile production pure Kotlin and exercise real file
+locks, including contention from a separate JVM. Neither substitutes for Android
+SQLiteOpenHelper, WorkManager, Keystore, telephony, permissions or OEM behavior.
+
+The permission-free QA package remains `com.momobio.app.qa`. It uses blank backend
+and filter configuration and has no activities, providers, receivers or services:
 
 ```bash
-python3 apps/momobio_sms_bridge/scripts/test_jvm.py --output build/qa/collector-jvm
-```
-
-It reads the generated constants from an actual QA build. If that file is absent,
-run `android/gradlew -p apps/momobio_sms_bridge :app:generateQaBuildConfig --offline`
-once. The runner does not create a substitute runtime configuration. Upload tests
-use a synthetic connection and signer; they never open a socket or create a key.
-
-Both use synthetic messages. The preference double tests concurrency and error
-handling, but cannot establish Android disk persistence.
-
-The `qa` build type uses `com.momobio.app.qa`, blank backend configuration and a
-manifest without permissions, application components or automatic initialization.
-Its instrumentation APK also requests no permissions. It has no collector UI and
-cannot receive SMS or upload. Build both APKs without operational configuration:
-
-```bash
-android/gradlew -p apps/momobio_sms_bridge :app:assembleQa :app:assembleQaAndroidTest --offline
-```
-
-Verify and copy both built APKs before installing them on a fresh, dedicated emulator:
-
-```bash
+android/gradlew -p apps/momobio_sms_bridge --no-daemon :app:testQaUnitTest :app:assembleQa :app:assembleQaAndroidTest
 python3 apps/momobio_sms_bridge/scripts/verify_qa_apks.py --output build/qa/collector-apks
 ```
 
-Use an explicit adb serial for every action. Run
-`com.momobio.app.qa.test/androidx.test.runner.AndroidJUnitRunner` with
-`adb -s SERIAL shell am instrument -w -r`. The six component tests check package
-isolation, Android JSON and multipart PDU parsing, Keystore signatures, queue
-concurrency and stored acknowledgements. Synthetic PDUs are parsed directly;
-no SMS broadcast is sent. Run again after stopping the QA process and replacing
-the QA APK without clearing its data to check continuity. These component checks
-do not establish operational collection, backend matching, device power behavior
-or release acceptance.
+Run instrumentation only on the verified QA package and an explicit adb serial.
+`DurableQueueDeviceTest` adds actual-adapter checks for migration, partial/unknown
+acknowledgments, quarantine, expiry, concurrent admission, bounded batch size and
+persisted backoff. These tests are authored but were not run in this increment's
+execution environment. The cached-compiler helper still covers the legacy
+preference-queue implementation; do not present those legacy tests as SQLite tests.
+
+## Server rollout and unresolved gates
+
+The signed `{ "action": "health" }` operation uses the existing collector
+signature, registry, replay and rate gates. It parses no SMS and allocates nothing.
+Disabled allocation, unapproved senders and missing merchant configuration are
+held for server review **before** calling the AI parser. This does not implement
+a new asynchronous durable intake worker: valid batch parsing is still sequential.
+Large valid batches, partial completion and lost acknowledgments therefore still
+need M032/provider-latency work. A connect/read timeout is not an overall deadline.
+
+Do not deploy this collector over the original unsafe booking/identity/receipt
+schema. Integrate the cumulative hardening patch, generate and review the six
+forward migration bodies, rehearse the full schema, then deploy compatible Edge
+functions before accepting an operational collector upgrade. All live financial,
+Auth, device, store, privacy and signing-rotation acceptance remains separate.
+See `docs/operations/collector-acceptance-2026-09-28.md`.

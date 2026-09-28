@@ -8,7 +8,6 @@ import threading
 import unittest
 import urllib.error
 import urllib.request
-from http.server import ThreadingHTTPServer
 
 from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -21,8 +20,8 @@ class HttpSmoke(unittest.TestCase):
         if cls.url:
             cls.server = None
             return
-        from server import Handler
-        cls.server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        from server import create_server
+        cls.server = create_server(("127.0.0.1", 0))
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.thread.start()
         cls.url = f"http://127.0.0.1:{cls.server.server_port}"

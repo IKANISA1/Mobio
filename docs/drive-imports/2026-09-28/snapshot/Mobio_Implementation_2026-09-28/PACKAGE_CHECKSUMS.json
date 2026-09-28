@@ -1,0 +1,360 @@
+{
+  "files": [
+    {
+      "path": "CHANGE_MANIFEST.json",
+      "bytes": 17116,
+      "sha256": "c432793ad6470c729031fce873e6e0a3d8f79a89c35c489a588b0443f6b0d047"
+    },
+    {
+      "path": "MOBIO_HARDENING.patch",
+      "bytes": 170173,
+      "sha256": "5673b12f6bd16f3c988d267c9d80ec46247793fefb80ce9c2f25a942b98e1696"
+    },
+    {
+      "path": "README.md",
+      "bytes": 14465,
+      "sha256": "0cf58737016cf274ba112963b7a871925d708e6f6dbb253d71f4b93d4605a600"
+    },
+    {
+      "path": "TASK_STATUS_2026-09-28.csv",
+      "bytes": 106595,
+      "sha256": "1a6e21177bba7f764f97a02951787028579c896b7cce2c0fac4b6df8306bf19d"
+    },
+    {
+      "path": "TASK_STATUS_2026-09-28.json",
+      "bytes": 152303,
+      "sha256": "7947c087c15eb39b7a384dbc98949fdf00476f4e908d42f2e6855b4e6dca0355"
+    },
+    {
+      "path": "VALIDATION_RESULTS.json",
+      "bytes": 3999,
+      "sha256": "7ee01d1208e95acb7ad48012043d9f18089e5c6e125a5cdc323cd7256035cafb"
+    },
+    {
+      "path": "changed-files/.github/dependabot.yml",
+      "bytes": 1002,
+      "sha256": "b1d4a7ce63eca85028563448179cfc02ae06449e91ad0eade65422dbf6e5adab"
+    },
+    {
+      "path": "changed-files/.github/workflows/ci.yml",
+      "bytes": 6849,
+      "sha256": "3be566f40dbb70786031b835713aff5893e5720afb368091c8761accf416868a"
+    },
+    {
+      "path": "changed-files/.gitignore",
+      "bytes": 1417,
+      "sha256": "c321fd0dc31f6aec792db4e156c3a3c665224c24886e6aeaa5eef2e60c823562"
+    },
+    {
+      "path": "changed-files/android/app/build.gradle.kts",
+      "bytes": 3542,
+      "sha256": "1b1875f3f931d3e58c5bd09dc5cae9d8f248c0b4a6dae2446a4095efd74b8a6a"
+    },
+    {
+      "path": "changed-files/android/app/src/main/kotlin/rw/mobi/app/BioPayHostApduService.kt",
+      "bytes": 2299,
+      "sha256": "bb6c6a69225678877a2c6bca444d7eaad3e89cf44232a731c2e3ba44c8c95b3b"
+    },
+    {
+      "path": "changed-files/android/app/src/main/kotlin/rw/mobi/app/BioPayNfcPolicy.kt",
+      "bytes": 2753,
+      "sha256": "8a4d408056dd4e9cfa84d1fd8e98fb636608f1c75d24905ff11a3d3c0e10429c"
+    },
+    {
+      "path": "changed-files/android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt",
+      "bytes": 44683,
+      "sha256": "9425443a35b5c89cfd8b46ee5de58b80c233608a01befe647a8e836dfd288ebb"
+    },
+    {
+      "path": "changed-files/lib/features/biopay/data/biopay_device_nfc_service.dart",
+      "bytes": 3008,
+      "sha256": "b01d44087861b3c5951237a76de8fc091998792dc874c0a7aa9e66520a09f7d9"
+    },
+    {
+      "path": "changed-files/scripts/ci/check_github_actions_pinned.py",
+      "bytes": 5776,
+      "sha256": "828711a367f07221cf30fbfedee2ce475c46b29c0c9e06b82d05123d95ae0781"
+    },
+    {
+      "path": "changed-files/scripts/ci/check_github_actions_pinned.sh",
+      "bytes": 195,
+      "sha256": "ad005d85b770b482d0f1d5c9b79745960f0d44a1eb178bba77b566669068e13b"
+    },
+    {
+      "path": "changed-files/scripts/ci/prepare_hardening_migrations.py",
+      "bytes": 7828,
+      "sha256": "68dcff705d83283e04afa15cb1810eb33e5a0d4c686c48c0ce69f18fc112e178"
+    },
+    {
+      "path": "changed-files/scripts/ci/requirements.txt",
+      "bytes": 14,
+      "sha256": "0969da99a0bc2a1b71ed50584560f4588a37567ac63af3ddbaf3c4617ca5621a"
+    },
+    {
+      "path": "changed-files/scripts/ci/run_hardening_tests.sh",
+      "bytes": 1356,
+      "sha256": "c205ad83051da1672c3c42a19ae0dd0deb33d9e3f2b5a3e8f4bf4afad060b57e"
+    },
+    {
+      "path": "changed-files/scripts/qa/verify_mobio_feature_readiness.sh",
+      "bytes": 2940,
+      "sha256": "a886010b5f1c7576fe24af44539fd9367d634dc2e9cc07d623462c416e01102c"
+    },
+    {
+      "path": "changed-files/scripts/release/check_play_version_evidence.py",
+      "bytes": 1482,
+      "sha256": "5457b7ab18012ce1aa4aaee6d89601152f2b0bb3c7352579ae8f9cbfd3c18efe"
+    },
+    {
+      "path": "changed-files/scripts/release/go_no_go_check.sh",
+      "bytes": 6537,
+      "sha256": "9d00b602616154881f10f916224dcc9d2680218529c222a4be36f416540079e5"
+    },
+    {
+      "path": "changed-files/scripts/tests/edge/deno-env.fixture.d.ts",
+      "bytes": 157,
+      "sha256": "baad36439ebf5ced84e9f366ce180857ed9d8858107e55fd68b3ce85bac19caf"
+    },
+    {
+      "path": "changed-files/scripts/tests/edge/fixture-loader.mjs",
+      "bytes": 573,
+      "sha256": "2b81fd308f31f4ac0f0b4e497aa5fdfa83e891241104e0931f92260695aa9080"
+    },
+    {
+      "path": "changed-files/scripts/tests/edge/handlers.test.mjs",
+      "bytes": 8785,
+      "sha256": "7a38c324aa8f0233ab17c6cb9a46eb289b766eed7ffccc86da138c242ed2ce7e"
+    },
+    {
+      "path": "changed-files/scripts/tests/edge/hardening.test.mjs",
+      "bytes": 12667,
+      "sha256": "47455429c1e7536271d7ddbfd775eb6fd54f6bcedd2c38a909b94e29bd12c8e6"
+    },
+    {
+      "path": "changed-files/scripts/tests/kotlin/BioPayNfcPolicyTest.kt",
+      "bytes": 2800,
+      "sha256": "e340064e707a144d7d89338841ddddcdeb27922d58facfb59933b9cc38b2bce2"
+    },
+    {
+      "path": "changed-files/scripts/tests/test_hardening_preparation.py",
+      "bytes": 5721,
+      "sha256": "68db3ddf7fcdc1fdee944ab7c39a9c46cbd0ecb8cc26e8cb80492a6d51c8971d"
+    },
+    {
+      "path": "changed-files/scripts/tests/test_play_version_evidence.py",
+      "bytes": 1182,
+      "sha256": "9791a909a08e0c8469afa7350cc0654c65944a680937937b8550e9a989322512"
+    },
+    {
+      "path": "changed-files/scripts/tests/test_production_gates.py",
+      "bytes": 8318,
+      "sha256": "307e45b77974f4056a82234feab0cfc54fdeb7cb9bbac65b28085f3491f42cbf"
+    },
+    {
+      "path": "changed-files/services/face-inference/Dockerfile",
+      "bytes": 509,
+      "sha256": "ce4d1960fa5614866615f7b23384f5353be85f6a3f7e652914f2d39ffca7f5fc"
+    },
+    {
+      "path": "changed-files/services/face-inference/inference.py",
+      "bytes": 4344,
+      "sha256": "e57acc3f0cdab8c2ae303024e51cce572d3b06427d7ae1abb4ed13b4037b4f86"
+    },
+    {
+      "path": "changed-files/services/face-inference/protocol.py",
+      "bytes": 232,
+      "sha256": "5190d0df920ffa8ef898885ae18128ed6478952bd844d3182ade9c5b126b9ee9"
+    },
+    {
+      "path": "changed-files/services/face-inference/server.py",
+      "bytes": 7433,
+      "sha256": "d0b86b5435aff6dbd4c3005cd7add36fcafdae05df9cad087518f7214da3f0ea"
+    },
+    {
+      "path": "changed-files/services/face-inference/tests/test_http.py",
+      "bytes": 2262,
+      "sha256": "e7123ea4d54b5ecdd75a02aea67d2e7b7cf74f250fc4847d14f968aadb426976"
+    },
+    {
+      "path": "changed-files/services/face-inference/tests/test_server_bounds.py",
+      "bytes": 5382,
+      "sha256": "b7b22b1079002097d38122d1356c12c9719e43306bdbba56e11528b267e5450e"
+    },
+    {
+      "path": "changed-files/supabase/functions/_shared/bounded-fetch.ts",
+      "bytes": 4015,
+      "sha256": "a328f2afa8ece90671fffa4887826dcd142ac91a60160348df417affe3b4a37b"
+    },
+    {
+      "path": "changed-files/supabase/functions/_shared/momo-receipt-evidence.ts",
+      "bytes": 3695,
+      "sha256": "a9f4d8546cf47e76ad4cdd1f6a761fcda57f41952a637f1080d6275542702221"
+    },
+    {
+      "path": "changed-files/supabase/functions/_shared/momo-sms.ts",
+      "bytes": 8587,
+      "sha256": "2b3e4c22aafa517a361ae067702802668fe3cb33eddd12bed870bb1feb41a755"
+    },
+    {
+      "path": "changed-files/supabase/functions/_shared/verified-phone-identity.ts",
+      "bytes": 1894,
+      "sha256": "6dbc2d42a5efe85b95cd3ffe2d8445926555a6599919342c988934524e442d91"
+    },
+    {
+      "path": "changed-files/supabase/functions/_shared/whatsapp-cloud.ts",
+      "bytes": 7214,
+      "sha256": "18877fa47f23e4e16483ca61e0da493e5fffdbe3c670e74102f819cb38c9a6da"
+    },
+    {
+      "path": "changed-files/supabase/functions/maps-gateway/index.ts",
+      "bytes": 23046,
+      "sha256": "eabedcff30e62f1022b1ab0127647ec4252e073f664dfb92a1100647dfa4b08a"
+    },
+    {
+      "path": "changed-files/supabase/functions/momobio-sms-ingest/index.ts",
+      "bytes": 6007,
+      "sha256": "b2e6de00c4c605b9342555d76550f0b7a9ebdf4eeb5811c10bb389111b65abc6"
+    },
+    {
+      "path": "changed-files/supabase/functions/parse-sms/index.ts",
+      "bytes": 654,
+      "sha256": "7acbe403802bfad206cf3f106c00920c36d1730754ce62ea2d5be8199616d1c3"
+    },
+    {
+      "path": "changed-files/supabase/functions/reconcile-momo-sms/index.ts",
+      "bytes": 654,
+      "sha256": "7acbe403802bfad206cf3f106c00920c36d1730754ce62ea2d5be8199616d1c3"
+    },
+    {
+      "path": "changed-files/supabase/functions/verify-login-otp/index.ts",
+      "bytes": 12909,
+      "sha256": "bbd5c8c9096c7df30686718bf8930394e47f8f6c6355622d2396551ff26948b7"
+    },
+    {
+      "path": "changed-files/supabase/hardening/2026-09-28/01_booking_write_authority.sql",
+      "bytes": 1521,
+      "sha256": "647f997ea8ec787274b784ed5c0c201ca19f0c05c19ad8590d47b498ad213588"
+    },
+    {
+      "path": "changed-files/supabase/hardening/2026-09-28/02_verified_phone_authority.sql",
+      "bytes": 8244,
+      "sha256": "38048cdcaa822c25faa35b6b4421305fb3a1765e98fd570ff66fa527561d1be4"
+    },
+    {
+      "path": "changed-files/supabase/hardening/2026-09-28/03_strict_receipt_allocation.sql",
+      "bytes": 12727,
+      "sha256": "5cfdb8ee79eae3071de0c6f8c6330cdd229c211f952ac838f4a99ff3fefffa24"
+    },
+    {
+      "path": "changed-files/supabase/hardening/2026-09-28/README.md",
+      "bytes": 5548,
+      "sha256": "74b3f4b13626cd9a490527fa7eac2dc9957aa7d6dea66647dc5c2882ea84a6e2"
+    },
+    {
+      "path": "changed-files/supabase/hardening/2026-09-28/manifest.json",
+      "bytes": 712,
+      "sha256": "b7eb4590f91f1aa5f27027b47c62e7f38f68383424c7ea426fbc930dc4df2e3e"
+    },
+    {
+      "path": "changed-files/supabase/hardening/2026-09-28/post_install_assertions.sql",
+      "bytes": 2131,
+      "sha256": "e6ca793cfb4a44b4c3f99b123a27d27e38f70af5ea4f80932bd143d2e294ff3e"
+    },
+    {
+      "path": "evidence/edge-handler-fixtures.log",
+      "bytes": 3368,
+      "sha256": "c4bc57979561851252cc30980ae527336c3f065d87cf3d00997894c8af5a11be"
+    },
+    {
+      "path": "evidence/edge-pure-tests.log",
+      "bytes": 10948,
+      "sha256": "c77ae042fe11e60c35e5494bc5ada70c7f5a2df363676f3e8230cd9361260237"
+    },
+    {
+      "path": "evidence/edge-pure-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/existing-face-worker-tests.log",
+      "bytes": 1671,
+      "sha256": "42cb739aba457a4073688b92faabbc98f2600c87e15eb0890b3493f6648eca69"
+    },
+    {
+      "path": "evidence/existing-pages-admin-tests.log",
+      "bytes": 14325,
+      "sha256": "3b5ea94197f21fd30843547d327317b1fe8226ace69217cc69e4e9de6959d3e7"
+    },
+    {
+      "path": "evidence/existing-test_android_smoke.log",
+      "bytes": 547,
+      "sha256": "e0a3722bfea779ad0fbc59657894c0a6fc0f886414dfa03ea27938c8e92a1003"
+    },
+    {
+      "path": "evidence/existing-test_repository_structure.log",
+      "bytes": 794,
+      "sha256": "cf269d3371ab75dc4798fbd944819e66b6facde0bba620af6d8ded71290f9500"
+    },
+    {
+      "path": "evidence/existing-test_runtime_defines.log",
+      "bytes": 1161,
+      "sha256": "006407551a53acd2bc57e36eb093e3bc95d40e3ea812022a943389b909187191"
+    },
+    {
+      "path": "evidence/existing-test_version_assets.log",
+      "bytes": 1143,
+      "sha256": "c20635935f2df1fe9469b443da33d3200cea7295553e41889a51ae5adb5045bf"
+    },
+    {
+      "path": "evidence/gate-tests.log",
+      "bytes": 3238,
+      "sha256": "2018eea92eac65e2d36bb7f08e40c8953788de8efddc6038fb74bb4e14a00304"
+    },
+    {
+      "path": "evidence/inference-http-bounds-tests.log",
+      "bytes": 1645,
+      "sha256": "65dc86e76f07fcf2625dfe66fd9e629050a81f156a0cb7d9c0d759efc8b32763"
+    },
+    {
+      "path": "evidence/migration-installation-check.log",
+      "bytes": 868,
+      "sha256": "b3216ab7cb16ecbed5416351a9dae53fe67054f6660c46785ee733d3f623c7f2"
+    },
+    {
+      "path": "evidence/migration-preparation-plan.json",
+      "bytes": 768,
+      "sha256": "ac9a7bc0420dec366ead0d3987f2e98c9f00b92504d187fe14a34130c36efbe5"
+    },
+    {
+      "path": "evidence/migration-preparer-tests.log",
+      "bytes": 1826,
+      "sha256": "0e7ba75a6160b0db84c72600c537452389860edd31b6cf3c400d5838788b0af7"
+    },
+    {
+      "path": "evidence/nfc-policy-tests.log",
+      "bytes": 646,
+      "sha256": "cb752bd1186a0800b6c4eb3336939e9143cd748b2f068b8fb5d519367c7f737f"
+    },
+    {
+      "path": "evidence/patch-application-check.log",
+      "bytes": 689,
+      "sha256": "a431fa690d592b33a2de117c5dabc58e22962e0d0109886bb186150c50efdc6e"
+    },
+    {
+      "path": "evidence/source-pin-check.log",
+      "bytes": 32,
+      "sha256": "222c70fc2b370d7043039e908635783f5f65a20646c54c36ae52feeedbd73aa5"
+    },
+    {
+      "path": "evidence/syntax_and_tooling.json",
+      "bytes": 8648,
+      "sha256": "a244753e1ce4c08341f6491bb9a979b5c3371e3a8d86e0d3b4f56503db0dcfe6"
+    },
+    {
+      "path": "evidence/version-evidence-tests.log",
+      "bytes": 932,
+      "sha256": "8d8f5bfd225063d2a7a6ae6a29d9e87a55200080a9d2111d5b5b5c885e27b31b"
+    }
+  ],
+  "count": 71
+}

@@ -1,0 +1,18 @@
+[Unit]
+Description=Mobio bounded SMS intake worker trigger
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=mobio-worker
+Group=mobio-worker
+EnvironmentFile=/etc/mobio/sms-intake-worker.env
+ExecStart=/usr/bin/python3 /opt/mobio/scripts/operations/run_sms_intake_worker.py --calls 2
+TimeoutStartSec=115
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+UMask=0077
+# Install only after isolated acceptance and explicit operator configuration.

@@ -120,7 +120,7 @@ require_current_play_console_upload_evidence() {
     return
   fi
 
-  if ! grep -Eq "Version code:[[:space:]]*\`?$expected_version_code\`?" "$evidence_path"; then
+  if ! python3 scripts/release/check_play_version_evidence.py "$evidence_path" "$expected_version_code"; then
     echo "FAIL: $evidence_path does not prove Play upload for current versionCode $expected_version_code." >&2
     failures=$((failures + 1))
     return
@@ -128,6 +128,8 @@ require_current_play_console_upload_evidence() {
 
   echo "PASS: Play Console upload evidence matches current versionCode $expected_version_code"
 }
+
+run_gate "Reviewed hardening migrations prepared" python3 ./scripts/ci/prepare_hardening_migrations.py --check
 
 if [[ "${RUN_FLUTTER_GATE:-true}" == "true" ]]; then
   run_gate "Flutter analyze/test gate" ./scripts/ci/verify_flutter.sh

@@ -690,7 +690,7 @@ void main() {
       expect(releaseConfig, contains('REQUIRE_IOS_FIREBASE:-true'));
       expect(releaseConfig, contains('REQUIRE_IOS_NATIVE:-true'));
       expect(profileScreen, contains('SupabaseConfig.accountDeletionUrl'));
-      expect(profileScreen, contains('Delete Account'));
+      expect(profileScreen, contains('Request account deletion'));
     });
 
     test('release pipeline defaults to internal Play validation', () {
@@ -707,6 +707,9 @@ void main() {
       ).readAsStringSync();
       final actionPinCheck = File(
         'scripts/ci/check_github_actions_pinned.sh',
+      ).readAsStringSync();
+      final actionPinImplementation = File(
+        'scripts/ci/check_github_actions_pinned.py',
       ).readAsStringSync();
       final secretHistoryCheck = File(
         'scripts/qa/check_secret_history.sh',
@@ -754,7 +757,8 @@ void main() {
       expect(backendVerify, contains(r'--lock="$deno_lock"'));
       expect(denoLock, contains('"version": "5"'));
       expect(denoLock, contains('"npm:@supabase/supabase-js@2"'));
-      expect(actionPinCheck, contains('40-character commit SHAs'));
+      expect(actionPinCheck, contains('check_github_actions_pinned.py'));
+      expect(actionPinImplementation, contains('full 40-hex commit SHA'));
       expect(secretHistoryCheck, contains('fetch-depth: 0'));
       expect(
         secretHistoryCheck,

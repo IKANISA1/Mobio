@@ -31,6 +31,12 @@ void main() {
         final reconcileMomoSms = File(
           'supabase/functions/reconcile-momo-sms/index.ts',
         ).readAsStringSync();
+        final enrolledIntake = File(
+          'supabase/functions/momobio-sms-ingest/index.ts',
+        ).readAsStringSync();
+        final intakeWorker = File(
+          'supabase/functions/momobio-sms-process/index.ts',
+        ).readAsStringSync();
         final sharedParser = File(
           'supabase/functions/_shared/momo-sms.ts',
         ).readAsStringSync();
@@ -39,13 +45,18 @@ void main() {
         ).readAsStringSync();
 
         for (final source in [parseSms, reconcileMomoSms]) {
-          expect(source, contains('createAdminClient'));
-          expect(source, contains('rpc_ingest_driver_subscription_momo_sms'));
-          expect(source, isNot(contains('scopeUnavailableResponse')));
+          expect(source, contains('LEGACY_SMS_INGEST_RETIRED'));
+          expect(source, contains('410'));
           expect(source, isNot(contains('.from("sms_raw_queue")')));
           expect(source, isNot(contains('.from("transactions")')));
           expect(source, isNot(contains('.from("payment_intents")')));
         }
+
+        expect(enrolledIntake, contains('verifyCollectorRequest'));
+        expect(enrolledIntake, contains('rpc_admit_momobio_sms_batch'));
+        expect(intakeWorker, contains('authorizeSmsWorker'));
+        expect(intakeWorker, contains('rpc_claim_momobio_sms_intake'));
+        expect(intakeWorker, contains('rpc_complete_momobio_sms_intake'));
 
         expect(sharedParser, contains('MOMO_SMS_BRIDGE_SECRET'));
         expect(sharedParser, contains('OPENAI_API_KEY_REQUIRED'));

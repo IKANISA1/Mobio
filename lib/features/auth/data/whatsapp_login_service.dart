@@ -1,10 +1,11 @@
+import 'dart:async';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_enums.dart';
 import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:mobi_app/features/admin/data/otp_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class WhatsAppLoginResult extends OtpResult {
   final AppRole? role;
@@ -27,6 +28,11 @@ class WhatsAppLoginService {
       super();
 
   final Dio _dio;
+  LoginAttempt? _attempt;
+  Object? _attemptOwner;
+  Future<void> cancelVerification({required Object owner}) async {
+    if (identical(owner, _attemptOwner)) await AccountContext.cancelPendingLogin(_attempt);
+  }
   final Future<Map<String, dynamic>?> Function(String action)?
   _playIntegrityEvidenceProvider;
 
@@ -41,6 +47,7 @@ class WhatsAppLoginService {
         },
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
+        sendTimeout: const Duration(seconds: 10),
       ),
     );
   }
@@ -56,7 +63,7 @@ class WhatsAppLoginService {
     );
 
     try {
-      final playIntegrity = await _playIntegrityEvidence('app_login_send_otp');
+      final playIntegrity = await _playIntegrityEvidence('app_login_send_otp').timeout(const Duration(seconds: 6));
       final data = <String, dynamic>{
         'phone': normalizedPhone,
         'countryCode': countryCode,
@@ -65,7 +72,7 @@ class WhatsAppLoginService {
       if (playIntegrity != null) {
         data['playIntegrity'] = playIntegrity;
       }
-      final response = await _dio.post('/send-login-otp', data: data);
+      final response = await _dio.post('/send-login-otp', data: data).timeout(const Duration(seconds: 15));
       final body = _asBody(response.data);
 
       if (body['success'] == true) {
@@ -83,13 +90,13 @@ class WhatsAppLoginService {
         retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'),
       );
     } on DioException catch (e) {
-      if (kDebugMode) debugPrint('WhatsAppLoginService.sendLoginOtp: $e');
+      if (kDebugMode) debugPrint('WhatsAppLoginService.sendLoginOtp: unavailable');
       return _fromDioException(
         e,
         fallbackMessage: 'Network error. Check your connection.',
       );
-    } on Object catch (e) {
-      if (kDebugMode) debugPrint('WhatsAppLoginService.sendLoginOtp: $e');
+    } on Object {
+      if (kDebugMode) debugPrint('WhatsAppLoginService.sendLoginOtp: unavailable');
       return const WhatsAppLoginResult(
         success: false,
         message: 'Network error. Check your connection.',
@@ -98,78 +105,54 @@ class WhatsAppLoginService {
   }
 
   Future<WhatsAppLoginResult> verifyLoginOtp({
+    Object? owner,
     required String phone,
     required String code,
     required AppRole role,
     required String countryCode,
   }) async {
-    final normalizedPhone = normalizePhoneForCountry(
-      phone: phone,
-      countryCode: countryCode,
-    );
-
+    if (_attempt != null) return const WhatsAppLoginResult(success: false, message: 'Verification is already in progress.');
+    LoginAttempt? ticket;
+    var completed = false;
     try {
-      final playIntegrity = await _playIntegrityEvidence(
-        'app_login_verify_otp',
-      );
+      ticket = AccountContext.beginLoginAttempt(provider: 'whatsapp_cloud_otp');
+      _attempt = ticket;
+      _attemptOwner = owner;
+      await AccountContext.prepareLogin(ticket);
+      final normalizedPhone = normalizePhoneForCountry(phone: phone, countryCode: countryCode);
+      final playIntegrity = await _playIntegrityEvidence('app_login_verify_otp').timeout(const Duration(seconds: 6));
+      AccountContext.requireLoginAttempt(ticket);
       final data = <String, dynamic>{
-        'phone': normalizedPhone,
-        'code': code,
-        'role': _loginRoleValue(role),
-        'countryCode': countryCode,
+        'phone': normalizedPhone, 'code': code, 'role': _loginRoleValue(role),
+        'countryCode': countryCode, if (playIntegrity != null) 'playIntegrity': playIntegrity,
       };
-      if (playIntegrity != null) {
-        data['playIntegrity'] = playIntegrity;
-      }
-      final response = await _dio.post('/verify-login-otp', data: data);
+      final response = await _dio.post('/verify-login-otp', data: data).timeout(const Duration(seconds: 15));
+      AccountContext.requireLoginAttempt(ticket);
       final body = _asBody(response.data);
-
-      if (body['success'] == true && body['session'] != null) {
-        final session = body['session'] as Map<String, dynamic>;
-        final refreshToken = session['refresh_token'] as String?;
-        if (refreshToken == null) {
-          return const WhatsAppLoginResult(
-            success: false,
-            message: 'Unable to restore the session.',
-          );
-        }
-
-        try {
-          await Supabase.instance.client.auth.setSession(refreshToken);
-        } on Object catch (e) {
-          if (kDebugMode) debugPrint('Session restore failed: $e');
-          return const WhatsAppLoginResult(
-            success: false,
-            message: 'Unable to restore the session.',
-          );
-        }
-
-        final resolvedRole = AppRole.fromString(body['role'] as String?);
-        return WhatsAppLoginResult(
-          success: true,
-          message: 'Verified successfully',
-          role: resolvedRole.isAdmin ? AppRole.passenger : resolvedRole,
-        );
+      if (body['success'] != true || body['session'] is! Map) {
+        return WhatsAppLoginResult(success: false,
+          message: body['message'] as String? ?? 'Verification failed',
+          attemptsRemaining: _extractInt(body, 'attemptsRemaining'),
+          retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'));
       }
-
-      return WhatsAppLoginResult(
-        success: false,
-        message: body['message'] as String? ?? 'Verification failed',
-        attemptsRemaining: _extractInt(body, 'attemptsRemaining'),
-        retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'),
-      );
-    } on DioException catch (e) {
-      if (kDebugMode) debugPrint('WhatsAppLoginService.verifyLoginOtp: $e');
-      return _fromDioException(
-        e,
-        fallbackMessage: 'Network error. Check your connection.',
-      );
-    } on Object catch (e) {
-      if (kDebugMode) debugPrint('WhatsAppLoginService.verifyLoginOtp: $e');
-      return const WhatsAppLoginResult(
-        success: false,
-        message: 'Network error. Check your connection.',
-      );
+      await AccountContext.restoreServerSession(ticket, Map<String, dynamic>.from(body['session'] as Map));
+      await AccountContext.completeVerifiedLogin(ticket).timeout(const Duration(seconds: 8));
+      final resolvedRole = AppRole.fromString(body['role'] as String?);
+      completed = true;
+      return WhatsAppLoginResult(success: true, message: 'Verified successfully',
+        role: resolvedRole.isAdmin ? AppRole.passenger : resolvedRole);
+    } on DioException catch (error) {
+      return _fromDioException(error, fallbackMessage: 'Network error. Check your connection.');
+    } on Object {
+      return const WhatsAppLoginResult(success: false,
+        message: 'Unable to confirm and save this login. Request a new code.');
+    } finally {
+      if (!completed) {
+        // abort invalidates trust before waiting for native/disk completion.
+        try { await AccountContext.abortLogin(ticket).timeout(const Duration(seconds: 5)); } on Object { /* locked */ }
+      }
+      _attempt = null;
+      _attemptOwner = null;
     }
   }
 
@@ -180,8 +163,8 @@ class WhatsAppLoginService {
   Future<Map<String, dynamic>?> _playIntegrityEvidence(String action) async {
     try {
       return await _playIntegrityEvidenceProvider?.call(action);
-    } on Object catch (error) {
-      if (kDebugMode) debugPrint('Play integrity evidence failed: $error');
+    } on Object {
+      if (kDebugMode) debugPrint('Play integrity evidence unavailable');
       return null;
     }
   }

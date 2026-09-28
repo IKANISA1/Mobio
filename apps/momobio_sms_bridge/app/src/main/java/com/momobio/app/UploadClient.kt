@@ -9,6 +9,10 @@ data class UploadResult(
     val ok: Boolean,
     val uploadedHashes: Set<String> = emptySet(),
     val message: String,
+    val outcome: String = if (ok) "acknowledged" else "unavailable",
+    val retryAfterMillis: Long? = null,
+    val serverAcknowledged: Boolean = false,
+    val automaticAllocationEnabled: Boolean? = null,
 )
 
 class UploadClient internal constructor(
@@ -32,12 +36,12 @@ class UploadClient internal constructor(
         messages: List<MomoSms>,
         onUploaded: ((Set<String>) -> Unit)? = null,
     ): UploadResult {
-        if (messages.isEmpty()) return UploadResult(ok = true, message = "No new SMS")
-        if (supabaseUrl.isBlank() || anonKey.isBlank()) {
-            return UploadResult(ok = false, message = "Upload config missing")
+        if (!CollectorTransportPolicy.validEndpoint(supabaseUrl) || anonKey.isBlank()) {
+            return UploadResult(ok = false, message = "Secure upload config missing", outcome = "configuration_missing")
         }
 
         val endpoint = "${supabaseUrl.trimEnd('/')}/functions/v1/momobio-sms-ingest"
+        if (messages.isEmpty()) return uploadBatch(endpoint, emptyList())
         val uploaded = mutableSetOf<String>()
         for (chunk in messages.chunked(batchSize)) {
             val result = uploadBatch(endpoint, chunk)
@@ -65,18 +69,22 @@ class UploadClient internal constructor(
             ok = true,
             uploadedHashes = uploaded,
             message = "Uploaded ${uploaded.size}",
+            serverAcknowledged = true,
         )
     }
 
     private fun uploadBatch(endpoint: String, messages: List<MomoSms>): UploadResult {
-        val body = """{"messages":[${messages.joinToString(",") { it.toJson() }}]}"""
+        val body = if (messages.isEmpty()) """{"action":"health"}""" else
+            """{"messages":[${messages.joinToString(",") { it.toJson() }}]}"""
         val bytes = body.toByteArray(Charsets.UTF_8)
+        if (bytes.size > 512_000) return UploadResult(false, message = "Batch exceeds upload limit", outcome = "oversized_batch")
         var connection: HttpURLConnection? = null
         return try {
             val activeConnection = openConnection(endpoint)
             // Keep the opened connection before configuration/signing can fail.
             connection = activeConnection
             activeConnection.apply {
+                instanceFollowRedirects = false
                 requestMethod = "POST"
                 connectTimeout = 15_000
                 readTimeout = 60_000
@@ -88,13 +96,26 @@ class UploadClient internal constructor(
             }
             activeConnection.outputStream.use { it.write(bytes) }
             val responseCode = activeConnection.responseCode
+            val retryAfter = CollectorTransportPolicy.retryAfterMillis(
+                activeConnection.getHeaderField("Retry-After"), System.currentTimeMillis())
             val responseText = if (responseCode in 200..299) {
-                activeConnection.inputStream.bufferedReader().use { it.readText() }
+                readBoundedResponse(activeConnection.inputStream)
             } else {
-                activeConnection.errorStream?.bufferedReader()?.use { it.readText() }.orEmpty()
+                // Do not echo provider bodies (which may contain sensitive information).
+                activeConnection.errorStream?.close()
+                ""
             }
             if (responseCode in 200..299) {
                 val response = JSONObject(responseText)
+                if (messages.isEmpty()) {
+                    val healthy = response.optBoolean("success") &&
+                        response.optString("kind") == "collector_health" && response.optBoolean("collector_enrolled") &&
+                        response.opt("automatic_allocation_enabled") is Boolean
+                    return UploadResult(healthy, message = if (healthy) "Server verified collector; no queued receipts"
+                        else "Collector health not acknowledged", outcome = if (healthy) "healthy" else "invalid_acknowledgement",
+                        serverAcknowledged = healthy,
+                        automaticAllocationEnabled = if (healthy) response.optBoolean("automatic_allocation_enabled") else null)
+                }
                 val results = response.optJSONArray("results")
                 val expected = messages.map { it.messageHash }.toSet()
                 val acknowledged = mutableSetOf<String>()
@@ -109,6 +130,7 @@ class UploadClient internal constructor(
                     ok = acknowledged == expected,
                     uploadedHashes = acknowledged,
                     message = if (acknowledged == expected) "Uploaded ${acknowledged.size}" else "Incomplete server acknowledgement",
+                    serverAcknowledged = acknowledged.isNotEmpty(),
                 )
             } else {
                 logFailure("Upload failed $responseCode")
@@ -117,7 +139,12 @@ class UploadClient internal constructor(
                     409 -> "Retrying collector request"
                     429 -> "Sync limit reached; retrying later"
                     else -> "Upload failed $responseCode"
-                })
+                }, outcome = when (responseCode) {
+                    401, 403 -> "enrollment_required"
+                    429 -> "rate_limited"
+                    in 300..399 -> "redirect_rejected"
+                    else -> "http_error"
+                }, retryAfterMillis = retryAfter)
             }
         } catch (error: Exception) {
             logFailure("Upload failed: ${error.javaClass.simpleName}")
@@ -126,4 +153,16 @@ class UploadClient internal constructor(
             connection?.disconnect()
         }
     }
+    private fun readBoundedResponse(input: java.io.InputStream): String = input.use { stream ->
+        val output = java.io.ByteArrayOutputStream()
+        val buffer = ByteArray(4096)
+        while (true) {
+            val n = stream.read(buffer)
+            if (n < 0) break
+            check(output.size() + n <= 262_144) { "Response size exceeded" }
+            output.write(buffer, 0, n)
+        }
+        output.toString("UTF-8")
+    }
+
 }

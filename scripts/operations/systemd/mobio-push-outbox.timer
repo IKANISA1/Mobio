@@ -1,0 +1,13 @@
+[Unit]
+Description=Poll Mobio notification outbox with bounded per-minute batches
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=1min
+RandomizedDelaySec=5s
+Persistent=false
+Unit=mobio-push-outbox.service
+
+[Install]
+WantedBy=timers.target
+# TEMPLATE ONLY: do not install/enable until deployment and capacity are accepted.

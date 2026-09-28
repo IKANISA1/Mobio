@@ -1,0 +1,446 @@
+{
+  "schema_version": 1,
+  "date": "2026-09-28",
+  "destination_id": "1UilSPU-LXRZ9iyRGbA1pYIpk0_r9pcOW",
+  "destination_url": "https://drive.google.com/drive/folders/1UilSPU-LXRZ9iyRGbA1pYIpk0_r9pcOW",
+  "individual_folder_id": "1ZqNbg-M_Rpf-ot3TN-cEAinPE3q_eULB",
+  "individual_folder_url": "https://drive.google.com/drive/folders/1ZqNbg-M_Rpf-ot3TN-cEAinPE3q_eULB",
+  "top_level_uploads": [
+    {
+      "file_name": "Mobio_Increment07_2026-09-28.zip",
+      "drive_file_id": "17wui8IV15uN42AjHwg1lxpdxxxhkIirK",
+      "bytes": 1021557,
+      "upload_success": true,
+      "listing_verified": true
+    },
+    {
+      "file_name": "Mobio_Backlog_Increment07_2026-09-28.xlsx",
+      "drive_file_id": "1NVcK0_mqPFCCVDo7Md1WJlBaYUqPzs6H",
+      "bytes": 62112,
+      "upload_success": true,
+      "listing_verified": true
+    },
+    {
+      "file_name": "IMPLEMENTATION_REPORT.md",
+      "drive_file_id": "1WNL3ZNdP7wBNZGUBnAa5l4dLp1vhSbWB",
+      "bytes": 12225,
+      "upload_success": true,
+      "listing_verified": true
+    },
+    {
+      "file_name": "INTEGRATION_RUNBOOK.md",
+      "drive_file_id": "177x0G6PWZ-PfvfKwRPPSP8ehENeNxY6B",
+      "bytes": 14221,
+      "upload_success": true,
+      "listing_verified": true
+    },
+    {
+      "file_name": "README.md",
+      "drive_file_id": "165ZZ_sNvYBlJJrz3ibJH_1cZdabRsC3x",
+      "bytes": 2192,
+      "upload_success": true,
+      "listing_verified": true
+    },
+    {
+      "file_name": "VALIDATION_RESULTS.json",
+      "drive_file_id": "1kbjNXtNS9TFxknaG7boGAKyzcthGo3Aj",
+      "bytes": 7173,
+      "upload_success": true,
+      "listing_verified": true
+    },
+    {
+      "file_name": "DELTA_MANIFEST.json",
+      "drive_file_id": "1xY3Xrd3qKN1SrBQGQsjlqj8cMzDZGvZg",
+      "bytes": 7766,
+      "upload_success": true,
+      "listing_verified": true
+    },
+    {
+      "file_name": "INDIVIDUAL_FILE_MAP.json",
+      "drive_file_id": "1Gzq8fst_ECLYMbQfyxjX1mqrymLqH4qn",
+      "bytes": 8121,
+      "upload_success": true,
+      "listing_verified": true
+    },
+    {
+      "file_name": "SOURCES.json",
+      "drive_file_id": "1hSW3uQueqDBg2ror5rf_IysemqiKkw3z",
+      "bytes": 5115,
+      "upload_success": true,
+      "listing_verified": true
+    }
+  ],
+  "individual_files": [
+    {
+      "repository_path": ".github/workflows/ci.yml",
+      "drive_file_name": ".github__workflows__ci.yml",
+      "sha256": "5e4a745df1e72969f91e3f9b9ee255ff0adf65359bd98470bbd528bd86953017",
+      "bytes": 10430,
+      "drive_file_id": "1qY621JwYiFBkwrDuCEov61kk1_RRmh0r",
+      "drive_listing_bytes": 10430,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "docs/production-readiness/INCREMENT07_NOTIFICATION_OUTBOX.md",
+      "drive_file_name": "docs__production-readiness__INCREMENT07_NOTIFICATION_OUTBOX.md",
+      "sha256": "34797e5c1eb8e4493375c59343c5d46c040721a2ec04fb2836242de344f68c83",
+      "bytes": 14221,
+      "drive_file_id": "1Kbb_RYGMzJa7LYyAVivNYBnyPGeiXCPs",
+      "drive_listing_bytes": 14221,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "lib/features/admin/presentation/admin_operational_health_screen.dart",
+      "drive_file_name": "lib__features__admin__presentation__admin_operational_health_screen.dart",
+      "sha256": "778b1976d98bcf214c3d8c17f11f7b19069538388a294c34bdb34a3a62f789ac",
+      "bytes": 26785,
+      "drive_file_id": "1jzJrQh_PbmJeYXn3Kvu1RIaghk1YZ4XY",
+      "drive_listing_bytes": 26785,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "lib/features/admin/presentation/widgets/push_delivery_health_card.dart",
+      "drive_file_name": "lib__features__admin__presentation__widgets__push_delivery_health_card.dart",
+      "sha256": "912c7144901c600fdd31ec5c224f4e6e009c86447d364ec61a0e9796712fe2b6",
+      "bytes": 4562,
+      "drive_file_id": "1wKfQGw5PWG8D1J7-ZrSREAiGARt1kvwM",
+      "drive_listing_bytes": 4562,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "lib/features/notifications/data/push_notification_service.dart",
+      "drive_file_name": "lib__features__notifications__data__push_notification_service.dart",
+      "sha256": "6e01bf5431ab149915298c147585a1804c7300a91378c90fb9469e2d080a6465",
+      "bytes": 14369,
+      "drive_file_id": "1ickbrEoUPKpub9G3H8Y3vHipB3LBGVTd",
+      "drive_listing_bytes": 14369,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "lib/features/notifications/domain/push_binding.dart",
+      "drive_file_name": "lib__features__notifications__domain__push_binding.dart",
+      "sha256": "85e54c9c6c9e3e2655c9ed991ad39cae4e9327b466330dcefd16b18465a1a8ad",
+      "bytes": 1340,
+      "drive_file_id": "19rEJwuQSrvab5ir0d5aKyX0uOVpl_Fys",
+      "drive_listing_bytes": 1340,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/ci/apply_increment07.py",
+      "drive_file_name": "scripts__ci__apply_increment07.py",
+      "sha256": "3b8d49dca0710e73bf0ec5279d9fc42157f4f400308db5b980044281e1686e4c",
+      "bytes": 4714,
+      "drive_file_id": "1jG7PcPBXUX4Z5LxDLqsX9Wu7CuYvNTtP",
+      "drive_listing_bytes": 4714,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/ci/run_hardening_tests.sh",
+      "drive_file_name": "scripts__ci__run_hardening_tests.sh",
+      "sha256": "cff44ee17bd3373ad7688608711df3d292fd7510370fe7e334fc97c27f2edc63",
+      "bytes": 2801,
+      "drive_file_id": "1CiDC5zLQsxMpdwz007NcS2NyK9JygiYY",
+      "drive_listing_bytes": 2801,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/operations/run_push_outbox_worker.py",
+      "drive_file_name": "scripts__operations__run_push_outbox_worker.py",
+      "sha256": "c72d60a113c8535b9378384729234122a5ec9b2aed401c20a0b73f7aec6c455f",
+      "bytes": 3620,
+      "drive_file_id": "1ldiA5mTWgDYVjNcI70YNG_X_ZdrYXda3",
+      "drive_listing_bytes": 3620,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/operations/systemd/mobio-push-outbox.service",
+      "drive_file_name": "scripts__operations__systemd__mobio-push-outbox.service",
+      "sha256": "8f6d9eb3f59732d517143f24a7e6c85b4d5f155f8444ad8e6447ef69b34c8d6b",
+      "bytes": 516,
+      "drive_file_id": "1Mj7RnZvLJcEVRUWWnZoAju6V7eRExs4U",
+      "drive_listing_bytes": 516,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/operations/systemd/mobio-push-outbox.timer",
+      "drive_file_name": "scripts__operations__systemd__mobio-push-outbox.timer",
+      "sha256": "6bde06047a295f4be5f13ade910d19a635aca4f7b7cbcd919b29231d369cdc13",
+      "bytes": 316,
+      "drive_file_id": "1FDQSCvO7kt1CG6qW7BYCFbWu5Pgia8up",
+      "drive_listing_bytes": 316,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/qa/test_push_postgres.py",
+      "drive_file_name": "scripts__qa__test_push_postgres.py",
+      "sha256": "5cd9dc210b924ab480e1d892e2c14ae2bf7e038ad840c745eee49f8e4434d73b",
+      "bytes": 13694,
+      "drive_file_id": "1WTQBXD-FjVILjrkYpo8-ZZg-BrRzPEP2",
+      "drive_listing_bytes": 13694,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/tests/push/http.test.mjs",
+      "drive_file_name": "scripts__tests__push__http.test.mjs",
+      "sha256": "9253edda44913f7c2fdefdec509b367c3aee185e8c5a9de425213b39d9d2988c",
+      "bytes": 2650,
+      "drive_file_id": "1BNkdKbTWgNUf5kmKK7NK57ePQFowwA1M",
+      "drive_listing_bytes": 2650,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/tests/push/provider.test.mjs",
+      "drive_file_name": "scripts__tests__push__provider.test.mjs",
+      "sha256": "ea89bdef3c6921f878c933e5beddb2cab18180d1ea3ffd4d54f6538cd9617384",
+      "bytes": 7389,
+      "drive_file_id": "1G1qgPs5cfuZ-oZsYk_mgmvBB0UEaQb6F",
+      "drive_listing_bytes": 7389,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/tests/push/worker.test.mjs",
+      "drive_file_name": "scripts__tests__push__worker.test.mjs",
+      "sha256": "7cc4605534c20b7618bb5795331c18b1176e9f6ff18a03cd1c36c21e4c220155",
+      "bytes": 8401,
+      "drive_file_id": "1ET9WLpTPra1S2wvWaNwRU7JNL4SECi8u",
+      "drive_listing_bytes": 8401,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/tests/sql/push_fixture_bootstrap.sql",
+      "drive_file_name": "scripts__tests__sql__push_fixture_bootstrap.sql",
+      "sha256": "a7abd93fd2662d64822896e974629593ced89c8770840c30657e68062bed9053",
+      "bytes": 4337,
+      "drive_file_id": "1v9tm4rV761cnsejjMku1vB0Ft5NzszVf",
+      "drive_listing_bytes": 4337,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/tests/test_identity_lifecycle_contracts.py",
+      "drive_file_name": "scripts__tests__test_identity_lifecycle_contracts.py",
+      "sha256": "1cdc22a8dd80fbfeb4d28c5399353590a12734f2691bb48a993b551530611ec1",
+      "bytes": 9501,
+      "drive_file_id": "1CPDmbZ-QmxDNkj2ugPMvTnLX8PpByOzY",
+      "drive_listing_bytes": 9501,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/tests/test_increment06_contracts.py",
+      "drive_file_name": "scripts__tests__test_increment06_contracts.py",
+      "sha256": "60fa446a46ff5afa580cb3ddef032a55e509494002a02ed9ee3cdef988e17868",
+      "bytes": 6941,
+      "drive_file_id": "1qVeXWcGe3lWciC4sh9XfFnEZNWkju7ZB",
+      "drive_listing_bytes": 6941,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/tests/test_increment07_applier.py",
+      "drive_file_name": "scripts__tests__test_increment07_applier.py",
+      "sha256": "a97fafe1057511a7555e0281d8260f667aa26f37e0aad6164bd9b7983538be15",
+      "bytes": 3662,
+      "drive_file_id": "1lYuu5JsI5re65C-diGiY-CjNYTbFO4mw",
+      "drive_listing_bytes": 3662,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/tests/test_increment07_contracts.py",
+      "drive_file_name": "scripts__tests__test_increment07_contracts.py",
+      "sha256": "d6bcd3fe1f65bfcb8d4848141cb6cd8aa361afa8eef75117f781135ea20c9e56",
+      "bytes": 3615,
+      "drive_file_id": "1tIuynWXZ1lzWBjCk4BBe-hdqFjkWnFDE",
+      "drive_listing_bytes": 3615,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "scripts/tests/test_push_operations.py",
+      "drive_file_name": "scripts__tests__test_push_operations.py",
+      "sha256": "d77d57f867114e90704d9eafec68bd6cb7803fb0ed093ada039cc21b79a9d5e8",
+      "bytes": 5372,
+      "drive_file_id": "1GalIcW1OV44ppYj9npDp5lSyDF6cHLuA",
+      "drive_listing_bytes": 5372,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "supabase/config.toml",
+      "drive_file_name": "supabase__config.toml",
+      "sha256": "935255e6def4aefde0b3078d86eed7db32cf238c911a7662b961494b6fbb93a8",
+      "bytes": 15610,
+      "drive_file_id": "1bc8yuSfKm81QzpFR0QSXvYgmqbufsQAi",
+      "drive_listing_bytes": 15610,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "supabase/functions/_shared/push-http.ts",
+      "drive_file_name": "supabase__functions___shared__push-http.ts",
+      "sha256": "d27b138b1b706e639c25b2dfc4c7982d5e025342497075108844518ebc0b1c2e",
+      "bytes": 3319,
+      "drive_file_id": "1-BUG84IXQmRonnb9V5QeNa5tC2ZoFXhF",
+      "drive_listing_bytes": 3319,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "supabase/functions/_shared/push-outbox.ts",
+      "drive_file_name": "supabase__functions___shared__push-outbox.ts",
+      "sha256": "36abcde61da4dbdef550598f9661e0935416d02702d61b7834be096aa58ae9c1",
+      "bytes": 7052,
+      "drive_file_id": "1DhAhywPvoRxjHIx_Dok3qzq4-PzN8pK3",
+      "drive_listing_bytes": 7052,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "supabase/functions/_shared/push-provider.ts",
+      "drive_file_name": "supabase__functions___shared__push-provider.ts",
+      "sha256": "0ef4c15221df280e1faf7e196f946c919934c9b5f938c7543a19234abe581a76",
+      "bytes": 8662,
+      "drive_file_id": "1-ro7UpZGsXZsFw-lhLC5iuK5X_3EU8PM",
+      "drive_listing_bytes": 8662,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "supabase/functions/push-outbox-worker/index.ts",
+      "drive_file_name": "supabase__functions__push-outbox-worker__index.ts",
+      "sha256": "1a848bbfe52c334601a2365d01371d8b4717049b71589689ce65d3d044f2e0b3",
+      "bytes": 699,
+      "drive_file_id": "1D_OFpsKlctnkCmy_6iaPHJAncyN9yFBg",
+      "drive_listing_bytes": 699,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "supabase/functions/send-push/index.ts",
+      "drive_file_name": "supabase__functions__send-push__index.ts",
+      "sha256": "aeecf1eeb9c5e020836760ba3b652a512a4689f8e14b5781210f90625ba66592",
+      "bytes": 488,
+      "drive_file_id": "1V5-9bhSrrYncIdyyZ31EhFE5UHbU2cKa",
+      "drive_listing_bytes": 488,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "supabase/functions/send-push/index_test.ts",
+      "drive_file_name": "supabase__functions__send-push__index_test.ts",
+      "sha256": "c91c36de2b8bac40501fde89dc1079aa5079e68ed7467411d72c5f06e01899cd",
+      "bytes": 373,
+      "drive_file_id": "15GsRuRKSOkK7WAxBx9ESTWbq_TiVjwEY",
+      "drive_listing_bytes": 373,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "supabase/hardening/2026-09-28/11_notification_outbox.sql",
+      "drive_file_name": "supabase__hardening__2026-09-28__11_notification_outbox.sql",
+      "sha256": "6cc9206583ae5df27dee0a216c558da288c7536d3f61a82495bbc3540d28404a",
+      "bytes": 23975,
+      "drive_file_id": "1V1cReA7sfCxkcqrAZ6gHV84r5mnCwJIk",
+      "drive_listing_bytes": 23975,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "supabase/hardening/2026-09-28/increment07_catalog_assertions.sql",
+      "drive_file_name": "supabase__hardening__2026-09-28__increment07_catalog_assertions.sql",
+      "sha256": "39c624c23d556428a5a86d2d64bedcef2352377de600e4d130e9ee8a73a62b56",
+      "bytes": 2607,
+      "drive_file_id": "1A0bc0WNeJIcrWwbxInigCOAbIfOl6WPU",
+      "drive_listing_bytes": 2607,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "supabase/hardening/2026-09-28/manifest.json",
+      "drive_file_name": "supabase__hardening__2026-09-28__manifest.json",
+      "sha256": "500f53277aa459c1655bfc6d64e22bff2abe36d75687a3f74e785b92a5cc5c87",
+      "bytes": 2400,
+      "drive_file_id": "1pesryd6xlCJcLmWr-17MI08oAt3aRHyT",
+      "drive_listing_bytes": 2400,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    },
+    {
+      "repository_path": "test/increment07/push_binding_test.dart",
+      "drive_file_name": "test__increment07__push_binding_test.dart",
+      "sha256": "0a9f24f114ca0d72c08c0cb6f8ddd6bb67ba7f88909216fd92f65da805c3cd6d",
+      "bytes": 2625,
+      "drive_file_id": "1nkK_aUqrjrbYePiElcEEEnALqlIYTL2R",
+      "drive_listing_bytes": 2625,
+      "upload_success": true,
+      "listing_name_size_verified": true,
+      "individual_byte_readback": false
+    }
+  ],
+  "verification": {
+    "archive_downloaded_from_drive": true,
+    "drive_readback_file_id": "file_000000002bb482089ee945fe8107ad1c",
+    "drive_readback_bytes": 1021557,
+    "drive_readback_sha256": "c3d09488b6dca370a3af1c29be99b06fc90f6838681ed0868d48c9f18089a315",
+    "original_sha256": "c3d09488b6dca370a3af1c29be99b06fc90f6838681ed0868d48c9f18089a315",
+    "byte_identical": true,
+    "all_32_archived_delta_hashes_match": true,
+    "all_package_content_hashes_match": true,
+    "archive_crc_valid": true,
+    "individual_listing_name_size_count": 32,
+    "individual_files_byte_readback": false,
+    "implementation_report_read_back": true,
+    "xlsx_integrity_checked_inside_readback_archive": true
+  },
+  "qualification": "Individual Drive files verified by successful upload responses plus listing names/sizes, not separate byte readback. The complete uploaded ZIP was downloaded and byte/hash checked. Upload and local checks do not establish compilation, database application or production acceptance. This receipt is separate from the earlier ZIP to avoid self-referential hashes.",
+  "production_deployed": false,
+  "live_permissions_changed": false,
+  "live_credentials_changed": false
+}

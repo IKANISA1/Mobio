@@ -51,11 +51,13 @@ void main() {
     expect(walletPlusSql, contains('chat_messages_insert_rpc_only'));
 
     expect(chatService, contains('rpc_get_or_create_chat_conversation'));
-    expect(chatService, contains('rpc_send_chat_message'));
+    final delivery=File('lib/features/chat/data/chat_delivery_coordinator.dart').readAsStringSync();
+    expect(delivery, contains('rpc_send_chat_message_v2'));
+    expect(delivery, contains('rpc_close_chat_delivery'));
     expect(chatService, contains('rpc_list_chat_messages'));
-    expect(chatService, contains("channel('chat_conversation_"));
+    expect(chatService, contains("channel('chat_v2_"));
     expect(chatService, contains('onPostgresChanges'));
-    expect(chatService, contains("table: 'chat_conversations'"));
+    expect(chatService, contains("table:'chat_conversations'"));
     expect(chatService, isNot(contains('Stream<void>.periodic')));
     expect(chatService, isNot(contains(".from('chat_messages').stream")));
 

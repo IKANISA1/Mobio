@@ -18,6 +18,8 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
+import java.time.Instant
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.util.Log
@@ -48,6 +50,7 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        SecureSessionChannel.register(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger,
             "rw.mobi.app/biopay_discovery").setMethodCallHandler { call, result ->
             if (pendingContactResult != null || pendingImageResult != null) {
@@ -113,23 +116,36 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
         ).setMethodCallHandler { call, result ->
             when (call.method) {
                 "start" -> {
-                    val payload = call.argument<String>("payload")
-                    if (payload.isNullOrBlank()) {
-                        result.error("INVALID_ARGUMENTS", "BioPay NFC payload is required.", null)
+                    val prefs = getSharedPreferences(BioPayHostApduService.PREFS_NAME, MODE_PRIVATE)
+                    val advertisement = BioPayNfcPolicy.prepare(
+                        call.argument<String>("payload"), call.argument<String>("expiresAt"),
+                        System.currentTimeMillis(), SystemClock.elapsedRealtime(),
+                    )
+                    if (advertisement == null) {
+                        BioPayHostApduService.clearAdvertisement(prefs)
+                        result.error("INVALID_ADVERTISEMENT", "A bounded payload and future expiry are required.", null)
                         return@setMethodCallHandler
                     }
-                    val prefs = getSharedPreferences(BioPayHostApduService.PREFS_NAME, MODE_PRIVATE)
-                    prefs.edit()
+                    val saved = prefs.edit().clear()
                         .putBoolean(BioPayHostApduService.KEY_ENABLED, true)
-                        .putString(BioPayHostApduService.KEY_PAYLOAD, payload)
+                        .putString(BioPayHostApduService.KEY_PAYLOAD, advertisement.payload)
                         .putString(BioPayHostApduService.KEY_TOKEN, call.argument<String>("token"))
-                        .putString(BioPayHostApduService.KEY_EXPIRES_AT, call.argument<String>("expiresAt"))
-                        .apply()
+                        .putString(BioPayHostApduService.KEY_EXPIRES_AT, Instant.ofEpochMilli(advertisement.expiresAtMillis).toString())
+                        .putLong(BioPayHostApduService.KEY_STARTED_AT, advertisement.startedAtMillis)
+                        .putLong(BioPayHostApduService.KEY_STARTED_ELAPSED, advertisement.startedElapsedMillis)
+                        .putLong(BioPayHostApduService.KEY_DEADLINE_ELAPSED, advertisement.deadlineElapsedMillis)
+                        .putString(BioPayHostApduService.KEY_PROCESS_INSTANCE, advertisement.instance)
+                        .commit()
+                    if (!saved) {
+                        BioPayHostApduService.clearAdvertisement(prefs)
+                        result.error("ADVERTISEMENT_STORAGE_FAILED", "NFC advertisement was not persisted.", null)
+                        return@setMethodCallHandler
+                    }
                     result.success(biopayDeviceNfcStatus())
                 }
                 "stop" -> {
                     val prefs = getSharedPreferences(BioPayHostApduService.PREFS_NAME, MODE_PRIVATE)
-                    prefs.edit().putBoolean(BioPayHostApduService.KEY_ENABLED, false).apply()
+                    BioPayHostApduService.clearAdvertisement(prefs)
                     result.success(biopayDeviceNfcStatus())
                 }
                 "status" -> result.success(biopayDeviceNfcStatus())
@@ -916,14 +932,15 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
         val supported = packageManager.hasSystemFeature(PackageManager.FEATURE_NFC_HOST_CARD_EMULATION)
         val adapter = NfcAdapter.getDefaultAdapter(this)
         val prefs = getSharedPreferences(BioPayHostApduService.PREFS_NAME, MODE_PRIVATE)
-        val enabled = supported && adapter?.isEnabled == true &&
-            prefs.getBoolean(BioPayHostApduService.KEY_ENABLED, false)
+        val active = BioPayHostApduService.isActive(prefs)
+        if (!active) BioPayHostApduService.clearAdvertisement(prefs)
+        val enabled = supported && adapter?.isEnabled == true && active
         return mapOf(
             "supported" to supported,
             "nfcEnabled" to (adapter?.isEnabled == true),
             "enabled" to enabled,
-            "token" to prefs.getString(BioPayHostApduService.KEY_TOKEN, null),
-            "expiresAt" to prefs.getString(BioPayHostApduService.KEY_EXPIRES_AT, null),
+            "token" to if (enabled) prefs.getString(BioPayHostApduService.KEY_TOKEN, null) else null,
+            "expiresAt" to if (enabled) prefs.getString(BioPayHostApduService.KEY_EXPIRES_AT, null) else null,
             "aid" to BioPayHostApduService.BIOPAY_AID,
             "reason" to when {
                 !supported -> "Android HCE is not supported on this device."

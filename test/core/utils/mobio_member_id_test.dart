@@ -23,21 +23,10 @@ void main() {
       );
     });
 
-    test('displays valid profile member IDs or stable six-digit fallback', () {
-      expect(
-        displayMobioMemberId(memberId: '482913', stableSeed: 'profile-a'),
-        '482913',
-      );
-
-      final fallback = displayMobioMemberId(
-        memberId: 'M00042',
-        stableSeed: 'profile-a',
-      );
-      expect(fallback, matches(RegExp(r'^\d{6}$')));
-      expect(
-        displayMobioMemberId(memberId: null, stableSeed: 'profile-a'),
-        fallback,
-      );
+    test('displays only authoritative six-digit member IDs', () {
+      expect(displayMobioMemberId('482913'), '482913');
+      expect(displayMobioMemberId('M00042'), isNull);
+      expect(displayMobioMemberId(null), isNull);
     });
   });
 }

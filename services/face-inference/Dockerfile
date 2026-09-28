@@ -5,7 +5,7 @@ COPY requirements.lock ./
 RUN pip install --no-cache-dir --require-hashes -r requirements.lock
 COPY model-manifest.json fetch_models.py LICENSE-detector LICENSE-recognizer ./
 RUN python fetch_models.py && useradd --uid 10001 --no-create-home face
-COPY inference.py server.py ./
+COPY inference.py server.py protocol.py ./
 USER 10001
 EXPOSE 8080
 CMD ["python", "server.py"]

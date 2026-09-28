@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "database_applied": false,
+  "bodies": [
+    {
+      "file": "01_booking_write_authority.sql",
+      "migration_name": "mobio_hardening_booking_write_authority",
+      "sha256": "647f997ea8ec787274b784ed5c0c201ca19f0c05c19ad8590d47b498ad213588"
+    },
+    {
+      "file": "02_verified_phone_authority.sql",
+      "migration_name": "mobio_hardening_verified_phone_authority",
+      "sha256": "a204d55887264fdcde3f2030699dfdb9401bee6131546553b5dcd22c1cb553f9"
+    },
+    {
+      "file": "03_strict_receipt_allocation.sql",
+      "migration_name": "mobio_hardening_strict_receipt_allocation",
+      "sha256": "5cfdb8ee79eae3071de0c6f8c6330cdd229c211f952ac838f4a99ff3fefffa24"
+    },
+    {
+      "file": "04_canonical_member_id.sql",
+      "migration_name": "mobio_hardening_canonical_member_id",
+      "sha256": "ff06946103fc5d41e03ec3dc99e343a5bbb5256af2d68390af12c876bb3eda81"
+    },
+    {
+      "file": "05_transport_hold_receipt_integrity.sql",
+      "migration_name": "mobio_hardening_transport_hold_receipt_integrity",
+      "sha256": "49128f73e4cab36797d2856bf906a79f500b66cc0face9aa6248dcb89c5a9dfe"
+    },
+    {
+      "file": "06_bounded_driver_discovery.sql",
+      "migration_name": "mobio_hardening_bounded_driver_discovery",
+      "sha256": "70aa5ceee34cb7dc09ccba35e912cfa92ec7b04c48daefeb4e11aad66f27a85d"
+    },
+    {
+      "file": "07_durable_sms_intake.sql",
+      "migration_name": "mobio_hardening_durable_sms_intake",
+      "sha256": "d393634f47686034862361568de6530fc832cbed1a80506718533019224fd0d7"
+    },
+    {
+      "file": "08_admin_session_leases.sql",
+      "migration_name": "mobio_hardening_admin_session_leases",
+      "sha256": "1e3e18b3c4de2dd41ec51aed00e45c10871df0450ad7a743d7beafa10346345b"
+    },
+    {
+      "file": "09_wallet_operation_journal.sql",
+      "migration_name": "mobio_hardening_wallet_operation_journal",
+      "sha256": "076aeda3a8c29ab91f6e8e789b2a7e36a3caafd6bc588b3edb17f838fcd78800"
+    },
+    {
+      "file": "10_chat_delivery_and_pagination.sql",
+      "migration_name": "mobio_hardening_chat_delivery_and_pagination",
+      "sha256": "24422690f6d4738d4a71561b56b8f641b4735b496496fb5277fb4fdb07920777"
+    },
+    {
+      "file": "11_notification_outbox.sql",
+      "migration_name": "mobio_hardening_notification_outbox",
+      "sha256": "6cc9206583ae5df27dee0a216c558da288c7536d3f61a82495bbc3540d28404a"
+    }
+  ]
+}

@@ -1,0 +1,532 @@
+[
+  {
+    "original_path": "CHANGE_MANIFEST.json",
+    "flat_name": "CHANGE_MANIFEST.json",
+    "size_bytes": 34051
+  },
+  {
+    "original_path": "DIFFSTAT.txt",
+    "flat_name": "DIFFSTAT.txt",
+    "size_bytes": 1878
+  },
+  {
+    "original_path": "MOBIO_HARDENING_CUMULATIVE_03.patch",
+    "flat_name": "MOBIO_HARDENING_CUMULATIVE_03.patch",
+    "size_bytes": 341138
+  },
+  {
+    "original_path": "MOBIO_INCREMENT02_TO_03.patch",
+    "flat_name": "MOBIO_INCREMENT02_TO_03.patch",
+    "size_bytes": 125799
+  },
+  {
+    "original_path": "PACKAGE_CHECKSUMS.json",
+    "flat_name": "PACKAGE_CHECKSUMS.json",
+    "size_bytes": 13763
+  },
+  {
+    "original_path": "PATCH_VERIFICATION.json",
+    "flat_name": "PATCH_VERIFICATION.json",
+    "size_bytes": 308
+  },
+  {
+    "original_path": "README.md",
+    "flat_name": "README.md",
+    "size_bytes": 5063
+  },
+  {
+    "original_path": "SYNTAX_RESULTS.json",
+    "flat_name": "SYNTAX_RESULTS.json",
+    "size_bytes": 2485
+  },
+  {
+    "original_path": "TASK_STATUS_ALL95.json",
+    "flat_name": "TASK_STATUS_ALL95.json",
+    "size_bytes": 25174
+  },
+  {
+    "original_path": "UPLOAD_STATUS.json",
+    "flat_name": "UPLOAD_STATUS.json",
+    "size_bytes": 412
+  },
+  {
+    "original_path": "VALIDATION_RESULTS.json",
+    "flat_name": "VALIDATION_RESULTS.json",
+    "size_bytes": 2620
+  },
+  {
+    "original_path": "changed-files/.github/dependabot.yml",
+    "flat_name": "changed-files__.github__dependabot.yml",
+    "size_bytes": 1002
+  },
+  {
+    "original_path": "changed-files/.github/workflows/ci.yml",
+    "flat_name": "changed-files__.github__workflows__ci.yml",
+    "size_bytes": 8605
+  },
+  {
+    "original_path": "changed-files/.gitignore",
+    "flat_name": "changed-files__.gitignore",
+    "size_bytes": 1417
+  },
+  {
+    "original_path": "changed-files/android/app/build.gradle.kts",
+    "flat_name": "changed-files__android__app__build.gradle.kts",
+    "size_bytes": 3542
+  },
+  {
+    "original_path": "changed-files/android/app/src/main/kotlin/rw/mobi/app/BioPayHostApduService.kt",
+    "flat_name": "changed-files__android__app__src__main__kotlin__rw__mobi__app__BioPayHostApduService.kt",
+    "size_bytes": 2299
+  },
+  {
+    "original_path": "changed-files/android/app/src/main/kotlin/rw/mobi/app/BioPayNfcPolicy.kt",
+    "flat_name": "changed-files__android__app__src__main__kotlin__rw__mobi__app__BioPayNfcPolicy.kt",
+    "size_bytes": 2753
+  },
+  {
+    "original_path": "changed-files/android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt",
+    "flat_name": "changed-files__android__app__src__main__kotlin__rw__mobi__app__MainActivity.kt",
+    "size_bytes": 44683
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/README.md",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__README.md",
+    "size_bytes": 7894
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/build.gradle.kts",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__build.gradle.kts",
+    "size_bytes": 4791
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/androidTest/java/com/momobio/app/DurableQueueDeviceTest.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__androidTest__java__com__momobio__app__DurableQueueDeviceTest.kt",
+    "size_bytes": 5465
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__AndroidManifest.xml",
+    "size_bytes": 2466
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/assets/receipt_queue_v1.sql",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__assets__receipt_queue_v1.sql",
+    "size_bytes": 1188
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeForegroundService.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__java__com__momobio__app__BridgeForegroundService.kt",
+    "size_bytes": 4731
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeSupervisor.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__java__com__momobio__app__BridgeSupervisor.kt",
+    "size_bytes": 2919
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeSyncWorker.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__java__com__momobio__app__BridgeSyncWorker.kt",
+    "size_bytes": 707
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorLease.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__java__com__momobio__app__CollectorLease.kt",
+    "size_bytes": 519
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorPolicy.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__java__com__momobio__app__CollectorPolicy.kt",
+    "size_bytes": 3592
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorRuntime.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__java__com__momobio__app__CollectorRuntime.kt",
+    "size_bytes": 1481
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorSync.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__java__com__momobio__app__CollectorSync.kt",
+    "size_bytes": 1815
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/DurableSmsQueue.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__java__com__momobio__app__DurableSmsQueue.kt",
+    "size_bytes": 12754
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/MainActivity.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__java__com__momobio__app__MainActivity.kt",
+    "size_bytes": 14737
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/ReceiptQueueSql.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__java__com__momobio__app__ReceiptQueueSql.kt",
+    "size_bytes": 980
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/SmsReceiver.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__java__com__momobio__app__SmsReceiver.kt",
+    "size_bytes": 1522
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/UploadClient.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__main__java__com__momobio__app__UploadClient.kt",
+    "size_bytes": 7983
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/app/src/test/java/com/momobio/app/UploadClientTest.kt",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__app__src__test__java__com__momobio__app__UploadClientTest.kt",
+    "size_bytes": 12951
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/scripts/device_uat.sh",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__scripts__device_uat.sh",
+    "size_bytes": 2119
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/scripts/test_jvm.py",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__scripts__test_jvm.py",
+    "size_bytes": 5002
+  },
+  {
+    "original_path": "changed-files/apps/momobio_sms_bridge/scripts/verify_release_certificate.py",
+    "flat_name": "changed-files__apps__momobio_sms_bridge__scripts__verify_release_certificate.py",
+    "size_bytes": 1230
+  },
+  {
+    "original_path": "changed-files/docs/operations/collector-acceptance-2026-09-28.md",
+    "flat_name": "changed-files__docs__operations__collector-acceptance-2026-09-28.md",
+    "size_bytes": 6808
+  },
+  {
+    "original_path": "changed-files/lib/app/router/screen_wrappers.dart",
+    "flat_name": "changed-files__lib__app__router__screen_wrappers.dart",
+    "size_bytes": 11559
+  },
+  {
+    "original_path": "changed-files/lib/core/auth/supabase_session_service.dart",
+    "flat_name": "changed-files__lib__core__auth__supabase_session_service.dart",
+    "size_bytes": 2488
+  },
+  {
+    "original_path": "changed-files/lib/core/utils/mobio_member_id.dart",
+    "flat_name": "changed-files__lib__core__utils__mobio_member_id.dart",
+    "size_bytes": 1080
+  },
+  {
+    "original_path": "changed-files/lib/features/biopay/data/biopay_device_nfc_service.dart",
+    "flat_name": "changed-files__lib__features__biopay__data__biopay_device_nfc_service.dart",
+    "size_bytes": 3008
+  },
+  {
+    "original_path": "changed-files/lib/features/biopay/data/biopay_face_service.dart",
+    "flat_name": "changed-files__lib__features__biopay__data__biopay_face_service.dart",
+    "size_bytes": 6682
+  },
+  {
+    "original_path": "changed-files/lib/features/biopay/presentation/face_copy.dart",
+    "flat_name": "changed-files__lib__features__biopay__presentation__face_copy.dart",
+    "size_bytes": 1485
+  },
+  {
+    "original_path": "changed-files/lib/features/bookings/data/public_transport_service.dart",
+    "flat_name": "changed-files__lib__features__bookings__data__public_transport_service.dart",
+    "size_bytes": 10187
+  },
+  {
+    "original_path": "changed-files/lib/features/bookings/presentation/bookings_screen.dart",
+    "flat_name": "changed-files__lib__features__bookings__presentation__bookings_screen.dart",
+    "size_bytes": 20454
+  },
+  {
+    "original_path": "changed-files/lib/features/home/presentation/widgets/scheduled_trip_card.dart",
+    "flat_name": "changed-files__lib__features__home__presentation__widgets__scheduled_trip_card.dart",
+    "size_bytes": 3467
+  },
+  {
+    "original_path": "changed-files/lib/features/notifications/data/push_notification_service.dart",
+    "flat_name": "changed-files__lib__features__notifications__data__push_notification_service.dart",
+    "size_bytes": 13648
+  },
+  {
+    "original_path": "changed-files/lib/features/profile/presentation/profile_screen.dart",
+    "flat_name": "changed-files__lib__features__profile__presentation__profile_screen.dart",
+    "size_bytes": 26125
+  },
+  {
+    "original_path": "changed-files/lib/shared/widgets/driver_card.dart",
+    "flat_name": "changed-files__lib__shared__widgets__driver_card.dart",
+    "size_bytes": 5139
+  },
+  {
+    "original_path": "changed-files/scripts/ci/check_github_actions_pinned.py",
+    "flat_name": "changed-files__scripts__ci__check_github_actions_pinned.py",
+    "size_bytes": 5776
+  },
+  {
+    "original_path": "changed-files/scripts/ci/check_github_actions_pinned.sh",
+    "flat_name": "changed-files__scripts__ci__check_github_actions_pinned.sh",
+    "size_bytes": 195
+  },
+  {
+    "original_path": "changed-files/scripts/ci/prepare_hardening_migrations.py",
+    "flat_name": "changed-files__scripts__ci__prepare_hardening_migrations.py",
+    "size_bytes": 7828
+  },
+  {
+    "original_path": "changed-files/scripts/ci/requirements.txt",
+    "flat_name": "changed-files__scripts__ci__requirements.txt",
+    "size_bytes": 14
+  },
+  {
+    "original_path": "changed-files/scripts/ci/run_hardening_tests.sh",
+    "flat_name": "changed-files__scripts__ci__run_hardening_tests.sh",
+    "size_bytes": 1851
+  },
+  {
+    "original_path": "changed-files/scripts/qa/verify_mobio_feature_readiness.sh",
+    "flat_name": "changed-files__scripts__qa__verify_mobio_feature_readiness.sh",
+    "size_bytes": 2940
+  },
+  {
+    "original_path": "changed-files/scripts/release/check_play_version_evidence.py",
+    "flat_name": "changed-files__scripts__release__check_play_version_evidence.py",
+    "size_bytes": 1482
+  },
+  {
+    "original_path": "changed-files/scripts/release/go_no_go_check.sh",
+    "flat_name": "changed-files__scripts__release__go_no_go_check.sh",
+    "size_bytes": 6537
+  },
+  {
+    "original_path": "changed-files/scripts/tests/edge/deno-env.fixture.d.ts",
+    "flat_name": "changed-files__scripts__tests__edge__deno-env.fixture.d.ts",
+    "size_bytes": 157
+  },
+  {
+    "original_path": "changed-files/scripts/tests/edge/fixture-loader.mjs",
+    "flat_name": "changed-files__scripts__tests__edge__fixture-loader.mjs",
+    "size_bytes": 573
+  },
+  {
+    "original_path": "changed-files/scripts/tests/edge/handlers.test.mjs",
+    "flat_name": "changed-files__scripts__tests__edge__handlers.test.mjs",
+    "size_bytes": 11793
+  },
+  {
+    "original_path": "changed-files/scripts/tests/edge/hardening.test.mjs",
+    "flat_name": "changed-files__scripts__tests__edge__hardening.test.mjs",
+    "size_bytes": 12667
+  },
+  {
+    "original_path": "changed-files/scripts/tests/kotlin/BioPayNfcPolicyTest.kt",
+    "flat_name": "changed-files__scripts__tests__kotlin__BioPayNfcPolicyTest.kt",
+    "size_bytes": 2800
+  },
+  {
+    "original_path": "changed-files/scripts/tests/kotlin/CollectorPolicyCheck.kt",
+    "flat_name": "changed-files__scripts__tests__kotlin__CollectorPolicyCheck.kt",
+    "size_bytes": 5240
+  },
+  {
+    "original_path": "changed-files/scripts/tests/test_collector_queue_contracts.py",
+    "flat_name": "changed-files__scripts__tests__test_collector_queue_contracts.py",
+    "size_bytes": 9919
+  },
+  {
+    "original_path": "changed-files/scripts/tests/test_hardening_preparation.py",
+    "flat_name": "changed-files__scripts__tests__test_hardening_preparation.py",
+    "size_bytes": 5721
+  },
+  {
+    "original_path": "changed-files/scripts/tests/test_identity_lifecycle_contracts.py",
+    "flat_name": "changed-files__scripts__tests__test_identity_lifecycle_contracts.py",
+    "size_bytes": 8750
+  },
+  {
+    "original_path": "changed-files/scripts/tests/test_play_version_evidence.py",
+    "flat_name": "changed-files__scripts__tests__test_play_version_evidence.py",
+    "size_bytes": 1182
+  },
+  {
+    "original_path": "changed-files/scripts/tests/test_production_gates.py",
+    "flat_name": "changed-files__scripts__tests__test_production_gates.py",
+    "size_bytes": 8318
+  },
+  {
+    "original_path": "changed-files/services/face-inference/Dockerfile",
+    "flat_name": "changed-files__services__face-inference__Dockerfile",
+    "size_bytes": 509
+  },
+  {
+    "original_path": "changed-files/services/face-inference/inference.py",
+    "flat_name": "changed-files__services__face-inference__inference.py",
+    "size_bytes": 4344
+  },
+  {
+    "original_path": "changed-files/services/face-inference/protocol.py",
+    "flat_name": "changed-files__services__face-inference__protocol.py",
+    "size_bytes": 232
+  },
+  {
+    "original_path": "changed-files/services/face-inference/server.py",
+    "flat_name": "changed-files__services__face-inference__server.py",
+    "size_bytes": 7433
+  },
+  {
+    "original_path": "changed-files/services/face-inference/tests/test_http.py",
+    "flat_name": "changed-files__services__face-inference__tests__test_http.py",
+    "size_bytes": 2262
+  },
+  {
+    "original_path": "changed-files/services/face-inference/tests/test_server_bounds.py",
+    "flat_name": "changed-files__services__face-inference__tests__test_server_bounds.py",
+    "size_bytes": 5382
+  },
+  {
+    "original_path": "changed-files/supabase/functions/_shared/bounded-fetch.ts",
+    "flat_name": "changed-files__supabase__functions___shared__bounded-fetch.ts",
+    "size_bytes": 4015
+  },
+  {
+    "original_path": "changed-files/supabase/functions/_shared/momo-receipt-evidence.ts",
+    "flat_name": "changed-files__supabase__functions___shared__momo-receipt-evidence.ts",
+    "size_bytes": 3695
+  },
+  {
+    "original_path": "changed-files/supabase/functions/_shared/momo-sms.ts",
+    "flat_name": "changed-files__supabase__functions___shared__momo-sms.ts",
+    "size_bytes": 8587
+  },
+  {
+    "original_path": "changed-files/supabase/functions/_shared/verified-phone-identity.ts",
+    "flat_name": "changed-files__supabase__functions___shared__verified-phone-identity.ts",
+    "size_bytes": 1894
+  },
+  {
+    "original_path": "changed-files/supabase/functions/_shared/whatsapp-cloud.ts",
+    "flat_name": "changed-files__supabase__functions___shared__whatsapp-cloud.ts",
+    "size_bytes": 7214
+  },
+  {
+    "original_path": "changed-files/supabase/functions/maps-gateway/index.ts",
+    "flat_name": "changed-files__supabase__functions__maps-gateway__index.ts",
+    "size_bytes": 23046
+  },
+  {
+    "original_path": "changed-files/supabase/functions/momobio-sms-ingest/index.ts",
+    "flat_name": "changed-files__supabase__functions__momobio-sms-ingest__index.ts",
+    "size_bytes": 7387
+  },
+  {
+    "original_path": "changed-files/supabase/functions/parse-sms/index.ts",
+    "flat_name": "changed-files__supabase__functions__parse-sms__index.ts",
+    "size_bytes": 654
+  },
+  {
+    "original_path": "changed-files/supabase/functions/reconcile-momo-sms/index.ts",
+    "flat_name": "changed-files__supabase__functions__reconcile-momo-sms__index.ts",
+    "size_bytes": 654
+  },
+  {
+    "original_path": "changed-files/supabase/functions/verify-login-otp/index.ts",
+    "flat_name": "changed-files__supabase__functions__verify-login-otp__index.ts",
+    "size_bytes": 12909
+  },
+  {
+    "original_path": "changed-files/supabase/hardening/2026-09-28/01_booking_write_authority.sql",
+    "flat_name": "changed-files__supabase__hardening__2026-09-28__01_booking_write_authority.sql",
+    "size_bytes": 1521
+  },
+  {
+    "original_path": "changed-files/supabase/hardening/2026-09-28/02_verified_phone_authority.sql",
+    "flat_name": "changed-files__supabase__hardening__2026-09-28__02_verified_phone_authority.sql",
+    "size_bytes": 8297
+  },
+  {
+    "original_path": "changed-files/supabase/hardening/2026-09-28/03_strict_receipt_allocation.sql",
+    "flat_name": "changed-files__supabase__hardening__2026-09-28__03_strict_receipt_allocation.sql",
+    "size_bytes": 12727
+  },
+  {
+    "original_path": "changed-files/supabase/hardening/2026-09-28/04_canonical_member_id.sql",
+    "flat_name": "changed-files__supabase__hardening__2026-09-28__04_canonical_member_id.sql",
+    "size_bytes": 3727
+  },
+  {
+    "original_path": "changed-files/supabase/hardening/2026-09-28/05_transport_hold_receipt_integrity.sql",
+    "flat_name": "changed-files__supabase__hardening__2026-09-28__05_transport_hold_receipt_integrity.sql",
+    "size_bytes": 10723
+  },
+  {
+    "original_path": "changed-files/supabase/hardening/2026-09-28/06_bounded_driver_discovery.sql",
+    "flat_name": "changed-files__supabase__hardening__2026-09-28__06_bounded_driver_discovery.sql",
+    "size_bytes": 5082
+  },
+  {
+    "original_path": "changed-files/supabase/hardening/2026-09-28/README.md",
+    "flat_name": "changed-files__supabase__hardening__2026-09-28__README.md",
+    "size_bytes": 6860
+  },
+  {
+    "original_path": "changed-files/supabase/hardening/2026-09-28/manifest.json",
+    "flat_name": "changed-files__supabase__hardening__2026-09-28__manifest.json",
+    "size_bytes": 1357
+  },
+  {
+    "original_path": "changed-files/supabase/hardening/2026-09-28/post_install_assertions.sql",
+    "flat_name": "changed-files__supabase__hardening__2026-09-28__post_install_assertions.sql",
+    "size_bytes": 4487
+  },
+  {
+    "original_path": "changed-files/test/core/utils/mobio_member_id_test.dart",
+    "flat_name": "changed-files__test__core__utils__mobio_member_id_test.dart",
+    "size_bytes": 1144
+  },
+  {
+    "original_path": "evidence/face-worker03.exit",
+    "flat_name": "evidence__face-worker03.exit",
+    "size_bytes": 2
+  },
+  {
+    "original_path": "evidence/face-worker03.log",
+    "flat_name": "evidence__face-worker03.log",
+    "size_bytes": 1674
+  },
+  {
+    "original_path": "evidence/full-hardening03.exit",
+    "flat_name": "evidence__full-hardening03.exit",
+    "size_bytes": 2
+  },
+  {
+    "original_path": "evidence/full-hardening03.log",
+    "flat_name": "evidence__full-hardening03.log",
+    "size_bytes": 33420
+  },
+  {
+    "original_path": "evidence/migration-gate03.exit",
+    "flat_name": "evidence__migration-gate03.exit",
+    "size_bytes": 2
+  },
+  {
+    "original_path": "evidence/migration-gate03.log",
+    "flat_name": "evidence__migration-gate03.log",
+    "size_bytes": 1588
+  },
+  {
+    "original_path": "evidence/pages-admin03.exit",
+    "flat_name": "evidence__pages-admin03.exit",
+    "size_bytes": 2
+  },
+  {
+    "original_path": "evidence/pages-admin03.log",
+    "flat_name": "evidence__pages-admin03.log",
+    "size_bytes": 14327
+  },
+  {
+    "original_path": "evidence/supabase-project-visibility03.json",
+    "flat_name": "evidence__supabase-project-visibility03.json",
+    "size_bytes": 278
+  }
+]

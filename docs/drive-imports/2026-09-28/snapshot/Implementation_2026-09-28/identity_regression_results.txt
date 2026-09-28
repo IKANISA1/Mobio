@@ -1,0 +1,96 @@
+TAP version 13
+# (node:758) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: normalizes verified Auth phone without inventing digits
+ok 1 - normalizes verified Auth phone without inventing digits
+  ---
+  duration_ms: 1.65018
+  type: 'test'
+  ...
+# Subtest: resolves only server binding and verified Auth identity
+ok 2 - resolves only server binding and verified Auth identity
+  ---
+  duration_ms: 0.644747
+  type: 'test'
+  ...
+# Subtest: unbound number does not query profile aliases
+ok 3 - unbound number does not query profile aliases
+  ---
+  duration_ms: 0.240032
+  type: 'test'
+  ...
+# Subtest: binding outage does not fall back
+ok 4 - binding outage does not fall back
+  ---
+  duration_ms: 0.487978
+  type: 'test'
+  ...
+# Subtest: missing Auth user is not recreated from profile
+ok 5 - missing Auth user is not recreated from profile
+  ---
+  duration_ms: 0.28523
+  type: 'test'
+  ...
+# Subtest: different Auth phone is never reassigned
+ok 6 - different Auth phone is never reassigned
+  ---
+  duration_ms: 0.156714
+  type: 'test'
+  ...
+# Subtest: unconfirmed phone cannot authenticate
+ok 7 - unconfirmed phone cannot authenticate
+  ---
+  duration_ms: 0.209552
+  type: 'test'
+  ...
+# Subtest: invalid confirmation timestamp rejected
+ok 8 - invalid confirmation timestamp rejected
+  ---
+  duration_ms: 0.108311
+  type: 'test'
+  ...
+# Subtest: anonymous Auth user rejected
+ok 9 - anonymous Auth user rejected
+  ---
+  duration_ms: 0.519993
+  type: 'test'
+  ...
+# Subtest: editable metadata cannot supply provider authority
+ok 10 - editable metadata cannot supply provider authority
+  ---
+  duration_ms: 0.523162
+  type: 'test'
+  ...
+# Subtest: separate admin provider cannot become app login
+ok 11 - separate admin provider cannot become app login
+  ---
+  duration_ms: 1.223482
+  type: 'test'
+  ...
+# Subtest: admin role cannot become consumer role
+ok 12 - admin role cannot become consumer role
+  ---
+  duration_ms: 0.172555
+  type: 'test'
+  ...
+# Subtest: server binding must return the same Auth id
+ok 13 - server binding must return the same Auth id
+  ---
+  duration_ms: 0.161799
+  type: 'test'
+  ...
+# Subtest: verified binding succeeds
+ok 14 - verified binding succeeds
+  ---
+  duration_ms: 0.07621
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 173.44196

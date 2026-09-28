@@ -1,0 +1,160 @@
+{
+  "files": [
+    {
+      "repository_path": ".github/workflows/ci.yml",
+      "flat_filename": ".github__workflows__ci.yml",
+      "sha256": "56b151b7b53e0cc46fb2f2b3387ecbd588911fd9f39c5229eebf792460550ada",
+      "size": 11479
+    },
+    {
+      "repository_path": "docs/production-readiness/INCREMENT09_PRIVACY_REQUESTS.md",
+      "flat_filename": "docs__production-readiness__INCREMENT09_PRIVACY_REQUESTS.md",
+      "sha256": "d2589da6576134e0d81faa0fb0503435068ac4d41d42685254dfc169ab602165",
+      "size": 14439
+    },
+    {
+      "repository_path": "lib/features/admin/presentation/admin_operational_health_screen.dart",
+      "flat_filename": "lib__features__admin__presentation__admin_operational_health_screen.dart",
+      "sha256": "633104e28f479fd01debde4d6af0737551da1bfd6a3d7df4849b6fc2ac1178f0",
+      "size": 26871
+    },
+    {
+      "repository_path": "lib/features/admin/presentation/widgets/privacy_health_card.dart",
+      "flat_filename": "lib__features__admin__presentation__widgets__privacy_health_card.dart",
+      "sha256": "b6e171699fba95d49beb21351077b7851ff83a3de5675daf562b2a3822c2bad5",
+      "size": 3384
+    },
+    {
+      "repository_path": "lib/features/privacy/data/privacy_service.dart",
+      "flat_filename": "lib__features__privacy__data__privacy_service.dart",
+      "sha256": "78cebcfbda082bc0a56edc44f1fbcadf8027db3141639fb2e311ed0319db2531",
+      "size": 3809
+    },
+    {
+      "repository_path": "lib/features/privacy/domain/privacy_request.dart",
+      "flat_filename": "lib__features__privacy__domain__privacy_request.dart",
+      "sha256": "b38eb3f3540b6680d3100d0ff64d4b4167204d84ca49f1d54e25e5ab67883750",
+      "size": 4785
+    },
+    {
+      "repository_path": "lib/features/privacy/presentation/privacy_request_screen.dart",
+      "flat_filename": "lib__features__privacy__presentation__privacy_request_screen.dart",
+      "sha256": "ea95f01e64134bc8d3e178e82385fbf8a86bc9ab916bd44bf9dca7d991814c01",
+      "size": 7527
+    },
+    {
+      "repository_path": "lib/features/profile/presentation/profile_screen.dart",
+      "flat_filename": "lib__features__profile__presentation__profile_screen.dart",
+      "sha256": "6013cf842c7bb32453958ceb5c64cb8590ed965c82a0971400e77c0c21db3f8b",
+      "size": 27431
+    },
+    {
+      "repository_path": "scripts/ci/apply_increment09.py",
+      "flat_filename": "scripts__ci__apply_increment09.py",
+      "sha256": "6d385a379213914df9a984f88cddae1801c1505070cc9b9c8e418bbbca68dd89",
+      "size": 4714
+    },
+    {
+      "repository_path": "scripts/ci/run_hardening_tests.sh",
+      "flat_filename": "scripts__ci__run_hardening_tests.sh",
+      "sha256": "8d5375dc9dc9a21a40adb38673c7408e70d8a7f657a37ef3da9dc33a7be42535",
+      "size": 3040
+    },
+    {
+      "repository_path": "scripts/ci/run_privacy_checks.sh",
+      "flat_filename": "scripts__ci__run_privacy_checks.sh",
+      "sha256": "4803a0cae316dbfde659a69367ea071c5fb5b30a42fca31343c8975fbb43e5be",
+      "size": 644
+    },
+    {
+      "repository_path": "scripts/privacy/verify_completion_manifest.py",
+      "flat_filename": "scripts__privacy__verify_completion_manifest.py",
+      "sha256": "3282c5f12cf2f83f0ff5dd0ee7eb91a8308951d4554daf88937b411b12720180",
+      "size": 9932
+    },
+    {
+      "repository_path": "scripts/qa/test_privacy_postgres.py",
+      "flat_filename": "scripts__qa__test_privacy_postgres.py",
+      "sha256": "25a5a65b2ce38338f9e13c00b4cb536b81952b8e06d2f9a79dd2b891455832cc",
+      "size": 9397
+    },
+    {
+      "repository_path": "scripts/tests/privacy/gateway.test.mjs",
+      "flat_filename": "scripts__tests__privacy__gateway.test.mjs",
+      "sha256": "64409bfccb990099a4646c1cded2cc3267fac2b537828c8176d451a5f776d74d",
+      "size": 10165
+    },
+    {
+      "repository_path": "scripts/tests/sql/privacy_fixture_bootstrap.sql",
+      "flat_filename": "scripts__tests__sql__privacy_fixture_bootstrap.sql",
+      "sha256": "34c426b4e7a010722f078fd29a215518c82aedf99fd2faf1ca48e42ee57d828c",
+      "size": 1933
+    },
+    {
+      "repository_path": "scripts/tests/test_identity_lifecycle_contracts.py",
+      "flat_filename": "scripts__tests__test_identity_lifecycle_contracts.py",
+      "sha256": "f29912448fd4651777f042b3a0d4ed356c6c810d48261ff46c31851791936ba0",
+      "size": 9914
+    },
+    {
+      "repository_path": "scripts/tests/test_increment07_contracts.py",
+      "flat_filename": "scripts__tests__test_increment07_contracts.py",
+      "sha256": "3e5e377e7f5e98910a3ce53e71600fa25ae25f8ac704f95dadaa6816a77ebfa3",
+      "size": 3615
+    },
+    {
+      "repository_path": "scripts/tests/test_increment09_applier.py",
+      "flat_filename": "scripts__tests__test_increment09_applier.py",
+      "sha256": "39c6bc01130ef56ad68a5619739aff8a1987a5e574ddbe2a09f478aef78250cf",
+      "size": 3662
+    },
+    {
+      "repository_path": "scripts/tests/test_privacy_evidence.py",
+      "flat_filename": "scripts__tests__test_privacy_evidence.py",
+      "sha256": "18278dbd1dd3efc80114ed275226adc9ffdbec49455e3bbee8c713c11e48020b",
+      "size": 8278
+    },
+    {
+      "repository_path": "scripts/tests/test_privacy_runner.py",
+      "flat_filename": "scripts__tests__test_privacy_runner.py",
+      "sha256": "da514ee1a6461b91b419c7a590399d7ab0f0c856454b22da3f0b8a568ce18e92",
+      "size": 1727
+    },
+    {
+      "repository_path": "supabase/config.toml",
+      "flat_filename": "supabase__config.toml",
+      "sha256": "25359bcf72dcecf97d40af5ef233284a012fbf54c3ab7550505eb9cf40536f03",
+      "size": 15740
+    },
+    {
+      "repository_path": "supabase/functions/_shared/privacy-request.ts",
+      "flat_filename": "supabase__functions___shared__privacy-request.ts",
+      "sha256": "562393f86e524521768ac2d3b3dbf4706b4e93c788fc1fc401946b00b07b906b",
+      "size": 11153
+    },
+    {
+      "repository_path": "supabase/functions/privacy-requests/index.ts",
+      "flat_filename": "supabase__functions__privacy-requests__index.ts",
+      "sha256": "6f6aa38445587133d17f34c49d6d3a7a3bf89562adf0143a7fd11b531ad424cf",
+      "size": 430
+    },
+    {
+      "repository_path": "supabase/hardening/2026-09-28/12_privacy_request_workflow.sql",
+      "flat_filename": "supabase__hardening__2026-09-28__12_privacy_request_workflow.sql",
+      "sha256": "5b752a17115176694e498a3853528d9443912655bb88080ac2091da437696946",
+      "size": 25633
+    },
+    {
+      "repository_path": "supabase/hardening/2026-09-28/manifest.json",
+      "flat_filename": "supabase__hardening__2026-09-28__manifest.json",
+      "sha256": "d67c250273d72dc2e63d2b236fec026f01351e4907f76384f89e4edc5381f614",
+      "size": 2613
+    },
+    {
+      "repository_path": "test/increment09/privacy_request_test.dart",
+      "flat_filename": "test__increment09__privacy_request_test.dart",
+      "sha256": "a105afa08e679298c34616e3406e9cce420df421cccf6a1151419c807c4b5d5b",
+      "size": 3322
+    }
+  ]
+}

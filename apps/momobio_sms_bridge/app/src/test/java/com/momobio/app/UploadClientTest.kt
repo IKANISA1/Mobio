@@ -16,11 +16,37 @@ class UploadClientTest {
         MomoSms("QA", "Synthetic receipt $it 🚌\nLiteral \\n", 1_780_000_000_000 + it.toLong())
     }
 
-    @Test fun emptyQueueDoesNotRequireConfigurationOrTouchTransport() {
+    @Test fun emptyQueueStillRequiresSecureConfiguration() {
         val fixture = UploadFixture()
-        assertTrue(fixture.client("", "").upload(emptyList()).ok)
+        assertFalse(fixture.client("", "").upload(emptyList()).ok)
         assertTrue(fixture.endpoints.isEmpty())
         assertTrue(fixture.signedBytes.isEmpty())
+    }
+
+    @Test fun emptyQueueRequiresSignedServerHealth() {
+        val fixture = UploadFixture { FakeConnection().apply {
+            responseBody = { """{"success":true,"kind":"collector_health","collector_enrolled":true,"automatic_allocation_enabled":false}""" }
+        } }
+        val result = fixture.client().upload(emptyList())
+        assertTrue(result.ok)
+        assertTrue(result.serverAcknowledged)
+        assertEquals(false, result.automaticAllocationEnabled)
+        assertEquals(1, fixture.signedBytes.size)
+        assertFalse(fixture.connections.single().instanceFollowRedirects)
+        assertEquals("health", JSONObject(fixture.connections.single().written.toString(Charsets.UTF_8)).getString("action"))
+    }
+
+    @Test fun emptyQueueDoesNotAcceptReceiptEnvelopeAsHealth() {
+        val fixture = UploadFixture { FakeConnection().apply { responseBody = { """{"success":true,"results":[]}""" } } }
+        assertFalse(fixture.client().upload(emptyList()).ok)
+    }
+
+    @Test fun redirectIsNeverFollowed() {
+        val fixture = UploadFixture { FakeConnection().apply { status = 307 } }
+        val result = fixture.client().upload(messages(1))
+        assertFalse(result.ok)
+        assertEquals("redirect_rejected", result.outcome)
+        assertFalse(fixture.connections.single().instanceFollowRedirects)
     }
 
     @Test fun missingConfigurationRetainsQueueWithoutSigningOrConnecting() {
@@ -28,7 +54,7 @@ class UploadClientTest {
             val fixture = UploadFixture()
             val result = fixture.client(url, key).upload(messages(1))
             assertFalse(result.ok)
-            assertEquals("Upload config missing", result.message)
+            assertEquals("Secure upload config missing", result.message)
             assertTrue(fixture.endpoints.isEmpty())
             assertTrue(fixture.signedBytes.isEmpty())
         }

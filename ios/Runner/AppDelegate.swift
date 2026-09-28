@@ -1,3 +1,4 @@
+import Security
 import Flutter
 import UIKit
 import ContactsUI
@@ -18,6 +19,7 @@ import UniformTypeIdentifiers
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    SecureSessionChannel.register(messenger: engineBridge.applicationRegistrar.messenger())
     discoveryPicker.register(messenger: engineBridge.applicationRegistrar.messenger())
     registerBioPayQrExportChannel(
       messenger: engineBridge.applicationRegistrar.messenger()
@@ -153,5 +155,110 @@ private final class BioPayDiscoveryPicker: NSObject, CNContactPickerDelegate, PH
     let result = pending
     pending = nil
     result?(value)
+  }
+}
+
+
+// Kept in this already-built compilation unit: no generated project IDs or
+// unregistered Swift files are needed. No Keychain sharing or sync is enabled.
+private enum SecureSessionChannel {
+  private static let queue = DispatchQueue(label: "rw.mobi.app.secure-session")
+  private static let service = (Bundle.main.bundleIdentifier ?? "rw.mobi.app") + ".session.v1"
+  private enum StoreFailure: Error { case unavailable }
+
+  static func register(messenger: FlutterBinaryMessenger) {
+    let channel = FlutterMethodChannel(name: "rw.mobi.app/secure_session", binaryMessenger: messenger)
+    channel.setMethodCallHandler { call, result in
+      guard ["read", "write", "clear", "reset"].contains(call.method) else {
+        result(FlutterMethodNotImplemented); return
+      }
+      guard let args = call.arguments as? [String: Any],
+            let namespace = args["namespace"] as? String,
+            namespace.utf8.count == 64,
+            namespace.range(of: "^[a-f0-9]{64}$", options: .regularExpression) != nil else {
+        result(FlutterError(code: "AUTH_STORAGE_ARGUMENT", message: "Invalid storage request.", details: nil)); return
+      }
+      let value = args["value"] as? String
+      if call.method == "write" && (value == nil || value!.utf8.isEmpty || value!.utf8.count > 65536) {
+        result(FlutterError(code: "AUTH_STORAGE_ARGUMENT", message: "Invalid session size.", details: nil)); return
+      }
+      queue.async {
+        do {
+          try ensureInstallation(namespace, forceReset: call.method == "reset")
+          var answer: Any? = true
+          switch call.method {
+          case "read": answer = try read(namespace)
+          case "write":
+            let data = Data(value!.utf8)
+            let attributes: [String: Any] = [
+              kSecValueData as String: data,
+              kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+            ]
+            let update = SecItemUpdate(query(namespace) as CFDictionary, attributes as CFDictionary)
+            if update == errSecItemNotFound {
+              var insert = query(namespace)
+              attributes.forEach { insert[$0.key] = $0.value }
+              guard SecItemAdd(insert as CFDictionary, nil) == errSecSuccess else { throw StoreFailure.unavailable }
+            } else if update != errSecSuccess { throw StoreFailure.unavailable }
+            guard try read(namespace) == value else { throw StoreFailure.unavailable }
+          default: try clear(namespace)
+          }
+          DispatchQueue.main.async { result(answer) }
+        } catch {
+          // Never stringify OS errors or persisted session contents.
+          DispatchQueue.main.async {
+            result(FlutterError(code: "AUTH_STORAGE_UNAVAILABLE",
+              message: "Unlock this device and try again. Saved login could not be accessed safely.", details: nil))
+          }
+        }
+      }
+    }
+  }
+
+  private static func query(_ namespace: String) -> [String: Any] {
+    [kSecClass as String: kSecClassGenericPassword,
+     kSecAttrService as String: service,
+     kSecAttrAccount as String: namespace,
+     kSecAttrSynchronizable as String: false]
+  }
+
+  private static func read(_ namespace: String) throws -> String? {
+    var request = query(namespace)
+    request[kSecReturnData as String] = true
+    request[kSecMatchLimit as String] = kSecMatchLimitOne
+    var response: CFTypeRef?
+    let status = SecItemCopyMatching(request as CFDictionary, &response)
+    if status == errSecItemNotFound { return nil }
+    guard status == errSecSuccess, let data = response as? Data,
+          !data.isEmpty, data.count <= 65536,
+          let value = String(data: data, encoding: .utf8) else { throw StoreFailure.unavailable }
+    return value
+  }
+
+  private static func clear(_ namespace: String) throws {
+    let status = SecItemDelete(query(namespace) as CFDictionary)
+    guard status == errSecSuccess || status == errSecItemNotFound else { throw StoreFailure.unavailable }
+    guard try read(namespace) == nil else { throw StoreFailure.unavailable }
+  }
+
+  private static func ensureInstallation(_ namespace: String, forceReset: Bool = false) throws {
+    let manager = FileManager.default
+    var directory = try manager.url(for: .applicationSupportDirectory, in: .userDomainMask,
+      appropriateFor: nil, create: true).appendingPathComponent("MobioAuth", isDirectory: true)
+    try manager.createDirectory(at: directory, withIntermediateDirectories: true)
+    var resources = URLResourceValues(); resources.isExcludedFromBackup = true
+    try directory.setResourceValues(resources)
+    var marker = directory.appendingPathComponent(namespace + ".install")
+    if forceReset || !manager.fileExists(atPath: marker.path) {
+      // Keychain items may survive app removal. A missing excluded installation
+      // marker means a fresh install/restore, never implicit re-authentication.
+      try clear(namespace)
+      try Data("mobio-auth-install-v1".utf8).write(to: marker,
+        options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+    }
+    try marker.setResourceValues(resources)
+    guard try Data(contentsOf: marker) == Data("mobio-auth-install-v1".utf8) else {
+      throw StoreFailure.unavailable
+    }
   }
 }

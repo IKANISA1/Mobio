@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/vehicle_type_icon.dart';
@@ -83,8 +82,8 @@ class ScheduledTripCard extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  trip.authorId.isNotEmpty
-                      ? AppConstants.getDriverId(trip.authorId)
+                  trip.authorName.trim().isNotEmpty
+                      ? trip.authorName.trim()
                       : trip.vehicleTypeStr.toUpperCase(),
                   style: AppTypography.labelMd.copyWith(
                     color: cs.onSurfaceVariant,

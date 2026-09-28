@@ -1,0 +1,11 @@
+[Unit]
+Description=Trigger the approved Mobio SMS worker once per minute
+
+[Timer]
+OnCalendar=*-*-* *:*:00
+AccuracySec=5s
+Persistent=false
+Unit=mobio-sms-intake.service
+
+[Install]
+WantedBy=timers.target

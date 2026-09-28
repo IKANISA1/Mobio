@@ -1,0 +1,132 @@
+{
+  "increment": "08",
+  "as_of": "2026-09-28",
+  "total_checks": 671,
+  "new_checks": 70,
+  "new_executable_checks": 52,
+  "new_static_assertions": 18,
+  "prior_checks_rerun": 601,
+  "qualification": "NOT an end-to-end test count. Zero new Dart session-persistence tests, AndroidKeyStore tests or iOS Keychain tests executed.",
+  "lanes": [
+    {
+      "name": "New session cipher JCA/JVM",
+      "status": "PASS",
+      "count": 41,
+      "kind": "executable",
+      "boundary": "Real AES-GCM, generated ephemeral keys, tamper/AAD/key/size tests and temporary-file roundtrip. Not Android Keystore or native bridge.",
+      "log": "session_cipher_final.txt"
+    },
+    {
+      "name": "New source applier",
+      "status": "PASS",
+      "count": 11,
+      "kind": "executable",
+      "boundary": "Actual local filesystem and guarded repeated application; not native app tests.",
+      "log": "test_increment08_applier.txt"
+    },
+    {
+      "name": "New integration source assertions",
+      "status": "PASS",
+      "count": 18,
+      "kind": "static",
+      "boundary": "Source text/manifest assertions only; not Dart or native behavior.",
+      "log": "test_increment08_contracts.txt"
+    },
+    {
+      "name": "Prior Python regression checks",
+      "status": "PASS",
+      "count": 253,
+      "kind": "mixed",
+      "boundary": "Selected original hardening lanes; mixed fixtures and source assertions.",
+      "log": "python_final_results.json"
+    },
+    {
+      "name": "Prior push worker/provider HTTP",
+      "status": "PASS",
+      "count": 70,
+      "kind": "fixtures",
+      "boundary": "Prior TS and HTTP/crypto logic; explicit external responses.",
+      "log": "push_node.txt"
+    },
+    {
+      "name": "Prior pure Edge modules",
+      "status": "PASS",
+      "count": 66,
+      "kind": "executable",
+      "boundary": "Node module logic, not native Deno runtime.",
+      "log": "edge_pure_node.txt"
+    },
+    {
+      "name": "Prior Edge handler fixtures",
+      "status": "PASS",
+      "count": 138,
+      "kind": "fixtures",
+      "boundary": "Real handler logic with declared Auth/database/SDK substitutes.",
+      "log": "edge_handlers_node_complete.txt"
+    },
+    {
+      "name": "Prior inference HTTP",
+      "status": "PASS",
+      "count": 16,
+      "kind": "fixtures",
+      "boundary": "Actual HTTP with fake model.",
+      "log": "inference_http.txt"
+    },
+    {
+      "name": "Prior NFC JVM policy",
+      "status": "PASS",
+      "count": 20,
+      "kind": "executable",
+      "boundary": "Compiled JVM logic, not NFC device.",
+      "log": "nfc_jvm.txt"
+    },
+    {
+      "name": "Prior collector policy/OS leases",
+      "status": "PASS",
+      "count": 38,
+      "kind": "executable",
+      "boundary": "Compiled pure Kotlin and file leases, not WorkManager/device.",
+      "log": "collector_jvm.txt"
+    }
+  ],
+  "other_checks": [
+    "Swift syntax parse only (not iOS typecheck)",
+    "YAML/TOML/Python/shell syntax",
+    "GitHub Action source pins",
+    "All eleven prior SQL bodies unchanged",
+    "Independent patch and guarded applier: 31 hashes match; reapply zero",
+    "Dependency lock unchanged"
+  ],
+  "not_executed": [
+    "Dart/Flutter compilation and new tests",
+    "Android native channel/Keystore runtime",
+    "iOS Keychain/build/sign/install",
+    "Physical device or emulator acceptance",
+    "PostgreSQL/full schema/Auth/PostgREST acceptance",
+    "Hosted CI and production deployment"
+  ],
+  "environment": {
+    "node": "v22.16.0",
+    "available": [
+      "Python",
+      "Node",
+      "TypeScript",
+      "JVM/Kotlin",
+      "Swift parser"
+    ],
+    "unavailable": [
+      "Flutter",
+      "Dart",
+      "adb",
+      "Docker",
+      "PostgreSQL/psql"
+    ]
+  },
+  "recovery_notes": [
+    "Initial broad Python discovery found two assertions tied to prior source locations, updated to the equivalent central guard. It also encountered absent baseline PWA/web dependencies; full broad discovery is not claimed passing. Final selected hardening lanes pass.",
+    "Initial Edge module-load failures resolved by restoring exact current-index matching sources; no stub replacement used for missing source. External fixture substitutions remain explicit."
+  ],
+  "production_deployed": false,
+  "native_runtime_accepted": false,
+  "all95_tasks_closed": false
+}

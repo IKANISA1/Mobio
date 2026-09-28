@@ -9,22 +9,38 @@ void main() {
       expect(AdminSessionGuard.isAdmin, isFalse);
     });
 
-    test('grant() sets isAdmin to true for the granted user', () {
+    test('legacy client grant cannot create admin access', () {
       AdminSessionGuard.grant('admin-user');
-      expect(AdminSessionGuard.isAdmin, isTrue);
-      expect(AdminSessionGuard.isAdminFor('admin-user'), isTrue);
+      expect(AdminSessionGuard.isAdmin, isFalse);
+      expect(AdminSessionGuard.isAdminFor('admin-user'), isFalse);
     });
 
     test('revoke() sets isAdmin to false', () {
-      AdminSessionGuard.grant('admin-user');
+      AdminSessionGuard.acceptServerLease(
+        userId: 'admin-user', sessionId: 'session-1',
+        idleRemaining: const Duration(minutes: 15),
+        absoluteRemaining: const Duration(hours: 1),
+      );
+      expect(AdminSessionGuard.isAdminFor('admin-user', sessionId: 'session-1'), isTrue);
       AdminSessionGuard.revoke();
       expect(AdminSessionGuard.isAdmin, isFalse);
     });
 
-    test('touch() extends the session', () {
-      AdminSessionGuard.grant('admin-user');
-      AdminSessionGuard.touch('admin-user'); // Should not throw or change state
+    test('legacy touch cannot grant access', () {
+      AdminSessionGuard.touch('admin-user');
+      expect(AdminSessionGuard.isAdmin, isFalse);
+    });
+
+    test('server lease binds access to owner and session', () {
+      AdminSessionGuard.acceptServerLease(
+        userId: 'admin-user', sessionId: 'session-1',
+        idleRemaining: const Duration(minutes: 15),
+        absoluteRemaining: const Duration(hours: 1),
+      );
       expect(AdminSessionGuard.isAdmin, isTrue);
+      expect(AdminSessionGuard.isAdminFor('admin-user', sessionId: 'session-1'), isTrue);
+      expect(AdminSessionGuard.isAdminFor('admin-user', sessionId: 'session-2'), isFalse);
+      expect(AdminSessionGuard.isAdminFor('other-user', sessionId: 'session-1'), isFalse);
     });
 
     test('touch() is a no-op when not admin', () {
@@ -33,9 +49,13 @@ void main() {
     });
 
     test('different user revokes stale admin fallback', () {
-      AdminSessionGuard.grant('admin-user');
-      expect(AdminSessionGuard.isAdminFor('other-user'), isFalse);
-      expect(AdminSessionGuard.isAdmin, isFalse);
+      AdminSessionGuard.acceptServerLease(
+        userId: 'admin-user', sessionId: 'session-1',
+        idleRemaining: const Duration(minutes: 15),
+        absoluteRemaining: const Duration(hours: 1),
+      );
+      expect(AdminSessionGuard.isAdminFor('other-user', sessionId: 'session-1'), isFalse);
+      expect(AdminSessionGuard.isAdmin, isTrue);
     });
 
     test('sessionTimeout is 15 minutes', () {

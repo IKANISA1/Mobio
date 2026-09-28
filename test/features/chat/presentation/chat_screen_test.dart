@@ -1,6 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+import 'package:http/testing.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/auth/auth_session_storage.dart';
+import 'package:mobi_app/features/chat/domain/chat_history_page.dart';
+import 'package:mobi_app/features/chat/domain/chat_delivery.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
@@ -20,14 +29,14 @@ class _ChatFixture extends Fake implements ChatService {
   Completer<void> acknowledgement = Completer<void>();
 
   @override
-  String get currentUserId => 'fixture-user';
+  String get currentUserId => '00000000-0000-4000-8000-000000000001';
 
   @override
   Future<ChatConversation?> getConversationById(String id) async =>
       ChatConversation(
         id: id,
         participantLowId: currentUserId,
-        participantHighId: 'fixture-peer',
+        participantHighId: '00000000-0000-4000-8000-000000000002',
         createdBy: currentUserId,
         contextType: 'direct',
         status: 'active',
@@ -37,7 +46,17 @@ class _ChatFixture extends Fake implements ChatService {
   Future<bool> isPeerBlocked(String peerId) async => false;
 
   @override
-  Future<void> markConversationRead(String conversationId) async {}
+  Future<void> markConversationRead(String conversationId, {ChatHistoryCursor? through}) async {}
+
+  @override
+  Future<bool> sendsEnabled() async => true;
+
+  @override
+  Future<ChatDeliveryReceipt?> pendingDelivery(String conversationId) async => null;
+
+  @override
+  Stream<ChatHistoryPage> watchMessagePages(String conversationId) => Stream.value(
+    const ChatHistoryPage(messages: [], hasMore: false));
 
   @override
   Stream<List<ChatMessageModel>> streamMessages(String conversationId) =>
@@ -71,17 +90,52 @@ Future<void> _pumpChat(WidgetTester tester, _ChatFixture service) async {
       child: MaterialApp(
         theme: AppTheme.darkTheme,
         home: TripChatScreen(
-          conversationId: 'fixture-conversation',
+          conversationId: '00000000-0000-4000-8000-000000000010',
           onBack: () {},
         ),
       ),
     ),
   );
+  addTearDown(() async { await tester.pumpWidget(const SizedBox.shrink()); await tester.pump(); });
   await tester.pumpAndSettle();
   expect(find.byType(ChatComposer), findsOneWidget);
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+    final storage = AuthSessionStorage.configured
+        ? AuthSessionStorage.instance
+        : AuthSessionStorage.configure('https://chat-widget.invalid');
+    debugDefaultTargetPlatformOverride = null;
+    await storage.persistence.initialize();
+    await storage.persistence.lockAndClear();
+    await sb.Supabase.initialize(url:'https://chat-widget.invalid',anonKey:'synthetic-public-key',
+      httpClient:MockClient((request)async => throw StateError('Unexpected external request')),
+      authOptions:const sb.FlutterAuthClientOptions(autoRefreshToken:false,
+        detectSessionInUri:false,localStorage:sb.EmptyLocalStorage()));
+    addTearDown(sb.Supabase.instance.dispose);
+    final expiry=DateTime.now().millisecondsSinceEpoch~/1000+3600;
+    String enc(Object v)=>base64Url.encode(utf8.encode(jsonEncode(v))).replaceAll('=','');
+    final token='${enc({'alg':'none'})}.${enc({'iss':'https://chat-widget.invalid/auth/v1',
+      'sub':'00000000-0000-4000-8000-000000000001',
+      'session_id':'00000000-0000-4000-8000-000000000099','iat':expiry-3600,
+      'exp':expiry,'role':'authenticated','is_anonymous':false})}.fixture';
+    await sb.Supabase.instance.client.auth.recoverSession(jsonEncode({
+      'access_token':token,'refresh_token':'synthetic-refresh','token_type':'bearer',
+      'expires_in':3600,'expires_at':expiry,'user':{'id':'00000000-0000-4000-8000-000000000001',
+        'aud':'authenticated','created_at':'2026-01-01T00:00:00Z',
+        'app_metadata':{'provider':'whatsapp_cloud_otp'},'user_metadata':<String,dynamic>{}}
+    }));
+    await storage.persistence.acceptVerified(
+      jsonEncode(sb.Supabase.instance.client.auth.currentSession!.toJson()),
+      expectedGeneration: storage.persistence.generation,
+    );
+    await AccountContext.restoreExitFence();
+  });
+
   testWidgets('acknowledgement preserves a newer draft', (tester) async {
     final service = _ChatFixture();
     await _pumpChat(tester, service);
@@ -170,4 +224,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
+  testWidgets('account exit masks chat and drops a late acknowledgement',(tester)async{
+    final service=_ChatFixture();await _pumpChat(tester,service);
+    await tester.enterText(find.byType(TextField),'Private draft');
+    tester.widget<ChatComposer>(find.byType(ChatComposer)).onSendMessage();
+    await tester.runAsync(AccountContext.beginExit);await tester.pumpAndSettle();
+    expect(find.text('Account changed. Close this chat and sign in again.'),findsOneWidget);
+    expect(find.byType(ChatComposer),findsNothing);
+    service.acknowledgement.complete();await tester.pumpAndSettle();
+    expect(find.text('Private draft'),findsNothing);expect(tester.takeException(),isNull);
+  });
+
 }

@@ -1,0 +1,134 @@
+{
+  "fresh_passed_tests_and_scenarios": 260,
+  "new_passed_tests_and_scenarios": 165,
+  "syntax_checks_separate": 65,
+  "production_accepted": false,
+  "environment": {
+    "python": "3.13.5",
+    "node": "22.16.0",
+    "typescript": "5.8.3",
+    "kotlin": "1.9.0",
+    "java": "21.0.11"
+  },
+  "checks": [
+    {
+      "check": "Release gate regression",
+      "result": "Passed",
+      "count": 29,
+      "evidence": "gate-tests.log",
+      "scope": "Python subprocess fixtures; not Flutter"
+    },
+    {
+      "check": "Migration preparer",
+      "result": "Passed",
+      "count": 12,
+      "evidence": "migration-preparer-tests.log",
+      "scope": "Fixture CLI only; no PostgreSQL/Supabase CLI execution"
+    },
+    {
+      "check": "Exact version evidence",
+      "result": "Passed",
+      "count": 8,
+      "evidence": "version-evidence-tests.log",
+      "scope": "Parser correctness; not a Play upload receipt"
+    },
+    {
+      "check": "Pure Edge modules",
+      "result": "Passed",
+      "count": 66,
+      "evidence": "edge-pure-tests.log",
+      "scope": "Node22 TypeScript stripping; env fixture; not Deno"
+    },
+    {
+      "check": "Actual Edge handler fixtures",
+      "result": "Passed",
+      "count": 14,
+      "evidence": "edge-handler-fixtures.log",
+      "scope": "Real handler control flow and RSA fixtures; mocked DB/Auth/modules"
+    },
+    {
+      "check": "Native NFC policy",
+      "result": "Passed",
+      "count": 20,
+      "evidence": "nfc-policy-tests.log",
+      "scope": "Compiled Kotlin/JVM scenarios; no Android framework/device"
+    },
+    {
+      "check": "Inference HTTP bounds",
+      "result": "Passed",
+      "count": 16,
+      "evidence": "inference-http-bounds-tests.log",
+      "scope": "Real local sockets/HTTP; explicitly fake ML model"
+    },
+    {
+      "check": "Existing Pages/admin tests",
+      "result": "Passed",
+      "count": 69,
+      "evidence": "existing-pages-admin-tests.log",
+      "scope": "Node unit/contract fixtures"
+    },
+    {
+      "check": "Existing face Worker tests",
+      "result": "Passed",
+      "count": 7,
+      "evidence": "existing-face-worker-tests.log",
+      "scope": "Mocked Worker bindings, not deployment"
+    },
+    {
+      "check": "Existing repository structure",
+      "result": "Passed",
+      "count": 5,
+      "evidence": "existing-test_repository_structure.log",
+      "scope": "Python source-boundary fixtures"
+    },
+    {
+      "check": "Existing runtime defines",
+      "result": "Passed",
+      "count": 7,
+      "evidence": "existing-test_runtime_defines.log",
+      "scope": "Python fixture tests"
+    },
+    {
+      "check": "Existing version assets",
+      "result": "Passed",
+      "count": 7,
+      "evidence": "existing-test_version_assets.log",
+      "scope": "Python fixture tests"
+    },
+    {
+      "check": "Existing Android smoke harness",
+      "result": "Incomplete / timed out",
+      "count": null,
+      "evidence": "existing-test_android_smoke.log",
+      "scope": "Repeated execution exceeded call budget during physical-device fixture; no actual device tested"
+    },
+    {
+      "check": "Selected pure TypeScript strict check",
+      "result": "Passed",
+      "count": null,
+      "evidence": "edge-pure-typecheck.log",
+      "scope": "TypeScript5.8.3 plus Deno env fixture; not full Edge compilation"
+    },
+    {
+      "check": "Python/Bash syntax",
+      "result": "Passed",
+      "count": 65,
+      "evidence": "syntax_and_tooling.json",
+      "scope": "Syntax checks only; separate from test total"
+    },
+    {
+      "check": "Current source Actions pins",
+      "result": "Passed",
+      "count": null,
+      "evidence": "source-pin-check.log",
+      "scope": "Current reconstructed/patched workflow tree"
+    },
+    {
+      "check": "Migration installation gate",
+      "result": "Blocked as intended",
+      "count": null,
+      "evidence": "migration-installation-check.log",
+      "scope": "Exit2; bodies not generated into real migration history"
+    }
+  ]
+}

@@ -50,7 +50,7 @@
             android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="always_on_sms_payment_bridge" />
+                android:value="institutional_receipt_collection_with_visible_status" />
         </service>
     </application>
 </manifest>

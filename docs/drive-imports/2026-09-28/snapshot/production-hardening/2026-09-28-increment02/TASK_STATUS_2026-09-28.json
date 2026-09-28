@@ -1,0 +1,145 @@
+{
+  "touched_tasks": 28,
+  "tasks": [
+    {
+      "task_id": "M003",
+      "status": "partial",
+      "implementation_evidence": "Auth-owned verified phone identity implemented locally; handler fixtures pass; live Auth collision/race and deployed RPC not tested."
+    },
+    {
+      "task_id": "M004",
+      "status": "partial",
+      "implementation_evidence": "Identity/member-id authority guard candidate prepared; database grants/RLS effective state not executed."
+    },
+    {
+      "task_id": "M005",
+      "status": "partial",
+      "implementation_evidence": "Canonical unique six-digit member-ID forward body + assertions implemented; database reconciliation not executed."
+    },
+    {
+      "task_id": "M006",
+      "status": "partial",
+      "implementation_evidence": "Production UUID/hash member-ID fallbacks removed; source-contract tests pass; Flutter runtime/goldens not run."
+    },
+    {
+      "task_id": "M007",
+      "status": "partial",
+      "implementation_evidence": "Ordinary sign-out and finally-safe cleanup implemented; account-switch/device tests not run."
+    },
+    {
+      "task_id": "M008",
+      "status": "partial",
+      "implementation_evidence": "FCM registration/unregister now owner-bound; real two-account push test not run."
+    },
+    {
+      "task_id": "M012",
+      "status": "implemented_local",
+      "implementation_evidence": "Production OTP dry-run guard/redaction implementation locally tested; deployment pending."
+    },
+    {
+      "task_id": "M015",
+      "status": "partial",
+      "implementation_evidence": "Direct booking-write containment body prepared; database/PostgREST authorization matrix not run."
+    },
+    {
+      "task_id": "M016",
+      "status": "partial",
+      "implementation_evidence": "Strong SMS receipt eligibility implemented in Edge/SQL candidate; operator evidence and DB activation tests pending."
+    },
+    {
+      "task_id": "M017",
+      "status": "partial",
+      "implementation_evidence": "Idempotent holds and durable expiry/release implemented in forward SQL body; concurrency DB test pending."
+    },
+    {
+      "task_id": "M018",
+      "status": "partial",
+      "implementation_evidence": "Receipt-to-booking binding and cross-booking reuse rejection implemented; real DB concurrency/payment tests pending."
+    },
+    {
+      "task_id": "M019",
+      "status": "partial",
+      "implementation_evidence": "Entitlement serialization candidate exists in strict receipt body; real two-session DB test pending."
+    },
+    {
+      "task_id": "M020",
+      "status": "partial",
+      "implementation_evidence": "Explicit merchant/sender policy structure implemented; approved live operator configuration not supplied."
+    },
+    {
+      "task_id": "M031",
+      "status": "implemented_local",
+      "implementation_evidence": "Legacy global-secret SMS POST routes return controlled retirement; local handler fixtures pass; deployment/caller inventory pending."
+    },
+    {
+      "task_id": "M042",
+      "status": "partial",
+      "implementation_evidence": "Inference HTTP service bounded/draining behavior implemented and 16 tests pass; real Linux model/image and load acceptance pending."
+    },
+    {
+      "task_id": "M044",
+      "status": "partial",
+      "implementation_evidence": "Consumer targetSdk set to 36; signed Android 16 build/device/Play preflight not run."
+    },
+    {
+      "task_id": "M047",
+      "status": "partial",
+      "implementation_evidence": "NFC native expiry/APDU policy implemented and 20 JVM scenarios pass; hardware/process/device acceptance pending."
+    },
+    {
+      "task_id": "M056",
+      "status": "partial",
+      "implementation_evidence": "Nearby RPC freshness/10km/50 cap and direct-read restriction body prepared; real DB/geospatial/load/device test pending."
+    },
+    {
+      "task_id": "M057",
+      "status": "partial",
+      "implementation_evidence": "Face-service outage represented as unavailable rather than not-started; Flutter UI runtime test pending."
+    },
+    {
+      "task_id": "M074",
+      "status": "implemented_local",
+      "implementation_evidence": "Actions pin checker repaired and 29 source/fixture tests plus repo check pass; remote CI run pending."
+    },
+    {
+      "task_id": "M075",
+      "status": "implemented_local",
+      "implementation_evidence": "Integrated gate rejects disabled/invalid required checks; fixture tests pass; promotion workflow execution pending."
+    },
+    {
+      "task_id": "M077",
+      "status": "partial",
+      "implementation_evidence": "CI coverage expanded for changed ecosystems; hosted CI run and required-branch configuration pending."
+    },
+    {
+      "task_id": "M078",
+      "status": "partial",
+      "implementation_evidence": "Ordered migration preparer, manifest and post-install assertions implemented; PostgreSQL/Supabase rehearsal pending."
+    },
+    {
+      "task_id": "M079",
+      "status": "partial",
+      "implementation_evidence": "Adversarial fixtures added, but live database/Auth/PostgREST authorization matrix pending."
+    },
+    {
+      "task_id": "M081",
+      "status": "partial",
+      "implementation_evidence": "Exact version-evidence parser and checks strengthened; complete artifact-bound release manifest still pending."
+    },
+    {
+      "task_id": "M082",
+      "status": "partial",
+      "implementation_evidence": "Additional dependency/toolchain pinning and update coverage added; complete advisory/SBOM review pending."
+    },
+    {
+      "task_id": "M090",
+      "status": "partial",
+      "implementation_evidence": "Versioned hardening manifest/evidence package produced; canonical repository/source-scope cleanup remains."
+    },
+    {
+      "task_id": "M091",
+      "status": "partial",
+      "implementation_evidence": "Bounded external-fetch helper and tests added; durable shared rate/cost control remains pending."
+    }
+  ]
+}

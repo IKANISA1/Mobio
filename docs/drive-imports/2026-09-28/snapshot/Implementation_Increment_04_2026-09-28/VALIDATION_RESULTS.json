@@ -1,0 +1,83 @@
+{
+  "as_of": "2026-09-28",
+  "implemented_source": true,
+  "production_ready": false,
+  "deployed": false,
+  "checks": [
+    {
+      "lane": "New Node admission/worker fixtures",
+      "status": "PASS",
+      "count": 86,
+      "qualification": "Actual TypeScript handler logic and WebCrypto RSA; explicit registry/database/parser fixtures."
+    },
+    {
+      "lane": "Existing Edge pure-module regressions",
+      "status": "PASS",
+      "count": 66,
+      "qualification": "Rerun locally; does not include all prior package tests."
+    },
+    {
+      "lane": "Python operational/DSN/SQL-source checks",
+      "status": "PASS",
+      "count": 20,
+      "qualification": "11 executable guard tests and 9 source-contract assertions; no SQL engine."
+    },
+    {
+      "lane": "Guarded delta applier",
+      "status": "PASS",
+      "count": 8,
+      "qualification": "Actual temporary-file checks, drift rejection, symlink/path protection and idempotent application."
+    },
+    {
+      "lane": "TypeScript strict compile",
+      "status": "PASS",
+      "count": null,
+      "qualification": "Runtime/Supabase declarations are explicitly substituted; not real SDK or Deno validation."
+    },
+    {
+      "lane": "GitHub action pin check and TOML/shell syntax",
+      "status": "PASS",
+      "count": null,
+      "qualification": "Local configuration checks only."
+    },
+    {
+      "lane": "PostgreSQL 17 queue and separate-session tests",
+      "status": "UNAVAILABLE",
+      "count": 0,
+      "qualification": "psql absent; runner returned exit 2. SQL body and concurrency tests NOT executed."
+    },
+    {
+      "lane": "Full schema, real Auth/PostgREST, Deno and model integration",
+      "status": "NOT RUN",
+      "count": 0,
+      "qualification": "No full application/deployed environment acceptance."
+    },
+    {
+      "lane": "Signed Android/iOS, physical-device SMS, USSD and fleet tests",
+      "status": "NOT RUN",
+      "count": 0,
+      "qualification": "No native build or device acceptance in this increment."
+    },
+    {
+      "lane": "Production deployment and hosted required CI",
+      "status": "NOT RUN",
+      "count": 0,
+      "qualification": "No live database, provider, payment or deployed application changes."
+    }
+  ],
+  "counted_local_tests_and_source_checks": 180,
+  "environment": {
+    "python": "3.13.5",
+    "node": "v22.16.0",
+    "typescript": "Version 5.8.3"
+  },
+  "folder_permission_observation": {
+    "as_of": "2026-09-28",
+    "folder_id": "120JIOTyeNX6nHaHPDqS3UgbaTWyJAE57",
+    "permission_type": "anyone",
+    "role": "writer",
+    "allow_file_discovery": false,
+    "modified_by_this_session": false
+  },
+  "citations_and_evidence": "See sources.json, evidence/ logs and the original Drive backlog/report. Historical test counts are not added to current-run totals."
+}

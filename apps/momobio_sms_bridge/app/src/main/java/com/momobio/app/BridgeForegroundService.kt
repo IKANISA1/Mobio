@@ -18,15 +18,20 @@ class BridgeForegroundService : Service() {
     private val executor = Executors.newSingleThreadExecutor()
     private val handler = Handler(Looper.getMainLooper())
     @Volatile private var syncInFlight = false
+    @Volatile private var destroyed = false
 
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        startForeground(notificationId, notification("Mo Mobio is active", "Watching SMS and syncing payments."))
+        startForeground(notificationId, notification("Mo Mobio collector", "Only approved receipt notifications are collected; checking connection."))
         BridgeSupervisor.schedule(applicationContext)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (!CollectorRuntime.ready(applicationContext)) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
         runSync()
         return START_STICKY
     }
@@ -34,6 +39,7 @@ class BridgeForegroundService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onDestroy() {
+        destroyed = true
         handler.removeCallbacksAndMessages(null)
         executor.shutdownNow()
         BridgeSupervisor.enqueueImmediate(applicationContext)
@@ -41,7 +47,7 @@ class BridgeForegroundService : Service() {
     }
 
     private fun runSync() {
-        if (syncInFlight) return
+        if (syncInFlight || destroyed || !CollectorRuntime.ready(applicationContext)) return
         syncInFlight = true
         executor.execute {
             val result = try {
@@ -53,28 +59,29 @@ class BridgeForegroundService : Service() {
                 syncInFlight = false
             }
 
-            updateNotification(result)
-            handler.postDelayed({ runSync() }, if (result.ok) idleDelayMillis else retryDelayMillis)
+            if (!destroyed) {
+                try {
+                    updateNotification(result)
+                } catch (_: Exception) {
+                    // A queue failure must not silently terminate the sync executor.
+                    getSystemService(NotificationManager::class.java).notify(notificationId,
+                        notification("Mo Mobio recovery required", "Do not clear app data. Contact the fleet administrator."))
+                }
+                handler.postDelayed({ runSync() }, retryDelayMillis)
+            }
         }
     }
 
     private fun syncOnce(): UploadResult {
-        val queue = SmsQueue(applicationContext)
-        val messages = queue.all()
-        return UploadClient(CollectorIdentity(applicationContext)).upload(messages) { uploadedHashes ->
-            queue.markUploaded(uploadedHashes)
-        }
+        return CollectorSync.run(applicationContext)
     }
 
     private fun updateNotification(result: UploadResult) {
         val manager = getSystemService(NotificationManager::class.java)
-        val queueCount = SmsQueue(applicationContext).count()
-        val title = if (result.ok && queueCount == 0) "Mo Mobio is active" else "Mo Mobio sync pending"
-        val body = if (result.ok) {
-            "${result.message}; queued $queueCount"
-        } else {
-            "${result.message}; queued $queueCount"
-        }
+        val health = DurableSmsQueue(applicationContext).health()
+        val title = if (result.ok && health.pending == 0 && health.quarantined == 0 && health.capacityBlocked == 0L)
+            "Mo Mobio server acknowledged" else "Mo Mobio needs attention"
+        val body = "${result.message}; queued ${health.pending}; review ${health.quarantined}; blocked ${health.capacityBlocked}"
         manager.notify(notificationId, notification(title, body))
     }
 
@@ -113,7 +120,6 @@ class BridgeForegroundService : Service() {
     companion object {
         private const val notificationId = 31045
         private const val notificationChannelId = "mo_mobio_sms_bridge_active"
-        private const val idleDelayMillis = 5 * 60 * 1000L
         private const val retryDelayMillis = 30 * 1000L
     }
 }

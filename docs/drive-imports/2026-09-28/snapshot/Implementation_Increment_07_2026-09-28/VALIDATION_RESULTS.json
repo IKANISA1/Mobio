@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-09-28",
+  "total_passing_checks": 601,
+  "new_checks": 107,
+  "new_executable_or_fixture_checks": 97,
+  "new_static_source_assertions": 10,
+  "prior_checks_rerun": 494,
+  "qualification": "Not an end-to-end test count. New TS logic plus actual loopback HTTP/cryptography; DB and Google boundaries are explicit fixtures. Prior lanes mix source assertions and runtime fixtures.",
+  "lanes": [
+    {
+      "name": "test_collector_queue_contracts.py",
+      "result": "PASS",
+      "count": 21,
+      "evidence": "evidence/test_collector_queue_contracts.py.log",
+      "new": false
+    },
+    {
+      "name": "test_hardening_preparation.py",
+      "result": "PASS",
+      "count": 12,
+      "evidence": "evidence/test_hardening_preparation.py.log",
+      "new": false
+    },
+    {
+      "name": "test_identity_lifecycle_contracts.py",
+      "result": "PASS",
+      "count": 22,
+      "evidence": "evidence/test_identity_lifecycle_contracts.py.log",
+      "new": false
+    },
+    {
+      "name": "test_increment04_applier.py",
+      "result": "PASS",
+      "count": 8,
+      "evidence": "evidence/test_increment04_applier.py.log",
+      "new": false
+    },
+    {
+      "name": "test_increment05_applier.py",
+      "result": "PASS",
+      "count": 11,
+      "evidence": "evidence/test_increment05_applier.py.log",
+      "new": false
+    },
+    {
+      "name": "test_increment05_contracts.py",
+      "result": "PASS",
+      "count": 22,
+      "evidence": "evidence/test_increment05_contracts.py.log",
+      "new": false
+    },
+    {
+      "name": "test_increment06_applier.py",
+      "result": "PASS",
+      "count": 11,
+      "evidence": "evidence/test_increment06_applier.py.log",
+      "new": false
+    },
+    {
+      "name": "test_increment06_contracts.py",
+      "result": "PASS",
+      "count": 28,
+      "evidence": "evidence/test_increment06_contracts.py.log",
+      "new": false
+    },
+    {
+      "name": "test_increment07_applier.py",
+      "result": "PASS",
+      "count": 11,
+      "evidence": "evidence/test_increment07_applier.py.log",
+      "new": true
+    },
+    {
+      "name": "test_increment07_contracts.py",
+      "result": "PASS",
+      "count": 10,
+      "evidence": "evidence/test_increment07_contracts.py.log",
+      "new": true
+    },
+    {
+      "name": "test_play_version_evidence.py",
+      "result": "PASS",
+      "count": 8,
+      "evidence": "evidence/test_play_version_evidence.py.log",
+      "new": false
+    },
+    {
+      "name": "test_production_gates.py",
+      "result": "PASS",
+      "count": 29,
+      "evidence": "evidence/test_production_gates.py.log",
+      "new": false
+    },
+    {
+      "name": "test_push_operations.py",
+      "result": "PASS",
+      "count": 16,
+      "evidence": "evidence/test_push_operations.py.log",
+      "new": true
+    },
+    {
+      "name": "test_receipt_reconciliation.py",
+      "result": "PASS",
+      "count": 24,
+      "evidence": "evidence/test_receipt_reconciliation.py.log",
+      "new": false
+    },
+    {
+      "name": "test_sms_intake_contracts.py",
+      "result": "PASS",
+      "count": 20,
+      "evidence": "evidence/test_sms_intake_contracts.py.log",
+      "new": false
+    },
+    {
+      "name": "New notification worker/provider/HTTP/crypto",
+      "result": "PASS",
+      "count": 70,
+      "evidence": "evidence/push_node_final.tap",
+      "new": true
+    },
+    {
+      "name": "Existing Edge modules",
+      "result": "PASS",
+      "count": 66,
+      "evidence": "evidence/edge_modules_final.tap",
+      "new": false
+    },
+    {
+      "name": "Existing Edge handler fixtures",
+      "result": "PASS",
+      "count": 138,
+      "evidence": "evidence/edge_handlers_final.tap",
+      "new": false
+    },
+    {
+      "name": "Existing inference HTTP with fake model",
+      "result": "PASS",
+      "count": 16,
+      "evidence": "evidence/http_regressions_final.log",
+      "new": false
+    },
+    {
+      "name": "Existing NFC JVM policy",
+      "result": "PASS",
+      "count": 20,
+      "evidence": "evidence/nfc_jvm_final.log",
+      "new": false
+    },
+    {
+      "name": "Existing collector JVM/OS leases",
+      "result": "PASS",
+      "count": 38,
+      "evidence": "evidence/collector_jvm_final.log",
+      "new": false
+    }
+  ],
+  "versions": {
+    "python": "3.13.5",
+    "node": "v22.16.0",
+    "tsc": "Version 5.8.3",
+    "kotlinc": "info: kotlinc-jvm 1.9.0 (JRE 21.0.11+10-1-deb13u2-Debian)"
+  },
+  "not_executed": [
+    {
+      "lane": "PostgreSQL17 body11, catalog and parallel-session tests",
+      "status": "UNAVAILABLE",
+      "reason": "Docker/psql absent locally; runner --check-tools exited 2."
+    },
+    {
+      "lane": "Real Mobio Supabase database/functions",
+      "status": "ACCESS_DENIED",
+      "reason": "Connected account get_project(paysnhuxngsvzdpwlosv) returned permission denial; no changes made."
+    },
+    {
+      "lane": "Flutter/Dart push binding, native and widget tests",
+      "status": "NOT_RUN",
+      "reason": "No Flutter/Dart runtime; authored domain tests and native client code remain uncompiled."
+    },
+    {
+      "lane": "Deno entrypoint/check/tests",
+      "status": "NOT_RUN",
+      "reason": "Deno unavailable; Node tests do not establish Deno entrypoint compatibility."
+    },
+    {
+      "lane": "Actual FCM/APNs/provider/device delivery",
+      "status": "NOT_RUN",
+      "reason": "No live service credentials used, provider sends, signed builds or devices."
+    },
+    {
+      "lane": "Hosted required CI and production deployment",
+      "status": "NOT_RUN",
+      "reason": "Source delivery only; no live flags, scheduler or deployment changes."
+    }
+  ],
+  "initial_failures_and_recovery": [
+    "Initial Node load failed on unsupported parameter-property syntax; explicit field declarations now pass strip-only Node execution.",
+    "Prior handler rerun initially lacked six exact indexed dependencies; they were restored unchanged from mounted Drive downloads, then all 138 handler fixtures passed.",
+    "An old body10-last assertion was updated to retain body10 at its ordered position while permitting body11; all 28 previous chat tooling/source checks passed.",
+    "A 15-second harness deadline interrupted the existing 29-test production-gate suite; rerun with sufficient local command allowance passed in 16.178 seconds. No aggregate timeout is labelled PASS."
+  ],
+  "extra_checks": {
+    "typescript_strict_core": "PASS; native Web/DOM types, no external SDK declaration replacements for new push core",
+    "action_pins": "PASS; local pins checker",
+    "forward_body_plan": "PASS; 11 body hashes/source order, no SQL applied",
+    "source_syntax": "PASS; see evidence/source_syntax.json"
+  },
+  "production_deployed": false,
+  "database_applied": false,
+  "folder_permissions_changed": false,
+  "package_integration": {
+    "delta_file_count": 32,
+    "cumulative_overlay_file_count": 188,
+    "guarded_plan": 32,
+    "guarded_apply": 32,
+    "second_apply": 0,
+    "independent_git_apply": "PASS",
+    "all_after_hashes": "PASS",
+    "qualification": "Separate affected-source reconstruction; not a complete canonical checkout, compilation or deployment."
+  }
+}

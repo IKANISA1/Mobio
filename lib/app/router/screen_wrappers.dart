@@ -5,11 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobi_app/app/app_providers.dart';
 import 'package:mobi_app/core/auth/admin_session_guard.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/auth/admin_session_service.dart';
 import 'package:mobi_app/core/auth/supabase_session_service.dart';
 import 'package:mobi_app/core/constants/app_enums.dart';
 import 'package:mobi_app/core/utils/navigation_utils.dart';
 import 'package:mobi_app/features/admin/presentation/admin_auth_screen.dart';
 import 'package:mobi_app/features/admin/presentation/admin_dashboard_screen.dart';
+import 'package:mobi_app/features/notifications/data/push_notification_service.dart';
+import 'package:mobi_app/features/biopay/data/biopay_device_nfc_service.dart';
 import 'package:mobi_app/features/auth/presentation/whatsapp_login_screen.dart';
 import 'package:mobi_app/features/bookings/presentation/bookings_screen.dart';
 import 'package:mobi_app/features/bookings/presentation/schedule_trip_screen.dart';
@@ -48,7 +52,7 @@ class HomeScreenWrapper extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final role = ref.watch(roleProvider);
-    if (role.isAdmin) {
+    if (role.isAdmin && AccountContext.hasVerifiedSession && AdminSessionGuard.isAdmin) {
       return const AdminDashboardScreen();
     }
 
@@ -112,22 +116,46 @@ class ProfileScreenWrapper extends ConsumerWidget {
         onNfcWriteCard: () => context.push('/biopay/nfc/write-card'),
         onAdminGateway: () => context.push('/admin-auth'),
         onExitAdmin: role.isAdmin ? handleExitAdmin : null,
+        onSignOut: () => _signOutUser(context, ref),
       ),
     );
   }
+}
+
+
+Future<void> _signOutUser(BuildContext context, WidgetRef ref) async {
+  AdminSessionGuard.revoke();
+  ref.read(roleProvider.notifier).set(AppRole.passenger);
+  await SupabaseSessionService.signOutToAnonymous(
+    beforeSignOut: () async {
+      await Future.wait<void>([
+        AdminSessionService.revoke(),
+        PushNotificationService.instance.unregisterToken(),
+        ref.read(driverLocationSharingServiceProvider).stop(),
+        () async { await const BioPayDeviceNfcService().stop(); }(),
+      ].map((work) => work.timeout(const Duration(seconds:3)).catchError((Object _) {})));
+    },
+  );
+  if (!context.mounted) return;
+  context.go('/login');
 }
 
 Future<void> _exitAdminSession(BuildContext context, WidgetRef ref) async {
   AdminSessionGuard.revoke();
   ref.read(roleProvider.notifier).set(AppRole.passenger);
   await SupabaseSessionService.signOutToAnonymous(
-    beforeSignOut: () => ref.read(driverLocationSharingServiceProvider).stop(),
+    beforeSignOut: () async {
+      await Future.wait<void>([
+        AdminSessionService.revoke(),
+        ref.read(driverLocationSharingServiceProvider).stop(),
+      ].map((work) => work.timeout(const Duration(seconds:3)).catchError((Object _) {})));
+    },
   );
   if (!context.mounted) {
     return;
   }
 
-  context.go('/profile'); // Intentional: clear stack on exit admin
+  context.go('/login'); // A fresh verified login clears the durable exit fence.
 }
 
 /// Admin auth screen wrapper.
@@ -138,9 +166,17 @@ class AdminAuthScreenWrapper extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return AdminAuthScreen(
       onBack: () => safePop(context),
-      onSuccess: () {
-        ref.read(roleProvider.notifier).set(AppRole.admin);
-        context.go('/admin'); // Intentional: clear stack on admin success
+      onSuccess: () async {
+        try {
+          if (!AccountContext.hasVerifiedSession || !AdminSessionGuard.isAdmin) throw StateError('ADMIN_LEASE_REQUIRED');
+          if (!context.mounted) return;
+          ref.read(roleProvider.notifier).set(AppRole.admin);
+          context.go('/admin');
+        } on Object {
+          AdminSessionGuard.revoke();
+          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Admin access could not be confirmed. Verify again.')));
+        }
       },
     );
   }

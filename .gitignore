@@ -75,3 +75,6 @@ apps/momobio_sms_bridge/qa/
 
 # Local recovery copies, generated artifacts, and validation logs.
 /output/
+
+# Local migration-preparation coordination (not production evidence)
+.mobio-hardening-prepare.lock

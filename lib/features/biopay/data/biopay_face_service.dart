@@ -158,6 +158,7 @@ class BioPayEnrollmentStatus {
     'deleted' => 'Removed',
     'processing' => 'Processing',
     'reenrollment_required' => 'Update',
+    'unavailable' => 'Unavailable',
     _ => 'Set up',
   };
 }

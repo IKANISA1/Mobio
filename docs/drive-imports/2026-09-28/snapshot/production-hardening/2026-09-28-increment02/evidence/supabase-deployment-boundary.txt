@@ -1,0 +1,1 @@
+Supabase MCP project discovery on 2026-09-28 returned an empty projects list. No database migration or Edge deployment was applied.

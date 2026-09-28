@@ -1,0 +1,76 @@
+{
+  "increment": "Increment09",
+  "as_of": "2026-09-28",
+  "status": "LOCAL_CHECKS_PASSED_NOT_PRODUCTION_ACCEPTED",
+  "total_passed": 483,
+  "new_passed": 131,
+  "selected_prior_passed": 352,
+  "qualification": "Counts include explicit external-response fixtures and earlier static assertions. No SQL/Flutter/provider erasure acceptance.",
+  "lanes": [
+    {
+      "name": "privacy_gateway",
+      "passed": 70,
+      "log": "evidence/privacy_checks_final.log",
+      "kind": "actual TS with controlled RPC responses"
+    },
+    {
+      "name": "privacy_evidence",
+      "passed": 40,
+      "log": "evidence/privacy_checks_final.log",
+      "kind": "actual Python/files with synthetic evidence"
+    },
+    {
+      "name": "privacy_runner_guards",
+      "passed": 10,
+      "log": "evidence/privacy_checks_final.log",
+      "kind": "input guards, not SQL"
+    },
+    {
+      "name": "increment09_applier",
+      "passed": 11,
+      "log": "evidence/privacy_checks_final.log",
+      "kind": "filesystem"
+    },
+    {
+      "name": "prior_python_selected",
+      "passed": 282,
+      "log": "evidence/python_regressions_final.log",
+      "kind": "mixed executable fixtures/static"
+    },
+    {
+      "name": "prior_push_selected",
+      "passed": 70,
+      "log": "evidence/push_regression.log",
+      "kind": "actual TS/WebCrypto/HTTP with external fixtures"
+    }
+  ],
+  "other_checks": {
+    "strict_typescript": "PASS",
+    "source_configuration_syntax": "PASS",
+    "actions_pins": "PASS",
+    "sql_body_hashes": 12,
+    "unchanged_previous_sql_bodies": 11,
+    "independent_patch_and_applier": "PASS",
+    "matching_changed_files": 26,
+    "second_apply_changes": 0
+  },
+  "not_run": [
+    "PostgreSQL component behavior/concurrency",
+    "Full schema clean/forward rehearsal",
+    "Real Auth/PostgREST and effective grants",
+    "Flutter/Dart compilation and13 new domain tests",
+    "Flutter service/widget/device acceptance",
+    "Native Deno entrypoint",
+    "Provider erasure",
+    "Hosted CI",
+    "Signed Android/iOS release",
+    "Production deployment"
+  ],
+  "not_implemented_in_increment": [
+    "Cross-provider erasure executors",
+    "Automatic retention purge",
+    "Post-Auth completion notice channel",
+    "Complete live-store inventory"
+  ],
+  "access_boundary": "Earlier Mobio Supabase denial respected; no alternative credential route; partial source reconstruction only."
+}

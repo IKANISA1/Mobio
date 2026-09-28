@@ -4,6 +4,17 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo_root"
 
+# A partial run must never be reported as a successful integrated release gate.
+# Validate before resolving Flutter, including explicitly empty/invalid values.
+for setting in \
+  "RUN_MOBIO_CONTRACT_TESTS=${RUN_MOBIO_CONTRACT_TESTS-true}" \
+  "RUN_MOBIO_BIOPAY_FEATURE_GATE=${RUN_MOBIO_BIOPAY_FEATURE_GATE-true}"; do
+  if [[ "${setting#*=}" != "true" ]]; then
+    echo "INCOMPLETE: ${setting%%=*} must be true for integrated readiness." >&2
+    exit 2
+  fi
+done
+
 failures=0
 source "$repo_root/scripts/lib/flutter.sh"
 flutter_bin="$FLUTTER_BIN"

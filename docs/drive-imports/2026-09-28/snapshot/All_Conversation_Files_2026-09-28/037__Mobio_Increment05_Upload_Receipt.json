@@ -1,0 +1,270 @@
+{
+  "date": "2026-09-28",
+  "destination_folder_id": "17sn4bVbylDAKjk0K8NfAIKQmWoSMHdnG",
+  "individual_files_folder_id": "18oZUnwCNL0sDYCisPEyObmpXZb566zXO",
+  "individual_listing_verified": true,
+  "zip": {
+    "drive_id": "1w5WKkkf0dwlEh-o4kx2pdjMMhHL-1Qi2",
+    "bytes": 648080,
+    "sha256": "045271a0a9d1746ce14a3866f89157119f6c755678d3996701478233a9131db2",
+    "downloaded_after_upload": true,
+    "matches_original": true,
+    "all_delta_bytes_verified": true
+  },
+  "workbook_id": "16dQKXDBI8Eciqx7d7HlP-N9O3WcUHpH3",
+  "report_id": "1zD_IR4VBqzAByesAJ3ZuQuYk95evtwvq",
+  "readme_id": "1C7DTSM_nRTusu7zfgZ-1OYBqtPokpM62",
+  "validation_id": "1gyBkXkBw8yD6Vn0jGc_XHJK6brrDrAlA",
+  "runbook_id": "1hUvq-Nt4IW6U3a8f_Jj1CGrb8PME-R6Z",
+  "manifest_id": "1QM03QTVi6YB1dVUubH5PHAAcsjxhbh3j",
+  "individual_map_id": "1mPg54VtuN0XtX02Cb6NNwGEAu3yWdMJD",
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "flat_name": ".github__workflows__ci.yml",
+      "drive_id": "1uPtypvsnidx0bdvklqCERpjKJ8_mBb7w",
+      "sha256": "05ef8abc928977df8461af0afb74cad9101ca5b101879888173dc3c65310f303"
+    },
+    {
+      "path": "docs/production-readiness/INCREMENT05_INTEGRATION.md",
+      "flat_name": "docs__production-readiness__INCREMENT05_INTEGRATION.md",
+      "drive_id": "1qPZ9oGckrfqNRNHiX6t_qiEQsTRrlGW1",
+      "sha256": "adb2a65b36c2185e3684435cf8e25844521de3759b42fde67d5d11777f9a7be8"
+    },
+    {
+      "path": "lib/app/app.dart",
+      "flat_name": "lib__app__app.dart",
+      "drive_id": "1SHnCN_xTHrueP1Y5DGgEraGFn3cHv0rg",
+      "sha256": "4b93e752d552bc3ce1f2992dc7bab3218dfadec1ebcc13ab07683fdddc6bb8ff"
+    },
+    {
+      "path": "lib/app/bootstrap.dart",
+      "flat_name": "lib__app__bootstrap.dart",
+      "drive_id": "1moX6zyHQwzf0rYwqeNVmytrwFiZp6MVw",
+      "sha256": "87f9ffa4286f6e619138664869946314faf964fb7108d99bf13f8d9037cddfcc"
+    },
+    {
+      "path": "lib/app/router/app_router.dart",
+      "flat_name": "lib__app__router__app_router.dart",
+      "drive_id": "1LzJ4q-pEu_OQFsYFb_EtJx_eM_pFKe9S",
+      "sha256": "93679194abefaafa09d95fe73618fb381dc9eccb0d9b009bb9b2723a1691d69c"
+    },
+    {
+      "path": "lib/app/router/screen_wrappers.dart",
+      "flat_name": "lib__app__router__screen_wrappers.dart",
+      "drive_id": "1kzatEqOD6EfItPFNsjsiXKbzGK9ILyvg",
+      "sha256": "49ebe54bb07cf6cd96958d8115d802323140e4e15edb150599ac1c2eed58757c"
+    },
+    {
+      "path": "lib/core/async/account_epoch.dart",
+      "flat_name": "lib__core__async__account_epoch.dart",
+      "drive_id": "1ItJv5MJyUSBRQ6ij0u9U1W-NzORovep3",
+      "sha256": "872cbe12a80684cb361a398906f8945937404dda4d3cd548b4356636c2107b35"
+    },
+    {
+      "path": "lib/core/async/startup_task.dart",
+      "flat_name": "lib__core__async__startup_task.dart",
+      "drive_id": "1zDLfUubEPA9GkX2bUnICN-6V7_xeCa4z",
+      "sha256": "6f86d0084bd734d24fe90c1a4af3b4e4611bebe0aae189058831671db0c8eb5e"
+    },
+    {
+      "path": "lib/core/auth/account_bound_view.dart",
+      "flat_name": "lib__core__auth__account_bound_view.dart",
+      "drive_id": "12jzgXX6yccP2Qf0BeYb45a33O0XzAIG_",
+      "sha256": "165f6f2a43bb30560056a7e7b75064d593df79642fb243fc3dafddbea9e7462a"
+    },
+    {
+      "path": "lib/core/auth/account_context.dart",
+      "flat_name": "lib__core__auth__account_context.dart",
+      "drive_id": "19eGB7vNZB5eSi_AYy18RBDQA8DLRsMq9",
+      "sha256": "a817d75de218cf748b664f4877987e7f6e2a4b54edb1bd963734b973f88d3cc7"
+    },
+    {
+      "path": "lib/core/auth/admin_session_boundary.dart",
+      "flat_name": "lib__core__auth__admin_session_boundary.dart",
+      "drive_id": "1WYa6JdZousX2Wd_ZcS613QxYMiPOTsHu",
+      "sha256": "23509bbb20cbe8f8f729a5475c9d749d2ec830b82082dda8235d4d83f32c4632"
+    },
+    {
+      "path": "lib/core/auth/admin_session_guard.dart",
+      "flat_name": "lib__core__auth__admin_session_guard.dart",
+      "drive_id": "128unJvhP54oFj9RKbJ1epekXECOVc_yt",
+      "sha256": "a85a1b175351412a281a9abd819650d8b2c5601b4b61fed02838e7f37233c804"
+    },
+    {
+      "path": "lib/core/auth/admin_session_service.dart",
+      "flat_name": "lib__core__auth__admin_session_service.dart",
+      "drive_id": "1J6jGgOBpjv9tZ4HqIJkf9euahXGLtFPS",
+      "sha256": "9c84ed1485c6aa508222df2b496e832b6c98dbb2ea655fb85097151e877493b3"
+    },
+    {
+      "path": "lib/core/auth/supabase_session_service.dart",
+      "flat_name": "lib__core__auth__supabase_session_service.dart",
+      "drive_id": "1UcA37PRyVeb_ZiTfKsqJs_sM8nhWBLNo",
+      "sha256": "e1c2b34602469a05d1dd3ec99205b6a368a0c3d782e3a418941ae2031ef4ac5d"
+    },
+    {
+      "path": "lib/features/admin/data/otp_service.dart",
+      "flat_name": "lib__features__admin__data__otp_service.dart",
+      "drive_id": "1WtXiZ7BOXVDqsawLKaZX5VAfD9Ke7W7n",
+      "sha256": "c303417d87d2730f5e4841b47cced39b8d13899648561085d598a5f2a1ed31d5"
+    },
+    {
+      "path": "lib/features/admin/presentation/admin_auth_screen.dart",
+      "flat_name": "lib__features__admin__presentation__admin_auth_screen.dart",
+      "drive_id": "1fwb1r1oVT_OGThca_1Gfd7FTqi2iYPF9",
+      "sha256": "11ca302d0ecd82d3b102642d803621040ff2b1c384d6e1ff7fbebe2531790ef3"
+    },
+    {
+      "path": "lib/features/auth/presentation/whatsapp_login_screen.dart",
+      "flat_name": "lib__features__auth__presentation__whatsapp_login_screen.dart",
+      "drive_id": "1CPgEqs7DRWeMbYcXpoN1F70Xuv1a9CSV",
+      "sha256": "f08c746468cd34907faa6eb0622a89638640a8c6a5d08fd4510268ca9e28d851"
+    },
+    {
+      "path": "lib/features/profile/data/wallet_operation_journal.dart",
+      "flat_name": "lib__features__profile__data__wallet_operation_journal.dart",
+      "drive_id": "1696utC3cpYAj1W7XziRpXBa_Kexe6m75",
+      "sha256": "b8d63843fb0d20568a91c1a6034a2a4d069ef47ad939c11051841f02c9a8348a"
+    },
+    {
+      "path": "lib/features/profile/data/wallet_service.dart",
+      "flat_name": "lib__features__profile__data__wallet_service.dart",
+      "drive_id": "1psUpoa5GaMwz9S_btXI2qn7rAJtGuotb",
+      "sha256": "6d3960b928ed99e1fc752996add92eff6e9c587aae33ffe5204caf7529719d59"
+    },
+    {
+      "path": "lib/features/profile/domain/wallet_operation.dart",
+      "flat_name": "lib__features__profile__domain__wallet_operation.dart",
+      "drive_id": "1STLIgYdgOnfpeSl2JKOVu8lba_PFeT3b",
+      "sha256": "c66017430558e45035d926bfa549f14968df1014d3dd6d30ff081bf11258c47a"
+    },
+    {
+      "path": "lib/features/profile/presentation/profile_screen.dart",
+      "flat_name": "lib__features__profile__presentation__profile_screen.dart",
+      "drive_id": "1J89GKNxbbBl5BcibKI0Ly00QjAxIsdFZ",
+      "sha256": "1b84fc0fcc96fb2f559e816cf984fea97f0c2109c6964e46856ecef741c6ed03"
+    },
+    {
+      "path": "lib/features/profile/presentation/wallet_screen.dart",
+      "flat_name": "lib__features__profile__presentation__wallet_screen.dart",
+      "drive_id": "1KdHZCGAEmQ--Habaon0i07lclh2iBCGI",
+      "sha256": "942549d7773b9a24b75f6ccbf68b720b9c9a60128bc3448332208a7ac3613538"
+    },
+    {
+      "path": "scripts/ci/apply_increment05.py",
+      "flat_name": "scripts__ci__apply_increment05.py",
+      "drive_id": "1dM7seDf_dZzN4mvjMI-w1kHDuC20riWM",
+      "sha256": "40642f845677caa31659832c674ec30dc390769a165d1d54f19f6af6e0a18e83"
+    },
+    {
+      "path": "scripts/ci/run_hardening_tests.sh",
+      "flat_name": "scripts__ci__run_hardening_tests.sh",
+      "drive_id": "1FqfVnlrgQDhG0tqhzRMigbaNldvNnXOI",
+      "sha256": "ec8b980ec7ac81d68fe1f1805e0af64a46d09458fcee275cca30f8c932705fa1"
+    },
+    {
+      "path": "scripts/operations/reconcile_receipts.py",
+      "flat_name": "scripts__operations__reconcile_receipts.py",
+      "drive_id": "1njS6_Vx7P_VbdxjLniPlguFGWuNEzXY5",
+      "sha256": "f11542bac7998c410dec79b35072a44aff080520ce6ebcca2852aef1b74c5143"
+    },
+    {
+      "path": "scripts/qa/check_increment05_catalog.py",
+      "flat_name": "scripts__qa__check_increment05_catalog.py",
+      "drive_id": "1a6y4_jiAkYHN66kmLI80PslStC21XEKI",
+      "sha256": "cf605c767aefaf9f5bdb78cf6de1beaae080cb765e2572d4ece394d3b46d15c8"
+    },
+    {
+      "path": "scripts/tests/edge/increment05.test.mjs",
+      "flat_name": "scripts__tests__edge__increment05.test.mjs",
+      "drive_id": "1JeZqCXEshcvWMTfkMIdmtJegwGnFF3nw",
+      "sha256": "670d6364ed0713d3865b80426a68e2912491ce4f3a5705684bd8557b7f759aa8"
+    },
+    {
+      "path": "scripts/tests/test_identity_lifecycle_contracts.py",
+      "flat_name": "scripts__tests__test_identity_lifecycle_contracts.py",
+      "drive_id": "15oltU3MM8imJoG-vPLRARULxkwpS-uXq",
+      "sha256": "6af223d543dace6162445f09ca5ca46e8bbafa2d7b23e7e604d0e21d18f7a9f5"
+    },
+    {
+      "path": "scripts/tests/test_increment05_applier.py",
+      "flat_name": "scripts__tests__test_increment05_applier.py",
+      "drive_id": "101R0lP0Y_Qm-4aiFvVQcv2ZrtDHkJVQK",
+      "sha256": "72cf87b8bc5b75b0dfa70f3c7ca4943db3220a09f60e7c9b90d09aeef9a7e0b8"
+    },
+    {
+      "path": "scripts/tests/test_increment05_contracts.py",
+      "flat_name": "scripts__tests__test_increment05_contracts.py",
+      "drive_id": "1_XDw2DGOeculOZoLRYCZTxCmVwSufnzr",
+      "sha256": "9b29e9a8ba83e758587c9b8403f63f7a04662f32e43f63360b6e613169878709"
+    },
+    {
+      "path": "scripts/tests/test_receipt_reconciliation.py",
+      "flat_name": "scripts__tests__test_receipt_reconciliation.py",
+      "drive_id": "1wlRrPZNjW5djhosDOlxmICqvAnamMbRA",
+      "sha256": "d3d6cceb73a7e53ff2910edb37ff188de1c8a72367cc436e3759b2f7deb73b53"
+    },
+    {
+      "path": "supabase/functions/_shared/admin-access.ts",
+      "flat_name": "supabase__functions___shared__admin-access.ts",
+      "drive_id": "1AC29Um3Jxcd9mJvZjuuTljGDhQimqvZV",
+      "sha256": "4685eeb42eb9a2960b003d5423f452366bbe6553f7552ffd662ec6c43bc3acfa"
+    },
+    {
+      "path": "supabase/functions/_shared/admin-lease.ts",
+      "flat_name": "supabase__functions___shared__admin-lease.ts",
+      "drive_id": "1FP-wXf-bMbTftL-Hage12ge0hxHvdM_T",
+      "sha256": "3de9d1a31f6393e0a93168cf6c86017e0c880824496737286b84845025674a30"
+    },
+    {
+      "path": "supabase/functions/_shared/admin-session_test.ts",
+      "flat_name": "supabase__functions___shared__admin-session_test.ts",
+      "drive_id": "1UUCtHPpFrtMqndI2SODWiS23QrXFRRoS",
+      "sha256": "2fe99cd8b429bc592539617a3e9017f336b48526218c65a2e1c8700cb3d9351d"
+    },
+    {
+      "path": "supabase/functions/_shared/admin-whatsapp.ts",
+      "flat_name": "supabase__functions___shared__admin-whatsapp.ts",
+      "drive_id": "1f7-dwltv58dbI2I9Gf5RHXehQyLNd9x_",
+      "sha256": "6b2d24fac2c838a4b0006ecf0aa3a77466539dad873e3e46770a2dffc9926d55"
+    },
+    {
+      "path": "supabase/functions/verify-otp/index.ts",
+      "flat_name": "supabase__functions__verify-otp__index.ts",
+      "drive_id": "1_4iXf2qVa3vUwLlClWUBRf1odxxxf6QN",
+      "sha256": "7d7fc70a0d25bcb85fc1471b68a9fad523889a213850d2229087647dc74da345"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/08_admin_session_leases.sql",
+      "flat_name": "supabase__hardening__2026-09-28__08_admin_session_leases.sql",
+      "drive_id": "1r8TvzH2HqY7dZ0zqstfBAitVw2PC31lM",
+      "sha256": "1e3e18b3c4de2dd41ec51aed00e45c10871df0450ad7a743d7beafa10346345b"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/09_wallet_operation_journal.sql",
+      "flat_name": "supabase__hardening__2026-09-28__09_wallet_operation_journal.sql",
+      "drive_id": "17Cq2SFipnY2FmdjnK6NDHd8D4EjrmqLc",
+      "sha256": "076aeda3a8c29ab91f6e8e789b2a7e36a3caafd6bc588b3edb17f838fcd78800"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/increment05_catalog_assertions.sql",
+      "flat_name": "supabase__hardening__2026-09-28__increment05_catalog_assertions.sql",
+      "drive_id": "1-jdWh9RXe4ju0TiYmMDqIq7NuFmbEjJa",
+      "sha256": "4974d243bbe30971c43e6cdc9dcafa95bc951dc55eb31a50f44bc89120c865e4"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/manifest.json",
+      "flat_name": "supabase__hardening__2026-09-28__manifest.json",
+      "drive_id": "1rqoALWRpewbRi7VSl81YMT2-AOonScSQ",
+      "sha256": "ab640145e5be0e77ee0613416edc408cfeed74b27e21b47926c5558c59718428"
+    },
+    {
+      "path": "test/increment05/session_and_wallet_test.dart",
+      "flat_name": "test__increment05__session_and_wallet_test.dart",
+      "drive_id": "1QeQoOJ7tJViuGshs4C5QXBqFwZgde7Wh",
+      "sha256": "56a9fd83392515151c5faf608090a47dddb7414ca15ef47332a0ad0bb149a93c"
+    }
+  ],
+  "qualification": "All41 individual uploads succeeded and folder listing verified. ZIP downloaded and SHA256 verified. Individual uploads were not each downloaded again. Source delivery only; no deployment or production acceptance."
+}

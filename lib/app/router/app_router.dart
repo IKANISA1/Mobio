@@ -8,6 +8,7 @@ import 'package:mobi_app/app/router/error_screens.dart';
 import 'package:mobi_app/app/router/screen_wrappers.dart';
 import 'package:mobi_app/app/shell.dart';
 import 'package:mobi_app/core/auth/admin_session_guard.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/firebase/firebase_analytics_service.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
@@ -106,13 +107,8 @@ void _safePopToProfile(BuildContext context) {
   safePop(context, fallback: AppRoutes.profile);
 }
 
-/// Admin route guard — validates role before allowing admin UI.
-///
-/// Accepts the user as admin if:
-///   1. `app_metadata.role == 'admin'` (set by the OTP-backed admin flow), OR
-///   2. `AdminSessionGuard.isAdmin` (in-memory session continuity fallback).
-///
-/// Server-side RPCs still enforce `role = 'admin'` independently.
+/// Navigation requires a server-checked, owner/session-bound lease. Backend
+/// RPC and row policies independently enforce the same server-owned deadline.
 String? _adminRouteGuard(GoRouterState state) {
   final path = state.matchedLocation;
   final isAdminAuthRoute = path == '/admin-auth';
@@ -132,13 +128,11 @@ String? _adminRouteGuard(GoRouterState state) {
       return isProtectedAdminRoute ? '/admin-auth' : null;
     }
 
-    final hasAdminRole = user.appMetadata['role'] == 'admin';
-    final hasActiveAdminSession = AdminSessionGuard.isAdminFor(user.id);
-    if (hasActiveAdminSession) {
-      AdminSessionGuard.touch(user.id);
-    }
-
-    final hasAdminAccess = hasAdminRole || hasActiveAdminSession;
+    final hasAdminRole = user.appMetadata['role'] == 'admin' &&
+        user.appMetadata['provider'] == 'admin_whatsapp_otp';
+    final hasAdminAccess = AccountContext.hasVerifiedSession && hasAdminRole &&
+        AdminSessionGuard.isAdminFor(user.id,
+          sessionId: AccountContext.sessionId(Supabase.instance.client.auth.currentSession));
     if (isAdminAuthRoute) {
       return hasAdminAccess ? '/admin' : null;
     }
@@ -158,25 +152,8 @@ String? _adminRouteGuard(GoRouterState state) {
 }
 
 bool _hasVerifiedWhatsAppSession() {
-  if (!SupabaseConfig.isConfigured) {
-    return false;
-  }
-
-  try {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null || user.isAnonymous) {
-      return false;
-    }
-
-    final provider = user.appMetadata['provider'];
-    final role = user.appMetadata['role'];
-    return provider == 'whatsapp_cloud_otp' ||
-        provider == 'admin_whatsapp_otp' ||
-        role == 'admin';
-  } on Object catch (e) {
-    AppLogger.error('App auth guard check failed: $e');
-    return false;
-  }
+  if (!SupabaseConfig.isConfigured) return false;
+  try { return AccountContext.hasVerifiedSession; } on Object { return false; }
 }
 
 String _loginLocationFor(GoRouterState state) {
@@ -208,6 +185,9 @@ String _safeRedirectTarget(String? raw) {
 }
 
 String? _appRouteGuard(GoRouterState state) {
+  if (AccountContext.exitRequested && state.matchedLocation != AppRoutes.login &&
+      state.matchedLocation != AppRoutes.adminAuth) return AppRoutes.login;
+
   if (!SupabaseConfig.isConfigured) {
     return null;
   }
@@ -248,6 +228,7 @@ class _SupabaseAuthRefreshListenable extends ChangeNotifier {
   StreamSubscription<AuthState>? _subscription;
 
   _SupabaseAuthRefreshListenable() {
+    AccountContext.changes.addListener(notifyListeners);
     if (!SupabaseConfig.isConfigured) {
       return;
     }
@@ -260,6 +241,7 @@ class _SupabaseAuthRefreshListenable extends ChangeNotifier {
   @override
   void dispose() {
     _subscription?.cancel();
+    AccountContext.changes.removeListener(notifyListeners);
     super.dispose();
   }
 }

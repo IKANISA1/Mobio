@@ -1,0 +1,14 @@
+[
+  {
+    "base": "audit-baseline",
+    "patch": "MOBIO_HARDENING_CUMULATIVE_03.patch",
+    "applied_in_isolated_copy": true,
+    "exact_after_files": 86
+  },
+  {
+    "base": "increment02",
+    "patch": "MOBIO_INCREMENT02_TO_03.patch",
+    "applied_in_isolated_copy": true,
+    "exact_after_files": 28
+  }
+]

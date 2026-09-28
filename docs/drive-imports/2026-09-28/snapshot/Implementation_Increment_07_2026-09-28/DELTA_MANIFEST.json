@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "increment": "07",
+  "baseline": "Increment06 cumulative overlay plus exact indexed/fetched prerequisites; not upstream main",
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "before_sha256": "bc50415e8a408c5760aeb199f4ee6debc042fa041788af74f77ace1ea7cbd54e",
+      "after_sha256": "5e4a745df1e72969f91e3f9b9ee255ff0adf65359bd98470bbd528bd86953017",
+      "after_mode": 420
+    },
+    {
+      "path": "docs/production-readiness/INCREMENT07_NOTIFICATION_OUTBOX.md",
+      "before_sha256": null,
+      "after_sha256": "34797e5c1eb8e4493375c59343c5d46c040721a2ec04fb2836242de344f68c83",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/features/admin/presentation/admin_operational_health_screen.dart",
+      "before_sha256": "f4b3698377da2d9750fb94eb4eae1bd54cb69f17161af4cb5fca3e86cf2abe5a",
+      "after_sha256": "778b1976d98bcf214c3d8c17f11f7b19069538388a294c34bdb34a3a62f789ac",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/features/admin/presentation/widgets/push_delivery_health_card.dart",
+      "before_sha256": null,
+      "after_sha256": "912c7144901c600fdd31ec5c224f4e6e009c86447d364ec61a0e9796712fe2b6",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/features/notifications/data/push_notification_service.dart",
+      "before_sha256": "2a74efd1be50cc38baa034dcc3c92fd9c06129b8363eafb38b06c1ee31f7d375",
+      "after_sha256": "6e01bf5431ab149915298c147585a1804c7300a91378c90fb9469e2d080a6465",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/features/notifications/domain/push_binding.dart",
+      "before_sha256": null,
+      "after_sha256": "85e54c9c6c9e3e2655c9ed991ad39cae4e9327b466330dcefd16b18465a1a8ad",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/ci/apply_increment07.py",
+      "before_sha256": null,
+      "after_sha256": "3b8d49dca0710e73bf0ec5279d9fc42157f4f400308db5b980044281e1686e4c",
+      "after_mode": 493
+    },
+    {
+      "path": "scripts/ci/run_hardening_tests.sh",
+      "before_sha256": "d5afe1a28db9b1e53f1071dc0f205bd82a2763391cb2812304816171e8de557a",
+      "after_sha256": "cff44ee17bd3373ad7688608711df3d292fd7510370fe7e334fc97c27f2edc63",
+      "after_mode": 493
+    },
+    {
+      "path": "scripts/operations/run_push_outbox_worker.py",
+      "before_sha256": null,
+      "after_sha256": "c72d60a113c8535b9378384729234122a5ec9b2aed401c20a0b73f7aec6c455f",
+      "after_mode": 493
+    },
+    {
+      "path": "scripts/operations/systemd/mobio-push-outbox.service",
+      "before_sha256": null,
+      "after_sha256": "8f6d9eb3f59732d517143f24a7e6c85b4d5f155f8444ad8e6447ef69b34c8d6b",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/operations/systemd/mobio-push-outbox.timer",
+      "before_sha256": null,
+      "after_sha256": "6bde06047a295f4be5f13ade910d19a635aca4f7b7cbcd919b29231d369cdc13",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/qa/test_push_postgres.py",
+      "before_sha256": null,
+      "after_sha256": "5cd9dc210b924ab480e1d892e2c14ae2bf7e038ad840c745eee49f8e4434d73b",
+      "after_mode": 493
+    },
+    {
+      "path": "scripts/tests/push/http.test.mjs",
+      "before_sha256": null,
+      "after_sha256": "9253edda44913f7c2fdefdec509b367c3aee185e8c5a9de425213b39d9d2988c",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/tests/push/provider.test.mjs",
+      "before_sha256": null,
+      "after_sha256": "ea89bdef3c6921f878c933e5beddb2cab18180d1ea3ffd4d54f6538cd9617384",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/tests/push/worker.test.mjs",
+      "before_sha256": null,
+      "after_sha256": "7cc4605534c20b7618bb5795331c18b1176e9f6ff18a03cd1c36c21e4c220155",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/tests/sql/push_fixture_bootstrap.sql",
+      "before_sha256": null,
+      "after_sha256": "a7abd93fd2662d64822896e974629593ced89c8770840c30657e68062bed9053",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/tests/test_identity_lifecycle_contracts.py",
+      "before_sha256": "af5a4c2f43b2f0831dfe1a3640e71c2f151b70535a2170b9bd3506ea3bab3763",
+      "after_sha256": "1cdc22a8dd80fbfeb4d28c5399353590a12734f2691bb48a993b551530611ec1",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/tests/test_increment06_contracts.py",
+      "before_sha256": "2a78f3dda16bd6d3f6f19985bdada3b8b1271fba1bbe035642c444253adcfd79",
+      "after_sha256": "60fa446a46ff5afa580cb3ddef032a55e509494002a02ed9ee3cdef988e17868",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/tests/test_increment07_applier.py",
+      "before_sha256": null,
+      "after_sha256": "a97fafe1057511a7555e0281d8260f667aa26f37e0aad6164bd9b7983538be15",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/tests/test_increment07_contracts.py",
+      "before_sha256": null,
+      "after_sha256": "d6bcd3fe1f65bfcb8d4848141cb6cd8aa361afa8eef75117f781135ea20c9e56",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/tests/test_push_operations.py",
+      "before_sha256": null,
+      "after_sha256": "d77d57f867114e90704d9eafec68bd6cb7803fb0ed093ada039cc21b79a9d5e8",
+      "after_mode": 420
+    },
+    {
+      "path": "supabase/config.toml",
+      "before_sha256": "c31ca4510cb0983c0456b3f75f19a6b780afc70a4ff11ffabb9478db95d99851",
+      "after_sha256": "935255e6def4aefde0b3078d86eed7db32cf238c911a7662b961494b6fbb93a8",
+      "after_mode": 420
+    },
+    {
+      "path": "supabase/functions/_shared/push-http.ts",
+      "before_sha256": null,
+      "after_sha256": "d27b138b1b706e639c25b2dfc4c7982d5e025342497075108844518ebc0b1c2e",
+      "after_mode": 420
+    },
+    {
+      "path": "supabase/functions/_shared/push-outbox.ts",
+      "before_sha256": null,
+      "after_sha256": "36abcde61da4dbdef550598f9661e0935416d02702d61b7834be096aa58ae9c1",
+      "after_mode": 420
+    },
+    {
+      "path": "supabase/functions/_shared/push-provider.ts",
+      "before_sha256": null,
+      "after_sha256": "0ef4c15221df280e1faf7e196f946c919934c9b5f938c7543a19234abe581a76",
+      "after_mode": 420
+    },
+    {
+      "path": "supabase/functions/push-outbox-worker/index.ts",
+      "before_sha256": null,
+      "after_sha256": "1a848bbfe52c334601a2365d01371d8b4717049b71589689ce65d3d044f2e0b3",
+      "after_mode": 420
+    },
+    {
+      "path": "supabase/functions/send-push/index.ts",
+      "before_sha256": "7ed9943e03c2b1dfbf887312286746326323b4581913802d3fe068adff929165",
+      "after_sha256": "aeecf1eeb9c5e020836760ba3b652a512a4689f8e14b5781210f90625ba66592",
+      "after_mode": 420
+    },
+    {
+      "path": "supabase/functions/send-push/index_test.ts",
+      "before_sha256": "418ec7d4113451e8ba9ab4e4adbf9aa82ee051d3b91f59681fcfa1c8a0a2d2e0",
+      "after_sha256": "c91c36de2b8bac40501fde89dc1079aa5079e68ed7467411d72c5f06e01899cd",
+      "after_mode": 420
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/11_notification_outbox.sql",
+      "before_sha256": null,
+      "after_sha256": "6cc9206583ae5df27dee0a216c558da288c7536d3f61a82495bbc3540d28404a",
+      "after_mode": 420
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/increment07_catalog_assertions.sql",
+      "before_sha256": null,
+      "after_sha256": "39c624c23d556428a5a86d2d64bedcef2352377de600e4d130e9ee8a73a62b56",
+      "after_mode": 420
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/manifest.json",
+      "before_sha256": "f152d094de33c62155a40e1b50858fad0e5c9eec152f44e777f121088f204399",
+      "after_sha256": "500f53277aa459c1655bfc6d64e22bff2abe36d75687a3f74e785b92a5cc5c87",
+      "after_mode": 420
+    },
+    {
+      "path": "test/increment07/push_binding_test.dart",
+      "before_sha256": null,
+      "after_sha256": "0a9f24f114ca0d72c08c0cb6f8ddd6bb67ba7f88909216fd92f65da805c3cd6d",
+      "after_mode": 420
+    }
+  ]
+}

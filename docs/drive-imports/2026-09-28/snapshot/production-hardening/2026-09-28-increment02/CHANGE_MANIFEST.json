@@ -1,0 +1,322 @@
+{
+  "package": "Mobio_Hardening_Increment02_2026-09-28",
+  "generated_at_utc": "2026-09-28T05:22:57.446947+00:00",
+  "base": "supplied Mobio Git HEAD reconstructed from Drive; patch is relative to that baseline",
+  "changed_file_count": 62,
+  "files": [
+    {
+      "path": ".github/dependabot.yml",
+      "size_bytes": 1002,
+      "sha256": "b1d4a7ce63eca85028563448179cfc02ae06449e91ad0eade65422dbf6e5adab"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "size_bytes": 6849,
+      "sha256": "3be566f40dbb70786031b835713aff5893e5720afb368091c8761accf416868a"
+    },
+    {
+      "path": ".gitignore",
+      "size_bytes": 1417,
+      "sha256": "c321fd0dc31f6aec792db4e156c3a3c665224c24886e6aeaa5eef2e60c823562"
+    },
+    {
+      "path": "android/app/build.gradle.kts",
+      "size_bytes": 3542,
+      "sha256": "1b1875f3f931d3e58c5bd09dc5cae9d8f248c0b4a6dae2446a4095efd74b8a6a"
+    },
+    {
+      "path": "android/app/src/main/kotlin/rw/mobi/app/BioPayHostApduService.kt",
+      "size_bytes": 2299,
+      "sha256": "bb6c6a69225678877a2c6bca444d7eaad3e89cf44232a731c2e3ba44c8c95b3b"
+    },
+    {
+      "path": "android/app/src/main/kotlin/rw/mobi/app/BioPayNfcPolicy.kt",
+      "size_bytes": 2753,
+      "sha256": "8a4d408056dd4e9cfa84d1fd8e98fb636608f1c75d24905ff11a3d3c0e10429c"
+    },
+    {
+      "path": "android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt",
+      "size_bytes": 44683,
+      "sha256": "9425443a35b5c89cfd8b46ee5de58b80c233608a01befe647a8e836dfd288ebb"
+    },
+    {
+      "path": "lib/app/router/screen_wrappers.dart",
+      "size_bytes": 11559,
+      "sha256": "b3f39fb8ff1c61df947c58dfabd228f814a9a3527ec6bc9cdc6999e725f6b21b"
+    },
+    {
+      "path": "lib/core/auth/supabase_session_service.dart",
+      "size_bytes": 2488,
+      "sha256": "6414eb3c6e220aa851fc9867fe13a78d285f00ff6ca50ac2715cf8ffb4acd33e"
+    },
+    {
+      "path": "lib/core/utils/mobio_member_id.dart",
+      "size_bytes": 1080,
+      "sha256": "aed7cec2b07c2c6e9859895f24ef62189ba34731c27be8430bf992738d339868"
+    },
+    {
+      "path": "lib/features/biopay/data/biopay_device_nfc_service.dart",
+      "size_bytes": 3008,
+      "sha256": "b01d44087861b3c5951237a76de8fc091998792dc874c0a7aa9e66520a09f7d9"
+    },
+    {
+      "path": "lib/features/biopay/data/biopay_face_service.dart",
+      "size_bytes": 6682,
+      "sha256": "2c96865543f56e125535cf4a108aeb27037cb250d0e3c6f9d1dfb64278e6ea6e"
+    },
+    {
+      "path": "lib/features/biopay/presentation/face_copy.dart",
+      "size_bytes": 1485,
+      "sha256": "56dc2aba5991077572338ddc4c894c4355f2220ef19c36036ca5aa510e2f9a50"
+    },
+    {
+      "path": "lib/features/bookings/data/public_transport_service.dart",
+      "size_bytes": 10187,
+      "sha256": "dcf618995e51885ac92dd03dce658e572138422a2796b31c140690edc6b61366"
+    },
+    {
+      "path": "lib/features/bookings/presentation/bookings_screen.dart",
+      "size_bytes": 20454,
+      "sha256": "af7505fecf7a7b5fb07ac28dae82330885501b32e38e5e594f0feedd0428e9d8"
+    },
+    {
+      "path": "lib/features/home/presentation/widgets/scheduled_trip_card.dart",
+      "size_bytes": 3467,
+      "sha256": "0bccf0c87db562e48aa9ea89b709c528a88e462af50d42449f6849777200396c"
+    },
+    {
+      "path": "lib/features/notifications/data/push_notification_service.dart",
+      "size_bytes": 13648,
+      "sha256": "2a74efd1be50cc38baa034dcc3c92fd9c06129b8363eafb38b06c1ee31f7d375"
+    },
+    {
+      "path": "lib/features/profile/presentation/profile_screen.dart",
+      "size_bytes": 26125,
+      "sha256": "b28b7d35404f4af0275d58c68c04dee9ea507a26438f3f811c971f7cd0f6c35e"
+    },
+    {
+      "path": "lib/shared/widgets/driver_card.dart",
+      "size_bytes": 5139,
+      "sha256": "06ffdec10c22808b0b40c35cb118371ad77b734570721d212d816b8c530a2c03"
+    },
+    {
+      "path": "scripts/ci/check_github_actions_pinned.py",
+      "size_bytes": 5776,
+      "sha256": "828711a367f07221cf30fbfedee2ce475c46b29c0c9e06b82d05123d95ae0781"
+    },
+    {
+      "path": "scripts/ci/check_github_actions_pinned.sh",
+      "size_bytes": 195,
+      "sha256": "ad005d85b770b482d0f1d5c9b79745960f0d44a1eb178bba77b566669068e13b"
+    },
+    {
+      "path": "scripts/ci/prepare_hardening_migrations.py",
+      "size_bytes": 7828,
+      "sha256": "68dcff705d83283e04afa15cb1810eb33e5a0d4c686c48c0ce69f18fc112e178"
+    },
+    {
+      "path": "scripts/ci/requirements.txt",
+      "size_bytes": 14,
+      "sha256": "0969da99a0bc2a1b71ed50584560f4588a37567ac63af3ddbaf3c4617ca5621a"
+    },
+    {
+      "path": "scripts/ci/run_hardening_tests.sh",
+      "size_bytes": 1445,
+      "sha256": "f9a3eb06db54b66c9f8c7fc123da5453e044c01a9dbd7cfdb9768fb054b2ad82"
+    },
+    {
+      "path": "scripts/qa/verify_mobio_feature_readiness.sh",
+      "size_bytes": 2940,
+      "sha256": "a886010b5f1c7576fe24af44539fd9367d634dc2e9cc07d623462c416e01102c"
+    },
+    {
+      "path": "scripts/release/check_play_version_evidence.py",
+      "size_bytes": 1482,
+      "sha256": "5457b7ab18012ce1aa4aaee6d89601152f2b0bb3c7352579ae8f9cbfd3c18efe"
+    },
+    {
+      "path": "scripts/release/go_no_go_check.sh",
+      "size_bytes": 6537,
+      "sha256": "9d00b602616154881f10f916224dcc9d2680218529c222a4be36f416540079e5"
+    },
+    {
+      "path": "scripts/tests/edge/deno-env.fixture.d.ts",
+      "size_bytes": 157,
+      "sha256": "baad36439ebf5ced84e9f366ce180857ed9d8858107e55fd68b3ce85bac19caf"
+    },
+    {
+      "path": "scripts/tests/edge/fixture-loader.mjs",
+      "size_bytes": 573,
+      "sha256": "2b81fd308f31f4ac0f0b4e497aa5fdfa83e891241104e0931f92260695aa9080"
+    },
+    {
+      "path": "scripts/tests/edge/handlers.test.mjs",
+      "size_bytes": 8785,
+      "sha256": "7a38c324aa8f0233ab17c6cb9a46eb289b766eed7ffccc86da138c242ed2ce7e"
+    },
+    {
+      "path": "scripts/tests/edge/hardening.test.mjs",
+      "size_bytes": 12667,
+      "sha256": "47455429c1e7536271d7ddbfd775eb6fd54f6bcedd2c38a909b94e29bd12c8e6"
+    },
+    {
+      "path": "scripts/tests/kotlin/BioPayNfcPolicyTest.kt",
+      "size_bytes": 2800,
+      "sha256": "e340064e707a144d7d89338841ddddcdeb27922d58facfb59933b9cc38b2bce2"
+    },
+    {
+      "path": "scripts/tests/test_hardening_preparation.py",
+      "size_bytes": 5721,
+      "sha256": "68db3ddf7fcdc1fdee944ab7c39a9c46cbd0ecb8cc26e8cb80492a6d51c8971d"
+    },
+    {
+      "path": "scripts/tests/test_identity_lifecycle_contracts.py",
+      "size_bytes": 8750,
+      "sha256": "40d343faa2b8a45b79b4d5e38bcc6788289fedfe182e44169faa1d0376a41def"
+    },
+    {
+      "path": "scripts/tests/test_play_version_evidence.py",
+      "size_bytes": 1182,
+      "sha256": "9791a909a08e0c8469afa7350cc0654c65944a680937937b8550e9a989322512"
+    },
+    {
+      "path": "scripts/tests/test_production_gates.py",
+      "size_bytes": 8318,
+      "sha256": "307e45b77974f4056a82234feab0cfc54fdeb7cb9bbac65b28085f3491f42cbf"
+    },
+    {
+      "path": "services/face-inference/Dockerfile",
+      "size_bytes": 509,
+      "sha256": "ce4d1960fa5614866615f7b23384f5353be85f6a3f7e652914f2d39ffca7f5fc"
+    },
+    {
+      "path": "services/face-inference/inference.py",
+      "size_bytes": 4344,
+      "sha256": "e57acc3f0cdab8c2ae303024e51cce572d3b06427d7ae1abb4ed13b4037b4f86"
+    },
+    {
+      "path": "services/face-inference/protocol.py",
+      "size_bytes": 232,
+      "sha256": "5190d0df920ffa8ef898885ae18128ed6478952bd844d3182ade9c5b126b9ee9"
+    },
+    {
+      "path": "services/face-inference/server.py",
+      "size_bytes": 7433,
+      "sha256": "d0b86b5435aff6dbd4c3005cd7add36fcafdae05df9cad087518f7214da3f0ea"
+    },
+    {
+      "path": "services/face-inference/tests/test_http.py",
+      "size_bytes": 2262,
+      "sha256": "e7123ea4d54b5ecdd75a02aea67d2e7b7cf74f250fc4847d14f968aadb426976"
+    },
+    {
+      "path": "services/face-inference/tests/test_server_bounds.py",
+      "size_bytes": 5382,
+      "sha256": "b7b22b1079002097d38122d1356c12c9719e43306bdbba56e11528b267e5450e"
+    },
+    {
+      "path": "supabase/functions/_shared/bounded-fetch.ts",
+      "size_bytes": 4015,
+      "sha256": "a328f2afa8ece90671fffa4887826dcd142ac91a60160348df417affe3b4a37b"
+    },
+    {
+      "path": "supabase/functions/_shared/momo-receipt-evidence.ts",
+      "size_bytes": 3695,
+      "sha256": "a9f4d8546cf47e76ad4cdd1f6a761fcda57f41952a637f1080d6275542702221"
+    },
+    {
+      "path": "supabase/functions/_shared/momo-sms.ts",
+      "size_bytes": 8587,
+      "sha256": "2b3e4c22aafa517a361ae067702802668fe3cb33eddd12bed870bb1feb41a755"
+    },
+    {
+      "path": "supabase/functions/_shared/verified-phone-identity.ts",
+      "size_bytes": 1894,
+      "sha256": "6dbc2d42a5efe85b95cd3ffe2d8445926555a6599919342c988934524e442d91"
+    },
+    {
+      "path": "supabase/functions/_shared/whatsapp-cloud.ts",
+      "size_bytes": 7214,
+      "sha256": "18877fa47f23e4e16483ca61e0da493e5fffdbe3c670e74102f819cb38c9a6da"
+    },
+    {
+      "path": "supabase/functions/maps-gateway/index.ts",
+      "size_bytes": 23046,
+      "sha256": "eabedcff30e62f1022b1ab0127647ec4252e073f664dfb92a1100647dfa4b08a"
+    },
+    {
+      "path": "supabase/functions/momobio-sms-ingest/index.ts",
+      "size_bytes": 6007,
+      "sha256": "b2e6de00c4c605b9342555d76550f0b7a9ebdf4eeb5811c10bb389111b65abc6"
+    },
+    {
+      "path": "supabase/functions/parse-sms/index.ts",
+      "size_bytes": 654,
+      "sha256": "7acbe403802bfad206cf3f106c00920c36d1730754ce62ea2d5be8199616d1c3"
+    },
+    {
+      "path": "supabase/functions/reconcile-momo-sms/index.ts",
+      "size_bytes": 654,
+      "sha256": "7acbe403802bfad206cf3f106c00920c36d1730754ce62ea2d5be8199616d1c3"
+    },
+    {
+      "path": "supabase/functions/verify-login-otp/index.ts",
+      "size_bytes": 12909,
+      "sha256": "bbd5c8c9096c7df30686718bf8930394e47f8f6c6355622d2396551ff26948b7"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/01_booking_write_authority.sql",
+      "size_bytes": 1521,
+      "sha256": "647f997ea8ec787274b784ed5c0c201ca19f0c05c19ad8590d47b498ad213588"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/02_verified_phone_authority.sql",
+      "size_bytes": 8297,
+      "sha256": "a204d55887264fdcde3f2030699dfdb9401bee6131546553b5dcd22c1cb553f9"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/03_strict_receipt_allocation.sql",
+      "size_bytes": 12727,
+      "sha256": "5cfdb8ee79eae3071de0c6f8c6330cdd229c211f952ac838f4a99ff3fefffa24"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/04_canonical_member_id.sql",
+      "size_bytes": 3727,
+      "sha256": "ff06946103fc5d41e03ec3dc99e343a5bbb5256af2d68390af12c876bb3eda81"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/05_transport_hold_receipt_integrity.sql",
+      "size_bytes": 10723,
+      "sha256": "49128f73e4cab36797d2856bf906a79f500b66cc0face9aa6248dcb89c5a9dfe"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/06_bounded_driver_discovery.sql",
+      "size_bytes": 5082,
+      "sha256": "70aa5ceee34cb7dc09ccba35e912cfa92ec7b04c48daefeb4e11aad66f27a85d"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/README.md",
+      "size_bytes": 6860,
+      "sha256": "1868abd82ad4071e515033bddae9fa9c0cc5bc42829e7f3a867dd58f21632fb0"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/manifest.json",
+      "size_bytes": 1357,
+      "sha256": "d35c3962d87afb7e9a0774395855c58fa03251d61fcf8f0f5b0d2ec4d1d10264"
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/post_install_assertions.sql",
+      "size_bytes": 4487,
+      "sha256": "2367e5a17cf7f1d5a75fcf57fe28609e8c7fddd033eda27be7d5a5b4e8c42e0c"
+    },
+    {
+      "path": "test/core/utils/mobio_member_id_test.dart",
+      "size_bytes": 1144,
+      "sha256": "38c76f28307ccfd03a9f384fcb1da643faec5273e01bbe500cb43ed039b55ba1"
+    }
+  ],
+  "database_applied": false,
+  "edge_functions_deployed": false,
+  "mobile_builds_produced": false,
+  "production_ready": false
+}

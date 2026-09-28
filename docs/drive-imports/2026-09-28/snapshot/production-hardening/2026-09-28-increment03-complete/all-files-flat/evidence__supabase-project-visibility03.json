@@ -1,0 +1,9 @@
+{
+  "tool": "Supabase.list_projects",
+  "observed_date": "2026-09-28",
+  "result": {
+    "projects": []
+  },
+  "interpretation": "No projects visible through this connection; this does not assert the user has no Supabase projects.",
+  "queries_or_migrations_performed": false
+}

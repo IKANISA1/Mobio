@@ -39,9 +39,11 @@ class WhatsAppLoginScreen extends ConsumerStatefulWidget {
 }
 
 class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
+  final Object _verificationOwner = Object();
   static const _defaultResendCooldown = 60;
 
   final _otpController = TextEditingController();
+  late final WhatsAppLoginService _loginService;
 
   late AppRole _role;
   String _number = '';
@@ -89,6 +91,7 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
   @override
   void initState() {
     super.initState();
+    _loginService = ref.read(whatsappLoginServiceProvider);
     _role = widget.initialRole == AppRole.driver
         ? AppRole.driver
         : AppRole.passenger;
@@ -96,6 +99,7 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
 
   @override
   void dispose() {
+    unawaited(_loginService.cancelVerification(owner: _verificationOwner).catchError((Object _) {}));
     _resendTimer?.cancel();
     _otpController.dispose();
     super.dispose();
@@ -112,9 +116,7 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
       _attemptsRemaining = null;
     });
 
-    final result = await ref
-        .read(whatsappLoginServiceProvider)
-        .sendLoginOtp(
+    final result = await _loginService.sendLoginOtp(
           phone: _fullPhone,
           countryCode: _countryCode,
           role: _role,
@@ -158,9 +160,8 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
       _attemptsRemaining = null;
     });
 
-    final result = await ref
-        .read(whatsappLoginServiceProvider)
-        .verifyLoginOtp(
+    final result = await _loginService.verifyLoginOtp(
+      owner: _verificationOwner,
           phone: _fullPhone,
           code: _otpController.text,
           role: _role,
@@ -171,7 +172,12 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
     }
 
     if (result.success) {
-      widget.onSuccess(result.role ?? _role);
+      try {
+        if (!mounted) return;
+        widget.onSuccess(result.role ?? _role);
+      } on Object {
+        if (mounted) setState(() { _verifyingCode=false; _error='Session could not be saved. Verify again.'; });
+      }
       return;
     }
 

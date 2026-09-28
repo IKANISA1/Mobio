@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/auth/admin_session_service.dart';
+import 'package:mobi_app/core/auth/admin_session_guard.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,6 +25,12 @@ class OtpResult {
 /// WhatsApp OTP service for platform-admin sign-in.
 class OtpService {
   OtpService._();
+  static bool _verificationPending = false;
+  static LoginAttempt? _attempt;
+  static Object? _attemptOwner;
+  static Future<void> cancelVerification({required Object owner}) async {
+    if (identical(owner, _attemptOwner)) await AccountContext.cancelPendingLogin(_attempt);
+  }
 
   // Edge functions live on the configured Supabase project.
   static final Dio _dio = Dio(
@@ -33,6 +42,7 @@ class OtpService {
         'Authorization': 'Bearer ${SupabaseConfig.anonKey}',
       },
       connectTimeout: const Duration(seconds: 10),
+      sendTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
     ),
   );
@@ -68,13 +78,13 @@ class OtpService {
         retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'),
       );
     } on DioException catch (e) {
-      if (kDebugMode) debugPrint('OtpService.sendOtp error: $e');
+      if (kDebugMode) debugPrint('OtpService.sendOtp: request unavailable');
       return _fromDioException(
         e,
         fallbackMessage: 'Network error. Check your connection.',
       );
-    } on Object catch (e) {
-      if (kDebugMode) debugPrint('OtpService.sendOtp error: $e');
+    } on Object {
+      if (kDebugMode) debugPrint('OtpService.sendOtp: request unavailable');
       return const OtpResult(
         success: false,
         message: 'Network error. Check your connection.',
@@ -84,92 +94,59 @@ class OtpService {
 
   /// Verify OTP [code] for [phone]. On success, restores session in Supabase.
   static Future<OtpResult> verifyOtp({
+    Object? owner,
     required String phone,
     required String code,
     required String countryCode,
   }) async {
-    final normalizedPhone = PhoneNumberNormalizer.normalizeForCountry(
-      phone: phone,
-      countryCode: countryCode,
-    );
-
+    if (_verificationPending) return const OtpResult(success: false, message: 'Verification is already in progress.');
+    if (!SupabaseConfig.isConfigured) return const OtpResult(success:false, message:'Admin service is unavailable.');
+    _verificationPending = true;
+    LoginAttempt? ticket;
+    var completed = false;
     try {
-      final response = await _dio.post(
-        '/verify-otp',
-        data: {
-          'phone': normalizedPhone,
-          'code': code,
-          'countryCode': countryCode,
-        },
-      );
+      ticket = AccountContext.beginLoginAttempt(provider: 'admin_whatsapp_otp');
+      _attempt = ticket;
+      _attemptOwner = owner;
+      await AccountContext.prepareLogin(ticket);
+      final normalizedPhone = PhoneNumberNormalizer.normalizeForCountry(phone: phone, countryCode: countryCode);
+      final response = await _dio.post('/verify-otp', data: {
+        'phone': normalizedPhone, 'code': code, 'countryCode': countryCode,
+      }).timeout(const Duration(seconds: 15));
+      AccountContext.requireLoginAttempt(ticket);
       final body = response.data as Map<String, dynamic>;
-
-      if (body['success'] == true && body['session'] != null) {
-        final session = body['session'] as Map<String, dynamic>;
-        final refreshToken = session['refresh_token'] as String?;
-
-        if (refreshToken != null) {
-          try {
-            await Supabase.instance.client.auth.setSession(refreshToken);
-          } on Object catch (e) {
-            if (kDebugMode) debugPrint('Session restore failed: $e');
-          }
+      if (body['success'] == true && body['session'] is Map && body['admin_lease'] is Map) {
+        final session = Map<String, dynamic>.from(body['session'] as Map);
+        final lease = Map<String, dynamic>.from(body['admin_lease'] as Map);
+        if (lease['active'] != true || session['user'] is! Map ||
+            (session['user'] as Map)['id'] != lease['user_id']) throw StateError('ADMIN_LEASE_REQUIRED');
+        await AccountContext.restoreServerSession(ticket, session);
+        if (AccountContext.sessionId(Supabase.instance.client.auth.currentSession) != lease['session_id']) {
+          throw StateError('ADMIN_LEASE_REQUIRED');
         }
-
-        try {
-          final currentUser = Supabase.instance.client.auth.currentUser;
-          if (currentUser == null) {
-            return const OtpResult(
-              success: false,
-              message: 'Unable to restore the admin session.',
-            );
-          }
-
-          final profile = await Supabase.instance.client
-              .from('profiles')
-              .select('role')
-              .eq('id', currentUser.id)
-              .maybeSingle();
-
-          if (profile == null || profile['role'] != 'admin') {
-            await Supabase.instance.client.auth.signOut();
-            return const OtpResult(
-              success: false,
-              message:
-                  'This WhatsApp number does not have platform admin access.',
-            );
-          }
-        } on Object catch (e) {
-          if (kDebugMode) {
-            debugPrint('OtpService.verifyOtp admin role check failed: $e');
-          }
-          return const OtpResult(
-            success: false,
-            message: 'Unable to verify admin access right now.',
-          );
+        await AccountContext.completeVerifiedLogin(ticket).timeout(const Duration(seconds: 8));
+        if (!await AdminSessionService.synchronize()) {
+          await AccountContext.beginExit();
+          throw StateError('ADMIN_LEASE_REQUIRED');
         }
-
+        completed = true;
         return const OtpResult(success: true, message: 'Verified successfully');
       }
-
-      return OtpResult(
-        success: false,
-        message: body['message'] as String? ?? 'Verification failed',
-        attemptsRemaining: _extractInt(body, 'attemptsRemaining'),
-        retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'),
-      );
-    } on DioException catch (e) {
-      if (kDebugMode) debugPrint('OtpService.verifyOtp error: $e');
-      return _fromDioException(
-        e,
-        fallbackMessage: 'Network error. Check your connection.',
-      );
-    } on Object catch (e) {
-      if (kDebugMode) debugPrint('OtpService.verifyOtp error: $e');
-      return const OtpResult(
-        success: false,
-        message: 'Network error. Check your connection.',
-      );
+      return OtpResult(success: false, message: body['message'] as String? ?? 'Verification failed',
+        attemptsRemaining: _extractInt(body, 'attemptsRemaining'), retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'));
+    } on DioException catch (error) {
+      AdminSessionGuard.revoke();
+      return _fromDioException(error, fallbackMessage: 'Network error. Check your connection.');
+    } on Object {
+      AdminSessionGuard.revoke();
+      return const OtpResult(success: false, message: 'Unable to confirm admin access. Request a new code.');
+    } finally {
+      if (!completed) {
+        try { await AccountContext.abortLogin(ticket).timeout(const Duration(seconds: 5)); } on Object { /* locked */ }
+      }
+      _attempt = null;
+      _attemptOwner = null;
+      _verificationPending = false;
     }
   }
 

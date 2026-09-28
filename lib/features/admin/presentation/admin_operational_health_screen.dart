@@ -1,3 +1,5 @@
+import 'widgets/privacy_health_card.dart';
+import 'package:mobi_app/features/admin/presentation/widgets/push_delivery_health_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
@@ -115,6 +117,9 @@ class _AdminOperationalHealthScreenState
               physics: const AlwaysScrollableScrollPhysics(),
               padding: AdminLayoutTokens.overlayPagePadding,
               children: [
+                const PushDeliveryHealthCard(),
+                const PrivacyHealthCard(),
+                const SizedBox(height: AppSpacing.lg),
                 _HealthMetricGrid(
                   totalCount: _events.length,
                   errorCount: errorCount,

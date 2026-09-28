@@ -1,0 +1,176 @@
+{
+  "as_of": "2026-09-28",
+  "scope": "Local portable logic/fixtures/source assertions, not production acceptance",
+  "new_checks": 102,
+  "new_executable_or_fixture_checks": 87,
+  "new_source_assertions": 15,
+  "regression_checks_rerun": 353,
+  "total_counted_checks": 455,
+  "lanes": [
+    {
+      "lane": "New admin lease / actual OTP handler Node fixtures",
+      "status": "PASS",
+      "count": 45,
+      "boundary": "Actual TypeScript, explicit Auth/DB/SDK substitutes; no real Deno or Auth."
+    },
+    {
+      "lane": "New read-only reconciliation CLI",
+      "status": "PASS",
+      "count": 24,
+      "boundary": "Real Python algorithm and temporary files; synthetic normalized exports, not actual operator evidence."
+    },
+    {
+      "lane": "New guarded Increment05 applier",
+      "status": "PASS",
+      "count": 11,
+      "boundary": "Actual local filesystem fixtures, drift/path/symlink rejection."
+    },
+    {
+      "lane": "New local DB target guards",
+      "status": "PASS",
+      "count": 7,
+      "boundary": "Executable DSN validation; no SQL engine."
+    },
+    {
+      "lane": "New source contracts",
+      "status": "PASS",
+      "count": 15,
+      "boundary": "Text assertions; not runtime SQL or Flutter behavior."
+    },
+    {
+      "lane": "Existing Python gates/source/queue/preparer/Increment04 applier",
+      "status": "PASS",
+      "count": 120,
+      "boundary": "Mixed executable and source assertions; named detailed logs supplied."
+    },
+    {
+      "lane": "Existing pure Edge and login/intake handler fixtures",
+      "status": "PASS",
+      "count": 159,
+      "boundary": "66 pure-module +7 actual login/retirement +86 signed intake fixtures; external clients are explicit substitutes."
+    },
+    {
+      "lane": "Bounded inference HTTP",
+      "status": "PASS",
+      "count": 16,
+      "boundary": "Real HTTP behavior with an explicitly fake inference model."
+    },
+    {
+      "lane": "Native NFC JVM policy",
+      "status": "PASS",
+      "count": 20,
+      "boundary": "Actual compiled pure Kotlin policy; not Android framework/hardware."
+    },
+    {
+      "lane": "Collector policy and OS leases JVM",
+      "status": "PASS",
+      "count": 38,
+      "boundary": "Actual compiled pure Kotlin and cross-process file leases; not Android WorkManager/device."
+    },
+    {
+      "lane": "Strict TypeScript check",
+      "status": "PASS",
+      "count": null,
+      "boundary": "External SDK/runtime declaration substitutes; not real SDK/Deno type acceptance."
+    },
+    {
+      "lane": "Action pins, shell/Python syntax, migration plan/hashes",
+      "status": "PASS",
+      "count": null,
+      "boundary": "Source/tooling checks only, no database mutation."
+    },
+    {
+      "lane": "PostgreSQL17 full-schema/financial/catalogue",
+      "status": "UNAVAILABLE",
+      "count": 0,
+      "boundary": "psql absent; local read-only probe returned exit2. SQL bodies not executed."
+    },
+    {
+      "lane": "Dart/Flutter compile, new client tests, full goldens",
+      "status": "UNAVAILABLE",
+      "count": 0,
+      "boundary": "Flutter/Dart absent. Authored tests supplied, not run."
+    },
+    {
+      "lane": "Native Deno / actual Supabase SDK",
+      "status": "UNAVAILABLE",
+      "count": 0,
+      "boundary": "Deno unavailable; updated native Deno test supplied, not run."
+    },
+    {
+      "lane": "Signed Android/iOS, physical-device/operator/model acceptance",
+      "status": "NOT RUN",
+      "count": 0,
+      "boundary": "No signed release, actual model deployment or device exercise."
+    },
+    {
+      "lane": "Hosted CI, actual database changes and production deployment",
+      "status": "NOT RUN",
+      "count": 0,
+      "boundary": "No live credentials, funds, permissions or production services changed."
+    }
+  ],
+  "aggregate_script_note": "Two aggregate invocations reached execution-tool timeouts during Kotlin compilation. Counted components were completed separately. No timed-out aggregate invocation is labelled PASS.",
+  "python_components": [
+    {
+      "lane": "test_production_gates.py",
+      "exit_code": 0,
+      "tests": 29,
+      "log": "test_production_gates.py.log"
+    },
+    {
+      "lane": "test_hardening_preparation.py",
+      "exit_code": 0,
+      "tests": 12,
+      "log": "test_hardening_preparation.py.log"
+    },
+    {
+      "lane": "test_play_version_evidence.py",
+      "exit_code": 0,
+      "tests": 8,
+      "log": "test_play_version_evidence.py.log"
+    },
+    {
+      "lane": "test_identity_lifecycle_contracts.py",
+      "exit_code": 0,
+      "tests": 22,
+      "log": "test_identity_lifecycle_contracts.py.log"
+    },
+    {
+      "lane": "test_collector_queue_contracts.py",
+      "exit_code": 0,
+      "tests": 21,
+      "log": "test_collector_queue_contracts.py.log"
+    },
+    {
+      "lane": "test_sms_intake_contracts.py",
+      "exit_code": 0,
+      "tests": 20,
+      "log": "test_sms_intake_contracts.py.log"
+    },
+    {
+      "lane": "test_increment04_applier.py",
+      "exit_code": 0,
+      "tests": 8,
+      "log": "test_increment04_applier.py.log"
+    },
+    {
+      "lane": "test_increment05_applier.py",
+      "exit_code": 0,
+      "tests": 11,
+      "log": "test_increment05_applier.py.log"
+    },
+    {
+      "lane": "test_increment05_contracts.py",
+      "exit_code": 0,
+      "tests": 22,
+      "log": "test_increment05_contracts.py.log"
+    },
+    {
+      "lane": "test_receipt_reconciliation.py",
+      "exit_code": 0,
+      "tests": 24,
+      "log": "test_receipt_reconciliation.py.log"
+    }
+  ]
+}

@@ -419,9 +419,9 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
     final vehicleTypeId = vType == VehicleType.private_
         ? 'private'
         : vType.name;
-    final nearbyLabel = trip.authorId.length >= 6
-        ? trip.authorId.substring(0, 6).toUpperCase()
-        : AppConstants.getDriverId(trip.authorId);
+    final nearbyLabel = trip.authorName.trim().isNotEmpty
+        ? trip.authorName.trim()
+        : 'Trip participant';
 
     String capitalize(String? s) => (s == null || s.isEmpty)
         ? 'Active'

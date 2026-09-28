@@ -1,65 +1,37 @@
-/// Lightweight session-level admin flag set after a successful allowlist check.
-///
-/// This is intentionally separate from routing so screens and services can
-/// extend or revoke admin access without importing router definitions.
+/// Client navigation gate, never server authority. Grants are accepted only
+/// after the current Auth session reads its server-owned lease. Routing and
+/// polling do not renew the idle deadline. Deadlines use elapsed monotonic time.
 class AdminSessionGuard {
   AdminSessionGuard._();
-
-  static bool _isAdmin = false;
-  static DateTime? _grantedAt;
+  static final Stopwatch _clock=Stopwatch()..start();
   static String? _userId;
-
-  /// Admin session timeout — 15 minutes of inactivity.
-  static const Duration sessionTimeout = Duration(minutes: 15);
-
-  /// Whether the current user passed the admin allowlist check this session
-  /// AND the session has not expired.
-  static bool get isAdmin {
-    if (_userId == null) {
-      return false;
-    }
-
-    return isAdminFor(_userId);
-  }
-
-  /// Whether the fallback admin grant belongs to [userId] and has not expired.
-  static bool isAdminFor(String? userId) {
-    if (!_isAdmin || _grantedAt == null) {
-      return false;
-    }
-
-    if (userId == null || userId != _userId) {
-      revoke();
-      return false;
-    }
-
-    final elapsed = DateTime.now().difference(_grantedAt!);
-    if (elapsed > sessionTimeout) {
-      revoke();
-      return false;
-    }
-
+  static String? _sessionId;
+  static int _idleDeadlineMs=0;
+  static int _absoluteDeadlineMs=0;
+  static const Duration sessionTimeout=Duration(minutes:15);
+  static bool get isAdmin => isAdminFor(_userId,sessionId:_sessionId);
+  static bool isAdminFor(String? userId,{String? sessionId}) {
+    if (userId == null || userId!=_userId || sessionId==null || sessionId!=_sessionId ||
+      _clock.elapsedMilliseconds>=_idleDeadlineMs || _clock.elapsedMilliseconds>=_absoluteDeadlineMs) return false;
     return true;
   }
-
-  /// Called after the allowlist check succeeds.
-  static void grant(String userId) {
-    _isAdmin = true;
-    _grantedAt = DateTime.now();
-    _userId = userId;
+  /// Kept for old callers, but a client allowlist/metadata response cannot grant.
+  @Deprecated('Use acceptServerLease after the owner/session-bound RPC.')
+  static void grant(String userId) => revoke();
+  /// Kept for old callers. Only a successful server touch may extend activity.
+  static void touch(String userId) {}
+  static void acceptServerLease({required String userId,required String sessionId,
+    required Duration idleRemaining,required Duration absoluteRemaining}) {
+    if (idleRemaining<=Duration.zero || idleRemaining>const Duration(minutes:30) ||
+      absoluteRemaining<=Duration.zero || absoluteRemaining>const Duration(hours:12) ||
+      idleRemaining>absoluteRemaining) { revoke();throw StateError('INVALID_ADMIN_LEASE'); }
+    final sameSession=_userId==userId && _sessionId==sessionId;
+    final now=_clock.elapsedMilliseconds;
+    final absolute=now+absoluteRemaining.inMilliseconds;
+    _absoluteDeadlineMs=sameSession && _absoluteDeadlineMs<absolute ? _absoluteDeadlineMs:absolute;
+    _idleDeadlineMs=now+idleRemaining.inMilliseconds;
+    if (_idleDeadlineMs>_absoluteDeadlineMs) _idleDeadlineMs=_absoluteDeadlineMs;
+    _userId=userId;_sessionId=sessionId;
   }
-
-  /// Extends the session timeout.
-  static void touch(String userId) {
-    if (isAdminFor(userId)) {
-      _grantedAt = DateTime.now();
-    }
-  }
-
-  /// Called when the user exits admin mode or their access expires.
-  static void revoke() {
-    _isAdmin = false;
-    _grantedAt = null;
-    _userId = null;
-  }
+  static void revoke() { _userId=null;_sessionId=null;_idleDeadlineMs=0;_absoluteDeadlineMs=0; }
 }

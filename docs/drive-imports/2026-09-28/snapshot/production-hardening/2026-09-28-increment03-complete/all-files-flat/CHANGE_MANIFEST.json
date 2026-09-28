@@ -1,0 +1,705 @@
+{
+  "provenance": {
+    "baseline_kind": "locally reconstructed supplied Git index and matching Git objects; not asserted to be original upstream commit or complete untracked Drive working tree",
+    "supplied_index_sha256": "d20337cd6edb1e6b6ff9a50e41c39497938f706f185bd85a7fe719004de6bba4",
+    "increment02_archive_sha256": "b3327a637355ced43e34753012418119d66418d4c757645b05a3e4ff91a9c7b3",
+    "increment02_source_files_verified_against_manifest": 62,
+    "local_reconstruction_commit": "a7a53df646e04a8332ee6f246f884c7a4535870d",
+    "local_increment02_import_commit": "ac8d6dd6da58397ad55cbd61934fbc2772d59b6d",
+    "local_index_tree": "bf03390d2ffaa1c68462be831b0776ab632b045f",
+    "cumulative_changed_file_count": 86,
+    "increment03_changed_file_count": 28,
+    "original_drive_files_overwritten": false,
+    "sensitive_signing_material_included": false
+  },
+  "files": [
+    {
+      "path": ".github/dependabot.yml",
+      "sha256": "b1d4a7ce63eca85028563448179cfc02ae06449e91ad0eade65422dbf6e5adab",
+      "size_bytes": 1002,
+      "audit_baseline_sha256": "5da54147994a92461f5b40f82c1673e51b5917ddece088d4475ade9277ddbc39",
+      "increment02_sha256": "b1d4a7ce63eca85028563448179cfc02ae06449e91ad0eade65422dbf6e5adab",
+      "changed_in_increment03": false
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "27d4a9aa6ff39beaf74abde424963b2c68d1d9b6ff23b79e2003da4faaab97de",
+      "size_bytes": 8605,
+      "audit_baseline_sha256": "9ec587e51d07689cea48a4a3e20cc636436680d7a018016be37e21629d2960fd",
+      "increment02_sha256": "3be566f40dbb70786031b835713aff5893e5720afb368091c8761accf416868a",
+      "changed_in_increment03": true
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "c321fd0dc31f6aec792db4e156c3a3c665224c24886e6aeaa5eef2e60c823562",
+      "size_bytes": 1417,
+      "audit_baseline_sha256": "554dcd361e71c282941026c755061126e31de8f32666f0d438ec538915f1db44",
+      "increment02_sha256": "c321fd0dc31f6aec792db4e156c3a3c665224c24886e6aeaa5eef2e60c823562",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "android/app/build.gradle.kts",
+      "sha256": "1b1875f3f931d3e58c5bd09dc5cae9d8f248c0b4a6dae2446a4095efd74b8a6a",
+      "size_bytes": 3542,
+      "audit_baseline_sha256": "252c2766e12a11b1b60bc8e36284d696a5fbf7611b6faab3f507d4a583723268",
+      "increment02_sha256": "1b1875f3f931d3e58c5bd09dc5cae9d8f248c0b4a6dae2446a4095efd74b8a6a",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "android/app/src/main/kotlin/rw/mobi/app/BioPayHostApduService.kt",
+      "sha256": "bb6c6a69225678877a2c6bca444d7eaad3e89cf44232a731c2e3ba44c8c95b3b",
+      "size_bytes": 2299,
+      "audit_baseline_sha256": "385a73b1b37a76da828476fd905767453e70912bafdaf972610ded63352398cf",
+      "increment02_sha256": "bb6c6a69225678877a2c6bca444d7eaad3e89cf44232a731c2e3ba44c8c95b3b",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "android/app/src/main/kotlin/rw/mobi/app/BioPayNfcPolicy.kt",
+      "sha256": "8a4d408056dd4e9cfa84d1fd8e98fb636608f1c75d24905ff11a3d3c0e10429c",
+      "size_bytes": 2753,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "8a4d408056dd4e9cfa84d1fd8e98fb636608f1c75d24905ff11a3d3c0e10429c",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt",
+      "sha256": "9425443a35b5c89cfd8b46ee5de58b80c233608a01befe647a8e836dfd288ebb",
+      "size_bytes": 44683,
+      "audit_baseline_sha256": "6830041adec79c2edc78d0a0811e6f71c90344a8fab7c1009f763fbdfe234c4a",
+      "increment02_sha256": "9425443a35b5c89cfd8b46ee5de58b80c233608a01befe647a8e836dfd288ebb",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "apps/momobio_sms_bridge/README.md",
+      "sha256": "2a7f490d74b775392d6a768ecd3edf56927ed0c37a6da56b193253025acea507",
+      "size_bytes": 7894,
+      "audit_baseline_sha256": "2ab5cba591f35378cf45c789aaf3134f2c9215331791fb760630d3187f273823",
+      "increment02_sha256": "2ab5cba591f35378cf45c789aaf3134f2c9215331791fb760630d3187f273823",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/build.gradle.kts",
+      "sha256": "06112d457e4678b25766694388ab982e7a4e0386512e91eef41c780b953d6baa",
+      "size_bytes": 4791,
+      "audit_baseline_sha256": "4c629b21066a03c1614900fee1a4029ca0b51838039140edfe43d51b6d355f0b",
+      "increment02_sha256": "4c629b21066a03c1614900fee1a4029ca0b51838039140edfe43d51b6d355f0b",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/androidTest/java/com/momobio/app/DurableQueueDeviceTest.kt",
+      "sha256": "eda13241a9378a2ca604522ff6c2ddde6e0c6f0bda28c7d97d5b871b71dbf5dc",
+      "size_bytes": 5465,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": null,
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml",
+      "sha256": "b08404e274dad2dd80c698e8270c5f2c816e1d131a1f5738d81b274af32ec7e2",
+      "size_bytes": 2466,
+      "audit_baseline_sha256": "53e293494c3c2cc8b056a3cde2b1cc98a1c54605e13e52fe6c104b9fca1c2172",
+      "increment02_sha256": "53e293494c3c2cc8b056a3cde2b1cc98a1c54605e13e52fe6c104b9fca1c2172",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/assets/receipt_queue_v1.sql",
+      "sha256": "8037d202d33193ef038f2c506a385247dfb73f3891deba64149be503a3ffc8d5",
+      "size_bytes": 1188,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": null,
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeForegroundService.kt",
+      "sha256": "82cb89169618284870de8fc7d7bc93ea904e53234d4654adf62c25c74bc3f68f",
+      "size_bytes": 4731,
+      "audit_baseline_sha256": "bca405e340689995ac9056acc3e27dd0dac4fbe5c0289046d2c2f50c771114e3",
+      "increment02_sha256": "bca405e340689995ac9056acc3e27dd0dac4fbe5c0289046d2c2f50c771114e3",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeSupervisor.kt",
+      "sha256": "7fc4dcb523fc752d95eecb1aa77733f5e09fe1d620e7394ae0904a31851e8bce",
+      "size_bytes": 2919,
+      "audit_baseline_sha256": "2dddfb040a0e6f959b59c50504f1bd1cea1d333b5b634ec87421370d6831b814",
+      "increment02_sha256": "2dddfb040a0e6f959b59c50504f1bd1cea1d333b5b634ec87421370d6831b814",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/BridgeSyncWorker.kt",
+      "sha256": "8600a5b9043e0b63e5da757939fa92b534ccea26bcafecd55f692bb6ff7e7a92",
+      "size_bytes": 707,
+      "audit_baseline_sha256": "516c067dc5ebfe60f3843d970e698e75b31f240dd5be14051321b3ff9ba2de94",
+      "increment02_sha256": "516c067dc5ebfe60f3843d970e698e75b31f240dd5be14051321b3ff9ba2de94",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorLease.kt",
+      "sha256": "ff3d5b8fa1b62139bb56badeeb96044bd95087217970befba8631bd1db64478d",
+      "size_bytes": 519,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": null,
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorPolicy.kt",
+      "sha256": "7638a8464889cfa636b94705d62962cd6a86d07361a7083a442d50b9f9a2878b",
+      "size_bytes": 3592,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": null,
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorRuntime.kt",
+      "sha256": "3178303fd60d880e45081e7d61a1cad2702b8552d3feadb002969af3a9e8eed5",
+      "size_bytes": 1481,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": null,
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/CollectorSync.kt",
+      "sha256": "9d45553f1187a1f9c82e2f68b579ee156c6d27577cc89c447f905b161f63ed5c",
+      "size_bytes": 1815,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": null,
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/DurableSmsQueue.kt",
+      "sha256": "1fa9870b02adc8e32ed0e552f2c9eb6232f09f17affd812330cc2d0f96efa806",
+      "size_bytes": 12754,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": null,
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/MainActivity.kt",
+      "sha256": "38fea7d1d6e50d05ca8a55b235d6b7a234b175109b3c931dab9a56742e2ad602",
+      "size_bytes": 14737,
+      "audit_baseline_sha256": "cc72d171a2b477cf8b0907226a3fa5c590042079eb88394ed7d42e608cb63512",
+      "increment02_sha256": "cc72d171a2b477cf8b0907226a3fa5c590042079eb88394ed7d42e608cb63512",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/ReceiptQueueSql.kt",
+      "sha256": "3d9514c5a25aca82c7554d16ef77c57bcddb96c6b7fb598f091d188934bfe6ee",
+      "size_bytes": 980,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": null,
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/SmsReceiver.kt",
+      "sha256": "9410575a9693f537a5b617770182d3ac65278634ccd6907144eab06ce6baa182",
+      "size_bytes": 1522,
+      "audit_baseline_sha256": "4e23de03cade4a924cb87c5cd3123b2d51709655921fd16fe52adedc20b4c655",
+      "increment02_sha256": "4e23de03cade4a924cb87c5cd3123b2d51709655921fd16fe52adedc20b4c655",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/main/java/com/momobio/app/UploadClient.kt",
+      "sha256": "bad2c44bc43b5762ecb27fbf431b2b7dd95821af353b4cc49586649952b4b3f2",
+      "size_bytes": 7983,
+      "audit_baseline_sha256": "775e5f916a352f9a2033926f25c59b1e6bef7c3f0de4e8b85f5146becffa5256",
+      "increment02_sha256": "775e5f916a352f9a2033926f25c59b1e6bef7c3f0de4e8b85f5146becffa5256",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/app/src/test/java/com/momobio/app/UploadClientTest.kt",
+      "sha256": "d051bb63aecddd9442b335a63446cdc8c29b11cd55127833ae8232c731d616f0",
+      "size_bytes": 12951,
+      "audit_baseline_sha256": "652ae4f98ff45fb3f8bb48f6c98cf9152dec5a06dadbd067f186543d750d946a",
+      "increment02_sha256": "652ae4f98ff45fb3f8bb48f6c98cf9152dec5a06dadbd067f186543d750d946a",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/scripts/device_uat.sh",
+      "sha256": "c76388b74d59fa9aa4aa55f977c19784ccbeb038347ba300e0fcdb71f060bc5f",
+      "size_bytes": 2119,
+      "audit_baseline_sha256": "7bec38eb7fdaa5e580c4b31ef8a03adae6b8b5370ac62bd69ec95174bc2ffe2b",
+      "increment02_sha256": "7bec38eb7fdaa5e580c4b31ef8a03adae6b8b5370ac62bd69ec95174bc2ffe2b",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/scripts/test_jvm.py",
+      "sha256": "e6cd9ecac2b168f3bdab747d819350a49e5733cb081ce424774e7e89d6c0f4da",
+      "size_bytes": 5002,
+      "audit_baseline_sha256": "c0aa384245b8b2278910766d32ad36012049a723f6abbc37a59551410c435706",
+      "increment02_sha256": "c0aa384245b8b2278910766d32ad36012049a723f6abbc37a59551410c435706",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/scripts/verify_release_certificate.py",
+      "sha256": "820545f7656f83d8ca09417d1b42b4438dec010e41bd853160264be1f0bf5653",
+      "size_bytes": 1230,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": null,
+      "changed_in_increment03": true
+    },
+    {
+      "path": "docs/operations/collector-acceptance-2026-09-28.md",
+      "sha256": "33b7078d3d2326bca163dcb1124b8dd3c4fa6b8c694ed2a32925eac6bf5ba03e",
+      "size_bytes": 6808,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": null,
+      "changed_in_increment03": true
+    },
+    {
+      "path": "lib/app/router/screen_wrappers.dart",
+      "sha256": "b3f39fb8ff1c61df947c58dfabd228f814a9a3527ec6bc9cdc6999e725f6b21b",
+      "size_bytes": 11559,
+      "audit_baseline_sha256": "ebb256230faff0d2874b4e4de1d0ce4200711bedb3bcdfc10d637bde1388bbe5",
+      "increment02_sha256": "b3f39fb8ff1c61df947c58dfabd228f814a9a3527ec6bc9cdc6999e725f6b21b",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "lib/core/auth/supabase_session_service.dart",
+      "sha256": "6414eb3c6e220aa851fc9867fe13a78d285f00ff6ca50ac2715cf8ffb4acd33e",
+      "size_bytes": 2488,
+      "audit_baseline_sha256": "dd2c7e3376211d27c4105e9a098318b691e6229638c7896c7bf9936738d8874c",
+      "increment02_sha256": "6414eb3c6e220aa851fc9867fe13a78d285f00ff6ca50ac2715cf8ffb4acd33e",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "lib/core/utils/mobio_member_id.dart",
+      "sha256": "aed7cec2b07c2c6e9859895f24ef62189ba34731c27be8430bf992738d339868",
+      "size_bytes": 1080,
+      "audit_baseline_sha256": "5760a44add9adc4c39821f4c3166d3dcc359c112dc8cf65ddb04acfe4e76912e",
+      "increment02_sha256": "aed7cec2b07c2c6e9859895f24ef62189ba34731c27be8430bf992738d339868",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "lib/features/biopay/data/biopay_device_nfc_service.dart",
+      "sha256": "b01d44087861b3c5951237a76de8fc091998792dc874c0a7aa9e66520a09f7d9",
+      "size_bytes": 3008,
+      "audit_baseline_sha256": "0baf919abfd21655a8391c4af6c8b933c508e5213574dd7cfb527fa1980eeac4",
+      "increment02_sha256": "b01d44087861b3c5951237a76de8fc091998792dc874c0a7aa9e66520a09f7d9",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "lib/features/biopay/data/biopay_face_service.dart",
+      "sha256": "2c96865543f56e125535cf4a108aeb27037cb250d0e3c6f9d1dfb64278e6ea6e",
+      "size_bytes": 6682,
+      "audit_baseline_sha256": "935bec75beb28c864d66930624e2efd4fb3d8167648c7a68846cfc090a2697e7",
+      "increment02_sha256": "2c96865543f56e125535cf4a108aeb27037cb250d0e3c6f9d1dfb64278e6ea6e",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "lib/features/biopay/presentation/face_copy.dart",
+      "sha256": "56dc2aba5991077572338ddc4c894c4355f2220ef19c36036ca5aa510e2f9a50",
+      "size_bytes": 1485,
+      "audit_baseline_sha256": "d91b23fec410e260eee59168527da7909a76f774e70f88f2cc25f357d5de82ee",
+      "increment02_sha256": "56dc2aba5991077572338ddc4c894c4355f2220ef19c36036ca5aa510e2f9a50",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "lib/features/bookings/data/public_transport_service.dart",
+      "sha256": "dcf618995e51885ac92dd03dce658e572138422a2796b31c140690edc6b61366",
+      "size_bytes": 10187,
+      "audit_baseline_sha256": "ac2b32b5bc7a06e526a539dbc155257b2de5a03c29b1f15d2b22b92875204dde",
+      "increment02_sha256": "dcf618995e51885ac92dd03dce658e572138422a2796b31c140690edc6b61366",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "lib/features/bookings/presentation/bookings_screen.dart",
+      "sha256": "af7505fecf7a7b5fb07ac28dae82330885501b32e38e5e594f0feedd0428e9d8",
+      "size_bytes": 20454,
+      "audit_baseline_sha256": "b7de0ef6f406b093d60ca6f86affc2a0465b76967ce6b411cbf04a004c17a068",
+      "increment02_sha256": "af7505fecf7a7b5fb07ac28dae82330885501b32e38e5e594f0feedd0428e9d8",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "lib/features/home/presentation/widgets/scheduled_trip_card.dart",
+      "sha256": "0bccf0c87db562e48aa9ea89b709c528a88e462af50d42449f6849777200396c",
+      "size_bytes": 3467,
+      "audit_baseline_sha256": "1739f7ef80291a75e3b6d2fb1d7864b04f28b4ee86e7d765f10d2bc0a0b19952",
+      "increment02_sha256": "0bccf0c87db562e48aa9ea89b709c528a88e462af50d42449f6849777200396c",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "lib/features/notifications/data/push_notification_service.dart",
+      "sha256": "2a74efd1be50cc38baa034dcc3c92fd9c06129b8363eafb38b06c1ee31f7d375",
+      "size_bytes": 13648,
+      "audit_baseline_sha256": "290f104c9abd6d4eef24aba6aa82e473e97ec623df9c8b31b705e85b9aeb879b",
+      "increment02_sha256": "2a74efd1be50cc38baa034dcc3c92fd9c06129b8363eafb38b06c1ee31f7d375",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "lib/features/profile/presentation/profile_screen.dart",
+      "sha256": "b28b7d35404f4af0275d58c68c04dee9ea507a26438f3f811c971f7cd0f6c35e",
+      "size_bytes": 26125,
+      "audit_baseline_sha256": "787c00c3799992a5384917a9669a6f4dc581171f9c22eb68577b0b2329dfc4d6",
+      "increment02_sha256": "b28b7d35404f4af0275d58c68c04dee9ea507a26438f3f811c971f7cd0f6c35e",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "lib/shared/widgets/driver_card.dart",
+      "sha256": "06ffdec10c22808b0b40c35cb118371ad77b734570721d212d816b8c530a2c03",
+      "size_bytes": 5139,
+      "audit_baseline_sha256": "f14ef237ce852d56434cbd2f10a722ea353edad5c9811bf855cd0881146ff689",
+      "increment02_sha256": "06ffdec10c22808b0b40c35cb118371ad77b734570721d212d816b8c530a2c03",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/ci/check_github_actions_pinned.py",
+      "sha256": "828711a367f07221cf30fbfedee2ce475c46b29c0c9e06b82d05123d95ae0781",
+      "size_bytes": 5776,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "828711a367f07221cf30fbfedee2ce475c46b29c0c9e06b82d05123d95ae0781",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/ci/check_github_actions_pinned.sh",
+      "sha256": "ad005d85b770b482d0f1d5c9b79745960f0d44a1eb178bba77b566669068e13b",
+      "size_bytes": 195,
+      "audit_baseline_sha256": "2123680075d920ab06b59fbc27bf422e4f9f78bb8725dbddeb70670f7ff2d2f2",
+      "increment02_sha256": "ad005d85b770b482d0f1d5c9b79745960f0d44a1eb178bba77b566669068e13b",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/ci/prepare_hardening_migrations.py",
+      "sha256": "68dcff705d83283e04afa15cb1810eb33e5a0d4c686c48c0ce69f18fc112e178",
+      "size_bytes": 7828,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "68dcff705d83283e04afa15cb1810eb33e5a0d4c686c48c0ce69f18fc112e178",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/ci/requirements.txt",
+      "sha256": "0969da99a0bc2a1b71ed50584560f4588a37567ac63af3ddbaf3c4617ca5621a",
+      "size_bytes": 14,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "0969da99a0bc2a1b71ed50584560f4588a37567ac63af3ddbaf3c4617ca5621a",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/ci/run_hardening_tests.sh",
+      "sha256": "59ea1abeee17cb50f3d92fa424b9e464875b28e50a683d1016683c7510a6f0c3",
+      "size_bytes": 1851,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "f9a3eb06db54b66c9f8c7fc123da5453e044c01a9dbd7cfdb9768fb054b2ad82",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "scripts/qa/verify_mobio_feature_readiness.sh",
+      "sha256": "a886010b5f1c7576fe24af44539fd9367d634dc2e9cc07d623462c416e01102c",
+      "size_bytes": 2940,
+      "audit_baseline_sha256": "87ddf29cd3a1a3785e724abb1486755c1280c8bd88700dd8017cce4b315638b3",
+      "increment02_sha256": "a886010b5f1c7576fe24af44539fd9367d634dc2e9cc07d623462c416e01102c",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/release/check_play_version_evidence.py",
+      "sha256": "5457b7ab18012ce1aa4aaee6d89601152f2b0bb3c7352579ae8f9cbfd3c18efe",
+      "size_bytes": 1482,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "5457b7ab18012ce1aa4aaee6d89601152f2b0bb3c7352579ae8f9cbfd3c18efe",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/release/go_no_go_check.sh",
+      "sha256": "9d00b602616154881f10f916224dcc9d2680218529c222a4be36f416540079e5",
+      "size_bytes": 6537,
+      "audit_baseline_sha256": "a1fb66a72a0c55a05e59085d961c0402732793f66b45e2f923656bc731fcf985",
+      "increment02_sha256": "9d00b602616154881f10f916224dcc9d2680218529c222a4be36f416540079e5",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/tests/edge/deno-env.fixture.d.ts",
+      "sha256": "baad36439ebf5ced84e9f366ce180857ed9d8858107e55fd68b3ce85bac19caf",
+      "size_bytes": 157,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "baad36439ebf5ced84e9f366ce180857ed9d8858107e55fd68b3ce85bac19caf",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/tests/edge/fixture-loader.mjs",
+      "sha256": "2b81fd308f31f4ac0f0b4e497aa5fdfa83e891241104e0931f92260695aa9080",
+      "size_bytes": 573,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "2b81fd308f31f4ac0f0b4e497aa5fdfa83e891241104e0931f92260695aa9080",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/tests/edge/handlers.test.mjs",
+      "sha256": "9a8b178f1845c3e16e6f8a7a975d9943a2394f0b530d6bd05939390f12c52d83",
+      "size_bytes": 11793,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "7a38c324aa8f0233ab17c6cb9a46eb289b766eed7ffccc86da138c242ed2ce7e",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "scripts/tests/edge/hardening.test.mjs",
+      "sha256": "47455429c1e7536271d7ddbfd775eb6fd54f6bcedd2c38a909b94e29bd12c8e6",
+      "size_bytes": 12667,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "47455429c1e7536271d7ddbfd775eb6fd54f6bcedd2c38a909b94e29bd12c8e6",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/tests/kotlin/BioPayNfcPolicyTest.kt",
+      "sha256": "e340064e707a144d7d89338841ddddcdeb27922d58facfb59933b9cc38b2bce2",
+      "size_bytes": 2800,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "e340064e707a144d7d89338841ddddcdeb27922d58facfb59933b9cc38b2bce2",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/tests/kotlin/CollectorPolicyCheck.kt",
+      "sha256": "e885dc76e2d55c7df54736094df82238d446d1a46723a88383e5fc941ab5f89e",
+      "size_bytes": 5240,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": null,
+      "changed_in_increment03": true
+    },
+    {
+      "path": "scripts/tests/test_collector_queue_contracts.py",
+      "sha256": "3d2a1b1c82c3ccca778adea5fdd03252e70bb99647e1baa3219fea402a81cf9d",
+      "size_bytes": 9919,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": null,
+      "changed_in_increment03": true
+    },
+    {
+      "path": "scripts/tests/test_hardening_preparation.py",
+      "sha256": "68db3ddf7fcdc1fdee944ab7c39a9c46cbd0ecb8cc26e8cb80492a6d51c8971d",
+      "size_bytes": 5721,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "68db3ddf7fcdc1fdee944ab7c39a9c46cbd0ecb8cc26e8cb80492a6d51c8971d",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/tests/test_identity_lifecycle_contracts.py",
+      "sha256": "40d343faa2b8a45b79b4d5e38bcc6788289fedfe182e44169faa1d0376a41def",
+      "size_bytes": 8750,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "40d343faa2b8a45b79b4d5e38bcc6788289fedfe182e44169faa1d0376a41def",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/tests/test_play_version_evidence.py",
+      "sha256": "9791a909a08e0c8469afa7350cc0654c65944a680937937b8550e9a989322512",
+      "size_bytes": 1182,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "9791a909a08e0c8469afa7350cc0654c65944a680937937b8550e9a989322512",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "scripts/tests/test_production_gates.py",
+      "sha256": "307e45b77974f4056a82234feab0cfc54fdeb7cb9bbac65b28085f3491f42cbf",
+      "size_bytes": 8318,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "307e45b77974f4056a82234feab0cfc54fdeb7cb9bbac65b28085f3491f42cbf",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "services/face-inference/Dockerfile",
+      "sha256": "ce4d1960fa5614866615f7b23384f5353be85f6a3f7e652914f2d39ffca7f5fc",
+      "size_bytes": 509,
+      "audit_baseline_sha256": "00819102b70d92a5dae19e21802e6b067a9671e9ffdb76f49a87679956f48608",
+      "increment02_sha256": "ce4d1960fa5614866615f7b23384f5353be85f6a3f7e652914f2d39ffca7f5fc",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "services/face-inference/inference.py",
+      "sha256": "e57acc3f0cdab8c2ae303024e51cce572d3b06427d7ae1abb4ed13b4037b4f86",
+      "size_bytes": 4344,
+      "audit_baseline_sha256": "e433ef8eb9b2cabd94396cb8d73ade3ce2e32f731e300be97fefce80808a759b",
+      "increment02_sha256": "e57acc3f0cdab8c2ae303024e51cce572d3b06427d7ae1abb4ed13b4037b4f86",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "services/face-inference/protocol.py",
+      "sha256": "5190d0df920ffa8ef898885ae18128ed6478952bd844d3182ade9c5b126b9ee9",
+      "size_bytes": 232,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "5190d0df920ffa8ef898885ae18128ed6478952bd844d3182ade9c5b126b9ee9",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "services/face-inference/server.py",
+      "sha256": "d0b86b5435aff6dbd4c3005cd7add36fcafdae05df9cad087518f7214da3f0ea",
+      "size_bytes": 7433,
+      "audit_baseline_sha256": "48bae55e5731d89fb23d337213b0f1277151034fa60225091577e32e7b76c3da",
+      "increment02_sha256": "d0b86b5435aff6dbd4c3005cd7add36fcafdae05df9cad087518f7214da3f0ea",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "services/face-inference/tests/test_http.py",
+      "sha256": "e7123ea4d54b5ecdd75a02aea67d2e7b7cf74f250fc4847d14f968aadb426976",
+      "size_bytes": 2262,
+      "audit_baseline_sha256": "d5bcac6c0c7263a88ffa120d9dd83a88fd331b4504c2c2605ba9afc407e9ee50",
+      "increment02_sha256": "e7123ea4d54b5ecdd75a02aea67d2e7b7cf74f250fc4847d14f968aadb426976",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "services/face-inference/tests/test_server_bounds.py",
+      "sha256": "b7b22b1079002097d38122d1356c12c9719e43306bdbba56e11528b267e5450e",
+      "size_bytes": 5382,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "b7b22b1079002097d38122d1356c12c9719e43306bdbba56e11528b267e5450e",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/functions/_shared/bounded-fetch.ts",
+      "sha256": "a328f2afa8ece90671fffa4887826dcd142ac91a60160348df417affe3b4a37b",
+      "size_bytes": 4015,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "a328f2afa8ece90671fffa4887826dcd142ac91a60160348df417affe3b4a37b",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/functions/_shared/momo-receipt-evidence.ts",
+      "sha256": "a9f4d8546cf47e76ad4cdd1f6a761fcda57f41952a637f1080d6275542702221",
+      "size_bytes": 3695,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "a9f4d8546cf47e76ad4cdd1f6a761fcda57f41952a637f1080d6275542702221",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/functions/_shared/momo-sms.ts",
+      "sha256": "2b3e4c22aafa517a361ae067702802668fe3cb33eddd12bed870bb1feb41a755",
+      "size_bytes": 8587,
+      "audit_baseline_sha256": "9fefbcc1c358ad10c50ab23732189d91c543638506b61df645d7168186733720",
+      "increment02_sha256": "2b3e4c22aafa517a361ae067702802668fe3cb33eddd12bed870bb1feb41a755",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/functions/_shared/verified-phone-identity.ts",
+      "sha256": "6dbc2d42a5efe85b95cd3ffe2d8445926555a6599919342c988934524e442d91",
+      "size_bytes": 1894,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "6dbc2d42a5efe85b95cd3ffe2d8445926555a6599919342c988934524e442d91",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/functions/_shared/whatsapp-cloud.ts",
+      "sha256": "18877fa47f23e4e16483ca61e0da493e5fffdbe3c670e74102f819cb38c9a6da",
+      "size_bytes": 7214,
+      "audit_baseline_sha256": "d3e37115d425d17c01b430192f6be13442c7aab61743688828b78e14266c8b24",
+      "increment02_sha256": "18877fa47f23e4e16483ca61e0da493e5fffdbe3c670e74102f819cb38c9a6da",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/functions/maps-gateway/index.ts",
+      "sha256": "eabedcff30e62f1022b1ab0127647ec4252e073f664dfb92a1100647dfa4b08a",
+      "size_bytes": 23046,
+      "audit_baseline_sha256": "3e83cf8c027ae10fb4e018f3c60fe1dd4837003cc4fdeb361c36f18a61adb921",
+      "increment02_sha256": "eabedcff30e62f1022b1ab0127647ec4252e073f664dfb92a1100647dfa4b08a",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/functions/momobio-sms-ingest/index.ts",
+      "sha256": "ed82d0727f88ce65494c0474d9405cc79a713f3a2893ba6c17023c7ba7e27763",
+      "size_bytes": 7387,
+      "audit_baseline_sha256": "16babc6ef80babe3a46870aad6eb5cfd5961a0f9385af52d0b997960e6f89bf9",
+      "increment02_sha256": "b2e6de00c4c605b9342555d76550f0b7a9ebdf4eeb5811c10bb389111b65abc6",
+      "changed_in_increment03": true
+    },
+    {
+      "path": "supabase/functions/parse-sms/index.ts",
+      "sha256": "7acbe403802bfad206cf3f106c00920c36d1730754ce62ea2d5be8199616d1c3",
+      "size_bytes": 654,
+      "audit_baseline_sha256": "fd1cf83ce1f454a78cbb08e05ec3df4187acf2721ac59aed6eda4c36eac20eac",
+      "increment02_sha256": "7acbe403802bfad206cf3f106c00920c36d1730754ce62ea2d5be8199616d1c3",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/functions/reconcile-momo-sms/index.ts",
+      "sha256": "7acbe403802bfad206cf3f106c00920c36d1730754ce62ea2d5be8199616d1c3",
+      "size_bytes": 654,
+      "audit_baseline_sha256": "1cd4bfad5b37589ee79e48e9b24bafd9bb6298b91f0f720bd734198ac8b11b0b",
+      "increment02_sha256": "7acbe403802bfad206cf3f106c00920c36d1730754ce62ea2d5be8199616d1c3",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/functions/verify-login-otp/index.ts",
+      "sha256": "bbd5c8c9096c7df30686718bf8930394e47f8f6c6355622d2396551ff26948b7",
+      "size_bytes": 12909,
+      "audit_baseline_sha256": "f10826c9cea8144da73890a5e23ba352635979290f3ebffef85ac9aba39b6f59",
+      "increment02_sha256": "bbd5c8c9096c7df30686718bf8930394e47f8f6c6355622d2396551ff26948b7",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/01_booking_write_authority.sql",
+      "sha256": "647f997ea8ec787274b784ed5c0c201ca19f0c05c19ad8590d47b498ad213588",
+      "size_bytes": 1521,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "647f997ea8ec787274b784ed5c0c201ca19f0c05c19ad8590d47b498ad213588",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/02_verified_phone_authority.sql",
+      "sha256": "a204d55887264fdcde3f2030699dfdb9401bee6131546553b5dcd22c1cb553f9",
+      "size_bytes": 8297,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "a204d55887264fdcde3f2030699dfdb9401bee6131546553b5dcd22c1cb553f9",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/03_strict_receipt_allocation.sql",
+      "sha256": "5cfdb8ee79eae3071de0c6f8c6330cdd229c211f952ac838f4a99ff3fefffa24",
+      "size_bytes": 12727,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "5cfdb8ee79eae3071de0c6f8c6330cdd229c211f952ac838f4a99ff3fefffa24",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/04_canonical_member_id.sql",
+      "sha256": "ff06946103fc5d41e03ec3dc99e343a5bbb5256af2d68390af12c876bb3eda81",
+      "size_bytes": 3727,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "ff06946103fc5d41e03ec3dc99e343a5bbb5256af2d68390af12c876bb3eda81",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/05_transport_hold_receipt_integrity.sql",
+      "sha256": "49128f73e4cab36797d2856bf906a79f500b66cc0face9aa6248dcb89c5a9dfe",
+      "size_bytes": 10723,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "49128f73e4cab36797d2856bf906a79f500b66cc0face9aa6248dcb89c5a9dfe",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/06_bounded_driver_discovery.sql",
+      "sha256": "70aa5ceee34cb7dc09ccba35e912cfa92ec7b04c48daefeb4e11aad66f27a85d",
+      "size_bytes": 5082,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "70aa5ceee34cb7dc09ccba35e912cfa92ec7b04c48daefeb4e11aad66f27a85d",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/README.md",
+      "sha256": "1868abd82ad4071e515033bddae9fa9c0cc5bc42829e7f3a867dd58f21632fb0",
+      "size_bytes": 6860,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "1868abd82ad4071e515033bddae9fa9c0cc5bc42829e7f3a867dd58f21632fb0",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/manifest.json",
+      "sha256": "d35c3962d87afb7e9a0774395855c58fa03251d61fcf8f0f5b0d2ec4d1d10264",
+      "size_bytes": 1357,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "d35c3962d87afb7e9a0774395855c58fa03251d61fcf8f0f5b0d2ec4d1d10264",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "supabase/hardening/2026-09-28/post_install_assertions.sql",
+      "sha256": "2367e5a17cf7f1d5a75fcf57fe28609e8c7fddd033eda27be7d5a5b4e8c42e0c",
+      "size_bytes": 4487,
+      "audit_baseline_sha256": null,
+      "increment02_sha256": "2367e5a17cf7f1d5a75fcf57fe28609e8c7fddd033eda27be7d5a5b4e8c42e0c",
+      "changed_in_increment03": false
+    },
+    {
+      "path": "test/core/utils/mobio_member_id_test.dart",
+      "sha256": "38c76f28307ccfd03a9f384fcb1da643faec5273e01bbe500cb43ed039b55ba1",
+      "size_bytes": 1144,
+      "audit_baseline_sha256": "33bc9f51296e004edd93ed2325f4b6e3f7658dba975f83d66b74a3fd4bc59d0a",
+      "increment02_sha256": "38c76f28307ccfd03a9f384fcb1da643faec5273e01bbe500cb43ed039b55ba1",
+      "changed_in_increment03": false
+    }
+  ]
+}

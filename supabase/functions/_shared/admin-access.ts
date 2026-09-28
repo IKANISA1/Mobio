@@ -72,7 +72,7 @@ export async function tryRecordAdminAccessAttempt(
   try {
     await recordAdminAccessAttempt(input);
   } catch (error) {
-    console.error("admin access attempt logging failed:", error);
+    console.error("admin access attempt logging failed", {code:"ADMIN_AUDIT_UNAVAILABLE"});
   }
 }
 

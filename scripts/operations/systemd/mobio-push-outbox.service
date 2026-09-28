@@ -1,0 +1,19 @@
+[Unit]
+Description=Mobio bounded notification outbox dispatch
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=mobio
+Group=mobio
+WorkingDirectory=/opt/mobio
+EnvironmentFile=/etc/mobio/push-outbox.env
+ExecStart=/usr/bin/python3 /opt/mobio/scripts/operations/run_push_outbox_worker.py --limit 10
+TimeoutStartSec=45
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+UMask=0077
+# No automatic restart/retry inside this invocation. Durable queue owns backoff.

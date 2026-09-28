@@ -1,0 +1,107 @@
+[
+  {
+    "file": "apps/momobio_sms_bridge/app/src/main/AndroidManifest.xml",
+    "check": "xml_parse",
+    "status": "passed"
+  },
+  {
+    "file": "apps/momobio_sms_bridge/scripts/device_uat.sh",
+    "check": "bash_syntax",
+    "status": "passed"
+  },
+  {
+    "file": "apps/momobio_sms_bridge/scripts/test_jvm.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "apps/momobio_sms_bridge/scripts/verify_release_certificate.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "scripts/ci/check_github_actions_pinned.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "scripts/ci/check_github_actions_pinned.sh",
+    "check": "bash_syntax",
+    "status": "passed"
+  },
+  {
+    "file": "scripts/ci/prepare_hardening_migrations.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "scripts/ci/run_hardening_tests.sh",
+    "check": "bash_syntax",
+    "status": "passed"
+  },
+  {
+    "file": "scripts/qa/verify_mobio_feature_readiness.sh",
+    "check": "bash_syntax",
+    "status": "passed"
+  },
+  {
+    "file": "scripts/release/check_play_version_evidence.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "scripts/release/go_no_go_check.sh",
+    "check": "bash_syntax",
+    "status": "passed"
+  },
+  {
+    "file": "scripts/tests/test_collector_queue_contracts.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "scripts/tests/test_hardening_preparation.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "scripts/tests/test_identity_lifecycle_contracts.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "scripts/tests/test_play_version_evidence.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "scripts/tests/test_production_gates.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "services/face-inference/inference.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "services/face-inference/protocol.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "services/face-inference/server.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "services/face-inference/tests/test_http.py",
+    "check": "python_ast",
+    "status": "passed"
+  },
+  {
+    "file": "services/face-inference/tests/test_server_bounds.py",
+    "check": "python_ast",
+    "status": "passed"
+  }
+]

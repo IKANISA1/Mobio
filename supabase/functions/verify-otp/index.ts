@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { registerIssuedAdminLease } from "../_shared/admin-lease.ts";
 
 import { tryRecordAdminAccessAttempt } from "../_shared/admin-access.ts";
 import {
@@ -52,7 +53,6 @@ function normalizeCode(value: unknown): string {
 async function loadExistingProfileSeed(
   supabase: ReturnType<typeof createAdminClient>,
   authUserId: string,
-  normalizedPhone: string,
 ): Promise<ExistingProfileRow | null> {
   const selectClause =
     "id, name, display_name, location, vehicle, category, vehicle_type, whatsapp, country_code, avatar_url, created_at";
@@ -71,18 +71,8 @@ async function loadExistingProfileSeed(
     return authUserProfile as ExistingProfileRow;
   }
 
-  const { data: phoneProfiles, error: phoneProfilesError } = await supabase
-    .from("profiles")
-    .select(selectClause)
-    .eq("phone", normalizedPhone)
-    .order("created_at", { ascending: false })
-    .limit(1);
-
-  if (phoneProfilesError) {
-    throw phoneProfilesError;
-  }
-
-  return ((phoneProfiles as ExistingProfileRow[] | null) ?? [])[0] ?? null;
+  // Editable phone aliases must never seed another Auth identity.
+  return null;
 }
 
 async function grantAdminPlatformPermissions(
@@ -118,7 +108,7 @@ async function grantAdminPlatformPermissions(
   }
 }
 
-async function ensureAdminUserSession(
+export async function ensureAdminUserSession(
   supabase: ReturnType<typeof createAdminClient>,
   anonClient: ReturnType<typeof createAnonClient>,
   adminNumber: AdminWhatsappNumberRow,
@@ -179,7 +169,6 @@ async function ensureAdminUserSession(
   const profileSeed = await loadExistingProfileSeed(
     supabase,
     authUser.id,
-    normalizedPhone,
   );
   const countryCode = profileSeed?.country_code?.trim() ||
     adminNumber.country_code;
@@ -226,7 +215,12 @@ async function ensureAdminUserSession(
 
 export async function handleVerifyAdminOtp(
   req: Request,
-  dependencies: { createSession?: typeof ensureAdminUserSession } = {},
+  dependencies: {
+    createSession?: typeof ensureAdminUserSession;
+    registerLease?: typeof registerIssuedAdminLease;
+    createAdmin?: typeof createAdminClient;
+    createAnon?: typeof createAnonClient;
+  } = {},
 ): Promise<Response> {
   const corsResponse = handleCors(req);
   if (corsResponse) {
@@ -256,8 +250,8 @@ export async function handleVerifyAdminOtp(
     );
     const code = normalizeCode(body?.code);
     const purpose = "admin_login";
-    const supabase = createAdminClient();
-    const anonClient = createAnonClient();
+    const supabase = (dependencies.createAdmin ?? createAdminClient)(8000);
+    const anonClient = (dependencies.createAnon ?? createAnonClient)(8000);
     const adminNumber = await resolveAdminWhatsappNumberByPhone(
       supabase,
       phone,
@@ -401,6 +395,12 @@ export async function handleVerifyAdminOtp(
         phone,
       );
 
+    // No credentials leave this endpoint before the server lease is committed.
+    // Failure consumes the OTP but fails closed; request a new OTP to retry login.
+    const lease = await (dependencies.registerLease ?? registerIssuedAdminLease)(
+      supabase, userId, session.access_token, String(otpRecord.id),
+    );
+
     await tryRecordAdminAccessAttempt({
       supabase,
       phone,
@@ -419,6 +419,7 @@ export async function handleVerifyAdminOtp(
         success: true,
         message: "Verified",
         userId,
+        admin_lease: lease,
         session: {
           access_token: session.access_token,
           refresh_token: session.refresh_token,
@@ -439,7 +440,7 @@ export async function handleVerifyAdminOtp(
       return errorResponse(error.message, 400, undefined, req);
     }
 
-    console.error("verify-otp error:", error);
+    console.error("verify-otp failed", { code: "ADMIN_VERIFICATION_FAILED" });
     return errorResponse("Internal error", 500, undefined, req);
   }
 }

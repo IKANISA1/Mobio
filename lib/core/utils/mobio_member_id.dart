@@ -31,10 +31,6 @@ String? mobioMemberIdInputError(String value) {
   return null;
 }
 
-String displayMobioMemberId({String? memberId, required String stableSeed}) {
-  final normalized = normalizeMobioMemberId(memberId);
-  if (normalized != null) return normalized;
-
-  final hash = stableSeed.hashCode.abs();
-  return (hash % 1000000).toString().padLeft(mobioMemberIdLength, '0');
+String? displayMobioMemberId(String? memberId) {
+  return normalizeMobioMemberId(memberId);
 }

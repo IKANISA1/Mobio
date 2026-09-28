@@ -1,0 +1,380 @@
+{
+  "syntax": [
+    {
+      "path": "apps/momobio_sms_bridge/scripts/test_jvm.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/scripts/verify_qa_apks.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/ci/check_github_actions_pinned.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/ci/check_repository_structure.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/ci/prepare_hardening_migrations.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/lib/runtime_defines.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/perf/capture_web_startup_metrics.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/qa/build_design_gallery.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/qa/test_face_ussd_db.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/qa/test_otp_rate_limit_db.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/release/check_play_version_evidence.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/tests/test_android_smoke.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/tests/test_hardening_preparation.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/tests/test_play_version_evidence.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/tests/test_production_gates.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/tests/test_pwa_packaging.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/tests/test_repository_structure.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/tests/test_runtime_defines.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/tests/test_version_assets.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/web/fetch_previous_assets.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/web/stamp_bundle.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/web/verify_public_release.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "scripts/web/version_assets.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "services/face-inference/evaluate.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "services/face-inference/fetch_models.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "services/face-inference/inference.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "services/face-inference/protocol.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "services/face-inference/server.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "services/face-inference/tests/test_http.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "services/face-inference/tests/test_inference.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "services/face-inference/tests/test_server_bounds.py",
+      "kind": "python_ast",
+      "passed": true
+    },
+    {
+      "path": "apps/momobio_sms_bridge/scripts/device_uat.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/ci/bootstrap_flutter.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/ci/check_github_actions_pinned.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/ci/run_hardening_tests.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/ci/verify_backend.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/ci/verify_flutter.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/ci/verify_ios_release.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/ci/verify_local.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/ci/verify_release_config.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/ci/write_android_signing_files.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/lib/flutter.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/perf/build_android_size_snapshot.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/perf/profile_startup_trace.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/qa/audit_storage_realtime.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/qa/capture_android_uat_state.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/qa/check_secret_history.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/qa/flutter_environment_doctor.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/qa/preflight_secret_history_purge.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/qa/scan_secrets.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/qa/test_biopay_discovery_db.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/qa/test_biopay_full_schema.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/qa/verify_biopay_live_readiness.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/qa/verify_biopay_nfc_card_uat.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/qa/verify_mobio_feature_readiness.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/release/build_android_release.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/release/go_no_go_check.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/release/smoke_android_release.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/release/upload_google_play_release.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/web/build_cloudflare_pages.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/web/build_visual_proof.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/web/deploy_cloudflare_pwas.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/web/prepare_pwa_bundles.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/web/verify_public_site.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    },
+    {
+      "path": "scripts/web/verify_pwa_bundles.sh",
+      "kind": "bash_n",
+      "passed": true,
+      "error": null
+    }
+  ],
+  "tools": {
+    "node": "/opt/nvm/versions/node/v22.16.0/bin/node",
+    "python3": "/opt/pyvenv/bin/python3",
+    "java": "/usr/bin/java",
+    "kotlinc": "/root/.sdkman/candidates/kotlin/current/bin/kotlinc",
+    "flutter": null,
+    "dart": null,
+    "deno": null,
+    "psql": null,
+    "postgres": null,
+    "docker": null,
+    "adb": null,
+    "xcodebuild": null,
+    "supabase": null
+  },
+  "syntax_count": 65,
+  "failed": []
+}

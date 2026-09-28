@@ -1,10 +1,10 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:mobi_app/core/errors/app_exception.dart' as app;
+import '../../../increment06/chat_protocol_fixture.dart';
+import 'package:mobi_app/features/chat/domain/chat_history_page.dart';
 import 'package:mobi_app/features/chat/data/chat_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -52,156 +52,40 @@ Future<SupabaseClient> _client(
 }
 
 void main() {
-  test('a second send cannot report success without a server call', () async {
-    final sent = <String>[];
-    final client = await _client((request) async {
-      expect(request.url.path, '/rest/v1/rpc/rpc_send_chat_message');
-      sent.add((jsonDecode(request.body) as Map)['p_body'] as String);
-      return http.Response(
-        jsonEncode('fixture-message-id'),
-        200,
-        headers: {'content-type': 'application/json'},
-        request: request,
-      );
+  test('real SDK request adapter uses the journal protocol and trims text', () async {
+    final f=ProtocolFixture();
+    final client=await _client((request)async {
+      final fn=request.url.path.split('/').last;
+      final result=await f.call(fn,Map<String,dynamic>.from(jsonDecode(request.body) as Map));
+      return http.Response(jsonEncode(result),200,headers:{'content-type':'application/json'},request:request);
     });
-    var now = DateTime.utc(2026, 9, 14);
-    final service = ChatService(supabase: client, now: () => now);
-    await service.sendMessage(conversationId: _conversationId, body: 'First');
-    Object? secondError;
-    try {
-      await service.sendMessage(
-        conversationId: _conversationId,
-        body: 'Second',
-      );
-    } on Object catch (error) {
-      secondError = error;
-    }
-    // A deliberate cooldown may reject the send, but successful completion
-    // must always mean that the message was submitted to the server.
-    expect(
-      sent.length == 2 || secondError is app.AppException,
-      isTrue,
-      reason: 'The UI clears its draft after a successful Future.',
-    );
-    expect(secondError, isA<app.ValidationException>());
-    expect(sent, ['First']);
-    now = now.add(const Duration(seconds: 1));
-    await service.sendMessage(conversationId: _conversationId, body: 'Second');
-    expect(sent, ['First', 'Second']);
+    final service=ChatService(supabase:client,deliveryStore:f.store,
+      captureAuthority:()=>ChatAuthority(_userId,(){}));
+    await service.sendMessage(conversationId:_conversationId,body:' First ');
+    await service.sendMessage(conversationId:_conversationId,body:'Second');
+    expect(f.effects,2);expect(f.sendIds.toSet().length,2);expect(f.store.pointer,isNull);
   });
-
-  test('server rejection is surfaced and permits an immediate retry', () async {
-    var attempts = 0;
-    final client = await _client((request) async {
-      attempts++;
-      if (attempts == 1) {
-        return http.Response(
-          jsonEncode({'message': 'temporary failure', 'code': 'P0001'}),
-          503,
-          headers: {'content-type': 'application/json'},
-          request: request,
-        );
-      }
-      return http.Response(
-        jsonEncode('fixture-message-id'),
-        200,
-        headers: {'content-type': 'application/json'},
-        request: request,
-      );
+  test('HTTP rejection is surfaced and retry retains its recovery id',()async{
+    final f=ProtocolFixture();var reject=true;
+    final client=await _client((request)async{
+      final fn=request.url.path.split('/').last;
+      if(fn=='rpc_send_chat_message_v2'&&reject){reject=false;return http.Response(
+        jsonEncode({'message':'temporary failure','code':'PT503'}),503,headers:{'content-type':'application/json'},request:request);}
+      return http.Response(jsonEncode(await f.call(fn,Map<String,dynamic>.from(jsonDecode(request.body) as Map))),
+        200,headers:{'content-type':'application/json'},request:request);
     });
-    final service = ChatService(supabase: client);
-    await expectLater(
-      service.sendMessage(conversationId: _conversationId, body: 'Retry me'),
-      throwsA(isA<app.AppException>()),
-    );
-    await service.sendMessage(
-      conversationId: _conversationId,
-      body: 'Retry me',
-    );
-    expect(attempts, 2);
+    final service=ChatService(supabase:client,deliveryStore:f.store,captureAuthority:()=>ChatAuthority(_userId,(){}));
+    await expectLater(service.sendMessage(conversationId:_conversationId,body:'Retry'),throwsA(isA<PostgrestException>()));
+    final id=f.store.pointer!.clientMessageId;
+    await service.sendMessage(conversationId:_conversationId,body:'Retry');expect(f.sendIds,[id]);
   });
-
-  test('separate chat clients do not suppress one another', () async {
-    final sent = <String>[];
-    final client = await _client((request) async {
-      sent.add((jsonDecode(request.body) as Map)['p_body'] as String);
-      return http.Response(
-        jsonEncode('fixture-message-id'),
-        200,
-        headers: {'content-type': 'application/json'},
-        request: request,
-      );
-    });
-    final now = DateTime.utc(2026, 9, 14);
-    final first = ChatService(supabase: client, now: () => now);
-    final second = ChatService(supabase: client, now: () => now);
-    await first.sendMessage(conversationId: _conversationId, body: 'First');
-    await second.sendMessage(conversationId: _conversationId, body: 'Second');
-    expect(sent, ['First', 'Second']);
+  test('read state requires a visible row, not client-now table writes',()async{
+    final calls=<String>[];
+    final client=await _client((request)async{calls.add(request.url.path);return http.Response('0',200,
+      headers:{'content-type':'application/json'},request:request);});
+    final service=ChatService(supabase:client,captureAuthority:()=>ChatAuthority(_userId,(){}));
+    await service.markConversationRead(_conversationId);expect(calls,isEmpty);
+    await service.markConversationRead(_conversationId,through:ChatHistoryCursor(DateTime.utc(2026,9,28),messageA));
+    expect(calls,['/rest/v1/rpc/rpc_mark_chat_read']);
   });
-
-  test('an older failure does not reset a newer send cooldown', () async {
-    final firstResponse = Completer<http.Response>();
-    http.Request? pendingRequest;
-    var attempts = 0;
-    final client = await _client((request) async {
-      attempts++;
-      if (attempts == 1) {
-        pendingRequest = request;
-        return firstResponse.future;
-      }
-      return http.Response(
-        jsonEncode('fixture-message-id'),
-        200,
-        headers: {'content-type': 'application/json'},
-        request: request,
-      );
-    });
-    var now = DateTime.utc(2026, 9, 14);
-    final service = ChatService(supabase: client, now: () => now);
-    final firstFailure = expectLater(
-      service.sendMessage(conversationId: _conversationId, body: 'First'),
-      throwsA(isA<app.AppException>()),
-    );
-    await Future<void>.delayed(Duration.zero);
-    now = now.add(const Duration(seconds: 1));
-    await service.sendMessage(conversationId: _conversationId, body: 'Second');
-    firstResponse.complete(
-      http.Response(
-        jsonEncode({'message': 'temporary failure', 'code': 'P0001'}),
-        503,
-        headers: {'content-type': 'application/json'},
-        request: pendingRequest,
-      ),
-    );
-    await firstFailure;
-    await expectLater(
-      service.sendMessage(conversationId: _conversationId, body: 'Too soon'),
-      throwsA(isA<app.ValidationException>()),
-    );
-    expect(attempts, 2);
-  });
-
-  test(
-    'empty bodies do not use the cooldown and submitted text is trimmed',
-    () async {
-      final sent = <String>[];
-      final client = await _client((request) async {
-        sent.add((jsonDecode(request.body) as Map)['p_body'] as String);
-        return http.Response(
-          jsonEncode('fixture-message-id'),
-          200,
-          headers: {'content-type': 'application/json'},
-          request: request,
-        );
-      });
-      final service = ChatService(supabase: client);
-      await service.sendMessage(conversationId: _conversationId, body: '  \n ');
-      await service.sendMessage(
-        conversationId: _conversationId,
-        body: ' Message  ',
-      );
-      expect(sent, ['Message']);
-    },
-  );
 }

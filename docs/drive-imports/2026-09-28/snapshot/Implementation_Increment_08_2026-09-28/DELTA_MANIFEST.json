@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "increment": "08",
+  "base": "Increment07 overlay plus identified originals; not a complete upstream checkout",
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "before_sha256": "5e4a745df1e72969f91e3f9b9ee255ff0adf65359bd98470bbd528bd86953017",
+      "after_sha256": "1ad31a24a8512b3aac883066816ac3924745c538b713dbaf6a9b1a09bdbd4029",
+      "after_mode": 420
+    },
+    {
+      "path": "android/app/src/main/AndroidManifest.xml",
+      "before_sha256": "fbf846a8fac7f8c5a64da28c0c90f677c924ccd613d21e8c9adfa09adbb67efa",
+      "after_sha256": "2a48095f520276614c4112676dc573e12099f29c0ddb94c18d5360f575769f42",
+      "after_mode": 420
+    },
+    {
+      "path": "android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt",
+      "before_sha256": "9425443a35b5c89cfd8b46ee5de58b80c233608a01befe647a8e836dfd288ebb",
+      "after_sha256": "d8cd44b0836ee4978535a320d4dd8e1f1c1ae9a0cb2c7c0dfea2a2a64413620a",
+      "after_mode": 420
+    },
+    {
+      "path": "android/app/src/main/kotlin/rw/mobi/app/SecureSessionChannel.kt",
+      "before_sha256": null,
+      "after_sha256": "61860e74f0c37bd4fd1b2a2146faf1dbeaeec713d26516733e93540fc2ab0596",
+      "after_mode": 420
+    },
+    {
+      "path": "android/app/src/main/kotlin/rw/mobi/app/SessionCipher.kt",
+      "before_sha256": null,
+      "after_sha256": "e31a5004eb60776e0862ffabb9a495599afb9b67175aacea915e1e0125cd32be",
+      "after_mode": 420
+    },
+    {
+      "path": "android/app/src/main/res/xml/auth_backup_rules.xml",
+      "before_sha256": null,
+      "after_sha256": "b99e701f2b03a3f1f04a6554604bd2b2f5886faaaa94d029a092f1bf078968e1",
+      "after_mode": 420
+    },
+    {
+      "path": "android/app/src/main/res/xml/auth_data_extraction_rules.xml",
+      "before_sha256": null,
+      "after_sha256": "2fa9e883c8569f14300189fa2b2463fe12da4fe6621e3b39bf3f052a0b2a831d",
+      "after_mode": 420
+    },
+    {
+      "path": "docs/production-readiness/INCREMENT08_SECURE_SESSION.md",
+      "before_sha256": null,
+      "after_sha256": "6e07155ffb559ec9be6abfa6a7e12aa21d618ec47334305342fb483d0761a1b7",
+      "after_mode": 420
+    },
+    {
+      "path": "ios/Runner/AppDelegate.swift",
+      "before_sha256": "86ffdd6efe054e5d726889b19f92259008da1c323b71ca749603f83a7f9e35b0",
+      "after_sha256": "99498d59425358e7e201889282c5dbdada331a5824ea8deef3c6ee2bac8f04ba",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/app/bootstrap.dart",
+      "before_sha256": "87f9ffa4286f6e619138664869946314faf964fb7108d99bf13f8d9037cddfcc",
+      "after_sha256": "9a91ac3239b384dc33ff7440990bd11d7b61f99f854dcbcdc6cbaac1f8430138",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/app/router/app_router.dart",
+      "before_sha256": "93679194abefaafa09d95fe73618fb381dc9eccb0d9b009bb9b2723a1691d69c",
+      "after_sha256": "dd1373e6451cfede26d493c3471fa62bd3c79e955b8054defa554604da70472c",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/core/auth/account_context.dart",
+      "before_sha256": "a817d75de218cf748b664f4877987e7f6e2a4b54edb1bd963734b973f88d3cc7",
+      "after_sha256": "7db5066bf88b6c40ee2b10ddb7d72ad70235ea75f22079b5549e0e093f3a8fc8",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/core/auth/auth_session_storage.dart",
+      "before_sha256": null,
+      "after_sha256": "ab643c8f817a88e25a8534a2d790b83062a778b21dd0ef914fb775e16c5c2acc",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/core/auth/auth_storage_recovery_view.dart",
+      "before_sha256": null,
+      "after_sha256": "3c5d41f323dc6479a7d870d3cf716d70f80329674a13bb9b6c834e7224581510",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/core/auth/session_persistence.dart",
+      "before_sha256": null,
+      "after_sha256": "bcc69f58ad3e2d2d0e9a0c9bac31e6b208fb84f04970b6c4570317a61026c84d",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/core/auth/supabase_session_service.dart",
+      "before_sha256": "e1c2b34602469a05d1dd3ec99205b6a368a0c3d782e3a418941ae2031ef4ac5d",
+      "after_sha256": "9a941cd70fa8bf2e9310bae89880f90de392bd3cfcec63b16e384e4a2e8e70a0",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/features/admin/data/otp_service.dart",
+      "before_sha256": "c303417d87d2730f5e4841b47cced39b8d13899648561085d598a5f2a1ed31d5",
+      "after_sha256": "5243c4a0d553956f91e5bb2aac0610920766f9e857bc8866e6cabbe003393e65",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/features/admin/presentation/admin_auth_screen.dart",
+      "before_sha256": "11ca302d0ecd82d3b102642d803621040ff2b1c384d6e1ff7fbebe2531790ef3",
+      "after_sha256": "a1f5eec27bed23c983e17c3c8bc20e963c4561bce48045ad82fa75b78bf6ad4b",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/features/auth/data/whatsapp_login_service.dart",
+      "before_sha256": "0b8a6e5f19d2e8afb6ae2ce516818615c9002f2c3d4e7fa25883133d22566316",
+      "after_sha256": "1a4bdfdf259538604a1b1e3460f9eed8be3e97f3d869f1fb95ea23c19b3c8ef9",
+      "after_mode": 420
+    },
+    {
+      "path": "lib/features/auth/presentation/whatsapp_login_screen.dart",
+      "before_sha256": "f08c746468cd34907faa6eb0622a89638640a8c6a5d08fd4510268ca9e28d851",
+      "after_sha256": "19f033d1654454e0ed1cd909c6d8e7ab6a4d02eb728548accd3ef965aa7c1cd7",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/ci/apply_increment08.py",
+      "before_sha256": null,
+      "after_sha256": "8e03244a33471e0ab1f9bb52d9344a18985b61a1e00dc96c7da0b7d5859847cc",
+      "after_mode": 493
+    },
+    {
+      "path": "scripts/ci/run_hardening_tests.sh",
+      "before_sha256": "cff44ee17bd3373ad7688608711df3d292fd7510370fe7e334fc97c27f2edc63",
+      "after_sha256": "b7f0a8029f056c1df493b53bf8164adc280c06e946833b5e95cec7b4dc8e0ce2",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/ci/test_session_cipher.sh",
+      "before_sha256": null,
+      "after_sha256": "31600c5ea854653d8164694466e65b06d3d41a573659edc7507e901b6e863d69",
+      "after_mode": 493
+    },
+    {
+      "path": "scripts/tests/kotlin/SessionCipherTest.kt",
+      "before_sha256": null,
+      "after_sha256": "4261843f55b5b044cb844ae0c7a2ebee64674145aea10955060e3845508a3342",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/tests/test_identity_lifecycle_contracts.py",
+      "before_sha256": "1cdc22a8dd80fbfeb4d28c5399353590a12734f2691bb48a993b551530611ec1",
+      "after_sha256": "b82dfb5a25458c5ff40ef597b46b81d70aa28751b3246083b5c8db1af9a56909",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/tests/test_increment05_contracts.py",
+      "before_sha256": "9b29e9a8ba83e758587c9b8403f63f7a04662f32e43f63360b6e613169878709",
+      "after_sha256": "a58628dc0d1503e76d5e129872658e38411636f55541b018e4143a140c83f6d1",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/tests/test_increment08_applier.py",
+      "before_sha256": null,
+      "after_sha256": "d15581cd06879deefc5c46f552bb4374a3674352c5e60607c6bd78a12cddad6d",
+      "after_mode": 420
+    },
+    {
+      "path": "scripts/tests/test_increment08_contracts.py",
+      "before_sha256": null,
+      "after_sha256": "bbfb439920cc37ea8ce87cbbbcf58244b160852b14b832c7e08755bd0d43cda3",
+      "after_mode": 420
+    },
+    {
+      "path": "test/increment08/auth_storage_recovery_view_test.dart",
+      "before_sha256": null,
+      "after_sha256": "1e8ab1f45f52936f1072f48bb6e0b51b6d6443e368f38f28b546a94618f1b853",
+      "after_mode": 420
+    },
+    {
+      "path": "test/increment08/native_session_adapter_test.dart",
+      "before_sha256": null,
+      "after_sha256": "dce3140a68717b7512877ca5ac2238ea6ac782bec24f57809566d69bcb55490f",
+      "after_mode": 420
+    },
+    {
+      "path": "test/increment08/session_persistence_test.dart",
+      "before_sha256": null,
+      "after_sha256": "2842c740f3d27d98a2b160ca211f46ea006dc4d50ac23034710e712597a827fd",
+      "after_mode": 420
+    }
+  ]
+}

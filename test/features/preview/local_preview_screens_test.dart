@@ -83,7 +83,7 @@ void main() {
       ),
     );
 
-    expect(find.text('482013'), findsWidgets);
+    expect(find.text('Member ID unavailable'), findsWidgets);
     expect(find.text('Register my face'), findsOneWidget);
     expect(find.text('Write NFC Card'), findsOneWidget);
     expect(find.text('Enroll AWS face identity'), findsNothing);

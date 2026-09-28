@@ -1,0 +1,58 @@
+{
+  "original_root": "https://drive.google.com/drive/folders/120JIOTyeNX6nHaHPDqS3UgbaTWyJAE57",
+  "delivery_folder": "https://drive.google.com/drive/folders/1SM66T5NPwOUCwRdId3SbQULe7wWP_Huk",
+  "baseline_delivery": {
+    "drive_id": "1xDuOAwHoy9k5pRZeRayZqFiEE7PPCmyh",
+    "file": "Mobio_Increment08_2026-09-28.zip",
+    "sha256": "e634fe706f4bd51de0bd21c7da9e896567560c4a7b43d8cfe7f21d07c5963580"
+  },
+  "baseline_source_map_sha256": "47f7f5de1bc0b191ba888474b819b97a256eed80fd0ee78144b68238d46b71ab",
+  "source_boundary": "Partial existing current-index recovery plus exact Increment08 overlay. Complete upstream main is not established. Earlier GitHub not-found, large-pack download limit and Mobio Supabase permission denial remain respected.",
+  "recovered_current_index": {
+    "recovered_files": 358,
+    "unrecovered_entries": 1718
+  },
+  "new_original_source_fetches": "No new original source bytes were needed beyond mounted verified baseline/current-index recovery. Drive metadata was read for latest delivery and source permissions; a scoped deletion/privacy function-name search returned no hits and is not treated as proof of global absence.",
+  "access_readback": {
+    "type": "anyone",
+    "role": "writer",
+    "allowFileDiscovery": false,
+    "changed": false
+  },
+  "technical_primary_sources": [
+    {
+      "url": "https://supabase.com/changelog",
+      "use": "Current changelog review; markdown index unavailable; HTML used."
+    },
+    {
+      "url": "https://supabase.com/docs/guides/auth/managing-user-data",
+      "use": "Account/session and cross-store deletion boundaries."
+    },
+    {
+      "url": "https://supabase.com/docs/reference/dart/functions-invoke",
+      "use": "Flutter Edge invoke/header/body contract."
+    },
+    {
+      "url": "https://supabase.com/docs/guides/database/testing",
+      "use": "Database testing boundary and isolated acceptance planning."
+    },
+    {
+      "url": "https://www.postgresql.org/docs/17/functions-json.html",
+      "use": "JSONB operations and privileged fixed-query API design."
+    }
+  ],
+  "skills_used": [
+    "Google Drive",
+    "Supabase",
+    "Supabase Postgres best practices",
+    "Spreadsheet artifact_tool workflow"
+  ],
+  "no_live_operations": [
+    "No database migration",
+    "No provider erasure",
+    "No permission change",
+    "No credential rotation",
+    "No scheduler enablement",
+    "No financial transaction"
+  ]
+}

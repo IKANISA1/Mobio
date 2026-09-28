@@ -1,0 +1,275 @@
+{
+  "increment": "06",
+  "verified_on": "2026-09-28",
+  "root_folder_id": "120JIOTyeNX6nHaHPDqS3UgbaTWyJAE57",
+  "delivery_folder_id": "1b6P3qCl5mhT_DDkcOIBVDURcN0JfqTYo",
+  "individual_folder_id": "1qkLGjiTX-Ty8cJt3faaANpxSb2X17Ie-",
+  "top_level_files": {
+    "Mobio_Increment06_2026-09-28.zip": "1GUdsAiL-D4J1xL7MFFgA2G2-3_8INw3F",
+    "Mobio_Backlog_Increment06_2026-09-28.xlsx": "1mXoZ1oXR3MnZ0Zx50gqKsXSltlxS0ojZ",
+    "IMPLEMENTATION_REPORT.md": "1OOa5cFj8i6TqF-MV89MFCwuAHTRVoeYK",
+    "INTEGRATION_RUNBOOK.md": "10T8vsQfg8tNaRr_4EkFycJe4mGCOumue",
+    "VALIDATION_RESULTS.json": "1Mfwh5O0eKYJCeHgrP_R_9mzHprAEJM56",
+    "README.md": "1FEhuJhgy0iUUwVZ9kL125MZEzlJGCONJ",
+    "DELTA_MANIFEST.json": "15dOUplgeXV-o6_2j8RkFEf8BuKkAlx3Z",
+    "INDIVIDUAL_FILE_MAP.json": "1zYlGcNwQa0zU5X9lnDaGUFOwwyx6YxDQ"
+  },
+  "individual_files": [
+    {
+      "repository_path": ".github/workflows/ci.yml",
+      "drive_flat_name": ".github__workflows__ci.yml",
+      "sha256": "bc50415e8a408c5760aeb199f4ee6debc042fa041788af74f77ace1ea7cbd54e",
+      "drive_id": "1fWo82byoj2VW4CW92APRp9Oy4iy92W7f",
+      "listed_bytes": 9535,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "docs/production-readiness/INCREMENT06_CHAT_DELIVERY.md",
+      "drive_flat_name": "docs__production-readiness__INCREMENT06_CHAT_DELIVERY.md",
+      "sha256": "4c36cc4be3a60e829edefbd9fdafc6ed094bf520dc505c78c9ca2d298710f473",
+      "drive_id": "1U4f9G2xednxwpNxGAMzj31DhC_Qo63NC",
+      "listed_bytes": 14497,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "lib/features/chat/application/chat_delivery_coordinator.dart",
+      "drive_flat_name": "lib__features__chat__application__chat_delivery_coordinator.dart",
+      "sha256": "12977f6f7978a865e75ba3b87ed105bed718d147e79d744a66ebc4b9a750bba2",
+      "drive_id": "15e0GKG0bn3RI338k6LiraEkfCt4dHQIR",
+      "listed_bytes": 5211,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "lib/features/chat/data/chat_delivery_store.dart",
+      "drive_flat_name": "lib__features__chat__data__chat_delivery_store.dart",
+      "sha256": "56d6b68354ffb662e779cd411256048ddfd4b5deb8b87935cee97d09530ad605",
+      "drive_id": "15NNSMPn4oT58r6vNdgUWFnqX3hKLztHi",
+      "listed_bytes": 2059,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "lib/features/chat/data/chat_service.dart",
+      "drive_flat_name": "lib__features__chat__data__chat_service.dart",
+      "sha256": "fe7b5d0b1a43673e118c99f44fcce9c0e55f41172b02da172d93c83d89bb87c0",
+      "drive_id": "1xSKoI603EiSwkxaqLWidwDabYSGb_7vX",
+      "listed_bytes": 8397,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "lib/features/chat/domain/chat_delivery.dart",
+      "drive_flat_name": "lib__features__chat__domain__chat_delivery.dart",
+      "sha256": "9c58b13484b3135b7422a911aad71faaff86b96ecbcfb3daeadfffd3b1a6e204",
+      "drive_id": "1tLR1CbkON4ODBn9Cd7Mvg0CTICiiDsak",
+      "listed_bytes": 4059,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "lib/features/chat/domain/chat_history_page.dart",
+      "drive_flat_name": "lib__features__chat__domain__chat_history_page.dart",
+      "sha256": "0ffa877dde1a1907773909254816598a3e265139a95d0e7e5c7a1c4ed55e6be1",
+      "drive_id": "1o-25YeBEPZOeRNIOTy1_Fle6qfTHn1iV",
+      "listed_bytes": 4541,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "lib/features/chat/presentation/chat_screen.dart",
+      "drive_flat_name": "lib__features__chat__presentation__chat_screen.dart",
+      "sha256": "3cc24c799ee8cda2f0a93a01c72ed180422a91fb912c3700ebac3d01e624ac44",
+      "drive_id": "1cy_tJAtYD-ou2H0q6BR67ZwnBiBqMjG-",
+      "listed_bytes": 38863,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "lib/features/chat/presentation/widgets/chat_composer.dart",
+      "drive_flat_name": "lib__features__chat__presentation__widgets__chat_composer.dart",
+      "sha256": "c67c6a78692bcd05637eb40cc5452b6186d3e7f62ea42649ab68f48f3b29b1bd",
+      "drive_id": "1U5Xvy0aSxrGjUDeEtaXxlLIwQob-plKU",
+      "listed_bytes": 4788,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "lib/features/chat/presentation/widgets/chat_delivery_controls.dart",
+      "drive_flat_name": "lib__features__chat__presentation__widgets__chat_delivery_controls.dart",
+      "sha256": "f53b55aa166aba0c137e81ee2d4eb9ab2cabf99fe27092dbe175c1408f4e7dbe",
+      "drive_id": "1L6Rph27WZEWjtJ9nSKs5AVwuve3uF4Zj",
+      "listed_bytes": 4862,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "lib/features/chat/presentation/widgets/chat_history_view.dart",
+      "drive_flat_name": "lib__features__chat__presentation__widgets__chat_history_view.dart",
+      "sha256": "c637b528d20f666fdbc428428e2a58ab25fba7d32e0d66ae26d8de1fb158109f",
+      "drive_id": "1crSdPCo9iwZ5k0vOhwzt24l60MQLGm-x",
+      "listed_bytes": 6797,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "pubspec.lock",
+      "drive_flat_name": "pubspec.lock",
+      "sha256": "256c441a57bbf04e332b0fc77803b6439f81f14c1016b33c504d9dfcfea75dbe",
+      "drive_id": "1pEU646mvzI8iyk5iz4rMwIxKktO3CvLQ",
+      "listed_bytes": 55724,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "pubspec.yaml",
+      "drive_flat_name": "pubspec.yaml",
+      "sha256": "c9698e8169b2ee489f06b29f274d69866bee4c59111ad3f823a199b87b0a4007",
+      "drive_id": "1JHn6TO5z7L4peRwNBqfaXUX0xnz_xB6q",
+      "listed_bytes": 2879,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "scripts/ci/apply_increment06.py",
+      "drive_flat_name": "scripts__ci__apply_increment06.py",
+      "sha256": "fdd2c525458f40f3132787f44e539474d2854cb761fa13207bf7daa50d97bc40",
+      "drive_id": "1xTDxm9qmPgO9Dmmdil1vepOcKFRSO_Dp",
+      "listed_bytes": 4714,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "scripts/ci/run_hardening_tests.sh",
+      "drive_flat_name": "scripts__ci__run_hardening_tests.sh",
+      "sha256": "d5afe1a28db9b1e53f1071dc0f205bd82a2763391cb2812304816171e8de557a",
+      "drive_id": "1gDGasCFnP5bln5LSy0oyec4VyoR0QQFF",
+      "listed_bytes": 2494,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "scripts/qa/test_chat_postgres.py",
+      "drive_flat_name": "scripts__qa__test_chat_postgres.py",
+      "sha256": "7f4d9f0920a23a47629a63d42146b9555aa770258407d2b245071632c2d7ee54",
+      "drive_id": "1lgAbobGTC25yhdc2Tn9CGKca2uRArAFP",
+      "listed_bytes": 10689,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "scripts/tests/sql/chat_fixture_bootstrap.sql",
+      "drive_flat_name": "scripts__tests__sql__chat_fixture_bootstrap.sql",
+      "sha256": "2ebdd5f10be31bce11ee7c635183389502c39c29d1ec4f088d31dc899a7d2342",
+      "drive_id": "1hOufGIbe0aesXqt-zjiGLByHYJn2Bs8r",
+      "listed_bytes": 3232,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "scripts/tests/test_identity_lifecycle_contracts.py",
+      "drive_flat_name": "scripts__tests__test_identity_lifecycle_contracts.py",
+      "sha256": "af5a4c2f43b2f0831dfe1a3640e71c2f151b70535a2170b9bd3506ea3bab3763",
+      "drive_id": "1Ummw67pnebQsdMBIz2y2E_1BLES3DEFK",
+      "listed_bytes": 9184,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "scripts/tests/test_increment06_applier.py",
+      "drive_flat_name": "scripts__tests__test_increment06_applier.py",
+      "sha256": "41d3f1a18f3713d1f139acc6d735a86a8316073a8c2a191fb7d3091892bb9b1e",
+      "drive_id": "1zqqFeZKZ4dRvaeo55pLs5t6f5VKy2BBh",
+      "listed_bytes": 3662,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "scripts/tests/test_increment06_contracts.py",
+      "drive_flat_name": "scripts__tests__test_increment06_contracts.py",
+      "sha256": "2a78f3dda16bd6d3f6f19985bdada3b8b1271fba1bbe035642c444253adcfd79",
+      "drive_id": "17_5rxxQZzujP5yUdwo9G53OHQip2vLyn",
+      "listed_bytes": 6942,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "supabase/hardening/2026-09-28/10_chat_delivery_and_pagination.sql",
+      "drive_flat_name": "supabase__hardening__2026-09-28__10_chat_delivery_and_pagination.sql",
+      "sha256": "24422690f6d4738d4a71561b56b8f641b4735b496496fb5277fb4fdb07920777",
+      "drive_id": "1XrkY_FseMDDr1Yo99IoVRXDWfkQR36vd",
+      "listed_bytes": 18668,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "supabase/hardening/2026-09-28/manifest.json",
+      "drive_flat_name": "supabase__hardening__2026-09-28__manifest.json",
+      "sha256": "f152d094de33c62155a40e1b50858fad0e5c9eec152f44e777f121088f204399",
+      "drive_id": "1ZT5ydbFGjttKzdO5R6qviKiGalfJ4AW2",
+      "listed_bytes": 2197,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "test/features/chat/data/chat_realtime_recovery_test.dart",
+      "drive_flat_name": "test__features__chat__data__chat_realtime_recovery_test.dart",
+      "sha256": "b9cc85f74e81c9e5d3643d3485a8f9256089901245009477afc6bd53cedcaa04",
+      "drive_id": "187ZGNZHbTSojSZVwNLnmTFS8ZpXbrW2i",
+      "listed_bytes": 10666,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "test/features/chat/data/chat_service_test.dart",
+      "drive_flat_name": "test__features__chat__data__chat_service_test.dart",
+      "sha256": "b29bd47756977edb0fd6e21c54c2f5d42340274dbecbce6c697ff9ed347f71be",
+      "drive_id": "1bRJwgERM9yU6OER_RSyr6bcbHWabww7Y",
+      "listed_bytes": 4258,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "test/features/chat/presentation/chat_screen_test.dart",
+      "drive_flat_name": "test__features__chat__presentation__chat_screen_test.dart",
+      "sha256": "7a1060e134d0048d19aff0478aefdda8d824335a418755199787b7b2b4f55657",
+      "drive_id": "19dUl2t6NICo0825uPg0P99nMG2rY2yVk",
+      "listed_bytes": 8891,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "test/increment06/chat_delivery_test.dart",
+      "drive_flat_name": "test__increment06__chat_delivery_test.dart",
+      "sha256": "0ce93e4472a31439417bba8597d8e7334d3a0576a8f8ac512195846b77c36b5c",
+      "drive_id": "1XIzn8PhX28HUtC-Xn6E2JGQefLSBu16P",
+      "listed_bytes": 7440,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "test/increment06/chat_history_page_test.dart",
+      "drive_flat_name": "test__increment06__chat_history_page_test.dart",
+      "sha256": "ed51859bd1d1469b78d76d2b1a6c5928832b35f6ecb49cafbea67f7357fe28e9",
+      "drive_id": "16YwnqcnExs51vRKj88zX-Ezknf3PKdcL",
+      "listed_bytes": 2730,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "test/increment06/chat_protocol_fixture.dart",
+      "drive_flat_name": "test__increment06__chat_protocol_fixture.dart",
+      "sha256": "9d0f23c371657b8a0dc02b090cb39d1a76a2036da94b526586dc4d0f552e2036",
+      "drive_id": "15a3upkr9DdKWsHhcsYh9d92DCc6trv-I",
+      "listed_bytes": 3829,
+      "individual_raw_bytes_downloaded": false
+    },
+    {
+      "repository_path": "test/release/chat_fullstack_contract_test.dart",
+      "drive_flat_name": "test__release__chat_fullstack_contract_test.dart",
+      "sha256": "1a5eb0e5de6fb68aa0fd63f0798def06ffd1aa1878c761ac23d56f16cfc9ea15",
+      "drive_id": "1c5513jJ_nlp23kLHKbyavJaLNW0ce0Uv",
+      "listed_bytes": 3013,
+      "individual_raw_bytes_downloaded": false
+    }
+  ],
+  "verification": {
+    "destination_listing_checked": true,
+    "individual_file_names_and_sizes_match": true,
+    "individual_raw_content_fetched": false,
+    "uploaded_zip_downloaded": true,
+    "returned_zip_file_id": "file_00000000ca0c8211b322916bee6b8b00",
+    "zip_sha256": "8397fa23cffb5471b540a4f821b14401495716b523bb58691ff9ed99fb3ff831",
+    "zip_bytes": 856777,
+    "download_matches_local_original": true,
+    "archived_delta_hashes_match": 29,
+    "readable_uploaded_report_read_back": true
+  },
+  "scope": {
+    "source_delta_files": 29,
+    "cumulative_overlay_files": 163,
+    "all_task_ids": 95,
+    "advanced_this_increment": 10,
+    "new_chat_sql_executed": false,
+    "new_chat_dart_executed": false,
+    "production_deployed": false,
+    "original_source_overwritten": false,
+    "permissions_changed": false
+  },
+  "note": "Archive readback is byte-verified. Separate flat files were verified by returned IDs and destination filename/size listing, not individually downloaded. This receipt is separate from the immutable archive."
+}
