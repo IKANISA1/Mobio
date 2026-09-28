@@ -1,0 +1,408 @@
+TAP version 13
+# (node:2335) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: bounded fetch preserves success body and status
+ok 1 - bounded fetch preserves success body and status
+  ---
+  duration_ms: 34.389897
+  type: 'test'
+  ...
+# Subtest: bounded fetch includes stalled headers in deadline
+ok 2 - bounded fetch includes stalled headers in deadline
+  ---
+  duration_ms: 20.113238
+  type: 'test'
+  ...
+# Subtest: bounded fetch includes stalled body in deadline
+ok 3 - bounded fetch includes stalled body in deadline
+  ---
+  duration_ms: 24.677451
+  type: 'test'
+  ...
+# Subtest: bounded fetch cancels late response without an unhandled rejection
+ok 4 - bounded fetch cancels late response without an unhandled rejection
+  ---
+  duration_ms: 50.811093
+  type: 'test'
+  ...
+# Subtest: bounded fetch rejects declared oversized body
+ok 5 - bounded fetch rejects declared oversized body
+  ---
+  duration_ms: 0.807222
+  type: 'test'
+  ...
+# Subtest: bounded fetch rejects actual oversized streamed body
+ok 6 - bounded fetch rejects actual oversized streamed body
+  ---
+  duration_ms: 0.815332
+  type: 'test'
+  ...
+# Subtest: bounded fetch preserves no-content response
+ok 7 - bounded fetch preserves no-content response
+  ---
+  duration_ms: 0.363292
+  type: 'test'
+  ...
+# Subtest: bounded fetch removes obsolete compression header
+ok 8 - bounded fetch removes obsolete compression header
+  ---
+  duration_ms: 1.374856
+  type: 'test'
+  ...
+# Subtest: bounded fetch rejects already-aborted parent without calling provider
+ok 9 - bounded fetch rejects already-aborted parent without calling provider
+  ---
+  duration_ms: 0.518546
+  type: 'test'
+  ...
+# Subtest: bounded fetch responds to in-flight parent abort
+ok 10 - bounded fetch responds to in-flight parent abort
+  ---
+  duration_ms: 10.513233
+  type: 'test'
+  ...
+# Subtest: bounded fetch sanitizes network errors and never retries
+ok 11 - bounded fetch sanitizes network errors and never retries
+  ---
+  duration_ms: 0.396121
+  type: 'test'
+  ...
+# Subtest: bounded fetch validates requested limits
+ok 12 - bounded fetch validates requested limits
+  ---
+  duration_ms: 0.366166
+  type: 'test'
+  ...
+# Subtest: OTP mode defaults to real delivery
+ok 13 - OTP mode defaults to real delivery
+  ---
+  duration_ms: 0.108073
+  type: 'test'
+  ...
+# Subtest: OTP dry run denied for missing environment
+ok 14 - OTP dry run denied for missing environment
+  ---
+  duration_ms: 0.134115
+  type: 'test'
+  ...
+# Subtest: OTP dry run denied for production environment
+ok 15 - OTP dry run denied for production environment
+  ---
+  duration_ms: 0.051385
+  type: 'test'
+  ...
+# Subtest: OTP dry run denied for staging environment
+ok 16 - OTP dry run denied for staging environment
+  ---
+  duration_ms: 0.041323
+  type: 'test'
+  ...
+# Subtest: OTP dry run denied for unknown environment
+ok 17 - OTP dry run denied for unknown environment
+  ---
+  duration_ms: 0.039046
+  type: 'test'
+  ...
+# Subtest: OTP dry run is denied on deployed Edge even with test label
+ok 18 - OTP dry run is denied on deployed Edge even with test label
+  ---
+  duration_ms: 0.072481
+  type: 'test'
+  ...
+# Subtest: OTP invalid setting rejected
+ok 19 - OTP invalid setting rejected
+  ---
+  duration_ms: 0.105516
+  type: 'test'
+  ...
+# Subtest: OTP fixture logging does not contain phone or OTP
+ok 20 - OTP fixture logging does not contain phone or OTP
+  ---
+  duration_ms: 0.339533
+  type: 'test'
+  ...
+# Subtest: OTP input rejected before delivery
+ok 21 - OTP input rejected before delivery
+  ---
+  duration_ms: 0.122332
+  type: 'test'
+  ...
+# Subtest: OTP generic errors do not leak arbitrary messages
+ok 22 - OTP generic errors do not leak arbitrary messages
+  ---
+  duration_ms: 0.149702
+  type: 'test'
+  ...
+# Subtest: OTP provider errors retain codes, not echoed secrets
+ok 23 - OTP provider errors retain codes, not echoed secrets
+  ---
+  duration_ms: 1.30295
+  type: 'test'
+  ...
+# Subtest: parser preserves positive exact invoice facts
+ok 24 - parser preserves positive exact invoice facts
+  ---
+  duration_ms: 1.22221
+  type: 'test'
+  ...
+# Subtest: parser does not reinterpret invalid amount -2000
+ok 25 - parser does not reinterpret invalid amount -2000
+  ---
+  duration_ms: 0.732159
+  type: 'test'
+  ...
+# Subtest: parser does not reinterpret invalid amount 0
+ok 26 - parser does not reinterpret invalid amount 0
+  ---
+  duration_ms: 0.610547
+  type: 'test'
+  ...
+# Subtest: parser does not reinterpret invalid amount 2.5
+ok 27 - parser does not reinterpret invalid amount 2.5
+  ---
+  duration_ms: 0.399882
+  type: 'test'
+  ...
+# Subtest: parser does not reinterpret invalid amount 2,000
+ok 28 - parser does not reinterpret invalid amount 2,000
+  ---
+  duration_ms: 0.354051
+  type: 'test'
+  ...
+# Subtest: parser does not reinterpret invalid amount 9007199254740992
+ok 29 - parser does not reinterpret invalid amount 9007199254740992
+  ---
+  duration_ms: 0.377639
+  type: 'test'
+  ...
+# Subtest: parser never pads or truncates identifiers
+ok 30 - parser never pads or truncates identifiers
+  ---
+  duration_ms: 0.597252
+  type: 'test'
+  ...
+# Subtest: parser rejects malformed structured output
+ok 31 - parser rejects malformed structured output
+  ---
+  duration_ms: 1.681954
+  type: 'test'
+  ...
+# Subtest: parser rejects empty or oversized SMS before API
+ok 32 - parser rejects empty or oversized SMS before API
+  ---
+  duration_ms: 0.173043
+  type: 'test'
+  ...
+# Subtest: parser errors do not contain provider response
+ok 33 - parser errors do not contain provider response
+  ---
+  duration_ms: 0.787278
+  type: 'test'
+  ...
+# Subtest: nonpayment classification remains nonpayment and cannot allocate
+ok 34 - nonpayment classification remains nonpayment and cannot allocate
+  ---
+  duration_ms: 2.093165
+  type: 'test'
+  ...
+# Subtest: receipt policy is disabled by default
+ok 35 - receipt policy is disabled by default
+  ---
+  duration_ms: 0.232687
+  type: 'test'
+  ...
+# Subtest: only fully supported fixture with explicit policy is eligible
+ok 36 - only fully supported fixture with explicit policy is eligible
+  ---
+  duration_ms: 0.262398
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies nonpayment
+ok 37 - receipt allocation denies nonpayment
+  ---
+  duration_ms: 0.195242
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies lowConfidence
+ok 38 - receipt allocation denies lowConfidence
+  ---
+  duration_ms: 0.084696
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies nanConfidence
+ok 39 - receipt allocation denies nanConfidence
+  ---
+  duration_ms: 0.072674
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies missingInvoice
+ok 40 - receipt allocation denies missingInvoice
+  ---
+  duration_ms: 0.072407
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies missingProvider
+ok 41 - receipt allocation denies missingProvider
+  ---
+  duration_ms: 0.062499
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies wrongMerchant
+ok 42 - receipt allocation denies wrongMerchant
+  ---
+  duration_ms: 0.068091
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies missingMerchant
+ok 43 - receipt allocation denies missingMerchant
+  ---
+  duration_ms: 0.154368
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies negative
+ok 44 - receipt allocation denies negative
+  ---
+  duration_ms: 0.102368
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies wrongAmount
+ok 45 - receipt allocation denies wrongAmount
+  ---
+  duration_ms: 0.121809
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies USD
+ok 46 - receipt allocation denies USD
+  ---
+  duration_ms: 0.118956
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies debit
+ok 47 - receipt allocation denies debit
+  ---
+  duration_ms: 0.059197
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies missingRawMerchant
+ok 48 - receipt allocation denies missingRawMerchant
+  ---
+  duration_ms: 0.056356
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies missingRawInvoice
+ok 49 - receipt allocation denies missingRawInvoice
+  ---
+  duration_ms: 0.049624
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies duplicateRawInvoice
+ok 50 - receipt allocation denies duplicateRawInvoice
+  ---
+  duration_ms: 0.047176
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies wrongRawProvider
+ok 51 - receipt allocation denies wrongRawProvider
+  ---
+  duration_ms: 0.054993
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies suffixOnly
+ok 52 - receipt allocation denies suffixOnly
+  ---
+  duration_ms: 0.043959
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies unapproved sender or unconfigured merchant
+ok 53 - receipt allocation denies unapproved sender or unconfigured merchant
+  ---
+  duration_ms: 0.180353
+  type: 'test'
+  ...
+# Subtest: receipt allocation cannot lower engineering minimum confidence
+ok 54 - receipt allocation cannot lower engineering minimum confidence
+  ---
+  duration_ms: 0.101021
+  type: 'test'
+  ...
+# Subtest: identity resolves confirmed Auth owner, not profile alias
+ok 55 - identity resolves confirmed Auth owner, not profile alias
+  ---
+  duration_ms: 0.639345
+  type: 'test'
+  ...
+# Subtest: no verified owner permits explicit provisioning path
+ok 56 - no verified owner permits explicit provisioning path
+  ---
+  duration_ms: 0.147784
+  type: 'test'
+  ...
+# Subtest: identity lookup error cannot become new-user provisioning
+ok 57 - identity lookup error cannot become new-user provisioning
+  ---
+  duration_ms: 1.632384
+  type: 'test'
+  ...
+# Subtest: identity load error cannot become new-user provisioning
+ok 58 - identity load error cannot become new-user provisioning
+  ---
+  duration_ms: 0.226938
+  type: 'test'
+  ...
+# Subtest: identity rejects wrongOwner
+ok 59 - identity rejects wrongOwner
+  ---
+  duration_ms: 0.083848
+  type: 'test'
+  ...
+# Subtest: identity rejects wrongPhone
+ok 60 - identity rejects wrongPhone
+  ---
+  duration_ms: 0.13362
+  type: 'test'
+  ...
+# Subtest: identity rejects unconfirmed
+ok 61 - identity rejects unconfirmed
+  ---
+  duration_ms: 0.049543
+  type: 'test'
+  ...
+# Subtest: identity rejects invalidConfirmation
+ok 62 - identity rejects invalidConfirmation
+  ---
+  duration_ms: 0.039096
+  type: 'test'
+  ...
+# Subtest: identity rejects anonymous
+ok 63 - identity rejects anonymous
+  ---
+  duration_ms: 0.036959
+  type: 'test'
+  ...
+# Subtest: identity rejects admin
+ok 64 - identity rejects admin
+  ---
+  duration_ms: 0.041498
+  type: 'test'
+  ...
+# Subtest: identity rejects malformed directory result
+ok 65 - identity rejects malformed directory result
+  ---
+  duration_ms: 0.09341
+  type: 'test'
+  ...
+# Subtest: phone canonicalization never guesses missing country code
+ok 66 - phone canonicalization never guesses missing country code
+  ---
+  duration_ms: 0.102454
+  type: 'test'
+  ...
+1..66
+# tests 66
+# suites 0
+# pass 66
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 325.536852

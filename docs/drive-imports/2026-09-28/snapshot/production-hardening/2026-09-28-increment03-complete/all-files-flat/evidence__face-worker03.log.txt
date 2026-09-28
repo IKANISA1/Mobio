@@ -1,0 +1,54 @@
+TAP version 13
+# (node:2614) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: all endpoints reject callers without server authentication
+ok 1 - all endpoints reject callers without server authentication
+  ---
+  duration_ms: 36.678293
+  type: 'test'
+  ...
+# Subtest: non-cosine misbinding fails closed using actual score direction
+ok 2 - non-cosine misbinding fails closed using actual score direction
+  ---
+  duration_ms: 5.742578
+  type: 'test'
+  ...
+# Subtest: accepted insertion remains unsearchable until asynchronous index mutation is visible
+ok 3 - accepted insertion remains unsearchable until asynchronous index mutation is visible
+  ---
+  duration_ms: 14.824678
+  type: 'test'
+  ...
+# Subtest: query response contains only opaque candidate IDs/scores
+ok 4 - query response contains only opaque candidate IDs/scores
+  ---
+  duration_ms: 4.601424
+  type: 'test'
+  ...
+# Subtest: explicit old vector deletion preserves new replacement
+ok 5 - explicit old vector deletion preserves new replacement
+  ---
+  duration_ms: 2.089712
+  type: 'test'
+  ...
+# Subtest: malformed, nonfinite, wrong-dimensional or non-normalized embeddings cannot enter index
+ok 6 - malformed, nonfinite, wrong-dimensional or non-normalized embeddings cannot enter index
+  ---
+  duration_ms: 0.383008
+  type: 'test'
+  ...
+# Subtest: image byte cap runs before inference
+ok 7 - image byte cap runs before inference
+  ---
+  duration_ms: 3.018102
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 290.346492

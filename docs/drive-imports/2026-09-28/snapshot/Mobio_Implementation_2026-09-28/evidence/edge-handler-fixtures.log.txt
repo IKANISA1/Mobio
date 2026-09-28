@@ -1,0 +1,101 @@
+TAP version 13
+# (node:2353) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+# --import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("./scripts/tests/edge/fixture-loader.mjs", pathToFileURL("./"));'
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# (node:2353) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (node:2353) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: actual intake verifies fixture RSA signature and allocates only eligible receipt
+ok 1 - actual intake verifies fixture RSA signature and allocates only eligible receipt
+  ---
+  duration_ms: 31.839837
+  type: 'test'
+  ...
+# Subtest: actual intake persists nonpayment without allocation
+ok 2 - actual intake persists nonpayment without allocation
+  ---
+  duration_ms: 4.121829
+  type: 'test'
+  ...
+# Subtest: disabled policy retains review and never credits
+ok 3 - disabled policy retains review and never credits
+  ---
+  duration_ms: 3.135213
+  type: 'test'
+  ...
+# momobio-sms-ingest: provider or storage operation failed
+# Subtest: failed review persistence is not acknowledged
+ok 4 - failed review persistence is not acknowledged
+  ---
+  duration_ms: 3.206861
+  type: 'test'
+  ...
+# Subtest: retry cannot overwrite prior matched receipt or misreport it as unmatched
+ok 5 - retry cannot overwrite prior matched receipt or misreport it as unmatched
+  ---
+  duration_ms: 3.241607
+  type: 'test'
+  ...
+# Subtest: unsigned intake does not parse or store
+ok 6 - unsigned intake does not parse or store
+  ---
+  duration_ms: 0.639173
+  type: 'test'
+  ...
+# Subtest: revoked collector is denied before parsing
+ok 7 - revoked collector is denied before parsing
+  ---
+  duration_ms: 8.972094
+  type: 'test'
+  ...
+# Subtest: parse-sms returns explicit retirement for POST
+ok 8 - parse-sms returns explicit retirement for POST
+  ---
+  duration_ms: 0.633037
+  type: 'test'
+  ...
+# Subtest: reconcile-momo-sms returns explicit retirement for POST
+ok 9 - reconcile-momo-sms returns explicit retirement for POST
+  ---
+  duration_ms: 1.254434
+  type: 'test'
+  ...
+# Subtest: actual existing-user login uses Auth owner and never reassigns phone/email
+ok 10 - actual existing-user login uses Auth owner and never reassigns phone/email
+  ---
+  duration_ms: 2.995957
+  type: 'test'
+  ...
+# Subtest: actual login rejects wrong Auth phone before mutation
+ok 11 - actual login rejects wrong Auth phone before mutation
+  ---
+  duration_ms: 0.602149
+  type: 'test'
+  ...
+# Subtest: actual login fails closed on directory outage
+ok 12 - actual login fails closed on directory outage
+  ---
+  duration_ms: 0.317203
+  type: 'test'
+  ...
+# Subtest: actual login fails closed on Auth lookup failure
+ok 13 - actual login fails closed on Auth lookup failure
+  ---
+  duration_ms: 0.140929
+  type: 'test'
+  ...
+# Subtest: actual new-user login never inspects an alias-matched profile
+ok 14 - actual new-user login never inspects an alias-matched profile
+  ---
+  duration_ms: 0.282554
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 683.085386

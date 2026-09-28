@@ -1,0 +1,12 @@
+test_cli_ios_file_is_private_and_does_not_execute_dotenv (test_runtime_defines.RuntimeDefinesTest.test_cli_ios_file_is_private_and_does_not_execute_dotenv) ... ok
+test_dotenv_is_parsed_literally_without_shell_execution (test_runtime_defines.RuntimeDefinesTest.test_dotenv_is_parsed_literally_without_shell_execution) ... ok
+test_environment_overrides_dotenv_and_empty_values_fall_back (test_runtime_defines.RuntimeDefinesTest.test_environment_overrides_dotenv_and_empty_values_fall_back) ... ok
+test_ios_only_adds_public_platform_fields (test_runtime_defines.RuntimeDefinesTest.test_ios_only_adds_public_platform_fields) ... ok
+test_ios_requires_its_own_registration (test_runtime_defines.RuntimeDefinesTest.test_ios_requires_its_own_registration) ... ok
+test_missing_values_fail_without_printing_configuration (test_runtime_defines.RuntimeDefinesTest.test_missing_values_fail_without_printing_configuration) ... ok
+test_server_secrets_never_enter_the_client_build (test_runtime_defines.RuntimeDefinesTest.test_server_secrets_never_enter_the_client_build) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.769s
+
+OK

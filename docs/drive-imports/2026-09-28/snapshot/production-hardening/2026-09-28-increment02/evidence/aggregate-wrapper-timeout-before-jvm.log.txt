@@ -1,0 +1,624 @@
+test_docker_digest (test_production_gates.ActionPinTests.test_docker_digest) ... ok
+test_docker_tag_rejected (test_production_gates.ActionPinTests.test_docker_tag_rejected) ... ok
+test_dollar_step_path_rejected (test_production_gates.ActionPinTests.test_dollar_step_path_rejected) ... ok
+test_duplicate_keys_rejected (test_production_gates.ActionPinTests.test_duplicate_keys_rejected) ... ok
+test_dynamic_reference_rejected (test_production_gates.ActionPinTests.test_dynamic_reference_rejected) ... ok
+test_empty_workflow_directory_rejected (test_production_gates.ActionPinTests.test_empty_workflow_directory_rejected) ... ok
+test_flow_style_is_checked (test_production_gates.ActionPinTests.test_flow_style_is_checked) ... ok
+test_github_ancestor_symlink_rejected (test_production_gates.ActionPinTests.test_github_ancestor_symlink_rejected) ... ok
+test_local_action_directory (test_production_gates.ActionPinTests.test_local_action_directory) ... ok
+test_local_action_without_metadata_rejected (test_production_gates.ActionPinTests.test_local_action_without_metadata_rejected) ... ok
+test_local_dollar_workflow (test_production_gates.ActionPinTests.test_local_dollar_workflow) ... ok
+test_local_reusable_workflow (test_production_gates.ActionPinTests.test_local_reusable_workflow) ... ok
+test_local_symlink_rejected (test_production_gates.ActionPinTests.test_local_symlink_rejected) ... ok
+test_malformed_yaml_rejected (test_production_gates.ActionPinTests.test_malformed_yaml_rejected) ... ok
+test_missing_local_workflow_rejected (test_production_gates.ActionPinTests.test_missing_local_workflow_rejected) ... ok
+test_non_string_reference_rejected (test_production_gates.ActionPinTests.test_non_string_reference_rejected) ... ok
+test_pinned_action (test_production_gates.ActionPinTests.test_pinned_action) ... ok
+test_quoted_pinned_action (test_production_gates.ActionPinTests.test_quoted_pinned_action) ... ok
+test_remote_workflow_path_required (test_production_gates.ActionPinTests.test_remote_workflow_path_required) ... ok
+test_run_block_does_not_create_false_action (test_production_gates.ActionPinTests.test_run_block_does_not_create_false_action) ... ok
+test_short_sha_rejected (test_production_gates.ActionPinTests.test_short_sha_rejected) ... ok
+test_tag_rejected (test_production_gates.ActionPinTests.test_tag_rejected) ... ok
+test_traversal_rejected (test_production_gates.ActionPinTests.test_traversal_rejected) ... ok
+test_both_disabled_rejected (test_production_gates.IntegratedGateTests.test_both_disabled_rejected) ... ok
+test_disabled_invalid_and_empty_rejected_before_flutter (test_production_gates.IntegratedGateTests.test_disabled_invalid_and_empty_rejected_before_flutter) ... ok
+test_failing_flutter_blocks (test_production_gates.IntegratedGateTests.test_failing_flutter_blocks) ... ok
+test_incomplete_child_blocks (test_production_gates.IntegratedGateTests.test_incomplete_child_blocks) ... ok
+test_missing_tool_blocks (test_production_gates.IntegratedGateTests.test_missing_tool_blocks) ... ok
+test_required_fixture_checks_pass (test_production_gates.IntegratedGateTests.test_required_fixture_checks_pass) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 19.245s
+
+OK
+test_body_symlink_rejected (test_hardening_preparation.PreparationTests.test_body_symlink_rejected) ... ok
+test_cli_filename_generation_protocol_without_database (test_hardening_preparation.PreparationTests.test_cli_filename_generation_protocol_without_database) ... ok
+test_duplicate_existing_timestamp_rejected (test_hardening_preparation.PreparationTests.test_duplicate_existing_timestamp_rejected) ... ok
+test_duplicate_generated_migration_rejected (test_hardening_preparation.PreparationTests.test_duplicate_generated_migration_rejected) ... ok
+test_exact_ordered_migrations_accepted (test_hardening_preparation.PreparationTests.test_exact_ordered_migrations_accepted) ... ok
+test_later_body_without_prior_rejected (test_hardening_preparation.PreparationTests.test_later_body_without_prior_rejected) ... ok
+test_missing_bodies_remain_pending (test_hardening_preparation.PreparationTests.test_missing_bodies_remain_pending) ... ok
+test_missing_cli_is_not_success (test_hardening_preparation.PreparationTests.test_missing_cli_is_not_success) ... ok
+test_modified_body_rejected (test_hardening_preparation.PreparationTests.test_modified_body_rejected) ... ok
+test_modified_generated_migration_never_overwritten (test_hardening_preparation.PreparationTests.test_modified_generated_migration_never_overwritten) ... ok
+test_nonempty_cli_result_not_overwritten (test_hardening_preparation.PreparationTests.test_nonempty_cli_result_not_overwritten) ... ok
+test_reverse_order_rejected (test_hardening_preparation.PreparationTests.test_reverse_order_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.023s
+
+OK
+Prepared supabase/migrations/20260928010102_mobio_hardening_alpha.sql; NOT applied
+Prepared supabase/migrations/20260928010103_mobio_hardening_beta.sql; NOT applied
+test_conflicting_declarations_rejected (test_play_version_evidence.VersionEvidenceTests.test_conflicting_declarations_rejected) ... ok
+test_exact (test_play_version_evidence.VersionEvidenceTests.test_exact) ... ok
+test_invalid_expected_rejected (test_play_version_evidence.VersionEvidenceTests.test_invalid_expected_rejected) ... ok
+test_markdown (test_play_version_evidence.VersionEvidenceTests.test_markdown) ... ok
+test_missing_rejected (test_play_version_evidence.VersionEvidenceTests.test_missing_rejected) ... ok
+test_prefix_rejected (test_play_version_evidence.VersionEvidenceTests.test_prefix_rejected) ... ok
+test_suffix_rejected (test_play_version_evidence.VersionEvidenceTests.test_suffix_rejected) ... ok
+test_unmatched_quote_rejected (test_play_version_evidence.VersionEvidenceTests.test_unmatched_quote_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.000s
+
+OK
+test_cleanup_failure_cannot_block_auth_signout (test_identity_lifecycle_contracts.AccountLifecycleTests.test_cleanup_failure_cannot_block_auth_signout) ... ok
+test_profile_exposes_ordinary_signout (test_identity_lifecycle_contracts.AccountLifecycleTests.test_profile_exposes_ordinary_signout) ... ok
+test_push_registration_rechecks_owner_after_token_await (test_identity_lifecycle_contracts.AccountLifecycleTests.test_push_registration_rechecks_owner_after_token_await) ... ok
+test_push_unregister_is_scoped_to_owner_and_token (test_identity_lifecycle_contracts.AccountLifecycleTests.test_push_unregister_is_scoped_to_owner_and_token) ... ok
+test_user_signout_revokes_account_bound_state_before_auth_loss (test_identity_lifecycle_contracts.AccountLifecycleTests.test_user_signout_revokes_account_bound_state_before_auth_loss) ... ok
+test_allocator_serializes_check_then_assignment (test_identity_lifecycle_contracts.CanonicalMemberIdTests.test_allocator_serializes_check_then_assignment) ... ok
+test_client_cannot_choose_inserted_member_id (test_identity_lifecycle_contracts.CanonicalMemberIdTests.test_client_cannot_choose_inserted_member_id) ... ok
+test_client_helper_never_hashes_missing_id (test_identity_lifecycle_contracts.CanonicalMemberIdTests.test_client_helper_never_hashes_missing_id) ... ok
+test_duplicate_historical_ids_are_reconciled (test_identity_lifecycle_contracts.CanonicalMemberIdTests.test_duplicate_historical_ids_are_reconciled) ... ok
+test_identity_guard_protects_member_id (test_identity_lifecycle_contracts.CanonicalMemberIdTests.test_identity_guard_protects_member_id) ... ok
+test_member_id_is_six_digit_unique_and_not_null (test_identity_lifecycle_contracts.CanonicalMemberIdTests.test_member_id_is_six_digit_unique_and_not_null) ... ok
+test_production_trip_cards_do_not_fabricate_member_ids (test_identity_lifecycle_contracts.CanonicalMemberIdTests.test_production_trip_cards_do_not_fabricate_member_ids) ... ok
+test_direct_location_policy_is_not_global_online_read (test_identity_lifecycle_contracts.DiscoveryAndStatusTests.test_direct_location_policy_is_not_global_online_read) ... ok
+test_face_service_failure_is_not_reported_as_not_started (test_identity_lifecycle_contracts.DiscoveryAndStatusTests.test_face_service_failure_is_not_reported_as_not_started) ... ok
+test_nearby_rpc_has_freshness_radius_and_hard_cap (test_identity_lifecycle_contracts.DiscoveryAndStatusTests.test_nearby_rpc_has_freshness_radius_and_hard_cap) ... ok
+test_manifest_hashes_all_bodies_exactly (test_identity_lifecycle_contracts.HardeningManifestTests.test_manifest_hashes_all_bodies_exactly) ... ok
+test_assertions_cover_new_identity_transport_and_discovery_invariants (test_identity_lifecycle_contracts.PostInstallAssertionTests.test_assertions_cover_new_identity_transport_and_discovery_invariants) ... ok
+test_equivalent_active_hold_is_returned_without_second_decrement (test_identity_lifecycle_contracts.TransportIntegrityTests.test_equivalent_active_hold_is_returned_without_second_decrement) ... ok
+test_expired_confirmation_returns_durable_expired_state (test_identity_lifecycle_contracts.TransportIntegrityTests.test_expired_confirmation_returns_durable_expired_state) ... ok
+test_expired_hold_release_restores_inventory (test_identity_lifecycle_contracts.TransportIntegrityTests.test_expired_hold_release_restores_inventory) ... ok
+test_receipt_reference_cannot_cross_booking (test_identity_lifecycle_contracts.TransportIntegrityTests.test_receipt_reference_cannot_cross_booking) ... ok
+test_sweeper_is_service_role_only (test_identity_lifecycle_contracts.TransportIntegrityTests.test_sweeper_is_service_role_only) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.005s
+
+OK
+github-actions pin check passed
+TAP version 13
+# (node:7771) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: bounded fetch preserves success body and status
+ok 1 - bounded fetch preserves success body and status
+  ---
+  duration_ms: 30.858666
+  type: 'test'
+  ...
+# Subtest: bounded fetch includes stalled headers in deadline
+ok 2 - bounded fetch includes stalled headers in deadline
+  ---
+  duration_ms: 20.524773
+  type: 'test'
+  ...
+# Subtest: bounded fetch includes stalled body in deadline
+ok 3 - bounded fetch includes stalled body in deadline
+  ---
+  duration_ms: 20.690635
+  type: 'test'
+  ...
+# Subtest: bounded fetch cancels late response without an unhandled rejection
+ok 4 - bounded fetch cancels late response without an unhandled rejection
+  ---
+  duration_ms: 50.629295
+  type: 'test'
+  ...
+# Subtest: bounded fetch rejects declared oversized body
+ok 5 - bounded fetch rejects declared oversized body
+  ---
+  duration_ms: 0.885657
+  type: 'test'
+  ...
+# Subtest: bounded fetch rejects actual oversized streamed body
+ok 6 - bounded fetch rejects actual oversized streamed body
+  ---
+  duration_ms: 0.513743
+  type: 'test'
+  ...
+# Subtest: bounded fetch preserves no-content response
+ok 7 - bounded fetch preserves no-content response
+  ---
+  duration_ms: 0.442713
+  type: 'test'
+  ...
+# Subtest: bounded fetch removes obsolete compression header
+ok 8 - bounded fetch removes obsolete compression header
+  ---
+  duration_ms: 0.894043
+  type: 'test'
+  ...
+# Subtest: bounded fetch rejects already-aborted parent without calling provider
+ok 9 - bounded fetch rejects already-aborted parent without calling provider
+  ---
+  duration_ms: 0.464105
+  type: 'test'
+  ...
+# Subtest: bounded fetch responds to in-flight parent abort
+ok 10 - bounded fetch responds to in-flight parent abort
+  ---
+  duration_ms: 10.599992
+  type: 'test'
+  ...
+# Subtest: bounded fetch sanitizes network errors and never retries
+ok 11 - bounded fetch sanitizes network errors and never retries
+  ---
+  duration_ms: 0.445024
+  type: 'test'
+  ...
+# Subtest: bounded fetch validates requested limits
+ok 12 - bounded fetch validates requested limits
+  ---
+  duration_ms: 0.29557
+  type: 'test'
+  ...
+# Subtest: OTP mode defaults to real delivery
+ok 13 - OTP mode defaults to real delivery
+  ---
+  duration_ms: 0.101709
+  type: 'test'
+  ...
+# Subtest: OTP dry run denied for missing environment
+ok 14 - OTP dry run denied for missing environment
+  ---
+  duration_ms: 0.125983
+  type: 'test'
+  ...
+# Subtest: OTP dry run denied for production environment
+ok 15 - OTP dry run denied for production environment
+  ---
+  duration_ms: 0.045317
+  type: 'test'
+  ...
+# Subtest: OTP dry run denied for staging environment
+ok 16 - OTP dry run denied for staging environment
+  ---
+  duration_ms: 0.084744
+  type: 'test'
+  ...
+# Subtest: OTP dry run denied for unknown environment
+ok 17 - OTP dry run denied for unknown environment
+  ---
+  duration_ms: 0.042682
+  type: 'test'
+  ...
+# Subtest: OTP dry run is denied on deployed Edge even with test label
+ok 18 - OTP dry run is denied on deployed Edge even with test label
+  ---
+  duration_ms: 0.076095
+  type: 'test'
+  ...
+# Subtest: OTP invalid setting rejected
+ok 19 - OTP invalid setting rejected
+  ---
+  duration_ms: 0.099477
+  type: 'test'
+  ...
+# Subtest: OTP fixture logging does not contain phone or OTP
+ok 20 - OTP fixture logging does not contain phone or OTP
+  ---
+  duration_ms: 0.340708
+  type: 'test'
+  ...
+# Subtest: OTP input rejected before delivery
+ok 21 - OTP input rejected before delivery
+  ---
+  duration_ms: 0.134799
+  type: 'test'
+  ...
+# Subtest: OTP generic errors do not leak arbitrary messages
+ok 22 - OTP generic errors do not leak arbitrary messages
+  ---
+  duration_ms: 0.153411
+  type: 'test'
+  ...
+# Subtest: OTP provider errors retain codes, not echoed secrets
+ok 23 - OTP provider errors retain codes, not echoed secrets
+  ---
+  duration_ms: 1.585818
+  type: 'test'
+  ...
+# Subtest: parser preserves positive exact invoice facts
+ok 24 - parser preserves positive exact invoice facts
+  ---
+  duration_ms: 1.274683
+  type: 'test'
+  ...
+# Subtest: parser does not reinterpret invalid amount -2000
+ok 25 - parser does not reinterpret invalid amount -2000
+  ---
+  duration_ms: 0.967279
+  type: 'test'
+  ...
+# Subtest: parser does not reinterpret invalid amount 0
+ok 26 - parser does not reinterpret invalid amount 0
+  ---
+  duration_ms: 0.471759
+  type: 'test'
+  ...
+# Subtest: parser does not reinterpret invalid amount 2.5
+ok 27 - parser does not reinterpret invalid amount 2.5
+  ---
+  duration_ms: 0.344539
+  type: 'test'
+  ...
+# Subtest: parser does not reinterpret invalid amount 2,000
+ok 28 - parser does not reinterpret invalid amount 2,000
+  ---
+  duration_ms: 0.59711
+  type: 'test'
+  ...
+# Subtest: parser does not reinterpret invalid amount 9007199254740992
+ok 29 - parser does not reinterpret invalid amount 9007199254740992
+  ---
+  duration_ms: 0.438284
+  type: 'test'
+  ...
+# Subtest: parser never pads or truncates identifiers
+ok 30 - parser never pads or truncates identifiers
+  ---
+  duration_ms: 0.579615
+  type: 'test'
+  ...
+# Subtest: parser rejects malformed structured output
+ok 31 - parser rejects malformed structured output
+  ---
+  duration_ms: 1.197783
+  type: 'test'
+  ...
+# Subtest: parser rejects empty or oversized SMS before API
+ok 32 - parser rejects empty or oversized SMS before API
+  ---
+  duration_ms: 0.315073
+  type: 'test'
+  ...
+# Subtest: parser errors do not contain provider response
+ok 33 - parser errors do not contain provider response
+  ---
+  duration_ms: 0.507488
+  type: 'test'
+  ...
+# Subtest: nonpayment classification remains nonpayment and cannot allocate
+ok 34 - nonpayment classification remains nonpayment and cannot allocate
+  ---
+  duration_ms: 1.249685
+  type: 'test'
+  ...
+# Subtest: receipt policy is disabled by default
+ok 35 - receipt policy is disabled by default
+  ---
+  duration_ms: 0.207861
+  type: 'test'
+  ...
+# Subtest: only fully supported fixture with explicit policy is eligible
+ok 36 - only fully supported fixture with explicit policy is eligible
+  ---
+  duration_ms: 0.178978
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies nonpayment
+ok 37 - receipt allocation denies nonpayment
+  ---
+  duration_ms: 0.075452
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies lowConfidence
+ok 38 - receipt allocation denies lowConfidence
+  ---
+  duration_ms: 0.042055
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies nanConfidence
+ok 39 - receipt allocation denies nanConfidence
+  ---
+  duration_ms: 0.037506
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies missingInvoice
+ok 40 - receipt allocation denies missingInvoice
+  ---
+  duration_ms: 0.042466
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies missingProvider
+ok 41 - receipt allocation denies missingProvider
+  ---
+  duration_ms: 0.035237
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies wrongMerchant
+ok 42 - receipt allocation denies wrongMerchant
+  ---
+  duration_ms: 0.037894
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies missingMerchant
+ok 43 - receipt allocation denies missingMerchant
+  ---
+  duration_ms: 0.093874
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies negative
+ok 44 - receipt allocation denies negative
+  ---
+  duration_ms: 0.06076
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies wrongAmount
+ok 45 - receipt allocation denies wrongAmount
+  ---
+  duration_ms: 0.03862
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies USD
+ok 46 - receipt allocation denies USD
+  ---
+  duration_ms: 0.056028
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies debit
+ok 47 - receipt allocation denies debit
+  ---
+  duration_ms: 0.036087
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies missingRawMerchant
+ok 48 - receipt allocation denies missingRawMerchant
+  ---
+  duration_ms: 0.029913
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies missingRawInvoice
+ok 49 - receipt allocation denies missingRawInvoice
+  ---
+  duration_ms: 0.090014
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies duplicateRawInvoice
+ok 50 - receipt allocation denies duplicateRawInvoice
+  ---
+  duration_ms: 0.032191
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies wrongRawProvider
+ok 51 - receipt allocation denies wrongRawProvider
+  ---
+  duration_ms: 0.03379
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies suffixOnly
+ok 52 - receipt allocation denies suffixOnly
+  ---
+  duration_ms: 0.062498
+  type: 'test'
+  ...
+# Subtest: receipt allocation denies unapproved sender or unconfigured merchant
+ok 53 - receipt allocation denies unapproved sender or unconfigured merchant
+  ---
+  duration_ms: 0.076449
+  type: 'test'
+  ...
+# Subtest: receipt allocation cannot lower engineering minimum confidence
+ok 54 - receipt allocation cannot lower engineering minimum confidence
+  ---
+  duration_ms: 0.103934
+  type: 'test'
+  ...
+# Subtest: identity resolves confirmed Auth owner, not profile alias
+ok 55 - identity resolves confirmed Auth owner, not profile alias
+  ---
+  duration_ms: 0.310006
+  type: 'test'
+  ...
+# Subtest: no verified owner permits explicit provisioning path
+ok 56 - no verified owner permits explicit provisioning path
+  ---
+  duration_ms: 0.079039
+  type: 'test'
+  ...
+# Subtest: identity lookup error cannot become new-user provisioning
+ok 57 - identity lookup error cannot become new-user provisioning
+  ---
+  duration_ms: 0.253708
+  type: 'test'
+  ...
+# Subtest: identity load error cannot become new-user provisioning
+ok 58 - identity load error cannot become new-user provisioning
+  ---
+  duration_ms: 0.174658
+  type: 'test'
+  ...
+# Subtest: identity rejects wrongOwner
+ok 59 - identity rejects wrongOwner
+  ---
+  duration_ms: 0.083615
+  type: 'test'
+  ...
+# Subtest: identity rejects wrongPhone
+ok 60 - identity rejects wrongPhone
+  ---
+  duration_ms: 0.060572
+  type: 'test'
+  ...
+# Subtest: identity rejects unconfirmed
+ok 61 - identity rejects unconfirmed
+  ---
+  duration_ms: 0.042262
+  type: 'test'
+  ...
+# Subtest: identity rejects invalidConfirmation
+ok 62 - identity rejects invalidConfirmation
+  ---
+  duration_ms: 0.037456
+  type: 'test'
+  ...
+# Subtest: identity rejects anonymous
+ok 63 - identity rejects anonymous
+  ---
+  duration_ms: 0.049231
+  type: 'test'
+  ...
+# Subtest: identity rejects admin
+ok 64 - identity rejects admin
+  ---
+  duration_ms: 0.043467
+  type: 'test'
+  ...
+# Subtest: identity rejects malformed directory result
+ok 65 - identity rejects malformed directory result
+  ---
+  duration_ms: 0.081242
+  type: 'test'
+  ...
+# Subtest: phone canonicalization never guesses missing country code
+ok 66 - phone canonicalization never guesses missing country code
+  ---
+  duration_ms: 0.10553
+  type: 'test'
+  ...
+1..66
+# tests 66
+# suites 0
+# pass 66
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 321.263661
+TAP version 13
+# (node:7788) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+# --import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("./scripts/tests/edge/fixture-loader.mjs", pathToFileURL("./"));'
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# (node:7788) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (node:7788) ExperimentalWarning: Type Stripping is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: actual intake verifies fixture RSA signature and allocates only eligible receipt
+ok 1 - actual intake verifies fixture RSA signature and allocates only eligible receipt
+  ---
+  duration_ms: 32.303371
+  type: 'test'
+  ...
+# Subtest: actual intake persists nonpayment without allocation
+ok 2 - actual intake persists nonpayment without allocation
+  ---
+  duration_ms: 4.017382
+  type: 'test'
+  ...
+# Subtest: disabled policy retains review and never credits
+ok 3 - disabled policy retains review and never credits
+  ---
+  duration_ms: 3.339966
+  type: 'test'
+  ...
+# momobio-sms-ingest: provider or storage operation failed
+# Subtest: failed review persistence is not acknowledged
+ok 4 - failed review persistence is not acknowledged
+  ---
+  duration_ms: 3.788614
+  type: 'test'
+  ...
+# Subtest: retry cannot overwrite prior matched receipt or misreport it as unmatched
+ok 5 - retry cannot overwrite prior matched receipt or misreport it as unmatched
+  ---
+  duration_ms: 4.718657
+  type: 'test'
+  ...
+# Subtest: unsigned intake does not parse or store
+ok 6 - unsigned intake does not parse or store
+  ---
+  duration_ms: 0.874893
+  type: 'test'
+  ...
+# Subtest: revoked collector is denied before parsing
+ok 7 - revoked collector is denied before parsing
+  ---
+  duration_ms: 4.13253
+  type: 'test'
+  ...
+# Subtest: parse-sms returns explicit retirement for POST
+ok 8 - parse-sms returns explicit retirement for POST
+  ---
+  duration_ms: 0.954706
+  type: 'test'
+  ...
+# Subtest: reconcile-momo-sms returns explicit retirement for POST
+ok 9 - reconcile-momo-sms returns explicit retirement for POST
+  ---
+  duration_ms: 1.37415
+  type: 'test'
+  ...
+# Subtest: actual existing-user login uses Auth owner and never reassigns phone/email
+ok 10 - actual existing-user login uses Auth owner and never reassigns phone/email
+  ---
+  duration_ms: 2.427008
+  type: 'test'
+  ...
+# Subtest: actual login rejects wrong Auth phone before mutation
+ok 11 - actual login rejects wrong Auth phone before mutation
+  ---
+  duration_ms: 0.436352
+  type: 'test'
+  ...
+# Subtest: actual login fails closed on directory outage
+ok 12 - actual login fails closed on directory outage
+  ---
+  duration_ms: 0.428607
+  type: 'test'
+  ...
+# Subtest: actual login fails closed on Auth lookup failure
+ok 13 - actual login fails closed on Auth lookup failure
+  ---
+  duration_ms: 0.162233
+  type: 'test'
+  ...
+# Subtest: actual new-user login never inspects an alias-matched profile
+ok 14 - actual new-user login never inspects an alias-matched profile
+  ---
+  duration_ms: 0.346117
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 864.578268
+test_draining_denies_new_work (test_server_bounds.ServerBounds.test_draining_denies_new_work) ... ok
+test_duplicate_content_length (test_server_bounds.ServerBounds.test_duplicate_content_length) ... ok
+test_embed (test_server_bounds.ServerBounds.test_embed) ... ok
+test_full_pool_returns_busy_without_queue (test_server_bounds.ServerBounds.test_full_pool_returns_busy_without_queue) ... ok
+test_invalid_length (test_server_bounds.ServerBounds.test_invalid_length) ... ok
+test_invalid_pool_configuration (test_server_bounds.ServerBounds.test_invalid_pool_configuration) ... ok
+test_missing_length (test_server_bounds.ServerBounds.test_missing_length) ... ok
+test_no_face_error (test_server_bounds.ServerBounds.test_no_face_error) ... ok
+test_oversized_body_before_read (test_server_bounds.ServerBounds.test_oversized_body_before_read) ... ok
+test_partial_body_never_infers (test_server_bounds.ServerBounds.test_partial_body_never_infers) ... ok
+test_private_health_uses_loaded_fixture (test_server_bounds.ServerBounds.test_private_health_uses_loaded_fixture) ... ok
+test_slow_headers_have_absolute_deadline (test_server_bounds.ServerBounds.test_slow_headers_have_absolute_deadline) ... ok
+test_transfer_encoding_rejected (test_server_bounds.ServerBounds.test_transfer_encoding_rejected) ... ok
+test_unexpected_error_sanitized (test_server_bounds.ServerBounds.test_unexpected_error_sanitized) ... ok
+test_unknown_path (test_server_bounds.ServerBounds.test_unknown_path) ... ok
+test_zero_body (test_server_bounds.ServerBounds.test_zero_body) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.468s
+
+OK

@@ -1,0 +1,6 @@
+Selected pure-module TypeScript check receipt (supplements the empty raw compiler log in the ZIP)
+Version 5.8.3
+Command: tsc --noEmit --strict --target es2022 --module esnext --moduleResolution bundler --allowImportingTsExtensions --lib ES2023,DOM --skipLibCheck scripts/tests/edge/deno-env.fixture.d.ts supabase/functions/_shared/{bounded-fetch,verified-phone-identity,momo-receipt-evidence,momo-sms,whatsapp-cloud}.ts
+Exit code: 0
+Not full Deno Edge, Flutter or Android compilation.
+[3JTERM environment variable not set.

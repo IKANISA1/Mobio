@@ -1,0 +1,424 @@
+TAP version 13
+# Subtest: migration replaces a legacy worker without navigating clients or touching stored state
+ok 1 - migration replaces a legacy worker without navigating clients or touching stored state
+  ---
+  duration_ms: 27.576662
+  type: 'test'
+  ...
+# Subtest: offline Admin navigation gives accessible retry, then returns the live page on reconnect
+ok 2 - offline Admin navigation gives accessible retry, then returns the live page on reconnect
+  ---
+  duration_ms: 3.919183
+  type: 'test'
+  ...
+# Subtest: API calls, user data, non-GET requests and the website are never intercepted or cached
+ok 3 - API calls, user data, non-GET requests and the website are never intercepted or cached
+  ---
+  duration_ms: 0.778264
+  type: 'test'
+  ...
+# Subtest: mobio.ikanisa.com/admin-auth serves the Admin shell with no cached HTML
+ok 4 - mobio.ikanisa.com/admin-auth serves the Admin shell with no cached HTML
+  ---
+  duration_ms: 61.25387
+  type: 'test'
+  ...
+# Subtest: mobio.ikanisa.com/admin serves the Admin shell with no cached HTML
+ok 5 - mobio.ikanisa.com/admin serves the Admin shell with no cached HTML
+  ---
+  duration_ms: 1.792227
+  type: 'test'
+  ...
+# Subtest: mobio.ikanisa.com/admin/users serves the Admin shell with no cached HTML
+ok 6 - mobio.ikanisa.com/admin/users serves the Admin shell with no cached HTML
+  ---
+  duration_ms: 3.488821
+  type: 'test'
+  ...
+# Subtest: mobio.ikanisa.com/admin/reports?status=open serves the Admin shell with no cached HTML
+ok 7 - mobio.ikanisa.com/admin/reports?status=open serves the Admin shell with no cached HTML
+  ---
+  duration_ms: 1.466179
+  type: 'test'
+  ...
+# Subtest: mobioadmin.ikanisa.com/admin-auth serves the Admin shell with no cached HTML
+ok 8 - mobioadmin.ikanisa.com/admin-auth serves the Admin shell with no cached HTML
+  ---
+  duration_ms: 3.431908
+  type: 'test'
+  ...
+# Subtest: mobioadmin.ikanisa.com/admin serves the Admin shell with no cached HTML
+ok 9 - mobioadmin.ikanisa.com/admin serves the Admin shell with no cached HTML
+  ---
+  duration_ms: 1.284213
+  type: 'test'
+  ...
+# Subtest: mobioadmin.ikanisa.com/admin/users serves the Admin shell with no cached HTML
+ok 10 - mobioadmin.ikanisa.com/admin/users serves the Admin shell with no cached HTML
+  ---
+  duration_ms: 2.591089
+  type: 'test'
+  ...
+# Subtest: mobioadmin.ikanisa.com/admin/reports?status=open serves the Admin shell with no cached HTML
+ok 11 - mobioadmin.ikanisa.com/admin/reports?status=open serves the Admin shell with no cached HTML
+  ---
+  duration_ms: 0.613482
+  type: 'test'
+  ...
+# Subtest: Admin hostname root redirects while website root remains marketing
+ok 12 - Admin hostname root redirects while website root remains marketing
+  ---
+  duration_ms: 2.181183
+  type: 'test'
+  ...
+# Subtest: mutable JavaScript is not stored and preserves its content identity
+ok 13 - mutable JavaScript is not stored and preserves its content identity
+  ---
+  duration_ms: 4.394743
+  type: 'test'
+  ...
+# Subtest: missing or mispackaged Admin shells return recovery instead of marketing
+ok 14 - missing or mispackaged Admin shells return recovery instead of marketing
+  ---
+  duration_ms: 2.769327
+  type: 'test'
+  ...
+# Subtest: HEAD and unsupported methods preserve HTTP semantics
+ok 15 - HEAD and unsupported methods preserve HTTP semantics
+  ---
+  duration_ms: 0.792558
+  type: 'test'
+  ...
+# Subtest: conditional or range requests still validate a complete current Admin shell
+ok 16 - conditional or range requests still validate a complete current Admin shell
+  ---
+  duration_ms: 0.896948
+  type: 'test'
+  ...
+# Subtest: versioned files are immutable while stable release controls are never stored
+ok 17 - versioned files are immutable while stable release controls are never stored
+  ---
+  duration_ms: 0.916748
+  type: 'test'
+  ...
+# Subtest: missing or invalid versioned assets fail as 404 instead of a cached marketing page
+ok 18 - missing or invalid versioned assets fail as 404 instead of a cached marketing page
+  ---
+  duration_ms: 0.458364
+  type: 'test'
+  ...
+# Subtest: router destination /config-error receives its own Flutter shell
+ok 19 - router destination /config-error receives its own Flutter shell
+  ---
+  duration_ms: 0.461546
+  type: 'test'
+  ...
+# Subtest: router destination /login receives its own Flutter shell
+ok 20 - router destination /login receives its own Flutter shell
+  ---
+  duration_ms: 2.701112
+  type: 'test'
+  ...
+# Subtest: router destination /home receives its own Flutter shell
+ok 21 - router destination /home receives its own Flutter shell
+  ---
+  duration_ms: 0.383993
+  type: 'test'
+  ...
+# Subtest: router destination /admin receives its own Flutter shell
+ok 22 - router destination /admin receives its own Flutter shell
+  ---
+  duration_ms: 0.253771
+  type: 'test'
+  ...
+# Subtest: router destination /bookings receives its own Flutter shell
+ok 23 - router destination /bookings receives its own Flutter shell
+  ---
+  duration_ms: 0.314544
+  type: 'test'
+  ...
+# Subtest: router destination /admin/users receives its own Flutter shell
+ok 24 - router destination /admin/users receives its own Flutter shell
+  ---
+  duration_ms: 0.298262
+  type: 'test'
+  ...
+# Subtest: router destination /biopay receives its own Flutter shell
+ok 25 - router destination /biopay receives its own Flutter shell
+  ---
+  duration_ms: 0.24246
+  type: 'test'
+  ...
+# Subtest: router destination /admin/biopay receives its own Flutter shell
+ok 26 - router destination /admin/biopay receives its own Flutter shell
+  ---
+  duration_ms: 1.556729
+  type: 'test'
+  ...
+# Subtest: router destination /admin/finance receives its own Flutter shell
+ok 27 - router destination /admin/finance receives its own Flutter shell
+  ---
+  duration_ms: 0.351838
+  type: 'test'
+  ...
+# Subtest: router destination /profile receives its own Flutter shell
+ok 28 - router destination /profile receives its own Flutter shell
+  ---
+  duration_ms: 0.330472
+  type: 'test'
+  ...
+# Subtest: router destination /admin/profile receives its own Flutter shell
+ok 29 - router destination /admin/profile receives its own Flutter shell
+  ---
+  duration_ms: 1.762304
+  type: 'test'
+  ...
+# Subtest: router destination /nearby receives its own Flutter shell
+ok 30 - router destination /nearby receives its own Flutter shell
+  ---
+  duration_ms: 0.392717
+  type: 'test'
+  ...
+# Subtest: router destination /ev-chargers receives its own Flutter shell
+ok 31 - router destination /ev-chargers receives its own Flutter shell
+  ---
+  duration_ms: 0.240143
+  type: 'test'
+  ...
+# Subtest: router destination /notifications receives its own Flutter shell
+ok 32 - router destination /notifications receives its own Flutter shell
+  ---
+  duration_ms: 1.881575
+  type: 'test'
+  ...
+# Subtest: router destination /ledger receives its own Flutter shell
+ok 33 - router destination /ledger receives its own Flutter shell
+  ---
+  duration_ms: 0.332678
+  type: 'test'
+  ...
+# Subtest: router destination /schedule receives its own Flutter shell
+ok 34 - router destination /schedule receives its own Flutter shell
+  ---
+  duration_ms: 1.269745
+  type: 'test'
+  ...
+# Subtest: router destination /trip/:id/edit receives its own Flutter shell
+ok 35 - router destination /trip/:id/edit receives its own Flutter shell
+  ---
+  duration_ms: 4.494669
+  type: 'test'
+  ...
+# Subtest: router destination /trip/:id receives its own Flutter shell
+ok 36 - router destination /trip/:id receives its own Flutter shell
+  ---
+  duration_ms: 0.43272
+  type: 'test'
+  ...
+# Subtest: router destination /chat receives its own Flutter shell
+ok 37 - router destination /chat receives its own Flutter shell
+  ---
+  duration_ms: 0.271488
+  type: 'test'
+  ...
+# Subtest: router destination /edit-profile receives its own Flutter shell
+ok 38 - router destination /edit-profile receives its own Flutter shell
+  ---
+  duration_ms: 0.207808
+  type: 'test'
+  ...
+# Subtest: router destination /wallet receives its own Flutter shell
+ok 39 - router destination /wallet receives its own Flutter shell
+  ---
+  duration_ms: 0.180521
+  type: 'test'
+  ...
+# Subtest: router destination /mobio-plus receives its own Flutter shell
+ok 40 - router destination /mobio-plus receives its own Flutter shell
+  ---
+  duration_ms: 0.77774
+  type: 'test'
+  ...
+# Subtest: router destination /admin/ev-chargers receives its own Flutter shell
+ok 41 - router destination /admin/ev-chargers receives its own Flutter shell
+  ---
+  duration_ms: 0.549969
+  type: 'test'
+  ...
+# Subtest: router destination /profile/setup receives its own Flutter shell
+ok 42 - router destination /profile/setup receives its own Flutter shell
+  ---
+  duration_ms: 3.479035
+  type: 'test'
+  ...
+# Subtest: router destination /admin-auth receives its own Flutter shell
+ok 43 - router destination /admin-auth receives its own Flutter shell
+  ---
+  duration_ms: 0.441688
+  type: 'test'
+  ...
+# Subtest: router destination /admin/vehicle-types receives its own Flutter shell
+ok 44 - router destination /admin/vehicle-types receives its own Flutter shell
+  ---
+  duration_ms: 0.432665
+  type: 'test'
+  ...
+# Subtest: router destination /admin/agencies receives its own Flutter shell
+ok 45 - router destination /admin/agencies receives its own Flutter shell
+  ---
+  duration_ms: 1.767003
+  type: 'test'
+  ...
+# Subtest: router destination /admin/subscriptions receives its own Flutter shell
+ok 46 - router destination /admin/subscriptions receives its own Flutter shell
+  ---
+  duration_ms: 2.147104
+  type: 'test'
+  ...
+# Subtest: router destination /admin/trips receives its own Flutter shell
+ok 47 - router destination /admin/trips receives its own Flutter shell
+  ---
+  duration_ms: 0.226297
+  type: 'test'
+  ...
+# Subtest: router destination /admin/reports receives its own Flutter shell
+ok 48 - router destination /admin/reports receives its own Flutter shell
+  ---
+  duration_ms: 1.895163
+  type: 'test'
+  ...
+# Subtest: router destination /admin/health receives its own Flutter shell
+ok 49 - router destination /admin/health receives its own Flutter shell
+  ---
+  duration_ms: 0.57375
+  type: 'test'
+  ...
+# Subtest: router destination /admin/audit receives its own Flutter shell
+ok 50 - router destination /admin/audit receives its own Flutter shell
+  ---
+  duration_ms: 0.622815
+  type: 'test'
+  ...
+# Subtest: router destination /admin/broadcasts receives its own Flutter shell
+ok 51 - router destination /admin/broadcasts receives its own Flutter shell
+  ---
+  duration_ms: 0.99501
+  type: 'test'
+  ...
+# Subtest: router destination /admin/biopay/routes receives its own Flutter shell
+ok 52 - router destination /admin/biopay/routes receives its own Flutter shell
+  ---
+  duration_ms: 0.31864
+  type: 'test'
+  ...
+# Subtest: router destination /biopay/send receives its own Flutter shell
+ok 53 - router destination /biopay/send receives its own Flutter shell
+  ---
+  duration_ms: 0.21704
+  type: 'test'
+  ...
+# Subtest: router destination /profile/payment-methods receives its own Flutter shell
+ok 54 - router destination /profile/payment-methods receives its own Flutter shell
+  ---
+  duration_ms: 0.185341
+  type: 'test'
+  ...
+# Subtest: router destination /biopay/requests receives its own Flutter shell
+ok 55 - router destination /biopay/requests receives its own Flutter shell
+  ---
+  duration_ms: 0.169953
+  type: 'test'
+  ...
+# Subtest: router destination /biopay/activity receives its own Flutter shell
+ok 56 - router destination /biopay/activity receives its own Flutter shell
+  ---
+  duration_ms: 1.725374
+  type: 'test'
+  ...
+# Subtest: router destination /biopay/recents receives its own Flutter shell
+ok 57 - router destination /biopay/recents receives its own Flutter shell
+  ---
+  duration_ms: 0.22839
+  type: 'test'
+  ...
+# Subtest: router destination /biopay/templates receives its own Flutter shell
+ok 58 - router destination /biopay/templates receives its own Flutter shell
+  ---
+  duration_ms: 0.19318
+  type: 'test'
+  ...
+# Subtest: router destination /biopay/request-payment receives its own Flutter shell
+ok 59 - router destination /biopay/request-payment receives its own Flutter shell
+  ---
+  duration_ms: 0.465452
+  type: 'test'
+  ...
+# Subtest: router destination /biopay/pay/:token receives its own Flutter shell
+ok 60 - router destination /biopay/pay/:token receives its own Flutter shell
+  ---
+  duration_ms: 0.429707
+  type: 'test'
+  ...
+# Subtest: router destination /biopay/qr receives its own Flutter shell
+ok 61 - router destination /biopay/qr receives its own Flutter shell
+  ---
+  duration_ms: 0.359304
+  type: 'test'
+  ...
+# Subtest: router destination /biopay/scan receives its own Flutter shell
+ok 62 - router destination /biopay/scan receives its own Flutter shell
+  ---
+  duration_ms: 1.26201
+  type: 'test'
+  ...
+# Subtest: router destination /biopay/face-scan receives its own Flutter shell
+ok 63 - router destination /biopay/face-scan receives its own Flutter shell
+  ---
+  duration_ms: 0.504564
+  type: 'test'
+  ...
+# Subtest: router destination /biopay/enroll receives its own Flutter shell
+ok 64 - router destination /biopay/enroll receives its own Flutter shell
+  ---
+  duration_ms: 5.87119
+  type: 'test'
+  ...
+# Subtest: router destination /biopay/nfc receives its own Flutter shell
+ok 65 - router destination /biopay/nfc receives its own Flutter shell
+  ---
+  duration_ms: 0.579316
+  type: 'test'
+  ...
+# Subtest: router destination /biopay/nfc/write-card receives its own Flutter shell
+ok 66 - router destination /biopay/nfc/write-card receives its own Flutter shell
+  ---
+  duration_ms: 2.332049
+  type: 'test'
+  ...
+# Subtest: private query, cookies and authorization do not enter the static shell request
+ok 67 - private query, cookies and authorization do not enter the static shell request
+  ---
+  duration_ms: 0.687802
+  type: 'test'
+  ...
+# Subtest: oversized, wrongly typed and unavailable shells recover without a cached false success
+ok 68 - oversized, wrongly typed and unavailable shells recover without a cached false success
+  ---
+  duration_ms: 5.848302
+  type: 'test'
+  ...
+# Subtest: HEAD returns no body for a static asset and preserves status and validators
+ok 69 - HEAD returns no body for a static asset and preserves status and validators
+  ---
+  duration_ms: 0.469575
+  type: 'test'
+  ...
+1..69
+# tests 69
+# suites 0
+# pass 69
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 378.451361

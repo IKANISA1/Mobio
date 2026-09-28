@@ -2,6 +2,12 @@
 
 Folder: `120JIOTyeNX6nHaHPDqS3UgbaTWyJAE57`
 
+**Interim status:** This audit records the first coverage pass. The later
+[complete individual review](drive-complete-individual-review-2026-09-28.md)
+closed the 2,545 size-only byte gaps, inspected all 5,299 files and 4,825
+ZIP entries individually, and refined the XML evidence finding below. Use
+that report for current coverage and conclusions.
+
 ## Direct answer
 
 The earlier import was **not a full independent semantic review of every Drive
@@ -84,25 +90,27 @@ tests; they do not establish a deployed or accepted release.
 
 ## Evidence defects found
 
-The technical pass found **67 invalid historical QA evidence files** among
-previously tracked files that matched Drive SHA-256 on 27 September:
+The first strict parser pass flagged **67 noncanonical historical QA evidence
+files** among previously tracked files that matched Drive SHA-256 on 27
+September. Later content inspection separated them as follows:
 
 - Seven PNG paths fail image validation: three are zero-byte files and four
   are truncated images.
-- Sixty XML UI dumps fail XML parsing: four are zero-byte files and 56 have
-  material after the document element.
+- Four XML UI dumps are zero-byte files. Another 56 contain a valid Android
+  `<hierarchy>` followed by the dump command's status footer; their hierarchy
+  is mechanically recoverable even though the stored file is noncanonical XML.
 
-The exact paths and check results are in the 5,299-row ledger. They must not
-be counted as readable device or visual acceptance evidence. This follow-up
-does not rewrite historical captures or infer what they would have shown.
+The exact paths and first-pass results are in the 5,299-row ledger. The later
+individual ledger records the recovered XML structure. Eleven files are
+unreadable or empty; none of these historical captures alone establishes
+device or visual acceptance. The stored bytes were not rewritten.
 
 ## Remaining conclusion
 
-The import covers the newly uploaded distinct source and package lineages,
-and every listed Drive path now has a recorded technical disposition. **It
-still does not meet a literal claim that every Drive file and ZIP entry was
-independently understood and approved.** The 2,545 size-only Drive paths need
-fresh Drive-byte comparison to close byte parity, and semantic decisions for
-source, vendor, binaries and evidence need the appropriate owner and test
-context. The app's 157 visual reference tests still fail; platform, database,
-provider and store acceptance remain open as described in the import report.
+At this interim point the import covered the newly uploaded distinct source
+and package lineages but left 2,545 Drive paths at size-only parity. The
+later individual review fetched and inspected those bytes. External evidence,
+owner decisions and test context are still needed to certify product
+behavior or release acceptance. The app's 157 visual reference tests and the
+platform, database, provider and store gates remain open as described in the
+import report.

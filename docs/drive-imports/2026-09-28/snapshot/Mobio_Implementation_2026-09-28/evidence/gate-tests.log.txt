@@ -1,0 +1,34 @@
+test_docker_digest (test_production_gates.ActionPinTests.test_docker_digest) ... ok
+test_docker_tag_rejected (test_production_gates.ActionPinTests.test_docker_tag_rejected) ... ok
+test_dollar_step_path_rejected (test_production_gates.ActionPinTests.test_dollar_step_path_rejected) ... ok
+test_duplicate_keys_rejected (test_production_gates.ActionPinTests.test_duplicate_keys_rejected) ... ok
+test_dynamic_reference_rejected (test_production_gates.ActionPinTests.test_dynamic_reference_rejected) ... ok
+test_empty_workflow_directory_rejected (test_production_gates.ActionPinTests.test_empty_workflow_directory_rejected) ... ok
+test_flow_style_is_checked (test_production_gates.ActionPinTests.test_flow_style_is_checked) ... ok
+test_github_ancestor_symlink_rejected (test_production_gates.ActionPinTests.test_github_ancestor_symlink_rejected) ... ok
+test_local_action_directory (test_production_gates.ActionPinTests.test_local_action_directory) ... ok
+test_local_action_without_metadata_rejected (test_production_gates.ActionPinTests.test_local_action_without_metadata_rejected) ... ok
+test_local_dollar_workflow (test_production_gates.ActionPinTests.test_local_dollar_workflow) ... ok
+test_local_reusable_workflow (test_production_gates.ActionPinTests.test_local_reusable_workflow) ... ok
+test_local_symlink_rejected (test_production_gates.ActionPinTests.test_local_symlink_rejected) ... ok
+test_malformed_yaml_rejected (test_production_gates.ActionPinTests.test_malformed_yaml_rejected) ... ok
+test_missing_local_workflow_rejected (test_production_gates.ActionPinTests.test_missing_local_workflow_rejected) ... ok
+test_non_string_reference_rejected (test_production_gates.ActionPinTests.test_non_string_reference_rejected) ... ok
+test_pinned_action (test_production_gates.ActionPinTests.test_pinned_action) ... ok
+test_quoted_pinned_action (test_production_gates.ActionPinTests.test_quoted_pinned_action) ... ok
+test_remote_workflow_path_required (test_production_gates.ActionPinTests.test_remote_workflow_path_required) ... ok
+test_run_block_does_not_create_false_action (test_production_gates.ActionPinTests.test_run_block_does_not_create_false_action) ... ok
+test_short_sha_rejected (test_production_gates.ActionPinTests.test_short_sha_rejected) ... ok
+test_tag_rejected (test_production_gates.ActionPinTests.test_tag_rejected) ... ok
+test_traversal_rejected (test_production_gates.ActionPinTests.test_traversal_rejected) ... ok
+test_both_disabled_rejected (test_production_gates.IntegratedGateTests.test_both_disabled_rejected) ... ok
+test_disabled_invalid_and_empty_rejected_before_flutter (test_production_gates.IntegratedGateTests.test_disabled_invalid_and_empty_rejected_before_flutter) ... ok
+test_failing_flutter_blocks (test_production_gates.IntegratedGateTests.test_failing_flutter_blocks) ... ok
+test_incomplete_child_blocks (test_production_gates.IntegratedGateTests.test_incomplete_child_blocks) ... ok
+test_missing_tool_blocks (test_production_gates.IntegratedGateTests.test_missing_tool_blocks) ... ok
+test_required_fixture_checks_pass (test_production_gates.IntegratedGateTests.test_required_fixture_checks_pass) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 18.696s
+
+OK

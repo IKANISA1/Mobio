@@ -1,0 +1,21 @@
+PASS: live interval
+PASS: wall expiry exact boundary
+PASS: wall clock rollback
+PASS: monotonic expiry despite wall delay
+PASS: monotonic reset
+PASS: process death denies persisted payload
+PASS: disabled
+PASS: missing payload
+PASS: oversized UTF8 payload
+PASS: missing expiry
+PASS: malformed expiry
+PASS: expired preparation
+PASS: duration capped
+PASS: deadline overflow denied
+PASS: exact SELECT with Le
+PASS: exact SELECT without Le
+PASS: embedded AID not SELECT
+PASS: trailing bytes rejected
+PASS: wrong length byte rejected
+PASS: null SELECT rejected
+20 JVM policy scenarios passed. No Android framework, NFC hardware or signed-app tests ran.

@@ -1,0 +1,12 @@
+test_code_change_gets_new_urls_and_retains_previous_bytes (test_version_assets.ReleaseAssetsTest.test_code_change_gets_new_urls_and_retains_previous_bytes) ... ok
+test_consumer_shell_and_manifest_share_the_release_cohort (test_version_assets.ReleaseAssetsTest.test_consumer_shell_and_manifest_share_the_release_cohort) ... ok
+test_previous_inventory_cannot_escape_bundle (test_version_assets.ReleaseAssetsTest.test_previous_inventory_cannot_escape_bundle) ... ok
+test_public_asset_cohort_preserves_routes_and_manifest_identity (test_version_assets.ReleaseAssetsTest.test_public_asset_cohort_preserves_routes_and_manifest_identity) ... ok
+test_tampered_previous_asset_fails_release (test_version_assets.ReleaseAssetsTest.test_tampered_previous_asset_fails_release) ... ok
+test_unchanged_input_produces_same_asset_version (test_version_assets.ReleaseAssetsTest.test_unchanged_input_produces_same_asset_version) ... ok
+test_unrecognized_loader_requires_review (test_version_assets.ReleaseAssetsTest.test_unrecognized_loader_requires_review) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.024s
+
+OK

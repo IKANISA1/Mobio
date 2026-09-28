@@ -1,0 +1,4 @@
+Preparing worktree (detached HEAD 704512b)
+Updating files:  90% (1875/2076)Updating files:  91% (1890/2076)Updating files:  92% (1910/2076)Updating files:  93% (1931/2076)Updating files:  94% (1952/2076)Updating files:  95% (1973/2076)Updating files:  96% (1993/2076)Updating files:  97% (2014/2076)Updating files:  98% (2035/2076)Updating files:  99% (2056/2076)Updating files: 100% (2076/2076)Updating files: 100% (2076/2076), done.
+HEAD is now at 704512b Baseline reconstructed from supplied Drive Git index; not a remote commit
+PASS: patch applies to reconstructed baseline; all 46 changed-file hashes match. This is not proof of compatibility with a different live branch.

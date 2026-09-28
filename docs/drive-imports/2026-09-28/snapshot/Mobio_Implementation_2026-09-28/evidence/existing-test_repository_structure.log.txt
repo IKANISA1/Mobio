@@ -1,0 +1,10 @@
+test_conditional_import_targets_are_checked (test_repository_structure.ArchitectureBoundaryTest.test_conditional_import_targets_are_checked) ... ok
+test_core_cannot_depend_on_a_feature (test_repository_structure.ArchitectureBoundaryTest.test_core_cannot_depend_on_a_feature) ... ok
+test_data_cannot_import_a_screen (test_repository_structure.ArchitectureBoundaryTest.test_data_cannot_import_a_screen) ... ok
+test_domain_cannot_depend_on_platform_plugins (test_repository_structure.ArchitectureBoundaryTest.test_domain_cannot_depend_on_platform_plugins) ... ok
+test_feature_can_use_shared_contracts (test_repository_structure.ArchitectureBoundaryTest.test_feature_can_use_shared_contracts) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.000s
+
+OK

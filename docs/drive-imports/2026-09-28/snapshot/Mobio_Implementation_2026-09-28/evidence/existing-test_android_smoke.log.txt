@@ -1,0 +1,4 @@
+test_boot_qemu_property_cannot_pass_physical_gate (test_android_smoke.AndroidSmokeTest.test_boot_qemu_property_cannot_pass_physical_gate) ... ok
+test_emulator_opt_in_is_labeled_as_nonphysical (test_android_smoke.AndroidSmokeTest.test_emulator_opt_in_is_labeled_as_nonphysical) ... ok
+test_emulator_serial_cannot_pass_physical_gate (test_android_smoke.AndroidSmokeTest.test_emulator_serial_cannot_pass_physical_gate) ... ok
+test_physical_device_passes_default_gate (test_android_smoke.AndroidSmokeTest.test_physical_device_passes_default_gate) ... 

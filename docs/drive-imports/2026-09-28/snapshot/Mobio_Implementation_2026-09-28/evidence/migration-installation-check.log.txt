@@ -1,0 +1,24 @@
+INCOMPLETE: reviewed bodies must be generated into ordered migrations using --write; no SQL applied
+{
+  "database_applied": false,
+  "migrations": [
+    {
+      "file": "01_booking_write_authority.sql",
+      "migration_name": "mobio_hardening_booking_write_authority",
+      "sha256": "647f997ea8ec787274b784ed5c0c201ca19f0c05c19ad8590d47b498ad213588",
+      "installed": null
+    },
+    {
+      "file": "02_verified_phone_authority.sql",
+      "migration_name": "mobio_hardening_verified_phone_authority",
+      "sha256": "38048cdcaa822c25faa35b6b4421305fb3a1765e98fd570ff66fa527561d1be4",
+      "installed": null
+    },
+    {
+      "file": "03_strict_receipt_allocation.sql",
+      "migration_name": "mobio_hardening_strict_receipt_allocation",
+      "sha256": "5cfdb8ee79eae3071de0c6f8c6330cdd229c211f952ac838f4a99ff3fefffa24",
+      "installed": null
+    }
+  ]
+}

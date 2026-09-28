@@ -1,0 +1,13 @@
+test_conflicting_declarations_rejected (test_play_version_evidence.VersionEvidenceTests.test_conflicting_declarations_rejected) ... ok
+test_exact (test_play_version_evidence.VersionEvidenceTests.test_exact) ... ok
+test_invalid_expected_rejected (test_play_version_evidence.VersionEvidenceTests.test_invalid_expected_rejected) ... ok
+test_markdown (test_play_version_evidence.VersionEvidenceTests.test_markdown) ... ok
+test_missing_rejected (test_play_version_evidence.VersionEvidenceTests.test_missing_rejected) ... ok
+test_prefix_rejected (test_play_version_evidence.VersionEvidenceTests.test_prefix_rejected) ... ok
+test_suffix_rejected (test_play_version_evidence.VersionEvidenceTests.test_suffix_rejected) ... ok
+test_unmatched_quote_rejected (test_play_version_evidence.VersionEvidenceTests.test_unmatched_quote_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.000s
+
+OK

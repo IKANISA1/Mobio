@@ -6,14 +6,14 @@ Local branch: `codex/mobio-drive-import-20260928`
 
 Status: **source imported for review; production release remains blocked**.
 
-**Coverage correction:** This work inventories every Drive path and reads every
-new ZIP entry for integrity, but it is not a semantic, file-by-file review of
-all 5,299 Drive files or all 4,825 ZIP entries. The existing-path comparison
-below is partly size-only. The package analysis reviews the distinct increment
-lineages and their integrated source. Do not cite this report as proof that each
-Drive file was independently understood, approved, or accepted. The
-[file-by-file coverage audit](drive-file-by-file-coverage-audit-2026-09-28.md)
-records every path's technical status and the remaining gaps.
+**Coverage correction:** At the initial import, the existing-path comparison
+below was partly size-only and the ZIP review established entry integrity, not
+individual semantic approval. The later
+[individual file and ZIP-entry review](drive-complete-individual-review-2026-09-28.md)
+freshly checks every raw Drive file byte, reads all native Doc exports,
+inspects every file and ZIP entry, and records the remaining content and
+release-evidence limits. Neither report is proof that every code behavior or
+uploader assertion was independently approved or accepted.
 
 The Drive root currently advertises `anyone` writer access. Local download hashes and package checks establish the bytes reviewed here; they do not establish who authored or approved an upload. Restricting Drive write access and confirming package authority remains a provenance gate.
 
@@ -40,7 +40,13 @@ The 621 selected Drive files were downloaded and preserved under [docs/drive-imp
 | Workbooks | 15 | Retain backlog, task status, and review criteria. |
 | Native Google Docs | 3 | Exported to `.docx` because Drive native files have no byte-for-byte local representation. |
 
-**595 snapshot files are eligible for Git.** The remaining 26 are historical `.log` files that exist in the local snapshot but are ignored by repository policy for generated test output. Their local paths and hashes remain in the per-file ledger. Importing a historical copy into the snapshot does not make it current application code.
+The initial import committed **595 snapshot files**. The later individual
+review checked the **26 historical `.log` files** that the generated-output
+ignore rule had left untracked and added exact-byte `.log.txt` archival copies
+for them. The original `.log` paths remain locally available and ignored;
+**all 621 imported file contents now have a tracked representation**. Both
+paths and hashes are in the per-file ledger. Importing a historical copy into
+the snapshot does not make it current application code.
 
 The Drive packages also contained cumulative, applicable changes. I applied the hardening 03 patch and increment 04–09 appliers in order after check-only validation. The active-source ledger, [drive-active-source-2026-09-28.tsv](drive-active-source-2026-09-28.tsv), identifies all **225 active paths** touched by that package lineage: **151 added and 74 updated** against the original checkout, with the package hash, current hash, purpose, and whether local correctness fixes changed the package bytes. **209 still match the latest package exactly; 16 have deliberate local corrections.** These paths cover durable institutional SMS intake, admin and wallet controls, chat delivery, notification outbox, secure session storage, privacy requests, platform bindings, migration preparation, and focused tests. The feature runbooks remain under `docs/production-readiness/`.
 
