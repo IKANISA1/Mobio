@@ -1,10 +1,19 @@
-# Mobio Drive deep review and local import — 28 September 2026
+# Mobio Drive inventory, package review, and local import — 28 September 2026
 
 Source folder: `120JIOTyeNX6nHaHPDqS3UgbaTWyJAE57`
 
 Local branch: `codex/mobio-drive-import-20260928`
 
 Status: **source imported for review; production release remains blocked**.
+
+**Coverage correction:** This work inventories every Drive path and reads every
+new ZIP entry for integrity, but it is not a semantic, file-by-file review of
+all 5,299 Drive files or all 4,825 ZIP entries. The existing-path comparison
+below is partly size-only. The package analysis reviews the distinct increment
+lineages and their integrated source. Do not cite this report as proof that each
+Drive file was independently understood, approved, or accepted. The
+[file-by-file coverage audit](drive-file-by-file-coverage-audit-2026-09-28.md)
+records every path's technical status and the remaining gaps.
 
 The Drive root currently advertises `anyone` writer access. Local download hashes and package checks establish the bytes reviewed here; they do not establish who authored or approved an upload. Restricting Drive write access and confirming package authority remains a provenance gate.
 
