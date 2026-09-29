@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 SHA = 'a' * 40
@@ -176,6 +177,35 @@ class IntegratedGateTests(unittest.TestCase):
         result = self.run_script()
         self.assertNotEqual(result.returncode, 0)
         self.assertNotIn('PASS:', result.stdout)
+
+class CiRequiredGateTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.workflow = yaml.safe_load((ROOT / '.github/workflows/ci.yml').read_text())
+
+    def test_signed_android_build_is_unavailable_without_signing_material(self):
+        steps = self.workflow['jobs']['flutter']['steps']
+        step = next(step for step in steps if step.get('name') == 'Build AAB (release)')
+        with tempfile.TemporaryDirectory() as directory:
+            environment = dict(os.environ)
+            environment.update({
+                'SUPABASE_URL': 'https://fixture.invalid',
+                'SUPABASE_ANON_KEY': 'fixture-public-anon',
+                'PRIVACY_POLICY_URL': 'https://fixture.invalid/privacy',
+                'ACCOUNT_DELETION_URL': 'https://fixture.invalid/delete',
+                'KEYSTORE_BASE64': '', 'KEY_ALIAS': '',
+                'KEY_PASSWORD': '', 'STORE_PASSWORD': '',
+            })
+            result = subprocess.run(['bash', '-e', '-o', 'pipefail', '-c', step['run']],
+                                    cwd=directory, env=environment, text=True,
+                                    capture_output=True, timeout=10, check=False)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn('UNAVAILABLE: signed release AAB', result.stderr)
+
+    def test_backend_ci_requires_linked_security_checks(self):
+        steps = self.workflow['jobs']['backend']['steps']
+        step = next(step for step in steps if step.get('name') == 'Verify backend contract')
+        self.assertEqual(step['env']['REQUIRE_LINKED_SUPABASE'], 'true')
 
 if __name__ == '__main__':
     unittest.main()
