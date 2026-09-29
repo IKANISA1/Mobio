@@ -1,5 +1,6 @@
 """Regression tests for shipped release scripts; no mobile/device claims."""
 import os
+import json
 from pathlib import Path
 import shutil
 import subprocess
@@ -206,6 +207,104 @@ class CiRequiredGateTests(unittest.TestCase):
         steps = self.workflow['jobs']['backend']['steps']
         step = next(step for step in steps if step.get('name') == 'Verify backend contract')
         self.assertEqual(step['env']['REQUIRE_LINKED_SUPABASE'], 'true')
+
+class ReleaseCandidateGateTests(unittest.TestCase):
+    def test_fastlane_has_no_unguarded_play_lane(self):
+        fastfile = (ROOT / 'android/fastlane/Fastfile').read_text()
+        lanes = {}
+        for name in ('build_and_deploy', 'deploy', 'metadata', 'upload_aab',
+                     'promote_to_production'):
+            start = fastfile.index('  lane :' + name + ' do')
+            next_lane = fastfile.find('  lane :', start + 1)
+            lanes[name] = fastfile[start:next_lane if next_lane >= 0 else len(fastfile)]
+        for name in ('build_and_deploy', 'metadata', 'promote_to_production'):
+            self.assertNotIn('upload_to_play_store(', lanes[name])
+            self.assertIn('UI.user_error!', lanes[name])
+        for name in ('deploy', 'upload_aab'):
+            self.assertIn('require_candidate_approval!(', lanes[name])
+            self.assertLess(lanes[name].index('require_candidate_approval!('),
+                            lanes[name].index('upload_to_play_store('))
+            self.assertIn('skip_upload_metadata: true', lanes[name])
+            self.assertIn('skip_upload_images: true', lanes[name])
+            self.assertIn('skip_upload_screenshots: true', lanes[name])
+        self.assertEqual(fastfile.count('upload_to_play_store('), 2)
+
+    def test_workflows_publish_candidates_only(self):
+        for name in ('release.yml', 'android-release.yml'):
+            with self.subTest(workflow=name):
+                workflow = yaml.safe_load((ROOT / '.github/workflows' / name).read_text())
+                self.assertEqual(workflow['permissions']['contents'], 'read')
+                for job in workflow['jobs'].values():
+                    steps = job['steps']
+                    names = [step.get('name', '') for step in steps]
+                    if 'Record Android release candidate' not in names:
+                        continue
+                    build_index = next(i for i, step in enumerate(steps)
+                                       if step.get('run', '').endswith('build_android_release.sh appbundle'))
+                    record_index = names.index('Record Android release candidate')
+                    upload_index = names.index('Upload candidate and AAB artifacts')
+                    self.assertLess(build_index, record_index)
+                    self.assertLess(record_index, upload_index)
+                    self.assertIn('android_candidate_manifest.py create', steps[record_index]['run'])
+                    self.assertIn('build/release-candidate.json', steps[upload_index]['with']['path'])
+                    self.assertIn('build/android-release-build-inputs.json', steps[upload_index]['with']['path'])
+                    self.assertEqual(steps[build_index]['env']['MOBIO_BUILD_ENVIRONMENT'], 'Mobio')
+                    self.assertNotIn('PLAY_STORE_SERVICE_ACCOUNT_JSON',
+                                     steps[names.index('Validate release configuration'
+                                                     if name == 'release.yml' else
+                                                     'Validate Android release configuration')]['env'])
+                    for step in steps:
+                        self.assertNotIn('upload-google-play', step.get('uses', ''))
+                        self.assertNotIn('action-gh-release', step.get('uses', ''))
+
+    def test_play_upload_requires_approval_before_credentials_or_network(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            aab = root / 'fixture.aab'
+            aab.write_bytes(b'not a real bundle')
+            bin_dir = root / 'bin'
+            bin_dir.mkdir()
+            marker = root / 'external-called'
+            for command in ('fastlane', 'curl', 'gcloud'):
+                stub = bin_dir / command
+                stub.write_text('#!/bin/sh\ntouch "' + str(marker) + '"\nexit 99\n')
+                stub.chmod(0o755)
+            env = dict(os.environ)
+            env.update(ANDROID_RELEASE_AAB=str(aab),
+                       PLAY_STORE_SERVICE_ACCOUNT_JSON=json.dumps({
+                           'type': 'service_' + 'account',
+                           'client_email': 'fixture@example.invalid',
+                       }),
+                       PATH=str(bin_dir) + os.pathsep + env['PATH'])
+            env.pop('MOBIO_ANDROID_CANDIDATE_MANIFEST', None)
+            env.pop('MOBIO_ANDROID_RELEASE_APPROVAL', None)
+            result = subprocess.run(['bash', str(ROOT / 'scripts/release/upload_google_play_release.sh')],
+                                    cwd=ROOT, env=env, text=True, capture_output=True,
+                                    timeout=10, check=False)
+            self.assertEqual(result.returncode, 2, result.stderr)
+            self.assertIn('NO-GO: candidate manifest', result.stderr)
+            self.assertFalse(marker.exists())
+
+    def test_signing_configuration_does_not_require_play_upload_credential(self):
+        env = dict(os.environ)
+        env.update(SUPABASE_URL='https://fixture.invalid', SUPABASE_ANON_KEY='fixture-public',
+                   PRIVACY_POLICY_URL='https://fixture.invalid/privacy',
+                   ACCOUNT_DELETION_URL='https://fixture.invalid/delete',
+                   KEYSTORE_BASE64='fixture', KEY_ALIAS='fixture',
+                   KEY_PASSWORD='fixture', STORE_PASSWORD='fixture',
+                   REQUIRE_ANDROID_SIGNING='true', REQUIRE_IOS_FIREBASE='false',
+                   REQUIRE_IOS_NATIVE='false', REQUIRE_SECRET_HISTORY_CLEAN='false')
+        env.pop('PLAY_STORE_SERVICE_ACCOUNT_JSON', None)
+        env.pop('REQUIRE_PLAY_UPLOAD_CREDENTIAL', None)
+        command = ['bash', str(ROOT / 'scripts/ci/verify_release_config.sh')]
+        candidate = subprocess.run(command, cwd=ROOT, env=env, text=True,
+                                   capture_output=True, timeout=10, check=False)
+        self.assertEqual(candidate.returncode, 0, candidate.stderr)
+        env['REQUIRE_PLAY_UPLOAD_CREDENTIAL'] = 'true'
+        upload = subprocess.run(command, cwd=ROOT, env=env, text=True,
+                                capture_output=True, timeout=10, check=False)
+        self.assertNotEqual(upload.returncode, 0)
+        self.assertIn('PLAY_STORE_SERVICE_ACCOUNT_JSON', upload.stderr)
 
 if __name__ == '__main__':
     unittest.main()

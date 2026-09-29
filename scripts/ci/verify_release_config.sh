@@ -47,6 +47,9 @@ if [[ "${REQUIRE_ANDROID_SIGNING:-false}" == "true" ]]; then
   require_var KEY_ALIAS
   require_var KEY_PASSWORD
   require_var STORE_PASSWORD
+fi
+
+if [[ "${REQUIRE_PLAY_UPLOAD_CREDENTIAL:-false}" == "true" ]]; then
   require_var PLAY_STORE_SERVICE_ACCOUNT_JSON
 
   play_release_track="${PLAY_RELEASE_TRACK:-internal}"

@@ -151,6 +151,7 @@ run_gate \
   "Release config and signing gates" \
   env \
     REQUIRE_ANDROID_SIGNING=true \
+    REQUIRE_PLAY_UPLOAD_CREDENTIAL=true \
     REQUIRE_SECRET_HISTORY_CLEAN=true \
     REQUIRE_IOS_FIREBASE="$([[ "$release_target" == "android" ]] && echo false || echo true)" \
     REQUIRE_IOS_NATIVE="$([[ "$release_target" == "android" ]] && echo false || echo true)" \

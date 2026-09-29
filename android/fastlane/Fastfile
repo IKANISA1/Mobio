@@ -29,61 +29,62 @@ def play_release_status
   status
 end
 
+def require_candidate_approval!(track, status)
+  root = File.expand_path("../..", __dir__)
+  candidate = ENV["MOBIO_ANDROID_CANDIDATE_MANIFEST"]
+  approval = ENV["MOBIO_ANDROID_RELEASE_APPROVAL"]
+  if candidate.to_s.empty? || approval.to_s.empty?
+    UI.user_error!("A candidate manifest and separate release approval are required before Google Play access")
+  end
+
+  aab = ENV.fetch("ANDROID_RELEASE_AAB", "build/app/outputs/bundle/release/app-release.aab")
+  verified = system(
+    "python3", File.join(root, "scripts/release/android_candidate_manifest.py"),
+    "--root", root, "verify", "--aab", File.expand_path(aab, root),
+    "--candidate", File.expand_path(candidate, root),
+    "--approval", File.expand_path(approval, root),
+    "--track", track, "--release-status", status, "--package", "rw.mobi.app"
+  )
+  UI.user_error!("Artifact-bound release approval failed") unless verified
+  File.expand_path(aab, root)
+end
+
 platform :android do
-  desc "Build AAB with Supabase env vars from .env, then upload to Google Play (internal draft by default)"
+  desc "Retired: build a release candidate, review it, then use deploy"
   lane :build_and_deploy do
-    # Build via the release script — it sources .env and hard-fails if
-    # SUPABASE_URL, SUPABASE_ANON_KEY, or PRIVACY_POLICY_URL are missing.
-    sh("cd ../.. && ./scripts/release/build_android_release.sh appbundle")
-
-    upload_to_play_store(
-      json_key_data: play_json_key_data,
-      track: play_track,
-      aab: "../build/app/outputs/bundle/release/app-release.aab",
-      mapping: "../build/app/outputs/mapping/release/mapping.txt",
-      skip_upload_apk: true,
-      skip_upload_metadata: false,
-      skip_upload_images: false,
-      skip_upload_screenshots: false,
-      release_status: play_release_status,
-    )
+    UI.user_error!("Build-and-upload is disabled; create a candidate and obtain separate approval")
   end
 
-  desc "Upload AAB, screenshots, metadata, and mapping to Google Play (internal draft by default)"
+  desc "Upload an approved AAB and mapping to Google Play"
   lane :deploy do
+    target_track = play_track
+    target_status = play_release_status
+    approved_aab = require_candidate_approval!(target_track, target_status)
     upload_to_play_store(
       json_key_data: play_json_key_data,
-      track: play_track,
-      aab: "../build/app/outputs/bundle/release/app-release.aab",
+      track: target_track,
+      aab: approved_aab,
       mapping: "../build/app/outputs/mapping/release/mapping.txt",
       skip_upload_apk: true,
-      skip_upload_metadata: false,
-      skip_upload_images: false,
-      skip_upload_screenshots: false,
-      release_status: play_release_status,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      release_status: target_status,
     )
   end
 
-  desc "Upload metadata and screenshots only (no binary)"
+  desc "Retired: metadata changes require a separate governed release path"
   lane :metadata do
-    upload_to_play_store(
-      json_key_data: play_json_key_data,
-      track: play_track,
-      skip_upload_aab: true,
-      skip_upload_apk: true,
-      skip_upload_metadata: false,
-      skip_upload_images: false,
-      skip_upload_screenshots: false,
-      release_status: play_release_status,
-    )
+    UI.user_error!("Metadata-only upload is disabled pending a separate approval path")
   end
 
   desc "Upload AAB only to internal track"
   lane :upload_aab do
+    approved_aab = require_candidate_approval!("internal", "draft")
     upload_to_play_store(
       json_key_data: play_json_key_data,
       track: "internal",
-      aab: "../build/app/outputs/bundle/release/app-release.aab",
+      aab: approved_aab,
       mapping: "../build/app/outputs/mapping/release/mapping.txt",
       skip_upload_apk: true,
       skip_upload_metadata: true,
@@ -93,19 +94,8 @@ platform :android do
     )
   end
 
-  desc "Promote internal to production"
+  desc "Retired: promote by uploading the approved AAB through deploy"
   lane :promote_to_production do
-    require_production_approval!
-
-    upload_to_play_store(
-      json_key_data: play_json_key_data,
-      track: "internal",
-      track_promote_to: "production",
-      skip_upload_aab: true,
-      skip_upload_apk: true,
-      skip_upload_metadata: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
-    )
+    UI.user_error!("Direct promotion is disabled; use deploy with production-bound approval")
   end
 end

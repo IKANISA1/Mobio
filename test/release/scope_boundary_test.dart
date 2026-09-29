@@ -693,7 +693,7 @@ void main() {
       expect(profileScreen, contains('Request account deletion'));
     });
 
-    test('release pipeline defaults to internal Play validation', () {
+    test('release pipeline builds a candidate before governed Play upload', () {
       final releaseWorkflow = File(
         '.github/workflows/release.yml',
       ).readAsStringSync();
@@ -728,7 +728,10 @@ void main() {
             (file) => file.path.endsWith('.yml') || file.path.endsWith('.yaml'),
           );
 
-      expect(releaseWorkflow, contains("PLAY_RELEASE_TRACK || 'internal'"));
+      expect(releaseWorkflow, contains('android_candidate_manifest.py create'));
+      expect(releaseWorkflow, contains('build/release-candidate.json'));
+      expect(releaseWorkflow, isNot(contains('upload-google-play@')));
+      expect(releaseWorkflow, isNot(contains('action-gh-release@')));
       expect(releaseWorkflow, contains('release_target:'));
       expect(releaseWorkflow, contains('default: android'));
       expect(releaseWorkflow, contains("inputs.release_target != 'android'"));

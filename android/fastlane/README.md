@@ -21,7 +21,8 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 [bundle exec] fastlane android build_and_deploy
 ```
 
-Build AAB with Supabase env vars from .env, then upload to Google Play (internal draft by default)
+Disabled. Build a candidate with `scripts/release/build_android_release.sh`
+and obtain a separate artifact-bound approval before upload.
 
 ### android deploy
 
@@ -29,7 +30,8 @@ Build AAB with Supabase env vars from .env, then upload to Google Play (internal
 [bundle exec] fastlane android deploy
 ```
 
-Upload AAB, screenshots, metadata, and mapping to Google Play (internal draft by default)
+Upload a separately approved AAB and mapping. Requires the candidate,
+receipt bundle and reviewer key documented in `docs/release/README.md`.
 
 ### android metadata
 
@@ -37,7 +39,7 @@ Upload AAB, screenshots, metadata, and mapping to Google Play (internal draft by
 [bundle exec] fastlane android metadata
 ```
 
-Upload metadata and screenshots only (no binary)
+Disabled pending a separate metadata approval path.
 
 ### android upload_aab
 
@@ -45,7 +47,7 @@ Upload metadata and screenshots only (no binary)
 [bundle exec] fastlane android upload_aab
 ```
 
-Upload AAB only to internal track
+Upload a separately approved AAB to the internal draft track.
 
 ### android promote_to_production
 
@@ -53,7 +55,7 @@ Upload AAB only to internal track
 [bundle exec] fastlane android promote_to_production
 ```
 
-Promote internal to production
+Disabled. Use `deploy` with a production-bound approval for the exact AAB.
 
 ----
 

@@ -2,6 +2,12 @@
 
 Last updated: 2026-06-15
 
+> Historical June 2026 evidence. The current Android promotion process is
+> [candidate and separate approval](README.md#android-candidate-and-play-promotion)
+> as of 2026-09-30. The version, target SDK, linked backend, provider, device,
+> credential and Play upload claims below are dated observations, not acceptance
+> for a new candidate. The GitHub workflows now build candidate artifacts only.
+
 ## Current Android Readiness
 
 - Package name: `rw.mobi.app`.
@@ -12,7 +18,7 @@ Last updated: 2026-06-15
   `PLAY_STORE_SERVICE_ACCOUNT_JSON`; do not commit JSON credentials. Release
   config validation now checks that this secret is valid service-account JSON
   before upload.
-- Play uploads default to the internal testing track through GitHub Actions and
+- Approved manual Play uploads default to the internal testing track through
   Fastlane. Set `PLAY_RELEASE_TRACK=production` only after go/no-go approval,
   and set `PLAY_PRODUCTION_APPROVED=true` for production-track validation.
 - A signed local release AAB was built on 2026-06-15 at

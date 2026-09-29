@@ -11,6 +11,78 @@ Release source of truth currently lives in:
 
 Every release must run Flutter verification, backend verification, migration/lint checks, signing validation, and artifact generation before deployment.
 
+## Android candidate and Play promotion
+
+The tag and manual GitHub workflows now build a **candidate only**. They do not
+upload to Google Play or publish a GitHub Release. A successful workflow stores
+the signed AAB, `build/release-candidate.json`,
+`build/android-release-build-inputs.json`, and symbols as artifacts. The
+candidate record binds the full Git commit and tree, Android source version and
+package, hardening migration hashes, model manifest hash, exact AAB hash, named
+build environment, and SHA-256 digests of the four public Dart defines used by
+the release script. The build-input record contains digests, not raw values;
+it is made from the same temporary defines file passed to Flutter. Candidate
+creation rejects Android build-name or number overrides that differ from the
+source version.
+The AAB must have valid bundle structure and a verifiable JAR signature.
+`build/release-candidate.json` is generated after the AAB build and is never a
+release approval.
+
+The release owner must review the exact downloaded candidate and collect
+current evidence for every required receipt ID defined in
+`scripts/release/android_candidate_manifest.py`: `flutter_full`,
+`backend_linked`, `db_clean_replay`, `db_forward_upgrade`,
+`auth_postgrest_matrix`, `signed_android_device`, `store_preflight`,
+`privacy_security`, `repository_protection`, `drive_access`, and
+`release_operations`. A receipt is a JSON object containing `schema_version: 1`,
+`check_id`, `status: "passed"`, `commit`, `artifact_sha256`,
+`candidate_sha256`, `completed_at` (UTC ISO 8601), and an `https://` evidence
+reference. Its `completed_at` records the review of the underlying evidence
+for this candidate. Store all receipts beside the approval and list each one
+in `checks` as `{ "id": "...", "file": "...", "sha256": "..." }`.
+The receipts must be verified against the referenced test, device, provider,
+store, access and operations records. A signed receipt is not proof that the
+underlying observation is true.
+
+The separate approval JSON contains exactly `schema_version: 1`,
+`candidate_sha256`, `reviewer`, `approved_at`, `track`, `release_status`,
+`checks`, and `signature_hmac_sha256`. The signature is the lowercase hex
+HMAC-SHA256 of the same object **without** `signature_hmac_sha256`, encoded as
+UTF-8 JSON with sorted keys, no extra whitespace (`separators=(",", ":")`),
+and `ensure_ascii=False`. Its key is the reviewer-controlled, base64-encoded
+`MOBIO_RELEASE_APPROVAL_HMAC_KEY_B64` (at least 32 decoded bytes). Keep that key
+outside this repository and outside build jobs. The reviewer must be a named
+person distinct from `build_actor`; the release owner controls key issuance,
+revocation and audit history. The key alone cannot enforce organizational
+separation, especially while the GitHub `Mobio` environment has no protection
+rules and administrators can bypass it.
+
+After independent review, use a clean checkout at the exact candidate commit
+with the matching AAB and build-input record under `build/`, and an approval
+bundle outside the repository. The
+approval is valid for at most seven days; the candidate is valid for at most
+fourteen days. Then invoke:
+
+```sh
+MOBIO_ANDROID_CANDIDATE_MANIFEST=/private/release/release-candidate.json \
+MOBIO_ANDROID_RELEASE_APPROVAL=/private/release/approval.json \
+MOBIO_RELEASE_APPROVAL_HMAC_KEY_B64=<provided-through-private-secret-store> \
+PLAY_RELEASE_TRACK=internal PLAY_RELEASE_STATUS=draft \
+./scripts/release/upload_google_play_release.sh
+```
+
+The uploader verifies the AAB, source, package, artifact hash, receipt hashes,
+check statuses, freshness, reviewer distinction and signature before it reads
+Play credentials or starts an API call. Production requires an approval bound
+to `track=production` and the requested status, plus the existing
+`PLAY_PRODUCTION_APPROVED=true` operational flag. Direct Fastlane `deploy` and
+`upload_aab` use the same gate; `build_and_deploy`, `metadata` and
+`promote_to_production` are disabled because they cannot bind a separately
+reviewed binary or metadata change to the upload. The enabled lanes skip
+metadata, images and screenshots. A Play upload still requires
+human authorization and actual store/device/provider evidence; a local gate
+pass alone is not release acceptance.
+
 ## Native smoke checks
 
 The Android release smoke command requires an authorized physical device by

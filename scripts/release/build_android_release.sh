@@ -71,6 +71,8 @@ fi
 tmpdir="${TMPDIR:-/tmp}"
 tmpdir="${tmpdir%/}"
 dart_define_file="$(mktemp "$tmpdir/mobi-dart-defines.XXXXXX")"
+build_inputs_file="build/android-release-build-inputs.json"
+rm -f "$build_inputs_file"
 
 python3 "$repo_root/scripts/lib/runtime_defines.py" "$dart_define_file"
 
@@ -121,6 +123,9 @@ case "$target" in
     "${build_cmd[@]}"
 
     test -s "$output"
+
+    python3 scripts/release/android_candidate_manifest.py --root "$repo_root" record-build-inputs \
+      --defines-file "$dart_define_file" --aab "$output" --out "$build_inputs_file"
 
     echo
     echo "Built AAB: $output"

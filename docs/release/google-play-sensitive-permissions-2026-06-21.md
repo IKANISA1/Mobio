@@ -1,5 +1,10 @@
 # Google Play Sensitive Permissions Declaration - 2026-06-21
 
+> Historical 21 June 2026 record. The upload command near the end now also
+> requires the candidate manifest, separate artifact-bound approval, eleven
+> reviewed receipts, and reviewer-controlled key documented in
+> [release/README.md](README.md#android-candidate-and-play-promotion).
+
 Package: `rw.mobi.app`
 
 ## App Access

@@ -15,7 +15,6 @@ version_code="$(
     exit
   }' pubspec.yaml
 )"
-changelog_path="android/fastlane/metadata/android/en-US/changelogs/${version_code}.txt"
 
 usage() {
   cat <<'EOF'
@@ -23,6 +22,12 @@ Upload the current Android AAB to Google Play.
 
 Required artifact:
   build/app/outputs/bundle/release/app-release.aab
+
+Required promotion evidence:
+  MOBIO_ANDROID_CANDIDATE_MANIFEST points to the candidate JSON produced with the AAB.
+  MOBIO_ANDROID_RELEASE_APPROVAL points to the signed approval JSON and receipts.
+  MOBIO_RELEASE_APPROVAL_HMAC_KEY_B64 is the reviewer-controlled verification key.
+  The source checkout must match the candidate commit and be clean.
 
 Credential options:
   1. PLAY_STORE_SERVICE_ACCOUNT_JSON contains a Google service-account JSON object.
@@ -32,6 +37,7 @@ Credential options:
 
 Production guard:
   PLAY_RELEASE_TRACK=production also requires PLAY_PRODUCTION_APPROVED=true.
+  Every track requires a distinct named reviewer and all required evidence receipts.
 
 Examples:
   PLAY_RELEASE_TRACK=internal PLAY_RELEASE_STATUS=draft ./scripts/release/upload_google_play_release.sh
@@ -75,6 +81,19 @@ if [[ ! -s "$aab_path" ]]; then
   echo "AAB not found at $aab_path. Build it first with ./scripts/release/build_android_release.sh appbundle." >&2
   exit 1
 fi
+
+if [[ -z "${MOBIO_ANDROID_CANDIDATE_MANIFEST:-}" || -z "${MOBIO_ANDROID_RELEASE_APPROVAL:-}" ]]; then
+  echo "NO-GO: candidate manifest and separate release approval are required before Google Play access." >&2
+  exit 2
+fi
+
+python3 scripts/release/android_candidate_manifest.py --root "$repo_root" verify \
+  --aab "$aab_path" \
+  --candidate "$MOBIO_ANDROID_CANDIDATE_MANIFEST" \
+  --approval "$MOBIO_ANDROID_RELEASE_APPROVAL" \
+  --track "$track" \
+  --release-status "$release_status" \
+  --package "$package_name"
 
 json_from_candidate() {
   local candidate="$1"
@@ -208,20 +227,9 @@ if [[ -z "$uploaded_version_code" ]]; then
   exit 1
 fi
 
-release_notes=""
-if [[ -f "$changelog_path" ]]; then
-  release_notes="$(python3 - "$changelog_path" <<'PY'
-import sys
-text = open(sys.argv[1], encoding="utf-8").read().strip()
-print(text[:500])
-PY
-)"
-fi
-
 track_body="$tmp_dir/track.json"
 VERSION_CODE="$uploaded_version_code" \
 RELEASE_STATUS="$release_status" \
-RELEASE_NOTES="$release_notes" \
 python3 - <<'PY' > "$track_body"
 import json, os
 
@@ -229,10 +237,6 @@ release = {
     "versionCodes": [os.environ["VERSION_CODE"]],
     "status": os.environ["RELEASE_STATUS"],
 }
-notes = os.environ.get("RELEASE_NOTES", "").strip()
-if notes:
-    release["releaseNotes"] = [{"language": "en-US", "text": notes}]
-
 print(json.dumps({"releases": [release]}, separators=(",", ":")))
 PY
 
