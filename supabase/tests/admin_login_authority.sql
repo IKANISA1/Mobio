@@ -62,6 +62,11 @@ select pg_temp.qa_claims('admin_whatsapp_otp');
 update auth.users set raw_app_meta_data='{"provider":"whatsapp_cloud_otp"}' where id=auth.uid();
 select pg_temp.qa_check('Admin JWT marker also needs trusted server metadata',public.verified_admin_user_id() is null);
 update auth.users set raw_app_meta_data='{"provider":"admin_whatsapp_otp"}' where id=auth.uid();
+select pg_temp.qa_check('Admin markers without a server lease remain denied',public.verified_admin_user_id() is null);
+insert into mobio_private.admin_session_leases
+  (session_id,user_id,otp_id,authenticated_at,last_activity_at,idle_expires_at,absolute_expires_at)
+select session_id,user_id,'admin-qa-lease',now(),now(),now()+interval '15 minutes',now()+interval '8 hours'
+from pg_temp.qa_admin_actor;
 select pg_temp.qa_check('verified Admin markers and allowlisted Auth phone resolve identity',public.verified_admin_user_id()=auth.uid());
 select pg_temp.qa_check('verified Admin retains its application identity',public.verified_app_user_id()=auth.uid());
 select pg_temp.qa_check('existing full-Admin permission fallback remains available',public.has_platform_permission('platform.admin'));

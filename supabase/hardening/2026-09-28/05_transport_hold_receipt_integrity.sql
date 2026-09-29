@@ -54,7 +54,7 @@ create or replace function public.rpc_hold_bus_seats(
 returns table (booking_id uuid,ticket_reference text,status text,payment_status text,hold_expires_at timestamptz,amount numeric,currency text)
 language plpgsql security definer set search_path = '' as $$
 declare
-  v_user_id uuid := auth.uid();
+  v_user_id uuid := public.verified_app_user_id();
   v_schedule public.bus_schedules%rowtype;
   v_inventory public.bus_seat_inventory%rowtype;
   v_booking public.bus_bookings%rowtype;
@@ -134,7 +134,7 @@ begin
 
   select b.* into v_booking from public.bus_bookings b where b.id=p_booking_id for update;
   if not found then raise exception 'Booking is not available for confirmation.'; end if;
-  if not (coalesce(current_setting('request.jwt.claim.role',true),'')='service_role'
+  if not (public._mobio_is_service_role()
       or public.can_access_organization(v_booking.organization_id,'transport.bookings.manage')) then
     raise exception 'Payment confirmation requires agency or service authorization.';
   end if;
@@ -205,7 +205,7 @@ create or replace function public.rpc_expire_bus_holds(p_limit integer default 5
 returns integer language plpgsql security definer set search_path='' as $$
 declare total_released integer := 0; schedule_row record; released integer;
 begin
-  if coalesce(current_setting('request.jwt.claim.role',true),'') <> 'service_role' then
+  if not public._mobio_is_service_role() then
     raise exception 'SERVICE_ROLE_REQUIRED' using errcode='42501';
   end if;
   for schedule_row in

@@ -40,10 +40,16 @@ begin
     where not exists(select 1 from information_schema.columns where table_schema='public'
       and table_name='biopay_profiles' and column_name='server_verified_at')
     union all
-    select 'Missing invoice amount guard'
+    -- Body03 replaced the older invoice_amount_mismatch marker with a combined
+    -- amount/currency/merchant comparison. Require the comparisons as well as
+    -- its review reason; a reason string alone is not an authority guard.
+    select 'Missing invoice amount/currency/merchant guard'
     where not exists(select 1 from pg_catalog.pg_proc p join pg_catalog.pg_namespace n on n.oid=p.pronamespace
       where n.nspname='public' and p.proname='rpc_ingest_driver_subscription_momo_sms'
-        and pg_get_functiondef(p.oid) like '%invoice_amount_mismatch%')
+        and pg_get_functiondef(p.oid) like '%v_request.amount_rwf<>v_amount%'
+        and pg_get_functiondef(p.oid) like '%v_request.currency<>''RWF''%'
+        and pg_get_functiondef(p.oid) like '%v_request.momo_pay_code<>v_merchant%'
+        and pg_get_functiondef(p.oid) like '%invoice_amount_currency_or_merchant_mismatch%')
   ) select string_agg(failure,E'\n') into v_failures from failures;
   if v_failures is not null then raise exception '%',v_failures; end if;
 end $$;

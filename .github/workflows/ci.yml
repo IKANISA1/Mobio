@@ -109,6 +109,15 @@ jobs:
         with:
           version: 2.84.2
 
+      - name: Booking direct-write boundary in PostgreSQL and PostgREST
+        env:
+          MOBIO_BOOKING_POSTGRES_IMAGE: postgres@sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232
+          MOBIO_BOOKING_POSTGREST_IMAGE: public.ecr.aws/supabase/postgrest@sha256:5922bde07147b82b1c9d8f749e48c1e5b99ebb233f3888bb7ab65f07cf4ac82d
+        run: |
+          docker pull --quiet "$MOBIO_BOOKING_POSTGRES_IMAGE"
+          docker pull --quiet "$MOBIO_BOOKING_POSTGREST_IMAGE"
+          python3 scripts/qa/test_booking_authority_postgrest.py
+
       - name: Require reviewed hardening migrations in this commit
         run: python3 scripts/ci/prepare_hardening_migrations.py --check
 

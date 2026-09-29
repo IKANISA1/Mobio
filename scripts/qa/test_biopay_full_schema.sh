@@ -68,8 +68,8 @@ db_psql -U postgres -v ON_ERROR_STOP=1 \
 db_psql -U postgres -v ON_ERROR_STOP=1 \
   < supabase/tests/provider_authority_assertions.sql > "$qa_dir/provider-authority.log" 2>&1 \
   || { tail -n 35 "$qa_dir/provider-authority.log"; exit 1; }
-# This test replaces pg_net HTTP inside a rolled-back transaction. The local
-# database administrator is required to replace that extension-owned function.
+# The outbox test replaces pg_net HTTP with a fail-closed function inside a
+# rolled-back transaction; the administrator owns the extension function.
 db_psql -U supabase_admin -d postgres -v ON_ERROR_STOP=1 \
   < supabase/tests/notification_dispatch_behavior.sql > "$qa_dir/notification-dispatch.log" 2>&1 \
   || { tail -n 35 "$qa_dir/notification-dispatch.log"; exit 1; }

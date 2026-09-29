@@ -25,12 +25,12 @@
     {
       "file": "05_transport_hold_receipt_integrity.sql",
       "migration_name": "mobio_hardening_transport_hold_receipt_integrity",
-      "sha256": "49128f73e4cab36797d2856bf906a79f500b66cc0face9aa6248dcb89c5a9dfe"
+      "sha256": "23c82ab27a2c09072cfa8ddf71e8b5909c82d75d45d56010d3dafea6dc83794d"
     },
     {
       "file": "06_bounded_driver_discovery.sql",
       "migration_name": "mobio_hardening_bounded_driver_discovery",
-      "sha256": "70aa5ceee34cb7dc09ccba35e912cfa92ec7b04c48daefeb4e11aad66f27a85d"
+      "sha256": "d2d8f01dd1e29cf8297156863c4bbdc16888489b6a63b259951eda08956c7d35"
     },
     {
       "file": "07_durable_sms_intake.sql",

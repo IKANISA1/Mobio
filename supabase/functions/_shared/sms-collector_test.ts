@@ -1,6 +1,7 @@
 import { assertEquals, assertRejects } from "https://deno.land/std@0.208.0/assert/mod.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { collectorSigningPayload, type CollectorRecord, type CollectorRegistry, sha256Hex, verifyCollectorRequest } from "./sms-collector.ts";
+import { INTAKE_VERSION } from "./momobio-intake.ts";
 import { HttpError } from "./validation.ts";
 import { handleMomoBioSmsIngest } from "../momobio-sms-ingest/index.ts";
 
@@ -70,46 +71,49 @@ for (const scenario of ["modified body", "modified nonce", "wrong key", "expired
   });
 }
 
-Deno.test("unsigned SMS ingestion never calls its parser or privileged storage", async () => {
+Deno.test("unsigned SMS ingestion never reaches durable privileged storage", async () => {
   let calls = 0;
   const previousFetch = globalThis.fetch;
   try {
     globalThis.fetch = (() => { calls++; throw new Error("Unexpected external call"); }) as typeof fetch;
     const response = await handleMomoBioSmsIngest(new Request("https://mobio-qa.invalid/functions/v1/momobio-sms-ingest", {
       method: "POST", headers: { authorization: "Bearer public-anonymous-key" }, body: '{"messages":[{"body":"synthetic"}]}',
-    }), { parse: () => { calls++; throw new Error("Unexpected parser call"); } });
+    }));
     assertEquals(response.status, 401);
     assertEquals(calls, 0);
   } finally { globalThis.fetch = previousFetch; }
 });
 
-Deno.test("authenticated fixture reaches ingestion once while replay never reaches the parser", async () => {
+Deno.test("authenticated fixture durably admits once while replay cannot readmit", async () => {
   const { store } = registry();
-  let parsed = 0;
-  let persisted = 0;
+  let admitted = 0;
+  const hash = "a".repeat(64);
   const client = createClient("https://mobio-qa.invalid", "synthetic-service-key", {
     auth: { autoRefreshToken: false, persistSession: false },
     global: { fetch: async (input) => {
       const url = input instanceof Request ? input.url : String(input);
-      assertEquals(url, "https://mobio-qa.invalid/rest/v1/rpc/rpc_ingest_driver_subscription_momo_sms");
-      persisted++;
-      return new Response('{"status":"matched"}', { headers: { "content-type": "application/json" } });
+      assertEquals(url, "https://mobio-qa.invalid/rest/v1/rpc/rpc_admit_momobio_sms_batch");
+      admitted++;
+      return new Response(JSON.stringify({version: INTAKE_VERSION, results: [{
+        message_hash: hash, status: "accepted", admission_id: collectorId,
+        admission_status: "review", review_required: true,
+      }]}), { headers: { "content-type": "application/json" } });
     } },
   });
   const dependencies = {
     registry: store, admin: client,
-    parse: async () => { parsed++; return {
-      parser_source: "openai" as const, openai_model: "synthetic-fixture", parser_version: "fixture-v1",
-    }; },
+    policy: { enabled: false, allowedSenders: [], merchantCodes: [], minConfidence: 0.95 },
   };
   const request = await signedRequest(JSON.stringify({ messages: [{
-    body: "synthetic receipt", sender: "fixture", received_at_millis: now, message_hash: "a".repeat(64),
+    body: "synthetic receipt", sender: "fixture", received_at_millis: now, message_hash: hash,
   }] }));
   const replay = request.clone();
   const response = await handleMomoBioSmsIngest(request, dependencies);
   assertEquals(response.status, 202);
-  assertEquals((await response.json()).results[0].status, "matched");
+  const admittedBody = await response.json();
+  assertEquals(admittedBody.kind, "durable_receipt_admission");
+  assertEquals(admittedBody.results[0].status, "accepted");
+  assertEquals(admittedBody.results[0].admission_status, "review");
   assertEquals((await handleMomoBioSmsIngest(replay, dependencies)).status, 409);
-  assertEquals(parsed, 1);
-  assertEquals(persisted, 1);
+  assertEquals(admitted, 1);
 });

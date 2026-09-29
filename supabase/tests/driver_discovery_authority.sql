@@ -8,10 +8,7 @@ create temp table qa_discovery_actors (
 insert into qa_discovery_actors(name)
 values ('viewer'), ('driver'), ('offline'), ('admin'), ('anonymous'), ('unverified');
 create temp table qa_discovery_results(name text);
-create temp table qa_discovery_baseline as
-select count(*) as online_cabs from public.driver_locations
-where is_online and vehicle_type_id = 'cab';
-grant select on qa_discovery_actors, qa_discovery_baseline to authenticated, anon, service_role;
+grant select on qa_discovery_actors to authenticated, anon, service_role;
 grant select, insert on qa_discovery_results to authenticated, anon, service_role;
 
 create function pg_temp.qa_check(label text, value boolean) returns void
@@ -76,6 +73,13 @@ values ('+250700006104','+250','Synthetic discovery administrator',true);
 insert into public.driver_locations(driver_id,latitude,longitude,vehicle_type_id,is_online)
 select user_id,0.001,0.001,'cab',name='driver'
 from qa_discovery_actors where name in ('driver','offline');
+create temp table qa_discovery_expected as
+select count(*) as nearby_cabs from public.driver_locations dl
+where dl.is_online and dl.updated_at >= timezone('utc',now())-interval '2 minutes'
+  and dl.vehicle_type_id='cab'
+  and (6371 * acos(least(1,greatest(-1,
+    cos(radians(dl.latitude))*cos(radians(dl.longitude)))))) <= 10;
+grant select on qa_discovery_expected to authenticated, service_role;
 
 select pg_temp.qa_check('public key cannot execute discovery search',
   not has_function_privilege('anon','public.rpc_search_nearby_drivers(double precision,double precision,text,text,integer)','EXECUTE'));
@@ -86,18 +90,19 @@ select pg_temp.qa_check('authenticated role retains search execute permission',
 
 select pg_temp.qa_identity('viewer');
 set local role authenticated;
-select pg_temp.qa_check('verified viewer sees online but not offline fixture coordinates',(
-  select count(*)=1 and bool_and(driver_id=(select user_id from pg_temp.qa_discovery_actors where name='driver'))
-  from public.driver_locations where driver_id in (select user_id from pg_temp.qa_discovery_actors)
-));
+select pg_temp.qa_check('viewer cannot read another driver raw coordinates',
+  not exists (select 1 from public.driver_locations
+    where driver_id in (select user_id from pg_temp.qa_discovery_actors)));
 select pg_temp.qa_check('verified search includes the online fixture and excludes offline fixture',(
   select count(*)=1 and bool_and(driver_id=(select user_id from pg_temp.qa_discovery_actors where name='driver'))
   from public.rpc_search_nearby_drivers(0,0,null,'cab',1000)
   where driver_id in (select user_id from pg_temp.qa_discovery_actors)
 ));
-select pg_temp.qa_check('verified summary preserves vehicle-filtered counts',
-  (public.rpc_get_discover_summary(null,null,'cab')->>'nearby_driver_count')::bigint
-    = (select online_cabs+1 from pg_temp.qa_discovery_baseline));
+select pg_temp.qa_check('summary without coordinates exposes no global count',
+  (public.rpc_get_discover_summary(null,null,'cab')->>'nearby_driver_count')::bigint=0);
+select pg_temp.qa_check('nearby summary preserves location-filtered counts',
+  (public.rpc_get_discover_summary(0,0,'cab')->>'nearby_driver_count')::bigint
+    = (select nearby_cabs from pg_temp.qa_discovery_expected));
 reset role;
 
 select pg_temp.qa_identity('offline');
@@ -107,6 +112,16 @@ select pg_temp.qa_check('verified driver can read its own offline location', exi
 ));
 reset role;
 select pg_temp.qa_identity('admin');
+set local role authenticated;
+select pg_temp.qa_check('Admin marker without server lease has no broad location read',
+  not exists(select 1 from public.driver_locations
+    where driver_id in (select user_id from pg_temp.qa_discovery_actors)));
+reset role;
+insert into mobio_private.admin_session_leases
+  (session_id,user_id,otp_id,authenticated_at,last_activity_at,idle_expires_at,absolute_expires_at)
+select session_id,user_id,'discovery-qa-admin',now(),now(),
+  now()+interval '15 minutes',now()+interval '8 hours'
+from qa_discovery_actors where name='admin';
 set local role authenticated;
 select pg_temp.qa_check('qualified Admin retains offline location visibility',(
   select count(*)=2 from public.driver_locations
@@ -146,8 +161,8 @@ select pg_temp.qa_check('trusted server role retains discovery search', exists(
   where driver_id=(select user_id from pg_temp.qa_discovery_actors where name='driver')
 ));
 select pg_temp.qa_check('trusted server role retains summary counts',
-  (public.rpc_get_discover_summary(null,null,'cab')->>'nearby_driver_count')::bigint
-    = (select online_cabs+1 from pg_temp.qa_discovery_baseline));
+  (public.rpc_get_discover_summary(0,0,'cab')->>'nearby_driver_count')::bigint
+    = (select nearby_cabs from pg_temp.qa_discovery_expected));
 reset role;
 
 select name as passed_assertion from qa_discovery_results order by name;

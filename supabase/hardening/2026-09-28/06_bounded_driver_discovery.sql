@@ -17,7 +17,7 @@ returns table(
 )
 language plpgsql security definer set search_path='' as $$
 begin
-  if coalesce(current_setting('request.jwt.claim.role',true),'') <> 'service_role'
+  if not public._mobio_is_service_role()
      and public.verified_app_user_id() is null then
     raise exception 'Verified WhatsApp session required' using errcode='PT401';
   end if;
@@ -60,7 +60,7 @@ create or replace function public.rpc_get_discover_summary(
 returns json language plpgsql security definer set search_path='' as $$
 declare result json; nearby_count integer; scheduled_count integer;
 begin
-  if coalesce(current_setting('request.jwt.claim.role',true),'') <> 'service_role'
+  if not public._mobio_is_service_role()
      and public.verified_app_user_id() is null then
     raise exception 'Verified WhatsApp session required' using errcode='PT401';
   end if;

@@ -113,14 +113,18 @@ select pg_temp.expect(public.rpc_biopay_discovery('quote','{"id":"00000000-0000-
 select pg_temp.expect(public.fn_biopay_quote_options(auth.uid(),'{"lookup":"+250788000002","amount":"1000","purpose":"transfer","device":"android"}')->'options'='[]','wrong purpose has no route');
 select pg_temp.expect(public.fn_biopay_quote_options(auth.uid(),jsonb_build_object('lookup','+250788000002','amount','1000','purpose','merchant','device','android','source_id',
  (select id from public.biopay_payment_methods where identifier='001234')))->'options'='[]','another users method cannot be a source');
-do $$ declare q jsonb; again jsonb; begin
+do $$ declare q jsonb; again jsonb; approved_routes uuid[]; begin
+ select array_agg(id) into approved_routes from public.biopay_provider_routes where state='approved';
+ perform pg_temp.expect(cardinality(approved_routes)>0,'fixture has an approved route to disable');
  q:=pg_temp.fresh_quote();
  update public.biopay_provider_routes set tariff_version=tariff_version+1,fee_rwf=25;
  perform pg_temp.reject_prepare(q);
  q:=pg_temp.fresh_quote();
- update public.biopay_provider_routes set state='disabled';
+ update public.biopay_provider_routes set state='disabled' where id=any(approved_routes);
  perform pg_temp.reject_prepare(q);
- update public.biopay_provider_routes set state='approved';
+ -- Re-enable only the routes whose independent test/review fields were present.
+ -- The earlier draft route is intentionally not promoted by this fixture.
+ update public.biopay_provider_routes set state='approved' where id=any(approved_routes);
  q:=pg_temp.fresh_quote();
  update public.biopay_provider_routes set valid_until=now()-interval '1 minute',valid_from=now()-interval '1 day';
  perform pg_temp.reject_prepare(q);
@@ -165,6 +169,20 @@ select pg_temp.expect_rejected($q$select public.rpc_admin_biopay_routes('list','
 select pg_temp.qa_identity('00000000-0000-4000-8000-000000000003');
 select pg_temp.expect_rejected($q$select public.rpc_admin_biopay_routes('list','{}')$q$);
 select pg_temp.qa_identity(auth.uid(), false, 'admin_whatsapp_otp');
+do $$ begin
+ if to_regclass('mobio_private.admin_session_leases') is not null then
+   perform pg_temp.expect_rejected($q$select public.rpc_admin_biopay_routes('list','{}')$q$);
+   -- Full-schema fixture: only a server-owned lease authorizes this synthetic
+   -- Admin JWT. Production registration still requires a verified OTP record.
+   insert into mobio_private.admin_session_leases
+     (session_id,user_id,otp_id,authenticated_at,last_activity_at,idle_expires_at,absolute_expires_at)
+   select s.id,s.user_id,'biopay-qa-'||s.user_id::text,now(),now(),
+     now()+interval '15 minutes',now()+interval '8 hours'
+   from auth.sessions s
+   where s.user_id in ('00000000-0000-4000-8000-000000000003',
+                       '00000000-0000-4000-8000-000000000004');
+ end if;
+end $$;
 do $$ declare r jsonb; bad jsonb; q jsonb; prepared jsonb; begin
  r:=public.rpc_admin_biopay_routes('save',jsonb_build_object('source_provider','mtn_rw','source_kind','mobileWallet',
    'destination_provider','mtn_rw','destination_kind','mobileWallet','rail','Synthetic transfer','purpose','transfer',

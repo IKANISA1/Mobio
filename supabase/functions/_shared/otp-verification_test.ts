@@ -44,6 +44,7 @@ async function withOtpFixture(
   run: (fixture: {
     verify: (code?: string) => Promise<Response>;
     issuedSessions: () => number;
+    registeredLeases: () => number;
     row: { attempts: number; verified: boolean; expires_at: string };
   }) => Promise<void>,
   options: {
@@ -80,6 +81,7 @@ async function withOtpFixture(
   let releaseReads!: () => void;
   const bothRead = new Promise<void>((resolve) => releaseReads = resolve);
   let issued = 0;
+  let registered = 0;
 
   globalThis.fetch = async (input, init) => {
     const request = new Request(input, init);
@@ -169,6 +171,20 @@ async function withOtpFixture(
       },
     };
   };
+  // OTP concurrency is the subject of this fixture. The real lease binding
+  // protocol is exercised separately; a successful Admin response must still
+  // pass through registration before credentials can leave the endpoint.
+  const registerLease = async (_client: unknown, userId: string, accessToken: string, otpId: string) => {
+    assertEquals(userId, "fixture-user");
+    assertEquals(accessToken, "fixture-access");
+    assertEquals(otpId, row.id);
+    registered += 1;
+    const stamp = new Date().toISOString();
+    return { active: true as const, session_id: "11111111-1111-4111-8111-111111111111",
+      user_id: userId, server_now: stamp, authenticated_at: stamp,
+      idle_expires_at: new Date(Date.now() + 15 * 60_000).toISOString(),
+      absolute_expires_at: new Date(Date.now() + 8 * 60 * 60_000).toISOString() };
+  };
 
   try {
     await run({
@@ -185,9 +201,10 @@ async function withOtpFixture(
         });
         return purpose === "app_login"
           ? handleVerifyLoginOtp(request, { createSession })
-          : handleVerifyAdminOtp(request, { createSession });
+          : handleVerifyAdminOtp(request, { createSession, registerLease });
       },
       issuedSessions: () => issued,
+      registeredLeases: () => registered,
       row,
     });
   } finally {
@@ -201,7 +218,7 @@ async function withOtpFixture(
 
 for (const purpose of ["app_login", "admin_login"] as const) {
   Deno.test(`${purpose}: only one concurrent verification may issue a session`, async () => {
-    await withOtpFixture(purpose, async ({ verify, issuedSessions, row }) => {
+    await withOtpFixture(purpose, async ({ verify, issuedSessions, registeredLeases, row }) => {
       const responses = await Promise.all([verify(), verify()]);
       assertEquals(
         issuedSessions(),
@@ -214,6 +231,7 @@ for (const purpose of ["app_login", "admin_login"] as const) {
       ]);
       assertEquals(row.verified, true);
       assertEquals(row.attempts, 1);
+      assertEquals(registeredLeases(), purpose === "admin_login" ? 1 : 0);
     });
   });
 
@@ -241,10 +259,11 @@ for (const purpose of ["app_login", "admin_login"] as const) {
   });
 
   Deno.test(`${purpose}: a consumed code cannot be replayed`, async () => {
-    await withOtpFixture(purpose, async ({ verify, issuedSessions }) => {
+    await withOtpFixture(purpose, async ({ verify, issuedSessions, registeredLeases }) => {
       assertEquals((await verify()).status, 200);
       assertEquals((await verify()).status, 400);
       assertEquals(issuedSessions(), 1);
+      assertEquals(registeredLeases(), purpose === "admin_login" ? 1 : 0);
     }, { simultaneousReads: 1 });
   });
 

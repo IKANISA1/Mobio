@@ -26,7 +26,13 @@ select set_config('request.jwt.claims', jsonb_build_object(
   'is_anonymous', false, 'app_metadata', jsonb_build_object('provider','admin_whatsapp_otp'))::text, true)
 from qa_permission_actor;
 insert into public.profile_platform_permissions(profile_id, permission_key, expires_at)
-select user_id, 'admin.users.read', now()-interval '5 minutes' from qa_permission_actor;
+select user_id, 'admin.users.read', now()+interval '5 minutes' from qa_permission_actor;
+select pg_temp.qa_check('future grant alone cannot bypass Admin session lease',
+  not public.has_platform_permission('admin.users.read'));
+insert into mobio_private.admin_session_leases
+  (session_id,user_id,otp_id,authenticated_at,last_activity_at,idle_expires_at,absolute_expires_at)
+select session_id,user_id,'permission-expiry-qa',now(),now(),
+  now()+interval '15 minutes',now()+interval '8 hours' from qa_permission_actor;
 
 do $$
 declare zone text;
