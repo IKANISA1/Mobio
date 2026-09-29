@@ -60,7 +60,7 @@
     {
       "file": "12_privacy_request_workflow.sql",
       "migration_name": "mobio_hardening_privacy_request_workflow",
-      "sha256": "5b752a17115176694e498a3853528d9443912655bb88080ac2091da437696946"
+      "sha256": "ef252a85845524ab2252df2fcf67391eb9f0b3e42b4d37248b5b91fae7c446ff"
     }
   ]
 }

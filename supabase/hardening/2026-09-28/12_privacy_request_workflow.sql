@@ -288,11 +288,13 @@ begin
       -- Live probes are independent of caller attestations for Auth/session state.
       if exists(select 1 from auth.users where id=r.owner_id) or exists(select 1 from auth.sessions where user_id=r.owner_id) then
         raise exception 'PRIVACY_AUTH_STILL_PRESENT' using errcode='P0001'; end if;
-      if exists(select 1 from mobio_private.privacy_current_evidence(r.request_id) where outcome='retained' and retention_until<=stamp) then
+      if exists(select 1 from mobio_private.privacy_current_evidence(r.request_id) e
+        where e.outcome='retained' and e.retention_until<=stamp) then
         raise exception 'PRIVACY_RETENTION_REVIEW_DUE' using errcode='P0001'; end if;
       -- This implementation retains identifiable case/audit records. Their
       -- mandatory exception prevents a false claim that no personal data remains.
-      r.status:=case when exists(select 1 from mobio_private.privacy_current_evidence(r.request_id) where outcome='retained')
+      r.status:=case when exists(select 1 from mobio_private.privacy_current_evidence(r.request_id) e
+        where e.outcome='retained')
         then 'completed_with_retention' else 'completed' end;
       r.completed_at:=stamp;r.completion_manifest_sha256:=p_payload->>'manifest_sha256';
     end if;
