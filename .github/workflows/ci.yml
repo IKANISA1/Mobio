@@ -121,6 +121,13 @@ jobs:
       - name: Require reviewed hardening migrations in this commit
         run: python3 scripts/ci/prepare_hardening_migrations.py --check
 
+      - name: Member ID remediation gate in isolated PostgreSQL 17
+        env:
+          MOBIO_MEMBER_ID_POSTGRES_IMAGE: postgres@sha256:f4c66b820c6f974249089d3d16d86a3698eae11e8746eb6644b2271031e91232
+        run: |
+          docker pull --quiet "$MOBIO_MEMBER_ID_POSTGRES_IMAGE"
+          python3 scripts/qa/test_member_id_migration.py
+
       - name: Check BioPay discovery authorization in isolated PostgreSQL
         run: ./scripts/qa/test_biopay_discovery_db.sh
 

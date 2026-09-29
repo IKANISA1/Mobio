@@ -20,7 +20,7 @@
     {
       "file": "04_canonical_member_id.sql",
       "migration_name": "mobio_hardening_canonical_member_id",
-      "sha256": "ff06946103fc5d41e03ec3dc99e343a5bbb5256af2d68390af12c876bb3eda81"
+      "sha256": "ee3d38d442b16584b61900cec1ca1f95d58b3066282a1ea2d57e77fe4df9b894"
     },
     {
       "file": "05_transport_hold_receipt_integrity.sql",

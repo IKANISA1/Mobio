@@ -57,6 +57,9 @@ cp supabase/migrations/*.sql "$qa_dir/supabase/migrations/"
 "$supabase_bin" --workdir "$qa_dir" migration up --local > "$qa_dir/migrate.log" 2>&1 \
   || { tail -n 35 "$qa_dir/migrate.log"; exit 1; }
 db_psql -U postgres -v ON_ERROR_STOP=1 \
+  < supabase/hardening/2026-09-28/post_install_assertions.sql > "$qa_dir/post-install.log" 2>&1 \
+  || { tail -n 35 "$qa_dir/post-install.log"; exit 1; }
+db_psql -U postgres -v ON_ERROR_STOP=1 \
   < supabase/tests/biopay_discovery_behavior.sql > "$qa_dir/behavior.log" 2>&1 \
   || { tail -n 35 "$qa_dir/behavior.log"; exit 1; }
 db_psql -U postgres -v ON_ERROR_STOP=1 \
@@ -95,4 +98,4 @@ db_psql -U postgres -v ON_ERROR_STOP=1 \
   < supabase/tests/driver_discovery_authority.sql > "$qa_dir/driver-discovery-authority.log" 2>&1 \
   || { tail -n 35 "$qa_dir/driver-discovery-authority.log"; exit 1; }
 count="$(db_psql -U postgres -Atc 'select count(*) from supabase_migrations.schema_migrations')"
-echo "Full-schema rehearsal passed: $count migrations; BioPay, security, schema, provider, notification, realtime authority, permission expiry, live identity, profile identity authority, Admin login, driver discovery and OTP rate-limit assertions passed."
+echo "Full-schema rehearsal passed: $count migrations; post-install catalog/invariants, BioPay, security, schema, provider, notification, realtime authority, permission expiry, live identity, profile identity authority, Admin login, driver discovery and OTP rate-limit assertions passed."

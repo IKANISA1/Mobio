@@ -4,27 +4,29 @@ begin;
 set local lock_timeout = '5s';
 set local statement_timeout = '60s';
 
--- Normalize historical invalid values before enforcing the format.
-update public.profiles
-set member_id = null
-where member_id is not null
-  and member_id !~ '^[0-9]{6}$';
-
--- Keep the oldest owner of a duplicated historical ID and reassign the rest.
-with ranked as (
-  select id,
-         row_number() over (
-           partition by member_id
-           order by created_at nulls last, id
-         ) as rn
-  from public.profiles
-  where member_id is not null
-)
-update public.profiles p
-set member_id = null
-from ranked r
-where p.id = r.id
-  and r.rn > 1;
+-- Hold writers through preflight, backfill and the unique constraint. Existing
+-- external references can contain a member ID, so changing a historical value
+-- without an account-level reviewed mapping would be destructive.
+lock table public.profiles in share row exclusive mode;
+do $preflight$
+declare
+  invalid_count bigint;
+  duplicate_count bigint;
+begin
+  select count(*) into invalid_count from public.profiles
+  where member_id is not null and member_id !~ '^[0-9]{6}$';
+  select count(*) into duplicate_count from (
+    select member_id from public.profiles
+    where member_id is not null
+    group by member_id having count(*) > 1
+  ) duplicate_ids;
+  if invalid_count > 0 or duplicate_count > 0 then
+    raise exception 'MEMBER_ID_REMEDIATION_REQUIRED'
+      using errcode='P0001',
+      detail=format('invalid_rows=%s; duplicate_values=%s',invalid_count,duplicate_count);
+  end if;
+end
+$preflight$;
 
 create or replace function public._mobio_allocate_member_id()
 returns text
