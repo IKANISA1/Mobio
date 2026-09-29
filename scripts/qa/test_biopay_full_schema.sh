@@ -86,10 +86,13 @@ db_psql -U postgres -v ON_ERROR_STOP=1 \
   < supabase/tests/live_identity_behavior.sql > "$qa_dir/live-identity.log" 2>&1 \
   || { tail -n 35 "$qa_dir/live-identity.log"; exit 1; }
 db_psql -U postgres -v ON_ERROR_STOP=1 \
+  < supabase/tests/profile_identity_authority.sql > "$qa_dir/profile-identity-authority.log" 2>&1 \
+  || { tail -n 35 "$qa_dir/profile-identity-authority.log"; exit 1; }
+db_psql -U postgres -v ON_ERROR_STOP=1 \
   < supabase/tests/admin_login_authority.sql > "$qa_dir/admin-login-authority.log" 2>&1 \
   || { tail -n 35 "$qa_dir/admin-login-authority.log"; exit 1; }
 db_psql -U postgres -v ON_ERROR_STOP=1 \
   < supabase/tests/driver_discovery_authority.sql > "$qa_dir/driver-discovery-authority.log" 2>&1 \
   || { tail -n 35 "$qa_dir/driver-discovery-authority.log"; exit 1; }
 count="$(db_psql -U postgres -Atc 'select count(*) from supabase_migrations.schema_migrations')"
-echo "Full-schema rehearsal passed: $count migrations; BioPay, security, schema, provider, notification, realtime authority, permission expiry, live identity, Admin login, driver discovery and OTP rate-limit assertions passed."
+echo "Full-schema rehearsal passed: $count migrations; BioPay, security, schema, provider, notification, realtime authority, permission expiry, live identity, profile identity authority, Admin login, driver discovery and OTP rate-limit assertions passed."
