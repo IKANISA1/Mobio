@@ -23,8 +23,9 @@ stops future scheduled collection/upload attempts; a request already in flight m
 finish. Revoking Android SMS permission also stops further capture.
 
 The receiver does not request READ_SMS. Force-stop, device loss, an unreceived
-broadcast, disk failure or a capacity refusal can leave missing receipts that need
-operator reconciliation. There is no claim of guaranteed always-on collection.
+broadcast, disk failure or exhaustion of both local raw-evidence tiers can leave
+missing receipts that need operator reconciliation. There is no claim of
+guaranteed always-on collection.
 
 ## Queue limits and recovery
 
@@ -36,6 +37,9 @@ These are engineering defaults, not approved legal retention periods:
 | Raw SMS body | At most 8,192 UTF-8 bytes |
 | Encoded local record | At most 12,288 bytes |
 | Pending + quarantined records | At most 10,000 records and 16 MiB of payload |
+| Durable overflow receipts | Another 10,000 records and 16 MiB of raw payload; FIFO promotion after main-queue acknowledgement |
+| Refusal ledger | Hash, SMS receive time, first/last refusal time and reason; no raw body, no automatic deletion |
+| Capacity warning | Visible when either tier reaches 80% of its row or payload-byte limit |
 | Per request | At most 50 records, bounded by a 400,000-byte envelope budget |
 | Response | At most 262,144 bytes |
 | Acknowledged raw bodies | Removed transactionally; this is not cryptographic erasure |
@@ -45,8 +49,18 @@ These are engineering defaults, not approved legal retention periods:
 | UI health freshness | Prior server acknowledgment expires after 15 minutes |
 | Retry | Exponential 30 seconds to one hour plus up to 25% jitter; server Retry-After capped at seven days |
 
-Queue capacity never evicts pending evidence to accept a newer record. It refuses
-new admission and records a visible reconciliation warning. Oversized or malformed
+Queue capacity never evicts pending evidence to accept a newer record. A new
+eligible receipt at the main-queue limit is committed to a second private SQLite
+table in the same transaction, and is promoted only when main-queue space is
+available. The receiver reports deferred admissions; the UI and foreground
+notification show overflow separately. If both tiers fill, the app records a
+refusal hash and timing in a durable incident ledger and shows a reconciliation
+warning. That ledger is not a copy of the original SMS. Operators must preserve
+the device and obtain the original from an authorized source before resolving a
+refusal. Disk-full and missed-broadcast failures remain possible and require
+fleet monitoring; this implementation does not justify unattended collection.
+The additive v1-to-v2 database upgrade preserves existing receipts and metadata.
+Oversized or malformed
 legacy storage is not cleared: upgrade stops for supervised recovery. Parseable
 legacy messages and acknowledgment history migrate in one transaction; malformed
 rows are quarantined. Legacy preferences are cleared only after the database commit.

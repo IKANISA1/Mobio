@@ -35,6 +35,9 @@ const manifest = read(`${appRoot}/app/src/main/AndroidManifest.xml`);
 const strings = read(`${appRoot}/app/src/main/res/values/strings.xml`);
 const mainActivity = read(`${sourceDir}/MainActivity.kt`);
 const receiver = read(`${sourceDir}/SmsReceiver.kt`);
+const queue = read(`${sourceDir}/DurableSmsQueue.kt`);
+const queueV2 = read(`${appRoot}/app/src/main/assets/receipt_queue_v2.sql`);
+const qaManifest = read(`${appRoot}/app/src/qa/AndroidManifest.xml`);
 const uploadClient = read(`${sourceDir}/UploadClient.kt`);
 const smsReader = read(`${sourceDir}/MomoSms.kt`);
 const functionEntry = read("supabase/functions/momobio-sms-ingest/index.ts");
@@ -80,7 +83,6 @@ for (const forbidden of [
   "Diagnostics",
   "Activity Screen",
   "Device ID",
-  "Consent",
   "isLikelyMomoSms",
 ]) {
   if (mainActivity.toLowerCase().includes(forbidden.toLowerCase())) {
@@ -111,11 +113,38 @@ for (const density of ["mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"]) {
 }
 
 for (const marker of [
-  "getMessagesFromIntent",
-  "SmsQueue",
-  "UploadClient",
+  "decodeIncomingSms",
+  "CollectorRuntime.ready",
+  "CollectorRuntime.policy.accepts",
+  "DurableSmsQueue",
+  "queue.enqueue",
+  "BridgeSupervisor.enqueueImmediate",
 ]) {
   if (!receiver.includes(marker)) failures.push(`SMS receiver missing ${marker}`);
+}
+
+for (const marker of [
+  "receipt_queue_v2.sql",
+  "oldVersion == 1 && newVersion == 2",
+  "insertOverflow",
+  "recordRefusal",
+  "promoteOverflow",
+  "MAX_PROMOTIONS_PER_TX",
+  "unreconciledRefusals",
+  "capacityWarning",
+]) {
+  if (!queue.includes(marker)) failures.push(`durable queue missing ${marker}`);
+}
+for (const marker of [
+  "overflow_receipts",
+  "OVERFLOW_CAPACITY_REVIEW_REQUIRED",
+  "receipt_refusals",
+]) {
+  if (!queueV2.includes(marker)) failures.push(`overflow schema missing ${marker}`);
+}
+if (!manifest.includes('android:allowBackup="false"')) failures.push("collector backup must remain disabled");
+if (!qaManifest.includes('uses-permission tools:node="removeAll"')) {
+  failures.push("component QA variant must remove permissions");
 }
 
 for (const source of [receiver, smsReader]) {
@@ -162,10 +191,9 @@ for (const forbidden of [
 }
 
 for (const marker of [
-  "rpc_ingest_driver_subscription_momo_sms",
-  "driver_subscription_momo_sms_receipts",
-  "parseMomoSmsWithOpenAi",
-  "messages.slice(0, 50)",
+  "rpc_admit_momobio_sms_batch",
+  "durable_receipt_admission",
+  "jsonResponse({success: true, kind: \"durable_receipt_admission\", results}, 202",
 ]) {
   if (!functionEntry.includes(marker)) {
     failures.push(`momobio-sms-ingest missing ${marker}`);
@@ -178,4 +206,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log("Mo Mobio SMS bridge validation PASS: minimal app, MOBI assets, and MOBI Supabase bridge contract are present.");
+console.log("Mo Mobio SMS bridge validation PASS: scoped collector, durable queue upgrade, asset and intake contract markers are present.");

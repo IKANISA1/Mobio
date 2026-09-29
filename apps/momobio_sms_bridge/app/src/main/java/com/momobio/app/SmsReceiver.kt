@@ -19,14 +19,19 @@ class SmsReceiver : BroadcastReceiver() {
                 if (messages.isEmpty()) return@Thread
                 val queue = DurableSmsQueue(context.applicationContext)
                 val admitted = queue.enqueue(messages)
+                if (admitted.deferred > 0) {
+                    Log.w("MoMobioBridge", "Eligible receipts saved in overflow; queue drain required")
+                }
                 if (admitted.blocked > 0) {
-                    Log.e("MoMobioBridge", "Queue capacity blocked eligible receipts; reconciliation required")
+                    Log.e("MoMobioBridge", "Raw receipt not retained; refusal hashes saved for reconciliation")
                 }
                 BridgeSupervisor.enqueueImmediate(context.applicationContext)
                 BridgeSupervisor.start(context.applicationContext)
                 // The service/worker uploads outside the broadcast's time limit.
             } catch (error: Exception) {
                 Log.e("MoMobioBridge", "SMS queue/scheduling failed: ${error.javaClass.simpleName}")
+                // Best effort visible recovery alarm even when SQLite cannot commit.
+                try { BridgeSupervisor.start(context.applicationContext) } catch (_: Exception) { }
             } finally {
                 pending.finish()
             }

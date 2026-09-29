@@ -79,9 +79,14 @@ class BridgeForegroundService : Service() {
     private fun updateNotification(result: UploadResult) {
         val manager = getSystemService(NotificationManager::class.java)
         val health = DurableSmsQueue(applicationContext).health()
-        val title = if (result.ok && health.pending == 0 && health.quarantined == 0 && health.capacityBlocked == 0L)
-            "Mo Mobio server acknowledged" else "Mo Mobio needs attention"
-        val body = "${result.message}; queued ${health.pending}; review ${health.quarantined}; blocked ${health.capacityBlocked}"
+        val title = when {
+            health.unreconciledRefusals > 0 || health.capacityBlocked > 0L -> "Mo Mobio receipt recovery required"
+            health.capacityWarning -> "Mo Mobio queue capacity warning"
+            result.ok && health.pending == 0 && health.quarantined == 0 -> "Mo Mobio server acknowledged"
+            else -> "Mo Mobio needs attention"
+        }
+        val body = "${result.message}; queued ${health.pending}; overflow ${health.overflowPending}; " +
+            "review ${health.quarantined}; refusals ${health.unreconciledRefusals}"
         manager.notify(notificationId, notification(title, body))
     }
 

@@ -175,7 +175,9 @@ class MainActivity : Activity() {
                     !CollectorRuntime.policy.configured -> "Configuration needed"
                     !CollectorRuntime.consented(applicationContext) -> "Notice required"
                     !hasSmsAccess() -> "Permission needed"
-                    health.capacityBlocked > 0 -> "Receipt reconciliation required"
+                    health.unreconciledRefusals > 0 || health.capacityBlocked > 0 -> "Receipt reconciliation required"
+                    health.overflowPending > 0 -> "Overflow receipts queued"
+                    health.capacityWarning -> "Queue capacity warning"
                     health.quarantined > 0 -> "Receipts need review"
                     syncError != null -> "Sync unavailable"
                     health.lastError != null -> "Sync pending"
@@ -189,7 +191,8 @@ class MainActivity : Activity() {
                     status.text = state
                     status.setTextColor(if (state == "Server acknowledged") mintGreen else orangeRed)
                     upload.text = (syncError?.let { it + "\n" } ?: "") + "Allocation policy: ${when (allocation) { true -> "enabled"; false -> "disabled"; else -> "not verified" }}\n" +
-                        "Queued: ${health.pending}; review: ${health.quarantined}; blocked: ${health.capacityBlocked}\n" +
+                        "Queued: ${health.pending}; overflow: ${health.overflowPending}; review: ${health.quarantined}; " +
+                        "refusals: ${health.unreconciledRefusals}; historical blocks: ${health.capacityBlocked}\n" +
                         "Oldest pending: ${health.oldestPendingAt?.let { java.util.Date(it).toString() } ?: "none"}\n" +
                         "Last server acknowledgment: ${lastServer.takeIf { it > 0 }?.let { java.util.Date(it).toString() } ?: "not observed"}"
                     enableButton.visibility = if (CollectorRuntime.ready(applicationContext)) View.GONE else View.VISIBLE

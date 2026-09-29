@@ -27,6 +27,8 @@ class DurableQueueDeviceTest {
         db = SQLiteDatabase.openDatabase(context.getDatabasePath("momobio_receipts.db").path, null, SQLiteDatabase.OPEN_READWRITE)
         // Only synthetic, isolated QA storage is reset. Enrollment keys are not touched.
         db.execSQL("DELETE FROM receipts")
+        db.execSQL("DELETE FROM overflow_receipts")
+        db.execSQL("DELETE FROM receipt_refusals")
         db.execSQL("DELETE FROM queue_metadata")
         db.execSQL("INSERT INTO queue_metadata(key,value) VALUES ('legacy_imported','1')")
         assertTrue(context.getSharedPreferences("momo_sms_queue", Context.MODE_PRIVATE).edit().clear().commit())
@@ -79,6 +81,45 @@ class DurableQueueDeviceTest {
             assertEquals(1, attempts.sumOf { it.get() })
             assertEquals(1, queue.count())
         } finally { executor.shutdownNow() }
+    }
+    @Test fun saturatedActiveQueueRetainsRawOverflowAcrossReopenAndPromotesAfterAck() {
+        val seed = db.compileStatement("INSERT INTO receipts(message_hash,payload,payload_bytes,received_at,admitted_at,state) " +
+            "VALUES (?,?,?,?,?,'pending')")
+        db.beginTransaction()
+        try {
+            for (i in 0 until DurableSmsQueue.MAX_ACTIVE_ROWS) {
+                val message = receipt(100 + i)
+                val raw = message.toJson()
+                seed.clearBindings()
+                seed.bindString(1,message.messageHash)
+                seed.bindString(2,raw)
+                seed.bindLong(3,raw.toByteArray(Charsets.UTF_8).size.toLong())
+                seed.bindLong(4,message.receivedAtMillis)
+                seed.bindLong(5,now + i)
+                seed.executeInsert()
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+            seed.close()
+        }
+        val deferred = receipt(20_000)
+        val admission = queue.enqueue(listOf(deferred),now)
+        assertEquals(1,admission.accepted)
+        assertEquals(1,admission.deferred)
+        assertEquals(0,admission.blocked)
+        val reopened = DurableSmsQueue(context)
+        assertEquals(1,reopened.health().overflowPending)
+        assertTrue(reopened.health().capacityWarning)
+        assertEquals(10_001,reopened.count())
+        assertEquals(1,reopened.enqueue(listOf(deferred),now).duplicate)
+        assertEquals(deferred.toJson(),db.rawQuery(
+            "SELECT payload FROM overflow_receipts WHERE message_hash=?",arrayOf(deferred.messageHash)).use {
+            assertTrue(it.moveToFirst());it.getString(0)
+        })
+        reopened.markUploaded(setOf(receipt(100).messageHash),now+1)
+        assertEquals(0,reopened.health().overflowPending)
+        assertTrue(reopened.batch(now=now+2).contains(deferred))
     }
     @Test fun backoffAndHealthArePersistedIndependentlyOfQueueSize() {
         queue.recordOutcome(UploadResult(false, message="rate limited", outcome="rate_limited", retryAfterMillis=120_000), now)

@@ -1,3 +1,5 @@
+import java.net.URI
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -31,7 +33,7 @@ if (releaseRequested) {
         markers.all { it.length in 3..100 && it.none { c -> c < ' ' } }) {
         "Approved collector receipt-filter configuration is required"
     }
-    val endpoint = java.net.URI(propOrEnv("SUPABASE_URL"))
+    val endpoint = URI(propOrEnv("SUPABASE_URL"))
     require(endpoint.scheme == "https" && !endpoint.host.isNullOrBlank() && endpoint.rawUserInfo == null &&
         endpoint.rawQuery == null && endpoint.rawFragment == null && endpoint.port in setOf(-1, 443) &&
         endpoint.rawPath.orEmpty() in setOf("", "/") && propOrEnv("SUPABASE_ANON_KEY").isNotBlank()) {

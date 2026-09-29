@@ -12,7 +12,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 ROOT = Path(__file__).resolve().parents[2]
 APP = ROOT / "apps/momobio_sms_bridge/app"
-SCHEMA = (APP / "src/main/assets/receipt_queue_v1.sql").read_text()
+SCHEMAS = [(APP / f"src/main/assets/receipt_queue_v{version}.sql").read_text()
+           for version in (1, 2)]
 KOTLIN = (APP / "src/main/java/com/momobio/app/ReceiptQueueSql.kt").read_text()
 DML = {name: ast.literal_eval(text) for name, text in re.findall(
     r'const val ([A-Z_]+) = ("[^\n]+")', KOTLIN)}
@@ -27,6 +28,18 @@ def put(db, ident, payload="synthetic", admitted=100):
                (key(ident), payload, len(payload.encode()), admitted, admitted))
 
 
+def put_overflow(db, ident, payload="synthetic", admitted=100):
+    db.execute("INSERT INTO overflow_receipts(message_hash,payload,payload_bytes,received_at,admitted_at) VALUES (?,?,?,?,?)",
+               (key(ident), payload, len(payload.encode()), admitted, admitted))
+
+
+def apply_schema(db, schema):
+    for block in schema.split("-- @statement"):
+        sql = "\n".join(x for x in block.splitlines() if not x.strip().startswith("--")).strip()
+        if sql:
+            db.execute(sql)
+
+
 class NativeQueueSQLTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -34,19 +47,30 @@ class NativeQueueSQLTests(unittest.TestCase):
         self.path = str(Path(self.tmp.name) / "synthetic.db")
         self.db = sqlite3.connect(self.path, timeout=5)
         self.addCleanup(lambda: self.db.close())
-        # Exercise the same statement delimiters used by QueueDatabase.onCreate.
-        for block in SCHEMA.split("-- @statement"):
-            sql = "\n".join(x for x in block.splitlines() if not x.strip().startswith("--")).strip()
-            if sql:
-                self.db.execute(sql)
+        # Exercise the same additive statement delimiters used by QueueDatabase.
+        for schema in SCHEMAS:
+            apply_schema(self.db, schema)
         self.db.commit()
 
     def row(self, ident):
         return self.db.execute("SELECT state,payload,payload_bytes,acknowledged_at,reason FROM receipts WHERE message_hash=?", (key(ident),)).fetchone()
 
     def test_exact_statement_contract_is_present(self):
-        self.assertEqual(set(DML), {"EXPIRE", "BATCH", "QUARANTINE", "ACKNOWLEDGE", "PRUNE_AGE", "PRUNE_ROWS"})
-        self.assertEqual(self.db.execute("SELECT count(*) FROM sqlite_master WHERE type='trigger'").fetchone()[0], 1)
+        self.assertEqual(set(DML), {"EXPIRE", "BATCH", "QUARANTINE", "ACKNOWLEDGE", "PRUNE_AGE", "PRUNE_ROWS",
+                                    "OVERFLOW_HEAD", "OVERFLOW_DELETE"})
+        self.assertEqual(self.db.execute("SELECT count(*) FROM sqlite_master WHERE type='trigger'").fetchone()[0], 2)
+
+    def test_v1_to_v2_upgrade_preserves_all_existing_rows(self):
+        with sqlite3.connect(":memory:") as prior:
+            apply_schema(prior, SCHEMAS[0])
+            put(prior, "old", "untouched body")
+            prior.execute("INSERT INTO queue_metadata(key,value) VALUES ('last_ack_at','123')")
+            apply_schema(prior, SCHEMAS[1])
+            self.assertEqual(prior.execute("SELECT payload FROM receipts WHERE message_hash=?",
+                                           (key("old"),)).fetchone(), ("untouched body",))
+            self.assertEqual(prior.execute("SELECT value FROM queue_metadata WHERE key='last_ack_at'").fetchone(),
+                             ("123",))
+            self.assertEqual(prior.execute("SELECT count(*) FROM overflow_receipts").fetchone()[0], 0)
 
     def test_pending_receipt_survives_database_reopen(self):
         put(self.db, 1, "receipt 🚌\nsynthetic")
@@ -130,6 +154,52 @@ class NativeQueueSQLTests(unittest.TestCase):
             put(self.db, 10000, "x")
         self.assertEqual(self.db.execute("SELECT count(*) FROM receipts").fetchone()[0], 10000)
         self.assertEqual(self.row(0)[0], "pending")
+
+    def test_overflow_retains_raw_at_active_saturation_and_promotes_atomically(self):
+        for i in range(10000):
+            put(self.db, i, "x")
+        put_overflow(self.db, "deferred", "private receipt", admitted=101)
+        self.db.commit(); self.db.close()
+        self.db = sqlite3.connect(self.path)
+        self.assertEqual(self.db.execute("SELECT payload FROM overflow_receipts WHERE message_hash=?",
+                                         (key("deferred"),)).fetchone(), ("private receipt",))
+        self.db.execute(DML["ACKNOWLEDGE"], (500, key(0)))
+        with self.db:
+            head = self.db.execute(DML["OVERFLOW_HEAD"]).fetchone()
+            self.assertEqual(head[0], key("deferred"))
+            self.db.execute("INSERT INTO receipts(message_hash,payload,payload_bytes,received_at,admitted_at,state) "
+                            "VALUES (?,?,?,?,?,'pending')", head)
+            self.assertEqual(self.db.execute(DML["OVERFLOW_DELETE"], (head[0],)).rowcount, 1)
+        self.assertEqual(self.row("deferred")[0:2], ("pending", "private receipt"))
+        self.assertEqual(self.db.execute("SELECT count(*) FROM overflow_receipts").fetchone()[0], 0)
+
+    def test_overflow_capacity_refusal_ledger_preserves_hash_and_time(self):
+        for i in range(10000):
+            put_overflow(self.db, i, "x")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "OVERFLOW_CAPACITY"):
+            put_overflow(self.db, "refused", "x")
+        self.db.execute("INSERT INTO receipt_refusals(message_hash,received_at,first_refused_at,"
+                        "last_refused_at,attempts,reason) VALUES (?,?,?,?,?,?)",
+                        (key("refused"), 80, 100, 100, 1, "capacity"))
+        self.db.commit(); self.db.close()
+        self.db = sqlite3.connect(self.path)
+        self.assertEqual(self.db.execute("SELECT received_at,attempts,reason,recovered_at "
+                                         "FROM receipt_refusals WHERE message_hash=?", (key("refused"),)).fetchone(),
+                         (80, 1, "capacity", None))
+
+    def test_interrupted_promotion_leaves_original_overflow_row(self):
+        put_overflow(self.db, "deferred", "private receipt")
+        self.db.commit()
+        with self.assertRaises(RuntimeError):
+            with self.db:
+                head = self.db.execute(DML["OVERFLOW_HEAD"]).fetchone()
+                self.db.execute("INSERT INTO receipts(message_hash,payload,payload_bytes,received_at,admitted_at,state) "
+                                "VALUES (?,?,?,?,?,'pending')", head)
+                self.db.execute(DML["OVERFLOW_DELETE"], (head[0],))
+                raise RuntimeError("interrupted before promotion commit")
+        self.assertIsNone(self.row("deferred"))
+        self.assertEqual(self.db.execute("SELECT payload FROM overflow_receipts WHERE message_hash=?",
+                                         (key("deferred"),)).fetchone(), ("private receipt",))
 
     def test_byte_capacity_blocks_and_acknowledgement_releases_space(self):
         cap = 16 * 1024 * 1024
