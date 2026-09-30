@@ -183,7 +183,7 @@ mobio_feature_gate="${RUN_MOBIO_FEATURE_GATE:-${RUN_BIOPAY_GATE:-true}}"
 if [[ "$mobio_feature_gate" == "true" ]]; then
   run_gate \
     "Mobio integrated feature readiness gates" \
-    env REQUIRE_BIOPAY_LIVE="${REQUIRE_BIOPAY_LIVE:-true}" \
+    env REQUIRE_BIOPAY_LIVE=true \
     ./scripts/qa/verify_mobio_feature_readiness.sh
 elif [[ "$dry_run" == "true" ]]; then
   echo

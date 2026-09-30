@@ -87,7 +87,8 @@ void main() {
     expect(find.text('Register my face'), findsOneWidget);
     expect(find.text('Write NFC Card'), findsOneWidget);
     expect(find.text('Enroll AWS face identity'), findsNothing);
-    expect(find.text('Set up'), findsWidgets);
+    expect(find.text('Unavailable'), findsWidgets);
+    expect(find.text('Set up'), findsNothing);
     expect(find.textContaining('Supabase'), findsNothing);
     expect(tester.takeException(), isNull);
   });

@@ -18,7 +18,7 @@ upload to Google Play or publish a GitHub Release. A successful workflow stores
 the signed AAB, `build/release-candidate.json`,
 `build/android-release-build-inputs.json`, and symbols as artifacts. The
 candidate record binds the full Git commit and tree, Android source version and
-package, hardening migration hashes, model manifest hash, exact AAB hash, named
+package, hardening migration hashes, validated Face model policy and its manifest hash, exact AAB hash, named
 build environment, and SHA-256 digests of the four public Dart defines used by
 the release script. The build-input record contains digests, not raw values;
 it is made from the same temporary defines file passed to Flutter. Candidate
@@ -32,7 +32,7 @@ The release owner must review the exact downloaded candidate and collect
 current evidence for every required receipt ID defined in
 `scripts/release/android_candidate_manifest.py`: `flutter_full`,
 `backend_linked`, `db_clean_replay`, `db_forward_upgrade`,
-`auth_postgrest_matrix`, `signed_android_device`, `store_preflight`,
+`auth_postgrest_matrix`, `mobio_feature_gate`, `signed_android_device`, `store_preflight`,
 `privacy_security`, `repository_protection`, `drive_access`, and
 `release_operations`. A receipt is a JSON object containing `schema_version: 1`,
 `check_id`, `status: "passed"`, `commit`, `artifact_sha256`,
@@ -43,6 +43,9 @@ in `checks` as `{ "id": "...", "file": "...", "sha256": "..." }`.
 The receipts must be verified against the referenced test, device, provider,
 store, access and operations records. A signed receipt is not proof that the
 underlying observation is true.
+The `mobio_feature_gate` receipt must reflect the integrated feature gate with
+live BioPay checks required. A skipped or unavailable required child check
+cannot support a passed receipt.
 
 The separate approval JSON contains exactly `schema_version: 1`,
 `candidate_sha256`, `reviewer`, `approved_at`, `track`, `release_status`,

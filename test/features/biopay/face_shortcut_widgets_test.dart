@@ -48,6 +48,7 @@ class CaptureFixture implements FaceCapture {
 
 class FaceFixture extends BioPayFaceService {
   String? account = '11111111-1111-4111-8111-111111111111';
+  bool statusUnavailable = false;
   final pending = Completer<PreparedFaceUssdShortcut>();
   int scans = 0, enrolls = 0, handoffs = 0;
   String? selected;
@@ -55,8 +56,11 @@ class FaceFixture extends BioPayFaceService {
   @override
   String? get ownerId => account;
   @override
-  Future<BioPayEnrollmentStatus> enrollmentStatus() async =>
-      const BioPayEnrollmentStatus();
+  Future<BioPayEnrollmentStatus> enrollmentStatus() async {
+    if (statusUnavailable) throw const FaceServiceException('TIMEOUT');
+    return const BioPayEnrollmentStatus(status: 'not_started');
+  }
+
   @override
   Future<PreparedFaceUssdShortcut> resolveShortcut({
     required List<int> imageBytes,
@@ -177,6 +181,51 @@ Future<void> scan(WidgetTester tester) async {
 }
 
 void main() {
+  test('unconfirmed Face status is unavailable, not unenrolled', () {
+    expect(const BioPayEnrollmentStatus().label, 'Unavailable');
+    expect(BioPayEnrollmentStatus.fromJson({}).label, 'Unavailable');
+    expect(
+      BioPayEnrollmentStatus.fromJson({'status': 'not_started'}).label,
+      'Set up',
+    );
+  });
+
+  testWidgets(
+    'Face status outage disables enrollment until a confirmed refresh',
+    (tester) async {
+      final face = FaceFixture()..statusUnavailable = true;
+      await mount(
+        tester,
+        face,
+        CaptureFixture(),
+        GatewayFixture(),
+        enroll: true,
+      );
+      expect(
+        find.text(
+          'Face lookup is unavailable. Try again or use a number or QR.',
+        ),
+        findsWidgets,
+      );
+      expect(
+        tester
+            .widget<MobiButton>(find.widgetWithText(MobiButton, 'Open camera'))
+            .onPressed,
+        isNull,
+      );
+      face.statusUnavailable = false;
+      await tester.tap(find.text('Check setup status'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'Face lookup is unavailable. Try again or use a number or QR.',
+        ),
+        findsNothing,
+      );
+      expect(face.enrolls, 0);
+    },
+  );
+
   for (final enroll in [false, true]) {
     for (final locale in ['en', 'fr', 'rw']) {
       testWidgets(

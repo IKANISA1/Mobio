@@ -99,7 +99,14 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
         _poll = Timer(const Duration(seconds: 3), () => unawaited(_load()));
       }
     } on Object catch (error) {
-      if (mounted && generation == _generation) setState(() => _error = error);
+      if (mounted && generation == _generation) {
+        setState(() {
+          _status = const BioPayEnrollmentStatus();
+          _methods = [];
+          _methodId = null;
+          _error = error;
+        });
+      }
     } finally {
       if (mounted && generation == _generation) setState(() => _busy = false);
     }
@@ -130,7 +137,12 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
   }
 
   Future<void> _captureFace() async {
-    if (_busy || !_foreground || !_consent || _methodId == null) return;
+    if (_busy ||
+        !_foreground ||
+        _status.isUnavailable ||
+        !_consent ||
+        _methodId == null)
+      return;
     final service = ref.read(biopayFaceServiceProvider);
     final account = service.ownerId;
     if (account == null) {
@@ -290,7 +302,11 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
               ),
             const SizedBox(height: 20),
             MobiButton(
-              onPressed: _busy || !_consent || _methodId == null
+              onPressed:
+                  _busy ||
+                      _status.isUnavailable ||
+                      !_consent ||
+                      _methodId == null
                   ? null
                   : _captureFace,
               isLoading: _busy,

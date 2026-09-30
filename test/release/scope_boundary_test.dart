@@ -821,7 +821,7 @@ void main() {
         contains('Mobio integrated feature readiness gates'),
       );
       expect(goNoGoScript, contains('REQUIRE_BIOPAY_LIVE'));
-      expect(goNoGoScript, contains('REQUIRE_BIOPAY_LIVE:-true'));
+      expect(goNoGoScript, contains('env REQUIRE_BIOPAY_LIVE=true'));
       expect(
         goNoGoScript,
         contains('scripts/qa/verify_mobio_feature_readiness.sh'),

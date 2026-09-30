@@ -29,7 +29,7 @@ BUILD_INPUTS = Path("build/android-release-build-inputs.json")
 PUBLIC_DEFINES = frozenset({"SUPABASE_URL", "SUPABASE_ANON_KEY", "PRIVACY_POLICY_URL", "ACCOUNT_DELETION_URL"})
 CHECKS = frozenset({
     "flutter_full", "backend_linked", "db_clean_replay", "db_forward_upgrade",
-    "auth_postgrest_matrix", "signed_android_device", "store_preflight",
+    "auth_postgrest_matrix", "mobio_feature_gate", "signed_android_device", "store_preflight",
     "privacy_security", "repository_protection", "drive_access",
     "release_operations",
 })
@@ -152,6 +152,46 @@ def migration_state(root: Path) -> tuple[str, list[dict[str, str]]]:
     return digest(bundle), installed
 
 
+def model_policy_state(root: Path) -> str:
+    path = regular(root / MODEL)
+    policy = json_file(path)
+    require(set(policy) == {"version", "opencv", "source_commit", "dimensions",
+                            "metric", "preprocessing", "models"},
+            "Invalid Face model policy schema")
+    require(isinstance(policy["version"], str) and len(policy["version"]) >= 8
+            and isinstance(policy["opencv"], str)
+            and re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", policy["opencv"])
+            and isinstance(policy["source_commit"], str)
+            and HEX40.fullmatch(policy["source_commit"])
+            and policy["dimensions"] == 128 and policy["metric"] == "cosine"
+            and isinstance(policy["preprocessing"], str)
+            and len(policy["preprocessing"].strip()) >= 20,
+            "Invalid Face model policy fields")
+    models = policy["models"]
+    require(isinstance(models, list) and len(models) == 2,
+            "Face model policy requires detector and recognizer")
+    found: set[str] = set()
+    for model in models:
+        require(isinstance(model, dict)
+                and set(model) == {"role", "file", "sha256", "license", "url"},
+                "Invalid Face model entry")
+        role = model["role"]
+        require(isinstance(role, str) and role in {"detector", "recognizer"}
+                and role not in found,
+                "Duplicate or unknown Face model role")
+        found.add(role)
+        filename = model["file"]
+        require(isinstance(filename, str) and re.fullmatch(r"[A-Za-z0-9_.-]+\.onnx", filename)
+                and isinstance(model["sha256"], str) and HEX64.fullmatch(model["sha256"])
+                and isinstance(model["license"], str) and bool(model["license"].strip())
+                and isinstance(model["url"], str)
+                and model["url"].startswith("https://")
+                and policy["source_commit"] in model["url"],
+                "Invalid Face model source or digest")
+    require(found == {"detector", "recognizer"}, "Face model roles incomplete")
+    return digest(path)
+
+
 def build_input_state(root: Path, aab: Path, version: str, code: int, package: str) -> dict:
     path = regular(root / BUILD_INPUTS)
     record = json_file(path)
@@ -190,7 +230,7 @@ def source_state(root: Path, aab: Path) -> dict:
         "version_code": version_code, "package": package,
         "flutter_version": regular(root / ".flutter-version").read_text(encoding="utf-8").strip(),
         "migration_bundle_sha256": migration_sha, "migrations": migrations,
-        "model_manifest_sha256": digest(regular(root / MODEL)),
+        "model_manifest_sha256": model_policy_state(root),
         "build_inputs": build_inputs,
         "aab": {"name": aab.name, "sha256": digest(aab), "size_bytes": aab.stat().st_size},
         "optional_features": {"paid_transport": False, "institutional_sms": False, "face_ussd": False},

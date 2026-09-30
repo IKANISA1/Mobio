@@ -140,7 +140,9 @@ class IntegratedGateTests(unittest.TestCase):
         binary.write_text('#!/bin/sh\nexit ' + str(flutter_exit) + '\n')
         binary.chmod(0o755)
         child = self.root / 'scripts/qa/verify_biopay_live_readiness.sh'
-        child.write_text('#!/bin/sh\nexit ' + str(biopay_exit) + '\n')
+        child.write_text('#!/bin/sh\n'
+                         '[ "${REQUIRE_BIOPAY_LIVE:-}" = true ] || exit 3\n'
+                         'exit ' + str(biopay_exit) + '\n')
         child.chmod(0o755)
 
     def test_disabled_invalid_and_empty_rejected_before_flutter(self):
@@ -160,6 +162,13 @@ class IntegratedGateTests(unittest.TestCase):
 
     def test_required_fixture_checks_pass(self):
         self.install_fixtures()
+        result = self.run_script()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('PASS: Mobio integrated feature readiness gates passed.', result.stdout)
+
+    def test_caller_cannot_disable_live_biopay_proof(self):
+        self.install_fixtures()
+        self.env['REQUIRE_BIOPAY_LIVE'] = 'false'
         result = self.run_script()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('PASS: Mobio integrated feature readiness gates passed.', result.stdout)

@@ -48,7 +48,17 @@ class CandidateManifestTests(unittest.TestCase):
         put("pubspec.yaml", "name: mobi_app\nversion: 1.0.0+17\n")
         put("android/app/build.gradle.kts", 'applicationId = "rw.mobi.app"\n')
         put(".flutter-version", "3.44.3\n")
-        write_json(self.root / manifest.MODEL, {"version": "synthetic-disabled-face"})
+        model_commit = "a" * 40
+        write_json(self.root / manifest.MODEL, {
+            "version": "synthetic-face-v1", "opencv": "4.11.0",
+            "source_commit": model_commit, "dimensions": 128,
+            "metric": "cosine", "preprocessing": "Synthetic normalized image fixture",
+            "models": [
+                {"role": role, "file": f"{role}.onnx", "sha256": "a" * 64,
+                 "license": "MIT", "url": f"https://example.invalid/{model_commit}/{role}.onnx"}
+                for role in ("detector", "recognizer")
+            ],
+        })
         bodies = []
         for index in range(12):
             name = f"mobio_hardening_fixture_{index:02}"
@@ -154,6 +164,24 @@ class CandidateManifestTests(unittest.TestCase):
         with self.assertRaisesRegex(manifest.ManifestError, "Candidate differs"):
             self.verify()
 
+    def test_changed_model_manifest_rejected(self):
+        policy = json.loads((self.root / manifest.MODEL).read_text())
+        policy["version"] = "synthetic-face-v2"
+        write_json(self.root / manifest.MODEL, policy)
+        self.git("add", ".")
+        self.git("commit", "-qm", "Changed model version")
+        with self.assertRaisesRegex(manifest.ManifestError, "Candidate differs"):
+            self.verify()
+
+    def test_invalid_model_policy_rejected_even_for_new_candidate(self):
+        policy = json.loads((self.root / manifest.MODEL).read_text())
+        policy["metric"] = "euclidean"
+        write_json(self.root / manifest.MODEL, policy)
+        self.git("add", ".")
+        self.git("commit", "-qm", "Changed model policy")
+        with self.assertRaisesRegex(manifest.ManifestError, "Invalid Face model policy fields"):
+            manifest.source_state(self.root, self.aab)
+
     def test_build_override_version_rejected(self):
         value = json.loads(self.build_inputs.read_text())
         value["build_number"] = "99"
@@ -195,7 +223,7 @@ class CandidateManifestTests(unittest.TestCase):
             self.verify()
 
     def test_skipped_required_check_rejected_even_when_signed(self):
-        check_id = "flutter_full"
+        check_id = "mobio_feature_gate"
         path = self.approval.parent / f"{check_id}.json"
         receipt = json.loads(path.read_text())
         receipt["status"] = "skipped"
@@ -208,6 +236,18 @@ class CandidateManifestTests(unittest.TestCase):
         value["signature_hmac_sha256"] = hmac.new(self.key, manifest.canonical(value), hashlib.sha256).hexdigest()
         write_json(self.approval, value)
         with self.assertRaisesRegex(manifest.ManifestError, "not a passed receipt"):
+            self.verify()
+
+    def test_missing_integrated_gate_receipt_rejected_even_when_signed(self):
+        value = json.loads(self.approval.read_text())
+        value["checks"] = [row for row in value["checks"]
+                           if row["id"] != "mobio_feature_gate"]
+        value.pop("signature_hmac_sha256")
+        value["signature_hmac_sha256"] = hmac.new(
+            self.key, manifest.canonical(value), hashlib.sha256
+        ).hexdigest()
+        write_json(self.approval, value)
+        with self.assertRaisesRegex(manifest.ManifestError, "Required check receipts missing"):
             self.verify()
 
     def test_missing_receipt_rejected(self):

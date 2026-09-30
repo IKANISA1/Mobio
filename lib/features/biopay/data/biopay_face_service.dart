@@ -134,7 +134,7 @@ class BioPayFaceService {
 
 class BioPayEnrollmentStatus {
   const BioPayEnrollmentStatus({
-    this.status = 'not_started',
+    this.status = 'unavailable',
     this.receivingMethodId,
     this.hasFace = false,
     this.pending = false,
@@ -144,13 +144,24 @@ class BioPayEnrollmentStatus {
   final bool hasFace, pending;
   factory BioPayEnrollmentStatus.fromJson(Map<String, dynamic> json) =>
       BioPayEnrollmentStatus(
-        status: json['status']?.toString() ?? 'not_started',
+        status: switch (json['status']) {
+          'not_started' ||
+          'active' ||
+          'paused' ||
+          'deleted' ||
+          'processing' ||
+          'reenrollment_required' ||
+          'receiving_method_required' => json['status'] as String,
+          _ => 'unavailable',
+        },
         receivingMethodId: json['receiving_method_id'] as String?,
         hasFace: json['has_face'] == true,
         pending: json['pending_vector_id'] != null,
       );
-  factory BioPayEnrollmentStatus.preview() => const BioPayEnrollmentStatus();
+  factory BioPayEnrollmentStatus.preview() =>
+      const BioPayEnrollmentStatus(status: 'not_started');
   bool get isEnrolled => hasFace && status == 'active';
+  bool get isUnavailable => status == 'unavailable';
   // Compatibility for profile badges; screens use translated copy.
   String get label => switch (status) {
     'active' => 'Ready',
@@ -159,7 +170,8 @@ class BioPayEnrollmentStatus {
     'processing' => 'Processing',
     'reenrollment_required' => 'Update',
     'unavailable' => 'Unavailable',
-    _ => 'Set up',
+    'not_started' => 'Set up',
+    _ => 'Unavailable',
   };
 }
 

@@ -77,7 +77,7 @@ fi
 if [[ "${RUN_MOBIO_BIOPAY_FEATURE_GATE:-true}" == "true" ]]; then
   run_gate \
     "BioPay feature readiness within Mobio" \
-    env REQUIRE_BIOPAY_LIVE="${REQUIRE_BIOPAY_LIVE:-true}" \
+    env REQUIRE_BIOPAY_LIVE=true \
     ./scripts/qa/verify_biopay_live_readiness.sh
 else
   echo

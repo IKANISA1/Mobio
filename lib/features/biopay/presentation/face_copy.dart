@@ -36,6 +36,7 @@ String faceStatusCopy(BuildContext context, BioPayEnrollmentStatus status) {
     'processing' => l.faceProcessing,
     'receiving_method_required' => l.faceSelectMethod,
     'unavailable' => l.faceUnavailable,
-    _ => l.faceSetUp,
+    'not_started' => l.faceSetUp,
+    _ => l.faceUnavailable,
   };
 }
