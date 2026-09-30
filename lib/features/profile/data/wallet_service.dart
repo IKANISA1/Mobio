@@ -127,7 +127,7 @@ class WalletService {
     var executionAcknowledged = false;
     try {
       await WalletOperationJournal.assertNoUnattributedLegacyRequest().timeout(
-        const Duration(seconds: 4),
+        WalletOperationJournal.observationTimeout,
       );
       account.requireCurrent();
       final prepared = await supabase
@@ -154,7 +154,7 @@ class WalletService {
       // returns the same unresolved operation on the next preparation request.
       await WalletOperationJournal.save(
         operation,
-      ).timeout(const Duration(seconds: 4));
+      ).timeout(WalletOperationJournal.observationTimeout);
       account.requireCurrent();
       if (operation.committed) return operation;
       if (operation.status != 'prepared') {
@@ -281,8 +281,13 @@ class WalletService {
     }
     // If local cleanup fails, the server still retains the prior closed receipt.
     // A later server read remains authoritative; never claim the transfer failed.
+    // This deadline bounds the UI wait only. The journal retains its native
+    // completion queue so late cleanup cannot erase a newer recovery pointer.
     try {
-      await WalletOperationJournal.clear(account.userId, operation.operationId);
+      await WalletOperationJournal.clear(
+        account.userId,
+        operation.operationId,
+      ).timeout(WalletOperationJournal.observationTimeout);
     } on Object {
       /* Stale local pointers cannot open a new server operation. */
     }

@@ -40,6 +40,8 @@ void main() {
         'author_id': 'saved-author',
         'origin': 'Kigali',
         'destination': 'Musanze',
+        'departure_date': '2026-10-01',
+        'departure_time': '09:00',
         'vehicle_type': 'bus',
         'note': 'Bus agency: ${entry.key}\nWindow seat',
       });
