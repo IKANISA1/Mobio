@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/features/admin/application/admin_services.dart';
 import 'package:mobi_app/features/admin/data/admin_service.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
@@ -25,6 +27,9 @@ class AdminTripsScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
+  final _actionToken = AccountActionToken.capture();
+  bool get _actionIsCurrent => mounted && _actionToken.isCurrent;
+
   AdminService get _adminService => ref.read(adminServiceProvider);
 
   late final TextEditingController _searchController;
@@ -56,6 +61,7 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
   }
 
   Future<void> _loadTrips({bool silent = false}) async {
+    if (!_actionIsCurrent) return;
     if (!silent) {
       setState(() {
         _isLoading = true;
@@ -71,7 +77,7 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
         limit: _rowsPerPage + 1,
         offset: _page * _rowsPerPage,
       );
-      if (mounted) {
+      if (_actionIsCurrent) {
         final hasNextPage = trips.length > _rowsPerPage;
         setState(() {
           _trips = trips.take(_rowsPerPage).toList();
@@ -80,7 +86,7 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
         });
       }
     } on Object catch (error) {
-      if (mounted) {
+      if (_actionIsCurrent) {
         setState(() {
           _isLoading = false;
           _error = error.toString();
@@ -90,8 +96,9 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
   }
 
   Future<void> _cancelTrip(AdminTripListItem trip) async {
+    if (!_actionIsCurrent) return;
     final confirmed = await _showConfirmCancelDialog(trip);
-    if (confirmed != true) return;
+    if (confirmed != true || !_actionIsCurrent) return;
 
     setState(() => _busyId = trip.id);
     try {
@@ -101,11 +108,15 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
       );
 
       await _loadTrips(silent: true);
-      if (mounted) _showSnackBar('Trip cancelled.');
+      if (_actionIsCurrent) _showSnackBar('Trip cancelled.');
     } on Object catch (e) {
-      if (mounted) _showSnackBar('Cancel failed: $e', isError: true);
+      if (_actionIsCurrent)
+        _showSnackBar(
+          userMessageForError(e, fallback: 'Unable to cancel the trip.'),
+          isError: true,
+        );
     } finally {
-      if (mounted) setState(() => _busyId = null);
+      if (_actionIsCurrent) setState(() => _busyId = null);
     }
   }
 
@@ -122,7 +133,7 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
-    if (!mounted) return;
+    if (!_actionIsCurrent) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),

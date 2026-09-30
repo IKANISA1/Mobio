@@ -1,5 +1,10 @@
 # Mobio Flutter Mobile Screen Inventory and 2026 Native UI Audit
 
+> Historical audit evidence. The former local specification was removed on
+> 30 September 2026. The external `revolut-design` skill is the sole design
+> authority; the source descriptions and dated scores below are not current
+> UI instructions or acceptance.
+
 Date: 2026-06-07
 Checkout: `/Volumes/PRO-G40/MOBI/mobi_app`
 Report path: `/Volumes/PRO-G40/MOBI/mobi_app/docs/reports/mobio_flutter_mobile_screen_inventory_2026-06-07.md`
@@ -11,7 +16,6 @@ The audit used:
 - Flutter adaptive and responsive guidance: responsive layout fits the available space; adaptive layout chooses platform-appropriate layout and input behavior.
 - Flutter accessibility guidance: large text resilience, sufficient contrast, labeled controls, and 48 dp Android / 44 pt iOS tap targets.
 - Flutter accessibility testing guidance: route and widget coverage should include tap target, label, and contrast guideline checks.
-- Apple Human Interface Guidelines for sheets and modal presentation.
 - Local Mobio UI system v2.2 in `design.md`.
 
 Verdict rule: a screen is only "100% compliant" if it has code evidence plus runtime/device evidence for Android and iOS compact widths, large text, dark/light theme, accessible labels/tap targets, reduced motion, safe areas, and expected loading/error/empty/success states. This audit found no route with complete evidence for 100% compliance.

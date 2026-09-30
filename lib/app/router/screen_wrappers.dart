@@ -52,7 +52,9 @@ class HomeScreenWrapper extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final role = ref.watch(roleProvider);
-    if (role.isAdmin && AccountContext.hasVerifiedSession && AdminSessionGuard.isAdmin) {
+    if (role.isAdmin &&
+        AccountContext.hasVerifiedSession &&
+        AdminSessionGuard.isAdmin) {
       return const AdminDashboardScreen();
     }
 
@@ -62,6 +64,7 @@ class HomeScreenWrapper extends ConsumerWidget {
       onModeChanged: (m) =>
           ref.read(modeProvider.notifier).set(AppMode.fromString(m)),
       onChat: (t) => context.push(chatPathForTrip(t)),
+      onChatPerson: (person) => context.push(person.chatUri.toString()),
       onTripDetails: (id) => context.push('/trip/$id'),
       onViewNearby: () => context.push('/nearby'),
       onViewBookings: () => context.go('/bookings'),
@@ -122,18 +125,25 @@ class ProfileScreenWrapper extends ConsumerWidget {
   }
 }
 
-
 Future<void> _signOutUser(BuildContext context, WidgetRef ref) async {
   AdminSessionGuard.revoke();
   ref.read(roleProvider.notifier).set(AppRole.passenger);
   await SupabaseSessionService.signOutToAnonymous(
     beforeSignOut: () async {
-      await Future.wait<void>([
-        AdminSessionService.revoke(),
-        PushNotificationService.instance.unregisterToken(),
-        ref.read(driverLocationSharingServiceProvider).stop(),
-        () async { await const BioPayDeviceNfcService().stop(); }(),
-      ].map((work) => work.timeout(const Duration(seconds:3)).catchError((Object _) {})));
+      await Future.wait<void>(
+        [
+          AdminSessionService.revoke(),
+          PushNotificationService.instance.unregisterToken(),
+          ref.read(driverLocationSharingServiceProvider).stop(),
+          () async {
+            await const BioPayDeviceNfcService().stop();
+          }(),
+        ].map(
+          (work) => work
+              .timeout(const Duration(seconds: 3))
+              .catchError((Object _) {}),
+        ),
+      );
     },
   );
   if (!context.mounted) return;
@@ -145,10 +155,16 @@ Future<void> _exitAdminSession(BuildContext context, WidgetRef ref) async {
   ref.read(roleProvider.notifier).set(AppRole.passenger);
   await SupabaseSessionService.signOutToAnonymous(
     beforeSignOut: () async {
-      await Future.wait<void>([
-        AdminSessionService.revoke(),
-        ref.read(driverLocationSharingServiceProvider).stop(),
-      ].map((work) => work.timeout(const Duration(seconds:3)).catchError((Object _) {})));
+      await Future.wait<void>(
+        [
+          AdminSessionService.revoke(),
+          ref.read(driverLocationSharingServiceProvider).stop(),
+        ].map(
+          (work) => work
+              .timeout(const Duration(seconds: 3))
+              .catchError((Object _) {}),
+        ),
+      );
     },
   );
   if (!context.mounted) {
@@ -168,14 +184,21 @@ class AdminAuthScreenWrapper extends ConsumerWidget {
       onBack: () => safePop(context),
       onSuccess: () async {
         try {
-          if (!AccountContext.hasVerifiedSession || !AdminSessionGuard.isAdmin) throw StateError('ADMIN_LEASE_REQUIRED');
+          if (!AccountContext.hasVerifiedSession || !AdminSessionGuard.isAdmin)
+            throw StateError('ADMIN_LEASE_REQUIRED');
           if (!context.mounted) return;
           ref.read(roleProvider.notifier).set(AppRole.admin);
           context.go('/admin');
         } on Object {
           AdminSessionGuard.revoke();
-          if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Admin access could not be confirmed. Verify again.')));
+          if (context.mounted)
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Admin access could not be confirmed. Verify again.',
+                ),
+              ),
+            );
         }
       },
     );
@@ -242,7 +265,7 @@ class NearbyScreenWrapper extends ConsumerWidget {
       body: SafeArea(
         bottom: false,
         child: NearbyScreen(
-          onChat: (t) => context.push(chatPathForTrip(t)),
+          onChat: (person) => context.push(person.chatUri.toString()),
           onTripDetails: (id) => context.push('/trip/$id'),
           onBack: () => safePop(context),
         ),

@@ -3,6 +3,7 @@ from pathlib import Path
 import json
 import tomllib
 import unittest
+from source_contract_helpers import compact_source
 ROOT=Path(__file__).resolve().parents[2]
 class SourceContracts(unittest.TestCase):
     def text(self,path):return (ROOT/path).read_text()
@@ -11,10 +12,10 @@ class SourceContracts(unittest.TestCase):
         self.assertIs(cfg['functions']['push-outbox-worker']['verify_jwt'],False)
         self.assertIn('MOBIO_PUSH_WORKER_SECRET',self.text('supabase/functions/push-outbox-worker/index.ts'))
     def test_flutter_registration_and_revocation_use_exact_session_rpc(self):
-        s=self.text('lib/features/notifications/data/push_notification_service.dart')
+        s=compact_source(self.text('lib/features/notifications/data/push_notification_service.dart'))
         self.assertIn("rpc('rpc_push_register'",s);self.assertIn("rpc('rpc_push_unregister'",s)
         self.assertNotIn(".from('fcm_tokens')",s)
-        self.assertIn("'p_session_id': account.sessionId",s);self.assertIn("'p_binding_id': binding.bindingId",s)
+        self.assertIn("'p_session_id':account.sessionId",s);self.assertIn("'p_binding_id':binding.bindingId",s)
     def test_flutter_disposal_fences_pending_registration(self):
         s=self.text('lib/features/notifications/data/push_notification_service.dart')
         self.assertIn('_lifecycle++;',s);self.assertGreater(s.count('_requireLifecycle(lifecycle)'),5)
@@ -24,10 +25,11 @@ class SourceContracts(unittest.TestCase):
         self.assertNotIn('message.notification?.body',s);self.assertNotIn('message.notification?.title',s)
         self.assertIn("GoRouter.of(context).push('/notifications')",s)
     def test_native_cleanup_does_not_prevent_server_revocation(self):
-        s=self.text('lib/features/notifications/data/push_notification_service.dart')
-        block=s[s.index('Future<void> _revokeBinding'):]
-        self.assertIn('on Object { localCleanupFailed = true; }',block)
+        s=compact_source(self.text('lib/features/notifications/data/push_notification_service.dart'))
+        block=s[s.index('Future<void>_revokeBinding'):]
+        self.assertIn('onObject{localCleanupFailed=true;}',block)
         self.assertIn("rpc('rpc_push_unregister'",block)
+        self.assertLess(block.index('onObject{localCleanupFailed=true;}'),block.index("rpc('rpc_push_unregister'"))
     def test_admin_health_card_is_wired_to_existing_screen(self):
         self.assertIn('PushDeliveryHealthCard()',self.text('lib/features/admin/presentation/admin_operational_health_screen.dart'))
         s=self.text('lib/features/admin/presentation/widgets/push_delivery_health_card.dart')

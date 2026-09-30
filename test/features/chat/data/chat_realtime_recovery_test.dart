@@ -13,11 +13,14 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 const _conversation = '00000000-0000-4000-8000-000000000010';
 
 Map<String, Object?> _message(String body) => {
-  'id': '00000000-0000-4000-8000-${({'before':1,'during join':2,'while offline':3,'latest':4}[body]??5).toString().padLeft(12,'0')}',
+  'id':
+      '00000000-0000-4000-8000-${({'before': 1, 'during join': 2, 'while offline': 3, 'latest': 4}[body] ?? 5).toString().padLeft(12, '0')}',
   'conversation_id': _conversation,
   'sender_id': '00000000-0000-4000-8000-000000000002',
   'message_type': 'text',
   'body': body,
+  'metadata': <String, dynamic>{},
+  'read_at': null,
   'created_at': '2026-09-15T00:00:00Z',
   'access_redacted': false,
 };
@@ -52,7 +55,9 @@ class _Fixture {
   http.Response response(http.Request request, {int status = 200}) =>
       http.Response(
         jsonEncode(
-          status == 200 ? rows.reversed.toList() : {'message': 'retry', 'code': 'P0001'},
+          status == 200
+              ? rows.reversed.toList()
+              : {'message': 'retry', 'code': 'P0001'},
         ),
         status,
         headers: {'content-type': 'application/json'},
@@ -117,7 +122,8 @@ class _Fixture {
     });
     listener = ChatService(
       supabase: client,
-      captureAuthority: () => ChatAuthority('00000000-0000-4000-8000-000000000001', () {}),
+      captureAuthority: () =>
+          ChatAuthority('00000000-0000-4000-8000-000000000001', () {}),
     ).streamMessages(_conversation).listen(snapshots.add, onError: errors.add);
   }
 
@@ -232,9 +238,11 @@ void main() {
     );
     expect(fixture.errors, isNotEmpty);
     expect(
-      fixture.errors.every((error) =>
-          error is ChatDeliveryException &&
-          error.code == 'history_connection_unavailable'),
+      fixture.errors.every(
+        (error) =>
+            error is ChatDeliveryException &&
+            error.code == 'history_connection_unavailable',
+      ),
       isTrue,
     );
   });

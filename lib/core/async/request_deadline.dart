@@ -45,12 +45,32 @@ abstract final class RequestDeadline {
       error is HttpException ||
       error is http.ClientException ||
       (error is supa.FunctionException && error.status >= 500) ||
+      // The locked PostgREST SDK uses an HTTP status string when a proxy
+      // response has no structured database error. Preserve SQLSTATE/PTxxx
+      // errors, whose explicit transaction rejection is known.
+      (error is supa.PostgrestException && _isProxyFailureCode(error.code)) ||
       (error is DioException &&
           switch (error.type) {
             DioExceptionType.connectionTimeout ||
             DioExceptionType.sendTimeout ||
             DioExceptionType.receiveTimeout ||
             DioExceptionType.connectionError => true,
+            DioExceptionType.unknown => _lostNativeTransport(error.error),
+            DioExceptionType.badResponse =>
+              error.response?.statusCode != null &&
+                  error.response!.statusCode! >= 500 &&
+                  error.response!.statusCode! <= 599 &&
+                  error.response!.data is! Map,
             _ => false,
           });
+  static bool _isProxyFailureCode(String? code) {
+    final status = int.tryParse(code ?? '');
+    return status != null && status >= 500 && status <= 599;
+  }
+
+  static bool _lostNativeTransport(Object? error) =>
+      error is TimeoutException ||
+      error is SocketException ||
+      error is HttpException ||
+      error is http.ClientException;
 }

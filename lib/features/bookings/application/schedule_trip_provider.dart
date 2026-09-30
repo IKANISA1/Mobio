@@ -10,7 +10,7 @@ import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/location/location_providers.dart';
-import 'package:mobi_app/core/permissions/app_permission_service.dart';
+import 'package:mobi_app/core/permissions/permission_providers.dart';
 import 'package:mobi_app/features/bookings/application/booking_services.dart';
 import 'package:mobi_app/features/bookings/application/schedule_trip_state.dart';
 import 'package:mobi_app/features/bookings/data/public_transport_service.dart';
@@ -57,11 +57,34 @@ final scheduleTripProvider =
     >(ScheduleTripController.new);
 
 class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
-  AccountSnapshot? _captureAccount() =>
-      SupabaseConfig.isLocalUiPreview ? null : AccountContext.capture();
+  ScheduleTripController() : _captureOverride = null, _isCurrentOverride = null;
+
+  @visibleForTesting
+  ScheduleTripController.test({
+    required AccountSnapshot? Function() captureAccount,
+    required bool Function(AccountSnapshot?) isCurrent,
+  }) : _captureOverride = captureAccount,
+       _isCurrentOverride = isCurrent;
+
+  final AccountSnapshot? Function()? _captureOverride;
+  final bool Function(AccountSnapshot?)? _isCurrentOverride;
+  AccountSnapshot? _draftAccount;
+  int _buildRevision = 0;
+  int _locationRevision = 0;
+
+  AccountSnapshot? _captureAccount() {
+    if (_draftAccount != null) _requireCurrent(_draftAccount);
+    return _captureOverride != null
+        ? _captureOverride()
+        : SupabaseConfig.isLocalUiPreview
+        ? null
+        : AccountContext.capture();
+  }
 
   bool _isCurrent(AccountSnapshot? account) =>
-      ref.mounted && (account == null || AccountContext.isCurrent(account));
+      ref.mounted &&
+      (_isCurrentOverride?.call(account) ??
+          (account == null || AccountContext.isCurrent(account)));
 
   void _requireCurrent(AccountSnapshot? account) {
     if (!_isCurrent(account)) throw const StaleAccountWork();
@@ -107,9 +130,16 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
 
   @override
   FutureOr<ScheduleTripState> build() async {
+    final buildRevision = ++_buildRevision;
+    _locationRevision++;
+    _draftAccount = null;
+    ref.onDispose(() {
+      _buildRevision++;
+      _locationRevision++;
+    });
     final args = ref.watch(scheduleTripArgsProvider);
 
-    if (SupabaseConfig.isLocalUiPreview) {
+    if (SupabaseConfig.isLocalUiPreview && _captureOverride == null) {
       final editingTrip = args.isEditMode ? AppConstants.mockTrips.first : null;
       final agencyNames = await _loadAgencyNames();
       return editingTrip == null
@@ -133,6 +163,15 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     }
 
     final account = _captureAccount();
+    _draftAccount = account;
+    void onAccountChanged() {
+      if (!_isCurrent(account) && ref.mounted) ref.invalidateSelf();
+    }
+
+    AccountContext.changes.addListener(onAccountChanged);
+    ref.onDispose(
+      () => AccountContext.changes.removeListener(onAccountChanged),
+    );
     final vt = await ref.read(vehicleTypeServiceProvider).getAll();
     _requireCurrent(account);
     final favorites = await _loadFavoriteAddresses();
@@ -164,7 +203,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
       favoriteAddresses: favorites,
     );
 
-    unawaited(_prefillCurrentPickupIfEmpty());
+    unawaited(_prefillCurrentPickupIfEmpty(account, buildRevision));
 
     return initialState;
   }
@@ -194,51 +233,65 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     }
   }
 
-  Future<void> _prefillCurrentPickupIfEmpty() async {
+  Future<void> _prefillCurrentPickupIfEmpty(
+    AccountSnapshot? account,
+    int buildRevision,
+  ) async {
+    final revision = ++_locationRevision;
+    bool current() =>
+        revision == _locationRevision &&
+        buildRevision == _buildRevision &&
+        _isCurrent(account);
     try {
-      final hasAccess = await AppPermissionService.instance.hasLocationAccess();
-      if (!hasAccess) return;
+      final hasAccess = await ref
+          .read(appPermissionServiceProvider)
+          .hasLocationAccess();
+      if (!current() || !hasAccess) return;
 
       final locationService = ref.read(locationServiceProvider);
-      final position =
-          await locationService.getLastKnownOrCached() ??
-          await locationService.getCurrentPosition();
+      final cached = await locationService.getLastKnownOrCached();
+      if (!current()) return;
+      final position = cached ?? await locationService.getCurrentPosition();
+      if (!current() || position == null) return;
 
-      if (position != null) {
-        final currentState = state.value;
-        if (currentState != null) {
-          final nextState = currentState.copyWith(
-            userLat: position.latitude,
-            userLng: position.longitude,
-          );
-          state = AsyncValue.data(nextState);
-        }
+      final currentState = state.value;
+      if (currentState == null) return;
+      state = AsyncValue.data(
+        currentState.copyWith(
+          userLat: position.latitude,
+          userLng: position.longitude,
+        ),
+      );
+      if (currentState.originDetails != null) return;
 
-        final afterPositionState = state.value;
-        if (afterPositionState?.originDetails != null) return;
-
-        final details = await ref
-            .read(placesServiceProvider)
-            .reverseGeocode(position.latitude, position.longitude);
-
-        final afterReverseGeocodeState = state.value;
-        if (details != null &&
-            afterReverseGeocodeState != null &&
-            afterReverseGeocodeState.originDetails == null) {
-          state = AsyncValue.data(
-            afterReverseGeocodeState.copyWith(
-              originDetails: details,
-              validationMessage: null,
-            ),
-          );
-        }
+      final details = await ref
+          .read(placesServiceProvider)
+          .reverseGeocode(position.latitude, position.longitude);
+      if (!current()) return;
+      final afterReverseGeocodeState = state.value;
+      if (details != null &&
+          afterReverseGeocodeState != null &&
+          afterReverseGeocodeState.originDetails == null) {
+        state = AsyncValue.data(
+          afterReverseGeocodeState.copyWith(
+            originDetails: details,
+            validationMessage: null,
+          ),
+        );
       }
     } on Object catch (error) {
-      debugPrint('Unable to bootstrap location: $error');
+      if (current()) debugPrint('Unable to bootstrap location: $error');
     }
   }
 
   Future<void> handleCurrentLocation() async {
+    final account = _captureAccount();
+    final revision = ++_locationRevision;
+    final buildRevision = _buildRevision;
+    bool current() =>
+        revision == _locationRevision &&
+        buildRevision == _buildRevision &&
+        _isCurrent(account);
     final currentState = state.value;
     if (currentState == null) return;
 
@@ -250,11 +303,12 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
       final placesService = ref.read(placesServiceProvider);
 
       final position = await locationService.getCurrentPosition();
+      if (!current()) return;
       if (position == null) {
-        final current = state.value;
-        if (current != null) {
+        final latest = state.value;
+        if (latest != null) {
           state = AsyncValue.data(
-            current.copyWith(
+            latest.copyWith(
               isLoadingLocation: false,
               validationMessage: 'Current location is unavailable.',
             ),
@@ -267,33 +321,46 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
         position.latitude,
         position.longitude,
       );
-
-      if (details != null) {
-        setOrigin(details);
+      if (!current()) return;
+      final latest = state.value;
+      if (details != null && latest != null) {
+        state = AsyncValue.data(
+          latest.copyWith(originDetails: details, validationMessage: null),
+        );
       }
     } on Object catch (error) {
+      if (!current()) return;
       debugPrint('Unable to use current location: $error');
-      final current = state.value;
-      if (current != null) {
+      final latest = state.value;
+      if (latest != null) {
         state = AsyncValue.data(
-          current.copyWith(
+          latest.copyWith(
             validationMessage: 'Unable to use current location. Try again.',
           ),
         );
       }
     } finally {
-      final finalState = state.value;
-      if (finalState != null) {
-        state = AsyncValue.data(finalState.copyWith(isLoadingLocation: false));
+      if (current()) {
+        final finalState = state.value;
+        if (finalState != null) {
+          state = AsyncValue.data(
+            finalState.copyWith(isLoadingLocation: false),
+          );
+        }
       }
     }
   }
 
   void setOrigin(PlaceDetails? details) {
+    _locationRevision++;
     final currentState = state.value;
     if (currentState == null) return;
     state = AsyncValue.data(
-      currentState.copyWith(originDetails: details, validationMessage: null),
+      currentState.copyWith(
+        originDetails: details,
+        validationMessage: null,
+        isLoadingLocation: false,
+      ),
     );
   }
 
@@ -318,8 +385,13 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     required String label,
     required String addressType,
   }) async {
+    final account = _captureAccount();
+    final buildRevision = _buildRevision;
+    bool current() => buildRevision == _buildRevision && _isCurrent(account);
     final currentState = state.value;
-    if (currentState == null) return false;
+    if (currentState == null || currentState.isSavingFavoriteAddress) {
+      return false;
+    }
 
     final place = fromOrigin
         ? currentState.originDetails
@@ -341,7 +413,9 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
             place: place,
             sortOrder: currentState.favoriteAddresses.length,
           );
+      if (!current()) throw const StaleAccountWork();
       final favorites = await _loadFavoriteAddresses();
+      if (!current()) throw const StaleAccountWork();
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(
@@ -353,7 +427,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
       }
       return true;
     } on Object {
-      final finalState = state.value;
+      final finalState = current() ? state.value : null;
       if (finalState != null) {
         state = AsyncValue.data(
           finalState.copyWith(isSavingFavoriteAddress: false),
@@ -364,8 +438,11 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   Future<void> deleteFavoriteAddress(FavoriteAddress address) async {
+    final account = _captureAccount();
+    final buildRevision = _buildRevision;
+    bool current() => buildRevision == _buildRevision && _isCurrent(account);
     final currentState = state.value;
-    if (currentState == null) return;
+    if (currentState == null || currentState.isSavingFavoriteAddress) return;
 
     state = AsyncValue.data(
       currentState.copyWith(isSavingFavoriteAddress: true),
@@ -373,7 +450,9 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
 
     try {
       await ref.read(favoriteAddressServiceProvider).delete(address.id);
+      if (!current()) throw const StaleAccountWork();
       final favorites = await _loadFavoriteAddresses();
+      if (!current()) throw const StaleAccountWork();
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(
@@ -384,7 +463,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
         );
       }
     } on Object {
-      final finalState = state.value;
+      final finalState = current() ? state.value : null;
       if (finalState != null) {
         state = AsyncValue.data(
           finalState.copyWith(isSavingFavoriteAddress: false),

@@ -35,6 +35,12 @@ CHECKS = frozenset({
 })
 HEX64 = re.compile(r"[0-9a-f]{64}\Z")
 HEX40 = re.compile(r"[0-9a-f]{40}\Z")
+ANDROID_NAMESPACE = "http://schemas.android.com/apk/res/android"
+COMPILED_MANIFEST = "base/manifest/AndroidManifest.xml"
+MAX_MANIFEST_BYTES = 2 * 1024 * 1024
+# Stable framework attribute IDs, also checked against the Android 36 SDK.
+IDENTITY_RESOURCE_IDS = {"versionCode": 0x0101021b, "versionName": 0x0101021c,
+                         "versionCodeMajor": 0x01010576}
 
 
 class ManifestError(ValueError):
@@ -107,6 +113,147 @@ def versions(root: Path) -> tuple[str, int, str]:
     package = re.findall(r'^\s*applicationId\s*=\s*"([a-z][a-z0-9_.]+)"\s*$', app, re.M)
     require(len(package) == 1, "Exactly one Android applicationId is required")
     return version[0], int(version[0].split("+")[1]), package[0]
+
+
+# AAB manifests use AAPT2 XmlNode/XmlElement/XmlAttribute, not text XML.
+# Field numbers: official AOSP tools/aapt2/Resources.proto (XmlNode and Item).
+# https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/tools/aapt2/Resources.proto
+def protobuf_fields(data: bytes) -> list[tuple[int, int, bytes | int]]:
+    """Read bounded protobuf wire fields; reject malformed/ambiguous encoding."""
+    require(len(data) <= MAX_MANIFEST_BYTES, "Compiled manifest message too large")
+    offset = 0
+
+    def varint() -> int:
+        nonlocal offset
+        value = 0
+        for index in range(10):
+            require(offset < len(data), "Truncated compiled manifest varint")
+            byte = data[offset]
+            offset += 1
+            require(index < 9 or byte <= 1, "Compiled manifest varint overflow")
+            value |= (byte & 127) << (index * 7)
+            if byte < 128:
+                return value
+        raise ManifestError("Compiled manifest varint overflow")
+
+    result = []
+    while offset < len(data):
+        require(len(result) < 10000, "Too many compiled manifest fields")
+        tag = varint()
+        number, wire = tag >> 3, tag & 7
+        require(0 < number < (1 << 29), "Invalid compiled manifest field number")
+        if wire == 0:
+            value: bytes | int = varint()
+        elif wire in (1, 2, 5):
+            length = varint() if wire == 2 else (8 if wire == 1 else 4)
+            require(length <= len(data) - offset, "Truncated compiled manifest field")
+            value = data[offset:offset + length]
+            offset += length
+        else:
+            raise ManifestError("Unsupported compiled manifest wire type")
+        result.append((number, wire, value))
+    return result
+
+
+def protobuf_single(fields: list[tuple[int, int, bytes | int]], number: int,
+                    wire: int, *, optional: bool = False) -> bytes | int | None:
+    selected = [item for item in fields if item[0] == number]
+    require(len(selected) <= 1, "Duplicate compiled manifest scalar field")
+    require(bool(selected) or optional, "Required compiled manifest field missing")
+    if not selected:
+        return None
+    require(selected[0][1] == wire, "Wrong compiled manifest field wire type")
+    return selected[0][2]
+
+
+def protobuf_text(fields: list[tuple[int, int, bytes | int]], number: int,
+                  *, optional: bool = False) -> str:
+    value = protobuf_single(fields, number, 2, optional=optional)
+    if value is None:
+        return ""
+    try:
+        return value.decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise ManifestError("Invalid compiled manifest UTF-8") from error
+
+
+def compiled_attribute_value(fields: list[tuple[int, int, bytes | int]],
+                             *, numeric: bool) -> str | int:
+    raw = protobuf_text(fields, 3)
+    if numeric:
+        require(len(raw) <= 10 and bool(re.fullmatch(r"0|[1-9][0-9]*", raw)),
+                "Invalid compiled manifest version code")
+        value: str | int = int(raw)
+        require(value <= 0x7fffffff, "Compiled manifest version code overflow")
+    else:
+        value = raw
+    item = protobuf_single(fields, 6, 2, optional=True)
+    if item is None:
+        return value
+    item_fields = protobuf_fields(item)
+    variants = [field for field in item_fields if 1 <= field[0] <= 7]
+    require(len(variants) == 1 and variants[0][1] == 2,
+            "Ambiguous compiled manifest attribute item")
+    if numeric:
+        require(variants[0][0] == 7, "Compiled manifest version code must be a literal integer")
+        primitives = [field for field in protobuf_fields(variants[0][2])
+                      if 1 <= field[0] <= 14]
+        require(len(primitives) == 1 and primitives[0][0] in (6, 7)
+                and primitives[0][1] == 0,
+                "Compiled manifest version code must be a literal integer")
+        compiled: str | int = primitives[0][2]
+    else:
+        require(variants[0][0] in (2, 3), "Compiled manifest identity must be a literal string")
+        compiled = protobuf_text(protobuf_fields(variants[0][2]), 1)
+    require(compiled == value, "Raw and compiled manifest identity differ")
+    return value
+
+
+def compiled_manifest_identity(aab: Path, version: str, code: int, package: str) -> dict:
+    try:
+        with zipfile.ZipFile(aab) as bundle:
+            entries = [entry for entry in bundle.infolist() if entry.filename == COMPILED_MANIFEST]
+            require(len(entries) == 1, "Exactly one compiled base Android manifest required")
+            require(0 < entries[0].file_size <= MAX_MANIFEST_BYTES,
+                    "Compiled Android manifest missing or too large")
+            body = bundle.read(entries[0])
+    except (OSError, zipfile.BadZipFile, RuntimeError) as error:
+        raise ManifestError("Compiled Android manifest is unreadable") from error
+    node = protobuf_fields(body)
+    require(not any(field[0] == 2 for field in node), "Compiled manifest root must be an element")
+    element = protobuf_fields(protobuf_single(node, 1, 2))
+    require(protobuf_text(element, 2, optional=True) == ""
+            and protobuf_text(element, 3) == "manifest", "Compiled manifest root must be manifest")
+    attributes = {}
+    for number, wire, data in element:
+        if number != 4:
+            continue
+        require(wire == 2, "Wrong compiled manifest attribute wire type")
+        fields = protobuf_fields(data)
+        name = (protobuf_text(fields, 1, optional=True), protobuf_text(fields, 2))
+        require(name not in attributes, "Duplicate compiled manifest root attribute")
+        resource_id = protobuf_single(fields, 5, 0, optional=True)
+        if name[0] == ANDROID_NAMESPACE and name[1] in IDENTITY_RESOURCE_IDS:
+            require(resource_id == IDENTITY_RESOURCE_IDS[name[1]],
+                    "Compiled manifest identity resource ID missing or incorrect")
+        elif resource_id in IDENTITY_RESOURCE_IDS.values():
+            raise ManifestError("Compiled manifest identity resource ID has wrong name/namespace")
+        if name == ("", "package"):
+            require(resource_id in (None, 0), "Compiled manifest package resource ID must be absent")
+        attributes[name] = fields
+    names = (("", "package"), (ANDROID_NAMESPACE, "versionName"),
+             (ANDROID_NAMESPACE, "versionCode"))
+    require(all(name in attributes for name in names), "Required compiled manifest identity missing")
+    actual_package = compiled_attribute_value(attributes[names[0]], numeric=False)
+    actual_name = compiled_attribute_value(attributes[names[1]], numeric=False)
+    actual_code = compiled_attribute_value(attributes[names[2]], numeric=True)
+    major = attributes.get((ANDROID_NAMESPACE, "versionCodeMajor"))
+    require(major is None or compiled_attribute_value(major, numeric=True) == 0,
+            "Compiled manifest versionCodeMajor must be zero")
+    require(actual_package == package and actual_name == version.split("+")[0]
+            and actual_code == code, "Compiled AAB version or package differs from source")
+    return {"package": actual_package, "version_name": actual_name,
+            "version_code": actual_code, "sha256": hashlib.sha256(body).hexdigest()}
 
 
 def verify_aab_signature(aab: Path) -> None:
@@ -225,6 +372,7 @@ def source_state(root: Path, aab: Path) -> dict:
     version, version_code, package = versions(root)
     migration_sha, migrations = migration_state(root)
     build_inputs = build_input_state(root, aab, version, version_code, package)
+    compiled_manifest = compiled_manifest_identity(aab, version, version_code, package)
     return {
         "commit": commit, "tree": tree, "version": version,
         "version_code": version_code, "package": package,
@@ -232,7 +380,8 @@ def source_state(root: Path, aab: Path) -> dict:
         "migration_bundle_sha256": migration_sha, "migrations": migrations,
         "model_manifest_sha256": model_policy_state(root),
         "build_inputs": build_inputs,
-        "aab": {"name": aab.name, "sha256": digest(aab), "size_bytes": aab.stat().st_size},
+        "aab": {"name": aab.name, "sha256": digest(aab), "size_bytes": aab.stat().st_size,
+                "compiled_manifest": compiled_manifest},
         "optional_features": {"paid_transport": False, "institutional_sms": False, "face_ussd": False},
     }
 
@@ -272,6 +421,7 @@ def record_build_inputs(root: Path, defines_file: Path, aab: Path, output: Path)
             and all(isinstance(value, str) and value for value in defines.values()),
             "Android build inputs lack a required public Dart define")
     version, code, package = versions(root)
+    compiled_manifest_identity(aab, version, code, package)
     environment = os.environ.get("MOBIO_BUILD_ENVIRONMENT", "local-unverified")
     require(bool(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{2,79}", environment)),
             "Invalid named Android build environment")
@@ -332,7 +482,9 @@ def verify(root: Path, aab: Path, candidate_path: Path, approval_path: Path,
             "Approval does not match requested Play track/status")
     reviewer = approval["reviewer"]
     require(isinstance(reviewer, str) and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.@-]{2,99}", reviewer)
-            and reviewer != candidate["build_actor"], "Distinct named release reviewer required")
+            and isinstance(candidate["build_actor"], str)
+            and reviewer.casefold() != candidate["build_actor"].casefold(),
+            "Distinct named release reviewer required")
     approved = parsed_time(approval["approved_at"], "approval time")
     require(created <= approved <= now + timedelta(minutes=5)
             and approved >= now - timedelta(days=7), "Approval is stale or predates candidate")

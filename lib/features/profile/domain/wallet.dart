@@ -1,3 +1,99 @@
+/// Exact backend fields used by wallet and subscription workflows.
+/// Required amounts and state never inherit display defaults.
+abstract final class WalletWireRecord {
+  static final _uuid = RegExp(
+    r'^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$',
+  );
+  static final _memberId = RegExp(r'^[0-9]{6}$');
+  static const _maximumInteger = 9007199254740991;
+
+  static Map<String, dynamic> object(Object? value) {
+    if (value is! Map || value.keys.any((key) => key is! String)) {
+      throw const FormatException('Invalid wallet RPC object');
+    }
+    return Map<String, dynamic>.from(value);
+  }
+
+  static List<Map<String, dynamic>> rows(Object? value) {
+    if (value is! List) throw const FormatException('Invalid wallet RPC list');
+    return value.map(object).toList(growable: false);
+  }
+
+  static String text(Map<String, dynamic> row, String key) {
+    final value = row[key];
+    if (value is! String || value.trim().isEmpty) {
+      throw FormatException('Invalid wallet field: $key');
+    }
+    return value;
+  }
+
+  static String id(Map<String, dynamic> row, String key) {
+    final value = text(row, key);
+    if (!_uuid.hasMatch(value)) {
+      throw FormatException('Invalid wallet ID: $key');
+    }
+    return value;
+  }
+
+  static String memberId(Map<String, dynamic> row, String key) {
+    final value = text(row, key);
+    if (!_memberId.hasMatch(value)) {
+      throw FormatException('Invalid member ID: $key');
+    }
+    return value;
+  }
+
+  static String? optionalText(Map<String, dynamic> row, String key) {
+    final value = row[key];
+    if (value == null) return null;
+    if (value is! String) throw FormatException('Invalid wallet field: $key');
+    return value;
+  }
+
+  static String? optionalId(Map<String, dynamic> row, String key) {
+    if (row[key] == null) return null;
+    return id(row, key);
+  }
+
+  static int integer(Map<String, dynamic> row, String key, {int minimum = 0}) {
+    final value = row[key];
+    if (value is! int || value < minimum || value > _maximumInteger) {
+      throw FormatException('Invalid wallet integer: $key');
+    }
+    return value;
+  }
+
+  static String state(
+    Map<String, dynamic> row,
+    String key,
+    Set<String> values,
+  ) {
+    final value = text(row, key);
+    if (!values.contains(value)) {
+      throw FormatException('Invalid wallet state: $key');
+    }
+    return value;
+  }
+
+  static bool flag(Map<String, dynamic> row, String key) {
+    final value = row[key];
+    if (value is! bool) throw FormatException('Invalid wallet flag: $key');
+    return value;
+  }
+
+  static DateTime date(Map<String, dynamic> row, String key) {
+    final value = text(row, key);
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null) throw FormatException('Invalid wallet date: $key');
+    return parsed;
+  }
+
+  static DateTime? optionalDate(Map<String, dynamic> row, String key) {
+    if (row[key] == null) return null;
+    return date(row, key);
+  }
+}
+
 class WalletSummary {
   const WalletSummary({
     required this.profileId,
@@ -21,19 +117,36 @@ class WalletSummary {
   final String? referralCode;
   final String? shareUrl;
 
-  factory WalletSummary.fromJson(Map<String, dynamic> json) {
+  factory WalletSummary.fromJson(
+    Map<String, dynamic> json, {
+    String? expectedProfileId,
+  }) {
+    final profileId = WalletWireRecord.id(json, 'profile_id');
+    if (expectedProfileId != null && profileId != expectedProfileId) {
+      throw const FormatException('Wallet summary owner mismatch');
+    }
     return WalletSummary(
-      profileId: json['profile_id'] as String? ?? '',
-      balanceTokens: (json['balance_tokens'] as num?)?.toInt() ?? 0,
-      rwfEquivalent: (json['rwf_equivalent'] as num?)?.toInt() ?? 0,
-      lifetimeEarnedTokens:
-          (json['lifetime_earned_tokens'] as num?)?.toInt() ?? 0,
-      lifetimeSentTokens: (json['lifetime_sent_tokens'] as num?)?.toInt() ?? 0,
-      lifetimeReceivedTokens:
-          (json['lifetime_received_tokens'] as num?)?.toInt() ?? 0,
-      successfulReferrals: (json['successful_referrals'] as num?)?.toInt() ?? 0,
-      referralCode: json['referral_code'] as String?,
-      shareUrl: json['share_url'] as String?,
+      profileId: profileId,
+      balanceTokens: WalletWireRecord.integer(json, 'balance_tokens'),
+      rwfEquivalent: WalletWireRecord.integer(json, 'rwf_equivalent'),
+      lifetimeEarnedTokens: WalletWireRecord.integer(
+        json,
+        'lifetime_earned_tokens',
+      ),
+      lifetimeSentTokens: WalletWireRecord.integer(
+        json,
+        'lifetime_sent_tokens',
+      ),
+      lifetimeReceivedTokens: WalletWireRecord.integer(
+        json,
+        'lifetime_received_tokens',
+      ),
+      successfulReferrals: WalletWireRecord.integer(
+        json,
+        'successful_referrals',
+      ),
+      referralCode: WalletWireRecord.optionalText(json, 'referral_code'),
+      shareUrl: WalletWireRecord.optionalText(json, 'share_url'),
     );
   }
 }
@@ -55,16 +168,21 @@ class TokenLedgerEntry {
   final DateTime createdAt;
   final String? note;
 
-  factory TokenLedgerEntry.fromJson(Map<String, dynamic> json) {
+  factory TokenLedgerEntry.fromJson(
+    Map<String, dynamic> json, {
+    String? expectedProfileId,
+  }) {
+    if (expectedProfileId != null &&
+        WalletWireRecord.id(json, 'profile_id') != expectedProfileId) {
+      throw const FormatException('Wallet ledger owner mismatch');
+    }
     return TokenLedgerEntry(
-      id: json['id'] as String? ?? '',
-      direction: json['direction'] as String? ?? 'credit',
-      amountTokens: (json['amount_tokens'] as num?)?.toInt() ?? 0,
-      reason: json['reason'] as String? ?? '',
-      note: json['note'] as String?,
-      createdAt:
-          DateTime.tryParse(json['created_at'] as String? ?? '') ??
-          DateTime.now(),
+      id: WalletWireRecord.id(json, 'id'),
+      direction: WalletWireRecord.state(json, 'direction', {'credit', 'debit'}),
+      amountTokens: WalletWireRecord.integer(json, 'amount_tokens', minimum: 1),
+      reason: WalletWireRecord.text(json, 'reason'),
+      note: WalletWireRecord.optionalText(json, 'note'),
+      createdAt: WalletWireRecord.date(json, 'created_at'),
     );
   }
 }
@@ -80,8 +198,8 @@ class WalletTransferRecipient {
 
   factory WalletTransferRecipient.fromJson(Map<String, dynamic> json) {
     return WalletTransferRecipient(
-      memberId: json['member_id'] as String? ?? '',
-      displayName: json['display_name'] as String? ?? 'Mobio member',
+      memberId: WalletWireRecord.memberId(json, 'member_id'),
+      displayName: WalletWireRecord.text(json, 'display_name'),
     );
   }
 
@@ -92,11 +210,10 @@ class WalletTransferRecipient {
     if (!RegExp(r'^[0-9]{6}$').hasMatch(requestedMemberId)) {
       throw StateError('INVALID_MEMBER_ID');
     }
-    final recipient = WalletTransferRecipient.fromJson(json);
-    if (recipient.memberId != requestedMemberId) {
+    if (json['member_id'] != requestedMemberId) {
       throw StateError('RECIPIENT_ID_MISMATCH');
     }
-    return recipient;
+    return WalletTransferRecipient.fromJson(json);
   }
 }
 
@@ -115,10 +232,16 @@ class WalletTransferReceipt {
 
   factory WalletTransferReceipt.fromJson(Map<String, dynamic> json) {
     return WalletTransferReceipt(
-      transferId: json['transfer_id'] as String? ?? '',
-      status: json['status'] as String? ?? 'completed',
-      senderLedgerEntryId: json['sender_ledger_entry_id'] as String?,
-      receiverLedgerEntryId: json['receiver_ledger_entry_id'] as String?,
+      transferId: WalletWireRecord.id(json, 'transfer_id'),
+      status: WalletWireRecord.state(json, 'status', {'completed', 'reversed'}),
+      senderLedgerEntryId: WalletWireRecord.optionalId(
+        json,
+        'sender_ledger_entry_id',
+      ),
+      receiverLedgerEntryId: WalletWireRecord.optionalId(
+        json,
+        'receiver_ledger_entry_id',
+      ),
     );
   }
 }
@@ -144,13 +267,18 @@ class WalletRedemptionReceipt {
 
   factory WalletRedemptionReceipt.fromJson(Map<String, dynamic> json) {
     return WalletRedemptionReceipt(
-      redemptionId: json['redemption_id'] as String? ?? '',
-      transferId: json['transfer_id'] as String? ?? '',
-      status: json['status'] as String? ?? 'pending',
-      adminMemberId: json['admin_member_id'] as String? ?? '',
-      amountTokens: (json['amount_tokens'] as num?)?.toInt() ?? 0,
-      amountRwf: (json['amount_rwf'] as num?)?.toInt() ?? 0,
-      momoNumber: json['momo_number'] as String?,
+      redemptionId: WalletWireRecord.id(json, 'redemption_id'),
+      transferId: WalletWireRecord.id(json, 'transfer_id'),
+      status: WalletWireRecord.state(json, 'status', {
+        'pending',
+        'cash_sent',
+        'cancelled',
+        'failed',
+      }),
+      adminMemberId: WalletWireRecord.memberId(json, 'admin_member_id'),
+      amountTokens: WalletWireRecord.integer(json, 'amount_tokens', minimum: 1),
+      amountRwf: WalletWireRecord.integer(json, 'amount_rwf', minimum: 1),
+      momoNumber: WalletWireRecord.optionalText(json, 'momo_number'),
     );
   }
 }
@@ -170,10 +298,10 @@ class ReferralCode {
 
   factory ReferralCode.fromJson(Map<String, dynamic> json) {
     return ReferralCode(
-      id: json['id'] as String? ?? '',
-      code: json['code'] as String? ?? '',
-      shareUrl: json['share_url'] as String? ?? '',
-      rewardTokens: (json['reward_tokens'] as num?)?.toInt() ?? 100,
+      id: WalletWireRecord.id(json, 'id'),
+      code: WalletWireRecord.text(json, 'code'),
+      shareUrl: WalletWireRecord.text(json, 'share_url'),
+      rewardTokens: WalletWireRecord.integer(json, 'reward_tokens'),
     );
   }
 }
@@ -215,21 +343,27 @@ class DriverPlusStatus {
 
   factory DriverPlusStatus.fromJson(Map<String, dynamic> json) {
     return DriverPlusStatus(
-      driverId: json['driver_id'] as String? ?? '',
-      vehicleTypeId: json['vehicle_type_id'] as String? ?? 'cab',
-      requiresPlus: json['requires_plus'] as bool? ?? true,
-      isFreeForever: json['is_free_forever'] as bool? ?? false,
-      hasActiveSubscription: json['has_active_subscription'] as bool? ?? false,
-      canReceiveNewRequest: json['can_receive_new_request'] as bool? ?? false,
-      canReply: json['can_reply'] as bool? ?? false,
-      canReadMessages: json['can_read_messages'] as bool? ?? false,
-      canShowWhatsapp: json['can_show_whatsapp'] as bool? ?? false,
-      upgradeRequired: json['upgrade_required'] as bool? ?? true,
-      usedToday: (json['used_today'] as num?)?.toInt() ?? 0,
-      usedTotal: (json['used_total'] as num?)?.toInt() ?? 0,
-      remainingToday: (json['remaining_today'] as num?)?.toInt() ?? 0,
-      remainingTotal: (json['remaining_total'] as num?)?.toInt() ?? 0,
-      trialEndsAt: DateTime.tryParse(json['trial_ends_at'] as String? ?? ''),
+      driverId: WalletWireRecord.id(json, 'driver_id'),
+      vehicleTypeId: WalletWireRecord.text(json, 'vehicle_type_id'),
+      requiresPlus: WalletWireRecord.flag(json, 'requires_plus'),
+      isFreeForever: WalletWireRecord.flag(json, 'is_free_forever'),
+      hasActiveSubscription: WalletWireRecord.flag(
+        json,
+        'has_active_subscription',
+      ),
+      canReceiveNewRequest: WalletWireRecord.flag(
+        json,
+        'can_receive_new_request',
+      ),
+      canReply: WalletWireRecord.flag(json, 'can_reply'),
+      canReadMessages: WalletWireRecord.flag(json, 'can_read_messages'),
+      canShowWhatsapp: WalletWireRecord.flag(json, 'can_show_whatsapp'),
+      upgradeRequired: WalletWireRecord.flag(json, 'upgrade_required'),
+      usedToday: WalletWireRecord.integer(json, 'used_today'),
+      usedTotal: WalletWireRecord.integer(json, 'used_total'),
+      remainingToday: WalletWireRecord.integer(json, 'remaining_today'),
+      remainingTotal: WalletWireRecord.integer(json, 'remaining_total'),
+      trialEndsAt: WalletWireRecord.optionalDate(json, 'trial_ends_at'),
     );
   }
 }
@@ -263,17 +397,27 @@ class DriverSubscriptionPaymentRequest {
 
   factory DriverSubscriptionPaymentRequest.fromJson(Map<String, dynamic> json) {
     return DriverSubscriptionPaymentRequest(
-      id: json['id'] as String? ?? '',
-      status: json['status'] as String? ?? 'pending',
-      paymentMethod: json['payment_method'] as String? ?? 'momo_ussd',
-      referenceCode: json['reference_code'] as String? ?? '',
-      amountTokens: (json['amount_tokens'] as num?)?.toInt() ?? 0,
-      amountRwf: (json['amount_rwf'] as num?)?.toInt() ?? 0,
-      currency: json['currency'] as String? ?? 'RWF',
-      momoPayCode: json['momo_pay_code'] as String? ?? '12345',
-      ussdCode: json['ussd_code'] as String?,
-      subscriptionId: json['subscription_id'] as String?,
-      expiresAt: DateTime.tryParse(json['expires_at'] as String? ?? ''),
+      id: WalletWireRecord.id(json, 'id'),
+      status: WalletWireRecord.state(json, 'status', {
+        'pending',
+        'dialer_opened',
+        'confirmed',
+        'failed',
+        'expired',
+        'cancelled',
+      }),
+      paymentMethod: WalletWireRecord.state(json, 'payment_method', {
+        'tokens',
+        'momo_ussd',
+      }),
+      referenceCode: WalletWireRecord.text(json, 'reference_code'),
+      amountTokens: WalletWireRecord.integer(json, 'amount_tokens', minimum: 1),
+      amountRwf: WalletWireRecord.integer(json, 'amount_rwf', minimum: 1),
+      currency: WalletWireRecord.text(json, 'currency'),
+      momoPayCode: WalletWireRecord.text(json, 'momo_pay_code'),
+      ussdCode: WalletWireRecord.optionalText(json, 'ussd_code'),
+      subscriptionId: WalletWireRecord.optionalId(json, 'subscription_id'),
+      expiresAt: WalletWireRecord.date(json, 'expires_at'),
     );
   }
 }

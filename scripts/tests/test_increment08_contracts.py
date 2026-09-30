@@ -2,6 +2,7 @@
 from pathlib import Path
 import unittest
 import xml.etree.ElementTree as ET
+from source_contract_helpers import compact_source
 ROOT = Path(__file__).resolve().parents[2]
 def read(path): return (ROOT / path).read_text()
 class SessionContracts(unittest.TestCase):
@@ -21,8 +22,11 @@ class SessionContracts(unittest.TestCase):
         s=read('lib/core/auth/auth_session_storage.dart')
         self.assertIn('!kIsWeb',s);self.assertIn('MemorySessionValueStore()',s)
     def test_http_disallowed_outside_local_debug(self):
-        s=read('lib/core/auth/auth_session_storage.dart')
-        self.assertIn("uri.scheme == 'http' && (!kDebugMode",s)
+        s=compact_source(read('lib/core/auth/auth_session_storage.dart'))
+        self.assertIn("uri.scheme=='http'&&(!kDebugMode||",s)
+        for host in ['localhost', '127.0.0.1', '::1', '10.0.2.2']:
+            self.assertIn(repr(host),s)
+        self.assertIn('.contains(uri.host)',s)
     def test_sdk_writes_cannot_establish_new_login(self):
         s=read('lib/core/auth/session_persistence.dart')
         self.assertIn('next.key != _accepted!.key',s)
@@ -58,9 +62,11 @@ class SessionContracts(unittest.TestCase):
             self.assertIn(text,s)
     def test_login_verification_is_service_owned(self):
         for f in ['lib/features/auth/data/whatsapp_login_service.dart','lib/features/admin/data/otp_service.dart']:
-            s=read(f)
-            for text in ['beginLoginAttempt(', 'prepareLogin(ticket)', 'restoreServerSession(ticket',
-                         'completeVerifiedLogin(ticket)', 'abortLogin(ticket)']:self.assertIn(text,s)
+            s=compact_source(read(f))
+            for text in ['beginLoginAttempt(', 'prepareLogin(ticket)', 'restoreServerSession(ticket']:
+                self.assertIn(text,s)
+            for call in ['completeVerifiedLogin', 'abortLogin']:
+                self.assertRegex(s, call + r'\(ticket,?\)')
             self.assertNotIn('.auth.setSession(',s)
     def test_late_sdk_completion_remains_serialized(self):
         s=read('lib/core/auth/account_context.dart')
@@ -75,8 +81,8 @@ class SessionContracts(unittest.TestCase):
     def test_cancel_does_not_revoke_a_successful_route_transition(self):
         s=read('lib/core/auth/account_context.dart')
         self.assertIn('ticket != null && identical(_activeLogin, ticket)',s)
-        self.assertIn('cancelVerification(owner: _verificationOwner)',read('lib/features/auth/presentation/whatsapp_login_screen.dart'))
-        self.assertIn('cancelVerification(owner: _verificationOwner)',read('lib/features/admin/presentation/admin_auth_screen.dart'))
+        for screen in ['lib/features/auth/presentation/whatsapp_login_screen.dart','lib/features/admin/presentation/admin_auth_screen.dart']:
+            self.assertRegex(compact_source(read(screen)),r'cancelVerification\(owner:_verificationOwner,?\)')
         for service in ['lib/features/auth/data/whatsapp_login_service.dart','lib/features/admin/data/otp_service.dart']:
             self.assertIn('identical(owner, _attemptOwner)',read(service))
     def test_recovery_scope_is_explicit(self):

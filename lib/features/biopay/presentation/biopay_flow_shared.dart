@@ -281,10 +281,10 @@ class BioPayFlowScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: bioPayLightTheme(context),
+      data: bioPayReferenceTheme(context),
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        body: BioPayLightCanvas(
+        body: BioPayTaskCanvas(
           child: SafeArea(
             bottom: false,
             child: SingleChildScrollView(
@@ -495,16 +495,9 @@ class BioPayReceiverField extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: bioPayDarkPanel.withValues(alpha: 0.76),
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-        boxShadow: [
-          BoxShadow(
-            color: bioPayBlue.withValues(alpha: 0.07),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xs),
@@ -534,7 +527,7 @@ class BioPayReceiverField extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
               child: Divider(
                 height: 1,
-                color: Colors.white.withValues(alpha: 0.10),
+                color: Theme.of(context).colorScheme.outlineVariant,
               ),
             ),
             ConstrainedBox(
@@ -549,14 +542,14 @@ class BioPayReceiverField extends StatelessWidget {
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   onChanged: onChanged,
                   style: AppTypography.displayMd.copyWith(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0,
                   ),
                   decoration: InputDecoration(
                     hintText: usesCode ? 'MoMo Pay code' : 'MoMo number',
                     hintStyle: AppTypography.titleLg.copyWith(
-                      color: Colors.white.withValues(alpha: 0.70),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
@@ -604,10 +597,9 @@ class _QrReceiverModeButton extends StatelessWidget {
           constraints: const BoxConstraints(minHeight: 48),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: selected ? Colors.white : null,
-            gradient: selected
-                ? const LinearGradient(colors: [bioPayInk, Color(0xFF28333D)])
-                : null,
+            color: selected
+                ? Theme.of(context).colorScheme.surfaceContainerHighest
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(AppRadii.xl),
             boxShadow: selected
                 ? [
@@ -623,8 +615,8 @@ class _QrReceiverModeButton extends StatelessWidget {
             label,
             style: AppTypography.titleMd.copyWith(
               color: selected
-                  ? Colors.white
-                  : Colors.white.withValues(alpha: 0.68),
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -727,14 +719,14 @@ class BioPayReceiveAmountFieldState extends State<BioPayReceiveAmountField> {
                   ],
                   onChanged: widget.onChanged,
                   style: AppTypography.displayMd.copyWith(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0,
                   ),
                   decoration: InputDecoration(
                     prefixText: widget.controller.text.isEmpty ? null : 'RWF ',
                     prefixStyle: AppTypography.displayMd.copyWith(
-                      color: Colors.white.withValues(alpha: 0.70),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0,
                     ),
@@ -743,17 +735,17 @@ class BioPayReceiveAmountFieldState extends State<BioPayReceiveAmountField> {
                       vertical: AppSpacing.lg,
                     ),
                     filled: true,
-                    fillColor: bioPayDarkPanel.withValues(alpha: 0.74),
+                    fillColor: Theme.of(context).colorScheme.surfaceContainer,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
                       borderSide: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.12),
+                        color: Theme.of(context).colorScheme.outlineVariant,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
                       borderSide: BorderSide(
-                        color: Colors.white.withValues(alpha: 0.12),
+                        color: Theme.of(context).colorScheme.outlineVariant,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -774,7 +766,7 @@ class BioPayReceiveAmountFieldState extends State<BioPayReceiveAmountField> {
                       Text(
                         'RWF ',
                         style: AppTypography.displayMd.copyWith(
-                          color: Colors.white.withValues(alpha: 0.70),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0,
                         ),
@@ -782,7 +774,7 @@ class BioPayReceiveAmountFieldState extends State<BioPayReceiveAmountField> {
                       Text(
                         '0.00',
                         style: AppTypography.displayMd.copyWith(
-                          color: Colors.white.withValues(alpha: 0.70),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0,
                         ),
@@ -827,7 +819,7 @@ class BioPayResolvedPaymentPreview extends StatelessWidget {
               child: Text(
                 'Tap Dial USSD to open the phone dialer',
                 style: AppTypography.bodyMd.copyWith(
-                  color: Colors.white.withValues(alpha: 0.72),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -1002,7 +994,7 @@ class _BioPayQrActionButton extends StatelessWidget {
         excludeFromSemantics: true,
         message: label,
         child: Material(
-          color: bioPayDarkPanel.withValues(alpha: 0.76),
+          color: Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(AppRadii.pill),
           child: InkWell(
             onTap: isLoading ? null : onTap,
@@ -1012,7 +1004,7 @@ class _BioPayQrActionButton extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(AppRadii.pill),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
+                border: Border.all(color: cs.outlineVariant),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -1035,7 +1027,7 @@ class _BioPayQrActionButton extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTypography.bodyMd.copyWith(
-                        color: Colors.white,
+                        color: cs.onSurface,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -1059,8 +1051,10 @@ class BioPayQrScannerSurface extends ConsumerStatefulWidget {
     this.handoffComplete = false,
     this.scanRevision = 0,
     this.onRetry,
+    this.cameraActionTimeout = const Duration(seconds: 8),
   });
 
+  final Duration cameraActionTimeout;
   final ValueChanged<String> onDetect;
   final String? error;
   final bool isResolving;
@@ -1079,6 +1073,8 @@ class BioPayQrScannerSurfaceState extends ConsumerState<BioPayQrScannerSurface>
   Future<void> _cameraOperation = Future.value();
   bool _cameraActive = true;
   bool _openingSettings = false;
+  int _cameraRevision = 0;
+  int _cameraPending = 0;
   String? _cameraActionError;
 
   @override
@@ -1112,30 +1108,73 @@ class BioPayQrScannerSurfaceState extends ConsumerState<BioPayQrScannerSurface>
     unawaited(_updateCamera());
   }
 
-  // Serialize stop/start, including permission-dialog and Settings transitions.
-  // Read the latest lifecycle state when each queued operation executes.
-  Future<void> _updateCamera({bool restart = false}) {
-    _cameraOperation = _cameraOperation
+  // Keep the tail attached to actual native completion. Timing out this tail
+  // would allow a late start to race a new stop/start or camera disposal.
+  Future<void> _queueCameraWork(Future<void> Function() action) {
+    final revision = ++_cameraRevision;
+    _cameraPending++;
+    if (mounted) setState(() {});
+    final work = _cameraOperation
         .then((_) async {
           if (!mounted) return;
-          if (restart || !_cameraActive) await _controller.stop();
-          if (!mounted) return;
-          if (_cameraActive) await _controller.start();
+          await action();
         })
         .catchError((Object error) {
-          if (mounted) {
+          if (mounted && revision == _cameraRevision) {
             setState(
-              () => _cameraActionError = 'Camera could not restart. Try again.',
+              () =>
+                  _cameraActionError = 'Camera action could not be completed.',
             );
           }
+        })
+        .whenComplete(() {
+          _cameraPending--;
+          if (mounted) {
+            setState(() {
+              if (_cameraPending == 0 &&
+                  _cameraActionError ==
+                      'Camera action is still pending. Wait for completion or close this screen.') {
+                _cameraActionError = null;
+              }
+            });
+          }
         });
-    return _cameraOperation;
+    _cameraOperation = work;
+    return _observeCamera(work, revision);
   }
 
+  Future<void> _observeCamera(Future<void> work, int revision) async {
+    try {
+      await work.timeout(widget.cameraActionTimeout);
+    } on TimeoutException {
+      if (mounted && revision == _cameraRevision && _cameraPending > 0) {
+        setState(
+          () => _cameraActionError =
+              'Camera action is still pending. Wait for completion or close this screen.',
+        );
+      }
+    }
+  }
+
+  Future<void> _updateCamera({
+    bool restart = false,
+  }) => _queueCameraWork(() async {
+    if (restart || !_cameraActive) await _controller.stop();
+    if (!mounted) return;
+    if (_cameraActive) await _controller.start();
+    // Lifecycle may change while native permission/start is still outstanding.
+    if (mounted && !_cameraActive) await _controller.stop();
+  });
+
   Future<void> _restartCamera() {
-    if (!mounted) return Future.value();
+    if (!mounted || _cameraPending > 0) return Future.value();
     setState(() => _cameraActionError = null);
     return _updateCamera(restart: true);
+  }
+
+  Future<void> _toggleTorch() {
+    if (!mounted || _cameraPending > 0) return Future.value();
+    return _queueCameraWork(_controller.toggleTorch);
   }
 
   Future<void> _openSettings() async {
@@ -1168,8 +1207,16 @@ class BioPayQrScannerSurfaceState extends ConsumerState<BioPayQrScannerSurface>
 
   @override
   void dispose() {
+    _cameraRevision++;
+    _cameraActive = false;
     WidgetsBinding.instance.removeObserver(this);
-    unawaited(_cameraOperation.then((_) => _controller.dispose()));
+    // Observe a finite wait without freeing the actual native-completion tail.
+    unawaited(
+      _cameraOperation
+          .then((_) => _controller.dispose())
+          .timeout(widget.cameraActionTimeout)
+          .catchError((Object _) {}),
+    );
     super.dispose();
   }
 
@@ -1192,7 +1239,7 @@ class BioPayQrScannerSurfaceState extends ConsumerState<BioPayQrScannerSurface>
               },
               errorBuilder: (context, error) => _BioPayCameraRecovery(
                 error: error,
-                onRetry: _restartCamera,
+                onRetry: _cameraPending > 0 ? null : _restartCamera,
                 onOpenSettings: kIsWeb || _openingSettings
                     ? null
                     : _openSettings,
@@ -1206,7 +1253,7 @@ class BioPayQrScannerSurfaceState extends ConsumerState<BioPayQrScannerSurface>
                     top: 14,
                     child: IconButton.filledTonal(
                       tooltip: 'Torch',
-                      onPressed: _controller.toggleTorch,
+                      onPressed: _cameraPending > 0 ? null : _toggleTorch,
                       icon: const Icon(LucideIcons.flashlight),
                     ),
                   ),
@@ -1219,7 +1266,7 @@ class BioPayQrScannerSurfaceState extends ConsumerState<BioPayQrScannerSurface>
           const SizedBox(height: AppSpacing.md),
           BioPayInlineError(message: _cameraActionError!),
           TextButton(
-            onPressed: _restartCamera,
+            onPressed: _cameraPending > 0 ? null : _restartCamera,
             child: const Text('Retry camera'),
           ),
         ],
@@ -1257,7 +1304,7 @@ class _BioPayCameraRecovery extends StatelessWidget {
   });
 
   final MobileScannerException error;
-  final VoidCallback onRetry;
+  final VoidCallback? onRetry;
   final VoidCallback? onOpenSettings;
 
   @override
@@ -1411,8 +1458,8 @@ class BioPayDetailRow extends StatelessWidget {
             child: Text(
               label,
               style: AppTypography.bodyMd.copyWith(
-                color: Colors.white.withValues(alpha: 0.68),
-                fontWeight: FontWeight.w700,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ),
@@ -1421,7 +1468,7 @@ class BioPayDetailRow extends StatelessWidget {
               value,
               textAlign: TextAlign.end,
               style: AppTypography.titleMd.copyWith(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),

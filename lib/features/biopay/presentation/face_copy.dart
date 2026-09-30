@@ -19,6 +19,7 @@ String faceErrorCopy(BuildContext context, Object error) {
     'POOR_CAPTURE' || 'INVALID_IMAGE' || 'IMAGE_TOO_LARGE' => l.facePoorCapture,
     'AUTH_EXPIRED' => l.faceSignIn,
     'TIMEOUT' => l.faceTimeout,
+    'OUTCOME_UNKNOWN' => l.faceOutcomeUnknown,
     'RECEIVING_METHOD_REQUIRED' => l.faceSelectMethod,
     'RECIPIENT_UNAVAILABLE' => l.faceRecipientUnavailable,
     _ => l.faceUnavailable,

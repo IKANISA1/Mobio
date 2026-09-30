@@ -1,5 +1,10 @@
 # Revolut Recommendations Implementation Log
 
+> Historical implementation evidence. The former local specification and
+> logo-derived palette proposal were removed on 30 September 2026. The external
+> `revolut-design` skill is the sole design authority; prior visual treatments
+> below describe that dated implementation and cannot govern current work.
+
 Date: 2026-06-13
 Goal source: `docs/product/revolut_full_repo_flutter_admin_comparative_audit_2026-06-13.md`
 

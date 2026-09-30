@@ -1,6 +1,7 @@
 import 'dart:js_interop';
 import 'dart:typed_data';
 
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:web/web.dart' as web;
 
 Future<bool> saveBioPayQrPng(
@@ -38,7 +39,11 @@ Future<bool> shareBioPayQrPng(
   );
 
   if (!web.window.navigator.canShare(data)) return false;
-  await web.window.navigator.share(data).toDart;
+  await RequestDeadline.mutation(
+    web.window.navigator.share(data).toDart,
+    operation: 'share_biopay_qr',
+    timeout: const Duration(seconds: 60),
+  );
   return true;
 }
 

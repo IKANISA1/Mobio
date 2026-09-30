@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/features/profile/application/profile_services.dart';
@@ -17,7 +19,19 @@ import 'package:mobi_shared_types/models/favorite_address.dart';
 import 'package:mobi_shared_types/models/place.dart';
 
 class ProfileFavoriteAddressesSection extends ConsumerStatefulWidget {
-  const ProfileFavoriteAddressesSection({super.key});
+  const ProfileFavoriteAddressesSection({super.key})
+    : _captureOverride = null,
+      _currentOverride = null;
+
+  const ProfileFavoriteAddressesSection.test({
+    super.key,
+    required AccountSnapshot Function() captureAccount,
+    required bool Function(AccountSnapshot) isCurrent,
+  }) : _captureOverride = captureAccount,
+       _currentOverride = isCurrent;
+
+  final AccountSnapshot Function()? _captureOverride;
+  final bool Function(AccountSnapshot)? _currentOverride;
 
   @override
   ConsumerState<ProfileFavoriteAddressesSection> createState() =>
@@ -30,15 +44,53 @@ class _ProfileFavoriteAddressesSectionState
   bool _isLoading = true;
   bool _isSaving = false;
   String? _errorMessage;
+  int _loadRevision = 0;
+
+  bool get _preview =>
+      widget._captureOverride == null && SupabaseConfig.isLocalUiPreview;
+  bool get _verified =>
+      widget._captureOverride != null || AccountContext.hasVerifiedSession;
+  AccountSnapshot? _captureAccount() => widget._captureOverride != null
+      ? widget._captureOverride!()
+      : _preview
+      ? null
+      : AccountContext.capture();
+  bool _current(AccountSnapshot? account) =>
+      mounted &&
+      (account == null
+          ? _preview
+          : (widget._currentOverride ?? AccountContext.isCurrent)(account));
+
+  void _accountChanged() {
+    if (!mounted) return;
+    _loadRevision++;
+    setState(() {
+      _addresses = const [];
+      _isSaving = false;
+      _isLoading = false;
+      _errorMessage = null;
+    });
+    if (_verified) _load();
+  }
 
   @override
   void initState() {
     super.initState();
+    AccountContext.changes.addListener(_accountChanged);
     _load();
   }
 
+  @override
+  void dispose() {
+    _loadRevision++;
+    AccountContext.changes.removeListener(_accountChanged);
+    super.dispose();
+  }
+
   Future<void> _load() async {
-    if (SupabaseConfig.isLocalUiPreview) {
+    if (!mounted) return;
+    final revision = ++_loadRevision;
+    if (_preview) {
       setState(() {
         _addresses = _previewAddresses;
         _isLoading = false;
@@ -52,15 +104,17 @@ class _ProfileFavoriteAddressesSectionState
       _errorMessage = null;
     });
 
+    AccountSnapshot? account;
     try {
+      account = _captureAccount();
       final addresses = await ref.read(favoriteAddressServiceProvider).list();
-      if (!mounted) return;
+      if (!_current(account) || revision != _loadRevision) return;
       setState(() {
         _addresses = addresses;
         _isLoading = false;
       });
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!_current(account) || revision != _loadRevision) return;
       setState(() {
         _isLoading = false;
         _errorMessage = userMessageForError(
@@ -72,7 +126,7 @@ class _ProfileFavoriteAddressesSectionState
   }
 
   Future<void> _delete(FavoriteAddress address) async {
-    if (SupabaseConfig.isLocalUiPreview) {
+    if (_preview) {
       setState(() {
         _addresses = _addresses
             .where((candidate) => candidate.id != address.id)
@@ -81,12 +135,17 @@ class _ProfileFavoriteAddressesSectionState
       return;
     }
 
+    if (!_verified) return;
+    final account = _captureAccount();
+    if (account != null && address.profileId != account.userId) return;
+    if (!_current(account)) return;
     setState(() => _isSaving = true);
     try {
       await ref.read(favoriteAddressServiceProvider).delete(address.id);
+      if (!_current(account)) return;
       await _load();
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!mounted || !_current(account)) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -99,21 +158,25 @@ class _ProfileFavoriteAddressesSectionState
         ),
       );
     } finally {
-      if (mounted) setState(() => _isSaving = false);
+      if (_current(account)) setState(() => _isSaving = false);
     }
   }
 
-  Future<void> _showAddSheet() async {
+  Future<void> _showAddSheet(AccountActionToken actionToken) async {
+    if (!mounted || !actionToken.isCurrent || (!_preview && !_verified)) return;
+    final account = _captureAccount();
     final result = await MobiBottomSheet.show<_FavoriteAddressDraft>(
       context: context,
       title: 'Favorite address',
       maxHeightFraction: 0.78,
-      builder: (context) =>
-          _FavoriteAddressSheet(existingCount: _addresses.length),
+      builder: (context) => _FavoriteAddressSheet(
+        existingCount: _addresses.length,
+        actionToken: actionToken,
+      ),
     );
-    if (result == null) return;
+    if (result == null || !_current(account) || !actionToken.isCurrent) return;
 
-    if (SupabaseConfig.isLocalUiPreview) {
+    if (_preview) {
       setState(() {
         _addresses = [
           ..._addresses,
@@ -143,9 +206,10 @@ class _ProfileFavoriteAddressesSectionState
             place: result.place,
             sortOrder: _addresses.length,
           );
+      if (!_current(account)) return;
       await _load();
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!mounted || !_current(account)) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -158,12 +222,15 @@ class _ProfileFavoriteAddressesSectionState
         ),
       );
     } finally {
-      if (mounted) setState(() => _isSaving = false);
+      if (_current(account)) setState(() => _isSaving = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final actionToken = AccountActionToken.capture(
+      captureAccount: widget._captureOverride,
+    );
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
@@ -174,7 +241,13 @@ class _ProfileFavoriteAddressesSectionState
           title: 'Favorite addresses',
           icon: LucideIcons.mapPin,
           actionLabel: 'Add',
-          onAction: _isSaving ? null : _showAddSheet,
+          onAction: _isSaving
+              ? null
+              : () {
+                  if (mounted && actionToken.isCurrent) {
+                    _showAddSheet(actionToken);
+                  }
+                },
         ),
         const SizedBox(height: AppSpacing.md),
         DecoratedBox(
@@ -187,14 +260,18 @@ class _ProfileFavoriteAddressesSectionState
           ),
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
-            child: _buildBody(context, cs),
+            child: _buildBody(context, cs, actionToken),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildBody(BuildContext context, ColorScheme cs) {
+  Widget _buildBody(
+    BuildContext context,
+    ColorScheme cs,
+    AccountActionToken actionToken,
+  ) {
     if (_isLoading) {
       return const SizedBox(
         height: 80,
@@ -214,7 +291,9 @@ class _ProfileFavoriteAddressesSectionState
           ),
           IconButton(
             tooltip: 'Retry',
-            onPressed: _load,
+            onPressed: () async {
+              if (mounted && actionToken.isCurrent) await _load();
+            },
             icon: Icon(LucideIcons.refreshCcw, color: cs.onSurface),
           ),
         ],
@@ -245,7 +324,11 @@ class _ProfileFavoriteAddressesSectionState
               fontWeight: FontWeight.w700,
             ),
             deleteIcon: _isSaving ? null : const Icon(LucideIcons.x, size: 16),
-            onDeleted: _isSaving ? null : () => _delete(address),
+            onDeleted: _isSaving
+                ? null
+                : () {
+                    if (mounted && actionToken.isCurrent) _delete(address);
+                  },
             backgroundColor: cs.surfaceContainerHighest.withValues(alpha: 0.52),
             side: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.28)),
             shape: const StadiumBorder(),
@@ -256,9 +339,13 @@ class _ProfileFavoriteAddressesSectionState
 }
 
 class _FavoriteAddressSheet extends StatefulWidget {
-  const _FavoriteAddressSheet({required this.existingCount});
+  const _FavoriteAddressSheet({
+    required this.existingCount,
+    required this.actionToken,
+  });
 
   final int existingCount;
+  final AccountActionToken actionToken;
 
   @override
   State<_FavoriteAddressSheet> createState() => _FavoriteAddressSheetState();
@@ -273,15 +360,27 @@ class _FavoriteAddressSheetState extends State<_FavoriteAddressSheet> {
   void initState() {
     super.initState();
     _labelController = TextEditingController();
+    AccountContext.changes.addListener(_accountChanged);
+  }
+
+  void _accountChanged() {
+    if (!mounted || widget.actionToken.isCurrent) return;
+    _labelController.clear();
+    setState(() {
+      _selectedPlace = null;
+      _validationMessage = null;
+    });
   }
 
   @override
   void dispose() {
+    AccountContext.changes.removeListener(_accountChanged);
     _labelController.dispose();
     super.dispose();
   }
 
   void _save() {
+    if (!mounted || !widget.actionToken.isCurrent) return;
     final label = _labelController.text.trim();
     final place = _selectedPlace;
     if (label.isEmpty) {
@@ -304,6 +403,11 @@ class _FavoriteAddressSheetState extends State<_FavoriteAddressSheet> {
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.actionToken.isCurrent) {
+      return const Center(
+        child: Text('Account changed. Close this view and sign in again.'),
+      );
+    }
     final cs = Theme.of(context).colorScheme;
 
     return ListView(
@@ -322,6 +426,7 @@ class _FavoriteAddressSheetState extends State<_FavoriteAddressSheet> {
           prefixIcon: LucideIcons.tag,
           textInputAction: TextInputAction.next,
           onChanged: (_) {
+            if (!widget.actionToken.isCurrent) return;
             if (_validationMessage != null) {
               setState(() => _validationMessage = null);
             }
@@ -335,6 +440,7 @@ class _FavoriteAddressSheetState extends State<_FavoriteAddressSheet> {
           iconColor: cs.onSecondaryContainer,
           icon: LucideIcons.mapPin,
           onPlaceSelected: (place) {
+            if (!widget.actionToken.isCurrent) return;
             setState(() {
               _selectedPlace = place;
               _validationMessage = null;

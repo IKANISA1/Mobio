@@ -20,15 +20,34 @@ void main() {
         'https://mobio.ikanisa.com/biopay/pay/ABCDEFGHIJKLMNOPQRSTUVWX';
     const messages = MethodChannel('com.llfbandit.app_links/messages');
     const events = MethodChannel('com.llfbandit.app_links/events');
+    const nfcWriter = MethodChannel('rw.mobi.app/biopay_nfc_writer');
+    const nfcKit = MethodChannel('flutter_nfc_kit/method');
+    const nfcReader = MethodChannel('rw.mobi.app/biopay_native_nfc_reader');
+    const deviceNfc = MethodChannel('rw.mobi.app/biopay_device_nfc');
     final messenger = tester.binding.defaultBinaryMessenger
       ..setMockMethodCallHandler(messages, (call) async {
         return call.method == 'getInitialLink' ? link : null;
       })
-      ..setMockMethodCallHandler(events, (_) async => null);
+      ..setMockMethodCallHandler(events, (_) async => null)
+      ..setMockMethodCallHandler(nfcWriter, (_) async => null)
+      ..setMockMethodCallHandler(
+        nfcKit,
+        (call) async =>
+            call.method == 'getNFCAvailability' ? 'not_supported' : null,
+      )
+      ..setMockMethodCallHandler(nfcReader, (_) async => null)
+      ..setMockMethodCallHandler(
+        deviceNfc,
+        (_) async => {'supported': false, 'enabled': false},
+      );
     addTearDown(() {
       messenger
         ..setMockMethodCallHandler(messages, null)
-        ..setMockMethodCallHandler(events, null);
+        ..setMockMethodCallHandler(events, null)
+        ..setMockMethodCallHandler(nfcWriter, null)
+        ..setMockMethodCallHandler(nfcKit, null)
+        ..setMockMethodCallHandler(nfcReader, null)
+        ..setMockMethodCallHandler(deviceNfc, null);
     });
     final theme = ThemeProvider();
     addTearDown(theme.dispose);

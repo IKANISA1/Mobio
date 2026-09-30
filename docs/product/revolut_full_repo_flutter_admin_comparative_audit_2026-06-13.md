@@ -1,5 +1,10 @@
 # Revolut Comparative UI/UX Audit: Flutter App and Admin Panel
 
+> Historical comparison evidence. References to the former local specification
+> below record the audited source, deleted on 30 September 2026. The external
+> `revolut-design` skill is the sole design authority; the dated scores and
+> recommendations do not establish current fidelity or acceptance.
+
 Date: 2026-06-13
 Checkout: `/Volumes/PRO-G40/MOBI/mobi_app`
 Report scope: full routed Flutter app, BioPay surfaces, admin panel/PWA, shared design system, visual evidence, and route-level test evidence.
@@ -168,7 +173,7 @@ Admin recommendation: treat this as one Flutter app with an admin PWA deployment
    - Add desktop web screenshots for admin at `1280`, `1440`, and compact tablet widths.
 
 4. Reconcile design documentation.
-   - Update `design.md` to reflect whether the shell is now three or four top-level tabs.
+   - Record the supported shell destinations in the product route/state mapping under the external `revolut-design` skill; a local specification cannot govern subsequent changes.
    - Clarify BioPay as active scope and specify whether it must follow the same dark shell.
    - Rename `/admin/finance` if it is actually BioPay operations.
 

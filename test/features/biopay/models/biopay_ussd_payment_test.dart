@@ -4,8 +4,8 @@ import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
 void main() {
   test('parses token and formats external USSD request amount', () {
     final request = BioPayUssdPaymentRequest.fromJson({
-      'id': 'request-1',
-      'token': 'scan-token-1',
+      'id': '11111111-1111-4111-8111-111111111111',
+      'token': 'abcdefghijklmnopqrstuvwx',
       'channel': 'qr',
       'provider_code': 'mtn_rw',
       'payee_label': 'Moto driver',
@@ -15,13 +15,16 @@ void main() {
       'ussd_code': '*182*8*1*250788000000*1500#',
       'status': 'ready_to_dial',
       'created_at': '2026-06-12T08:30:00Z',
+      'expires_at': '2026-06-12T08:45:00Z',
+      'confirmed_at': null,
+      'confirmation_source': null,
     });
 
-    expect(request.token, 'scan-token-1');
+    expect(request.token, 'abcdefghijklmnopqrstuvwx');
     expect(request.channel, BioPayRequestChannel.qr);
     expect(request.status, BioPayRequestStatus.readyToDial);
     expect(request.amountLabel, 'RWF 1,500');
-    expect(request.toJson()['token'], 'scan-token-1');
+    expect(request.toJson()['token'], 'abcdefghijklmnopqrstuvwx');
 
     final markedPaid = request.copyWith(
       status: BioPayRequestStatus.userMarkedPaid,

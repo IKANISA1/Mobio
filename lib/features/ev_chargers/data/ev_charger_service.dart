@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/errors/app_exception_mapper.dart';
@@ -9,6 +10,9 @@ class EvChargerService {
 
   final SupabaseClient? supabase;
   static const _networkTimeout = Duration(seconds: 15);
+  static final _uuid = RegExp(
+    r'^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$',
+  );
 
   SupabaseClient get _client {
     final client = supabase;
@@ -27,7 +31,7 @@ class EvChargerService {
     double radiusKm = 30,
     int limit = 5,
   }) async {
-    if (SupabaseConfig.isLocalUiPreview) {
+    if (supabase == null && SupabaseConfig.isLocalUiPreview) {
       return EvCharger.previewChargers(
         originLat: latitude,
         originLng: longitude,
@@ -47,10 +51,7 @@ class EvChargerService {
           )
           .timeout(_networkTimeout);
 
-      return (rows as List<dynamic>)
-          .whereType<Map<String, dynamic>>()
-          .map(EvCharger.fromJson)
-          .toList(growable: false);
+      return _requireRows(rows).map(_parseCharger).toList(growable: false);
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
@@ -63,7 +64,7 @@ class EvChargerService {
   }
 
   Future<List<EvCharger>> listChargers({bool includeInactive = false}) async {
-    if (SupabaseConfig.isLocalUiPreview) {
+    if (supabase == null && SupabaseConfig.isLocalUiPreview) {
       return EvCharger.previewChargers();
     }
 
@@ -78,10 +79,7 @@ class EvChargerService {
         query = query.eq('is_active', true);
       }
       final rows = await query.order('name').timeout(_networkTimeout);
-      return (rows as List<dynamic>)
-          .whereType<Map<String, dynamic>>()
-          .map(EvCharger.fromJson)
-          .toList(growable: false);
+      return _requireRows(rows).map(_parseCharger).toList(growable: false);
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
@@ -107,33 +105,90 @@ class EvChargerService {
     String? placeId,
     bool isActive = true,
   }) async {
-    await _client
-        .rpc(
-          'rpc_admin_upsert_ev_charger',
-          params: {
-            'p_charger_id': id,
-            'p_name': name,
-            'p_address': address,
-            'p_latitude': latitude,
-            'p_longitude': longitude,
-            'p_connector_types': connectorTypes,
-            'p_operator_name': operatorName,
-            'p_phone': phone,
-            'p_power_kw': powerKw,
-            'p_price_note': priceNote,
-            'p_place_id': placeId,
-            'p_is_active': isActive,
-          },
-        )
-        .timeout(_networkTimeout);
+    final result = await RequestDeadline.mutation(
+      _client.rpc(
+        'rpc_admin_upsert_ev_charger',
+        params: {
+          'p_charger_id': id,
+          'p_name': name,
+          'p_address': address,
+          'p_latitude': latitude,
+          'p_longitude': longitude,
+          'p_connector_types': connectorTypes,
+          'p_operator_name': operatorName,
+          'p_phone': phone,
+          'p_power_kw': powerKw,
+          'p_price_note': priceNote,
+          'p_place_id': placeId,
+          'p_is_active': isActive,
+        },
+      ),
+      operation: 'rpc_admin_upsert_ev_charger',
+      operationId: id,
+      timeout: _networkTimeout,
+    );
+    if (result is! String ||
+        !_uuid.hasMatch(result) ||
+        (id != null && result != id)) {
+      throw MutationOutcomeUnknownException(
+        operation: 'rpc_admin_upsert_ev_charger',
+        operationId: id,
+      );
+    }
   }
 
   Future<void> setChargerActive(String id, bool isActive) async {
-    await _client
-        .rpc(
-          'rpc_admin_set_ev_charger_active',
-          params: {'p_charger_id': id, 'p_is_active': isActive},
-        )
-        .timeout(_networkTimeout);
+    await RequestDeadline.mutation(
+      _client.rpc(
+        'rpc_admin_set_ev_charger_active',
+        params: {'p_charger_id': id, 'p_is_active': isActive},
+      ),
+      operation: 'rpc_admin_set_ev_charger_active',
+      operationId: id,
+      timeout: _networkTimeout,
+    );
+  }
+
+  List<Map<String, dynamic>> _requireRows(Object? raw) {
+    if (raw is! List) throw const FormatException('Invalid EV charger list');
+    return raw.map((row) {
+      if (row is! Map) throw const FormatException('Invalid EV charger row');
+      return Map<String, dynamic>.from(row);
+    }).toList();
+  }
+
+  EvCharger _parseCharger(Map<String, dynamic> row) {
+    final id = row['id'];
+    final name = row['name'];
+    final address = row['address'];
+    final latitude = row['latitude'];
+    final longitude = row['longitude'];
+    final connectors = row['connector_types'];
+    final active = row['is_active'];
+    final distance = row['distance_km'];
+    if (id is! String ||
+        !_uuid.hasMatch(id) ||
+        name is! String ||
+        name.trim().isEmpty ||
+        address is! String ||
+        address.trim().isEmpty ||
+        latitude is! num ||
+        !latitude.toDouble().isFinite ||
+        latitude < -90 ||
+        latitude > 90 ||
+        longitude is! num ||
+        !longitude.toDouble().isFinite ||
+        longitude < -180 ||
+        longitude > 180 ||
+        connectors is! List ||
+        connectors.any((item) => item is! String) ||
+        active is! bool ||
+        (distance != null &&
+            (distance is! num ||
+                !distance.toDouble().isFinite ||
+                distance < 0))) {
+      throw const FormatException('Invalid EV charger response row');
+    }
+    return EvCharger.fromJson(row);
   }
 }

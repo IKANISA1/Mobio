@@ -1,6 +1,8 @@
 import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/admin/data/admin_base_service.dart';
+import 'package:mobi_app/features/admin/domain/admin_wire_record.dart';
 import 'package:mobi_shared_types/models/admin/admin_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
 
@@ -26,7 +28,10 @@ class AdminBroadcastService extends AdminBaseService {
         ),
         operation: 'request_campaign_approval',
       );
-      return _requireUuid(result, 'campaign approval ID');
+      return _confirmMutation(
+        () => _requireUuid(result, 'campaign approval ID'),
+        operation: 'request_campaign_approval',
+      );
     } on Object catch (e) {
       AppLogger.error('Error requesting campaign approval: $e');
       rethrow;
@@ -95,7 +100,7 @@ class AdminBroadcastService extends AdminBaseService {
       final rows = await RequestDeadline.read(
         supabaseClient.rpc('rpc_admin_get_notification_consent_summary'),
       );
-      return _parseRows(rows, AdminNotificationConsentSummary.fromJson);
+      return _parseRows(rows, AdminWireRecord.consentSummary);
     } on Object catch (e) {
       AppLogger.error('Error loading notification consent summary: $e');
       rethrow;
@@ -112,7 +117,10 @@ class AdminBroadcastService extends AdminBaseService {
           params: {'p_campaign_id': campaignId},
         ),
       );
-      return AdminCampaignAudiencePreview.fromJson(_firstRow(rows));
+      return AdminWireRecord.audiencePreview(
+        _firstRow(rows),
+        campaignId: campaignId,
+      );
     } on Object catch (e) {
       AppLogger.error('Error loading campaign audience preview: $e');
       rethrow;
@@ -129,7 +137,10 @@ class AdminBroadcastService extends AdminBaseService {
           params: {'p_campaign_id': campaignId},
         ),
       );
-      return _parseRows(rows, AdminAuditLogItem.fromJson);
+      return _parseRows(
+        rows,
+        (row) => AdminWireRecord.audit(row, expectedCampaignId: campaignId),
+      );
     } on Object catch (e) {
       AppLogger.error('Error loading campaign audit timeline: $e');
       rethrow;
@@ -146,7 +157,7 @@ class AdminBroadcastService extends AdminBaseService {
           params: {'p_days': days},
         ),
       );
-      return _parseRows(rows, AdminNotificationConsentTrendPoint.fromJson);
+      return _parseRows(rows, AdminWireRecord.consentTrend);
     } on Object catch (e) {
       AppLogger.error('Error loading notification consent trend: $e');
       rethrow;
@@ -187,7 +198,11 @@ class AdminBroadcastService extends AdminBaseService {
         operation: 'send_approved_campaign',
         operationId: campaignId,
       );
-      return _requireCount(count);
+      return _confirmMutation(
+        () => _requireCount(count),
+        operation: 'send_approved_campaign',
+        operationId: campaignId,
+      );
     } on Object catch (e) {
       AppLogger.error('Error sending approved campaign: $e');
       rethrow;
@@ -211,7 +226,10 @@ class AdminBroadcastService extends AdminBaseService {
         ),
         operation: 'send_promo',
       );
-      return _requireCount(count);
+      return _confirmMutation(
+        () => _requireCount(count),
+        operation: 'send_promo',
+      );
     } on Object catch (e) {
       AppLogger.error('Error sending promo broadcast: $e');
       rethrow;
@@ -235,7 +253,10 @@ class AdminBroadcastService extends AdminBaseService {
         ),
         operation: 'send_announcement',
       );
-      return _requireCount(count);
+      return _confirmMutation(
+        () => _requireCount(count),
+        operation: 'send_announcement',
+      );
     } on Object catch (e) {
       AppLogger.error('Error sending announcement broadcast: $e');
       rethrow;
@@ -248,7 +269,7 @@ class AdminBroadcastService extends AdminBaseService {
   }
 
   List<AdminCampaignApprovalItem> _parseCampaignRows(Object? rows) {
-    return _parseRows(rows, AdminCampaignApprovalItem.fromJson);
+    return _parseRows(rows, AdminWireRecord.campaign);
   }
 
   Map<String, dynamic> _firstRow(Object? rows) {
@@ -280,5 +301,22 @@ class AdminBroadcastService extends AdminBaseService {
       throw FormatException('Invalid $label');
     }
     return value;
+  }
+
+  T _confirmMutation<T>(
+    T Function() parse, {
+    required String operation,
+    String? operationId,
+  }) {
+    try {
+      return parse();
+    } on FormatException catch (error) {
+      throw MutationOutcomeUnknownException(
+        operation: operation,
+        operationId: operationId,
+        originalError: error,
+        debugMessage: error.message,
+      );
+    }
   }
 }

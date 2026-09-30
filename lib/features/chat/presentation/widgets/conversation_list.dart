@@ -3,7 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/utils/mobio_member_id.dart';
 import 'package:mobi_app/features/chat/domain/chat_conversation.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_motion.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_shared_types/models/trip.dart';
@@ -33,7 +33,7 @@ class ConversationList extends StatelessWidget {
     if (conversations.isEmpty) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
-        child: ClayCard(
+        child: MobiTonalCard(
           padding: const EdgeInsets.all(28),
           borderRadius: 40,
           child: Column(
@@ -69,7 +69,7 @@ class ConversationList extends StatelessWidget {
           peerProfile['member_id'] as String?,
         );
 
-        return ClayCard(
+        return MobiTonalCard(
               borderRadius: 36,
               onTap: () => onOpenConversation(conversation),
               child: Row(

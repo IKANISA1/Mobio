@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
@@ -80,7 +80,7 @@ class TripTimingPicker extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-    return ClayCard(
+    return MobiTonalCard(
       onTap: onTap,
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,

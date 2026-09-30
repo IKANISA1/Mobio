@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/async/external_action.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/features/admin/application/admin_services.dart';
 import 'package:mobi_app/features/admin/data/admin_service.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_dashboard_utils.dart';
@@ -24,6 +27,9 @@ class AdminReportsScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
+  final _actionToken = AccountActionToken.capture();
+  bool get _actionIsCurrent => mounted && _actionToken.isCurrent;
+
   AdminService get _adminService => ref.read(adminServiceProvider);
 
   final _searchController = TextEditingController();
@@ -51,6 +57,7 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
   }
 
   Future<void> _loadReports({bool silent = false}) async {
+    if (!_actionIsCurrent) return;
     if (!silent) {
       setState(() {
         _isLoading = true;
@@ -65,7 +72,7 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
         limit: _rowsPerPage + 1,
         offset: _page * _rowsPerPage,
       );
-      if (!mounted) return;
+      if (!_actionIsCurrent) return;
       final hasNextPage = reports.length > _rowsPerPage;
       setState(() {
         _reports = reports.take(_rowsPerPage).toList();
@@ -73,7 +80,7 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
         _isLoading = false;
       });
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!_actionIsCurrent) return;
       setState(() {
         _isLoading = false;
         _error = error.toString();
@@ -82,8 +89,9 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
   }
 
   Future<void> _reviewReport(AdminUserReportItem report, String status) async {
+    if (!_actionIsCurrent) return;
     final notes = await _showReviewReportSheet(status);
-    if (notes == null) return;
+    if (notes == null || !_actionIsCurrent) return;
 
     setState(() => _busyId = report.id);
     try {
@@ -95,9 +103,12 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
       await _loadReports(silent: true);
       _showSnackBar('Report ${_humanize(status).toLowerCase()}.');
     } on Object catch (error) {
-      _showSnackBar('Review failed: $error', isError: true);
+      _showSnackBar(
+        userMessageForError(error, fallback: 'Unable to record the review.'),
+        isError: true,
+      );
     } finally {
-      if (mounted) {
+      if (_actionIsCurrent) {
         setState(() => _busyId = null);
       }
     }
@@ -336,7 +347,7 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
-    if (!mounted) return;
+    if (!_actionIsCurrent) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -577,11 +588,21 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
                   : () => _reviewReport(report, 'dismissed'),
               onCopyConversation: report.conversationId == null
                   ? null
-                  : () {
-                      Clipboard.setData(
-                        ClipboardData(text: report.conversationId!),
-                      );
-                      _showSnackBar('Conversation ID copied.');
+                  : () async {
+                      if (!_actionIsCurrent) return;
+                      try {
+                        await ExternalAction.run(
+                          Clipboard.setData(
+                            ClipboardData(text: report.conversationId!),
+                          ),
+                          operation: 'copy_conversation_id',
+                        );
+                        _showSnackBar('Conversation ID copied.');
+                      } on Object {
+                        _showSnackBar(
+                          'Conversation ID copy was not confirmed.',
+                        );
+                      }
                     },
             ),
           AdminPaginationBar(

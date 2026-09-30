@@ -1,9 +1,14 @@
 # Revolut Reference Design Gap Analysis
 
+> Historical comparison evidence. The source-contract filename below records the
+> former local specification, deleted on 30 September 2026. This report cannot
+> govern subsequent UI work; the external `revolut-design` skill is the sole
+> design authority. Its dated findings do not establish current acceptance.
+
 > Date: 2026-06-12
 > Scope: MOBI Flutter app, design tokens, static web shell, launch surfaces, and
 > product docs
-> Source contract: `design.md`
+> Historical source contract: `design.md` (removed)
 > Reference folder supplied by user: `/Users/jeanbosco/Downloads/Revolut10`
 
 ## Executive Finding

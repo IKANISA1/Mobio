@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobi_app/features/notifications/data/notification_service.dart';
 
 void main() {
   group('notification delivery contract', () {
@@ -28,9 +29,15 @@ void main() {
       sendPush = File(
         'supabase/functions/send-push/index.ts',
       ).readAsStringSync();
-      pushWorker = File('supabase/functions/push-outbox-worker/index.ts').readAsStringSync();
-      pushProvider = File('supabase/functions/_shared/push-provider.ts').readAsStringSync();
-      pushOutbox = File('supabase/functions/_shared/push-outbox.ts').readAsStringSync();
+      pushWorker = File(
+        'supabase/functions/push-outbox-worker/index.ts',
+      ).readAsStringSync();
+      pushProvider = File(
+        'supabase/functions/_shared/push-provider.ts',
+      ).readAsStringSync();
+      pushOutbox = File(
+        'supabase/functions/_shared/push-outbox.ts',
+      ).readAsStringSync();
       pushService = File(
         'lib/features/notifications/data/push_notification_service.dart',
       ).readAsStringSync();
@@ -147,7 +154,26 @@ void main() {
         expect(notificationService, contains("=> '/bookings'"));
         expect(notificationService, contains("'chat_message'"));
         expect(notificationService, contains("=> '/chat'"));
-        expect(notificationService, isNot(contains('return value;')));
+        // Exercise route validation itself. Parser helpers may legitimately
+        // return typed values; arbitrary notification metadata cannot route.
+        String routeFor(Object? route) => AppNotification(
+          id: '00000000-0000-4000-8000-000000000001',
+          userId: '00000000-0000-4000-8000-000000000002',
+          type: 'chat_message',
+          title: 'Test notification',
+          createdAt: '2026-09-30T00:00:00Z',
+          metadata: {'route': route},
+        ).route;
+        for (final unsafeRoute in [
+          'https://example.invalid/chat',
+          '//example.invalid/chat',
+          '/retired-route',
+          42,
+          null,
+        ]) {
+          expect(routeFor(unsafeRoute), '/chat');
+        }
+        expect(routeFor('/bookings'), '/bookings');
       },
     );
   });

@@ -99,7 +99,11 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
 
   @override
   void dispose() {
-    unawaited(_loginService.cancelVerification(owner: _verificationOwner).catchError((Object _) {}));
+    unawaited(
+      _loginService
+          .cancelVerification(owner: _verificationOwner)
+          .catchError((Object _) {}),
+    );
     _resendTimer?.cancel();
     _otpController.dispose();
     super.dispose();
@@ -117,11 +121,21 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
     });
 
     final result = await _loginService.sendLoginOtp(
-          phone: _fullPhone,
-          countryCode: _countryCode,
-          role: _role,
-        );
+      phone: _fullPhone,
+      countryCode: _countryCode,
+      role: _role,
+    );
     if (!mounted) {
+      return;
+    }
+
+    if (result.deliveryUnconfirmed) {
+      _startResendCooldown(result.retryAfterSeconds ?? _defaultResendCooldown);
+      setState(() {
+        _sendingCode = false;
+        _otpRequested = true;
+        _error = result.message;
+      });
       return;
     }
 
@@ -162,11 +176,11 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
 
     final result = await _loginService.verifyLoginOtp(
       owner: _verificationOwner,
-          phone: _fullPhone,
-          code: _otpController.text,
-          role: _role,
-          countryCode: _countryCode,
-        );
+      phone: _fullPhone,
+      code: _otpController.text,
+      role: _role,
+      countryCode: _countryCode,
+    );
     if (!mounted) {
       return;
     }
@@ -176,7 +190,11 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
         if (!mounted) return;
         widget.onSuccess(result.role ?? _role);
       } on Object {
-        if (mounted) setState(() { _verifyingCode=false; _error='Session could not be saved. Verify again.'; });
+        if (mounted)
+          setState(() {
+            _verifyingCode = false;
+            _error = 'Session could not be saved. Verify again.';
+          });
       }
       return;
     }

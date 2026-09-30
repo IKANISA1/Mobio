@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobi_app/core/async/external_action.dart';
 import 'package:mobi_app/core/utils/navigation_utils.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/domain/payment_entry.dart';
@@ -111,8 +112,11 @@ class _PaymentLinkArrivalScreenState
             PaymentAction(
               label: l.bpCopy,
               secondary: true,
-              onPressed: () => Clipboard.setData(
-                ClipboardData(text: bioPayShareUri(widget.token).toString()),
+              onPressed: () => ExternalAction.start(
+                Clipboard.setData(
+                  ClipboardData(text: bioPayShareUri(widget.token).toString()),
+                ),
+                operation: 'copy_to_clipboard',
               ),
             ),
           ],

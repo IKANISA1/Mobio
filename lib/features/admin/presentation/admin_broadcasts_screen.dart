@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/admin/application/admin_services.dart';
 import 'package:mobi_app/features/admin/data/admin_service.dart';
@@ -30,6 +32,9 @@ class AdminBroadcastsScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
+  final _actionToken = AccountActionToken.capture();
+  bool get _actionIsCurrent => mounted && _actionToken.isCurrent;
+
   AdminService get _adminService => ref.read(adminServiceProvider);
 
   BroadcastType _type = BroadcastType.announcement;
@@ -67,6 +72,7 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
   }
 
   Future<void> _loadCampaigns() async {
+    if (!_actionIsCurrent) return;
     setState(() {
       _isLoadingCampaigns = true;
       _campaignError = null;
@@ -80,11 +86,13 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
         limit: _campaignRowsPerPage,
         offset: _campaignPage * _campaignRowsPerPage,
       );
+      if (!_actionIsCurrent) return;
       final consentSummaries = await _adminService
           .getNotificationConsentSummary();
+      if (!_actionIsCurrent) return;
       final consentTrendPoints = await _adminService
           .getNotificationConsentTrend(days: 14);
-      if (!mounted) return;
+      if (!_actionIsCurrent) return;
       setState(() {
         _campaigns = campaigns;
         _consentSummaries = consentSummaries;
@@ -97,10 +105,13 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
             : (_campaignPage * _campaignRowsPerPage) + campaigns.length;
       });
     } on Object {
-      if (!mounted) return;
-      setState(() => _campaignError = 'Campaign status is unavailable. Try refreshing.');
+      if (!_actionIsCurrent) return;
+      setState(
+        () =>
+            _campaignError = 'Campaign status is unavailable. Try refreshing.',
+      );
     } finally {
-      if (mounted) setState(() => _isLoadingCampaigns = false);
+      if (_actionIsCurrent) setState(() => _isLoadingCampaigns = false);
     }
   }
 
@@ -117,6 +128,7 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
   }
 
   Future<void> _sendBroadcast() async {
+    if (!_actionIsCurrent) return;
     final title = _titleController.text.trim();
     final body = _bodyController.text.trim();
 
@@ -126,7 +138,7 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
     }
 
     final confirmed = await _showConfirmDialog();
-    if (confirmed != true) return;
+    if (confirmed != true || !_actionIsCurrent) return;
 
     setState(() => _isSending = true);
 
@@ -138,28 +150,30 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
           title: title,
           body: body,
         );
-        if (mounted) {
+        if (_actionIsCurrent) {
           _showSnackBar(
             'Queued ${_broadcastLabel(_type).toLowerCase()} for $count members.',
           );
         }
       }
 
-      if (mounted) {
+      if (_actionIsCurrent) {
         if (_type == BroadcastType.promo) {
           _showSnackBar('Promo submitted for approval.');
           await _loadCampaigns();
+          if (!_actionIsCurrent) return;
         }
         _titleController.clear();
         _bodyController.clear();
       }
     } on MutationOutcomeUnknownException catch (error) {
-      if (mounted) _showSnackBar(error.message, isError: true);
-      if (mounted) await _loadCampaigns();
+      if (_actionIsCurrent) _showSnackBar(error.message, isError: true);
+      if (_actionIsCurrent) await _loadCampaigns();
     } on Object {
-      if (mounted) _showSnackBar('Unable to submit the broadcast.', isError: true);
+      if (_actionIsCurrent)
+        _showSnackBar('Unable to submit the broadcast.', isError: true);
     } finally {
-      if (mounted) setState(() => _isSending = false);
+      if (_actionIsCurrent) setState(() => _isSending = false);
     }
   }
 
@@ -167,6 +181,7 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
     AdminCampaignApprovalItem campaign, {
     required bool approved,
   }) async {
+    if (!_actionIsCurrent) return;
     final confirmed = await MobiConfirmDialog.show(
       context: context,
       title: approved ? 'Approve promo' : 'Reject promo',
@@ -176,7 +191,7 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
       confirmLabel: approved ? 'Approve' : 'Reject',
       cancelLabel: 'Back',
     );
-    if (confirmed != true) return;
+    if (confirmed != true || !_actionIsCurrent) return;
 
     setState(() => _campaignActionId = campaign.id);
 
@@ -185,20 +200,22 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
         campaignId: campaign.id,
         approved: approved,
       );
-      if (!mounted) return;
+      if (!_actionIsCurrent) return;
       _showSnackBar(approved ? 'Promo approved.' : 'Promo rejected.');
       await _loadCampaigns();
     } on MutationOutcomeUnknownException catch (error) {
-      if (mounted) _showSnackBar(error.message, isError: true);
+      if (_actionIsCurrent) _showSnackBar(error.message, isError: true);
       await _loadCampaigns();
     } on Object {
-      if (mounted) _showSnackBar('Unable to review this campaign.', isError: true);
+      if (_actionIsCurrent)
+        _showSnackBar('Unable to review this campaign.', isError: true);
     } finally {
-      if (mounted) setState(() => _campaignActionId = null);
+      if (_actionIsCurrent) setState(() => _campaignActionId = null);
     }
   }
 
   Future<void> _sendApprovedCampaign(AdminCampaignApprovalItem campaign) async {
+    if (!_actionIsCurrent) return;
     setState(() => _campaignActionId = campaign.id);
 
     try {
@@ -207,7 +224,7 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
       );
 
       if (campaign.isPromo && !preview.hasPromotionalRecipients) {
-        if (!mounted) return;
+        if (!_actionIsCurrent) return;
         _showSnackBar(
           'Promo cannot be sent because no members have granted promotional consent.',
           isError: true,
@@ -215,7 +232,7 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
         return;
       }
 
-      if (!mounted) return;
+      if (!_actionIsCurrent) return;
       final confirmed = await MobiConfirmDialog.show(
         context: context,
         title: 'Send approved promo',
@@ -229,25 +246,27 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
         confirmLabel: 'Send',
         cancelLabel: 'Back',
       );
-      if (confirmed != true) return;
+      if (confirmed != true || !_actionIsCurrent) return;
 
       final count = await _adminService.sendApprovedCampaign(
         campaignId: campaign.id,
       );
-      if (!mounted) return;
+      if (!_actionIsCurrent) return;
       _showSnackBar('Promo sent to $count consenting members.');
       await _loadCampaigns();
     } on MutationOutcomeUnknownException catch (error) {
-      if (mounted) _showSnackBar(error.message, isError: true);
+      if (_actionIsCurrent) _showSnackBar(error.message, isError: true);
       await _loadCampaigns();
     } on Object {
-      if (mounted) _showSnackBar('Unable to confirm this send.', isError: true);
+      if (_actionIsCurrent)
+        _showSnackBar('Unable to confirm this send.', isError: true);
     } finally {
-      if (mounted) setState(() => _campaignActionId = null);
+      if (_actionIsCurrent) setState(() => _campaignActionId = null);
     }
   }
 
   Future<void> _showCampaignDetails(AdminCampaignApprovalItem campaign) async {
+    if (!_actionIsCurrent) return;
     final detailFuture = _loadCampaignDetail(campaign.id);
     await MobiBottomSheet.show<void>(
       context: context,
@@ -259,12 +278,15 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
   }
 
   Future<_CampaignDetailData> _loadCampaignDetail(String campaignId) async {
+    if (!_actionIsCurrent) throw const StaleAccountWork();
     final preview = await _adminService.getCampaignAudiencePreview(
       campaignId: campaignId,
     );
+    if (!_actionIsCurrent) throw const StaleAccountWork();
     final timeline = await _adminService.listCampaignAuditTimeline(
       campaignId: campaignId,
     );
+    if (!_actionIsCurrent) throw const StaleAccountWork();
     return _CampaignDetailData(preview: preview, timeline: timeline);
   }
 
@@ -283,7 +305,7 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
-    if (!mounted) return;
+    if (!_actionIsCurrent) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -1080,7 +1102,7 @@ class _CampaignDetailSheet extends StatelessWidget {
                     _statusLabel(campaign.status),
                     style: AppTypography.bodySm.copyWith(
                       color: cs.onSurfaceVariant,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),

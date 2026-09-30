@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/location/location_access_state.dart';
 import 'package:mobi_app/core/permissions/app_permission_service.dart';
 import 'package:mobi_app/core/platform/platform_io.dart';
@@ -41,7 +42,9 @@ class LocationService {
 
   Future<LocationAccessState> accessState({bool background = false}) async {
     try {
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      final serviceEnabled = await RequestDeadline.read(
+        Geolocator.isLocationServiceEnabled(),
+      );
       if (!serviceEnabled) {
         clearCache();
         return LocationAccessState.serviceDisabled;
@@ -69,7 +72,9 @@ class LocationService {
   }) async {
     try {
       // Check location services
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      final serviceEnabled = await RequestDeadline.read(
+        Geolocator.isLocationServiceEnabled(),
+      );
       if (!serviceEnabled) {
         AppLogger.warning('Location services are disabled');
         clearCache();
@@ -85,10 +90,12 @@ class LocationService {
       }
 
       // Get fresh position
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.medium,
-          timeLimit: Duration(seconds: 10),
+      final position = await RequestDeadline.read(
+        Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.medium,
+            timeLimit: Duration(seconds: 10),
+          ),
         ),
       );
 
@@ -114,7 +121,9 @@ class LocationService {
       final granted = await _permissionService.hasLocationAccess();
       if (!granted) return null;
 
-      final last = await Geolocator.getLastKnownPosition();
+      final last = await RequestDeadline.read(
+        Geolocator.getLastKnownPosition(),
+      );
       if (last != null) {
         _remember(last);
       }

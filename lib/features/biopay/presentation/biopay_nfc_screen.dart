@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/core/utils/money_formatting.dart';
@@ -17,7 +18,24 @@ import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 
 class BioPayNfcScreen extends ConsumerStatefulWidget {
-  const BioPayNfcScreen({super.key, required this.onBack});
+  const BioPayNfcScreen({
+    super.key,
+    required this.onBack,
+    this.deviceNfcService = const BioPayDeviceNfcService(),
+  }) : _captureOverride = null,
+       _isCurrentOverride = null;
+  @visibleForTesting
+  const BioPayNfcScreen.test({
+    super.key,
+    required this.onBack,
+    required AccountSnapshot Function() captureAccount,
+    required bool Function(AccountSnapshot) isCurrent,
+    this.deviceNfcService = const BioPayDeviceNfcService(),
+  }) : _captureOverride = captureAccount,
+       _isCurrentOverride = isCurrent;
+  final BioPayDeviceNfcService deviceNfcService;
+  final AccountSnapshot Function()? _captureOverride;
+  final bool Function(AccountSnapshot)? _isCurrentOverride;
 
   final VoidCallback onBack;
 
@@ -26,7 +44,57 @@ class BioPayNfcScreen extends ConsumerStatefulWidget {
 }
 
 class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
-  static const _deviceNfcService = BioPayDeviceNfcService();
+  BioPayDeviceNfcService get _deviceNfcService => widget.deviceNfcService;
+  late final BioPayNfcForegroundSuspendedNotifier _foreground;
+  AccountSnapshot? _viewAccount;
+  int _revision = 0;
+  int? _suspension;
+  bool _accountLost = false;
+  bool _current(AccountSnapshot? account, int revision) =>
+      mounted &&
+      !_accountLost &&
+      revision == _revision &&
+      (account == null
+          ? SupabaseConfig.isLocalUiPreview && widget._captureOverride == null
+          : widget._isCurrentOverride?.call(account) ??
+                AccountContext.isCurrent(account));
+  void _release(int lease) {
+    if (_suspension == lease) _suspension = null;
+    _foreground.releaseSuspension(lease);
+  }
+
+  Future<void> _stopOwned(int? lease) async {
+    if (lease == null || !_foreground.ownsSuspension(lease)) return;
+    try {
+      await _deviceNfcService.stop(
+        canDispatch: () => _foreground.isCurrentSuspensionLease(lease),
+      );
+    } on Object catch (error, stackTrace) {
+      AppLogger.warning(
+        'Device NFC cleanup is unconfirmed.',
+        context: 'BioPayDeviceNfc',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    } finally {
+      _release(lease);
+    }
+  }
+
+  void _accountChanged() {
+    if (_accountLost || _current(_viewAccount, _revision)) return;
+    _revision++;
+    _accountLost = true;
+    _receiverNumberController.clear();
+    _receiverCodeController.clear();
+    _amountController.clear();
+    setState(() {
+      _request = null;
+      _busy = false;
+      _error = 'Sign in again to continue.';
+    });
+    unawaited(_stopOwned(_suspension));
+  }
 
   final TextEditingController _receiverNumberController =
       TextEditingController();
@@ -45,16 +113,24 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
   @override
   void initState() {
     super.initState();
-    _hydrateDefaultReceiver();
+    _foreground = ref.read(bioPayNfcForegroundSuspendedProvider.notifier);
+    try {
+      _viewAccount =
+          widget._captureOverride?.call() ??
+          (SupabaseConfig.isLocalUiPreview ? null : AccountContext.capture());
+    } on Object {
+      _accountLost = true;
+      _error = 'Sign in again to continue.';
+    }
+    AccountContext.changes.addListener(_accountChanged);
+    unawaited(_hydrateDefaultReceiver());
   }
 
   @override
   void dispose() {
-    if (_request != null) {
-      ref
-          .read(bioPayNfcForegroundSuspendedProvider.notifier)
-          .setSuspended(true);
-    }
+    _revision++;
+    AccountContext.changes.removeListener(_accountChanged);
+    unawaited(_stopOwned(_suspension));
     _receiverNumberController.dispose();
     _receiverCodeController.dispose();
     _amountController.dispose();
@@ -62,14 +138,17 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
   }
 
   Future<void> _hydrateDefaultReceiver() async {
-    if (SupabaseConfig.isLocalUiPreview) {
+    final account = _viewAccount;
+    final revision = _revision;
+    if (!_current(account, revision)) return;
+    if (SupabaseConfig.isLocalUiPreview && widget._captureOverride == null) {
       _receiverNumberController.text = '0788123456';
       _receiverCodeController.text = '23456';
       if (mounted) setState(() {});
       return;
     }
 
-    if (!SupabaseConfig.isConfigured) return;
+    if (!SupabaseConfig.isConfigured && widget._captureOverride == null) return;
 
     final profile = await ref
         .read(profileServiceProvider)
@@ -84,7 +163,7 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
         : whatsapp.isNotEmpty
         ? whatsapp
         : phone;
-    if (!mounted) return;
+    if (!_current(account, revision)) return;
 
     if (receiver.isNotEmpty && _receiverNumberController.text.trim().isEmpty) {
       _receiverNumberController.text = momoReceiverDisplay(receiver);
@@ -98,12 +177,9 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
   }
 
   void _resetRequest() {
-    if (_request != null) {
-      unawaited(_deviceNfcService.stop());
-      ref
-          .read(bioPayNfcForegroundSuspendedProvider.notifier)
-          .setSuspended(false);
-    }
+    if (!_current(_viewAccount, _revision)) return;
+    _revision++;
+    unawaited(_stopOwned(_suspension));
     setState(() {
       _request = null;
       _error = null;
@@ -111,6 +187,7 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
   }
 
   void _onReceiverChanged(String value) {
+    if (!_current(_viewAccount, _revision)) return;
     if (!_receiverUsesCode) {
       final display = momoReceiverDisplay(value);
       if (display != value) {
@@ -137,11 +214,20 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
   }
 
   bool get _canActivateDeviceNfc {
-    return !_busy && _request == null && _hasValidReceiver && _hasValidAmount;
+    return _current(_viewAccount, _revision) &&
+        !_busy &&
+        _request == null &&
+        _hasValidReceiver &&
+        _hasValidAmount;
   }
 
   Future<void> _activateDeviceNfc() async {
-    ref.read(bioPayNfcForegroundSuspendedProvider.notifier).setSuspended(true);
+    final account = _viewAccount;
+    if (!_current(account, _revision) || !_canActivateDeviceNfc) return;
+    final revision = ++_revision;
+    final lease = _suspension = _foreground.acquireSuspension();
+    bool current() =>
+        _current(account, revision) && _foreground.ownsSuspension(lease);
     setState(() {
       _busy = true;
       _error = null;
@@ -156,7 +242,8 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
       }
       final amountMinor = amountMinorFromController(_amountController);
       final service = ref.read(biopayUssdServiceProvider);
-      final request = SupabaseConfig.isConfigured
+      final request =
+          (SupabaseConfig.isConfigured || widget._captureOverride != null)
           ? await service.createPaymentRequest(
               channel: BioPayRequestChannel.nfc,
               amountMinor: amountMinor,
@@ -169,6 +256,7 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
               payeeLabel: 'MoMo receiver',
               payeePhone: receiver,
             );
+      if (!current()) return;
       final status = kIsWeb && SupabaseConfig.isLocalUiPreview
           ? BioPayDeviceNfcStatus(
               supported: true,
@@ -176,29 +264,31 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
               token: request.token,
               expiresAt: request.expiresAt,
             )
-          : await _deviceNfcService.startPaymentRequest(request);
+          : await _deviceNfcService.startPaymentRequest(
+              request,
+              canDispatch: current,
+            );
+      if (!current()) return;
       if (!status.supported) {
         throw StateError(status.reason ?? 'Device NFC is not supported.');
       }
       if (!status.canAdvertise) {
         throw StateError(status.reason ?? 'Device NFC is not active.');
       }
-      if (!mounted) return;
+      if (!current()) return;
       setState(() {
         _request = request;
       });
     } on Object catch (error, stackTrace) {
-      unawaited(_deviceNfcService.stop());
-      ref
-          .read(bioPayNfcForegroundSuspendedProvider.notifier)
-          .setSuspended(false);
+      if (!current()) return;
+      await _stopOwned(lease);
       AppLogger.warning(
         'Device NFC activation failed: $error',
         context: 'BioPayDeviceNfc',
         error: error,
         stackTrace: stackTrace,
       );
-      if (!mounted) return;
+      if (!_current(account, revision)) return;
       setState(
         () => _error = _deviceNfcErrorLabel(
           error,
@@ -206,7 +296,7 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
         ),
       );
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (_current(account, revision)) setState(() => _busy = false);
     }
   }
 
@@ -231,32 +321,45 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final account = _viewAccount;
+    final revision = _revision;
+    bool current() => _current(account, revision);
     return BioPayFlowScreen(
       title: 'Device NFC',
       primaryLabel: _request == null ? 'Activate Device NFC' : '',
       isPrimaryLoading: _busy,
       onBack: widget.onBack,
-      onPrimary: _canActivateDeviceNfc ? _activateDeviceNfc : null,
+      onPrimary: _canActivateDeviceNfc
+          ? () {
+              if (current()) unawaited(_activateDeviceNfc());
+            }
+          : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (_request == null) ...[
+          if (_request == null && !_accountLost) ...[
             BioPayReceiverField(
               controller: _activeReceiverController,
-              enabled: _request == null,
+              enabled: _request == null && !_busy,
               usesCode: _receiverUsesCode,
-              onModeChanged: (usesCode) => setState(() {
-                _receiverUsesCode = usesCode;
-                _request = null;
-                _error = null;
-              }),
-              onChanged: _onReceiverChanged,
+              onModeChanged: (usesCode) {
+                if (!current()) return;
+                setState(() {
+                  _receiverUsesCode = usesCode;
+                });
+                _resetRequest();
+              },
+              onChanged: (value) {
+                if (current()) _onReceiverChanged(value);
+              },
             ),
             const SizedBox(height: AppSpacing.md),
             BioPayReceiveAmountField(
               controller: _amountController,
-              enabled: _request == null,
-              onChanged: (_) => _resetRequest(),
+              enabled: _request == null && !_busy,
+              onChanged: (_) {
+                if (current()) _resetRequest();
+              },
             ),
             const SizedBox(height: AppSpacing.xl),
           ],

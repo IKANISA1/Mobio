@@ -99,6 +99,7 @@ PaymentEntry? _manualEntry(bool phone, String receiver, String? amount) {
   return PaymentEntry(
     manual: PaymentMethod(
       id: 'manual',
+      version: 0,
       ownerId: '',
       provider: 'mtn_rw',
       kind: phone

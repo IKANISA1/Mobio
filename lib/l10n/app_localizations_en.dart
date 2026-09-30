@@ -733,6 +733,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get faceTimeout => 'This is taking too long. Try again.';
 
   @override
+  String get faceOutcomeUnknown =>
+      'The result is unconfirmed. Check the current status or activity before trying again.';
+
+  @override
   String get faceSignIn => 'Sign in again to continue.';
 
   @override

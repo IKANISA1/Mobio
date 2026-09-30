@@ -24,6 +24,12 @@ the release script. The build-input record contains digests, not raw values;
 it is made from the same temporary defines file passed to Flutter. Candidate
 creation rejects Android build-name or number overrides that differ from the
 source version.
+Build-input recording, candidate creation and promotion verification also read
+the AAB's compiled base Android manifest. Its actual package, `versionName` and
+`versionCode` must equal the source; the candidate records their readback and
+the compiled manifest SHA-256. Missing, duplicate, malformed or conflicting
+identity fields fail closed, including nonzero `versionCodeMajor` and disagreement
+between raw and compiled attribute values.
 The AAB must have valid bundle structure and a verifiable JAR signature.
 `build/release-candidate.json` is generated after the AAB build and is never a
 release approval.

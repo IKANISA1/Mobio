@@ -958,7 +958,10 @@ void main() {
         expect(promo, isNot(contains("scan the driver's face")));
         expect(promo, contains("view the driver's profile"));
         expect(driverCard, isNot(contains('trip.price')));
-        expect(nearbyScreen, contains('km away'));
+        expect(nearbyScreen, contains('DriverCard.person('));
+        expect(nearbyScreen, contains('distanceKm: driver.distanceKm'));
+        expect(driverCard, contains('person.distanceKm!.toStringAsFixed(1)'));
+        expect(driverCard, contains('KM AWAY'));
         expect(sharedExports, isNot(contains('ride_request.dart')));
       },
     );

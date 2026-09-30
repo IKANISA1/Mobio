@@ -1,4 +1,7 @@
 import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/async/client_operation_id.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_shared_types/models/favorite_address.dart';
@@ -6,11 +9,29 @@ import 'package:mobi_shared_types/models/place.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
 class FavoriteAddressService {
-  FavoriteAddressService({SupabaseClient? supabase})
-    : _supabase = supabase ?? Supabase.instance.client;
+  FavoriteAddressService({
+    SupabaseClient? supabase,
+    AccountSnapshot Function()? captureAccount,
+    void Function(AccountSnapshot)? requireCurrent,
+  }) : _supabase = supabase ?? Supabase.instance.client,
+       _captureOverride = captureAccount,
+       _requireOverride = requireCurrent;
 
   final SupabaseClient _supabase;
+  final AccountSnapshot Function()? _captureOverride;
+  final void Function(AccountSnapshot)? _requireOverride;
   static const _networkTimeout = Duration(seconds: 15);
+
+  AccountSnapshot _capture() {
+    final account = _captureOverride?.call() ?? AccountContext.capture();
+    _require(account);
+    return account;
+  }
+
+  void _require(AccountSnapshot account) {
+    if (_requireUserId() != account.userId) throw const StaleAccountWork();
+    (_requireOverride ?? AccountContext.requireCurrent)(account);
+  }
 
   String _requireUserId() {
     final userId = _supabase.auth.currentUser?.id;
@@ -21,7 +42,8 @@ class FavoriteAddressService {
   }
 
   Future<List<FavoriteAddress>> list({bool activeOnly = true}) async {
-    final userId = _requireUserId();
+    final account = _capture();
+    final userId = account.userId;
 
     try {
       var query = _supabase
@@ -37,16 +59,22 @@ class FavoriteAddressService {
           .order('sort_order')
           .order('created_at')
           .timeout(_networkTimeout);
+      _require(account);
 
-      return (rows as List<dynamic>)
+      final addresses = (rows as List<dynamic>)
           .map(
             (row) =>
                 FavoriteAddress.fromJson(Map<String, dynamic>.from(row as Map)),
           )
           .toList();
+      if (addresses.any((address) => address.profileId != userId)) {
+        throw const FormatException('Saved address owner mismatch');
+      }
+      return addresses;
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
+      _require(account);
       throw AppExceptionMapper.mapAndLog(
         error,
         stackTrace,
@@ -62,8 +90,11 @@ class FavoriteAddressService {
     required PlaceDetails place,
     int sortOrder = 0,
   }) async {
-    final userId = _requireUserId();
+    final account = _capture();
+    final userId = account.userId;
+    final addressId = id ?? newClientOperationId();
     final payload = {
+      if (id == null) 'id': addressId,
       'profile_id': userId,
       'label': label.trim(),
       'address_type': addressType,
@@ -85,6 +116,7 @@ class FavoriteAddressService {
                   .select()
                   .single(),
               operation: 'create_favorite_address',
+              operationId: addressId,
               timeout: _networkTimeout,
             )
           : await RequestDeadline.mutation(
@@ -100,10 +132,27 @@ class FavoriteAddressService {
               timeout: _networkTimeout,
             );
 
-      return FavoriteAddress.fromJson(Map<String, dynamic>.from(row as Map));
+      _require(account);
+      try {
+        final address = FavoriteAddress.fromJson(
+          Map<String, dynamic>.from(row as Map),
+        );
+        if (address.profileId != userId || address.id != addressId) {
+          throw const FormatException('Saved address identity mismatch');
+        }
+        return address;
+      } on Object catch (error, stackTrace) {
+        throw MutationOutcomeUnknownException(
+          operation: 'save_favorite_address',
+          operationId: addressId,
+          originalError: error,
+          stackTrace: stackTrace,
+        );
+      }
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
+      _require(account);
       throw AppExceptionMapper.mapAndLog(
         error,
         stackTrace,
@@ -113,7 +162,8 @@ class FavoriteAddressService {
   }
 
   Future<void> delete(String id) async {
-    final userId = _requireUserId();
+    final account = _capture();
+    final userId = account.userId;
 
     try {
       await RequestDeadline.mutation(
@@ -126,9 +176,11 @@ class FavoriteAddressService {
         operationId: id,
         timeout: _networkTimeout,
       );
+      _require(account);
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
+      _require(account);
       throw AppExceptionMapper.mapAndLog(
         error,
         stackTrace,

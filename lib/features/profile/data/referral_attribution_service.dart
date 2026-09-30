@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/profile/data/referral_service.dart';
@@ -41,9 +43,11 @@ class ReferralAttributionService {
   }
 
   Future<void> completePendingSignup() async {
-    if (!SupabaseConfig.isConfigured) return;
+    if (!SupabaseConfig.isConfigured || !AccountContext.hasVerifiedSession) return;
+    final account = AccountContext.capture();
 
     final prefs = await SharedPreferences.getInstance();
+    AccountContext.requireCurrent(account);
     final code = prefs.getString(_pendingCodeKey);
     if (code == null || code.isEmpty) return;
     final installId = prefs.getString(_pendingInstallIdKey);
@@ -63,6 +67,7 @@ class ReferralAttributionService {
         installId: installId,
         metadata: metadata,
       );
+      AccountContext.requireCurrent(account);
       await prefs.remove(_pendingCodeKey);
       await prefs.remove(_pendingInstallIdKey);
       await prefs.remove(_pendingAttributionSourceKey);
@@ -73,7 +78,7 @@ class ReferralAttributionService {
 
   Future<void> _captureInitialUri() async {
     try {
-      final uri = await _appLinks.getInitialLink();
+      final uri = await RequestDeadline.read(_appLinks.getInitialLink());
       if (uri != null) {
         await _handleUri(uri, source: 'initial_app_link');
       }
@@ -86,8 +91,8 @@ class ReferralAttributionService {
     if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
 
     try {
-      final response = await _platform.invokeMethod<dynamic>(
-        'getInstallReferrer',
+      final response = await RequestDeadline.read(
+        _platform.invokeMethod<dynamic>('getInstallReferrer'),
       );
       final raw = _installReferrerValue(response);
       if (raw == null || raw.isEmpty) return;

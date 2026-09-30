@@ -2,7 +2,7 @@
 
 These prompts are used by the `generate-promo-content` Supabase Edge Function to generate the marketing imagery and videos for the application's empty states. 
 
-The strategy focuses on high emotional engagement, relatability, and Sub-Saharan African influencer aesthetics overlaying the "Soft Liquid Glass" dark UI.
+These prompts record product photography content. UI composition, imagery placement and state treatments must follow the external `revolut-design` skill, with Mobio's own identity and workflows. The prompts do not define a visual system.
 
 **Dynamic Regional Targeting:** The tags `<CITY>` and `<COUNTRY>` are replaced dynamically by the edge function based on a daily rotation (e.g., Kigali, Rwanda -> Nairobi, Kenya).
 

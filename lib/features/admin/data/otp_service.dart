@@ -1,21 +1,25 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/auth/account_context.dart';
-import 'package:mobi_app/core/auth/admin_session_service.dart';
 import 'package:mobi_app/core/auth/admin_session_guard.dart';
+import 'package:mobi_app/core/auth/admin_session_service.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Result of an OTP send or verify operation.
 class OtpResult {
   final bool success;
+  final bool deliveryUnconfirmed;
   final String? message;
   final int? retryAfterSeconds;
   final int? attemptsRemaining;
 
   const OtpResult({
     required this.success,
+    this.deliveryUnconfirmed = false,
     this.message,
     this.retryAfterSeconds,
     this.attemptsRemaining,
@@ -29,7 +33,8 @@ class OtpService {
   static LoginAttempt? _attempt;
   static Object? _attemptOwner;
   static Future<void> cancelVerification({required Object owner}) async {
-    if (identical(owner, _attemptOwner)) await AccountContext.cancelPendingLogin(_attempt);
+    if (identical(owner, _attemptOwner))
+      await AccountContext.cancelPendingLogin(_attempt);
   }
 
   // Edge functions live on the configured Supabase project.
@@ -52,6 +57,8 @@ class OtpService {
   static Future<OtpResult> sendOtp({
     required String phone,
     required String countryCode,
+    Dio? dio,
+    Duration requestTimeout = const Duration(seconds: 15),
   }) async {
     final normalizedPhone = PhoneNumberNormalizer.normalizeForCountry(
       phone: phone,
@@ -59,11 +66,24 @@ class OtpService {
     );
 
     try {
-      final response = await _dio.post(
-        '/send-otp',
-        data: {'phone': normalizedPhone, 'countryCode': countryCode},
+      final response = await RequestDeadline.mutation(
+        (dio ?? _dio).post(
+          '/send-otp',
+          data: {'phone': normalizedPhone, 'countryCode': countryCode},
+        ),
+        operation: 'send_admin_otp',
+        timeout: requestTimeout,
       );
-      final body = response.data as Map<String, dynamic>;
+      final body = response.data;
+      if (body is! Map<String, dynamic> || body['success'] is! bool) {
+        return const OtpResult(
+          success: false,
+          deliveryUnconfirmed: true,
+          retryAfterSeconds: 60,
+          message:
+              'Code delivery could not be confirmed. Check WhatsApp before requesting another code.',
+        );
+      }
 
       if (body['success'] == true) {
         return const OtpResult(
@@ -74,8 +94,18 @@ class OtpService {
 
       return OtpResult(
         success: false,
-        message: body['message'] as String? ?? 'Failed to send OTP',
+        message: body['message'] is String
+            ? body['message'] as String
+            : 'Failed to send OTP',
         retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'),
+      );
+    } on MutationOutcomeUnknownException {
+      return const OtpResult(
+        success: false,
+        deliveryUnconfirmed: true,
+        retryAfterSeconds: 60,
+        message:
+            'Code delivery could not be confirmed. Check WhatsApp before requesting another code.',
       );
     } on DioException catch (e) {
       if (kDebugMode) debugPrint('OtpService.sendOtp: request unavailable');
@@ -99,8 +129,16 @@ class OtpService {
     required String code,
     required String countryCode,
   }) async {
-    if (_verificationPending) return const OtpResult(success: false, message: 'Verification is already in progress.');
-    if (!SupabaseConfig.isConfigured) return const OtpResult(success:false, message:'Admin service is unavailable.');
+    if (_verificationPending)
+      return const OtpResult(
+        success: false,
+        message: 'Verification is already in progress.',
+      );
+    if (!SupabaseConfig.isConfigured)
+      return const OtpResult(
+        success: false,
+        message: 'Admin service is unavailable.',
+      );
     _verificationPending = true;
     LoginAttempt? ticket;
     var completed = false;
@@ -109,40 +147,75 @@ class OtpService {
       _attempt = ticket;
       _attemptOwner = owner;
       await AccountContext.prepareLogin(ticket);
-      final normalizedPhone = PhoneNumberNormalizer.normalizeForCountry(phone: phone, countryCode: countryCode);
-      final response = await _dio.post('/verify-otp', data: {
-        'phone': normalizedPhone, 'code': code, 'countryCode': countryCode,
-      }).timeout(const Duration(seconds: 15));
+      final normalizedPhone = PhoneNumberNormalizer.normalizeForCountry(
+        phone: phone,
+        countryCode: countryCode,
+      );
+      final response = await _dio
+          .post(
+            '/verify-otp',
+            data: {
+              'phone': normalizedPhone,
+              'code': code,
+              'countryCode': countryCode,
+            },
+          )
+          .timeout(const Duration(seconds: 15));
       AccountContext.requireLoginAttempt(ticket);
       final body = response.data as Map<String, dynamic>;
-      if (body['success'] == true && body['session'] is Map && body['admin_lease'] is Map) {
+      if (body['success'] == true &&
+          body['session'] is Map &&
+          body['admin_lease'] is Map) {
         final session = Map<String, dynamic>.from(body['session'] as Map);
         final lease = Map<String, dynamic>.from(body['admin_lease'] as Map);
-        if (lease['active'] != true || session['user'] is! Map ||
-            (session['user'] as Map)['id'] != lease['user_id']) throw StateError('ADMIN_LEASE_REQUIRED');
+        if (lease['active'] != true ||
+            session['user'] is! Map ||
+            (session['user'] as Map)['id'] != lease['user_id'])
+          throw StateError('ADMIN_LEASE_REQUIRED');
         await AccountContext.restoreServerSession(ticket, session);
-        if (AccountContext.sessionId(Supabase.instance.client.auth.currentSession) != lease['session_id']) {
+        if (AccountContext.sessionId(
+              Supabase.instance.client.auth.currentSession,
+            ) !=
+            lease['session_id']) {
           throw StateError('ADMIN_LEASE_REQUIRED');
         }
-        await AccountContext.completeVerifiedLogin(ticket).timeout(const Duration(seconds: 8));
+        await AccountContext.completeVerifiedLogin(
+          ticket,
+        ).timeout(const Duration(seconds: 8));
         if (!await AdminSessionService.synchronize()) {
-          await AccountContext.beginExit();
+          await AccountContext.beginExit().timeout(const Duration(seconds: 4));
           throw StateError('ADMIN_LEASE_REQUIRED');
         }
         completed = true;
         return const OtpResult(success: true, message: 'Verified successfully');
       }
-      return OtpResult(success: false, message: body['message'] as String? ?? 'Verification failed',
-        attemptsRemaining: _extractInt(body, 'attemptsRemaining'), retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'));
+      return OtpResult(
+        success: false,
+        message: body['message'] as String? ?? 'Verification failed',
+        attemptsRemaining: _extractInt(body, 'attemptsRemaining'),
+        retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'),
+      );
     } on DioException catch (error) {
       AdminSessionGuard.revoke();
-      return _fromDioException(error, fallbackMessage: 'Network error. Check your connection.');
+      return _fromDioException(
+        error,
+        fallbackMessage: 'Network error. Check your connection.',
+      );
     } on Object {
       AdminSessionGuard.revoke();
-      return const OtpResult(success: false, message: 'Unable to confirm admin access. Request a new code.');
+      return const OtpResult(
+        success: false,
+        message: 'Unable to confirm admin access. Request a new code.',
+      );
     } finally {
       if (!completed) {
-        try { await AccountContext.abortLogin(ticket).timeout(const Duration(seconds: 5)); } on Object { /* locked */ }
+        try {
+          await AccountContext.abortLogin(
+            ticket,
+          ).timeout(const Duration(seconds: 5));
+        } on Object {
+          /* locked */
+        }
       }
       _attempt = null;
       _attemptOwner = null;

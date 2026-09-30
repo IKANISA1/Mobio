@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "product": "Mobio",
+  "recorded_on": "2026-09-30",
+  "authority": {
+    "skill_id": "revolut-design",
+    "role": "sole_design_authority",
+    "entrypoint": {
+      "path": "/Volumes/PRO-G40/Application Data/Codex/Codex-Home/skills/revolut-design/SKILL.md",
+      "sha256": "59ed494b2dd61684a8f2f516385ba601cfa549b7541bc1e9706df50e28fe3e1a"
+    },
+    "bundled_references": [
+      {
+        "path": "/Volumes/PRO-G40/Application Data/Codex/Codex-Home/skills/revolut-design/references/brand-adaptation.md",
+        "sha256": "135a13f0672dc0384668b92c5ac88e77b9219c5760f10cdcaff8ec456501f9fd"
+      },
+      {
+        "path": "/Volumes/PRO-G40/Application Data/Codex/Codex-Home/skills/revolut-design/references/mobile-design-100.md",
+        "sha256": "f552445abe63cab63bdcda039d301d6b532f404380fb0d3d35d3563a3ec803cb"
+      }
+    ]
+  },
+  "identity": "Preserve Mobio name, logo, app icon, supported features, navigation, workflows and content.",
+  "declared_surfaces": [
+    "native_android",
+    "native_ios",
+    "consumer_web",
+    "public_website",
+    "admin_web"
+  ],
+  "target": "100% fidelity to selected visual typologies and full applicable colour system; own-product identity and workflow adaptations are required.",
+  "acceptance": {
+    "status": "unverified",
+    "per_surface": {
+      "native_android": "unverified",
+      "native_ios": "unverified",
+      "consumer_web": "unverified",
+      "public_website": "unverified",
+      "admin_web": "unverified"
+    },
+    "mobile_rule": "MOBILE-DESIGN-100",
+    "coverage_status": "Historical route and reference inventories do not establish current complete route/state coverage.",
+    "independent_visual_review": "unverified",
+    "owner_acceptance": "unverified"
+  },
+  "product_evidence": {
+    "index": "docs/design/README.md",
+    "historical_reference_registry": "docs/design/reference-sources-20260905.json",
+    "historical_routes": "docs/design/routes-20260905.json"
+  },
+  "limitations": [
+    "This registry binds source authority and status; it does not supply a competing visual specification.",
+    "A source hash or passing technical check does not establish visual fidelity or release acceptance."
+  ]
+}

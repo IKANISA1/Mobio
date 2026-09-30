@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_shared_types/models/country.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -18,11 +19,13 @@ class CountryService {
     if (_cached != null) return _cached!;
 
     try {
-      final response = await _supabase
-          .from('countries')
-          .select()
-          .eq('is_active', true)
-          .order('sort_order');
+      final response = await RequestDeadline.read(
+        _supabase
+            .from('countries')
+            .select()
+            .eq('is_active', true)
+            .order('sort_order'),
+      );
 
       final rows = response as List<dynamic>;
       final countries = rows

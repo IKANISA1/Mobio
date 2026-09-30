@@ -1,5 +1,7 @@
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/admin/data/admin_base_service.dart';
+import 'package:mobi_app/features/admin/domain/admin_wire_record.dart';
 import 'package:mobi_shared_types/models/admin/admin_models.dart';
 
 class AdminDashboardService extends AdminBaseService {
@@ -8,9 +10,7 @@ class AdminDashboardService extends AdminBaseService {
   Future<AdminDashboardStats> getDashboardStats() async {
     try {
       final data = await read(supabaseClient.rpc('get_dashboard_stats'));
-      return AdminDashboardStats.fromJson(
-        requireRow(data, 'get_dashboard_stats'),
-      );
+      return AdminWireRecord.dashboard(requireRow(data, 'get_dashboard_stats'));
     } on Object catch (error) {
       AppLogger.error('Error fetching admin dashboard stats: $error');
       rethrow;
@@ -31,7 +31,7 @@ class AdminDashboardService extends AdminBaseService {
       return requireRows(
         rows,
         'rpc_admin_list_access_attempts',
-      ).map(AdminAccessAttemptItem.fromJson).toList();
+      ).map(AdminWireRecord.accessAttempt).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching admin access attempts: $error');
       rethrow;
@@ -59,10 +59,9 @@ class AdminDashboardService extends AdminBaseService {
             .limit(limit),
       );
 
-      return requireRows(
-        rows,
-        'admin_notifications',
-      ).map(AdminNotificationItem.fromJson).toList();
+      return requireRows(rows, 'admin_notifications')
+          .map((row) => AdminWireRecord.notification(row, userId: userId))
+          .toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching admin notifications: $error');
       rethrow;
@@ -74,7 +73,7 @@ class AdminDashboardService extends AdminBaseService {
       final data = await read(
         supabaseClient.rpc('rpc_admin_get_platform_settings'),
       );
-      return AdminPlatformSettings.fromJson(
+      return AdminWireRecord.platformSettings(
         requireRow(data, 'rpc_admin_get_platform_settings'),
       );
     } on Object catch (error) {
@@ -96,8 +95,26 @@ class AdminDashboardService extends AdminBaseService {
         operation: 'rpc_admin_upsert_platform_setting',
         operationId: key,
       );
-      return AdminPlatformSettings.fromJson(
-        requireRow(data, 'rpc_admin_upsert_platform_setting'),
+      return _confirmReceipt(
+        () {
+          final settings = AdminWireRecord.platformSettings(
+            requireRow(data, 'rpc_admin_upsert_platform_setting'),
+          );
+          final digits = value.replaceAll(RegExp(r'[^0-9]'), '');
+          final matches = switch (key.trim()) {
+            'insurance_agent_whatsapp_e164' =>
+              settings.insuranceAgentWhatsappE164 == '+$digits',
+            'token_redemption_admin_member_id' =>
+              settings.tokenRedemptionAdminMemberId == digits,
+            _ => false,
+          };
+          if (!matches) {
+            throw const FormatException('Platform setting receipt mismatch');
+          }
+          return settings;
+        },
+        operation: 'rpc_admin_upsert_platform_setting',
+        operationId: key,
       );
     } on Object catch (error) {
       AppLogger.error('Error updating platform setting: $error');
@@ -120,7 +137,7 @@ class AdminDashboardService extends AdminBaseService {
       return requireRows(
         rows,
         'rpc_admin_list_token_redemption_requests',
-      ).map(AdminTokenRedemptionItem.fromJson).toList();
+      ).map(AdminWireRecord.redemption).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching token redemptions: $error');
       rethrow;
@@ -145,8 +162,14 @@ class AdminDashboardService extends AdminBaseService {
         operation: 'rpc_admin_update_token_redemption_status',
         operationId: requestId,
       );
-      return AdminTokenRedemptionItem.fromJson(
-        requireRow(data, 'rpc_admin_update_token_redemption_status'),
+      return _confirmReceipt(
+        () => AdminWireRecord.redemption(
+          requireRow(data, 'rpc_admin_update_token_redemption_status'),
+          expectedRequestId: requestId,
+          expectedStatus: status,
+        ),
+        operation: 'rpc_admin_update_token_redemption_status',
+        operationId: requestId,
       );
     } on Object catch (error) {
       AppLogger.error('Error updating token redemption: $error');
@@ -196,6 +219,23 @@ class AdminDashboardService extends AdminBaseService {
     } on Object catch (error) {
       AppLogger.error('Error marking all admin notifications as read: $error');
       rethrow;
+    }
+  }
+
+  T _confirmReceipt<T>(
+    T Function() parse, {
+    required String operation,
+    required String operationId,
+  }) {
+    try {
+      return parse();
+    } on FormatException catch (error) {
+      throw MutationOutcomeUnknownException(
+        operation: operation,
+        operationId: operationId,
+        originalError: error,
+        debugMessage: error.message,
+      );
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/features/biopay/data/payment_discovery_service.dart';
 import 'package:mobi_app/features/biopay/domain/face_shortcut.dart';
 
@@ -20,6 +21,14 @@ PreparedFaceUssdShortcut shortcut({
 
 class AndroidGateway extends PaymentDiscoveryService {
   AndroidGateway() : super(null);
+  @override
+  String get ownerId => 'payer';
+  @override
+  AccountSnapshot captureAccount() =>
+      const AccountSnapshot('payer', 'fixture', 0);
+  @override
+  bool isCurrent(AccountSnapshot account) => account.userId == ownerId;
+
   @override
   String get deviceFamily => 'android';
 }

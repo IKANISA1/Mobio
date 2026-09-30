@@ -47,7 +47,7 @@ See `docs/product/public_transport_tracking_booking_scope_2026-06-08.md`.
 - Driver earnings, refunds, settlement, wallets, or trip payment ledgers.
 - In-app BioPay, QR/NFC payment, SMS payment ingestion, or payment collection
   for legacy trip posts.
-- Uber-style trip management.
+- Automatic dispatch and ride lifecycle management.
 
 Fares and prices are negotiated manually between users outside Mobio's automated
 systems unless the interaction is inside the new approved bus booking/payment

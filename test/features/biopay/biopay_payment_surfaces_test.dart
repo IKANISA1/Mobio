@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobi_app/features/biopay/data/biopay_ussd_service.dart';
@@ -25,6 +26,32 @@ import '../../helpers/mobile_scanner_test_channel.dart';
 void main() {
   setUpAll(installMobileScannerTestChannel);
   tearDownAll(uninstallMobileScannerTestChannel);
+  setUp(() {
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger
+      ..setMockMethodCallHandler(
+        const MethodChannel('rw.mobi.app/biopay_nfc_writer'),
+        (_) async => null,
+      )
+      ..setMockMethodCallHandler(
+        const MethodChannel('flutter_nfc_kit/method'),
+        (_) async => null,
+      );
+  });
+  tearDown(() {
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger
+      ..setMockMethodCallHandler(
+        const MethodChannel('rw.mobi.app/biopay_nfc_writer'),
+        null,
+      )
+      ..setMockMethodCallHandler(
+        const MethodChannel('flutter_nfc_kit/method'),
+        null,
+      );
+  });
 
   testWidgets('BioPay overview connects every identity action to its flow', (
     tester,
@@ -79,7 +106,9 @@ void main() {
       final paymentLinkDecoration = paymentLinkInk.decoration! as BoxDecoration;
       expect(
         paymentLinkDecoration.color,
-        bioPayDarkPanelAlt.withValues(alpha: 0.96),
+        Theme.of(
+          tester.element(find.text('Get Payment Link')),
+        ).colorScheme.surfaceContainerHigh,
       );
       for (final label in [
         'Face Scan',
@@ -426,6 +455,8 @@ void main() {
       find.widgetWithText(MobiButton, 'Write NFC'),
     );
     expect(action.onPressed, isNotNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
   });
 
   testWidgets('Face scan surface keeps redundant AWS helper label removed', (

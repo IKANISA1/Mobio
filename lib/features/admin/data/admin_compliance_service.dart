@@ -1,5 +1,6 @@
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/admin/data/admin_base_service.dart';
+import 'package:mobi_app/features/admin/domain/admin_wire_record.dart';
 import 'package:mobi_shared_types/models/admin/admin_models.dart';
 
 class AdminComplianceService extends AdminBaseService {
@@ -29,7 +30,7 @@ class AdminComplianceService extends AdminBaseService {
       return requireRows(
         rows,
         'rpc_admin_list_audit_logs',
-      ).map(AdminAuditLogItem.fromJson).toList();
+      ).map(AdminWireRecord.audit).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching admin audit logs: $error');
       rethrow;
@@ -58,7 +59,7 @@ class AdminComplianceService extends AdminBaseService {
       return requireRows(
         rows,
         'rpc_admin_list_user_reports',
-      ).map(AdminUserReportItem.fromJson).toList();
+      ).map(AdminWireRecord.report).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching user reports: $error');
       rethrow;
@@ -115,7 +116,7 @@ class AdminComplianceService extends AdminBaseService {
       return requireRows(
         rows,
         'rpc_admin_list_operational_health_events',
-      ).map(AdminOperationalHealthEventItem.fromJson).toList();
+      ).map(AdminWireRecord.operationalHealth).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching operational health events: $error');
       rethrow;

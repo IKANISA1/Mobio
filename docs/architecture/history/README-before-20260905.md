@@ -41,7 +41,7 @@ Rwanda-first mobility app with BioPay biometric payments, trip scheduling, and r
 |---|------|---------|
 | 1 | **User IDs = 6 numeric digits** | No letters, no UUIDs in UI. Always `\d{6}`. See `AppConstants.getDriverId()`. |
 | 2 | **Default country = Rwanda (RW)** | Pre-selected everywhere: dialing code `+250`, currency `RWF`, MoMo `MTN MoMo`. Never prompt user to choose. |
-| 3 | **UI = `design.md` only** | No ad-hoc styles. Every color, font, spacing, shadow, and component MUST follow [`design.md`](./design.md). Update the spec first, then code. |
+| 3 | **UI authority replaced** | The former local specification was removed on 30 September 2026. Follow the external `revolut-design` skill for all app, web and admin work; see `docs/design/README.md` for product evidence. |
 | 4 | **Auth = WhatsApp OTP** | Passenger/driver app access requires WhatsApp Cloud OTP. Admin OTP is separate and allowlisted. |
 | 5 | **Build env vars = mandatory** | Every `flutter build apk/appbundle` **MUST** pass `--dart-define=SUPABASE_URL=...` and `--dart-define=SUPABASE_ANON_KEY=...`. Use `./scripts/release/build_android_release.sh`. |
 

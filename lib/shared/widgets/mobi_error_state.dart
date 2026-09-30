@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
@@ -40,7 +40,7 @@ class MobiErrorState extends StatelessWidget {
       label: subtitle == null ? title : '$title. $subtitle',
       child: SizedBox(
         height: containerHeight,
-        child: ClayCard(
+        child: MobiTonalCard(
           borderRadius: AppRadii.hero,
           color: ext.surfaceContainerLowest.withValues(
             alpha: ext.surfacePanelAlpha,

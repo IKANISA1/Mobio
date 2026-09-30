@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/location/location_access_state.dart';
 import 'package:mobi_app/core/platform/platform_io.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -15,11 +16,15 @@ class AppPermissionService {
     PermissionRequester? requestPermission,
     OpenSettingsCallback? openSettings,
     bool? supportsRuntimePermissions,
+    Duration readTimeout = RequestDeadline.readTimeout,
+    Duration promptTimeout = const Duration(seconds: 60),
   }) : _readStatus = readStatus ?? _defaultReadStatus,
        _requestPermission = requestPermission ?? _defaultRequestPermission,
        _openSettings = openSettings ?? openAppSettings,
        _supportsRuntimePermissions =
-           supportsRuntimePermissions ?? (Platform.isAndroid || Platform.isIOS);
+           supportsRuntimePermissions ?? (Platform.isAndroid || Platform.isIOS),
+       _readTimeout = readTimeout,
+       _promptTimeout = promptTimeout;
 
   static final instance = AppPermissionService();
 
@@ -27,6 +32,8 @@ class AppPermissionService {
   final PermissionRequester _requestPermission;
   final OpenSettingsCallback _openSettings;
   final bool _supportsRuntimePermissions;
+  final Duration _readTimeout;
+  final Duration _promptTimeout;
 
   /// Requests location permission (whenInUse).
   /// Returns true if granted/limited, false otherwise.
@@ -81,7 +88,11 @@ class AppPermissionService {
     return _locationAccessStateForPermissionStatus(status);
   }
 
-  Future<bool> openAppPermissionSettings() => _openSettings();
+  Future<bool> openAppPermissionSettings() => RequestDeadline.mutation(
+    _openSettings(),
+    operation: 'open_permission_settings',
+    timeout: _readTimeout,
+  );
 
   Future<bool> _ensureActionPermission(Permission permission) async {
     final currentStatus = await _safeReadStatus(permission);
@@ -90,7 +101,7 @@ class AppPermissionService {
     }
 
     if (currentStatus.isPermanentlyDenied || currentStatus.isRestricted) {
-      await _openSettings();
+      await openAppPermissionSettings();
       return false;
     }
 
@@ -100,7 +111,7 @@ class AppPermissionService {
     }
 
     if (requestedStatus.isPermanentlyDenied || requestedStatus.isRestricted) {
-      await _openSettings();
+      await openAppPermissionSettings();
     }
 
     return false;
@@ -108,7 +119,10 @@ class AppPermissionService {
 
   Future<PermissionStatus> _safeReadStatus(Permission permission) async {
     try {
-      return await _readStatus(permission);
+      return await RequestDeadline.read(
+        _readStatus(permission),
+        timeout: _readTimeout,
+      );
     } on MissingPluginException {
       return PermissionStatus.granted;
     } on UnimplementedError {
@@ -118,7 +132,12 @@ class AppPermissionService {
 
   Future<PermissionStatus> _safeRequestPermission(Permission permission) async {
     try {
-      return await _requestPermission(permission);
+      // A prompt may remain visible after the caller stops waiting. No retry is
+      // started here; a later action re-reads the platform's actual permission.
+      return await RequestDeadline.read(
+        _requestPermission(permission),
+        timeout: _promptTimeout,
+      );
     } on MissingPluginException {
       return PermissionStatus.granted;
     } on UnimplementedError {

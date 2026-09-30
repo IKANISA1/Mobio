@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/biopay/data/biopay_nfc_card_payload.dart';
 import 'package:ndef/ndef.dart' as ndef;
@@ -10,7 +12,20 @@ import 'package:ndef/ndef.dart' as ndef;
 enum BioPayNfcOperationStep { waiting, writing, verifying, locking }
 
 class BioPayNfcService {
-  const BioPayNfcService();
+  const BioPayNfcService({
+    Duration requestTimeout = const Duration(seconds: 8),
+    Duration pollTimeout = const Duration(seconds: 30),
+    Duration nativeMutationTimeout = const Duration(seconds: 30),
+    Duration readBackTimeout = const Duration(seconds: 12),
+  }) : _requestTimeout = requestTimeout,
+       _pollTimeout = pollTimeout,
+       _nativeMutationTimeout = nativeMutationTimeout,
+       _readBackTimeout = readBackTimeout;
+
+  final Duration _requestTimeout;
+  final Duration _pollTimeout;
+  final Duration _nativeMutationTimeout;
+  final Duration _readBackTimeout;
 
   Future<BioPayNfcWriteResult> writeCard(
     BioPayNfcCardPayload payload, {
@@ -34,7 +49,7 @@ class BioPayNfcService {
       timeout: const Duration(seconds: 25),
       androidPlatformSound: false,
       iosAlertMessage: 'Hold near the blank NFC card',
-    );
+    ).timeout(_pollTimeout);
     final diagnostics = BioPayNfcTagDiagnostics.fromTag(tag);
     AppLogger.warning(
       'NFC write tag detected: ${diagnostics.logSummary}',
@@ -60,10 +75,24 @@ class BioPayNfcService {
     }
 
     onStep?.call(BioPayNfcOperationStep.writing);
-    await FlutterNfcKit.writeNDEFRecords(records);
+    await _mutateNfc(
+      FlutterNfcKit.writeNDEFRecords(records),
+      operation: 'nfc_write_card',
+    );
 
     onStep?.call(BioPayNfcOperationStep.verifying);
-    final readBackRecords = await _readNdefRecordsWithRetry();
+    late List<ndef.NDEFRecord> readBackRecords;
+    try {
+      readBackRecords = await _readNdefRecordsWithRetry();
+    } on Object catch (error, stackTrace) {
+      // The write acknowledged, but its required read-back did not. Preserve
+      // that uncertainty instead of calling the physical change unsuccessful.
+      throw MutationOutcomeUnknownException(
+        operation: 'nfc_write_card',
+        originalError: error,
+        stackTrace: stackTrace,
+      );
+    }
     final readBackPayload = bioPayNfcCardPayloadFromRecords(readBackRecords);
     final verified =
         readBackPayload != null && readBackPayload.semanticallyMatches(payload);
@@ -85,7 +114,7 @@ class BioPayNfcService {
       'NFC write verified: ${result.diagnostics.logSummary}',
       context: 'BioPayNfc',
     );
-    await FlutterNfcKit.finish(iosAlertMessage: 'BioPay card written');
+    await _finishSafely(iosAlertMessage: 'BioPay card written');
     return result;
   }
 
@@ -111,7 +140,7 @@ class BioPayNfcService {
       timeout: const Duration(seconds: 20),
       androidPlatformSound: false,
       iosAlertMessage: 'Hold near the verified NFC card',
-    );
+    ).timeout(_pollTimeout);
     var diagnostics = BioPayNfcTagDiagnostics.fromTag(tag);
     if (tag.ndefCanMakeReadOnly == false) {
       throw BioPayNfcException(
@@ -121,7 +150,10 @@ class BioPayNfcService {
     }
 
     onStep?.call(BioPayNfcOperationStep.verifying);
-    final readBackRecords = await FlutterNfcKit.readNDEFRecords(cached: false);
+    final readBackRecords = await RequestDeadline.read(
+      FlutterNfcKit.readNDEFRecords(cached: false),
+      timeout: _requestTimeout,
+    );
     final readBackPayload = bioPayNfcCardPayloadFromRecords(readBackRecords);
     final verified =
         readBackPayload != null &&
@@ -142,35 +174,69 @@ class BioPayNfcService {
       context: 'BioPayNfc',
     );
     onStep?.call(BioPayNfcOperationStep.locking);
-    await FlutterNfcKit.makeNdefReadOnly();
+    await _mutateNfc(
+      FlutterNfcKit.makeNdefReadOnly(),
+      operation: 'nfc_lock_card',
+    );
     AppLogger.warning(
       'NFC card locked: ${diagnostics.logSummary}',
       context: 'BioPayNfc',
     );
-    await FlutterNfcKit.finish(iosAlertMessage: 'BioPay card locked');
+    await _finishSafely(iosAlertMessage: 'BioPay card locked');
     return BioPayNfcLockResult(payload: expected, diagnostics: diagnostics);
   }
 
   Future<void> finishWithError(String message) async {
     await _cancelAndroidNativeWriter();
-    try {
-      await FlutterNfcKit.finish(iosErrorMessage: message);
-    } on Object {
-      // Session may not have started.
-    }
+    await _finishSafely(iosErrorMessage: message);
   }
 
   Future<void> cancelActiveSession() async {
     await _cancelAndroidNativeWriter();
+    await _finishSafely();
+  }
+
+  Future<void> _finishSafely({
+    String? iosAlertMessage,
+    String? iosErrorMessage,
+  }) async {
     try {
-      await FlutterNfcKit.finish();
+      await FlutterNfcKit.finish(
+        iosAlertMessage: iosAlertMessage,
+        iosErrorMessage: iosErrorMessage,
+      ).timeout(_requestTimeout);
     } on Object {
-      // Session may not have started.
+      // Cleanup cannot revoke a verified write or lock receipt. A deadline
+      // bounds the wait; it does not prove that the native session was cancelled.
+    }
+  }
+
+  Future<T> _mutateNfc<T>(
+    Future<T> request, {
+    required String operation,
+  }) async {
+    try {
+      return await RequestDeadline.mutation(
+        request,
+        operation: operation,
+        timeout: _requestTimeout,
+      );
+    } on PlatformException catch (error, stackTrace) {
+      // A card can change before the platform reports tag loss or another I/O
+      // error. Require a fresh read before repeating the physical write/lock.
+      throw MutationOutcomeUnknownException(
+        operation: operation,
+        originalError: error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
   Future<void> _ensureNfcAvailable() async {
-    final availability = await FlutterNfcKit.nfcAvailability;
+    final availability = await RequestDeadline.read(
+      FlutterNfcKit.nfcAvailability,
+      timeout: _requestTimeout,
+    );
     if (availability == NFCAvailability.available) return;
     if (availability == NFCAvailability.disabled) {
       throw const BioPayNfcException('NFC is disabled.');
@@ -186,7 +252,7 @@ class BioPayNfcService {
     final response = await _invokeAndroidNativeWriter(
       'writeCard',
       payload,
-      timeout: const Duration(seconds: 30),
+      timeout: _nativeMutationTimeout,
     );
     onStep?.call(BioPayNfcOperationStep.verifying);
     final result = _androidWriteResultFromResponse(payload, response);
@@ -208,7 +274,7 @@ class BioPayNfcService {
     final response = await _invokeAndroidNativeWriter(
       'lockVerifiedCard',
       expected,
-      timeout: const Duration(seconds: 30),
+      timeout: _nativeMutationTimeout,
     );
     onStep?.call(BioPayNfcOperationStep.locking);
     final result = _androidWriteResultFromResponse(expected, response);
@@ -234,25 +300,44 @@ class BioPayNfcService {
     required Duration timeout,
   }) async {
     try {
-      final response = await _androidNfcWriterChannel
-          .invokeMapMethod<Object?, Object?>(method, {
-            'appLink': payload.appLink,
-            'jsonPayload': payload.toJsonString(),
-            'mimeType': bioPayNfcCardMimeType,
-            'packageName': bioPayNfcAppPackage,
-            'receiverType': payload.receiverTypeWireName,
-            'receiver': payload.receiver,
-          })
-          .timeout(timeout);
+      final response = await RequestDeadline.mutation(
+        _androidNfcWriterChannel.invokeMapMethod<Object?, Object?>(method, {
+          'appLink': payload.appLink,
+          'jsonPayload': payload.toJsonString(),
+          'mimeType': bioPayNfcCardMimeType,
+          'packageName': bioPayNfcAppPackage,
+          'receiverType': payload.receiverTypeWireName,
+          'receiver': payload.receiver,
+        }),
+        operation: method == 'lockVerifiedCard'
+            ? 'nfc_lock_card'
+            : 'nfc_write_card',
+        timeout: timeout,
+      );
       if (response == null) {
         throw const BioPayNfcException('NFC card write failed.');
       }
       return response;
     } on MissingPluginException {
       throw const BioPayNfcException('NFC is not supported.');
-    } on TimeoutException {
-      throw const BioPayNfcException('NFC card write timed out.');
-    } on PlatformException catch (error) {
+    } on PlatformException catch (error, stackTrace) {
+      if (!const {
+        'NFC_DISABLED',
+        'NFC_NOT_SUPPORTED',
+        'NFC_NOT_WRITABLE',
+        'NFC_TOO_SMALL',
+        'NFC_LOCK_UNSUPPORTED',
+        'INVALID_ARGUMENTS',
+        'NFC_BUSY',
+      }.contains(error.code)) {
+        throw MutationOutcomeUnknownException(
+          operation: method == 'lockVerifiedCard'
+              ? 'nfc_lock_card'
+              : 'nfc_write_card',
+          originalError: error,
+          stackTrace: stackTrace,
+        );
+      }
       throw BioPayNfcException(_androidNfcErrorLabel(error));
     }
   }
@@ -280,7 +365,9 @@ class BioPayNfcService {
   Future<void> _cancelAndroidNativeWriter() async {
     if (!_useAndroidNativeWriter) return;
     try {
-      await _androidNfcWriterChannel.invokeMethod<Object?>('cancel');
+      await _androidNfcWriterChannel
+          .invokeMethod<Object?>('cancel')
+          .timeout(_requestTimeout);
     } on Object {
       // Writer may not be active or available on this platform.
     }
@@ -288,15 +375,33 @@ class BioPayNfcService {
 
   Future<List<ndef.NDEFRecord>> _readNdefRecordsWithRetry() async {
     Object? lastError;
+    final elapsed = Stopwatch()..start();
+    Duration remaining() {
+      final budget = _readBackTimeout - elapsed.elapsed;
+      if (budget <= Duration.zero)
+        throw TimeoutException(
+          'NFC read-back was not confirmed.',
+          _readBackTimeout,
+        );
+      return budget;
+    }
+
     const readModes = <bool?>[false, null, true];
     for (var attempt = 0; attempt < 6; attempt += 1) {
       if (attempt > 0) {
-        await Future<void>.delayed(Duration(milliseconds: 300 + attempt * 150));
+        await Future<void>.delayed(
+          Duration(milliseconds: 300 + attempt * 150),
+        ).timeout(remaining());
       }
       for (final cached in readModes) {
         try {
-          final records = await FlutterNfcKit.readNDEFRecords(cached: cached);
+          final records = await FlutterNfcKit.readNDEFRecords(
+            cached: cached,
+          ).timeout(remaining());
           if (records.isNotEmpty) return records;
+        } on TimeoutException {
+          // Do not start another platform read while a timed-out one may remain active.
+          rethrow;
         } on Object catch (error) {
           lastError = error;
         }

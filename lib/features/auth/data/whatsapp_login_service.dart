@@ -1,9 +1,12 @@
 import 'dart:async';
-import 'package:mobi_app/core/auth/account_context.dart';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_enums.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:mobi_app/features/admin/data/otp_service.dart';
 
@@ -15,6 +18,7 @@ class WhatsAppLoginResult extends OtpResult {
     required super.success,
     super.message,
     super.retryAfterSeconds,
+    super.deliveryUnconfirmed,
     super.attemptsRemaining,
     this.role,
     this.usesReviewCode = false,
@@ -23,16 +27,23 @@ class WhatsAppLoginResult extends OtpResult {
 
 /// WhatsApp Cloud OTP login for passenger and driver app sessions.
 class WhatsAppLoginService {
-  WhatsAppLoginService({Dio? dio, this._playIntegrityEvidenceProvider})
-    : _dio = dio ?? _defaultDio(),
-      super();
+  WhatsAppLoginService({
+    Dio? dio,
+    this._playIntegrityEvidenceProvider,
+    Duration requestTimeout = const Duration(seconds: 15),
+  }) : _dio = dio ?? _defaultDio(),
+       _requestTimeout = requestTimeout,
+       super();
 
   final Dio _dio;
+  final Duration _requestTimeout;
   LoginAttempt? _attempt;
   Object? _attemptOwner;
   Future<void> cancelVerification({required Object owner}) async {
-    if (identical(owner, _attemptOwner)) await AccountContext.cancelPendingLogin(_attempt);
+    if (identical(owner, _attemptOwner))
+      await AccountContext.cancelPendingLogin(_attempt);
   }
+
   final Future<Map<String, dynamic>?> Function(String action)?
   _playIntegrityEvidenceProvider;
 
@@ -63,7 +74,9 @@ class WhatsAppLoginService {
     );
 
     try {
-      final playIntegrity = await _playIntegrityEvidence('app_login_send_otp').timeout(const Duration(seconds: 6));
+      final playIntegrity = await _playIntegrityEvidence(
+        'app_login_send_otp',
+      ).timeout(const Duration(seconds: 6));
       final data = <String, dynamic>{
         'phone': normalizedPhone,
         'countryCode': countryCode,
@@ -72,13 +85,28 @@ class WhatsAppLoginService {
       if (playIntegrity != null) {
         data['playIntegrity'] = playIntegrity;
       }
-      final response = await _dio.post('/send-login-otp', data: data).timeout(const Duration(seconds: 15));
+      final response = await RequestDeadline.mutation(
+        _dio.post('/send-login-otp', data: data),
+        operation: 'send_login_otp',
+        timeout: _requestTimeout,
+      );
       final body = _asBody(response.data);
+      if (body['success'] is! bool) {
+        return const WhatsAppLoginResult(
+          success: false,
+          deliveryUnconfirmed: true,
+          retryAfterSeconds: 60,
+          message:
+              'Code delivery could not be confirmed. Check WhatsApp before requesting another code.',
+        );
+      }
 
       if (body['success'] == true) {
         return WhatsAppLoginResult(
           success: true,
-          message: body['message'] as String? ?? 'OTP sent to your WhatsApp',
+          message: body['message'] is String
+              ? body['message'] as String
+              : 'OTP sent to your WhatsApp',
           retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'),
           usesReviewCode: body['deliveryMode'] == 'review_code',
         );
@@ -86,17 +114,29 @@ class WhatsAppLoginService {
 
       return WhatsAppLoginResult(
         success: false,
-        message: body['message'] as String? ?? 'Failed to send OTP',
+        message: body['message'] is String
+            ? body['message'] as String
+            : 'Failed to send OTP',
         retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'),
       );
+    } on MutationOutcomeUnknownException {
+      return const WhatsAppLoginResult(
+        success: false,
+        deliveryUnconfirmed: true,
+        retryAfterSeconds: 60,
+        message:
+            'Code delivery could not be confirmed. Check WhatsApp before requesting another code.',
+      );
     } on DioException catch (e) {
-      if (kDebugMode) debugPrint('WhatsAppLoginService.sendLoginOtp: unavailable');
+      if (kDebugMode)
+        debugPrint('WhatsAppLoginService.sendLoginOtp: unavailable');
       return _fromDioException(
         e,
         fallbackMessage: 'Network error. Check your connection.',
       );
     } on Object {
-      if (kDebugMode) debugPrint('WhatsAppLoginService.sendLoginOtp: unavailable');
+      if (kDebugMode)
+        debugPrint('WhatsAppLoginService.sendLoginOtp: unavailable');
       return const WhatsAppLoginResult(
         success: false,
         message: 'Network error. Check your connection.',
@@ -111,7 +151,11 @@ class WhatsAppLoginService {
     required AppRole role,
     required String countryCode,
   }) async {
-    if (_attempt != null) return const WhatsAppLoginResult(success: false, message: 'Verification is already in progress.');
+    if (_attempt != null)
+      return const WhatsAppLoginResult(
+        success: false,
+        message: 'Verification is already in progress.',
+      );
     LoginAttempt? ticket;
     var completed = false;
     try {
@@ -119,37 +163,68 @@ class WhatsAppLoginService {
       _attempt = ticket;
       _attemptOwner = owner;
       await AccountContext.prepareLogin(ticket);
-      final normalizedPhone = normalizePhoneForCountry(phone: phone, countryCode: countryCode);
-      final playIntegrity = await _playIntegrityEvidence('app_login_verify_otp').timeout(const Duration(seconds: 6));
+      final normalizedPhone = normalizePhoneForCountry(
+        phone: phone,
+        countryCode: countryCode,
+      );
+      final playIntegrity = await _playIntegrityEvidence(
+        'app_login_verify_otp',
+      ).timeout(const Duration(seconds: 6));
       AccountContext.requireLoginAttempt(ticket);
       final data = <String, dynamic>{
-        'phone': normalizedPhone, 'code': code, 'role': _loginRoleValue(role),
-        'countryCode': countryCode, if (playIntegrity != null) 'playIntegrity': playIntegrity,
+        'phone': normalizedPhone,
+        'code': code,
+        'role': _loginRoleValue(role),
+        'countryCode': countryCode,
+        if (playIntegrity != null) 'playIntegrity': playIntegrity,
       };
-      final response = await _dio.post('/verify-login-otp', data: data).timeout(const Duration(seconds: 15));
+      final response = await _dio
+          .post('/verify-login-otp', data: data)
+          .timeout(const Duration(seconds: 15));
       AccountContext.requireLoginAttempt(ticket);
       final body = _asBody(response.data);
       if (body['success'] != true || body['session'] is! Map) {
-        return WhatsAppLoginResult(success: false,
+        return WhatsAppLoginResult(
+          success: false,
           message: body['message'] as String? ?? 'Verification failed',
           attemptsRemaining: _extractInt(body, 'attemptsRemaining'),
-          retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'));
+          retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'),
+        );
       }
-      await AccountContext.restoreServerSession(ticket, Map<String, dynamic>.from(body['session'] as Map));
-      await AccountContext.completeVerifiedLogin(ticket).timeout(const Duration(seconds: 8));
+      await AccountContext.restoreServerSession(
+        ticket,
+        Map<String, dynamic>.from(body['session'] as Map),
+      );
+      await AccountContext.completeVerifiedLogin(
+        ticket,
+      ).timeout(const Duration(seconds: 8));
       final resolvedRole = AppRole.fromString(body['role'] as String?);
       completed = true;
-      return WhatsAppLoginResult(success: true, message: 'Verified successfully',
-        role: resolvedRole.isAdmin ? AppRole.passenger : resolvedRole);
+      return WhatsAppLoginResult(
+        success: true,
+        message: 'Verified successfully',
+        role: resolvedRole.isAdmin ? AppRole.passenger : resolvedRole,
+      );
     } on DioException catch (error) {
-      return _fromDioException(error, fallbackMessage: 'Network error. Check your connection.');
+      return _fromDioException(
+        error,
+        fallbackMessage: 'Network error. Check your connection.',
+      );
     } on Object {
-      return const WhatsAppLoginResult(success: false,
-        message: 'Unable to confirm and save this login. Request a new code.');
+      return const WhatsAppLoginResult(
+        success: false,
+        message: 'Unable to confirm and save this login. Request a new code.',
+      );
     } finally {
       if (!completed) {
         // abort invalidates trust before waiting for native/disk completion.
-        try { await AccountContext.abortLogin(ticket).timeout(const Duration(seconds: 5)); } on Object { /* locked */ }
+        try {
+          await AccountContext.abortLogin(
+            ticket,
+          ).timeout(const Duration(seconds: 5));
+        } on Object {
+          /* locked */
+        }
       }
       _attempt = null;
       _attemptOwner = null;

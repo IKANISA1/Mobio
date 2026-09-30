@@ -67,6 +67,207 @@ void main() {
     expect(sharing.isSharing, isFalse);
     expect(offline, isTrue);
   });
+
+  test('account switch during eligibility cannot publish a location', () async {
+    final eligibility = Completer<bool>();
+    var current = true;
+    var published = 0;
+    final sharing = DriverLocationSharingService.test(
+      locationService: _FakeLocationService(position: _position()),
+      canShareAsDriver: () => eligibility.future,
+      publishLocation: (_, _) async => published++,
+      setOffline: () async {},
+      captureAuthority: () =>
+          SharingAuthority(identity: 'old-account', isCurrent: () => current),
+    );
+
+    final started = sharing.start();
+    current = false;
+    eligibility.complete(true);
+    expect(await started, isFalse);
+    expect(published, 0);
+    expect(sharing.isSharing, isFalse);
+  });
+
+  test('stop during first publish compensates after late completion', () async {
+    final publish = Completer<void>();
+    var offlineCalls = 0;
+    final sharing = DriverLocationSharingService.test(
+      locationService: _FakeLocationService(position: _position()),
+      canShareAsDriver: () async => true,
+      publishLocation: (_, _) => publish.future,
+      setOffline: () async => offlineCalls++,
+    );
+
+    final started = sharing.start();
+    await Future<void>.delayed(Duration.zero);
+    final stopped = sharing.stop();
+    publish.complete();
+    await stopped;
+    expect(await started, isFalse);
+    expect(sharing.isSharing, isFalse);
+    expect(offlineCalls, greaterThanOrEqualTo(2));
+  });
+
+  test('older start cleanup finishes before a newer start publishes', () async {
+    final firstPublish = Completer<void>();
+    final events = <String>[];
+    var publications = 0;
+    final stream = StreamController<Position>();
+    final sharing = DriverLocationSharingService.test(
+      locationService: _FakeLocationService(
+        position: _position(),
+        stream: stream.stream,
+      ),
+      canShareAsDriver: () async => true,
+      publishLocation: (_, type) async {
+        events.add('publish-$type');
+        if (++publications == 1) await firstPublish.future;
+        events.add('online-$type');
+      },
+      setOffline: () async => events.add('offline'),
+    );
+
+    final oldStart = sharing.start(vehicleTypeId: 'old');
+    await Future<void>.delayed(Duration.zero);
+    final newStart = sharing.start(vehicleTypeId: 'new');
+    await Future<void>.delayed(Duration.zero);
+    expect(publications, 1);
+    firstPublish.complete();
+    expect(await oldStart, isFalse);
+    expect(await newStart, isTrue);
+    expect(events, [
+      'publish-old',
+      'online-old',
+      'offline',
+      'publish-new',
+      'online-new',
+    ]);
+    expect(sharing.isSharing, isTrue);
+    await sharing.stop();
+    await stream.close();
+  });
+
+  test(
+    'start during a pending stop publishes after the offline write',
+    () async {
+      final offline = Completer<void>();
+      final events = <String>[];
+      final stream = StreamController<Position>.broadcast();
+      var blockOffline = false;
+      final sharing = DriverLocationSharingService.test(
+        locationService: _FakeLocationService(
+          position: _position(),
+          stream: stream.stream,
+        ),
+        canShareAsDriver: () async => true,
+        publishLocation: (_, type) async => events.add('online-$type'),
+        setOffline: () async {
+          events.add('offline-start');
+          if (blockOffline) await offline.future;
+          events.add('offline-end');
+        },
+      );
+
+      expect(await sharing.start(vehicleTypeId: 'old'), isTrue);
+      blockOffline = true;
+      final stopped = sharing.stop();
+      final restarted = sharing.start(vehicleTypeId: 'new');
+      await Future<void>.delayed(Duration.zero);
+      expect(events, ['online-old', 'offline-start']);
+      offline.complete();
+      await stopped;
+      expect(await restarted, isTrue);
+      expect(events, [
+        'online-old',
+        'offline-start',
+        'offline-end',
+        'online-new',
+      ]);
+      expect(sharing.isSharing, isTrue);
+      await sharing.stop();
+      await stream.close();
+    },
+  );
+
+  test('queued stream positions cannot publish after stop', () async {
+    final publish = Completer<void>();
+    final stream = StreamController<Position>();
+    final positions = <double>[];
+    final sharing = DriverLocationSharingService.test(
+      locationService: _FakeLocationService(
+        position: _position(),
+        stream: stream.stream,
+      ),
+      canShareAsDriver: () async => true,
+      publishLocation: (position, _) async {
+        positions.add(position.latitude);
+        if (positions.length == 2) await publish.future;
+      },
+      setOffline: () async {},
+    );
+
+    expect(await sharing.start(), isTrue);
+    stream.add(_position(latitude: -1));
+    await Future<void>.delayed(Duration.zero);
+    stream.add(_position(latitude: -2));
+    await Future<void>.delayed(Duration.zero);
+    final stopped = sharing.stop();
+    publish.complete();
+    await stopped;
+    await stream.close();
+    expect(positions, [-1.95, -1]);
+    expect(sharing.isSharing, isFalse);
+  });
+
+  test(
+    'late old-account publication cannot take a new account offline',
+    () async {
+      final publish = Completer<void>();
+      var current = true;
+      var offlineCalls = 0;
+      final sharing = DriverLocationSharingService.test(
+        locationService: _FakeLocationService(position: _position()),
+        canShareAsDriver: () async => true,
+        publishLocation: (_, _) => publish.future,
+        setOffline: () async => offlineCalls++,
+        captureAuthority: () =>
+            SharingAuthority(identity: 'old', isCurrent: () => current),
+      );
+
+      final started = sharing.start();
+      await Future<void>.delayed(Duration.zero);
+      current = false;
+      final stopped = sharing.stop();
+      publish.complete();
+      expect(await started, isFalse);
+      await stopped;
+      expect(offlineCalls, 0);
+      expect(sharing.isSharing, isFalse);
+    },
+  );
+
+  test('failed replacement start retires the previous live sharing', () async {
+    var eligible = true;
+    var offlineCalls = 0;
+    final stream = StreamController<Position>();
+    final sharing = DriverLocationSharingService.test(
+      locationService: _FakeLocationService(
+        position: _position(),
+        stream: stream.stream,
+      ),
+      canShareAsDriver: () async => eligible,
+      publishLocation: (_, _) async {},
+      setOffline: () async => offlineCalls++,
+    );
+    expect(await sharing.start(vehicleTypeId: 'old'), isTrue);
+    eligible = false;
+    expect(await sharing.start(vehicleTypeId: 'new'), isFalse);
+    expect(sharing.isSharing, isFalse);
+    expect(offlineCalls, 1);
+    await sharing.stop();
+    await stream.close();
+  });
 }
 
 Position _position({double latitude = -1.95, double longitude = 30.06}) {

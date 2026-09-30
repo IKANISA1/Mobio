@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/models/discovery_person.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/vehicle_filter_chips.dart';
 import 'package:mobi_app/shared/widgets/vehicle_type_icon.dart';
@@ -13,34 +14,54 @@ import 'package:mobi_shared_types/models/vehicle_type.dart';
 /// Discovery card for a nearby driver/passenger listing.
 /// The active product scope allows profile browsing and communication only.
 class DriverCard extends StatelessWidget {
-  final Trip trip;
+  final Trip? _trip;
+  final DiscoveryPerson? _person;
   final VoidCallback onChat;
   final VoidCallback? onTap;
 
   const DriverCard({
     super.key,
-    required this.trip,
+    required Trip trip,
     required this.onChat,
     this.onTap,
-  });
+  }) : _trip = trip,
+       _person = null;
+
+  const DriverCard.person({
+    super.key,
+    required DiscoveryPerson person,
+    required this.onChat,
+    this.onTap,
+  }) : _person = person,
+       _trip = null;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-    final driverLabel = trip.authorName.trim().isEmpty ? 'Driver' : trip.authorName.trim();
-    final vType = trip.effectiveVehicleType;
+    final trip = _trip;
+    final person = _person;
+    final driverLabel =
+        person?.displayLabel ??
+        (trip!.authorName.trim().isEmpty ? 'Driver' : trip.authorName.trim());
+    final vType = person?.vehicleType ?? trip!.effectiveVehicleType;
     final vehicleTypeId = vType == VehicleType.private_
         ? 'private'
         : vType.name;
     final icon = getVehicleIcon(vType);
-    final distanceLabel = _distanceLabel(trip.description);
+    final distanceLabel = person == null
+        ? _distanceLabel(trip?.description)
+        : person.distanceKm == null
+        ? null
+        : '${person.distanceKm!.toStringAsFixed(1)} KM AWAY';
 
     return Hero(
-      tag: 'trip_card_${trip.id ?? trip.hashCode}',
+      tag: person == null
+          ? 'trip_card_${trip?.id ?? trip.hashCode}'
+          : 'person_card_${person.peerId}',
       child: Material(
         type: MaterialType.transparency,
-        child: ClayCard(
+        child: MobiTonalCard(
           onTap: onTap,
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(

@@ -229,6 +229,7 @@
   "faceRecipientUnavailable": "Uyu muntu nta nimero yo kwakiriraho ihari. Koresha nimero cyangwa QR.",
   "faceCameraError": "Kamera ntiboneka. Reba uburenganzira wayihaye wongere ugerageze.",
   "faceTimeout": "Byatinze. Ongera ugerageze.",
+  "faceOutcomeUnknown": "Ibyavuye muri iki gikorwa ntibiramenyekana. Banza urebe uko bihagaze mbere yo kongera kugerageza.",
   "faceSignIn": "Ongera winjire kugira ngo ukomeze.",
   "faceSelectMethod": "Banza uhitemo nimero yo kwakiriraho MoMo.",
   "faceDialFailed": "Aho uhamagara ntihafungutse. Kopora kode cyangwa ukoreshe ubundi buryo.",

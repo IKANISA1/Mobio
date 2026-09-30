@@ -49,6 +49,34 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  testWidgets('unconfirmed code delivery keeps code entry and a resend cooldown', (
+    tester,
+  ) async {
+    final service = FakeWhatsAppLoginService()
+      ..send = () async => const WhatsAppLoginResult(
+        success: false,
+        deliveryUnconfirmed: true,
+        retryAfterSeconds: 60,
+        message:
+            'Code delivery could not be confirmed. Check WhatsApp before requesting another code.',
+      );
+    await pumpLogin(tester, service);
+    await requestPreviewCode(tester);
+    expect(find.text('Check your WhatsApp'), findsOneWidget);
+    expect(
+      find.text(
+        'Code delivery could not be confirmed. Check WhatsApp before requesting another code.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.byKey(const ValueKey('mobi_otp_digit_0')), findsOneWidget);
+    expect(service.sendCount, 1);
+    await tester.pump(const Duration(seconds: 2));
+    expect(service.sendCount, 1);
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
+  });
+
   testWidgets(
     'driver receives code, pastes it, and returns the verified role',
     (tester) async {

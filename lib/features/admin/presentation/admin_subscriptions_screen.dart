@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/localization/country_providers.dart';
 import 'package:mobi_app/core/localization/country_service.dart';
 import 'package:mobi_app/core/utils/money_formatting.dart';
@@ -33,6 +35,9 @@ class AdminSubscriptionsScreen extends ConsumerStatefulWidget {
 
 class _AdminSubscriptionsScreenState
     extends ConsumerState<AdminSubscriptionsScreen> {
+  final _actionToken = AccountActionToken.capture();
+  bool get _actionIsCurrent => mounted && _actionToken.isCurrent;
+
   SubscriptionPlanService get _subService =>
       ref.read(subscriptionPlanServiceProvider);
   VehicleTypeService get _vehicleService =>
@@ -69,6 +74,7 @@ class _AdminSubscriptionsScreenState
   }
 
   Future<void> _load() async {
+    if (!_actionIsCurrent) return;
     setState(() {
       _isLoading = true;
       _error = null;
@@ -82,7 +88,7 @@ class _AdminSubscriptionsScreenState
         _countryService.getCountries(),
         _subService.getOperationsSnapshot(),
       ]);
-      if (mounted) {
+      if (_actionIsCurrent) {
         final ops = results[3] as SubscriptionOperationsSnapshot;
         setState(() {
           _plans = results[0] as List<SubscriptionPlanModel>;
@@ -94,7 +100,7 @@ class _AdminSubscriptionsScreenState
         });
       }
     } on Object catch (error) {
-      if (mounted) {
+      if (_actionIsCurrent) {
         setState(() {
           _isLoading = false;
           _error = error.toString();
@@ -104,21 +110,30 @@ class _AdminSubscriptionsScreenState
   }
 
   Future<void> _toggleActive(SubscriptionPlanModel plan) async {
+    if (!_actionIsCurrent) return;
     setState(() => _busyId = plan.id);
     try {
       await _subService.toggleActive(plan.id, !plan.isActive);
       await _load();
-      if (mounted) {
+      if (_actionIsCurrent) {
         _showSnackBar(plan.isActive ? 'Plan paused.' : 'Plan activated.');
       }
     } on Object catch (error) {
-      if (mounted) _showSnackBar('Error: $error', isError: true);
+      if (_actionIsCurrent)
+        _showSnackBar(
+          userMessageForError(
+            error,
+            fallback: 'Unable to complete the requested change.',
+          ),
+          isError: true,
+        );
     } finally {
-      if (mounted) setState(() => _busyId = null);
+      if (_actionIsCurrent) setState(() => _busyId = null);
     }
   }
 
   Future<void> _showEditSheet(SubscriptionPlanModel plan) async {
+    if (!_actionIsCurrent) return;
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final priceController = TextEditingController(
@@ -197,6 +212,7 @@ class _AdminSubscriptionsScreenState
                     Expanded(
                       child: MobiButton(
                         onPressed: () {
+                          if (!_actionIsCurrent) return;
                           final price = parseGroupedAmount(
                             priceController.text,
                           );
@@ -219,6 +235,7 @@ class _AdminSubscriptionsScreenState
   }
 
   Future<void> _savePlan(SubscriptionPlanModel plan, double price) async {
+    if (!_actionIsCurrent) return;
     setState(() => _busyId = plan.id);
     try {
       await _subService.upsert(
@@ -230,29 +247,47 @@ class _AdminSubscriptionsScreenState
         isActive: plan.isActive,
       );
       await _load();
-      if (mounted) _showSnackBar('Subscription plan updated.');
+      if (_actionIsCurrent) _showSnackBar('Subscription plan updated.');
     } on Object catch (error) {
-      if (mounted) _showSnackBar('Error: $error', isError: true);
+      if (_actionIsCurrent)
+        _showSnackBar(
+          userMessageForError(
+            error,
+            fallback: 'Unable to complete the requested change.',
+          ),
+          isError: true,
+        );
     } finally {
-      if (mounted) setState(() => _busyId = null);
+      if (_actionIsCurrent) setState(() => _busyId = null);
     }
   }
 
   Future<void> _expireStalePaymentRequests() async {
+    if (!_actionIsCurrent) return;
     const actionId = 'expire-stale-payment-requests';
     setState(() => _busyId = actionId);
     try {
       final count = await _subService.expireStalePaymentRequests();
       await _load();
-      if (mounted) _showSnackBar('$count stale payment request(s) expired.');
+      if (_actionIsCurrent)
+        _showSnackBar('$count stale payment request(s) expired.');
     } on Object catch (error) {
-      if (mounted) _showSnackBar('Error: $error', isError: true);
+      if (_actionIsCurrent)
+        _showSnackBar(
+          userMessageForError(
+            error,
+            fallback: 'Unable to complete the requested change.',
+          ),
+          isError: true,
+        );
     } finally {
-      if (mounted && _busyId == actionId) setState(() => _busyId = null);
+      if (_actionIsCurrent && _busyId == actionId)
+        setState(() => _busyId = null);
     }
   }
 
   Future<void> _confirmMomoReceipt(MomoSmsReceiptOpsRow row) async {
+    if (!_actionIsCurrent) return;
     setState(() => _busyId = row.id);
     try {
       await _subService.confirmMomoSmsReceipt(
@@ -260,16 +295,24 @@ class _AdminSubscriptionsScreenState
         reviewNote: 'Confirmed from subscriptions admin review',
       );
       await _load();
-      if (mounted) _showSnackBar('MoMo receipt matched and confirmed.');
+      if (_actionIsCurrent)
+        _showSnackBar('MoMo receipt matched and confirmed.');
     } on Object catch (error) {
-      if (mounted) _showSnackBar('Error: $error', isError: true);
+      if (_actionIsCurrent)
+        _showSnackBar(
+          userMessageForError(
+            error,
+            fallback: 'Unable to complete the requested change.',
+          ),
+          isError: true,
+        );
     } finally {
-      if (mounted && _busyId == row.id) setState(() => _busyId = null);
+      if (_actionIsCurrent && _busyId == row.id) setState(() => _busyId = null);
     }
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
-    if (!mounted) return;
+    if (!_actionIsCurrent) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -1108,7 +1151,7 @@ class _PlanRow extends StatelessWidget {
       '${formatWholeAmount(plan.price)} ${plan.currency}',
       style: AppTypography.titleMd.copyWith(
         color: cs.onSurface,
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w600,
       ),
     );
 

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/location/places_exception.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_shared_types/models/place.dart';
@@ -27,7 +28,10 @@ class PlacesService {
 
   Future<bool> _hasConnectivity() async {
     try {
-      final results = await _connectivity.checkConnectivity();
+      final results = await RequestDeadline.read(
+        _connectivity.checkConnectivity(),
+        timeout: const Duration(seconds: 4),
+      );
       return results.isNotEmpty &&
           !results.every((r) => r == ConnectivityResult.none);
     } on Object catch (_) {

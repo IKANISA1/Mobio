@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class GoogleMapsLocation {
@@ -217,7 +218,10 @@ class GoogleMapsDeepLinkService {
   }
 
   static Future<bool> _open(Uri uri) {
-    return launchUrl(uri, mode: LaunchMode.externalApplication);
+    return RequestDeadline.mutation(
+      launchUrl(uri, mode: LaunchMode.externalApplication),
+      operation: 'open_google_maps',
+    );
   }
 
   static bool isGooglePlaceId(String? placeId) {

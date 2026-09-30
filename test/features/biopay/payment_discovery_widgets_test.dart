@@ -18,6 +18,20 @@ import 'package:mobi_design_system/theme/app_theme.dart';
 import '../../helpers/payment_discovery_fixture.dart';
 
 void main() {
+  const writer = MethodChannel('rw.mobi.app/biopay_nfc_writer');
+  const kit = MethodChannel('flutter_nfc_kit/method');
+  setUp(() {
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(writer, (_) async => null);
+    messenger.setMockMethodCallHandler(kit, (_) async => null);
+  });
+  tearDown(() {
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(writer, null);
+    messenger.setMockMethodCallHandler(kit, null);
+  });
   setUpAll(() async {
     WidgetController.hitTestWarningShouldBeFatal = true;
     final lucide = FontLoader('packages/lucide_icons/Lucide')
@@ -130,6 +144,7 @@ void main() {
           }
         } finally {
           await tester.pumpWidget(const SizedBox.shrink());
+          await tester.pumpAndSettle();
           semantics.dispose();
         }
       });

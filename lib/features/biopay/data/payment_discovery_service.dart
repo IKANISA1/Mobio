@@ -5,7 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:mobi_app/core/async/account_epoch.dart';
 import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/biopay/domain/payment_discovery.dart';
+import 'package:mobi_app/features/biopay/domain/payment_discovery_response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,6 +18,8 @@ class PaymentDiscoveryException implements Exception {
 
 abstract interface class PaymentDiscoveryGateway {
   String? get ownerId;
+  AccountSnapshot captureAccount();
+  bool isCurrent(AccountSnapshot account);
   String get deviceFamily;
   Future<Map<String, dynamic>> call(String action, Map<String, dynamic> data);
   Future<void> rememberDraft(String ownerId, String draftId);
@@ -23,9 +27,33 @@ abstract interface class PaymentDiscoveryGateway {
 }
 
 class PaymentDiscoveryService implements PaymentDiscoveryGateway {
-  PaymentDiscoveryService(this.client);
+  PaymentDiscoveryService(
+    this.client, {
+    AccountSnapshot Function()? captureAccount,
+    bool Function(AccountSnapshot)? isCurrent,
+  }) : _captureOverride = captureAccount,
+       _isCurrentOverride = isCurrent;
 
   final SupabaseClient? client;
+  final AccountSnapshot Function()? _captureOverride;
+  final bool Function(AccountSnapshot)? _isCurrentOverride;
+
+  @override
+  AccountSnapshot captureAccount() {
+    final account = _captureOverride?.call() ?? AccountContext.capture();
+    _requireCurrent(account);
+    return account;
+  }
+
+  @override
+  bool isCurrent(AccountSnapshot account) =>
+      ownerId == account.userId &&
+      (_isCurrentOverride?.call(account) ?? AccountContext.isCurrent(account));
+
+  void _requireCurrent(AccountSnapshot account) {
+    if (!isCurrent(account)) throw const StaleAccountWork();
+  }
+
   static const deviceChannel = MethodChannel('rw.mobi.app/biopay_discovery');
 
   @override
@@ -47,18 +75,20 @@ class PaymentDiscoveryService implements PaymentDiscoveryGateway {
     String action,
     Map<String, dynamic> data,
   ) async {
-    final account = ownerId;
-    if (account == null || client == null) {
+    if (!PaymentDiscoveryResponse.actions.contains(action)) {
+      throw ArgumentError.value(action, 'action', 'Unsupported BioPay action');
+    }
+    if (ownerId == null || client == null) {
       throw StateError('Verified sign-in required.');
     }
-    final sessionId = AccountContext.sessionId(client!.auth.currentSession);
+    final account = captureAccount();
     dynamic result;
     try {
       final request = client!.rpc<dynamic>(
         'rpc_biopay_discovery',
         params: {'p_action': action, 'p_data': data},
       );
-      result = const {'workspace', 'sharing', 'resolve'}.contains(action)
+      result = PaymentDiscoveryResponse.reads.contains(action)
           ? await RequestDeadline.read(request)
           : await RequestDeadline.mutation(
               request,
@@ -66,6 +96,7 @@ class PaymentDiscoveryService implements PaymentDiscoveryGateway {
               operationId: (data['id'] ?? data['quote_id'])?.toString(),
             );
     } on PostgrestException catch (error) {
+      _requireCurrent(account);
       final message = error.message;
       throw PaymentDiscoveryException(
         message.contains('Receiving details changed')
@@ -79,43 +110,66 @@ class PaymentDiscoveryService implements PaymentDiscoveryGateway {
             ? 'routeChanged'
             : 'refreshRequired',
       );
+    } on Object {
+      _requireCurrent(account);
+      rethrow;
     }
-    if (ownerId != account ||
-        AccountContext.sessionId(client!.auth.currentSession) != sessionId) {
-      throw const StaleAccountWork();
+    _requireCurrent(account);
+    try {
+      final row = PaymentWire.object(result);
+      PaymentDiscoveryResponse.validate(action, row, data, account.userId);
+      return row;
+    } on FormatException catch (error, stackTrace) {
+      if (PaymentDiscoveryResponse.reads.contains(action)) rethrow;
+      throw MutationOutcomeUnknownException(
+        operation: 'rpc_biopay_discovery:$action',
+        operationId:
+            (data['id'] ?? data['quote_id'] ?? data['method_id']) as String?,
+        originalError: error,
+        stackTrace: stackTrace,
+      );
     }
-    if (result is! Map) throw const FormatException('Invalid BioPay response');
-    return Map<String, dynamic>.from(result);
   }
 
   Future<Map<String, dynamic>> adminCall(
     String action,
     Map<String, dynamic> data,
   ) async {
-    final account = client?.auth.currentUser?.id;
-    if (account == null || client == null) {
+    if (ownerId == null || client == null) {
       throw StateError('Admin connection required.');
     }
-    final sessionId = AccountContext.sessionId(client!.auth.currentSession);
+    final account = captureAccount();
     final request = client!.rpc<dynamic>(
       'rpc_admin_biopay_routes',
       params: {'p_action': action, 'p_data': data},
     );
-    final response = action == 'list'
-        ? await RequestDeadline.read(request)
-        : await RequestDeadline.mutation(
-            request,
-            operation: 'rpc_admin_biopay_routes:$action',
-            operationId: data['id']?.toString(),
-          );
-    if (account != client!.auth.currentUser?.id ||
-        AccountContext.sessionId(client!.auth.currentSession) != sessionId) {
-      throw const StaleAccountWork();
+    dynamic response;
+    try {
+      response = action == 'list'
+          ? await RequestDeadline.read(request)
+          : await RequestDeadline.mutation(
+              request,
+              operation: 'rpc_admin_biopay_routes:$action',
+              operationId: data['id']?.toString(),
+            );
+    } on Object {
+      _requireCurrent(account);
+      rethrow;
     }
-    if (response is! Map) {
-      throw const FormatException('Invalid BioPay admin response');
+    _requireCurrent(account);
+    try {
+      final row = PaymentWire.object(response);
+      PaymentDiscoveryResponse.admin(action, row, data);
+      return row;
+    } on FormatException catch (error, stackTrace) {
+      if (action == 'list') rethrow;
+      throw MutationOutcomeUnknownException(
+        operation: 'rpc_admin_biopay_routes:$action',
+        operationId: data['id'] as String?,
+        originalError: error,
+        stackTrace: stackTrace,
+      );
     }
-    return Map<String, dynamic>.from(response);
   }
 
   Future<Map<String, dynamic>> previewLink(String token) async {
@@ -126,39 +180,52 @@ class PaymentDiscoveryService implements PaymentDiscoveryGateway {
         params: {'p_token': token},
       ),
     );
-    if (result is! Map)
-      throw const FormatException('Invalid BioPay link preview');
-    return Map<String, dynamic>.from(result);
+    final row = PaymentWire.object(result);
+    PaymentDiscoveryResponse.preview(row);
+    return row;
   }
 
   // Only an opaque draft ID is stored on disk. Receiving details and bearer
   // tokens remain in the authenticated backend, never SharedPreferences.
   @override
   Future<void> rememberDraft(String ownerId, String draftId) async {
-    if (this.ownerId != ownerId) throw StateError('Account changed.');
+    final account = captureAccount();
+    if (account.userId != ownerId) throw const StaleAccountWork();
     final preferences = await SharedPreferences.getInstance();
-    if (!await preferences.setString('biopay.draft.$ownerId', draftId)) {
+    _requireCurrent(account);
+    if (!await preferences.setString(
+      'biopay.draft.${account.identity}',
+      draftId,
+    )) {
       throw StateError('Draft shortcut could not be saved.');
     }
+    _requireCurrent(account);
   }
 
   @override
-  Future<String?> rememberedDraft(String ownerId) async =>
-      (await SharedPreferences.getInstance()).getString(
-        'biopay.draft.$ownerId',
-      );
+  Future<String?> rememberedDraft(String ownerId) async {
+    final account = captureAccount();
+    if (account.userId != ownerId) throw const StaleAccountWork();
+    final preferences = await SharedPreferences.getInstance();
+    _requireCurrent(account);
+    return preferences.getString('biopay.draft.${account.identity}');
+  }
 
   Future<Map<String, String>?> pickPhone() async {
     if (kIsWeb) return null;
-    final result = await deviceChannel.invokeMapMethod<String, String>(
-      'pickPhone',
+    final result = await RequestDeadline.read(
+      deviceChannel.invokeMapMethod<String, String>('pickPhone'),
+      timeout: const Duration(seconds: 20),
     );
     return result;
   }
 
   Future<String?> pickQrImage() async {
     if (kIsWeb) return null;
-    return deviceChannel.invokeMethod<String>('pickQrImage');
+    return RequestDeadline.read(
+      deviceChannel.invokeMethod<String>('pickQrImage'),
+      timeout: const Duration(seconds: 20),
+    );
   }
 
   Future<bool> openReviewedInstruction(Map<String, dynamic> prepared) async {
@@ -167,11 +234,23 @@ class PaymentDiscoveryService implements PaymentDiscoveryGateway {
     if (deviceFamily != 'android' || prepared['mode'] != 'dial') return false;
     final instruction = prepared['instruction'] as String? ?? '';
     if (!RegExp(r'^\*[0-9*]+#$').hasMatch(instruction)) return false;
-    final result = await const MethodChannel('rw.mobi.app/biopay_ussd_dialer')
-        .invokeMapMethod<Object?, Object?>('launchUssd', {
-          'uri': 'tel:${instruction.replaceAll('#', '%23')}',
-        });
-    return result?['launched'] == true;
+    final account = captureAccount();
+    final result = await RequestDeadline.mutation(
+      const MethodChannel(
+        'rw.mobi.app/biopay_ussd_dialer',
+      ).invokeMapMethod<Object?, Object?>('launchUssd', {
+        'uri': 'tel:${instruction.replaceAll('#', '%23')}',
+      }),
+      operation: 'open_reviewed_ussd_instruction',
+      timeout: const Duration(seconds: 10),
+    );
+    _requireCurrent(account);
+    if (result == null || result['launched'] is! bool) {
+      throw MutationOutcomeUnknownException(
+        operation: 'open_reviewed_ussd_instruction',
+      );
+    }
+    return result['launched'] as bool;
   }
 }
 
@@ -185,7 +264,16 @@ String newBioPayUuid() {
       '${h.substring(16, 20)}-${h.substring(20)}';
 }
 
-List<PaymentMethod> workspaceMethods(Map<String, dynamic> workspace) =>
-    (workspace['methods'] as List? ?? const [])
-        .map((x) => PaymentMethod.fromJson(Map<String, dynamic>.from(x as Map)))
-        .toList();
+List<PaymentMethod> workspaceMethods(Map<String, dynamic> workspace) {
+  final methods = workspace['methods'];
+  if (methods is! List)
+    throw const FormatException('Invalid BioPay methods list');
+  return methods
+      .map((row) {
+        if (row is! Map || row.keys.any((key) => key is! String)) {
+          throw const FormatException('Invalid BioPay method row');
+        }
+        return PaymentMethod.fromJson(Map<String, dynamic>.from(row));
+      })
+      .toList(growable: false);
+}

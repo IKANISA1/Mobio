@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
 import 'package:mobi_app/features/profile/application/edit_profile_provider.dart';
 import 'package:mobi_app/features/profile/application/edit_profile_state.dart';
 import 'package:mobi_app/features/profile/presentation/widgets/profile_contact_section.dart';
@@ -45,6 +47,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late final TextEditingController _busCapacityController;
   late final TextEditingController _rentalModelController;
   bool _didHydrateControllers = false;
+  int _formRevision = 0;
 
   @override
   void initState() {
@@ -56,10 +59,29 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     _busAgencyController = TextEditingController();
     _busCapacityController = TextEditingController();
     _rentalModelController = TextEditingController();
+    AccountContext.changes.addListener(_accountChanged);
+  }
+
+  void _accountChanged() {
+    if (!mounted) return;
+    _formRevision++;
+    for (final field in [
+      _whatsAppController,
+      _momoNumberController,
+      _momoPayCodeController,
+      _vehiclePlateController,
+      _busAgencyController,
+      _busCapacityController,
+      _rentalModelController,
+    ]) {
+      field.clear();
+    }
+    setState(() => _didHydrateControllers = false);
   }
 
   @override
   void dispose() {
+    AccountContext.changes.removeListener(_accountChanged);
     _whatsAppController.dispose();
     _momoNumberController.dispose();
     _momoPayCodeController.dispose();
@@ -81,6 +103,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   }
 
   Future<void> _handleSave(EditProfileController controller) async {
+    final token = AccountActionToken.capture();
+    final revision = _formRevision;
     try {
       final success = await controller.saveProfile(
         momoNumber: _momoNumberController.text,
@@ -90,6 +114,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         busPassengerCapacity: _busCapacityController.text,
         rentalVehicleModel: _rentalModelController.text,
       );
+      if (!mounted || !token.isCurrent || revision != _formRevision) return;
       if (success) {
         _showSnackBar(
           widget.isFirstRun ? 'Profile setup complete.' : 'Profile saved.',
@@ -97,6 +122,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         widget.onBack();
       }
     } on Object catch (e) {
+      if (!mounted || !token.isCurrent || revision != _formRevision) return;
       _showSnackBar(
         userMessageForError(
           e,

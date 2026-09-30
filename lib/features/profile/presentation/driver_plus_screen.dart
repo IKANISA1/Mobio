@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -5,10 +6,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/profile/application/profile_services.dart';
 import 'package:mobi_app/features/profile/domain/wallet.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
@@ -25,9 +30,22 @@ import 'package:mobi_shared_types/models/subscription_plan_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DriverPlusScreen extends ConsumerStatefulWidget {
-  const DriverPlusScreen({super.key, required this.onBack});
+  const DriverPlusScreen({super.key, required this.onBack})
+    : _captureOverride = null,
+      _isCurrentOverride = null;
+
+  @visibleForTesting
+  const DriverPlusScreen.test({
+    super.key,
+    required this.onBack,
+    required AccountSnapshot Function() captureAccount,
+    required bool Function(AccountSnapshot) isCurrent,
+  }) : _captureOverride = captureAccount,
+       _isCurrentOverride = isCurrent;
 
   final VoidCallback onBack;
+  final AccountSnapshot Function()? _captureOverride;
+  final bool Function(AccountSnapshot)? _isCurrentOverride;
 
   @override
   ConsumerState<DriverPlusScreen> createState() => _DriverPlusScreenState();
@@ -43,31 +61,98 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
   bool _isLoading = true;
   bool _isBusy = false;
   String? _error;
+  int _loadRevision = 0;
+  AccountSnapshot? _viewAccount;
+
+  AccountSnapshot? _currentAccount() {
+    if (SupabaseConfig.isLocalUiPreview && widget._captureOverride == null) {
+      return null;
+    }
+    try {
+      return widget._captureOverride?.call() ?? AccountContext.capture();
+    } on Object {
+      return null;
+    }
+  }
+
+  bool _current(AccountSnapshot? account) =>
+      mounted &&
+      (account == null
+          ? SupabaseConfig.isLocalUiPreview && widget._captureOverride == null
+          : widget._isCurrentOverride?.call(account) ??
+                AccountContext.isCurrent(account));
+
+  void _requireCurrent(AccountSnapshot? account) {
+    if (!_current(account)) throw const StaleAccountWork();
+  }
+
+  void _onAccountChanged() {
+    if (!mounted) return;
+    final current = _currentAccount();
+    if (current?.identity == _viewAccount?.identity &&
+        current?.generation == _viewAccount?.generation) {
+      return;
+    }
+    _viewAccount = current;
+    setState(() => _isBusy = false);
+    unawaited(_load());
+  }
+
+  @override
+  void dispose() {
+    _loadRevision++;
+    AccountContext.changes.removeListener(_onAccountChanged);
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
-    _load();
+    _viewAccount = _currentAccount();
+    AccountContext.changes.addListener(_onAccountChanged);
+    unawaited(_load());
   }
 
   Future<void> _load() async {
+    if (!mounted) return;
+    final revision = ++_loadRevision;
+    final account = _currentAccount();
     setState(() {
       _isLoading = true;
       _error = null;
+      _profile = null;
+      _status = null;
+      _plans = const [];
+      _wallet = null;
     });
+    if (SupabaseConfig.isLocalUiPreview && widget._captureOverride == null) {
+      setState(() {
+        _profile = _previewDriverProfile;
+        _status = _previewDriverPlusStatus;
+        _plans = _previewDriverPlusPlans;
+        _wallet = _previewDriverPlusWallet;
+        _isLoading = false;
+      });
+      return;
+    }
     try {
+      _requireCurrent(account);
       final profile = await ref.read(profileServiceProvider).getMyProfile();
-      if (profile == null) {
-        throw StateError('Profile unavailable');
-      }
+      _requireCurrent(account);
+      if (revision != _loadRevision) return;
+      if (profile == null) throw StateError('Profile unavailable');
 
       final status = await ref.read(driverPlusServiceProvider).getStatus();
+      _requireCurrent(account);
+      if (revision != _loadRevision) return;
       final plans = await ref
           .read(subscriptionPlanServiceProvider)
           .getAvailablePlans(status.vehicleTypeId, 'RW');
+      _requireCurrent(account);
+      if (revision != _loadRevision) return;
       final wallet = await ref.read(walletServiceProvider).getSummary();
-
-      if (!mounted) return;
+      _requireCurrent(account);
+      if (revision != _loadRevision) return;
       setState(() {
         _profile = profile;
         _status = status;
@@ -77,16 +162,10 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
         _wallet = wallet;
         _isLoading = false;
       });
-    } on Object catch (_) {
-      if (!mounted) return;
-      if (SupabaseConfig.canRunWithoutBackend) {
-        setState(() {
-          _profile = _previewDriverProfile;
-          _status = _previewDriverPlusStatus;
-          _plans = _previewDriverPlusPlans;
-          _wallet = _previewDriverPlusWallet;
-          _isLoading = false;
-        });
+    } on Object {
+      if (!mounted ||
+          revision != _loadRevision ||
+          (account != null && !_current(account))) {
         return;
       }
       setState(() {
@@ -100,34 +179,49 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
     SubscriptionPlanModel plan,
     String paymentMethod,
   ) async {
+    if (_isBusy || !mounted) return;
+    final account = _currentAccount();
+    if (account == null ||
+        !_current(account) ||
+        account.identity != _viewAccount?.identity ||
+        account.generation != _viewAccount?.generation) {
+      return;
+    }
     setState(() => _isBusy = true);
     final keyScope = _subscriptionKeyScope(
+      account: account,
       planId: plan.id,
       paymentMethod: paymentMethod,
     );
     try {
+      final requestKey = await _pendingOperationKey(
+        scope: keyScope,
+        prefix: 'driver-plus',
+        account: account,
+      );
+      _requireCurrent(account);
       final request = await ref
           .read(driverPlusServiceProvider)
           .startSubscription(
             planId: plan.id,
             paymentMethod: paymentMethod,
-            clientRequestId: await _pendingOperationKey(
-              scope: keyScope,
-              prefix: 'driver-plus',
-            ),
+            clientRequestId: requestKey,
           );
+      _requireCurrent(account);
 
       if (request.status == 'expired' ||
           request.status == 'cancelled' ||
           request.status == 'failed') {
-        await _clearPendingOperationKey(keyScope);
+        await _clearPendingOperationKey(keyScope, requestKey, account);
+        _requireCurrent(account);
         _showSnackBar(_requestStatusMessage(request.status));
         await _load();
         return;
       }
 
       if (paymentMethod == 'tokens') {
-        await _clearPendingOperationKey(keyScope);
+        await _clearPendingOperationKey(keyScope, requestKey, account);
+        _requireCurrent(account);
         _showSnackBar('Mobio Plus activated with TOKENS.');
         await _load();
         return;
@@ -139,14 +233,21 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
         return;
       }
 
-      await Clipboard.setData(ClipboardData(text: request.referenceCode));
+      await RequestDeadline.mutation(
+        Clipboard.setData(ClipboardData(text: request.referenceCode)),
+        operation: 'copy_driver_subscription_reference',
+        timeout: const Duration(seconds: 5),
+      );
+      _requireCurrent(account);
       final launched = await ref
           .read(driverPlusServiceProvider)
           .launchUssd(ussd);
+      _requireCurrent(account);
       if (launched) {
         await ref
             .read(driverPlusServiceProvider)
             .recordDialerOpened(request.id);
+        _requireCurrent(account);
         _showSnackBar(
           'USSD opened. Reference copied: ${request.referenceCode}',
         );
@@ -155,13 +256,16 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
       }
       await _load();
     } on Object catch (error) {
-      _showSnackBar(_paymentError(error));
+      if (_current(account)) _showSnackBar(_paymentError(error));
     } finally {
-      if (mounted) setState(() => _isBusy = false);
+      if (_current(account)) setState(() => _isBusy = false);
     }
   }
 
   String _paymentError(Object error) {
+    if (error is MutationOutcomeUnknownException) {
+      return 'Subscription outcome is unconfirmed. Refresh to reconcile before trying again.';
+    }
     final value = error.toString();
     if (value.contains('INSUFFICIENT_TOKENS')) {
       return 'You do not have enough TOKENS for this plan.';
@@ -191,17 +295,24 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
   }
 
   String _subscriptionKeyScope({
+    required AccountSnapshot account,
     required String planId,
     required String paymentMethod,
   }) {
-    return 'driver-plus:$planId:$paymentMethod';
+    return 'driver-plus:${account.identity}:$planId:$paymentMethod';
   }
 
   Future<String> _pendingOperationKey({
     required String scope,
     required String prefix,
+    required AccountSnapshot account,
   }) async {
-    final prefs = await SharedPreferences.getInstance();
+    _requireCurrent(account);
+    final prefs = await RequestDeadline.read(
+      SharedPreferences.getInstance(),
+      timeout: const Duration(seconds: 5),
+    );
+    _requireCurrent(account);
     final prefKey = 'mobio.pending.$scope';
     final existing = prefs.getString(prefKey);
     if (existing != null && existing.isNotEmpty) return existing;
@@ -209,13 +320,40 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
     final key =
         '$prefix-${DateTime.now().microsecondsSinceEpoch}-'
         '${Random.secure().nextInt(1 << 32).toRadixString(36)}';
-    await prefs.setString(prefKey, key);
+    if (!await RequestDeadline.mutation(
+      prefs.setString(prefKey, key),
+      operation: 'save_subscription_request_key',
+      operationId: key,
+      timeout: const Duration(seconds: 5),
+    )) {
+      throw StateError('Subscription request storage unavailable');
+    }
+    _requireCurrent(account);
     return key;
   }
 
-  Future<void> _clearPendingOperationKey(String scope) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('mobio.pending.$scope');
+  Future<void> _clearPendingOperationKey(
+    String scope,
+    String expectedKey,
+    AccountSnapshot account,
+  ) async {
+    _requireCurrent(account);
+    final prefs = await RequestDeadline.read(
+      SharedPreferences.getInstance(),
+      timeout: const Duration(seconds: 5),
+    );
+    _requireCurrent(account);
+    final prefKey = 'mobio.pending.$scope';
+    if (prefs.getString(prefKey) != expectedKey) return;
+    if (!await RequestDeadline.mutation(
+      prefs.remove(prefKey),
+      operation: 'clear_subscription_request_key',
+      operationId: expectedKey,
+      timeout: const Duration(seconds: 5),
+    )) {
+      throw StateError('Subscription request storage unavailable');
+    }
+    _requireCurrent(account);
   }
 
   void _showSnackBar(String message) {
@@ -230,6 +368,11 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
       MobiVisualTheme(family: MobiVisualFamily.rewards, builder: _buildContent);
 
   Widget _buildContent(BuildContext context) {
+    final renderedAccount = _viewAccount;
+    Future<void> refresh() async {
+      if (_current(renderedAccount)) await _load();
+    }
+
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
@@ -245,13 +388,13 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
                 title: 'Mobio Plus',
                 trailing: IconButton(
                   tooltip: 'Refresh',
-                  onPressed: _load,
+                  onPressed: refresh,
                   icon: const Icon(LucideIcons.refreshCw),
                 ),
               ),
               Expanded(
                 child: RefreshIndicator.adaptive(
-                  onRefresh: _load,
+                  onRefresh: refresh,
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(24, 12, 24, 140),
                     children: [
@@ -264,7 +407,7 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
                           title: 'Mobio Plus unavailable',
                           subtitle: _error,
                           icon: LucideIcons.badgeCheck,
-                          onRetry: _load,
+                          onRetry: refresh,
                           retryLabel: 'Refresh',
                           height: 260,
                         ),
@@ -291,7 +434,7 @@ class _DriverPlusScreenState extends ConsumerState<DriverPlusScreen> {
                             ),
                           ),
                         if (_plans.isEmpty)
-                          ClayCard(
+                          MobiTonalCard(
                             padding: const EdgeInsets.all(20),
                             child: Text(
                               'No active plan is available for this vehicle type.',
@@ -384,7 +527,7 @@ class _PlusStatusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final active = status.isFreeForever || status.hasActiveSubscription;
-    return ClayCard(
+    return MobiTonalCard(
       padding: const EdgeInsets.all(22),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -462,7 +605,7 @@ class _PlanCard extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final tokenCost = plan.price.round();
     final canPayTokens = walletBalanceTokens >= tokenCost;
-    return ClayCard(
+    return MobiTonalCard(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

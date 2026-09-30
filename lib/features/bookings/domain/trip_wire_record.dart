@@ -65,8 +65,74 @@ abstract final class TripWireRecord {
         isActive is! bool) {
       throw const FormatException('Invalid scheduled trip RPC row');
     }
+    final isRecurring = row['is_recurring'];
+    final recurringDays = row['recurring_days'];
+    final skipDates = row['recurrence_skip_dates'];
+    final endDate = row['recurrence_end_date'];
+    if (isRecurring is! bool ||
+        recurringDays is! List ||
+        recurringDays.any((day) => day is! int || day < 0 || day > 6) ||
+        recurringDays.toSet().length != recurringDays.length ||
+        (isRecurring && recurringDays.isEmpty) ||
+        skipDates is! List ||
+        skipDates.any((date) => !_validDate(date)) ||
+        (endDate != null && !_validDate(endDate))) {
+      throw const FormatException('Invalid scheduled trip recurrence');
+    }
+    if (endDate is String && endDate.compareTo(departureDate) < 0) {
+      throw const FormatException('Invalid scheduled trip repeat window');
+    }
+    for (final key in ['origin_lat', 'dest_lat']) {
+      _optionalCoordinate(row[key], minimum: -90, maximum: 90);
+    }
+    for (final key in ['origin_lng', 'dest_lng']) {
+      _optionalCoordinate(row[key], minimum: -180, maximum: 180);
+    }
     final safe = Map<String, dynamic>.from(row);
     if (redactWhatsApp) safe['whatsapp'] = '';
     return Trip.fromJson(safe);
+  }
+
+  static bool _validDate(Object? value) {
+    if (value is! String || !_date.hasMatch(value)) return false;
+    final parsed = DateTime.tryParse(value);
+    return parsed != null && parsed.toIso8601String().substring(0, 10) == value;
+  }
+
+  static void _optionalCoordinate(
+    Object? value, {
+    required double minimum,
+    required double maximum,
+  }) {
+    if (value == null) return;
+    if (value is! num ||
+        !value.toDouble().isFinite ||
+        value < minimum ||
+        value > maximum) {
+      throw const FormatException('Invalid scheduled trip coordinate');
+    }
+  }
+
+  /// This RPC returns one matching occurrence, rather than the original
+  /// recurrence definition. Its SQL explicitly restricts active posts.
+  static Trip parsePoolOccurrence(Map<String, dynamic> row) {
+    final score = row['score'];
+    final reason = row['reason'];
+    if (score is! num ||
+        !score.toDouble().isFinite ||
+        reason is! String ||
+        reason.trim().isEmpty) {
+      throw const FormatException('Invalid pool occurrence response');
+    }
+    return parse({
+      ...row,
+      'id': requireId(row['trip_id']),
+      'status': 'active',
+      'is_active': true,
+      'is_recurring': false,
+      'recurring_days': <int>[],
+      'recurrence_end_date': null,
+      'recurrence_skip_dates': <String>[],
+    });
   }
 }

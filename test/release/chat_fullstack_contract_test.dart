@@ -51,13 +51,18 @@ void main() {
     expect(walletPlusSql, contains('chat_messages_insert_rpc_only'));
 
     expect(chatService, contains('rpc_get_or_create_chat_conversation'));
-    final delivery=File('lib/features/chat/data/chat_delivery_coordinator.dart').readAsStringSync();
+    final delivery = File(
+      'lib/features/chat/data/chat_delivery_coordinator.dart',
+    ).readAsStringSync();
     expect(delivery, contains('rpc_send_chat_message_v2'));
     expect(delivery, contains('rpc_close_chat_delivery'));
     expect(chatService, contains('rpc_list_chat_messages'));
     expect(chatService, contains("channel('chat_v2_"));
     expect(chatService, contains('onPostgresChanges'));
-    expect(chatService, contains("table:'chat_conversations'"));
+    expect(
+      RegExp(r"table\s*:\s*'chat_conversations'").hasMatch(chatService),
+      isTrue,
+    );
     expect(chatService, isNot(contains('Stream<void>.periodic')));
     expect(chatService, isNot(contains(".from('chat_messages').stream")));
 
@@ -66,7 +71,20 @@ void main() {
     expect(chatScreen, contains('Report user'));
     expect(chatScreen, contains('Block user'));
     expect(tripDetails, contains('_currentUserIdForChat'));
-    expect(tripDetails, contains('canChat ? _openChat : null'));
+    // Chat eligibility remains server-owned; the rendered callback also keeps
+    // its originating account token and selected trip across delayed taps.
+    expect(
+      RegExp(
+        r'canChat\s*\?\s*\(\)\s*=>\s*_openChat\(actionToken,\s*trip\)\s*:\s*null',
+      ).hasMatch(tripDetails),
+      isTrue,
+    );
+    expect(
+      RegExp(
+        r'void\s+_openChat\(AccountActionToken\s+actionToken,\s*Trip\s+trip\)\s*\{\s*if\s*\(!mounted\s*\|\|\s*!actionToken\.isCurrent\)\s*return;',
+      ).hasMatch(tripDetails),
+      isTrue,
+    );
     expect(tripDetails, contains("label: 'Pick up'"));
     expect(tripDetails, contains("label: 'Drop off'"));
     expect(tripDetails, isNot(contains("label: 'Fare'")));

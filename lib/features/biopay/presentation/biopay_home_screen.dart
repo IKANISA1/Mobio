@@ -58,7 +58,7 @@ class _BioPayScreenState extends ConsumerState<BioPayScreen> {
 
   Widget _buildContent(BuildContext context) {
     return Theme(
-      data: bioPayLightTheme(context),
+      data: bioPayReferenceTheme(context),
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: SoftGradient(
@@ -164,16 +164,11 @@ class _BioPayInsuranceBanner extends StatelessWidget {
           child: Ink(
             padding: const EdgeInsets.all(AppSpacing.lg),
             decoration: BoxDecoration(
-              color: bioPayDarkPanel.withValues(alpha: 0.86),
+              color: Theme.of(context).colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(AppRadii.xl),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.22),
-                  blurRadius: 24,
-                  offset: const Offset(0, 12),
-                ),
-              ],
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
             ),
             child: Row(
               children: [
@@ -189,9 +184,9 @@ class _BioPayInsuranceBanner extends StatelessWidget {
                           padding: EdgeInsets.all(14),
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Icon(
+                      : Icon(
                           LucideIcons.shieldCheck,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onSurface,
                           size: 24,
                         ),
                 ),
@@ -203,7 +198,7 @@ class _BioPayInsuranceBanner extends StatelessWidget {
                       Text(
                         'Motor insurance',
                         style: AppTypography.titleMd.copyWith(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -211,16 +206,16 @@ class _BioPayInsuranceBanner extends StatelessWidget {
                       Text(
                         'Get covered and earn 3000 TOKENS.',
                         style: AppTypography.bodySm.copyWith(
-                          color: Colors.white.withValues(alpha: 0.78),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(width: AppSpacing.sm),
-                const Icon(
+                Icon(
                   LucideIcons.messageCircle,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onSurface,
                   size: 20,
                 ),
               ],
@@ -247,8 +242,6 @@ class _BioPayRequestPaymentButton extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadii.pill),
-        elevation: 8,
-        shadowColor: Colors.black.withValues(alpha: 0.24),
         child: InkWell(
           borderRadius: BorderRadius.circular(AppRadii.pill),
           onTap: onTap,
@@ -258,28 +251,26 @@ class _BioPayRequestPaymentButton extends StatelessWidget {
               vertical: AppSpacing.lg,
             ),
             decoration: BoxDecoration(
-              color: bioPayDarkPanelAlt.withValues(alpha: 0.96),
+              color: Theme.of(context).colorScheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(AppRadii.pill),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.26),
-                  blurRadius: 24,
-                  offset: const Offset(0, 12),
-                ),
-              ],
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outlineVariant,
+              ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(LucideIcons.badgeDollarSign, color: Colors.white),
+                Icon(
+                  LucideIcons.badgeDollarSign,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 const SizedBox(width: AppSpacing.sm),
                 Flexible(
                   child: Text(
                     'Get Payment Link',
                     textAlign: TextAlign.center,
                     style: AppTypography.titleMd.copyWith(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

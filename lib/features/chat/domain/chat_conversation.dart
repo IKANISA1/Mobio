@@ -1,3 +1,5 @@
+import 'package:mobi_app/features/chat/domain/chat_wire_record.dart';
+
 class ChatConversation {
   const ChatConversation({
     required this.id,
@@ -31,24 +33,47 @@ class ChatConversation {
     if (participantLowId == currentUserId) {
       return participantHighId;
     }
-    return participantLowId;
+    if (participantHighId == currentUserId) return participantLowId;
+    throw StateError('CHAT_PARTICIPANT_MISMATCH');
   }
 
-  factory ChatConversation.fromJson(Map<String, dynamic> json) {
+  factory ChatConversation.fromJson(
+    Map<String, dynamic> json, {
+    String? expectedId,
+    String? expectedOwnerId,
+  }) {
+    final id = ChatWireRecord.id(json, 'id');
+    final low = ChatWireRecord.id(json, 'participant_low_id');
+    final high = ChatWireRecord.id(json, 'participant_high_id');
+    final context = ChatWireRecord.state(json, 'context_type', {
+      'direct',
+      'trip',
+    });
+    final tripId = ChatWireRecord.optionalId(json, 'trip_id');
+    if (low == high ||
+        (expectedId != null && id != expectedId) ||
+        (expectedOwnerId != null &&
+            low != expectedOwnerId &&
+            high != expectedOwnerId) ||
+        (context == 'trip' && tripId == null)) {
+      throw const FormatException('Chat conversation identity mismatch');
+    }
     return ChatConversation(
-      id: json['id'] as String,
-      tripId: json['trip_id'] as String?,
-      participantLowId: json['participant_low_id'] as String,
-      participantHighId: json['participant_high_id'] as String,
-      createdBy: json['created_by'] as String,
-      contextType: (json['context_type'] as String?) ?? 'direct',
-      status: (json['status'] as String?) ?? 'active',
-      lastMessagePreview: (json['last_message_preview'] as String?) ?? '',
-      lastMessageAt: DateTime.tryParse(
-        json['last_message_at'] as String? ?? '',
-      ),
-      createdAt: DateTime.tryParse(json['created_at'] as String? ?? ''),
-      updatedAt: DateTime.tryParse(json['updated_at'] as String? ?? ''),
+      id: id,
+      tripId: tripId,
+      participantLowId: low,
+      participantHighId: high,
+      createdBy: ChatWireRecord.id(json, 'created_by'),
+      contextType: context,
+      status: ChatWireRecord.state(json, 'status', {
+        'active',
+        'archived',
+        'closed',
+      }),
+      lastMessagePreview: ChatWireRecord.text(json, 'last_message_preview'),
+      lastMessageAt: ChatWireRecord.optionalDate(json, 'last_message_at'),
+      createdAt: ChatWireRecord.date(json, 'created_at'),
+      updatedAt: ChatWireRecord.date(json, 'updated_at'),
     );
   }
 

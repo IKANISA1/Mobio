@@ -1,3 +1,5 @@
+import 'package:mobi_app/features/chat/domain/chat_wire_record.dart';
+
 class ChatMessageModel {
   const ChatMessageModel({
     required this.id,
@@ -25,18 +27,17 @@ class ChatMessageModel {
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
     return ChatMessageModel(
-      id: json['id'] as String,
-      conversationId: json['conversation_id'] as String,
-      senderId: json['sender_id'] as String?,
-      messageType: (json['message_type'] as String?) ?? 'text',
-      body: (json['body'] as String?) ?? '',
-      createdAt:
-          DateTime.tryParse(json['created_at'] as String? ?? '') ??
-          DateTime.now(),
-      readAt: DateTime.tryParse(json['read_at'] as String? ?? ''),
-      metadata: json['metadata'] is Map<String, dynamic>
-          ? json['metadata'] as Map<String, dynamic>
-          : const {},
+      id: ChatWireRecord.id(json, 'id'),
+      conversationId: ChatWireRecord.id(json, 'conversation_id'),
+      senderId: ChatWireRecord.optionalId(json, 'sender_id'),
+      messageType: ChatWireRecord.state(json, 'message_type', {
+        'text',
+        'system',
+      }),
+      body: ChatWireRecord.text(json, 'body'),
+      createdAt: ChatWireRecord.date(json, 'created_at'),
+      readAt: ChatWireRecord.optionalDate(json, 'read_at'),
+      metadata: ChatWireRecord.object(json['metadata']),
     );
   }
 }

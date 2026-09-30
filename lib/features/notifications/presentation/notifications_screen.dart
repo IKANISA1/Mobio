@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_app/features/notifications/application/notification_services.dart';
 import 'package:mobi_app/features/notifications/data/notification_service.dart';
@@ -16,9 +19,22 @@ import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
-  const NotificationsScreen({super.key, required this.onBack});
+  const NotificationsScreen({super.key, required this.onBack})
+    : _captureOverride = null,
+      _isCurrentOverride = null;
+
+  @visibleForTesting
+  const NotificationsScreen.test({
+    super.key,
+    required this.onBack,
+    required AccountSnapshot Function() captureAccount,
+    required bool Function(AccountSnapshot) isCurrent,
+  }) : _captureOverride = captureAccount,
+       _isCurrentOverride = isCurrent;
 
   final VoidCallback onBack;
+  final AccountSnapshot Function()? _captureOverride;
+  final bool Function(AccountSnapshot)? _isCurrentOverride;
 
   @override
   ConsumerState<NotificationsScreen> createState() =>
@@ -28,28 +44,87 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   late Future<List<AppNotification>> _future;
   bool _writing = false;
+  AccountSnapshot? _viewAccount;
+  int _loadRevision = 0;
 
   NotificationService get _service => ref.read(notificationServiceProvider);
   bool get _isPreview => ref.read(notificationUiPreviewProvider);
 
+  AccountSnapshot? _captureAccount() {
+    if (_isPreview && widget._captureOverride == null) return null;
+    try {
+      return widget._captureOverride?.call() ?? AccountContext.capture();
+    } on Object {
+      return null;
+    }
+  }
+
+  bool _current(AccountSnapshot? account) =>
+      mounted &&
+      (account == null
+          ? _isPreview && widget._captureOverride == null
+          : widget._isCurrentOverride?.call(account) ??
+                AccountContext.isCurrent(account));
+
+  void _onAccountChanged() {
+    if (!mounted) return;
+    final account = _captureAccount();
+    if (account?.identity == _viewAccount?.identity &&
+        account?.generation == _viewAccount?.generation) {
+      return;
+    }
+    _viewAccount = account;
+    setState(() {
+      _loadRevision++;
+      _writing = false;
+      _future = _load(account);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    _future = _load();
+    _viewAccount = _captureAccount();
+    _future = _load(_viewAccount);
+    AccountContext.changes.addListener(_onAccountChanged);
   }
 
-  Future<List<AppNotification>> _load() {
+  @override
+  void dispose() {
+    _loadRevision++;
+    AccountContext.changes.removeListener(_onAccountChanged);
+    super.dispose();
+  }
+
+  Future<List<AppNotification>> _load(AccountSnapshot? account) {
+    final future = _read(account);
+    // Observe failures immediately, including account invalidation before the
+    // next frame attaches FutureBuilder. The original Future retains its error
+    // for the visible error state; discarded generations cannot leak errors.
+    unawaited(future.then<void>((_) {}, onError: (Object _, StackTrace _) {}));
+    return future;
+  }
+
+  Future<List<AppNotification>> _read(AccountSnapshot? account) async {
     if (_isPreview) {
-      return Future.value(_previewNotifications);
+      return _previewNotifications;
     }
-
-    return _service.getNotifications(limit: 80);
+    if (account == null || !_current(account)) {
+      throw const AuthException(message: 'Sign in to view notifications.');
+    }
+    final rows = await _service.getNotifications(limit: 80);
+    if (!_current(account)) throw const StaleAccountWork();
+    if (rows.any((row) => row.userId != account.userId)) {
+      throw const FormatException('Notification inbox owner mismatch');
+    }
+    return rows;
   }
 
-  Future<void> _refresh() async {
-    if (!mounted) return;
-    final future = _load();
+  Future<void> _refreshFor(AccountSnapshot? account) async {
+    if (!_current(account)) return;
+    final future = _load(account);
     setState(() {
+      _loadRevision++;
       _future = future;
     });
     try {
@@ -59,34 +134,43 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     }
   }
 
-  Future<void> _markAllRead() async {
-    if (_writing) return;
+  Future<void> _markAllRead(AccountSnapshot? account) async {
+    if (_writing || !_current(account)) return;
     setState(() => _writing = true);
     try {
       if (!_isPreview) await _service.markAllAsRead();
-      await _refresh();
+      if (!_current(account)) return;
+      await _refreshFor(account);
     } on Object catch (error) {
-      _showWriteError(error);
+      if (_current(account)) _showWriteError(error);
     } finally {
-      if (mounted) setState(() => _writing = false);
+      if (_current(account)) setState(() => _writing = false);
     }
   }
 
-  Future<void> _open(AppNotification notification) async {
-    if (_writing) return;
+  Future<void> _open(
+    AppNotification notification,
+    AccountSnapshot? account,
+  ) async {
+    if (_writing ||
+        !_current(account) ||
+        (!_isPreview && notification.userId != account?.userId)) {
+      return;
+    }
     setState(() => _writing = true);
     try {
       if (!_isPreview && !notification.isRead) {
         await _service.markAsRead(notification.id);
       }
-      if (!mounted) return;
-      unawaited(_refresh());
+      if (!_current(account)) return;
+      unawaited(_refreshFor(account));
       final route = notification.route;
+      if (!mounted || !_current(account)) return;
       if (route != '/notifications') context.push(route);
     } on Object catch (error) {
-      _showWriteError(error);
+      if (_current(account)) _showWriteError(error);
     } finally {
-      if (mounted) setState(() => _writing = false);
+      if (_current(account)) setState(() => _writing = false);
     }
   }
 
@@ -101,6 +185,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final renderedAccount = _viewAccount;
     return SoftGradient(
       child: SafeArea(
         bottom: false,
@@ -111,12 +196,15 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               onBack: widget.onBack,
               trailing: IconButton(
                 tooltip: 'Mark all read',
-                onPressed: _writing ? null : _markAllRead,
+                onPressed: _writing
+                    ? null
+                    : () => _markAllRead(renderedAccount),
                 icon: const Icon(LucideIcons.checkCheck),
               ),
             ),
             Expanded(
               child: FutureBuilder<List<AppNotification>>(
+                key: ValueKey(_loadRevision),
                 future: _future,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -155,7 +243,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                               ),
                               const SizedBox(height: AppSpacing.lg),
                               MobiButton(
-                                onPressed: _refresh,
+                                onPressed: () => _refreshFor(renderedAccount),
                                 child: const Text('Try again'),
                               ),
                             ],
@@ -168,7 +256,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   final notifications = snapshot.data ?? const [];
                   if (notifications.isEmpty) {
                     return RefreshIndicator(
-                      onRefresh: _refresh,
+                      onRefresh: () => _refreshFor(renderedAccount),
                       child: ListView(
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.fromLTRB(
@@ -190,7 +278,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   }
 
                   return RefreshIndicator(
-                    onRefresh: _refresh,
+                    onRefresh: () => _refreshFor(renderedAccount),
                     child: ListView.separated(
                       padding: const EdgeInsets.fromLTRB(
                         AppSpacing.lg,
@@ -205,7 +293,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                         final notification = notifications[index];
                         return _NotificationTile(
                           notification: notification,
-                          onTap: _writing ? null : () => _open(notification),
+                          onTap: _writing
+                              ? null
+                              : () => _open(notification, renderedAccount),
                         );
                       },
                     ),
@@ -222,7 +312,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               ),
               child: MobiButton(
                 variant: MobiButtonVariant.ghost,
-                onPressed: _refresh,
+                onPressed: () => _refreshFor(renderedAccount),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

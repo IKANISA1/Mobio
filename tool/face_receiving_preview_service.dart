@@ -15,6 +15,8 @@ class FaceReceivingPreviewService extends PaymentDiscoveryService {
       'label': 'My MoMo',
       'can_send': true,
       'can_receive': true,
+      'phone_discoverable': false,
+      'preferred': false,
       'active': true,
       'version': 1,
     },

@@ -2,6 +2,7 @@
 import importlib.util
 from pathlib import Path
 import unittest
+from source_contract_helpers import compact_source
 ROOT=Path(__file__).resolve().parents[2]
 def text(path):return (ROOT/path).read_text()
 spec=importlib.util.spec_from_file_location('catalog',ROOT/'scripts/qa/check_increment05_catalog.py');catalog=importlib.util.module_from_spec(spec);spec.loader.exec_module(catalog)
@@ -27,11 +28,12 @@ class SourceContracts(unittest.TestCase):
   s=text('lib/app/router/app_router.dart');self.assertNotIn('hasAdminRole || hasActiveAdminSession',s)
   s=text('lib/core/auth/admin_session_guard.dart');self.assertIn('static void grant(String userId) => revoke()',s);self.assertIn('Stopwatch',s)
  def test_actual_admin_ui_requires_restored_lease(self):
-  s=text('lib/features/admin/data/otp_service.dart');self.assertIn("(session['user'] as Map)['id'] != lease['user_id']",s);self.assertIn("AccountContext.sessionId(Supabase.instance.client.auth.currentSession) != lease['session_id']",s);self.assertIn('AccountContext.restoreServerSession(ticket, session)',s);self.assertIn('actual.key != expected.key',text('lib/core/auth/account_context.dart'));self.assertIn('AdminSessionService.synchronize()',s)
+  s=compact_source(text('lib/features/admin/data/otp_service.dart'));self.assertIn("(session['user']asMap)['id']!=lease['user_id']",s);self.assertRegex(s,r"AccountContext\.sessionId\(Supabase\.instance\.client\.auth\.currentSession,?\)!=lease\['session_id'\]");self.assertIn('AccountContext.restoreServerSession(ticket,session)',s);self.assertIn('actual.key != expected.key',text('lib/core/auth/account_context.dart'));self.assertIn('AdminSessionService.synchronize()',s)
   self.assertNotIn(".select('role')",s)
   s=text('lib/features/admin/presentation/admin_auth_screen.dart');self.assertNotIn('AdminSessionGuard.grant(',s)
  def test_server_touch_not_timer_keepalive(self):
-  s=text('lib/core/auth/admin_session_boundary.dart');self.assertIn('userActivity:true',s);self.assertIn('onPointer',s)
+  s=compact_source(text('lib/core/auth/admin_session_boundary.dart'));self.assertIn('_refresh(userActivity:true)',s);self.assertIn('onPointerDown:(_)=>_activity()',s)
+  timer=s[s.index('Timer.periodic('):s.index('@overridevoiddidUpdateWidget')];self.assertNotIn('_refresh(',timer);self.assertNotIn('synchronize(',timer)
  def test_exit_marker_and_account_generation_are_separate(self):
   s=text('lib/core/auth/account_context.dart');self.assertIn('mobio.auth.exit_requested.v1',s);self.assertIn('_fenceRevision',s);self.assertIn('_synchronizeIdentity',s)
   self.assertIn('AdminSessionGuard.revoke()',s);self.assertIn('scheduleMicrotask',s)
@@ -45,9 +47,21 @@ class SourceContracts(unittest.TestCase):
   s=text('supabase/hardening/2026-09-28/09_wallet_operation_journal.sql');start=s.index('create function public.rpc_execute_wallet_operation');end=s.index('create function public.rpc_wallet_operation_status')
   f=s[start:end];self.assertLess(f.index('public.rpc_transfer_tokens'),f.index("set status='committed'"));self.assertNotIn('exception when',f)
  def test_wallet_client_persists_before_execution(self):
-  s=text('lib/features/profile/data/wallet_service.dart');self.assertLess(s.index('WalletOperationJournal.save(operation)'),s.index(".rpc<dynamic>('rpc_execute_wallet_operation'"));self.assertIn('UnknownWalletOutcome',s)
+  s=compact_source(text('lib/features/profile/data/wallet_service.dart'));self.assertLess(s.index('WalletOperationJournal.save(operation'),s.index(".rpc<dynamic>('rpc_execute_wallet_operation'"));self.assertIn('UnknownWalletOutcome',s)
  def test_wallet_read_sequence_owner_bound(self):
-  s=text('lib/features/profile/presentation/wallet_screen.dart');start=s.index('Future<void> _load()');end=s.index('Future<void> _shareInvite',start);self.assertIn('AccountContext.requireCurrent(account)',s[start:end]);self.assertIn('revision!=_loadRevision',s[start:end])
+  s=compact_source(text('lib/features/profile/presentation/wallet_screen.dart'))
+  start=s.index('Future<void>_load(');end=s.index('Future<void>_shareInvite(',start);load=s[start:end]
+  self.assertIn('finalorigin=action??_captureAction();if(!origin.isCurrent)return;finalaccount=origin.account;',load)
+  self.assertIn('finalrevision=++_loadRevision;',load)
+  self.assertIn('boolcurrent()=>origin.isCurrent&&revision==_loadRevision;',load)
+  ownership=s[s.index('bool_currentAccount('):s.index('_WalletAction_captureAction(')]
+  self.assertIn('mounted&&',ownership);self.assertIn('AccountContext.isCurrent(account)',ownership)
+  self.assertIn('AccountActionToken.capture(captureAccount:_captureAccount)',ownership)
+  self.assertIn('()=>_currentAccount(account)',ownership)
+  self.assertIn('boolgetisCurrent=>token.isCurrent&&_accountIsCurrent();',s)
+  for read in ['getSummary','listLedger','activeOperation']:
+   self.assertIn(f'awaitwallet.{read}();if(!current())return;',load)
+  self.assertIn('}onObject{if(!current())return;',load)
  def test_no_ownerless_raw_note_storage(self):
   s=text('lib/features/profile/presentation/wallet_screen.dart');self.assertNotIn('SharedPreferences',s);self.assertNotIn('_transferKeyStorageKey',s)
   s=text('lib/features/profile/data/wallet_operation_journal.dart');self.assertNotIn("'note':",s);self.assertNotIn("'refresh_token':",s)

@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import re
 import unittest
+from source_contract_helpers import compact_source
 
 ROOT=Path(__file__).resolve().parents[2]
 _spec=importlib.util.spec_from_file_location('chat_pg_runner',ROOT/'scripts/qa/test_chat_postgres.py')
@@ -78,18 +79,18 @@ class StaticSourceContracts(unittest.TestCase):
   self.assertLess(s.index('await store.write(p)'),s.index("_call('rpc_send_chat_message_v2'"))
   self.assertLess(s.index("_call('rpc_close_chat_delivery'"),s.index('await store.remove(p)'))
  def test_account_fence_reaches_render_and_delayed_read_mark(self):
-  s=text('lib/features/chat/presentation/chat_screen.dart');self.assertIn('_accountLost',s)
-  self.assertGreaterEqual(s.count('requireCurrent: () => AccountContext.requireCurrent(_account!)'),2)
-  s=text('lib/features/chat/presentation/widgets/chat_history_view.dart');self.assertIn('||!_current)return;',s)
+  s=compact_source(text('lib/features/chat/presentation/chat_screen.dart'));self.assertIn('_accountLost',s)
+  self.assertGreaterEqual(s.count('requireCurrent:()=>AccountContext.requireCurrent(_account!)'),2)
+  s=compact_source(text('lib/features/chat/presentation/widgets/chat_history_view.dart'));self.assertIn('||!_current)return;',s)
  def test_stream_teardown_is_independent_of_done_consumption(self):
-  s=text('lib/features/chat/data/chat_service.dart');self.assertIn('unawaited(stop());',s)
+  s=compact_source(text('lib/features/chat/data/chat_service.dart'));self.assertIn('unawaited(stop());',s)
   self.assertIn('onCancel:stop',s);self.assertIn('AccountContext.changes.removeListener',s)
  def test_ci_includes_actual_component_gate(self):
   s=text('.github/workflows/ci.yml');self.assertIn('python3 scripts/qa/test_chat_postgres.py',s)
   self.assertIn('MOBIO_CHAT_POSTGRES_IMAGE',s)
  def test_read_marker_uses_existing_row_not_client_now(self):
   s=text(SQL);self.assertIn('created_at=p_through_created_at',s)
-  s=text('lib/features/chat/data/chat_service.dart');self.assertNotIn(".from('chat_messages').update",s)
+  s=compact_source(text('lib/features/chat/data/chat_service.dart'));self.assertNotIn(".from('chat_messages').update",s)
   self.assertIn('if(through==null)return',s)
  def test_no_placeholder_uuid_or_false_failed_timeout(self):
   s=text('lib/features/chat/domain/chat_delivery.dart');self.assertIn('Random.secure()',s)

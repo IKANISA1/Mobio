@@ -229,6 +229,7 @@
   "faceRecipientUnavailable": "Ce destinataire n’a pas de numéro de réception disponible. Utilisez un numéro ou un QR.",
   "faceCameraError": "Caméra indisponible. Vérifiez l’autorisation, puis réessayez.",
   "faceTimeout": "Cela prend trop de temps. Réessayez.",
+  "faceOutcomeUnknown": "Le résultat n’est pas confirmé. Vérifiez l’état actuel ou l’activité avant de réessayer.",
   "faceSignIn": "Reconnectez-vous pour continuer.",
   "faceSelectMethod": "Choisissez d’abord un numéro de réception MoMo.",
   "faceDialFailed": "Le composeur n’a pas pu s’ouvrir. Copiez le code ou utilisez une autre méthode.",

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/async/external_action.dart';
 import 'package:mobi_app/core/auth/admin_session_guard.dart';
 import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:mobi_app/features/admin/data/otp_service.dart';
@@ -85,7 +86,11 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
 
   @override
   void dispose() {
-    unawaited(OtpService.cancelVerification(owner: _verificationOwner).catchError((Object _) {}));
+    unawaited(
+      OtpService.cancelVerification(
+        owner: _verificationOwner,
+      ).catchError((Object _) {}),
+    );
     _resendTimer?.cancel();
     _otpController.dispose();
     super.dispose();
@@ -108,6 +113,16 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
       countryCode: _countryCode,
     );
     if (!mounted) {
+      return;
+    }
+
+    if (result.deliveryUnconfirmed) {
+      _startResendCooldown(result.retryAfterSeconds ?? _defaultResendCooldown);
+      setState(() {
+        _sendingCode = false;
+        _otpRequested = true;
+        _error = result.message;
+      });
       return;
     }
 
@@ -171,7 +186,10 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
       }
 
       if (!AdminSessionGuard.isAdmin) {
-        setState(() { _verifyingCode = false; _error = 'Admin session could not be confirmed. Verify again.'; });
+        setState(() {
+          _verifyingCode = false;
+          _error = 'Admin session could not be confirmed. Verify again.';
+        });
         return;
       }
       widget.onSuccess();
@@ -294,7 +312,10 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
     );
 
     try {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      await ExternalAction.run(
+        launchUrl(uri, mode: LaunchMode.externalApplication),
+        operation: 'open_external_link',
+      );
     } on Object catch (_) {
       if (mounted) _showSnackBar('Could not open WhatsApp.');
     }
@@ -502,7 +523,7 @@ class _AdminAuthScreenState extends ConsumerState<AdminAuthScreen> {
                         ctaLabel,
                         style: AppTypography.titleMd.copyWith(
                           color: cs.onPrimary,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),

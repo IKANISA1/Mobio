@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 
 /// Firebase Auth is treated as infrastructure support only in this repo.
@@ -43,7 +44,7 @@ class FirebaseAuthService {
     }
 
     try {
-      await auth.signInAnonymously();
+      await RequestDeadline.read(auth.signInAnonymously());
       if (kDebugMode) {
         debugPrint('[firebase-auth] Anonymous Firebase session initialized');
       }

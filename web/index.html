@@ -17,9 +17,8 @@
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Mobio is a secure mobility and operations platform for drivers, passengers, and platform teams.">
-  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#000d19">
+  <meta name="color-scheme" content="dark">
   <meta name="robots" content="index, follow">
 
   <!-- iOS meta tags & icons -->
@@ -37,17 +36,81 @@
   <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
 
   <style id="splash-screen-style">
-    html, body { min-height: 100%; margin: 0; background: #fff; color: #000; }
-    #splash { position: fixed; inset: 0; display: flex; align-items: center;
-      justify-content: center; gap: 0; padding: 24px; }
-    #splash img { width: 112px; height: 112px; object-fit: contain; }
-    #splash span { font: 600 48px/1.2 system-ui, sans-serif; letter-spacing: -1.2px; }
-    @media (prefers-color-scheme: dark) {
-      html, body { background: #000; color: #fff; }
+    @font-face {
+      font-family: Inter;
+      src: url("assets/assets/google_fonts/Inter-Regular.ttf") format("truetype");
+      font-weight: 400;
+      font-display: swap;
     }
-    @media (max-width: 320px) {
-      #splash img { width: 88px; height: 88px; }
-      #splash span { font-size: 40px; }
+    /* WEB-STATE-002 public signed-out SSO colour context from revolut-design.
+       Illumination geometry and launch/retry composition adapt it to Mobio. */
+    :root {
+      --launch-canvas: #000d19;
+      --launch-foreground: #fff;
+      --launch-secondary: rgb(255 255 255 / 70%);
+      --launch-accent: #6fa0ff;
+      --launch-illumination: rgb(99 147 243 / 20%);
+      --launch-widget: rgb(255 255 255 / 10%);
+      --launch-focus: rgb(111 160 255 / 50%);
+      color-scheme: dark;
+    }
+    html, body {
+      min-height: 100%; margin: 0;
+      background: var(--launch-canvas); color: var(--launch-foreground);
+    }
+    #splash {
+      position: fixed; inset: 0; display: grid; place-items: center;
+      padding: max(24px, env(safe-area-inset-top))
+        max(24px, env(safe-area-inset-right))
+        max(24px, env(safe-area-inset-bottom))
+        max(24px, env(safe-area-inset-left));
+      background: radial-gradient(ellipse at 50% 0%,
+        var(--launch-illumination), transparent 65%), var(--launch-canvas);
+      font-family: Inter, system-ui, sans-serif;
+      overflow: auto;
+    }
+    .splash-content { width: min(100%, 352px); text-align: center; }
+    #splash img {
+      width: 80px; height: 80px; object-fit: contain;
+      display: block; margin: 0 auto 24px; border-radius: 24px;
+    }
+    #splash h1 {
+      margin: 0 0 16px; font-size: 32px; line-height: 1.125;
+      font-weight: 600; letter-spacing: -0.8px; overflow-wrap: anywhere;
+    }
+    #splash p {
+      margin: 0; color: var(--launch-secondary); font-size: 16px;
+      line-height: 1.5; overflow-wrap: anywhere;
+    }
+    .splash-progress {
+      width: 24px; height: 24px; margin: 28px auto 0;
+      border: 2px solid var(--launch-widget);
+      border-top-color: var(--launch-accent); border-radius: 50%;
+      animation: splash-spin 0.9s linear infinite;
+    }
+    #splash-retry {
+      width: 100%; min-height: 44px; padding: 12px 24px; margin-top: 28px;
+      border: 0; border-radius: 9999px; background: var(--launch-foreground);
+      color: var(--launch-canvas); font: 500 16px/22px Inter, system-ui, sans-serif;
+      cursor: pointer; transition: opacity 0.3s cubic-bezier(0.15, 0.5, 0.5, 1);
+    }
+    #splash-retry:hover { opacity: 0.85; }
+    #splash-retry:focus-visible {
+      opacity: 1; outline: 2px solid var(--launch-focus); outline-offset: 2px;
+    }
+    #splash [hidden], #splash.splash-problem .splash-progress { display: none; }
+    #splash.splash-problem .splash-content { text-align: left; }
+    #splash.splash-problem img { margin-left: 0; }
+    @keyframes splash-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      .splash-progress { animation: none; }
+      #splash-retry { transition: none; }
+    }
+    @media (forced-colors: active) {
+      #splash { background: Canvas; color: CanvasText; }
+      #splash p { color: CanvasText; }
+      #splash-retry { background: ButtonFace; color: ButtonText; border: 1px solid ButtonText; }
+      .splash-progress { border-color: GrayText; border-top-color: Highlight; }
     }
   </style>
   <script id="splash-screen-script">
@@ -70,27 +133,57 @@
       }
     }
 
+    var splashTimeout;
     function removeSplashFromWeb() {
+      window.clearTimeout(splashTimeout);
       removeElementById("splash");
       removeElementById("splash-branding");
       document.body.style.background = "transparent";
     }
 
+    function showMobioStartupProblem() {
+      var splash = document.getElementById("splash");
+      if (!splash) return;
+      window.clearTimeout(splashTimeout);
+      splash.classList.add("splash-problem");
+      splash.setAttribute("aria-label", "Mobio is taking longer to open");
+      document.getElementById("splash-title").textContent = "Let’s try again";
+      document.getElementById("splash-status").textContent =
+        "Mobio is taking longer to open. Check your connection and try again.";
+      document.getElementById("splash-retry").hidden = false;
+    }
+
     window.addEventListener("flutter-first-frame", removeSplashFromWeb);
-    window.setTimeout(function () {
-      if (document.querySelector("flutter-view, flt-glass-pane")) {
-        removeSplashFromWeb();
+    window.addEventListener("error", function (event) {
+      if (event.target && event.target.id === "mobio-bootstrap") {
+        showMobioStartupProblem();
       }
-    }, 1200);
+    }, true);
+    window.addEventListener("DOMContentLoaded", function () {
+      if (!document.getElementById("splash")) return;
+      document.getElementById("splash-retry").addEventListener("click", function () {
+        window.location.reload();
+      });
+      splashTimeout = window.setTimeout(showMobioStartupProblem, 25000);
+    });
   </script>
 </head>
 <body>
   <div id="splash" role="status" aria-label="Mobio is loading">
-    <img src="icons/mobio-mark.png" alt="" aria-hidden="true">
-    <span aria-hidden="true">Mobio</span>
+    <div class="splash-content">
+      <img src="icons/mobio-mark.png" alt="" aria-hidden="true">
+      <h1 id="splash-title">Mobio</h1>
+      <p id="splash-status">Opening your next connection…</p>
+      <div class="splash-progress" aria-hidden="true"></div>
+      <button id="splash-retry" type="button" hidden>Try again</button>
+      <noscript>
+        <style>#splash-status, .splash-progress { display: none; }</style>
+        <p>Turn on JavaScript in your browser to open Mobio.</p>
+      </noscript>
+    </div>
   </div>
 
-  <script src="flutter_bootstrap.js" async=""></script>
+  <script id="mobio-bootstrap" src="flutter_bootstrap.js" async=""></script>
 
 
 

@@ -1,13 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/biopay/data/biopay_nfc_card_payload.dart';
 import 'package:mobi_app/features/biopay/data/biopay_nfc_service.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_flow_shared.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_nfc_foreground_listener.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_style.dart';
+import 'package:mobi_app/features/biopay/presentation/payment_composer_screen.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_design_system/theme/app_colors.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
@@ -15,9 +22,26 @@ import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 
 class BioPayNfcWriteCardScreen extends ConsumerStatefulWidget {
-  const BioPayNfcWriteCardScreen({super.key, required this.onBack});
+  const BioPayNfcWriteCardScreen({
+    super.key,
+    required this.onBack,
+    this.nfcService = const BioPayNfcService(),
+  }) : _captureOverride = null,
+       _isCurrentOverride = null;
+  @visibleForTesting
+  const BioPayNfcWriteCardScreen.test({
+    super.key,
+    required this.onBack,
+    required AccountSnapshot Function() captureAccount,
+    required bool Function(AccountSnapshot) isCurrent,
+    this.nfcService = const BioPayNfcService(),
+  }) : _captureOverride = captureAccount,
+       _isCurrentOverride = isCurrent;
 
   final VoidCallback onBack;
+  final BioPayNfcService nfcService;
+  final AccountSnapshot Function()? _captureOverride;
+  final bool Function(AccountSnapshot)? _isCurrentOverride;
 
   @override
   ConsumerState<BioPayNfcWriteCardScreen> createState() =>
@@ -26,7 +50,58 @@ class BioPayNfcWriteCardScreen extends ConsumerStatefulWidget {
 
 class _BioPayNfcWriteCardScreenState
     extends ConsumerState<BioPayNfcWriteCardScreen> {
-  static const _nfcService = BioPayNfcService();
+  BioPayNfcService get _nfcService => widget.nfcService;
+  late final BioPayNfcForegroundSuspendedNotifier _foreground;
+  AccountSnapshot? _viewAccount;
+  int _revision = 0;
+  int? _suspension;
+  bool _accountLost = false;
+
+  bool _current(AccountSnapshot? account, int revision) =>
+      mounted &&
+      !_accountLost &&
+      revision == _revision &&
+      (account == null
+          ? SupabaseConfig.isLocalUiPreview && widget._captureOverride == null
+          : widget._isCurrentOverride?.call(account) ??
+                AccountContext.isCurrent(account));
+
+  void _accountChanged() {
+    if (_accountLost || _current(_viewAccount, _revision)) return;
+    _accountLost = true;
+    _revision++;
+    _receiverController.clear();
+    setState(() {
+      _step = _NfcWriteStep.idle;
+      _writtenPayload = null;
+      _tagLabel = null;
+      _cardLocked = false;
+      _canLockCard = false;
+      _error = 'Account changed. Sign in again.';
+    });
+    unawaited(_cancelAndRelease(_suspension));
+  }
+
+  int _suspendForeground() {
+    final lease = _foreground.acquireSuspension();
+    _suspension = lease;
+    return lease;
+  }
+
+  void _releaseForeground(int? lease) {
+    if (lease == null) return;
+    if (_suspension == lease) _suspension = null;
+    _foreground.releaseSuspension(lease);
+  }
+
+  Future<void> _cancelAndRelease(int? lease) async {
+    if (lease == null || !_foreground.ownsSuspension(lease)) return;
+    try {
+      await _nfcService.cancelActiveSession();
+    } finally {
+      _releaseForeground(lease);
+    }
+  }
 
   final TextEditingController _receiverController = TextEditingController();
   BioPayNfcReceiverType _receiverType = BioPayNfcReceiverType.momoNumber;
@@ -42,23 +117,26 @@ class _BioPayNfcWriteCardScreenState
   @override
   void initState() {
     super.initState();
+    _foreground = ref.read(bioPayNfcForegroundSuspendedProvider.notifier);
+    try {
+      _viewAccount =
+          widget._captureOverride?.call() ??
+          (SupabaseConfig.isLocalUiPreview ? null : AccountContext.capture());
+    } on Object {
+      _accountLost = true;
+      _error = 'Sign in again.';
+    }
+    AccountContext.changes.addListener(_accountChanged);
     Future<void>.microtask(() {
-      if (!mounted) return;
-      ref
-          .read(bioPayNfcForegroundSuspendedProvider.notifier)
-          .setSuspended(true);
+      if (_current(_viewAccount, _revision)) _suspendForeground();
     });
   }
 
   @override
   void dispose() {
-    try {
-      ref
-          .read(bioPayNfcForegroundSuspendedProvider.notifier)
-          .setSuspended(false);
-    } on Object {
-      // The surrounding ProviderScope may already be disposed in tests.
-    }
+    _revision++;
+    AccountContext.changes.removeListener(_accountChanged);
+    unawaited(_cancelAndRelease(_suspension));
     _receiverController.dispose();
     super.dispose();
   }
@@ -89,6 +167,9 @@ class _BioPayNfcWriteCardScreenState
   }
 
   Future<void> _confirmAndWrite() async {
+    final account = _viewAccount;
+    final revision = _revision;
+    if (_busy || !_current(account, revision)) return;
     final payload = _previewPayload();
     if (payload == null) {
       setState(() => _error = 'Enter a valid MoMo number or MoMo Pay code.');
@@ -98,16 +179,22 @@ class _BioPayNfcWriteCardScreenState
     final confirmed = await showModalBottomSheet<bool>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => _NfcWriteConfirmationSheet(payload: payload),
+      builder: (context) => PaymentAccountView(
+        isCurrent: () => _current(account, revision),
+        child: _NfcWriteConfirmationSheet(payload: payload),
+      ),
     );
-    if (confirmed != true || !mounted) return;
+    if (confirmed != true || !_current(account, revision)) return;
 
-    await _writeCard(payload);
+    await _writeCard(payload, account);
   }
 
-  Future<void> _writeCard(BioPayNfcCardPayload payload) async {
-    ref.read(bioPayNfcForegroundSuspendedProvider.notifier).setSuspended(true);
-    await _nfcService.cancelActiveSession();
+  Future<void> _writeCard(
+    BioPayNfcCardPayload payload,
+    AccountSnapshot? account,
+  ) async {
+    final revision = ++_revision;
+    final lease = _suspendForeground();
     setState(() {
       _step = _NfcWriteStep.waiting;
       _writtenPayload = null;
@@ -116,13 +203,24 @@ class _BioPayNfcWriteCardScreenState
       _canLockCard = false;
       _error = null;
     });
-
     try {
+      await _nfcService.cancelActiveSession();
+      if (!_current(account, revision) || !_foreground.ownsSuspension(lease)) {
+        return;
+      }
       final result = await _nfcService.writeCard(
         payload,
-        onStep: _setOperationStep,
+        onStep: (step) {
+          if (!_current(account, revision) ||
+              !_foreground.ownsSuspension(lease)) {
+            throw const StaleAccountWork();
+          }
+          _setOperationStep(step);
+        },
       );
-      if (!mounted) return;
+      if (!_current(account, revision) || !_foreground.ownsSuspension(lease)) {
+        return;
+      }
       setState(() {
         _step = _NfcWriteStep.idle;
         _writtenPayload = payload;
@@ -130,42 +228,67 @@ class _BioPayNfcWriteCardScreenState
         _canLockCard = result.diagnostics.ndefCanMakeReadOnly == true;
       });
     } on Object catch (error) {
+      if (!_current(account, revision) || !_foreground.ownsSuspension(lease)) {
+        return;
+      }
       await _nfcService.finishWithError('BioPay NFC write failed');
       _logNfcError(error);
-      if (!mounted) return;
+      if (!_current(account, revision)) return;
       setState(() {
         _step = _NfcWriteStep.idle;
         _error = _nfcWriteErrorLabel(error);
       });
     } finally {
-      _resumeForegroundListener();
+      _releaseForeground(lease);
     }
   }
 
   Future<void> _confirmAndLockCard() async {
+    final account = _viewAccount;
+    final revision = _revision;
     final payload = _writtenPayload;
-    if (payload == null || _busy || _cardLocked) return;
-
+    if (payload == null ||
+        _busy ||
+        _cardLocked ||
+        !_current(account, revision)) {
+      return;
+    }
     final confirmed = await showModalBottomSheet<bool>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => const _NfcLockConfirmationSheet(),
+      builder: (context) => PaymentAccountView(
+        isCurrent: () => _current(account, revision),
+        child: const _NfcLockConfirmationSheet(),
+      ),
     );
-    if (confirmed != true || !mounted) return;
-
-    ref.read(bioPayNfcForegroundSuspendedProvider.notifier).setSuspended(true);
-    await _nfcService.cancelActiveSession();
+    if (confirmed != true ||
+        !_current(account, revision) ||
+        !identical(payload, _writtenPayload)) {
+      return;
+    }
+    final lease = _suspendForeground();
     setState(() {
       _step = _NfcWriteStep.waiting;
       _error = null;
     });
-
     try {
+      await _nfcService.cancelActiveSession();
+      if (!_current(account, revision) || !_foreground.ownsSuspension(lease)) {
+        return;
+      }
       final result = await _nfcService.lockVerifiedCard(
         payload,
-        onStep: _setOperationStep,
+        onStep: (step) {
+          if (!_current(account, revision) ||
+              !_foreground.ownsSuspension(lease)) {
+            throw const StaleAccountWork();
+          }
+          _setOperationStep(step);
+        },
       );
-      if (!mounted) return;
+      if (!_current(account, revision) || !_foreground.ownsSuspension(lease)) {
+        return;
+      }
       setState(() {
         _step = _NfcWriteStep.idle;
         _cardLocked = true;
@@ -173,15 +296,18 @@ class _BioPayNfcWriteCardScreenState
         _tagLabel = result.diagnostics.tagLabel;
       });
     } on Object catch (error) {
+      if (!_current(account, revision) || !_foreground.ownsSuspension(lease)) {
+        return;
+      }
       await _nfcService.finishWithError('BioPay NFC lock failed');
       _logNfcError(error);
-      if (!mounted) return;
+      if (!_current(account, revision)) return;
       setState(() {
         _step = _NfcWriteStep.idle;
         _error = _nfcWriteErrorLabel(error);
       });
     } finally {
-      _resumeForegroundListener();
+      _releaseForeground(lease);
     }
   }
 
@@ -195,16 +321,6 @@ class _BioPayNfcWriteCardScreenState
         BioPayNfcOperationStep.locking => _NfcWriteStep.locking,
       };
     });
-  }
-
-  void _resumeForegroundListener() {
-    try {
-      ref
-          .read(bioPayNfcForegroundSuspendedProvider.notifier)
-          .setSuspended(false);
-    } on Object {
-      // The surrounding ProviderScope may already be disposed in tests.
-    }
   }
 
   void _logNfcError(Object error) {
@@ -224,6 +340,7 @@ class _BioPayNfcWriteCardScreenState
   }
 
   String _nfcWriteErrorLabel(Object error) {
+    if (error is MutationOutcomeUnknownException) return error.message;
     final message = error.toString().toLowerCase();
     if (message.contains('disabled')) return 'NFC is disabled.';
     if (message.contains('not supported')) return 'NFC is not supported.';
@@ -257,7 +374,8 @@ class _BioPayNfcWriteCardScreenState
   Widget build(BuildContext context) {
     final payload = _previewPayload();
     final hasValidReceiver = payload != null;
-    final canWrite = !_busy && hasValidReceiver;
+    final canWrite =
+        !_busy && hasValidReceiver && _current(_viewAccount, _revision);
     final VoidCallback? primaryAction = _writtenPayload == null
         ? canWrite
               ? _confirmAndWrite
@@ -273,7 +391,7 @@ class _BioPayNfcWriteCardScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (_writtenPayload == null) ...[
+          if (!_accountLost && _writtenPayload == null) ...[
             _NfcReceiverTypePicker(
               controller: _receiverController,
               selected: _receiverType,
@@ -285,7 +403,7 @@ class _BioPayNfcWriteCardScreenState
               const SizedBox(height: AppSpacing.lg),
               _NfcUssdPreview(payload: payload),
             ],
-          ] else ...[
+          ] else if (!_accountLost) ...[
             _NfcWriteSuccessPanel(
               payload: _writtenPayload!,
               tagLabel: _tagLabel,
@@ -330,16 +448,9 @@ class _NfcReceiverTypePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: bioPayDarkPanel.withValues(alpha: 0.76),
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(AppRadii.xxl),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-        boxShadow: [
-          BoxShadow(
-            color: bioPayNfcPurple.withValues(alpha: 0.07),
-            blurRadius: 24,
-            offset: const Offset(0, 12),
-          ),
-        ],
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xs),
@@ -371,7 +482,7 @@ class _NfcReceiverTypePicker extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
               child: Divider(
                 height: 1,
-                color: Colors.white.withValues(alpha: 0.10),
+                color: Theme.of(context).colorScheme.outlineVariant,
               ),
             ),
             ConstrainedBox(
@@ -388,7 +499,7 @@ class _NfcReceiverTypePicker extends StatelessWidget {
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   onChanged: onTextChanged,
                   style: AppTypography.displayMd.copyWith(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0,
                   ),
@@ -397,7 +508,7 @@ class _NfcReceiverTypePicker extends StatelessWidget {
                         ? 'MoMo number'
                         : 'MoMo Pay code',
                     hintStyle: AppTypography.titleLg.copyWith(
-                      color: Colors.white.withValues(alpha: 0.70),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w600,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
@@ -438,8 +549,8 @@ class _NfcReceiverModeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final contentColor = selected
-        ? Colors.white
-        : Colors.white.withValues(alpha: 0.68);
+        ? Theme.of(context).colorScheme.onSurface
+        : Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Expanded(
       child: Semantics(
@@ -458,12 +569,9 @@ class _NfcReceiverModeButton extends StatelessWidget {
               height: 48,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: selected ? Colors.white : null,
-                gradient: selected
-                    ? const LinearGradient(
-                        colors: [bioPayInk, Color(0xFF28333D)],
-                      )
-                    : null,
+                color: selected
+                    ? Theme.of(context).colorScheme.surfaceContainerHighest
+                    : Colors.transparent,
                 borderRadius: BorderRadius.circular(AppRadii.xl),
                 boxShadow: selected
                     ? [
@@ -512,16 +620,9 @@ class _NfcUssdPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: bioPayDarkPanel.withValues(alpha: 0.76),
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-        boxShadow: [
-          BoxShadow(
-            color: bioPayNfcPurple.withValues(alpha: 0.10),
-            blurRadius: 26,
-            offset: const Offset(0, 14),
-          ),
-        ],
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -544,7 +645,7 @@ class _NfcUssdPreview extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.titleMd.copyWith(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -592,9 +693,9 @@ class _NfcWriteProgressPanel extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: bioPayDarkPanel.withValues(alpha: 0.76),
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
@@ -612,7 +713,7 @@ class _NfcWriteProgressPanel extends StatelessWidget {
                 Container(
                   width: 10,
                   height: 1,
-                  color: Colors.white.withValues(alpha: 0.16),
+                  color: Theme.of(context).colorScheme.outlineVariant,
                 ),
             ],
           ],
@@ -651,7 +752,7 @@ class _NfcProgressItem extends StatelessWidget {
         ? AppColors.success
         : active
         ? bioPayNfcPurple
-        : Colors.white.withValues(alpha: 0.38);
+        : Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -666,7 +767,7 @@ class _NfcProgressItem extends StatelessWidget {
             ),
             child: Icon(
               completed ? LucideIcons.check : item.icon,
-              color: completed ? Colors.white : color,
+              color: completed ? AppColors.onSuccess : color,
               size: 17,
             ),
           ),
@@ -677,9 +778,9 @@ class _NfcProgressItem extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: AppTypography.labelSm.copyWith(
-            color: Colors.white.withValues(
-              alpha: active || completed ? 1 : 0.55,
-            ),
+            color: active || completed
+                ? Theme.of(context).colorScheme.onSurface
+                : Theme.of(context).colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -700,15 +801,8 @@ class _NfcWriteConfirmationSheet extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.md),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: bioPayCanvas,
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
             borderRadius: BorderRadius.circular(26),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.28),
-                blurRadius: 28,
-                offset: const Offset(0, 14),
-              ),
-            ],
           ),
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
@@ -732,7 +826,7 @@ class _NfcWriteConfirmationSheet extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.titleLg.copyWith(
-                          color: bioPayInk,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -740,11 +834,13 @@ class _NfcWriteConfirmationSheet extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                _LightDetailRow(label: 'USSD', value: payload.ussdCode),
+                _NfcDetailRow(label: 'USSD', value: payload.ussdCode),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   'The card will be verified after writing. You can lock it permanently after a successful write.',
-                  style: AppTypography.bodySm.copyWith(color: bioPayMuted),
+                  style: AppTypography.bodySm.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 Row(
@@ -784,15 +880,8 @@ class _NfcLockConfirmationSheet extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.md),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: bioPayCanvas,
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
             borderRadius: BorderRadius.circular(26),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.28),
-                blurRadius: 28,
-                offset: const Offset(0, 14),
-              ),
-            ],
           ),
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.lg),
@@ -816,7 +905,7 @@ class _NfcLockConfirmationSheet extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: AppTypography.titleLg.copyWith(
-                          color: bioPayInk,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -826,7 +915,9 @@ class _NfcLockConfirmationSheet extends StatelessWidget {
                 const SizedBox(height: AppSpacing.md),
                 Text(
                   'Locking makes the NFC card read-only and usually cannot be undone. Hold the same verified card to continue.',
-                  style: AppTypography.bodyMd.copyWith(color: bioPayMuted),
+                  style: AppTypography.bodyMd.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 Row(
@@ -856,8 +947,8 @@ class _NfcLockConfirmationSheet extends StatelessWidget {
   }
 }
 
-class _LightDetailRow extends StatelessWidget {
-  const _LightDetailRow({required this.label, required this.value});
+class _NfcDetailRow extends StatelessWidget {
+  const _NfcDetailRow({required this.label, required this.value});
 
   final String label;
   final String value;
@@ -874,7 +965,7 @@ class _LightDetailRow extends StatelessWidget {
             child: Text(
               label,
               style: AppTypography.labelMd.copyWith(
-                color: bioPayMuted,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -884,7 +975,7 @@ class _LightDetailRow extends StatelessWidget {
               value,
               textAlign: TextAlign.right,
               style: AppTypography.labelLg.copyWith(
-                color: bioPayInk,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -916,16 +1007,9 @@ class _NfcWriteSuccessPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: bioPayDarkPanel.withValues(alpha: 0.76),
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.success.withValues(alpha: 0.10),
-            blurRadius: 26,
-            offset: const Offset(0, 14),
-          ),
-        ],
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -944,7 +1028,7 @@ class _NfcWriteSuccessPanel extends StatelessWidget {
               locked ? 'Card written and locked' : 'Card written and verified',
               textAlign: TextAlign.center,
               style: AppTypography.headlineSm.copyWith(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -971,10 +1055,7 @@ class _NfcWriteSuccessPanel extends StatelessWidget {
               onPressed: onWriteAnother,
               width: double.infinity,
               variant: MobiButtonVariant.ghost,
-              child: const Text(
-                'Write Another',
-                style: TextStyle(color: Colors.white),
-              ),
+              child: const Text('Write Another'),
             ),
           ],
         ),

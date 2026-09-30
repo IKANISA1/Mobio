@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/localization/country_providers.dart';
 import 'package:mobi_app/core/localization/country_service.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
@@ -30,6 +32,9 @@ class AdminVehicleTypesScreen extends ConsumerStatefulWidget {
 
 class _AdminVehicleTypesScreenState
     extends ConsumerState<AdminVehicleTypesScreen> {
+  final _actionToken = AccountActionToken.capture();
+  bool get _actionIsCurrent => mounted && _actionToken.isCurrent;
+
   VehicleTypeService get _vehicleService =>
       ref.read(vehicleTypeServiceProvider);
   CountryService get _countryService => ref.read(countryServiceProvider);
@@ -60,6 +65,7 @@ class _AdminVehicleTypesScreenState
   }
 
   Future<void> _load() async {
+    if (!_actionIsCurrent) return;
     setState(() {
       _isLoading = true;
       _error = null;
@@ -70,7 +76,7 @@ class _AdminVehicleTypesScreenState
         _vehicleService.getAll(includeInactive: true),
         _countryService.getCountries(),
       ]);
-      if (mounted) {
+      if (_actionIsCurrent) {
         setState(() {
           _vehicleTypes = results[0] as List<VehicleTypeModel>;
           _countries = results[1] as List<Country>;
@@ -78,7 +84,7 @@ class _AdminVehicleTypesScreenState
         });
       }
     } on Object catch (error) {
-      if (mounted) {
+      if (_actionIsCurrent) {
         setState(() {
           _isLoading = false;
           _error = error.toString();
@@ -88,11 +94,12 @@ class _AdminVehicleTypesScreenState
   }
 
   Future<void> _toggleActive(VehicleTypeModel vehicleType) async {
+    if (!_actionIsCurrent) return;
     setState(() => _busyId = vehicleType.id);
     try {
       await _vehicleService.toggleActive(vehicleType.id, !vehicleType.isActive);
       await _load();
-      if (mounted) {
+      if (_actionIsCurrent) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -104,19 +111,27 @@ class _AdminVehicleTypesScreenState
         );
       }
     } on Object catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $error')));
+      if (_actionIsCurrent) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              userMessageForError(
+                error,
+                fallback: 'Unable to complete the requested change.',
+              ),
+            ),
+          ),
+        );
       }
     } finally {
-      if (mounted) {
+      if (_actionIsCurrent) {
         setState(() => _busyId = null);
       }
     }
   }
 
   Future<void> _showCountryEditor(VehicleTypeModel vehicleType) async {
+    if (!_actionIsCurrent) return;
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final selected = Set<String>.from(vehicleType.countryIds);
@@ -190,6 +205,7 @@ class _AdminVehicleTypesScreenState
                         Expanded(
                           child: MobiButton(
                             onPressed: () async {
+                              if (!_actionIsCurrent) return;
                               Navigator.of(context).pop();
                               await _saveCountries(
                                 vehicleType.id,
@@ -215,23 +231,31 @@ class _AdminVehicleTypesScreenState
     String vehicleTypeId,
     List<String> countryIds,
   ) async {
+    if (!_actionIsCurrent) return;
     setState(() => _busyId = vehicleTypeId);
     try {
       await _vehicleService.updateCountries(vehicleTypeId, countryIds);
       await _load();
-      if (mounted) {
+      if (_actionIsCurrent) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Country allocation updated.')),
         );
       }
     } on Object catch (error) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $error')));
+      if (_actionIsCurrent) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              userMessageForError(
+                error,
+                fallback: 'Unable to complete the requested change.',
+              ),
+            ),
+          ),
+        );
       }
     } finally {
-      if (mounted) {
+      if (_actionIsCurrent) {
         setState(() => _busyId = null);
       }
     }

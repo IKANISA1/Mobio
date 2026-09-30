@@ -1,12 +1,14 @@
-import 'widgets/privacy_health_card.dart';
-import 'package:mobi_app/features/admin/presentation/widgets/push_delivery_health_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/features/admin/application/admin_services.dart';
 import 'package:mobi_app/features/admin/data/admin_service.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_dashboard_utils.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
+import 'package:mobi_app/features/admin/presentation/widgets/privacy_health_card.dart';
+import 'package:mobi_app/features/admin/presentation/widgets/push_delivery_health_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
@@ -27,6 +29,26 @@ class _AdminOperationalHealthScreenState
     extends ConsumerState<AdminOperationalHealthScreen> {
   AdminService get _adminService => ref.read(adminServiceProvider);
 
+  final _origin = AccountActionToken.capture();
+  int _loadRevision = 0;
+  bool get _current => mounted && _origin.isCurrent;
+  void _update(VoidCallback callback) {
+    if (_current) setState(callback);
+  }
+
+  void _accountChanged() {
+    if (!mounted || _origin.isCurrent) return;
+    _loadRevision++;
+    _searchController.clear();
+    setState(() {
+      _events = [];
+      _searchQuery = '';
+      _isLoading = false;
+      _hasNextPage = false;
+      _error = 'Admin session locked';
+    });
+  }
+
   final _searchController = TextEditingController();
 
   bool _isLoading = true;
@@ -44,17 +66,22 @@ class _AdminOperationalHealthScreenState
   @override
   void initState() {
     super.initState();
+    AccountContext.changes.addListener(_accountChanged);
     _load();
   }
 
   @override
   void dispose() {
+    _loadRevision++;
+    AccountContext.changes.removeListener(_accountChanged);
     _searchController.dispose();
     super.dispose();
   }
 
   Future<void> _load() async {
-    setState(() {
+    if (!_current) return;
+    final revision = ++_loadRevision;
+    _update(() {
       _isLoading = true;
       _error = null;
     });
@@ -68,16 +95,16 @@ class _AdminOperationalHealthScreenState
         limit: _rowsPerPage + 1,
         offset: _page * _rowsPerPage,
       );
-      if (!mounted) return;
+      if (!_current || revision != _loadRevision) return;
       final hasNextPage = events.length > _rowsPerPage;
-      setState(() {
+      _update(() {
         _events = events.take(_rowsPerPage).toList();
         _hasNextPage = hasNextPage;
         _isLoading = false;
       });
     } on Object catch (error) {
-      if (!mounted) return;
-      setState(() {
+      if (!_current || revision != _loadRevision) return;
+      _update(() {
         _isLoading = false;
         _error = error.toString();
       });
@@ -145,7 +172,7 @@ class _AdminOperationalHealthScreenState
                               controller: _searchController,
                               hintText: 'Search service, code, function',
                               onChanged: (value) {
-                                setState(() {
+                                _update(() {
                                   _searchQuery = value;
                                   _page = 0;
                                 });
@@ -181,7 +208,7 @@ class _AdminOperationalHealthScreenState
                                     icon: LucideIcons.activity,
                                   ),
                                 ],
-                                onChanged: (value) => setState(() {
+                                onChanged: (value) => _update(() {
                                   _sortKey = value;
                                   _page = 0;
                                 }),
@@ -341,11 +368,11 @@ class _AdminOperationalHealthScreenState
                           page: _page,
                           rowsPerPage: _rowsPerPage,
                           onPageChanged: (page) {
-                            setState(() => _page = page);
+                            _update(() => _page = page);
                             _load();
                           },
                           onRowsPerPageChanged: (rows) {
-                            setState(() {
+                            _update(() {
                               _rowsPerPage = rows;
                               _page = 0;
                             });
@@ -364,7 +391,7 @@ class _AdminOperationalHealthScreenState
   }
 
   void _setStatusFilter(String value) {
-    setState(() {
+    _update(() {
       _statusFilter = value;
       _page = 0;
     });
@@ -372,7 +399,7 @@ class _AdminOperationalHealthScreenState
   }
 
   void _setSeverityFilter(String value) {
-    setState(() {
+    _update(() {
       _severityFilter = value;
       _page = 0;
     });
@@ -380,7 +407,7 @@ class _AdminOperationalHealthScreenState
   }
 
   void _setServiceFilter(String value) {
-    setState(() {
+    _update(() {
       _serviceFilter = value;
       _page = 0;
     });

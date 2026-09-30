@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_admin.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_flow_shared.dart';
+import 'package:mobi_app/features/biopay/presentation/payment_composer_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
@@ -25,6 +28,22 @@ class BioPayAdminConsoleScreen extends ConsumerStatefulWidget {
 
 class _BioPayAdminConsoleScreenState
     extends ConsumerState<BioPayAdminConsoleScreen> {
+  final _actionToken = AccountActionToken.capture();
+  int _loadRevision = 0;
+  bool get _actionIsCurrent => mounted && _actionToken.isCurrent;
+  void _accountChanged() {
+    if (_actionIsCurrent || !mounted) return;
+    _loadRevision++;
+    _searchController.clear();
+    setState(() {
+      _snapshot = null;
+      _selectedPayee = null;
+      _confirmingId = null;
+      _loading = false;
+      _error = paymentCopy(context).bpSignIn;
+    });
+  }
+
   final TextEditingController _searchController = TextEditingController();
   BioPayAdminSnapshot? _snapshot;
   BioPayAdminPayee? _selectedPayee;
@@ -36,16 +55,21 @@ class _BioPayAdminConsoleScreenState
   @override
   void initState() {
     super.initState();
+    AccountContext.changes.addListener(_accountChanged);
     Future<void>.microtask(_load);
   }
 
   @override
   void dispose() {
+    _loadRevision++;
+    AccountContext.changes.removeListener(_accountChanged);
     _searchController.dispose();
     super.dispose();
   }
 
   Future<void> _load() async {
+    if (!_actionIsCurrent) return;
+    final revision = ++_loadRevision;
     setState(() {
       _loading = true;
       _error = null;
@@ -54,7 +78,7 @@ class _BioPayAdminConsoleScreenState
       final snapshot = await ref
           .read(biopayAdminServiceProvider)
           .loadSnapshot(search: _searchController.text);
-      if (!mounted) return;
+      if (!_actionIsCurrent || revision != _loadRevision) return;
       setState(() {
         _snapshot = snapshot;
         if (_selectedPayee != null) {
@@ -65,52 +89,64 @@ class _BioPayAdminConsoleScreenState
         }
       });
     } on Object catch (_) {
-      if (!mounted) return;
+      if (!_actionIsCurrent || revision != _loadRevision) return;
       setState(() => _error = 'BioPay operations unavailable.');
     } finally {
-      if (mounted) setState(() => _loading = false);
+      if (_actionIsCurrent && revision == _loadRevision) {
+        setState(() => _loading = false);
+      }
     }
   }
 
   Future<void> _confirmExternal(BioPayUssdPaymentRequest request) async {
+    if (!_actionIsCurrent) return;
     final l = paymentCopy(context);
     final reference = TextEditingController();
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l.bpRecordEvidence),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(l.bpOperatorNotice),
-              TextField(
-                controller: reference,
-                maxLength: 120,
-                decoration: InputDecoration(labelText: l.bpEvidenceReference),
-              ),
-            ],
+      builder: (context) => PaymentAccountView(
+        isCurrent: () => _actionIsCurrent,
+        child: AlertDialog(
+          title: Text(l.bpRecordEvidence),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(l.bpOperatorNotice),
+                TextField(
+                  controller: reference,
+                  maxLength: 120,
+                  decoration: InputDecoration(labelText: l.bpEvidenceReference),
+                ),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                if (_actionIsCurrent && context.mounted) {
+                  Navigator.pop(context, false);
+                }
+              },
+              child: Text(l.bpCancel),
+            ),
+            TextButton(
+              onPressed: () {
+                if (_actionIsCurrent &&
+                    context.mounted &&
+                    reference.text.trim().length >= 6) {
+                  Navigator.pop(context, true);
+                }
+              },
+              child: Text(l.bpRecordEvidence),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l.bpCancel),
-          ),
-          TextButton(
-            onPressed: () {
-              if (reference.text.trim().length >= 6) {
-                Navigator.pop(context, true);
-              }
-            },
-            child: Text(l.bpRecordEvidence),
-          ),
-        ],
       ),
     );
     final value = reference.text.trim();
     reference.dispose();
-    if (!mounted || confirmed != true) return;
+    if (!_actionIsCurrent || confirmed != true) return;
     setState(() {
       _confirmingId = request.id;
       _error = null;
@@ -122,7 +158,7 @@ class _BioPayAdminConsoleScreenState
             request: request,
             confirmationSource: 'operator_review:$value',
           );
-      if (!mounted) return;
+      if (!_actionIsCurrent) return;
       final snapshot = _snapshot;
       if (snapshot == null) return;
       setState(() {
@@ -137,10 +173,12 @@ class _BioPayAdminConsoleScreenState
         );
       });
     } on Object catch (_) {
-      if (!mounted) return;
+      if (!_actionIsCurrent) return;
       setState(() => _error = 'External confirmation unavailable.');
     } finally {
-      if (mounted) setState(() => _confirmingId = null);
+      if (_actionIsCurrent) {
+        setState(() => _confirmingId = null);
+      }
     }
   }
 
@@ -162,13 +200,21 @@ class _BioPayAdminConsoleScreenState
           label: 'Payees',
           icon: LucideIcons.users,
           tone: MobiStatusBadgeTone.info,
-          onTap: () => setState(() => _section = _BioPayAdminSection.payees),
+          onTap: () {
+            if (_actionIsCurrent) {
+              setState(() => _section = _BioPayAdminSection.payees);
+            }
+          },
         ),
         AdminActionChip(
           label: 'Status',
           icon: LucideIcons.serverCog,
           tone: MobiStatusBadgeTone.positive,
-          onTap: () => setState(() => _section = _BioPayAdminSection.status),
+          onTap: () {
+            if (_actionIsCurrent) {
+              setState(() => _section = _BioPayAdminSection.status);
+            }
+          },
         ),
         AdminActionChip(
           label: 'Refresh',
@@ -190,33 +236,52 @@ class _BioPayAdminConsoleScreenState
                 const SizedBox(height: AppSpacing.lg),
               ],
               if (snapshot == null)
-                const _AdminBioPayLoading()
+                _actionIsCurrent
+                    ? const _AdminBioPayLoading()
+                    : const SizedBox.shrink()
               else ...[
                 _BioPayAdminMetrics(summary: snapshot.summary),
                 const SizedBox(height: AppSpacing.lg),
                 _BioPayAdminSectionPicker(
                   selected: _section,
-                  onSelected: (section) => setState(() => _section = section),
+                  onSelected: (section) {
+                    if (_actionIsCurrent) {
+                      setState(() => _section = section);
+                    }
+                  },
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 switch (_section) {
                   _BioPayAdminSection.overview => _BioPayAdminOverview(
                     snapshot: snapshot,
-                    onOpenPayees: () =>
-                        setState(() => _section = _BioPayAdminSection.payees),
-                    onOpenStatus: () =>
-                        setState(() => _section = _BioPayAdminSection.status),
-                    onOpenConfirmations: () => setState(
-                      () => _section = _BioPayAdminSection.confirmations,
-                    ),
+                    onOpenPayees: () {
+                      if (_actionIsCurrent) {
+                        setState(() => _section = _BioPayAdminSection.payees);
+                      }
+                    },
+                    onOpenStatus: () {
+                      if (_actionIsCurrent) {
+                        setState(() => _section = _BioPayAdminSection.status);
+                      }
+                    },
+                    onOpenConfirmations: () {
+                      if (_actionIsCurrent) {
+                        setState(
+                          () => _section = _BioPayAdminSection.confirmations,
+                        );
+                      }
+                    },
                   ),
                   _BioPayAdminSection.payees => _BioPayAdminPayees(
                     payees: snapshot.payees,
                     selectedPayee: _selectedPayee,
                     searchController: _searchController,
                     onSearchChanged: (_) => _load(),
-                    onSelectPayee: (payee) =>
-                        setState(() => _selectedPayee = payee),
+                    onSelectPayee: (payee) {
+                      if (_actionIsCurrent) {
+                        setState(() => _selectedPayee = payee);
+                      }
+                    },
                   ),
                   _BioPayAdminSection.status => _BioPayAdminStatusPanel(
                     status: snapshot.systemStatus,

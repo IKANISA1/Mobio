@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
 import 'package:mobi_app/features/bookings/application/booking_services.dart';
 import 'package:mobi_app/features/bookings/data/public_transport_service.dart';
@@ -25,6 +27,9 @@ class AdminTransportAgenciesScreen extends ConsumerStatefulWidget {
 
 class _AdminTransportAgenciesScreenState
     extends ConsumerState<AdminTransportAgenciesScreen> {
+  final _actionToken = AccountActionToken.capture();
+  bool get _actionIsCurrent => mounted && _actionToken.isCurrent;
+
   PublicTransportService get _transportService =>
       ref.read(publicTransportServiceProvider);
 
@@ -50,6 +55,7 @@ class _AdminTransportAgenciesScreenState
   }
 
   Future<void> _load() async {
+    if (!_actionIsCurrent) return;
     setState(() {
       _isLoading = true;
       _error = null;
@@ -61,13 +67,13 @@ class _AdminTransportAgenciesScreenState
         includeInactive: true,
         forceRefresh: true,
       );
-      if (!mounted) return;
+      if (!_actionIsCurrent) return;
       setState(() {
         _agencies = agencies;
         _isLoading = false;
       });
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!_actionIsCurrent) return;
       setState(() {
         _error = error.toString();
         _isLoading = false;
@@ -76,32 +82,45 @@ class _AdminTransportAgenciesScreenState
   }
 
   Future<void> _toggleActive(TransportAgency agency) async {
+    if (!_actionIsCurrent) return;
     setState(() => _busyId = agency.id);
     try {
       await _transportService.setAgencyActive(agency.id, !agency.isActive);
       await _load();
       _showSnackBar(agency.isActive ? 'Agency removed.' : 'Agency restored.');
     } on Object catch (error) {
-      _showSnackBar('Error: $error');
+      _showSnackBar(
+        userMessageForError(
+          error,
+          fallback: 'Unable to complete the requested change.',
+        ),
+      );
     } finally {
-      if (mounted) setState(() => _busyId = null);
+      if (_actionIsCurrent) setState(() => _busyId = null);
     }
   }
 
   Future<void> _removeAgency(TransportAgency agency) async {
+    if (!_actionIsCurrent) return;
     setState(() => _busyId = agency.id);
     try {
       await _transportService.removeAgency(agency.id);
       await _load();
       _showSnackBar('Agency removed.');
     } on Object catch (error) {
-      _showSnackBar('Error: $error');
+      _showSnackBar(
+        userMessageForError(
+          error,
+          fallback: 'Unable to complete the requested change.',
+        ),
+      );
     } finally {
-      if (mounted) setState(() => _busyId = null);
+      if (_actionIsCurrent) setState(() => _busyId = null);
     }
   }
 
   Future<void> _showAgencyEditor([TransportAgency? agency]) async {
+    if (!_actionIsCurrent) return;
     final nameController = TextEditingController(text: agency?.name ?? '');
     final phoneController = TextEditingController(text: agency?.phone ?? '');
     final whatsappController = TextEditingController(
@@ -218,6 +237,7 @@ class _AdminTransportAgenciesScreenState
                           Expanded(
                             child: MobiButton(
                               onPressed: () async {
+                                if (!_actionIsCurrent) return;
                                 final name = nameController.text
                                     .replaceAll(RegExp(r'\s+'), ' ')
                                     .trim();
@@ -272,6 +292,7 @@ class _AdminTransportAgenciesScreenState
     required String serviceArea,
     required bool isActive,
   }) async {
+    if (!_actionIsCurrent) return;
     final busyId = agency?.id ?? '__new__';
     setState(() => _busyId = busyId);
     try {
@@ -287,14 +308,19 @@ class _AdminTransportAgenciesScreenState
       await _load();
       _showSnackBar(agency == null ? 'Agency added.' : 'Agency updated.');
     } on Object catch (error) {
-      _showSnackBar('Error: $error');
+      _showSnackBar(
+        userMessageForError(
+          error,
+          fallback: 'Unable to complete the requested change.',
+        ),
+      );
     } finally {
-      if (mounted) setState(() => _busyId = null);
+      if (_actionIsCurrent) setState(() => _busyId = null);
     }
   }
 
   void _showSnackBar(String message) {
-    if (!mounted) return;
+    if (!_actionIsCurrent) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));

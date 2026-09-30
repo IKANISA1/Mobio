@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
 import 'package:mobi_app/features/ev_chargers/application/ev_charger_providers.dart';
 import 'package:mobi_app/features/ev_chargers/data/ev_charger_service.dart';
@@ -26,6 +28,9 @@ class AdminEvChargersScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminEvChargersScreenState extends ConsumerState<AdminEvChargersScreen> {
+  final _actionToken = AccountActionToken.capture();
+  bool get _actionIsCurrent => mounted && _actionToken.isCurrent;
+
   EvChargerService get _service => ref.read(evChargerServiceProvider);
 
   final _searchController = TextEditingController();
@@ -50,19 +55,20 @@ class _AdminEvChargersScreenState extends ConsumerState<AdminEvChargersScreen> {
   }
 
   Future<void> _load() async {
+    if (!_actionIsCurrent) return;
     setState(() {
       _isLoading = true;
       _error = null;
     });
     try {
       final chargers = await _service.listChargers(includeInactive: true);
-      if (!mounted) return;
+      if (!_actionIsCurrent) return;
       setState(() {
         _chargers = chargers;
         _isLoading = false;
       });
     } on Object catch (error) {
-      if (!mounted) return;
+      if (!_actionIsCurrent) return;
       setState(() {
         _error = error.toString();
         _isLoading = false;
@@ -85,6 +91,7 @@ class _AdminEvChargersScreenState extends ConsumerState<AdminEvChargersScreen> {
   }
 
   Future<void> _toggleActive(EvCharger charger) async {
+    if (!_actionIsCurrent) return;
     setState(() => _busyId = charger.id);
     try {
       await _service.setChargerActive(charger.id, !charger.isActive);
@@ -93,13 +100,19 @@ class _AdminEvChargersScreenState extends ConsumerState<AdminEvChargersScreen> {
         charger.isActive ? 'EV charger hidden.' : 'EV charger restored.',
       );
     } on Object catch (error) {
-      _showSnackBar('Error: $error');
+      _showSnackBar(
+        userMessageForError(
+          error,
+          fallback: 'Unable to complete the requested change.',
+        ),
+      );
     } finally {
-      if (mounted) setState(() => _busyId = null);
+      if (_actionIsCurrent) setState(() => _busyId = null);
     }
   }
 
   Future<void> _showEditor([EvCharger? charger]) async {
+    if (!_actionIsCurrent) return;
     final nameController = TextEditingController(text: charger?.name ?? '');
     final addressController = TextEditingController(
       text: charger?.address ?? '',
@@ -295,6 +308,7 @@ class _AdminEvChargersScreenState extends ConsumerState<AdminEvChargersScreen> {
                           Expanded(
                             child: MobiButton(
                               onPressed: () async {
+                                if (!_actionIsCurrent) return;
                                 final name = nameController.text.trim();
                                 final address = addressController.text.trim();
                                 final latitude = double.tryParse(
@@ -374,6 +388,7 @@ class _AdminEvChargersScreenState extends ConsumerState<AdminEvChargersScreen> {
     required String placeId,
     required bool isActive,
   }) async {
+    if (!_actionIsCurrent) return;
     setState(() => _busyId = charger?.id ?? '__new__');
     try {
       await _service.upsertCharger(
@@ -397,14 +412,19 @@ class _AdminEvChargersScreenState extends ConsumerState<AdminEvChargersScreen> {
       await _load();
       _showSnackBar('EV charger saved.');
     } on Object catch (error) {
-      _showSnackBar('Error: $error');
+      _showSnackBar(
+        userMessageForError(
+          error,
+          fallback: 'Unable to complete the requested change.',
+        ),
+      );
     } finally {
-      if (mounted) setState(() => _busyId = null);
+      if (_actionIsCurrent) setState(() => _busyId = null);
     }
   }
 
   void _showSnackBar(String message) {
-    if (!mounted) return;
+    if (!_actionIsCurrent) return;
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));

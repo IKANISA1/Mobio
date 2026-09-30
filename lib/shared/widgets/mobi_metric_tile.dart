@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
@@ -25,7 +25,7 @@ class MobiMetricTile extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final resolvedAccent = accent ?? cs.primary;
 
-    return ClayCard(
+    return MobiTonalCard(
       onTap: onTap,
       padding: const EdgeInsets.all(AppSpacing.lg),
       borderRadius: AppRadii.xl,

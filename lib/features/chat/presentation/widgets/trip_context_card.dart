@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_shared_types/models/trip.dart';
 
@@ -17,7 +17,7 @@ class TripContextCard extends StatelessWidget {
         ? trip.time
         : 'Flexible';
 
-    return ClayCard(
+    return MobiTonalCard(
       borderRadius: 32,
       padding: const EdgeInsets.all(20),
       child: Column(

@@ -11,14 +11,23 @@ class BioPayAdminSummary {
   });
 
   factory BioPayAdminSummary.fromJson(Map<String, dynamic> json) {
+    final matchRate = BioPayWireRecord.field(json, 'match_rate');
+    if (matchRate is! num ||
+        !matchRate.toDouble().isFinite ||
+        matchRate < 0 ||
+        matchRate > 1) {
+      throw const FormatException('Invalid BioPay match rate');
+    }
     return BioPayAdminSummary(
-      totalPayees: (json['total_payees'] as num?)?.toInt() ?? 0,
-      enrolledPayees: (json['enrolled_payees'] as num?)?.toInt() ?? 0,
-      totalRequests: (json['total_requests'] as num?)?.toInt() ?? 0,
-      pendingConfirmations:
-          (json['pending_confirmations'] as num?)?.toInt() ?? 0,
-      confirmedRequests: (json['confirmed_requests'] as num?)?.toInt() ?? 0,
-      matchRate: (json['match_rate'] as num?)?.toDouble() ?? 0,
+      totalPayees: BioPayWireRecord.integer(json, 'total_payees'),
+      enrolledPayees: BioPayWireRecord.integer(json, 'enrolled_payees'),
+      totalRequests: BioPayWireRecord.integer(json, 'total_requests'),
+      pendingConfirmations: BioPayWireRecord.integer(
+        json,
+        'pending_confirmations',
+      ),
+      confirmedRequests: BioPayWireRecord.integer(json, 'confirmed_requests'),
+      matchRate: matchRate.toDouble(),
     );
   }
 
@@ -60,22 +69,34 @@ class BioPayAdminPayee {
   });
 
   factory BioPayAdminPayee.fromJson(Map<String, dynamic> json) {
+    final status = BioPayWireRecord.text(json, 'status');
+    if (!const {
+      'active',
+      'paused',
+      'deleted',
+      'rejected',
+      'processing',
+      'reenrollment_required',
+    }.contains(status)) {
+      throw const FormatException('Invalid BioPay payee status');
+    }
     return BioPayAdminPayee(
-      userId: json['user_id']?.toString() ?? '',
-      handle: json['handle']?.toString() ?? '',
-      displayName: json['display_name']?.toString() ?? 'BioPay payee',
-      provider: json['provider']?.toString() ?? 'opencv_sface_v1',
-      providerSubjectId: json['provider_subject_id']?.toString() ?? '',
-      providerCollectionId: json['provider_collection_id']?.toString() ?? '',
-      status: json['status']?.toString() ?? 'active',
-      requestCount: (json['request_count'] as num?)?.toInt() ?? 0,
-      confirmedCount: (json['confirmed_count'] as num?)?.toInt() ?? 0,
-      lastRequestAt: DateTime.tryParse(
-        json['last_request_at']?.toString() ?? '',
-      ),
-      enrolledAt: DateTime.tryParse(json['enrolled_at']?.toString() ?? ''),
-      serverVerifiedAt: DateTime.tryParse(
-        json['server_verified_at']?.toString() ?? '',
+      userId: BioPayWireRecord.id(json, 'user_id'),
+      handle: BioPayWireRecord.text(json, 'handle'),
+      displayName: BioPayWireRecord.text(json, 'display_name'),
+      provider: BioPayWireRecord.text(json, 'provider'),
+      providerSubjectId:
+          BioPayWireRecord.optionalText(json, 'provider_subject_id') ?? '',
+      providerCollectionId:
+          BioPayWireRecord.optionalText(json, 'provider_collection_id') ?? '',
+      status: status,
+      requestCount: BioPayWireRecord.integer(json, 'request_count'),
+      confirmedCount: BioPayWireRecord.integer(json, 'confirmed_count'),
+      lastRequestAt: BioPayWireRecord.optionalDate(json, 'last_request_at'),
+      enrolledAt: BioPayWireRecord.optionalDate(json, 'enrolled_at'),
+      serverVerifiedAt: BioPayWireRecord.optionalDate(
+        json,
+        'server_verified_at',
       ),
     );
   }
@@ -154,15 +175,17 @@ class BioPayAdminSystemStatus {
 
   factory BioPayAdminSystemStatus.fromJson(Map<String, dynamic> json) {
     return BioPayAdminSystemStatus(
-      overallStatus: json['overall_status']?.toString() ?? 'unknown',
-      faceProvider: json['face_provider']?.toString() ?? 'opencv_sface_v1',
-      faceProviderReady: json['face_provider_ready'] == true,
-      collectionId: json['collection_id']?.toString() ?? '',
-      databaseStatus: json['database_status']?.toString() ?? 'available',
-      ussdHandoffStatus: json['ussd_handoff_status']?.toString() ?? 'external',
-      pendingConfirmations:
-          (json['pending_confirmations'] as num?)?.toInt() ?? 0,
-      lastAuditAt: DateTime.tryParse(json['last_audit_at']?.toString() ?? ''),
+      overallStatus: BioPayWireRecord.text(json, 'overall_status'),
+      faceProvider: BioPayWireRecord.text(json, 'face_provider'),
+      faceProviderReady: BioPayWireRecord.flag(json, 'face_provider_ready'),
+      collectionId: BioPayWireRecord.text(json, 'collection_id'),
+      databaseStatus: BioPayWireRecord.text(json, 'database_status'),
+      ussdHandoffStatus: BioPayWireRecord.text(json, 'ussd_handoff_status'),
+      pendingConfirmations: BioPayWireRecord.integer(
+        json,
+        'pending_confirmations',
+      ),
+      lastAuditAt: BioPayWireRecord.optionalDate(json, 'last_audit_at'),
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_app/features/bookings/domain/transport_agency_catalog.dart';
+import 'package:mobi_app/features/bookings/domain/public_transport_wire_record.dart';
 import 'package:mobi_shared_types/models/public_transport.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
@@ -49,14 +50,11 @@ class PublicTransportService {
 
       final rows = await query.order('name').timeout(_networkTimeout);
       final agencies =
-          (rows as List<dynamic>)
-              .whereType<Map<String, dynamic>>()
-              .map(TransportAgency.fromJson)
-              .where((agency) => agency.name.trim().isNotEmpty)
-              .toList()
-            ..sort(
-              (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
-            );
+          PublicTransportWireRecord.rows(
+            rows,
+          ).map(PublicTransportWireRecord.agency).toList()..sort(
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+          );
 
       if (includeInactive) {
         _cachedAllAgencies = agencies;
@@ -65,7 +63,7 @@ class PublicTransportService {
       }
       return agencies;
     } on Object {
-      if (SupabaseConfig.isLocalUiPreview) {
+      if (supabase == null && SupabaseConfig.isLocalUiPreview) {
         return _fallbackAgencies(includeInactive: includeInactive);
       }
       rethrow;
@@ -86,7 +84,8 @@ class PublicTransportService {
 
       return names;
     } on Object {
-      if (SupabaseConfig.isLocalUiPreview) return fallbackAgencyNames;
+      if (supabase == null && SupabaseConfig.isLocalUiPreview)
+        return fallbackAgencyNames;
       rethrow;
     }
   }
@@ -116,8 +115,7 @@ class PublicTransportService {
       operation: 'rpc_admin_upsert_transport_agency',
       operationId: id,
       timeout: _networkTimeout,
-    );
-    invalidateAgencyCache();
+    ).whenComplete(invalidateAgencyCache);
   }
 
   Future<void> setAgencyActive(String id, bool isActive) async {
@@ -129,8 +127,7 @@ class PublicTransportService {
       operation: 'rpc_admin_set_transport_agency_active',
       operationId: id,
       timeout: _networkTimeout,
-    );
-    invalidateAgencyCache();
+    ).whenComplete(invalidateAgencyCache);
   }
 
   Future<void> removeAgency(String id) async {
@@ -142,8 +139,7 @@ class PublicTransportService {
       operation: 'rpc_admin_remove_transport_agency',
       operationId: id,
       timeout: _networkTimeout,
-    );
-    invalidateAgencyCache();
+    ).whenComplete(invalidateAgencyCache);
   }
 
   void invalidateAgencyCache() {
@@ -177,13 +173,9 @@ class PublicTransportService {
         timeout: _networkTimeout,
       );
 
-      return (rows as List<dynamic>)
-          .map(
-            (row) => PublicTransportSchedule.fromJson(
-              Map<String, dynamic>.from(row as Map),
-            ),
-          )
-          .toList();
+      return PublicTransportWireRecord.rows(
+        rows,
+      ).map(PublicTransportWireRecord.schedule).toList();
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
@@ -213,7 +205,17 @@ class PublicTransportService {
         timeout: _networkTimeout,
       );
 
-      return BusSeatHold.fromJson(_firstRpcRow(rows as Object));
+      try {
+        return PublicTransportWireRecord.hold(
+          PublicTransportWireRecord.single(rows),
+        );
+      } on FormatException catch (error) {
+        throw MutationOutcomeUnknownException(
+          operation: 'rpc_hold_bus_seats',
+          operationId: request.scheduleId,
+          originalError: error,
+        );
+      }
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
@@ -247,9 +249,19 @@ class PublicTransportService {
         timeout: _networkTimeout,
       );
 
-      final confirmation = BusBookingConfirmation.fromJson(
-        _firstRpcRow(rows as Object),
-      );
+      final BusBookingConfirmation confirmation;
+      try {
+        confirmation = PublicTransportWireRecord.confirmation(
+          PublicTransportWireRecord.single(rows),
+          bookingId: bookingId,
+        );
+      } on FormatException catch (error) {
+        throw MutationOutcomeUnknownException(
+          operation: 'rpc_confirm_bus_booking',
+          operationId: bookingId,
+          originalError: error,
+        );
+      }
       if (confirmation.status != 'confirmed' ||
           confirmation.paymentStatus != 'paid') {
         throw const ValidationException(
@@ -299,10 +311,13 @@ class PublicTransportService {
           )
           .timeout(_networkTimeout);
 
-      final list = rows as List<dynamic>;
+      final list = PublicTransportWireRecord.rows(rows);
       if (list.isEmpty) return null;
-      return BusPaymentStatus.fromJson(
-        Map<String, dynamic>.from(list.first as Map),
+      if (list.length != 1)
+        throw const FormatException('Unexpected payment status count');
+      return PublicTransportWireRecord.paymentStatus(
+        list.single,
+        bookingId: bookingId,
       );
     } on AppException {
       rethrow;
@@ -337,7 +352,13 @@ class PublicTransportService {
         timeout: _networkTimeout,
       );
 
-      return eventId as String;
+      if (eventId is! String || eventId.isEmpty) {
+        throw MutationOutcomeUnknownException(
+          operation: 'rpc_ingest_bus_location',
+          operationId: request.busId,
+        );
+      }
+      return eventId;
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
@@ -347,14 +368,6 @@ class PublicTransportService {
         'Error ingesting bus location',
       );
     }
-  }
-
-  Map<String, dynamic> _firstRpcRow(Object rows) {
-    final list = rows as List<dynamic>;
-    if (list.isEmpty) {
-      throw const NotFoundException(message: 'No public transport result.');
-    }
-    return Map<String, dynamic>.from(list.first as Map);
   }
 
   String _dateOnly(DateTime value) {

@@ -1,12 +1,39 @@
 import 'package:flutter/foundation.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/biopay/data/payment_discovery_service.dart';
 import 'package:mobi_app/features/biopay/domain/payment_discovery.dart';
+import 'package:mobi_app/features/biopay/domain/payment_discovery_response.dart';
 
 enum ComposerStep { recipient, options, review, outcome }
 
 /// Every async write/result belongs to one account and one draft revision.
 class PaymentComposerController extends ChangeNotifier {
-  PaymentComposerController({required this.gateway, required this.draft});
+  PaymentComposerController({required this.gateway, required this.draft})
+    : _account = gateway.captureAccount() {
+    if (_account.userId != draft.ownerId) throw StateError('Account changed.');
+    AccountContext.changes.addListener(_accountChanged);
+  }
+  final AccountSnapshot _account;
+
+  void _accountChanged() {
+    if (_disposed || accountCurrent) return;
+    _operation++;
+    busy = false;
+    saved = false;
+    recipient = null;
+    selected = null;
+    prepared = null;
+    options = const [];
+    sourceAvailability = const {};
+    quoteId = null;
+    quoteExpiresAt = null;
+    draft = PaymentDraft(id: draft.id, ownerId: draft.ownerId);
+    step = ComposerStep.recipient;
+    error = 'authRequired';
+    failureMessage = null;
+    notifyListeners();
+  }
 
   final PaymentDiscoveryGateway gateway;
   PaymentDraft draft;
@@ -21,10 +48,12 @@ class PaymentComposerController extends ChangeNotifier {
   bool busy = false;
   bool saved = false;
   String? error;
+  String? failureMessage;
   int _operation = 0;
   bool _disposed = false;
 
-  bool get accountCurrent => gateway.ownerId == draft.ownerId;
+  bool get accountCurrent =>
+      gateway.ownerId == draft.ownerId && gateway.isCurrent(_account);
   bool get quoteCurrent =>
       accountCurrent &&
       quoteId != null &&
@@ -32,6 +61,7 @@ class PaymentComposerController extends ChangeNotifier {
       quoteExpiresAt!.isAfter(DateTime.now());
 
   void edit(PaymentDraft next) {
+    if (!accountCurrent || _disposed) return;
     if (next.id != draft.id || next.ownerId != draft.ownerId) {
       throw ArgumentError('Use a new controller for another draft or account.');
     }
@@ -46,6 +76,7 @@ class PaymentComposerController extends ChangeNotifier {
     sourceAvailability = const {};
     prepared = null;
     error = null;
+    failureMessage = null;
     step = recipient == null ? ComposerStep.recipient : ComposerStep.options;
     notifyListeners();
   }
@@ -62,11 +93,13 @@ class PaymentComposerController extends ChangeNotifier {
     final revision = draft.revision;
     busy = true;
     error = null;
+    failureMessage = null;
     notifyListeners();
     try {
       return await action(operation, revision);
     } on Object catch (failure) {
       if (!_disposed && accountCurrent && operation == _operation) {
+        failureMessage = failure is AppException ? failure.message : null;
         error = failure is PaymentDiscoveryException
             ? failure.reason
             : 'refreshRequired';
@@ -84,7 +117,9 @@ class PaymentComposerController extends ChangeNotifier {
       }
       return null;
     } finally {
-      if (!_disposed && operation == _operation) {
+      if (!_disposed && !accountCurrent) {
+        _accountChanged();
+      } else if (!_disposed && operation == _operation) {
         busy = false;
         notifyListeners();
       }
@@ -119,9 +154,31 @@ class PaymentComposerController extends ChangeNotifier {
     });
   }
 
+  Map<String, dynamic> _validated(
+    String action,
+    Map<String, dynamic> input,
+    Map<String, dynamic> result,
+  ) {
+    try {
+      PaymentDiscoveryResponse.validate(action, result, input, draft.ownerId);
+      return result;
+    } on FormatException catch (failure, stackTrace) {
+      if (PaymentDiscoveryResponse.reads.contains(action)) rethrow;
+      throw MutationOutcomeUnknownException(
+        operation: 'discovery:$action',
+        operationId: (input['id'] ?? input['quote_id']) as String?,
+        originalError: failure,
+        stackTrace: stackTrace,
+      );
+    }
+  }
+
   Future<void> _saveSnapshot(PaymentDraft snapshot) async {
-    await gateway.call('save_draft', snapshot.toJson());
-    if (!accountCurrent) throw StateError('Account changed.');
+    final input = snapshot.toJson();
+    final result = await gateway.call('save_draft', input);
+    if (_disposed || !accountCurrent) throw StateError('Account changed.');
+    _validated('save_draft', input, result);
+    if (_disposed || !accountCurrent) throw StateError('Account changed.');
     await gateway.rememberDraft(snapshot.ownerId, snapshot.id);
   }
 
@@ -136,27 +193,22 @@ class PaymentComposerController extends ChangeNotifier {
       await _saveSnapshot(snapshot);
       if (!_current(operation, revision)) return;
       saved = true;
-      final result = await gateway.call('quote', {
+      final input = {
         'id': snapshot.id,
         'revision': snapshot.revision,
         'device': gateway.deviceFamily,
-      });
+      };
+      final result = await gateway.call('quote', input);
       if (!_current(operation, revision)) return;
-      recipient = PaymentRecipient.fromJson(
-        result['recipient'] as Map<String, dynamic>,
-      );
-      options = rankPaymentOptions(
-        (result['options'] as List).map(
-          (x) => PaymentOption.fromJson(Map<String, dynamic>.from(x as Map)),
-        ),
-      );
+      final quote = PaymentQuote.fromJson(_validated('quote', input, result));
+      recipient = quote.recipient;
+      options = rankPaymentOptions(quote.options);
       sourceAvailability = {
-        for (final entry
-            in (result['source_availability'] as List? ?? const []))
+        for (final entry in quote.sourceAvailability)
           entry['id'] as String: entry['reason'] as String?,
       };
-      quoteId = result['quote_id'] as String;
-      quoteExpiresAt = DateTime.parse(result['expires_at'] as String);
+      quoteId = quote.id;
+      quoteExpiresAt = quote.expiresAt;
       selected = null;
       step = ComposerStep.options;
     });
@@ -180,16 +232,20 @@ class PaymentComposerController extends ChangeNotifier {
       return null;
     }
     return _perform<Map<String, dynamic>?>((operation, revision) async {
-      final result = await gateway.call('prepare', {
+      final input = {
         'quote_id': quoteId,
         'option_id': selected!.id,
         'device': gateway.deviceFamily,
-      });
+      };
+      final result = await gateway.call('prepare', input);
       if (!_current(operation, revision)) return null;
+      final instruction = PaymentPreparedInstruction.fromJson(
+        _validated('prepare', input, result),
+      );
       prepared = result;
       draft = draft.copyWith(
         evidence: PaymentEvidence.prepared,
-        attemptId: result['attempt_id'] as String,
+        attemptId: instruction.attemptId,
       );
       // Persist before handing control away. A failed save prevents launching.
       await _saveSnapshot(draft);
@@ -213,11 +269,10 @@ class PaymentComposerController extends ChangeNotifier {
       return;
     }
     await _perform((operation, revision) async {
-      final response = await gateway.call('record_attempt', {
-        'id': draft.attemptId,
-        'evidence': evidence.name,
-      });
+      final input = {'id': draft.attemptId, 'evidence': evidence.name};
+      final response = await gateway.call('record_attempt', input);
       if (!_current(operation, revision)) return;
+      _validated('record_attempt', input, response);
       draft = draft.copyWith(
         evidence: PaymentEvidence.values.byName(response['evidence'] as String),
       );
@@ -228,6 +283,11 @@ class PaymentComposerController extends ChangeNotifier {
   }
 
   void invalidateOnResume() {
+    if (_disposed) return;
+    if (!accountCurrent) {
+      _accountChanged();
+      return;
+    }
     _operation++;
     busy = false;
     quoteId = null;
@@ -244,6 +304,7 @@ class PaymentComposerController extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    AccountContext.changes.removeListener(_accountChanged);
     _operation++;
     super.dispose();
   }

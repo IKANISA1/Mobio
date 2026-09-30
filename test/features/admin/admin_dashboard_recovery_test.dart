@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
 import 'package:mobi_app/features/admin/application/admin_dashboard_provider.dart';
 import 'package:mobi_app/features/admin/application/admin_dashboard_state.dart';
 import 'package:mobi_app/features/admin/presentation/admin_dashboard_screen.dart';
@@ -15,7 +16,7 @@ class _UnavailableDashboard extends AdminDashboardController {
   }
 
   @override
-  Future<void> refresh() async {
+  Future<void> refresh({AccountActionToken? actionToken}) async {
     retries++;
   }
 }

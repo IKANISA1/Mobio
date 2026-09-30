@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// ThemeExtension carrying custom tokens not available in standard [ColorScheme].
 ///
-/// These non-MD3 tokens change between light and dark modes.
+/// These reference adapters change between light and dark modes.
 /// Access via: `Theme.of(context).extension<MobiThemeExtension>()!`
 class MobiThemeExtension extends ThemeExtension<MobiThemeExtension> {
   final Color surfaceContainerLowest;
@@ -25,12 +25,6 @@ class MobiThemeExtension extends ThemeExtension<MobiThemeExtension> {
   final Color caution;
   final Color cautionContainer;
   final Color onCautionContainer;
-  final List<BoxShadow> clayCardShadow;
-  final List<BoxShadow> clayButtonShadow;
-  final double clayCardGradientWhiteAlpha;
-  final double glassCardBgAlpha;
-  final double glassCardBorderWhiteAlpha;
-  final double glassCardGradientWhiteAlpha;
   final double surfacePanelAlpha;
   final double surfacePanelBorderAlpha;
   final double surfacePanelShadowAlpha;
@@ -68,12 +62,6 @@ class MobiThemeExtension extends ThemeExtension<MobiThemeExtension> {
     required this.caution,
     required this.cautionContainer,
     required this.onCautionContainer,
-    required this.clayCardShadow,
-    required this.clayButtonShadow,
-    required this.clayCardGradientWhiteAlpha,
-    required this.glassCardBgAlpha,
-    required this.glassCardBorderWhiteAlpha,
-    required this.glassCardGradientWhiteAlpha,
     required this.surfacePanelAlpha,
     required this.surfacePanelBorderAlpha,
     required this.surfacePanelShadowAlpha,
@@ -113,12 +101,6 @@ class MobiThemeExtension extends ThemeExtension<MobiThemeExtension> {
     Color? caution,
     Color? cautionContainer,
     Color? onCautionContainer,
-    List<BoxShadow>? clayCardShadow,
-    List<BoxShadow>? clayButtonShadow,
-    double? clayCardGradientWhiteAlpha,
-    double? glassCardBgAlpha,
-    double? glassCardBorderWhiteAlpha,
-    double? glassCardGradientWhiteAlpha,
     double? surfacePanelAlpha,
     double? surfacePanelBorderAlpha,
     double? surfacePanelShadowAlpha,
@@ -158,15 +140,6 @@ class MobiThemeExtension extends ThemeExtension<MobiThemeExtension> {
       caution: caution ?? this.caution,
       cautionContainer: cautionContainer ?? this.cautionContainer,
       onCautionContainer: onCautionContainer ?? this.onCautionContainer,
-      clayCardShadow: clayCardShadow ?? this.clayCardShadow,
-      clayButtonShadow: clayButtonShadow ?? this.clayButtonShadow,
-      clayCardGradientWhiteAlpha:
-          clayCardGradientWhiteAlpha ?? this.clayCardGradientWhiteAlpha,
-      glassCardBgAlpha: glassCardBgAlpha ?? this.glassCardBgAlpha,
-      glassCardBorderWhiteAlpha:
-          glassCardBorderWhiteAlpha ?? this.glassCardBorderWhiteAlpha,
-      glassCardGradientWhiteAlpha:
-          glassCardGradientWhiteAlpha ?? this.glassCardGradientWhiteAlpha,
       surfacePanelAlpha: surfacePanelAlpha ?? this.surfacePanelAlpha,
       surfacePanelBorderAlpha:
           surfacePanelBorderAlpha ?? this.surfacePanelBorderAlpha,
@@ -245,19 +218,6 @@ class MobiThemeExtension extends ThemeExtension<MobiThemeExtension> {
         other.onCautionContainer,
         t,
       )!,
-      clayCardShadow: t < 0.5 ? clayCardShadow : other.clayCardShadow,
-      clayButtonShadow: t < 0.5 ? clayButtonShadow : other.clayButtonShadow,
-      clayCardGradientWhiteAlpha:
-          clayCardGradientWhiteAlpha +
-          (other.clayCardGradientWhiteAlpha - clayCardGradientWhiteAlpha) * t,
-      glassCardBgAlpha:
-          glassCardBgAlpha + (other.glassCardBgAlpha - glassCardBgAlpha) * t,
-      glassCardBorderWhiteAlpha:
-          glassCardBorderWhiteAlpha +
-          (other.glassCardBorderWhiteAlpha - glassCardBorderWhiteAlpha) * t,
-      glassCardGradientWhiteAlpha:
-          glassCardGradientWhiteAlpha +
-          (other.glassCardGradientWhiteAlpha - glassCardGradientWhiteAlpha) * t,
       surfacePanelAlpha:
           surfacePanelAlpha + (other.surfacePanelAlpha - surfacePanelAlpha) * t,
       surfacePanelBorderAlpha:

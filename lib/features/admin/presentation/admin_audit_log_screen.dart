@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/features/admin/application/admin_services.dart';
 import 'package:mobi_app/features/admin/data/admin_service.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_dashboard_utils.dart';
@@ -32,6 +34,26 @@ class AdminAuditLogScreen extends ConsumerStatefulWidget {
 class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
   AdminService get _adminService => ref.read(adminServiceProvider);
 
+  final _origin = AccountActionToken.capture();
+  int _loadRevision = 0;
+  bool get _current => mounted && _origin.isCurrent;
+  void _update(VoidCallback callback) {
+    if (_current) setState(callback);
+  }
+
+  void _accountChanged() {
+    if (!mounted || _origin.isCurrent) return;
+    _loadRevision++;
+    _searchController.clear();
+    setState(() {
+      _logs = [];
+      _searchQuery = '';
+      _isLoading = false;
+      _hasNextPage = false;
+      _error = 'Admin session locked';
+    });
+  }
+
   final _searchController = TextEditingController();
 
   bool _isLoading = true;
@@ -48,6 +70,7 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
   @override
   void initState() {
     super.initState();
+    AccountContext.changes.addListener(_accountChanged);
     final initialSearch = widget.initialSearch?.trim();
     if (initialSearch != null && initialSearch.isNotEmpty) {
       _searchController.text = initialSearch;
@@ -58,11 +81,14 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
 
   @override
   void dispose() {
+    _loadRevision++;
+    AccountContext.changes.removeListener(_accountChanged);
     _searchController.dispose();
     super.dispose();
   }
 
   Future<void> _showAuditDetailSheet(AdminAuditLogItem item) {
+    if (!_current) return Future<void>.value();
     final cs = Theme.of(context).colorScheme;
     final payload = item.details.isEmpty
         ? 'No detail payload'
@@ -73,127 +99,140 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
       title: 'Audit event',
       builder: (context) {
         final tone = _actionTone(item.action);
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            0,
-            AppSpacing.lg,
-            AppSpacing.md,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AdminDashboardUtils.formatTimestamp(item.createdAt),
-                            style: AppTypography.bodySm.copyWith(
-                              color: cs.onSurfaceVariant,
+        return ValueListenableBuilder<int>(
+          valueListenable: AccountContext.changes,
+          builder: (_, _, child) => _current ? child! : const SizedBox.shrink(),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              0,
+              AppSpacing.lg,
+              AppSpacing.md,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AdminDashboardUtils.formatTimestamp(
+                                item.createdAt,
+                              ),
+                              style: AppTypography.bodySm.copyWith(
+                                color: cs.onSurfaceVariant,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    AdminActionChip(
-                      label: 'Close',
-                      icon: LucideIcons.x,
-                      onTap: () => Navigator.of(context).pop(),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Wrap(
-                  spacing: AppSpacing.sm,
-                  runSpacing: AppSpacing.sm,
-                  children: [
-                    MobiStatusBadge(label: _humanize(item.action), tone: tone),
-                    MobiStatusBadge(
-                      label: _humanize(item.targetType),
-                      tone: MobiStatusBadgeTone.neutral,
-                    ),
-                    if (_isSensitiveAction(item))
-                      const MobiStatusBadge(
-                        label: 'Sensitive',
-                        icon: LucideIcons.shieldAlert,
-                        tone: MobiStatusBadgeTone.warning,
-                      ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    final isWide = constraints.maxWidth >= 640;
-                    final fields = [
-                      AdminFieldPair(label: 'Actor', value: item.adminName),
-                      AdminFieldPair(label: 'Action', value: item.action),
-                      AdminFieldPair(
-                        label: 'Target type',
-                        value: item.targetType,
-                      ),
-                      AdminFieldPair(
-                        label: 'Target ID',
-                        value: item.targetId ?? 'None',
-                      ),
-                      AdminFieldPair(
-                        label: 'Created',
-                        value: item.createdAt ?? 'Unknown',
-                      ),
-                    ];
-                    if (!isWide) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          for (final field in fields) ...[
-                            field,
-                            const SizedBox(height: AppSpacing.md),
                           ],
+                        ),
+                      ),
+                      AdminActionChip(
+                        label: 'Close',
+                        icon: LucideIcons.x,
+                        onTap: () {
+                          if (_current && context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
+                    children: [
+                      MobiStatusBadge(
+                        label: _humanize(item.action),
+                        tone: tone,
+                      ),
+                      MobiStatusBadge(
+                        label: _humanize(item.targetType),
+                        tone: MobiStatusBadgeTone.neutral,
+                      ),
+                      if (_isSensitiveAction(item))
+                        const MobiStatusBadge(
+                          label: 'Sensitive',
+                          icon: LucideIcons.shieldAlert,
+                          tone: MobiStatusBadgeTone.warning,
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isWide = constraints.maxWidth >= 640;
+                      final fields = [
+                        AdminFieldPair(label: 'Actor', value: item.adminName),
+                        AdminFieldPair(label: 'Action', value: item.action),
+                        AdminFieldPair(
+                          label: 'Target type',
+                          value: item.targetType,
+                        ),
+                        AdminFieldPair(
+                          label: 'Target ID',
+                          value: item.targetId ?? 'None',
+                        ),
+                        AdminFieldPair(
+                          label: 'Created',
+                          value: item.createdAt ?? 'Unknown',
+                        ),
+                      ];
+                      if (!isWide) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            for (final field in fields) ...[
+                              field,
+                              const SizedBox(height: AppSpacing.md),
+                            ],
+                          ],
+                        );
+                      }
+                      return Wrap(
+                        spacing: AppSpacing.xl,
+                        runSpacing: AppSpacing.md,
+                        children: [
+                          for (final field in fields)
+                            SizedBox(width: 220, child: field),
                         ],
                       );
-                    }
-                    return Wrap(
-                      spacing: AppSpacing.xl,
-                      runSpacing: AppSpacing.md,
-                      children: [
-                        for (final field in fields)
-                          SizedBox(width: 220, child: field),
-                      ],
-                    );
-                  },
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Text(
-                  'Detail payload',
-                  style: AppTypography.labelLg.copyWith(color: cs.onSurface),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).extension<MobiThemeExtension>()!.surfaceContainerLow,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
-                      color: cs.outlineVariant.withValues(alpha: 0.5),
-                    ),
+                    },
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: SelectableText(
-                      payload,
-                      style: AppTypography.bodySm.copyWith(
-                        color: cs.onSurface,
-                        fontFamily: 'monospace',
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    'Detail payload',
+                    style: AppTypography.labelLg.copyWith(color: cs.onSurface),
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).extension<MobiThemeExtension>()!.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: cs.outlineVariant.withValues(alpha: 0.5),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      child: SelectableText(
+                        payload,
+                        style: AppTypography.bodySm.copyWith(
+                          color: cs.onSurface,
+                          fontFamily: 'monospace',
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
@@ -202,7 +241,9 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
   }
 
   Future<void> _load() async {
-    setState(() {
+    if (!_current) return;
+    final revision = ++_loadRevision;
+    _update(() {
       _isLoading = true;
       _error = null;
     });
@@ -215,17 +256,17 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
         limit: _rowsPerPage + 1,
         offset: _page * _rowsPerPage,
       );
-      if (mounted) {
+      if (_current && revision == _loadRevision) {
         final hasNextPage = logs.length > _rowsPerPage;
-        setState(() {
+        _update(() {
           _logs = logs.take(_rowsPerPage).toList();
           _hasNextPage = hasNextPage;
           _isLoading = false;
         });
       }
     } on Object catch (error) {
-      if (mounted) {
-        setState(() {
+      if (_current && revision == _loadRevision) {
+        _update(() {
           _isLoading = false;
           _error = error.toString();
         });
@@ -289,7 +330,7 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
                               controller: _searchController,
                               hintText: 'Search action, actor, target',
                               onChanged: (value) {
-                                setState(() {
+                                _update(() {
                                   _searchQuery = value;
                                   _page = 0;
                                 });
@@ -325,7 +366,7 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
                                     icon: LucideIcons.crosshair,
                                   ),
                                 ],
-                                onChanged: (value) => setState(() {
+                                onChanged: (value) => _update(() {
                                   _sortKey = value;
                                   _page = 0;
                                 }),
@@ -362,7 +403,7 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
                             icon: LucideIcons.list,
                             isSelected: _actionFilter == 'all',
                             onTap: () {
-                              setState(() {
+                              _update(() {
                                 _actionFilter = 'all';
                                 _page = 0;
                               });
@@ -374,7 +415,7 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
                               label: _humanize(action),
                               isSelected: _actionFilter == action,
                               onTap: () {
-                                setState(() {
+                                _update(() {
                                   _actionFilter = action;
                                   _page = 0;
                                 });
@@ -393,7 +434,7 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
                             icon: LucideIcons.box,
                             isSelected: _targetFilter == 'all',
                             onTap: () {
-                              setState(() {
+                              _update(() {
                                 _targetFilter = 'all';
                                 _page = 0;
                               });
@@ -405,7 +446,7 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
                               label: _humanize(target),
                               isSelected: _targetFilter == target,
                               onTap: () {
-                                setState(() {
+                                _update(() {
                                   _targetFilter = target;
                                   _page = 0;
                                 });
@@ -471,11 +512,11 @@ class _AdminAuditLogScreenState extends ConsumerState<AdminAuditLogScreen> {
                           page: _page,
                           rowsPerPage: _rowsPerPage,
                           onPageChanged: (page) {
-                            setState(() => _page = page);
+                            _update(() => _page = page);
                             _load();
                           },
                           onRowsPerPageChanged: (rows) {
-                            setState(() {
+                            _update(() {
                               _rowsPerPage = rows;
                               _page = 0;
                             });

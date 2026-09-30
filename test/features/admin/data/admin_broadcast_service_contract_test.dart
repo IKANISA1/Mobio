@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/admin/data/admin_broadcast_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -32,7 +32,7 @@ void main() {
       final service = fixture(null);
       await expectLater(
         service.requestCampaignApproval(campaignType: 'promo', title: 'Test'),
-        throwsFormatException,
+        throwsA(isA<MutationOutcomeUnknownException>()),
       );
     },
   );
@@ -44,7 +44,10 @@ void main() {
 
   test('missing send count is not treated as zero recipients', () async {
     final service = fixture(null);
-    await expectLater(service.sendPromo(title: 'Test'), throwsFormatException);
+    await expectLater(
+      service.sendPromo(title: 'Test'),
+      throwsA(isA<MutationOutcomeUnknownException>()),
+    );
   });
 
   test('confirmed zero send count remains valid', () async {

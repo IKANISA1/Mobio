@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/firebase/firebase_analytics_service.dart';
 import 'package:mobi_app/core/firebase/firebase_auth_service.dart';
 import 'package:mobi_app/core/firebase/firebase_remote_config_service.dart';
@@ -45,7 +48,10 @@ class FirebaseBootstrapService {
 
     try {
       if (Firebase.apps.isEmpty) {
-        await Firebase.initializeApp(options: options);
+        await RequestDeadline.read(
+          Firebase.initializeApp(options: options),
+          timeout: const Duration(seconds: 8),
+        );
       }
 
       await FirebaseAuthService.instance.initialize();
@@ -61,8 +67,11 @@ class FirebaseBootstrapService {
           FirebaseRemoteConfigService.instance.crashlyticsEnabled;
 
       if (_supportsCrashlytics) {
-        await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
-          _crashlyticsCollectionEnabled,
+        await RequestDeadline.read(
+          FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+            _crashlyticsCollectionEnabled,
+          ),
+          timeout: const Duration(seconds: 4),
         );
       }
 
@@ -85,7 +94,10 @@ class FirebaseBootstrapService {
     }
 
     try {
-      await Firebase.initializeApp(options: options);
+      await RequestDeadline.read(
+        Firebase.initializeApp(options: options),
+        timeout: const Duration(seconds: 8),
+      );
       _isReady = true;
     } on Object catch (error, stackTrace) {
       AppLogger.warning(
@@ -98,7 +110,11 @@ class FirebaseBootstrapService {
 
   void recordFlutterFatalError(FlutterErrorDetails details) {
     if (_crashlyticsCollectionEnabled && _supportsCrashlytics) {
-      FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+      unawaited(
+        _recordSafely(
+          FirebaseCrashlytics.instance.recordFlutterFatalError(details),
+        ),
+      );
       return;
     }
 
@@ -107,7 +123,15 @@ class FirebaseBootstrapService {
 
   bool recordPlatformError(Object error, StackTrace stackTrace) {
     if (_crashlyticsCollectionEnabled && _supportsCrashlytics) {
-      FirebaseCrashlytics.instance.recordError(error, stackTrace, fatal: true);
+      unawaited(
+        _recordSafely(
+          FirebaseCrashlytics.instance.recordError(
+            error,
+            stackTrace,
+            fatal: true,
+          ),
+        ),
+      );
     } else {
       AppLogger.error('PlatformError: $error', error, stackTrace);
     }
@@ -121,14 +145,26 @@ class FirebaseBootstrapService {
     bool fatal = false,
   }) async {
     if (_crashlyticsCollectionEnabled && _supportsCrashlytics) {
-      await FirebaseCrashlytics.instance.recordError(
-        error,
-        stackTrace,
-        fatal: fatal,
+      await _recordSafely(
+        FirebaseCrashlytics.instance.recordError(
+          error,
+          stackTrace,
+          fatal: fatal,
+        ),
       );
       return;
     }
 
     AppLogger.error('Firebase-infra error: $error', error, stackTrace);
+  }
+
+  Future<void> _recordSafely(Future<void> request) async {
+    try {
+      await RequestDeadline.read(request, timeout: const Duration(seconds: 4));
+    } on Object {
+      // Error reporting is optional infrastructure. Do not feed a reporting
+      // failure back into the zone's reporting hook or retry it automatically.
+      AppLogger.warning('Crash reporting was not confirmed.');
+    }
   }
 }

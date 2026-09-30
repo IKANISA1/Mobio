@@ -53,9 +53,25 @@ See [CRITICAL_RULES.md](./CRITICAL_RULES.md) for the full list:
 
 1. User IDs = 6 numeric digits only
 2. Default country = Rwanda (RW)
-3. UI = follow `design.md` exactly
+3. UI = follow the external `revolut-design` skill exactly for app, web and admin
 4. Auth = WhatsApp OTP; anonymous Supabase sessions are bootstrap only
 5. **Build env vars = SUPABASE_URL + SUPABASE_ANON_KEY + PRIVACY_POLICY_URL + ACCOUNT_DELETION_URL mandatory on every build**
+
+## Sole Design Authority
+
+The entire Mobio app, web experience, public website and admin workspace must
+follow the selected visual typologies and full applicable colour system of the
+[external `revolut-design` skill](</Volumes/PRO-G40/Application Data/Codex/Codex-Home/skills/revolut-design/SKILL.md>).
+This skill and its bundled references are the sole design authority. Keep
+Mobio's own name, logo, app icon, supported features, navigation, workflows and
+content. Product mappings, tokens, screenshots and acceptance records are
+implementation evidence; they cannot introduce or override a design reference.
+Do not restore deleted local design specifications or add competing design
+inspiration. Use [the product evidence index](docs/design/README.md) to find
+existing source mappings and acceptance records. A 100% fidelity claim requires
+the skill's complete route/state comparison and acceptance evidence; tests alone
+do not establish it. Run `python3 scripts/ci/check_design_authority.py` for any
+design or instruction change.
 
 ## CRITICAL REVIEW-NOTE RULE: Batch Before Rebuild
 
@@ -126,11 +142,11 @@ be proposed as Mobio work.
 - Import shared model and theme package APIs directly; do not restore the retired
   `lib/models`, `lib/core/theme`, or centralized service-provider wrappers.
 
-- Prefer `/Volumes/PRO-G40/flutter_3_44/bin/flutter` and its bundled Dart
+- Prefer `/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/flutter` and its bundled Dart
   3.12 SDK for local validation. If a script supports it, set `FLUTTER_BIN`
   explicitly rather than relying on shell `PATH`.
 - Keep the Dart MCP server configured for Codex with:
-  `codex mcp add dart -- /Volumes/PRO-G40/flutter_3_44/bin/dart mcp-server --force-roots-fallback`.
+  `codex mcp add dart -- /Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/dart mcp-server --force-roots-fallback`.
   Do not use a bare `dart` command here; this workstation also has older Dart
   SDKs on `PATH`, and MCP test execution must match the repo's Dart `^3.12.0`
   constraint.

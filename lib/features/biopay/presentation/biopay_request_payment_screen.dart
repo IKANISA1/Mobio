@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/async/external_action.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_flow_shared.dart';
@@ -190,10 +192,13 @@ class _BioPayRequestPaymentScreenState
             );
       if (!mounted) return;
       setState(() => _request = request);
-    } on Object {
+    } on Object catch (error) {
       if (!mounted) return;
       setState(() {
-        _error = 'Enter a valid MoMo number or MoMo Pay code and amount.';
+        _error = userMessageForError(
+          error,
+          fallback: 'Enter a valid MoMo number or MoMo Pay code and amount.',
+        );
       });
     } finally {
       if (mounted) setState(() => _creating = false);
@@ -206,26 +211,37 @@ class _BioPayRequestPaymentScreenState
     setState(() => _sharing = true);
     try {
       final service = ref.read(biopayUssdServiceProvider);
-      final opened = await launchUrl(
-        service.paymentRequestWhatsAppUri(
-          request,
-          receiverLabel: _receiverLabel,
+      final opened = await ExternalAction.run(
+        launchUrl(
+          service.paymentRequestWhatsAppUri(
+            request,
+            receiverLabel: _receiverLabel,
+          ),
+          mode: LaunchMode.externalApplication,
         ),
-        mode: LaunchMode.externalApplication,
+        operation: 'open_external_link',
       );
       if (!opened) {
-        await SharePlus.instance.share(
-          ShareParams(
-            text: service.paymentRequestShareText(
-              request,
-              receiverLabel: _receiverLabel,
+        await ExternalAction.run(
+          SharePlus.instance.share(
+            ShareParams(
+              text: service.paymentRequestShareText(
+                request,
+                receiverLabel: _receiverLabel,
+              ),
             ),
           ),
+          operation: 'share_external',
         );
       }
       _showMessage('MoMo USSD link ready to share.');
-    } on Object {
-      _showMessage('Unable to share this payment request.');
+    } on Object catch (error) {
+      _showMessage(
+        userMessageForError(
+          error,
+          fallback: 'Unable to share this payment request.',
+        ),
+      );
     } finally {
       if (mounted) setState(() => _sharing = false);
     }
@@ -240,10 +256,18 @@ class _BioPayRequestPaymentScreenState
           .read(biopayUssdServiceProvider)
           .paymentRequestDialerUri(request)
           .toString();
-      await Clipboard.setData(ClipboardData(text: link));
+      await ExternalAction.run(
+        Clipboard.setData(ClipboardData(text: link)),
+        operation: 'copy_to_clipboard',
+      );
       _showMessage('MoMo USSD link copied.');
-    } on Object {
-      _showMessage('Unable to copy this MoMo USSD link.');
+    } on Object catch (error) {
+      _showMessage(
+        userMessageForError(
+          error,
+          fallback: 'Unable to copy this MoMo USSD link.',
+        ),
+      );
     } finally {
       if (mounted) setState(() => _copying = false);
     }
@@ -338,9 +362,9 @@ class _PaymentLinkPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: bioPayDarkPanel.withValues(alpha: 0.76),
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
@@ -349,10 +373,12 @@ class _PaymentLinkPanel extends StatelessWidget {
           children: [
             Row(
               children: [
-                const BioPayIconBox(
+                BioPayIconBox(
                   icon: LucideIcons.link,
                   color: bioPayBlue,
-                  background: Colors.white,
+                  background: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest,
                 ),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
@@ -362,7 +388,7 @@ class _PaymentLinkPanel extends StatelessWidget {
                       Text(
                         'MoMo USSD link ready',
                         style: AppTypography.titleMd.copyWith(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

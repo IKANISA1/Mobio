@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/notifications/application/notification_services.dart';
 import 'package:mobi_app/features/notifications/data/notification_service.dart';
@@ -45,11 +47,30 @@ class _Service extends Fake implements NotificationService {
   }
 }
 
+class _Authority {
+  int generation = 0;
+  String userId = _row.userId;
+  bool available = true;
+  AccountSnapshot capture() {
+    if (!available) throw const StaleAccountWork();
+    return AccountSnapshot(userId, 'same-session', generation);
+  }
+
+  bool current(AccountSnapshot account) =>
+      available && account.userId == userId && account.generation == generation;
+  void change() {
+    generation++;
+    AccountContext.changes.value++;
+  }
+}
+
 Future<void> _pump(
   WidgetTester tester,
   _Service service, {
   double scale = 1,
+  _Authority? authority,
 }) async {
+  final account = authority ?? _Authority();
   await tester.binding.setSurfaceSize(const Size(390, 844));
   addTearDown(() => tester.binding.setSurfaceSize(null));
   final router = GoRouter(
@@ -57,7 +78,13 @@ Future<void> _pump(
     routes: [
       GoRoute(
         path: '/notifications',
-        builder: (_, _) => Scaffold(body: NotificationsScreen(onBack: () {})),
+        builder: (_, _) => Scaffold(
+          body: NotificationsScreen.test(
+            onBack: () {},
+            captureAccount: account.capture,
+            isCurrent: account.current,
+          ),
+        ),
       ),
       GoRoute(
         path: '/chat',
@@ -88,6 +115,116 @@ Future<void> _pump(
 }
 
 void main() {
+  testWidgets(
+    'cached inbox clears immediately while a new account load is pending',
+    (tester) async {
+      final authority = _Authority();
+      final service = _Service();
+      await _pump(tester, service, authority: authority);
+      expect(find.text(_row.title), findsOneWidget);
+      final pending = Completer<List<AppNotification>>();
+      service.load = () => pending.future;
+      authority.change();
+      await tester.pump();
+      expect(find.text(_row.title), findsNothing);
+      expect(service.reads, 2);
+      pending.complete([]);
+      await tester.pumpAndSettle();
+      expect(find.text('No notifications'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'an old already-read row callback cannot navigate after same-user relogin',
+    (tester) async {
+      final authority = _Authority();
+      final service = _Service()
+        ..rows = const [
+          AppNotification(
+            id: 'read-row',
+            userId: 'synthetic-user',
+            type: 'chat_message',
+            title: 'Read session alert',
+            metadata: {'route': '/chat'},
+            isRead: true,
+            createdAt: '2026-09-15T00:00:00Z',
+          ),
+        ];
+      await _pump(tester, service, authority: authority);
+      final tile = tester.widget<InkWell>(
+        find
+            .ancestor(
+              of: find.text('Read session alert'),
+              matching: find.byType(InkWell),
+            )
+            .first,
+      );
+      final callback = tile.onTap!;
+      authority.change();
+      callback();
+      await tester.pumpAndSettle();
+      expect(find.text('Chat destination'), findsNothing);
+      expect(service.writes, 0);
+      expect(service.reads, 2);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'late row acknowledgement cannot navigate or refresh a new session',
+    (tester) async {
+      final authority = _Authority();
+      final acknowledgement = Completer<void>();
+      final service = _Service()..write = () => acknowledgement.future;
+      await _pump(tester, service, authority: authority);
+      await tester.tap(find.text(_row.title));
+      await tester.pump();
+      expect(service.writes, 1);
+      authority.change();
+      await tester.pumpAndSettle();
+      acknowledgement.complete();
+      await tester.pumpAndSettle();
+      expect(find.text('Chat destination'), findsNothing);
+      expect(service.reads, 2);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('late mark-all acknowledgement cannot reload the next session', (
+    tester,
+  ) async {
+    final authority = _Authority();
+    final acknowledgement = Completer<void>();
+    final service = _Service()..write = () => acknowledgement.future;
+    await _pump(tester, service, authority: authority);
+    await tester.tap(find.byTooltip('Mark all read'));
+    await tester.pump();
+    authority.change();
+    await tester.pumpAndSettle();
+    acknowledgement.complete();
+    await tester.pumpAndSettle();
+    expect(service.reads, 2);
+    expect(service.writes, 1);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'session invalidation clears private inbox without a new service call',
+    (tester) async {
+      final authority = _Authority();
+      final service = _Service();
+      await _pump(tester, service, authority: authority);
+      authority
+        ..available = false
+        ..change();
+      await tester.pumpAndSettle();
+      expect(find.text(_row.title), findsNothing);
+      expect(find.text('Sign in to view notifications.'), findsOneWidget);
+      expect(service.reads, 1);
+      expect(tester.takeException(), isNull);
+    },
+  );
   testWidgets('failed load shows an error and retry restores the inbox', (
     tester,
   ) async {

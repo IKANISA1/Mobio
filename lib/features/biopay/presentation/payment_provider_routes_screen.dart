@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/domain/payment_discovery.dart';
@@ -16,8 +18,12 @@ class PaymentProviderRoutesScreen extends ConsumerStatefulWidget {
 
 class _PaymentProviderRoutesScreenState
     extends ConsumerState<PaymentProviderRoutesScreen> {
+  final _actionToken = AccountActionToken.capture();
+  bool get _actionIsCurrent => mounted && _actionToken.isCurrent;
+
   Map<String, dynamic> _data = {};
   bool _busy = false, _error = false;
+  String? _errorMessage;
   @override
   void initState() {
     super.initState();
@@ -32,50 +38,81 @@ class _PaymentProviderRoutesScreenState
   }
 
   Future<void> _load() async {
+    if (!_actionIsCurrent) return;
     setState(() {
       _busy = true;
       _error = false;
+      _errorMessage = null;
     });
     try {
       final value = await _call('list', {});
-      if (mounted) setState(() => _data = value);
-    } on Object {
-      if (mounted) setState(() => _error = true);
+      if (_actionIsCurrent) setState(() => _data = value);
+    } on Object catch (error) {
+      if (_actionIsCurrent) {
+        setState(() {
+          _error = true;
+          _errorMessage = userMessageForError(
+            error,
+            fallback: paymentCopy(context).bpRefreshRequired,
+          );
+        });
+      }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (_actionIsCurrent) setState(() => _busy = false);
     }
   }
 
   Future<void> _transition(String action, Map<String, dynamic> route) async {
+    if (!_actionIsCurrent) return;
     if (_busy) return;
     setState(() {
       _busy = true;
       _error = false;
+      _errorMessage = null;
     });
     try {
       await _call(action, {
         'id': route['id'],
         'adapter_version': route['adapter_version'],
       });
-    } on Object {
-      if (mounted) setState(() => _error = true);
+    } on Object catch (error) {
+      if (_actionIsCurrent) {
+        setState(() {
+          _error = true;
+          _errorMessage = userMessageForError(
+            error,
+            fallback: paymentCopy(context).bpRefreshRequired,
+          );
+        });
+      }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (_actionIsCurrent) setState(() => _busy = false);
     }
-    if (mounted && !_error) await _load();
+    if (_actionIsCurrent && !_error) await _load();
   }
 
   Future<void> _edit([Map<String, dynamic>? route]) async {
+    if (!_actionIsCurrent) return;
     final result = await Navigator.push<Map<String, dynamic>>(
       context,
-      MaterialPageRoute(builder: (_) => _RouteEditor(route: route)),
+      MaterialPageRoute(
+        builder: (_) => _RouteEditor(route: route, actionToken: _actionToken),
+      ),
     );
-    if (result == null || !mounted) return;
+    if (result == null || !_actionIsCurrent) return;
     try {
       await _call('save', result);
-      if (mounted) await _load();
-    } on Object {
-      if (mounted) setState(() => _error = true);
+      if (_actionIsCurrent) await _load();
+    } on Object catch (error) {
+      if (_actionIsCurrent) {
+        setState(() {
+          _error = true;
+          _errorMessage = userMessageForError(
+            error,
+            fallback: paymentCopy(context).bpRefreshRequired,
+          );
+        });
+      }
     }
   }
 
@@ -111,7 +148,7 @@ class _PaymentProviderRoutesScreenState
           children: [
             Text(l.bpRouteNotice),
             const SizedBox(height: 24),
-            if (_error) PaymentError(l.bpRefreshRequired),
+            if (_error) PaymentError(_errorMessage ?? l.bpRefreshRequired),
             for (final raw in _data['routes'] as List? ?? const [])
               Builder(
                 builder: (context) {
@@ -215,7 +252,8 @@ class _PaymentProviderRoutesScreenState
 }
 
 class _RouteEditor extends StatefulWidget {
-  const _RouteEditor({this.route});
+  const _RouteEditor({this.route, required this.actionToken});
+  final AccountActionToken actionToken;
   final Map<String, dynamic>? route;
   @override
   State<_RouteEditor> createState() => _RouteEditorState();
@@ -317,6 +355,7 @@ class _RouteEditorState extends State<_RouteEditor> {
       action: PaymentAction(
         label: l.bpSave,
         onPressed: () {
+          if (!mounted || !widget.actionToken.isCurrent) return;
           final value = Map<String, dynamic>.from(_value);
           for (final e in _fields.entries) {
             value[e.key] =

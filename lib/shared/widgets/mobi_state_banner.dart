@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
@@ -69,7 +69,7 @@ class MobiStateBanner extends StatelessWidget {
         tone == MobiStateBannerTone.danger &&
         subtitle?.trim().isNotEmpty == true;
 
-    return ClayCard(
+    return MobiTonalCard(
       onTap: onTap,
       semanticLabel: subtitle?.trim().isNotEmpty == true
           ? '$title. $subtitle'

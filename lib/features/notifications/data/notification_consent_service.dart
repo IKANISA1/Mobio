@@ -1,19 +1,39 @@
+import 'package:mobi_app/core/async/account_epoch.dart';
 import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_shared_types/models/notification_consent_settings.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NotificationConsentService {
-  NotificationConsentService({SupabaseClient? supabase})
-    : _supabase = supabase ?? Supabase.instance.client;
+  NotificationConsentService({
+    SupabaseClient? supabase,
+    AccountSnapshot Function()? captureAccount,
+    void Function(AccountSnapshot)? requireCurrent,
+  }) : _supabase = supabase ?? Supabase.instance.client,
+       _captureOverride = captureAccount,
+       _requireOverride = requireCurrent;
 
   final SupabaseClient _supabase;
+  final AccountSnapshot Function()? _captureOverride;
+  final void Function(AccountSnapshot)? _requireOverride;
+
+  AccountSnapshot _captureAccount() {
+    final account = _captureOverride?.call() ?? AccountContext.capture();
+    _requireCurrent(account);
+    return account;
+  }
+
+  void _requireCurrent(AccountSnapshot account) {
+    if (_currentUserId != account.userId) throw const StaleAccountWork();
+    (_requireOverride ?? AccountContext.requireCurrent)(account);
+  }
 
   String? get _currentUserId => _supabase.auth.currentUser?.id;
 
   Future<NotificationConsentSettings> getSettings() async {
-    final userId = _currentUserId;
-    if (userId == null) return const NotificationConsentSettings();
+    final account = _captureAccount();
+    final userId = account.userId;
 
     try {
       final rows = await RequestDeadline.read(
@@ -25,6 +45,7 @@ class NotificationConsentService {
             .inFilter('channel', const ['in_app', 'push']),
       );
 
+      _requireCurrent(account);
       return NotificationConsentSettings.fromRows(rows);
     } on Object catch (e) {
       AppLogger.error('Error loading notification consent settings: $e');
@@ -35,12 +56,8 @@ class NotificationConsentService {
   Future<NotificationConsentSettings> saveSettings(
     NotificationConsentSettings settings,
   ) async {
-    final userId = _currentUserId;
-    if (userId == null) {
-      throw Exception(
-        'User must be authenticated to update notification consent.',
-      );
-    }
+    final account = _captureAccount();
+    final userId = account.userId;
 
     final now = DateTime.now().toUtc().toIso8601String();
     final rows = [
@@ -66,6 +83,7 @@ class NotificationConsentService {
         operation: 'save_notification_consent',
         operationId: userId,
       );
+      _requireCurrent(account);
       return settings;
     } on Object catch (e) {
       AppLogger.error('Error saving notification consent settings: $e');

@@ -4,10 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobi_app/core/async/external_action.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/application/payment_composer_controller.dart';
 import 'package:mobi_app/features/biopay/data/payment_discovery_service.dart';
 import 'package:mobi_app/features/biopay/domain/payment_discovery.dart';
+import 'package:mobi_app/features/biopay/domain/payment_discovery_response.dart';
 import 'package:mobi_app/features/biopay/domain/payment_entry.dart';
 import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
 
@@ -32,28 +36,82 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
   bool _more = false;
   bool _allowLeave = false;
   String? _error;
+  AccountSnapshot? _viewAccount;
+  int _loadRevision = 0;
+
+  bool _current(AccountSnapshot? account) =>
+      mounted &&
+      account != null &&
+      identical(account, _viewAccount) &&
+      ref.read(paymentDiscoveryServiceProvider).isCurrent(account);
+
+  AccountActionToken _origin() => AccountActionToken.capture(
+    captureAccount: () {
+      try {
+        return ref.read(paymentDiscoveryServiceProvider).captureAccount();
+      } on Object {
+        return null;
+      }
+    },
+  );
+
+  void _accountChanged() {
+    if (_viewAccount != null && _current(_viewAccount)) return;
+    _loadRevision++;
+    _controller?.removeListener(_changed);
+    _controller?.dispose();
+    _controller = null;
+    _viewAccount = null;
+    _phone.clear();
+    _amount.clear();
+    _reference.clear();
+    setState(() {
+      _methods = const [];
+      _recents = const [];
+      _loading = false;
+      _error = 'authRequired';
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    AccountContext.changes.addListener(_accountChanged);
     unawaited(_load());
   }
 
-  Future<void> _load() async {
+  Future<void> _load({
+    AccountSnapshot? originAccount,
+    AccountActionToken? origin,
+  }) async {
+    if (!mounted ||
+        (origin != null && !origin.isCurrent) ||
+        (originAccount != null && !_current(originAccount))) {
+      return;
+    }
+    final revision = ++_loadRevision;
+    AccountSnapshot? account;
+    bool current() =>
+        revision == _loadRevision &&
+        _current(account) &&
+        (origin?.isCurrent ?? true);
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
       final service = ref.read(paymentDiscoveryServiceProvider);
-      final owner = service.ownerId;
-      if (owner == null) throw StateError('Sign in required');
+      account = service.captureAccount();
+      _viewAccount = account;
+      final owner = account.userId;
       final workspace = await service.call('workspace', {});
-      if (!mounted || service.ownerId != owner) return;
+      if (!current()) return;
+      PaymentDiscoveryResponse.validate('workspace', workspace, {}, owner);
       var draft = PaymentDraft(id: newBioPayUuid(), ownerId: owner);
       if (widget.resume) {
         final id = await service.rememberedDraft(owner);
+        if (!current()) return;
         final rows = workspace['drafts'] as List? ?? const [];
         final saved = rows
             .whereType<Map<String, dynamic>>()
@@ -86,7 +144,9 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
           _error = 'invalidQr';
         }
       }
-      if (!mounted) return;
+      if (!current()) return;
+      _controller?.removeListener(_changed);
+      _controller?.dispose();
       _methods = workspaceMethods(workspace);
       if (!widget.resume) {
         final preferred = _methods
@@ -112,13 +172,13 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
           draft.linkToken != null ||
           draft.manualMethod != null) {
         await controller.resolve();
-        if (mounted) {
+        if (current() && identical(_controller, controller)) {
           _amount.text = controller.draft.amount;
           _reference.text = controller.draft.reference;
         }
       }
     } on Object {
-      if (mounted) {
+      if (mounted && revision == _loadRevision) {
         setState(() {
           _loading = false;
           _error = 'refreshRequired';
@@ -143,40 +203,70 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
             c.draft.amount.isNotEmpty);
   }
 
-  Future<void> _leave() async {
+  Future<void> _leave(
+    AccountSnapshot? account,
+    PaymentComposerController? controller,
+    AccountActionToken origin,
+  ) async {
+    if (!mounted ||
+        !origin.isCurrent ||
+        !identical(controller, _controller) ||
+        !identical(account, _viewAccount)) {
+      return;
+    }
     if (_controller?.busy == true) return;
     if (_needsSave) {
       final l = paymentCopy(context);
       final choice = await showDialog<String>(
         context: context,
-        builder: (context) => AlertDialog(
-          title: Text(l.bpSaveDraft),
-          content: Text(l.bpLeaveDraft),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l.bpCancel),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'discard'),
-              child: Text(l.bpDiscard),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'save'),
-              child: Text(l.bpSave),
-            ),
-          ],
+        builder: (context) => PaymentAccountView(
+          isCurrent: () => _current(account),
+          child: AlertDialog(
+            title: Text(l.bpSaveDraft),
+            content: Text(l.bpLeaveDraft),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  if (_current(account)) Navigator.pop(context);
+                },
+                child: Text(l.bpCancel),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (_current(account)) Navigator.pop(context, 'discard');
+                },
+                child: Text(l.bpDiscard),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (_current(account)) Navigator.pop(context, 'save');
+                },
+                child: Text(l.bpSave),
+              ),
+            ],
+          ),
         ),
       );
-      if (!mounted || choice == null) return;
+      if (!_current(account) ||
+          !identical(controller, _controller) ||
+          choice == null) {
+        return;
+      }
       if (choice == 'save') {
-        await _controller!.save();
-        if (!mounted || !_controller!.saved) return;
+        await controller!.save();
+        if (!_current(account) ||
+            !identical(controller, _controller) ||
+            !controller.saved) {
+          return;
+        }
       }
     }
     setState(() => _allowLeave = true);
     await WidgetsBinding.instance.endOfFrame;
-    if (mounted) {
+    if (mounted &&
+        origin.isCurrent &&
+        identical(controller, _controller) &&
+        identical(account, _viewAccount)) {
       context.canPop() ? context.pop() : context.go('/biopay');
     }
   }
@@ -189,6 +279,8 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    AccountContext.changes.removeListener(_accountChanged);
+    _loadRevision++;
     _controller?.removeListener(_changed);
     _controller?.dispose();
     _phone.dispose();
@@ -197,12 +289,24 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
     super.dispose();
   }
 
-  Future<void> _pickContact() async {
+  Future<void> _pickContact(
+    AccountSnapshot? account,
+    PaymentComposerController? controller,
+  ) async {
+    if (!_current(account) ||
+        controller == null ||
+        !identical(controller, _controller)) {
+      return;
+    }
     try {
       final selected = await ref
           .read(paymentDiscoveryServiceProvider)
           .pickPhone();
-      if (!mounted || selected == null) return;
+      if (!_current(account) ||
+          !identical(controller, _controller) ||
+          selected == null) {
+        return;
+      }
       final phone = normalizeRwandaPhone(selected['phone'] ?? '');
       if (phone == null) {
         setState(() => _error = 'checkFields');
@@ -215,11 +319,19 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
         _controller!.draft.copyWith(lookup: phone, clearRecipient: true),
       );
     } on Object {
-      if (mounted) setState(() => _error = 'checkFields');
+      if (_current(account)) setState(() => _error = 'checkFields');
     }
   }
 
-  Future<void> _manual() async {
+  Future<void> _manual(
+    AccountSnapshot? account,
+    PaymentComposerController? controller,
+  ) async {
+    if (!_current(account) ||
+        controller == null ||
+        !identical(controller, _controller)) {
+      return;
+    }
     final l = paymentCopy(context);
     var provider = 'mtn_rw';
     var kind = PaymentMethodKind.mobileWallet;
@@ -227,87 +339,102 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
     String? error;
     final method = await showDialog<PaymentMethod>(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, update) => AlertDialog(
-          title: Text(l.bpManual),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                DropdownButtonFormField<String>(
-                  isExpanded: true,
-                  initialValue: provider,
-                  decoration: InputDecoration(labelText: l.bpProvider),
-                  items: paymentProviders.entries
-                      .map(
-                        (e) => DropdownMenuItem(
-                          value: e.key,
-                          child: Text(e.value),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (v) => update(() => provider = v!),
-                ),
-                DropdownButtonFormField<PaymentMethodKind>(
-                  isExpanded: true,
-                  initialValue: kind,
-                  decoration: InputDecoration(labelText: l.bpMethodKind),
-                  items: PaymentMethodKind.values
-                      .map(
-                        (v) => DropdownMenuItem(
-                          value: v,
-                          child: Text(paymentKindLabel(l, v)),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (v) => update(() => kind = v!),
-                ),
-                TextField(
-                  controller: number,
-                  decoration: InputDecoration(
-                    labelText: l.bpIdentifier,
-                    errorText: error,
+      builder: (context) => PaymentAccountView(
+        isCurrent: () => _current(account),
+        child: StatefulBuilder(
+          builder: (context, update) => AlertDialog(
+            title: Text(l.bpManual),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    initialValue: provider,
+                    decoration: InputDecoration(labelText: l.bpProvider),
+                    items: paymentProviders.entries
+                        .map(
+                          (e) => DropdownMenuItem(
+                            value: e.key,
+                            child: Text(e.value),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (v) {
+                      if (_current(account)) update(() => provider = v!);
+                    },
                   ),
-                  autocorrect: false,
-                  enableSuggestions: false,
-                ),
-                const SizedBox(height: 16),
-                Text(l.bpUnverified),
-              ],
+                  DropdownButtonFormField<PaymentMethodKind>(
+                    isExpanded: true,
+                    initialValue: kind,
+                    decoration: InputDecoration(labelText: l.bpMethodKind),
+                    items: PaymentMethodKind.values
+                        .map(
+                          (v) => DropdownMenuItem(
+                            value: v,
+                            child: Text(paymentKindLabel(l, v)),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (v) {
+                      if (_current(account)) update(() => kind = v!);
+                    },
+                  ),
+                  TextField(
+                    controller: number,
+                    decoration: InputDecoration(
+                      labelText: l.bpIdentifier,
+                      errorText: error,
+                    ),
+                    autocorrect: false,
+                    enableSuggestions: false,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(l.bpUnverified),
+                ],
+              ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  if (_current(account)) Navigator.pop(context);
+                },
+                child: Text(l.bpCancel),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (!_current(account)) return;
+                  final identifier = kind == PaymentMethodKind.mobileWallet
+                      ? normalizeRwandaPhone(number.text)
+                      : number.text.trim();
+                  final value = PaymentMethod(
+                    id: 'manual',
+                    ownerId: '',
+                    version: 0,
+                    provider: provider,
+                    kind: kind,
+                    identifier: identifier ?? '',
+                    label: l.bpManual,
+                  );
+                  if (value.validationError != null) {
+                    update(() => error = l.bpCheckFields);
+                    return;
+                  }
+                  Navigator.pop(context, value);
+                },
+                child: Text(l.bpContinue),
+              ),
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(l.bpCancel),
-            ),
-            TextButton(
-              onPressed: () {
-                final identifier = kind == PaymentMethodKind.mobileWallet
-                    ? normalizeRwandaPhone(number.text)
-                    : number.text.trim();
-                final value = PaymentMethod(
-                  id: 'manual',
-                  ownerId: '',
-                  provider: provider,
-                  kind: kind,
-                  identifier: identifier ?? '',
-                  label: l.bpManual,
-                );
-                if (value.validationError != null) {
-                  update(() => error = l.bpCheckFields);
-                  return;
-                }
-                Navigator.pop(context, value);
-              },
-              child: Text(l.bpContinue),
-            ),
-          ],
         ),
       ),
     );
     number.dispose();
-    if (!mounted || method == null) return;
+    if (!_current(account) ||
+        !identical(controller, _controller) ||
+        method == null) {
+      return;
+    }
     final c = _controller!;
     c.edit(
       c.draft.copyWith(
@@ -322,74 +449,93 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
     await c.resolve();
   }
 
-  Future<void> _sources() async {
+  Future<void> _sources(
+    AccountSnapshot? account,
+    PaymentComposerController? c,
+  ) async {
+    if (!_current(account) || c == null || !identical(c, _controller)) return;
+    final screenContext = context;
     final l = paymentCopy(context);
-    final c = _controller!;
     final picked = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      builder: (context) => ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * .8,
-        ),
-        child: ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(
-              l.bpMyAccounts,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            ListTile(
-              title: Text(l.bpAllAccounts),
-              onTap: () => Navigator.pop(context, ''),
-            ),
-            for (final method in _methods)
-              ListTile(
-                title: Text(method.label),
-                subtitle: Text(
-                  '${paymentProviders[method.provider] ?? method.provider} · ${method.maskedIdentifier}'
-                  '${!method.canSend
-                      ? '\n${l.bpSourceUnavailable}'
-                      : c.sourceAvailability[method.id] == null
-                      ? ''
-                      : '\n${paymentSourceReason(l, c.sourceAvailability[method.id]!)}'}',
-                ),
-                trailing: method.preferred
-                    ? Icon(Icons.star, semanticLabel: l.bpPreferred)
-                    : null,
-                enabled:
-                    method.canSend && c.sourceAvailability[method.id] == null,
-                onTap: () => Navigator.pop(context, method.id),
+      builder: (context) => PaymentAccountView(
+        isCurrent: () => _current(account),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(context).height * .8,
+          ),
+          child: ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.all(16),
+            children: [
+              Text(
+                l.bpMyAccounts,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
-            PaymentAction(
-              label: l.bpMethods,
-              secondary: true,
-              onPressed: () {
-                Navigator.pop(context);
-                context.push('/profile/payment-methods');
-              },
-            ),
-          ],
+              ListTile(
+                title: Text(l.bpAllAccounts),
+                onTap: () {
+                  if (_current(account)) Navigator.pop(context, '');
+                },
+              ),
+              for (final method in _methods)
+                ListTile(
+                  title: Text(method.label),
+                  subtitle: Text(
+                    '${paymentProviders[method.provider] ?? method.provider} · ${method.maskedIdentifier}'
+                    '${!method.canSend
+                        ? '\n${l.bpSourceUnavailable}'
+                        : c.sourceAvailability[method.id] == null
+                        ? ''
+                        : '\n${paymentSourceReason(l, c.sourceAvailability[method.id]!)}'}',
+                  ),
+                  trailing: method.preferred
+                      ? Icon(Icons.star, semanticLabel: l.bpPreferred)
+                      : null,
+                  enabled:
+                      method.canSend && c.sourceAvailability[method.id] == null,
+                  onTap: () {
+                    if (_current(account)) Navigator.pop(context, method.id);
+                  },
+                ),
+              PaymentAction(
+                label: l.bpMethods,
+                secondary: true,
+                onPressed: () {
+                  if (!_current(account) || !identical(c, _controller)) return;
+                  Navigator.pop(context);
+                  screenContext.push('/profile/payment-methods');
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
-    if (picked != null && mounted) c.edit(c.draft.copyWith(sourceId: picked));
+    if (picked != null && _current(account) && identical(c, _controller)) {
+      c.edit(c.draft.copyWith(sourceId: picked));
+    }
   }
 
-  Future<void> _handoff() async {
-    final c = _controller!;
+  Future<void> _handoff(
+    AccountSnapshot? account,
+    PaymentComposerController? c,
+  ) async {
+    if (!_current(account) || c == null || !identical(c, _controller)) return;
     final prepared = await c.prepare();
-    if (!mounted || prepared == null) return;
+    if (!_current(account) || !identical(c, _controller) || prepared == null) {
+      return;
+    }
     try {
       final service = ref.read(paymentDiscoveryServiceProvider);
       final opened = await service.openReviewedInstruction(prepared);
-      if (!mounted) return;
+      if (!_current(account) || !identical(c, _controller)) return;
       if (opened) await c.record(PaymentEvidence.handoffOpened);
       // Failure leaves the reviewed, copyable instructions and unknown outcome.
     } on Object {
-      if (mounted) setState(() => _error = 'refreshRequired');
+      if (_current(account)) setState(() => _error = 'refreshRequired');
     }
   }
 
@@ -397,29 +543,38 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
   Widget build(BuildContext context) {
     final l = paymentCopy(context);
     final c = _controller;
+    final account = _viewAccount;
+    final origin = _origin();
+    bool current() =>
+        origin.isCurrent && _current(account) && identical(c, _controller);
+
     final error = _error ?? c?.error;
     final children = <Widget>[
       if (error != null)
         PaymentError(
-          error == 'wholeAmount'
-              ? l.bpWholeAmount
-              : error == 'invalidQr'
-              ? l.bpInvalidQr
-              : error == 'checkFields'
-              ? l.bpCheckFields
-              : error == 'recipientChanged'
-              ? l.bpRecipientChanged
-              : error == 'sourceChanged'
-              ? l.bpSourceChanged
-              : error == 'feeChanged'
-              ? l.bpFeeChanged
-              : error == 'routeChanged'
-              ? l.bpRouteChanged
-              : l.bpRefreshRequired,
+          c?.failureMessage ??
+              (error == 'wholeAmount'
+                  ? l.bpWholeAmount
+                  : error == 'invalidQr'
+                  ? l.bpInvalidQr
+                  : error == 'checkFields'
+                  ? l.bpCheckFields
+                  : error == 'recipientChanged'
+                  ? l.bpRecipientChanged
+                  : error == 'sourceChanged'
+                  ? l.bpSourceChanged
+                  : error == 'feeChanged'
+                  ? l.bpFeeChanged
+                  : error == 'routeChanged'
+                  ? l.bpRouteChanged
+                  : l.bpRefreshRequired),
         ),
       if (c != null && !c.accountCurrent) PaymentError(l.bpSignIn),
       if (!_loading && c == null)
-        PaymentAction(label: l.bpRefresh, onPressed: _load),
+        PaymentAction(
+          label: l.bpRefresh,
+          onPressed: () => _load(originAccount: account, origin: origin),
+        ),
     ];
     if (c != null && c.accountCurrent) {
       if (c.step == ComposerStep.recipient) {
@@ -432,6 +587,7 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
               hintText: '+250 7…',
             ),
             onChanged: (value) {
+              if (!current()) return;
               c
                 ..recipient = null
                 ..edit(
@@ -444,12 +600,20 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
           ),
           PaymentAction(
             label: l.bpContacts,
-            onPressed: c.busy ? null : _pickContact,
+            onPressed: c.busy
+                ? null
+                : () {
+                    if (current()) unawaited(_pickContact(account, c));
+                  },
             secondary: true,
           ),
           PaymentAction(
             label: l.bpManual,
-            onPressed: c.busy ? null : _manual,
+            onPressed: c.busy
+                ? null
+                : () {
+                    if (current()) unawaited(_manual(account, c));
+                  },
             secondary: true,
           ),
           if (_recents.isNotEmpty) ...[
@@ -459,6 +623,7 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
                 title: Text(recent['nickname'] as String),
                 subtitle: Text(recent['lookup'] as String),
                 onTap: () {
+                  if (!current()) return;
                   _phone.text = recent['lookup'] as String;
                   c.edit(
                     c.draft.copyWith(lookup: _phone.text, clearRecipient: true),
@@ -485,6 +650,7 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
                   ),
                 TextButton(
                   onPressed: () {
+                    if (!current()) return;
                     c
                       ..recipient = null
                       ..edit(c.draft.copyWith(clearRecipient: true));
@@ -496,7 +662,12 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
           ),
           if (c.recipient?.methods.isEmpty ?? true) ...[
             PaymentError(l.bpNoShared),
-            PaymentAction(label: l.bpManual, onPressed: _manual),
+            PaymentAction(
+              label: l.bpManual,
+              onPressed: () {
+                if (current()) unawaited(_manual(account, c));
+              },
+            ),
           ],
           TextField(
             controller: _amount,
@@ -511,7 +682,9 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
               suffixText: 'RWF',
             ),
             style: Theme.of(context).textTheme.headlineLarge,
-            onChanged: (value) => c.edit(c.draft.copyWith(amount: value)),
+            onChanged: (value) {
+              if (current()) c.edit(c.draft.copyWith(amount: value));
+            },
           ),
           DropdownButtonFormField<PaymentPurpose>(
             isExpanded: true,
@@ -530,14 +703,18 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
             ],
             onChanged: c.recipient?.purpose != null
                 ? null
-                : (value) => c.edit(c.draft.copyWith(purpose: value)),
+                : (value) {
+                    if (current()) c.edit(c.draft.copyWith(purpose: value));
+                  },
           ),
           TextField(
             controller: _reference,
             readOnly: c.recipient?.reference.isNotEmpty ?? false,
             maxLength: 80,
             decoration: InputDecoration(labelText: l.bpReference),
-            onChanged: (value) => c.edit(c.draft.copyWith(reference: value)),
+            onChanged: (value) {
+              if (current()) c.edit(c.draft.copyWith(reference: value));
+            },
           ),
           ListTile(
             shape: RoundedRectangleBorder(
@@ -553,7 +730,9 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
                   l.bpAllAccounts,
             ),
             trailing: const Icon(Icons.expand_more),
-            onTap: _sources,
+            onTap: () {
+              if (current()) unawaited(_sources(account, c));
+            },
           ),
           if (c.quoteId != null && c.options.isEmpty)
             PaymentError(
@@ -589,7 +768,11 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
                       '${option.fee.certainty == FeeCertainty.exact ? l.bpTotal : l.bpTotalCap}: $total RWF',
                     ),
                   TextButton(
-                    onPressed: c.busy ? null : () => c.review(option),
+                    onPressed: c.busy
+                        ? null
+                        : () {
+                            if (current()) c.review(option);
+                          },
                     child: Text(l.bpReview),
                   ),
                 ],
@@ -597,12 +780,18 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
             ),
           if (!_more && c.options.length > 3)
             TextButton(
-              onPressed: () => setState(() => _more = true),
+              onPressed: () {
+                if (current()) setState(() => _more = true);
+              },
               child: Text(l.bpMore),
             ),
           PaymentAction(
             label: l.bpSaveDraft,
-            onPressed: c.busy ? null : c.save,
+            onPressed: c.busy
+                ? null
+                : () {
+                    if (current()) unawaited(c.save());
+                  },
             secondary: true,
           ),
           Semantics(
@@ -666,6 +855,7 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
           Text(l.bpExternalOnly),
           TextButton(
             onPressed: () {
+              if (!current()) return;
               c.step = ComposerStep.options;
               _changed();
             },
@@ -688,8 +878,13 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
                   const SizedBox(height: 12),
                   Text(l.bpExternalOnly),
                   TextButton(
-                    onPressed: () =>
+                    onPressed: () {
+                      if (!current()) return;
+                      ExternalAction.start(
                         Clipboard.setData(ClipboardData(text: instruction)),
+                        operation: 'copy_to_clipboard',
+                      );
+                    },
                     child: Text(l.bpCopyInstructions),
                   ),
                 ],
@@ -700,7 +895,11 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
             onPressed:
                 c.busy || c.draft.evidence == PaymentEvidence.userReported
                 ? null
-                : () => c.record(PaymentEvidence.userReported),
+                : () {
+                    if (current()) {
+                      unawaited(c.record(PaymentEvidence.userReported));
+                    }
+                  },
             secondary: true,
           ),
           PaymentAction(
@@ -709,13 +908,16 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
             onPressed: () => showPaymentSupport(
               context,
               attemptId: c.draft.attemptId,
+              isCurrent: current,
               evidence: paymentEvidenceLabel(l, c.draft.evidence),
             ),
           ),
           PaymentAction(
             label: l.bpActivity,
             secondary: true,
-            onPressed: () => context.push('/biopay/activity'),
+            onPressed: () {
+              if (current()) context.push('/biopay/activity');
+            },
           ),
         ]);
       }
@@ -723,7 +925,7 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
     return PopScope<void>(
       canPop: _allowLeave || (!_needsSave && !(c?.busy ?? false)),
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) unawaited(_leave());
+        if (!didPop) unawaited(_leave(account, c, origin));
       },
       child: PaymentTaskScaffold(
         title: c?.step == ComposerStep.review
@@ -733,7 +935,7 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
             : c?.step == ComposerStep.options
             ? l.bpPay
             : l.bpRecipient,
-        onBack: _leave,
+        onBack: () => _leave(account, c, origin),
         busy: _loading || (c?.busy ?? false),
         action: c == null || !c.accountCurrent
             ? null
@@ -742,13 +944,17 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
                   label: l.bpContinue,
                   onPressed: c.busy || normalizeRwandaPhone(_phone.text) == null
                       ? null
-                      : c.resolve,
+                      : () {
+                          if (current()) unawaited(c.resolve());
+                        },
                 ),
                 ComposerStep.options => PaymentAction(
                   label: l.bpCompare,
                   onPressed: c.busy || (c.recipient?.methods.isEmpty ?? true)
                       ? null
-                      : c.quote,
+                      : () {
+                          if (current()) unawaited(c.quote());
+                        },
                 ),
                 ComposerStep.review => PaymentAction(
                   label:
@@ -758,7 +964,11 @@ class _PaymentComposerScreenState extends ConsumerState<PaymentComposerScreen>
                       : c.selected?.source.provider == 'mtn_rw'
                       ? l.bpOpenMomo
                       : l.bpOpenBank,
-                  onPressed: c.busy ? null : _handoff,
+                  onPressed: c.busy
+                      ? null
+                      : () {
+                          if (current()) unawaited(_handoff(account, c));
+                        },
                 ),
                 ComposerStep.outcome => null,
               },
@@ -772,33 +982,67 @@ Future<void> showPaymentSupport(
   BuildContext context, {
   String? attemptId,
   required String evidence,
+  bool Function()? isCurrent,
 }) async {
+  bool current() => context.mounted && (isCurrent?.call() ?? true);
+  if (!current()) return;
   final l = paymentCopy(context);
   final summary = 'Mobio BioPay\n${attemptId ?? ''}\n$evidence';
   await showDialog<void>(
     context: context,
-    builder: (context) => AlertDialog(
-      title: Text(l.bpSupportSummary),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(l.bpSupportNotice),
-            const SizedBox(height: 16),
-            SelectableText(summary),
-          ],
+    builder: (context) => PaymentAccountView(
+      isCurrent: current,
+      child: AlertDialog(
+        title: Text(l.bpSupportSummary),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(l.bpSupportNotice),
+              const SizedBox(height: 16),
+              SelectableText(summary),
+            ],
+          ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              if (current()) Navigator.pop(context);
+            },
+            child: Text(l.bpBack),
+          ),
+          TextButton(
+            onPressed: () {
+              if (!current()) return;
+              ExternalAction.start(
+                Clipboard.setData(ClipboardData(text: summary)),
+                operation: 'copy_to_clipboard',
+              );
+            },
+            child: Text(l.bpCopy),
+          ),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l.bpBack),
-        ),
-        TextButton(
-          onPressed: () => Clipboard.setData(ClipboardData(text: summary)),
-          child: Text(l.bpCopy),
-        ),
-      ],
     ),
+  );
+}
+
+/// Modal content remains tied to the account that opened it.
+class PaymentAccountView extends StatelessWidget {
+  const PaymentAccountView({
+    super.key,
+    required this.isCurrent,
+    required this.child,
+  });
+  final bool Function() isCurrent;
+  final Widget child;
+  @override
+  Widget build(BuildContext context) => ValueListenableBuilder<int>(
+    valueListenable: AccountContext.changes,
+    builder: (context, value, _) => isCurrent()
+        ? child
+        : const Material(
+            child: Center(child: Text('Account changed. Close this view.')),
+          ),
   );
 }

@@ -45,6 +45,7 @@ Map<String, Object?> _row() => {
   'user_id': _user,
   'type': 'general',
   'title': 'Synthetic account alert',
+  'metadata': <String, dynamic>{},
   'is_read': false,
   'visible_in_app': true,
   'created_at': '2026-09-15T00:00:00Z',
@@ -85,6 +86,83 @@ Future<({SupabaseClient client, NotificationService service})> _fixture(
 }
 
 void main() {
+  test(
+    'notification rows require explicit fields without defaulting delivery state',
+    () {
+      expect(AppNotification.fromJson({..._row(), 'body': null}).body, isNull);
+      expect(AppNotification.fromJson({..._row(), 'title': ''}).title, '');
+      for (final key in [
+        'id',
+        'user_id',
+        'type',
+        'title',
+        'metadata',
+        'is_read',
+        'visible_in_app',
+        'created_at',
+      ]) {
+        expect(
+          () => AppNotification.fromJson({..._row()}..remove(key)),
+          throwsFormatException,
+        );
+      }
+      for (final row in [
+        {..._row(), 'id': 'bad'},
+        {..._row(), 'metadata': <Object?>[]},
+        {..._row(), 'visible_in_app': 'true'},
+        {..._row(), 'created_at': ''},
+      ]) {
+        expect(() => AppNotification.fromJson(row), throwsFormatException);
+      }
+    },
+  );
+
+  test(
+    'inbox rejects wrong owner and mismatched visibility or unread state',
+    () async {
+      for (final row in [
+        {..._row(), 'user_id': _peer},
+        {..._row(), 'visible_in_app': false},
+      ]) {
+        final fixture = await _fixture(
+          (request) async => _response(request, [row]),
+        );
+        await expectLater(
+          fixture.service.getNotifications(),
+          throwsA(isA<app.AppException>()),
+        );
+      }
+      final fixture = await _fixture(
+        (request) async => _response(request, [
+          {..._row(), 'is_read': true},
+        ]),
+      );
+      await expectLater(
+        fixture.service.getUnreadNotifications(),
+        throwsA(isA<app.AppException>()),
+      );
+    },
+  );
+
+  test('ambiguous or wrong mark-read acknowledgement stays unknown', () async {
+    for (final rows in [
+      [
+        {'id': _peer},
+      ],
+      [
+        {'id': _notification},
+        {'id': _notification},
+      ],
+    ]) {
+      final fixture = await _fixture(
+        (request) async => _response(request, rows),
+      );
+      await expectLater(
+        fixture.service.markAsRead(_notification),
+        throwsA(isA<app.MutationOutcomeUnknownException>()),
+      );
+    }
+  });
   final operations = <String, Future<Object?> Function(NotificationService)>{
     'inbox': (service) => service.getNotifications(),
     'unread inbox': (service) => service.getUnreadNotifications(),

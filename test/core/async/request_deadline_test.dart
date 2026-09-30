@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -99,4 +101,68 @@ void main() {
       throwsA(same(rejection)),
     );
   });
+  test(
+    'real PostgREST adapter exposes a proxy 502 as an unknown write',
+    () async {
+      final client = SupabaseClient(
+        'https://deadline-fixture.invalid',
+        'synthetic-key',
+        httpClient: MockClient(
+          (request) async => http.Response(
+            '<html>proxy failure</html>',
+            502,
+            request: request,
+          ),
+        ),
+      );
+      addTearDown(client.dispose);
+      await expectLater(
+        RequestDeadline.mutation(
+          client.rpc('fixture_write'),
+          operation: 'fixture_write',
+        ),
+        throwsA(
+          isA<MutationOutcomeUnknownException>().having(
+            (error) => error.originalError,
+            'SDK error',
+            isA<PostgrestException>().having(
+              (error) => error.code,
+              'proxy code',
+              '502',
+            ),
+          ),
+        ),
+      );
+    },
+  );
+  for (final code in ['23505', '42501', 'PT503', 'XX000']) {
+    test('structured database error $code remains a known rejection', () async {
+      final client = SupabaseClient(
+        'https://deadline-fixture.invalid',
+        'synthetic-key',
+        httpClient: MockClient(
+          (request) async => http.Response(
+            '{"code":"$code","message":"rejected"}',
+            503,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          ),
+        ),
+      );
+      addTearDown(client.dispose);
+      await expectLater(
+        RequestDeadline.mutation(
+          client.rpc('fixture_write'),
+          operation: 'fixture_write',
+        ),
+        throwsA(
+          isA<PostgrestException>().having(
+            (error) => error.code,
+            'database code',
+            code,
+          ),
+        ),
+      );
+    });
+  }
 }

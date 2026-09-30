@@ -15,7 +15,7 @@ void main() {
     final epoch=AccountEpoch();
     final first=epoch.update('A:one');
     expect(epoch.update('A:one'),first);
-    epoch.update('B:two'); epoch.update('A:one');
+    epoch..update('B:two')..update('A:one');
     expect(epoch.matches('A:one',first),isFalse);
   });
   test('explicit exit invalidates work without replacing identity', () {

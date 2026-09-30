@@ -1,10 +1,10 @@
-name: Cloudflare Pages
+name: Cloudflare Pages Candidate
 
 on:
   workflow_dispatch:
     inputs:
       branch:
-        description: Cloudflare Pages branch/environment to deploy to
+        description: Intended Pages branch for the candidate
         required: true
         default: main
 
@@ -12,9 +12,9 @@ permissions:
   contents: read
 
 jobs:
-  deploy-pages:
-    # Both manual entrypoints must deploy the verified combined site. Deploying
-    # landing/ alone to this Pages project removes consumer and Admin runtimes.
+  build-pages-candidate:
+    # Both manual entrypoints produce the combined candidate for review.
+    # Publishing requires the separate approval-gated deployment script.
     uses: ./.github/workflows/cloudflare-pwa.yml
     with:
       branch: ${{ inputs.branch }}

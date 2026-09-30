@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/permissions/permission_providers.dart';
@@ -48,6 +49,8 @@ class ScheduleTripScreen extends ConsumerStatefulWidget {
 }
 
 class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
+  final _formToken = AccountActionToken.capture();
+  bool get _isCurrent => mounted && _formToken.isCurrent;
   late final TextEditingController _noteController;
   String? _noteSyncedTripId;
   bool _isNoteExpanded = false;
@@ -59,9 +62,10 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   void initState() {
     super.initState();
     _noteController = TextEditingController();
+    AccountContext.changes.addListener(_onAccountChanged);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
+      if (!_isCurrent) return;
       final args = ref.read(scheduleTripArgsProvider.notifier);
       final editingTripId = widget.editingTripId;
       if (editingTripId != null && editingTripId.isNotEmpty) {
@@ -74,12 +78,13 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
 
   @override
   void dispose() {
+    AccountContext.changes.removeListener(_onAccountChanged);
     _noteController.dispose();
     super.dispose();
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
-    if (!mounted) return;
+    if (!_isCurrent) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -89,6 +94,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   }
 
   Future<void> _handleSubmit(WidgetRef ref) async {
+    if (!_isCurrent) return;
     AccountSnapshot? account;
     try {
       account = SupabaseConfig.isLocalUiPreview
@@ -99,7 +105,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
       return;
     }
     bool current() =>
-        mounted && (account == null || AccountContext.isCurrent(account));
+        _isCurrent && (account == null || AccountContext.isCurrent(account));
     final controller = ref.read(scheduleTripProvider.notifier);
     try {
       final state = ref.read(scheduleTripProvider).value;
@@ -143,7 +149,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   Future<void> _showScheduledPostSuggestionsSheet(
     List<Trip> suggestions,
   ) async {
-    if (!mounted) return;
+    if (!_isCurrent) return;
 
     await MobiBottomSheet.show<void>(
       context: context,
@@ -197,30 +203,56 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   }
 
   Future<void> _handleCurrentLocation(ScheduleTripController controller) async {
+    if (!_isCurrent) return;
     final permissionService = ref.read(appPermissionServiceProvider);
     final hasAccess = await permissionService.hasLocationAccess();
+    if (!_isCurrent) return;
 
     if (!hasAccess && mounted) {
       final action = await PermissionAccessDialog.show(
         context,
         config: PermissionAccessDialogConfig.location(),
       );
-      if (action != PermissionAccessDialogAction.grantAccess) {
+      if (!_isCurrent || action != PermissionAccessDialogAction.grantAccess) {
         return;
       }
 
       final granted = await permissionService.ensureLocationAccess();
+      if (!_isCurrent) return;
       if (!granted) {
         _showSnackBar('Location access was not enabled.', isError: true);
         return;
       }
     }
 
-    await controller.handleCurrentLocation();
+    if (_isCurrent) await controller.handleCurrentLocation();
+  }
+
+  void _onAccountChanged() {
+    if (!mounted || _formToken.isCurrent) return;
+    _noteController.clear();
+    setState(() {
+      _noteSyncedTripId = null;
+      _isNoteExpanded = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_formToken.isCurrent) {
+      return Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              MobiPageHeader(title: 'Schedule', onBack: widget.onBack),
+              const Expanded(
+                child: Center(child: Text('Account changed. Close this view.')),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     final asyncState = ref.watch(scheduleTripProvider);
     final controller = ref.read(scheduleTripProvider.notifier);
     final mediaPadding = MediaQuery.paddingOf(context);
@@ -236,7 +268,9 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
           error,
           fallback: 'Trip scheduling is unavailable. Please try again.',
         ),
-        onRetry: () => ref.invalidate(scheduleTripProvider),
+        onRetry: () {
+          if (_isCurrent) ref.invalidate(scheduleTripProvider);
+        },
       ),
     );
   }
@@ -302,6 +336,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                         selectedRole: state.selectedRole,
                         showErrors: state.showErrors,
                         onChanged: (role) {
+                          if (!_isCurrent) return;
                           controller.setRole(role);
                           widget.onModeChanged(role);
                         },
@@ -316,51 +351,87 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                         userLng: state.userLng,
                         favoriteAddresses: state.favoriteAddresses,
                         isSavingFavoriteAddress: state.isSavingFavoriteAddress,
-                        onOriginSelected: controller.setOrigin,
-                        onDestSelected: controller.setDestination,
+                        onOriginSelected: (value) {
+                          if (_isCurrent) controller.setOrigin(value);
+                        },
+                        onDestSelected: (value) {
+                          if (_isCurrent) controller.setDestination(value);
+                        },
                         onHandleCurrentLocation: () =>
                             unawaited(_handleCurrentLocation(controller)),
-                        onFavoriteOriginSelected:
-                            controller.useFavoriteAsOrigin,
-                        onFavoriteDestSelected:
-                            controller.useFavoriteAsDestination,
-                        onSaveFavoriteAddress: controller.saveFavoriteAddress,
-                        onDeleteFavoriteAddress:
-                            controller.deleteFavoriteAddress,
+                        onFavoriteOriginSelected: (value) {
+                          if (_isCurrent) controller.useFavoriteAsOrigin(value);
+                        },
+                        onFavoriteDestSelected: (value) {
+                          if (_isCurrent)
+                            controller.useFavoriteAsDestination(value);
+                        },
+                        onSaveFavoriteAddress:
+                            ({
+                              required fromOrigin,
+                              required label,
+                              required addressType,
+                            }) async {
+                              if (!_isCurrent) return false;
+                              return controller.saveFavoriteAddress(
+                                fromOrigin: fromOrigin,
+                                label: label,
+                                addressType: addressType,
+                              );
+                            },
+                        onDeleteFavoriteAddress: (value) async {
+                          if (_isCurrent)
+                            await controller.deleteFavoriteAddress(value);
+                        },
                       ),
                       const SizedBox(height: AppSpacing.xl),
                       TripTimingPicker(
                         date: state.date,
                         time: state.time,
-                        onDateChanged: controller.setDate,
-                        onTimeChanged: controller.setTime,
+                        onDateChanged: (value) {
+                          if (_isCurrent) controller.setDate(value);
+                        },
+                        onTimeChanged: (value) {
+                          if (_isCurrent) controller.setTime(value);
+                        },
                       ),
                       const SizedBox(height: AppSpacing.xl),
                       TripRepeatPicker(
                         isRecurring: state.isRecurring,
                         recurringDays: state.recurringDays,
-                        onToggleRecurring: controller.toggleRecurring,
-                        onToggleDay: controller.toggleRecurringDay,
+                        onToggleRecurring: () {
+                          if (_isCurrent) controller.toggleRecurring();
+                        },
+                        onToggleDay: (value) {
+                          if (_isCurrent) controller.toggleRecurringDay(value);
+                        },
                       ),
                       const SizedBox(height: AppSpacing.xl),
                       TripVehicleGrid(
                         vehicleTypes: state.vehicleTypes,
                         selectedVehicleId: state.vehicleId,
-                        onSelected: controller.setVehicleId,
+                        onSelected: (value) {
+                          if (_isCurrent) controller.setVehicleId(value);
+                        },
                       ),
                       if (state.requiresBusAgency) ...[
                         const SizedBox(height: AppSpacing.md),
                         _BusAgencySelector(
                           agencies: state.transportAgencyNames,
                           selectedAgency: state.normalizedBusAgencyName,
-                          onSelected: controller.setBusAgencyName,
+                          onSelected: (value) {
+                            if (_isCurrent) controller.setBusAgencyName(value);
+                          },
                         ),
                       ],
                       if (state.requiresVehicleModel) ...[
                         const SizedBox(height: AppSpacing.md),
                         _RentalVehicleModelPicker(
                           selectedModel: state.normalizedRentalVehicleModel,
-                          onSelected: controller.setRentalVehicleModel,
+                          onSelected: (value) {
+                            if (_isCurrent)
+                              controller.setRentalVehicleModel(value);
+                          },
                         ),
                       ],
                       const SizedBox(height: AppSpacing.xl),
@@ -368,6 +439,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                         isExpanded: _isNoteExpanded,
                         controller: _noteController,
                         onToggle: () {
+                          if (!_isCurrent) return;
                           setState(() {
                             _isNoteExpanded = !_isNoteExpanded;
                           });
@@ -428,9 +500,10 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
 
     _didRequestInitialPickupLocation = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
+      if (!_isCurrent) return;
       final permissionService = ref.read(appPermissionServiceProvider);
       final hasAccess = await permissionService.hasLocationAccess();
+      if (!_isCurrent) return;
       if (hasAccess) {
         return;
       }

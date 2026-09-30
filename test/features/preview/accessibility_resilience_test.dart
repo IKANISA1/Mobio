@@ -13,11 +13,14 @@ import 'package:mobi_app/features/profile/presentation/edit_profile_screen.dart'
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
 import 'package:mobi_design_system/theme/app_theme.dart';
 
+import '../../helpers/biopay_nfc_test_channels.dart';
 import '../../helpers/mobile_scanner_test_channel.dart';
 
 void main() {
   setUpAll(installMobileScannerTestChannel);
   tearDownAll(uninstallMobileScannerTestChannel);
+  setUp(installBioPayNfcTestChannels);
+  tearDown(uninstallBioPayNfcTestChannels);
 
   Future<void> pumpAccessibilitySubject(
     WidgetTester tester,
@@ -100,6 +103,7 @@ void main() {
           mode: 'passenger',
           onModeChanged: (_) {},
           onChat: (_) {},
+          onChatPerson: (_) {},
           onTripDetails: (_) {},
           onViewNearby: () {},
           onViewBookings: () {},
@@ -138,6 +142,8 @@ void main() {
       await pumpAccessibilitySubject(tester, surface.child);
       expect(tester.takeException(), isNull, reason: surface.name);
     }
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpAndSettle();
   });
 
   testWidgets('chat composer supports focus and icon send at large text', (

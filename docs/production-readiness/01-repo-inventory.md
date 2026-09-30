@@ -80,7 +80,7 @@ Date: 2026-05-06
 - Root Flutter project layout and package boundaries; docs say runtime code must not move into `apps/` yet.
 - Supabase destructive commands (`db reset`, production `db push`, destructive migrations).
 - Product auth direction: passenger/driver WhatsApp OTP, admin WhatsApp OTP allowlist, Supabase/RLS as authority.
-- Design tokens/style system in `design.md` and `packages/design-system`.
+- Visual authority: the external `revolut-design` skill; implementation adapters in `packages/design-system` and product evidence in `docs/design/README.md`.
 - User-owned uncommitted admin/campaign changes present before this pass.
 
 ## Duplicated, Deprecated, Or Unclear Areas

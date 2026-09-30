@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/features/biopay/application/payment_composer_controller.dart';
 import 'package:mobi_app/features/biopay/data/payment_discovery_service.dart';
 import 'package:mobi_app/features/biopay/domain/payment_discovery.dart';
@@ -138,11 +140,7 @@ void main() {
         source: source,
         destination: destination,
         rail: 'rail',
-        fee: PaymentFee(
-          certainty: FeeCertainty.exact,
-          francs: 0,
-          allIn: true,
-        ),
+        fee: PaymentFee(certainty: FeeCertainty.exact, francs: 0, allIn: true),
         adapterVersion: 2,
         tariffVersion: 2,
       );
@@ -226,6 +224,69 @@ void main() {
       expect(controller.quoteId, isNull);
       expect(controller.options, isEmpty);
     });
+    test(
+      'same owner with a new session clears late quotes and draft input',
+      () async {
+        gateway.pendingQuote = Completer();
+        final pending = controller.quote();
+        await Future<void>.delayed(Duration.zero);
+        gateway.generation++;
+        AccountContext.changes.value++;
+        expect(controller.draft.lookup, isEmpty);
+        expect(controller.draft.amount, isEmpty);
+        expect(controller.busy, isFalse);
+        gateway.pendingQuote!.complete(gateway.quote);
+        await pending;
+        expect(controller.options, isEmpty);
+        expect(controller.quoteId, isNull);
+        expect(controller.recipient, isNull);
+        expect(controller.error, 'authRequired');
+        expect(await controller.prepare(), isNull);
+        expect(gateway.calls, isNot(contains('prepare')));
+      },
+    );
+    for (final malformed in ['revision', 'source_availability']) {
+      test('malformed quote $malformed cannot expose ranked options', () async {
+        gateway.badQuote = Map.of(gateway.quote)..remove(malformed);
+        await controller.quote();
+        expect(controller.options, isEmpty);
+        expect(controller.quoteId, isNull);
+        expect(controller.failureMessage, contains('could not be confirmed'));
+        expect(await controller.prepare(), isNull);
+      });
+    }
+    test(
+      'missing prepare evidence cannot promote a draft or expose instructions',
+      () async {
+        await controller.quote();
+        controller.review(controller.options.single);
+        gateway.badPrepared = {
+          'attempt_id': 'attempt',
+          'mode': 'instructions',
+          'instruction': 'Fixture instructions',
+          'source_label': source.label,
+          'sim_label': null,
+        };
+        expect(await controller.prepare(), isNull);
+        expect(controller.prepared, isNull);
+        expect(controller.draft.evidence, PaymentEvidence.draft);
+        expect(controller.draft.attemptId, isNull);
+        expect(controller.failureMessage, contains('could not be confirmed'));
+        expect(await controller.prepare(), isNull);
+      },
+    );
+    test(
+      'malformed record evidence cannot claim a confirmed outcome',
+      () async {
+        await controller.quote();
+        controller.review(controller.options.single);
+        await controller.prepare();
+        gateway.badEvidence = {'evidence': 'confirmed'};
+        await controller.record(PaymentEvidence.userReported);
+        expect(controller.draft.evidence, PaymentEvidence.prepared);
+        expect(controller.failureMessage, contains('could not be confirmed'));
+      },
+    );
     test('source change invalidates review', () async {
       await controller.quote();
       controller
@@ -331,16 +392,30 @@ void main() {
 }
 
 class FakeGateway implements PaymentDiscoveryGateway {
+  int generation = 0;
+  @override
+  AccountSnapshot captureAccount() =>
+      AccountSnapshot(ownerId!, 'fixture', generation);
+  @override
+  bool isCurrent(AccountSnapshot account) =>
+      account.userId == ownerId && account.generation == generation;
+
   @override
   String? ownerId = 'payer';
   @override
   String get deviceFamily => 'android';
   String? fail;
+  int savedRevision = 0;
+  Map<String, dynamic>? badQuote, badPrepared, badEvidence;
   Map<String, dynamic>? resolved;
   Completer<Map<String, dynamic>>? pendingQuote;
   final calls = <String>[];
   Map<String, dynamic> get quote => {
     'quote_id': 'quote',
+    'revision': savedRevision,
+    'source_availability': [
+      {'id': source.id, 'reason': null},
+    ],
     'expires_at': DateTime.now()
         .add(const Duration(minutes: 2))
         .toIso8601String(),
@@ -358,6 +433,8 @@ class FakeGateway implements PaymentDiscoveryGateway {
         'fee': {'certainty': 'capped', 'francs': 20, 'all_in': true},
         'adapter_version': 1,
         'tariff_version': 1,
+        'handoff_mode': 'instructions',
+        'supports_reference': false,
       },
     ],
   };
@@ -368,15 +445,22 @@ class FakeGateway implements PaymentDiscoveryGateway {
   ) async {
     calls.add(action);
     if (fail == action) throw StateError('fixture failure');
+    if (action == 'save_draft') savedRevision = data['revision'] as int;
     return switch (action) {
-      'quote' => pendingQuote == null ? quote : await pendingQuote!.future,
+      'quote' =>
+        pendingQuote == null ? badQuote ?? quote : await pendingQuote!.future,
       'resolve' => resolved ?? quote['recipient'] as Map<String, dynamic>,
-      'prepare' => {
-        'attempt_id': 'attempt',
-        'mode': 'instructions',
-        'instruction': 'Fixture instructions',
-      },
-      'record_attempt' => {'evidence': data['evidence']},
+      'prepare' =>
+        badPrepared ??
+            {
+              'attempt_id': 'attempt',
+              'evidence': 'prepared',
+              'source_label': source.label,
+              'sim_label': source.simLabel,
+              'mode': 'instructions',
+              'instruction': 'Fixture instructions',
+            },
+      'record_attempt' => badEvidence ?? {'evidence': data['evidence']},
       _ => data,
     };
   }

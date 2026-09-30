@@ -5,12 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/features/bookings/application/booking_services.dart';
 import 'package:mobi_app/features/bookings/data/trip_service.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_confirm_dialog.dart';
@@ -133,7 +134,8 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
     return null;
   }
 
-  Future<void> _handleCancel() async {
+  Future<void> _handleCancel(AccountActionToken actionToken, Trip trip) async {
+    if (!mounted || !actionToken.isCurrent) return;
     final account = _currentAccount();
     if (!SupabaseConfig.isLocalUiPreview && account == null) return;
     final confirmed = await MobiConfirmDialog.show(
@@ -144,8 +146,10 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
       isDestructive: true,
     );
 
-    if (!confirmed ||
-        _trip?.id == null ||
+    if (!mounted ||
+        !actionToken.isCurrent ||
+        !confirmed ||
+        trip.id == null ||
         (account != null && !AccountContext.isCurrent(account))) {
       return;
     }
@@ -153,8 +157,10 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
     setState(() => _isCancelling = true);
 
     try {
-      await _tripService.cancelTrip(_trip!.id!);
-      if (mounted && (account == null || AccountContext.isCurrent(account))) {
+      await _tripService.cancelTrip(trip.id!);
+      if (mounted &&
+          actionToken.isCurrent &&
+          (account == null || AccountContext.isCurrent(account))) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Trip cancelled.'),
@@ -164,8 +170,9 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
         widget.onBack();
       }
     } on Object catch (e) {
-      if (mounted && (account == null || AccountContext.isCurrent(account))) {
-        setState(() => _isCancelling = false);
+      if (mounted &&
+          actionToken.isCurrent &&
+          (account == null || AccountContext.isCurrent(account))) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -174,13 +181,19 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
           ),
         );
       }
+    } finally {
+      if (mounted &&
+          actionToken.isCurrent &&
+          (account == null || AccountContext.isCurrent(account))) {
+        setState(() => _isCancelling = false);
+      }
     }
   }
 
-  void _openChat() {
-    final trip = _trip;
+  void _openChat(AccountActionToken actionToken, Trip trip) {
+    if (!mounted || !actionToken.isCurrent) return;
     final currentUserId = _currentUserIdForChat();
-    if (trip == null || trip.id == null || currentUserId == null) {
+    if (trip.id == null || currentUserId == null) {
       return;
     }
 
@@ -284,12 +297,15 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
   }
 
   Widget _buildError() {
+    final actionToken = AccountActionToken.capture();
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.screenPadding),
         child: MobiErrorState(
           title: _error ?? 'Something went wrong',
-          onRetry: _loadTrip,
+          onRetry: () {
+            if (mounted && actionToken.isCurrent) unawaited(_loadTrip());
+          },
           height: 280,
         ),
       ),
@@ -297,6 +313,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
   }
 
   Widget _buildContent() {
+    final actionToken = AccountActionToken.capture();
     final trip = _trip!;
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
@@ -360,7 +377,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
             ),
             const SizedBox(height: AppSpacing.xl),
 
-            ClayCard(
+            MobiTonalCard(
               padding: const EdgeInsets.all(AppSpacing.lg),
               borderRadius: AppRadii.xxl,
               child: Column(
@@ -431,7 +448,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
             if (trip.note != null && trip.note!.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                child: ClayCard(
+                child: MobiTonalCard(
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   borderRadius: AppRadii.xxl,
                   child: Row(
@@ -457,7 +474,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
               ),
 
             // Marketplace notice — compact
-            ClayCard(
+            MobiTonalCard(
               padding: const EdgeInsets.all(AppSpacing.lg),
               borderRadius: AppRadii.xxl,
               color: ext.surfaceContainerLow,
@@ -487,7 +504,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
             // Chat button
             MobiButton(
               width: double.infinity,
-              onPressed: canChat ? _openChat : null,
+              onPressed: canChat ? () => _openChat(actionToken, trip) : null,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -514,6 +531,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
                 width: double.infinity,
                 variant: MobiButtonVariant.ghost,
                 onPressed: () {
+                  if (!mounted || !actionToken.isCurrent) return;
                   final tripId = trip.id;
                   if (tripId == null || tripId.isEmpty) {
                     return;
@@ -542,7 +560,9 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
             if (isTripOwner && !isCancelled)
               Center(
                 child: TextButton(
-                  onPressed: _isCancelling ? null : _handleCancel,
+                  onPressed: _isCancelling
+                      ? null
+                      : () => _handleCancel(actionToken, trip),
                   child: _isCancelling
                       ? SizedBox(
                           width: 20,

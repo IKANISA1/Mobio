@@ -43,10 +43,11 @@ class PlayIntegrityService {
     }
 
     try {
-      final response = await _channel.invokeMapMethod<Object?, Object?>(
-        'requestIntegrityToken',
-        {'nonce': nonce},
-      );
+      final response = await _channel
+          .invokeMapMethod<Object?, Object?>('requestIntegrityToken', {
+            'nonce': nonce,
+          })
+          .timeout(const Duration(seconds: 15));
       final token = response?['token'] as String?;
       if (token == null || token.isEmpty) {
         return {
@@ -95,10 +96,12 @@ class PlayIntegrityService {
 
   Future<Map<String, dynamic>?> _requestChallenge(String action) async {
     try {
-      final response = await _dio.post(
-        '/play-integrity',
-        data: {'operation': 'challenge', 'action': action},
-      );
+      final response = await _dio
+          .post(
+            '/play-integrity',
+            data: {'operation': 'challenge', 'action': action},
+          )
+          .timeout(const Duration(seconds: 15));
       final data = response.data;
       if (data is Map<String, dynamic>) return data;
       if (data is Map) return Map<String, dynamic>.from(data);

@@ -1,5 +1,3 @@
-import 'package:mobi_app/features/privacy/presentation/privacy_request_screen.dart';
-import 'package:mobi_app/core/auth/account_context.dart';
 import 'dart:async';
 import 'dart:developer';
 
@@ -9,14 +7,20 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/utils/mobio_member_id.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
 import 'package:mobi_app/features/biopay/presentation/face_copy.dart';
 import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
+import 'package:mobi_app/features/privacy/presentation/privacy_request_screen.dart';
 import 'package:mobi_app/features/profile/application/profile_services.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_feature_tile.dart';
 import 'package:mobi_app/shared/widgets/mobi_motion.dart';
@@ -44,6 +48,8 @@ class ProfileScreen extends ConsumerStatefulWidget {
   final VoidCallback onAdminGateway;
   final VoidCallback? onExitAdmin;
   final FutureOr<void> Function()? onSignOut;
+  final AccountSnapshot Function()? _captureAccount;
+  final bool Function(AccountSnapshot)? _isCurrent;
 
   const ProfileScreen({
     super.key,
@@ -59,7 +65,27 @@ class ProfileScreen extends ConsumerStatefulWidget {
     required this.onAdminGateway,
     this.onExitAdmin,
     this.onSignOut,
-  });
+  }) : _captureAccount = null,
+       _isCurrent = null;
+
+  @visibleForTesting
+  const ProfileScreen.test({
+    super.key,
+    required this.isDarkMode,
+    required this.onDarkModeChanged,
+    required this.onEditProfile,
+    this.onWallet,
+    this.onInviteAndEarn,
+    this.onMobioPlus,
+    this.onBioPayEnroll,
+    this.onNfcWriteCard,
+    required this.onAdminGateway,
+    this.onExitAdmin,
+    this.onSignOut,
+    required AccountSnapshot Function() captureAccount,
+    required bool Function(AccountSnapshot) isCurrent,
+  }) : _captureAccount = captureAccount,
+       _isCurrent = isCurrent;
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -71,13 +97,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   BioPayEnrollmentStatus _bioPayEnrollment = const BioPayEnrollmentStatus();
 
   String? _userCode;
-  int _profileRevision=0;
+  int _profileRevision = 0;
+  bool _current(AccountSnapshot account) =>
+      (widget._isCurrent ?? AccountContext.isCurrent)(account);
+
+  void _requireCurrent(AccountSnapshot account) {
+    if (!_current(account)) throw const StaleAccountWork();
+  }
+
   void _onAccountChanged() {
-    if(!mounted)return;
-    setState(() { _userCode=null; _bioPayEnrollment=const BioPayEnrollmentStatus(status:'unavailable'); });
+    if (!mounted) return;
+    setState(() {
+      _userCode = null;
+      _bioPayEnrollment = const BioPayEnrollmentStatus(status: 'unavailable');
+      _error = null;
+      _isLoading = true;
+    });
     unawaited(_loadProfile());
   }
-  @override void dispose() { _profileRevision++; AccountContext.changes.removeListener(_onAccountChanged); super.dispose(); }
+
+  @override
+  void dispose() {
+    _profileRevision++;
+    AccountContext.changes.removeListener(_onAccountChanged);
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -87,31 +131,41 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Future<void> _loadProfile() async {
-    final revision=++_profileRevision;
+    final revision = ++_profileRevision;
     AccountSnapshot? account;
-    if (!SupabaseConfig.isConfigured) {
-      if (mounted && revision==_profileRevision) setState(() => _isLoading = false);
+    if (widget._captureAccount == null && !SupabaseConfig.isConfigured) {
+      if (mounted && revision == _profileRevision) {
+        setState(() => _isLoading = false);
+      }
       return;
     }
     try {
-      if (Supabase.instance.client.auth.currentSession == null) {
-        if (mounted && revision==_profileRevision) setState(() => _isLoading = false);
+      if (widget._captureAccount == null &&
+          Supabase.instance.client.auth.currentSession == null) {
+        if (mounted && revision == _profileRevision) {
+          setState(() => _isLoading = false);
+        }
         return;
       }
-      account=AccountContext.capture();
+      account = (widget._captureAccount ?? AccountContext.capture)();
       final profileService = ref.read(profileServiceProvider);
-      final profile = await profileService.getMyProfile().timeout(const Duration(seconds:12));
+      final profile = await profileService.getMyProfile().timeout(
+        const Duration(seconds: 12),
+      );
+      _requireCurrent(account);
+      if (!mounted || revision != _profileRevision) return;
       BioPayEnrollmentStatus bioPayEnrollment;
       try {
         bioPayEnrollment = await ref
             .read(biopayFaceServiceProvider)
-            .enrollmentStatus().timeout(const Duration(seconds:6));
+            .enrollmentStatus()
+            .timeout(const Duration(seconds: 6));
       } on Object {
         // Optional face-service downtime must not hide the rest of Profile.
         bioPayEnrollment = const BioPayEnrollmentStatus(status: 'unavailable');
       }
-      AccountContext.requireCurrent(account);
-      if (revision!=_profileRevision) return;
+      _requireCurrent(account);
+      if (revision != _profileRevision) return;
       if (profile != null && mounted) {
         setState(() {
           _userCode = displayMobioMemberId(profile.memberId);
@@ -122,9 +176,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       }
     } on Object {
       log('PROFILE_LOAD_UNAVAILABLE');
-      if (mounted && revision==_profileRevision && (account==null || AccountContext.isCurrent(account))) setState(() => _error = 'Unable to load profile.');
+      if (mounted &&
+          revision == _profileRevision &&
+          (account == null || _current(account))) {
+        setState(() => _error = 'Unable to load profile.');
+      }
     } finally {
-      if (mounted && revision==_profileRevision) setState(() => _isLoading = false);
+      if (mounted && revision == _profileRevision) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -133,23 +193,37 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     String failureMessage, {
     Uri? fallback,
   }) async {
+    final token = AccountActionToken.capture(
+      captureAccount: widget._captureAccount,
+    );
+    bool current() => mounted && token.isCurrent;
+    if (!current()) return;
     final messenger = ScaffoldMessenger.of(context);
     Future<bool> launch(Uri target) {
-      return launchUrl(target, mode: LaunchMode.externalApplication);
+      return RequestDeadline.mutation(
+        launchUrl(target, mode: LaunchMode.externalApplication),
+        operation: 'open_profile_external_link',
+      );
     }
 
     try {
       if (await launch(uri)) return;
+      if (!current()) return;
       if (fallback != null && await launch(fallback)) return;
+    } on MutationOutcomeUnknownException catch (error) {
+      if (current()) {
+        messenger.showSnackBar(SnackBar(content: Text(error.message)));
+      }
+      return;
     } on Object catch (_) {
-      if (fallback != null) {
+      if (current() && fallback != null) {
         try {
           if (await launch(fallback)) return;
         } on Object catch (_) {}
       }
     }
 
-    if (!mounted) return;
+    if (!current()) return;
     messenger.showSnackBar(SnackBar(content: Text(failureMessage)));
   }
 
@@ -192,6 +266,17 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       MobiVisualTheme(family: MobiVisualFamily.rewards, builder: _buildContent);
 
   Widget _buildContent(BuildContext context) {
+    final actionToken = AccountActionToken.capture(
+      captureAccount: widget._captureAccount,
+    );
+    VoidCallback? guarded(FutureOr<void> Function()? action) {
+      if (action == null) return null;
+      return () async {
+        if (!mounted || !actionToken.isCurrent) return;
+        await action();
+      };
+    }
+
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
@@ -230,7 +315,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.screenPadding),
-            child: ClayCard(
+            child: MobiTonalCard(
               padding: const EdgeInsets.all(AppSpacing.xl),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -246,13 +331,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   TextButton(
-                    onPressed: () {
+                    onPressed: guarded(() {
                       setState(() {
                         _error = null;
                         _isLoading = true;
                       });
                       _loadProfile();
-                    },
+                    }),
                     child: Text(
                       'Retry',
                       style: AppTypography.labelLg.copyWith(color: cs.primary),
@@ -312,12 +397,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     const SizedBox(height: AppSpacing.sectionGap),
 
-                    ClayCard(
+                    MobiTonalCard(
                       padding: EdgeInsets.zero,
                       child: Column(
                         children: [
                           _ProfileActionRow(
-                            onTap: widget.onEditProfile,
+                            onTap: guarded(widget.onEditProfile),
                             icon: LucideIcons.user,
                             title: 'Edit Profile',
                           ),
@@ -331,8 +416,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ),
                           _ProfileActionRow(
-                            onTap: () =>
-                                context.push('/profile/payment-methods'),
+                            onTap: guarded(() async {
+                              await context.push<void>(
+                                '/profile/payment-methods',
+                              );
+                            }),
                             icon: LucideIcons.creditCard,
                             title: paymentCopy(context).bpMethods,
                           ),
@@ -346,7 +434,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ),
                           _ProfileActionRow(
-                            onTap: widget.onWallet,
+                            onTap: guarded(widget.onWallet),
                             icon: LucideIcons.wallet,
                             title: 'Wallet',
                           ),
@@ -360,7 +448,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ),
                           _ProfileActionRow(
-                            onTap: widget.onMobioPlus,
+                            onTap: guarded(widget.onMobioPlus),
                             icon: LucideIcons.badgeCheck,
                             title: 'Mobio Plus',
                           ),
@@ -376,10 +464,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           _ProfileActionRow(
                             onTap: widget.onBioPayEnroll == null
                                 ? null
-                                : () async {
+                                : guarded(() async {
                                     await widget.onBioPayEnroll!();
-                                    if (mounted) await _loadProfile();
-                                  },
+                                    if (mounted && actionToken.isCurrent) {
+                                      await _loadProfile();
+                                    }
+                                  }),
                             icon: LucideIcons.scanFace,
                             title: paymentCopy(context).faceRegister,
                             badge: _ProfileStatusPill(
@@ -399,7 +489,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             ),
                           ),
                           _ProfileActionRow(
-                            onTap: widget.onNfcWriteCard,
+                            onTap: guarded(widget.onNfcWriteCard),
                             icon: LucideIcons.nfc,
                             title: 'Write NFC Card',
                           ),
@@ -414,8 +504,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       toggled: widget.isDarkMode,
                       label: 'Dark Mode',
                       child: MobiFeatureTile(
-                        onTap: () =>
-                            widget.onDarkModeChanged(!widget.isDarkMode),
+                        onTap: guarded(
+                          () => widget.onDarkModeChanged(!widget.isDarkMode),
+                        ),
                         icon: widget.isDarkMode
                             ? LucideIcons.sun
                             : LucideIcons.moon,
@@ -454,23 +545,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     MobiFeatureTile(
-                      onTap: _openSupport,
+                      onTap: guarded(_openSupport),
                       icon: LucideIcons.messageCircle,
                       title: 'Support',
                       compact: true,
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     MobiFeatureTile(
-                      onTap: widget.onInviteAndEarn ?? _openShareApp,
+                      onTap: guarded(widget.onInviteAndEarn ?? _openShareApp),
                       icon: LucideIcons.share2,
                       title: 'Invite and Earn',
                       compact: true,
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     MobiFeatureTile(
-                      onTap: () => _launchExternalUri(
-                        Uri.parse(SupabaseConfig.privacyPolicyUrl),
-                        'Could not open privacy policy.',
+                      onTap: guarded(
+                        () => _launchExternalUri(
+                          Uri.parse(SupabaseConfig.privacyPolicyUrl),
+                          'Could not open privacy policy.',
+                        ),
                       ),
                       icon: LucideIcons.shield,
                       title: 'Privacy Policy',
@@ -478,9 +571,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     MobiFeatureTile(
-                      onTap: () => _launchExternalUri(
-                        Uri.parse(SupabaseConfig.termsAndConditionsUrl),
-                        'Could not open terms and conditions.',
+                      onTap: guarded(
+                        () => _launchExternalUri(
+                          Uri.parse(SupabaseConfig.termsAndConditionsUrl),
+                          'Could not open terms and conditions.',
+                        ),
                       ),
                       icon: LucideIcons.fileText,
                       title: 'Terms and Conditions',
@@ -489,7 +584,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     if (widget.onSignOut != null) ...[
                       const SizedBox(height: AppSpacing.sm),
                       MobiFeatureTile(
-                        onTap: widget.onSignOut,
+                        onTap: guarded(widget.onSignOut),
                         icon: LucideIcons.logOut,
                         title: 'Sign out',
                         compact: true,
@@ -497,15 +592,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ],
                     const SizedBox(height: AppSpacing.sm),
                     MobiFeatureTile(
-                      onTap: () {
+                      onTap: guarded(() {
                         if (!AccountContext.hasVerifiedSession) {
-                          _launchExternalUri(Uri.parse(SupabaseConfig.accountDeletionUrl), 'Could not open account deletion.');
+                          _launchExternalUri(
+                            Uri.parse(SupabaseConfig.accountDeletionUrl),
+                            'Could not open account deletion.',
+                          );
                           return;
                         }
                         final account = AccountContext.capture();
-                        Navigator.of(context).push(MaterialPageRoute<void>(
-                          builder: (_) => PrivacyRequestScreen(account: account)));
-                      },
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) =>
+                                PrivacyRequestScreen(account: account),
+                          ),
+                        );
+                      }),
                       icon: LucideIcons.userX,
                       title: 'Request account deletion',
                       accent: cs.error,
@@ -515,7 +617,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     if (widget.onExitAdmin != null) ...[
                       const SizedBox(height: AppSpacing.sm),
                       MobiFeatureTile(
-                        onTap: widget.onExitAdmin!,
+                        onTap: guarded(widget.onExitAdmin),
                         icon: LucideIcons.logOut,
                         title: 'Exit Admin',
                         accent: cs.error,
@@ -531,7 +633,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         child: TappableIconButton(
                           icon: LucideIcons.lock,
                           semanticLabel: 'Admin sign in',
-                          onTap: widget.onAdminGateway,
+                          onTap: guarded(widget.onAdminGateway),
                           iconColor: cs.onSurfaceVariant,
                         ),
                       ),
@@ -563,7 +665,7 @@ class _ProfileIdentityStrip extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
-    return ClayCard(
+    return MobiTonalCard(
       padding: const EdgeInsets.all(AppSpacing.sm),
       borderRadius: 28,
       child: Row(

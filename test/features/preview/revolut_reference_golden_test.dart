@@ -10,6 +10,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/app/launch_screen.dart';
 import 'package:mobi_app/app/router/error_screens.dart';
 import 'package:mobi_app/app/router/screen_wrappers.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/localization/country_providers.dart';
 import 'package:mobi_app/core/localization/country_service.dart';
 import 'package:mobi_app/features/admin/application/admin_services.dart';
@@ -31,6 +32,7 @@ import 'package:mobi_app/features/auth/application/auth_providers.dart';
 import 'package:mobi_app/features/auth/data/whatsapp_login_service.dart';
 import 'package:mobi_app/features/auth/presentation/whatsapp_login_screen.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
+import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
 import 'package:mobi_app/features/biopay/data/biopay_ussd_service.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_admin_console_screen.dart';
@@ -69,6 +71,7 @@ import 'package:mobi_shared_types/models/trip.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../tool/face_receiving_preview_service.dart';
+import '../../helpers/biopay_nfc_test_channels.dart';
 import '../../helpers/mobile_scanner_test_channel.dart';
 import '../../helpers/scrolled_tap_target_guideline.dart';
 import '../../helpers/whatsapp_login_fixture.dart';
@@ -96,6 +99,8 @@ void registerVisualSurfaceTests({bool accessibilityAudit = false}) {
   });
 
   tearDownAll(uninstallMobileScannerTestChannel);
+  setUp(installBioPayNfcTestChannels);
+  tearDown(uninstallBioPayNfcTestChannels);
 
   const compact = Size(390, 844);
   const large = Size(430, 932);
@@ -178,7 +183,9 @@ void registerVisualSurfaceTests({bool accessibilityAudit = false}) {
       name: 'login',
       builder: () => ProviderScope(
         overrides: [
-          whatsappLoginServiceProvider.overrideWithValue(FakeWhatsAppLoginService()),
+          whatsappLoginServiceProvider.overrideWithValue(
+            FakeWhatsAppLoginService(),
+          ),
         ],
         child: WhatsAppLoginScreen(onBack: () {}, onSuccess: (_) {}),
       ),
@@ -189,6 +196,7 @@ void registerVisualSurfaceTests({bool accessibilityAudit = false}) {
         mode: 'passenger',
         onModeChanged: (_) {},
         onChat: (_) {},
+        onChatPerson: (_) {},
         onTripDetails: (_) {},
         onViewNearby: () {},
         onViewBookings: () {},
@@ -289,6 +297,7 @@ void registerVisualSurfaceTests({bool accessibilityAudit = false}) {
       name: 'biopay_face_enroll',
       builder: () => ProviderScope(
         overrides: [
+          biopayFaceServiceProvider.overrideWith((ref) => _GoldenFaceService()),
           paymentDiscoveryServiceProvider.overrideWith(
             (ref) => FaceReceivingPreviewService(),
           ),
@@ -520,6 +529,7 @@ void registerVisualSurfaceTests({bool accessibilityAudit = false}) {
             } finally {
               FlutterError.onError = onError;
               await tester.pumpWidget(const SizedBox.shrink());
+              await tester.pumpAndSettle();
               semantics.dispose();
             }
           },
@@ -565,6 +575,7 @@ void registerVisualSurfaceTests({bool accessibilityAudit = false}) {
             matchesGoldenFile('goldens/revolut/${item.name}_$suffix.png'),
           );
           await tester.pumpWidget(const SizedBox.shrink());
+          await tester.pumpAndSettle();
         });
       }
     });
@@ -818,6 +829,28 @@ const _previewPlans = [
     isActive: false,
   ),
 ];
+
+/// Synthetic visual-fixture authority. It never calls a backend or enrolls a
+/// face; the stored baseline represents an explicit not-started enrollment.
+class _GoldenFaceService extends BioPayFaceService {
+  static const _account = AccountSnapshot(
+    '11111111-1111-4111-8111-111111111111',
+    'golden-fixture-session',
+    0,
+  );
+
+  @override
+  String get ownerId => _account.userId;
+  @override
+  AccountSnapshot captureAccount() => _account;
+  @override
+  bool isCurrent(AccountSnapshot account) =>
+      account.identity == _account.identity &&
+      account.generation == _account.generation;
+  @override
+  Future<BioPayEnrollmentStatus> enrollmentStatus() async =>
+      const BioPayEnrollmentStatus(status: 'not_started');
+}
 
 final _baseOverrides = [
   countryServiceProvider.overrideWithValue(_PreviewCountryService()),

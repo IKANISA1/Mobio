@@ -17,6 +17,87 @@ enum PaymentEvidence {
   providerConfirmed,
 }
 
+/// Strict JSON primitives shared by authoritative discovery projections.
+/// Missing booleans and fractional versions must never become capabilities.
+class PaymentWire {
+  PaymentWire._();
+  static Map<String, dynamic> object(Object? value) {
+    if (value is! Map || value.keys.any((key) => key is! String)) {
+      throw const FormatException('Invalid payment record');
+    }
+    return Map<String, dynamic>.from(value);
+  }
+
+  static List<Map<String, dynamic>> rows(Object? value) {
+    if (value is! List) throw const FormatException('Invalid payment list');
+    return value.map(object).toList(growable: false);
+  }
+
+  static String text(
+    Map<String, dynamic> json,
+    String key, {
+    bool empty = false,
+  }) {
+    final value = json[key];
+    if (value is! String || (!empty && value.trim().isEmpty)) {
+      throw FormatException('Invalid payment field: $key');
+    }
+    return value;
+  }
+
+  static String? optionalText(Map<String, dynamic> json, String key) =>
+      json[key] == null ? null : text(json, key, empty: true);
+
+  static bool boolean(Map<String, dynamic> json, String key) {
+    final value = json[key];
+    if (value is! bool) throw FormatException('Invalid payment flag: $key');
+    return value;
+  }
+
+  static int integer(Map<String, dynamic> json, String key, {int min = 0}) {
+    final value = json[key];
+    if (value is! int || value < min || value > 2147483647) {
+      throw FormatException('Invalid payment integer: $key');
+    }
+    return value;
+  }
+
+  static DateTime timestamp(Map<String, dynamic> json, String key) {
+    final value = DateTime.tryParse(text(json, key));
+    if (value == null) throw FormatException('Invalid payment date: $key');
+    return value;
+  }
+
+  static String choice(
+    Map<String, dynamic> json,
+    String key,
+    Iterable<String> allowed,
+  ) {
+    final value = text(json, key);
+    if (!allowed.contains(value)) {
+      throw FormatException('Invalid payment state: $key');
+    }
+    return value;
+  }
+
+  static bool sameValue(Object? left, Object? right) {
+    if (left is Map && right is Map) {
+      return left.length == right.length &&
+          left.keys.every(
+            (key) => right.containsKey(key) && sameValue(left[key], right[key]),
+          );
+    }
+    if (left is List && right is List) {
+      return left.length == right.length &&
+          List.generate(
+            left.length,
+            (index) => index,
+          ).every((index) => sameValue(left[index], right[index]));
+    }
+    return left == right;
+  }
+}
+
 int? parseRwf(String value) {
   final text = value.trim();
   if (!RegExp(r'^[0-9]{1,8}$').hasMatch(text)) return null;
@@ -38,6 +119,18 @@ int rwfFromLegacyMinor(int minor) {
   final amount = minor ~/ 100;
   legacyMinorFromRwf(amount);
   return amount;
+}
+
+/// History can contain legacy minor amounts with fractional RWF. Preserve the
+/// integer evidence exactly; new discovery preparation still requires whole RWF.
+String formatHistoricalRwfMinor(int minor) =>
+    formatHistoricalAmountMinor(minor, 'RWF');
+
+String formatHistoricalAmountMinor(int minor, String currency) {
+  if (minor < 0 || !RegExp(r'^[A-Z]{3}$').hasMatch(currency))
+    throw const FormatException('Invalid historical amount or currency');
+  final remainder = minor % 100;
+  return '${minor ~/ 100}${remainder == 0 ? '' : '.${remainder.toString().padLeft(2, '0')}'} $currency';
 }
 
 String? normalizeRwandaPhone(String input) {
@@ -113,22 +206,83 @@ class PaymentMethod {
     return null;
   }
 
-  factory PaymentMethod.fromJson(Map<String, dynamic> json) => PaymentMethod(
-    id: json['id'] as String,
-    ownerId: json['owner_id'] as String? ?? '',
-    provider: json['provider'] as String,
-    kind: PaymentMethodKind.values.byName(json['kind'] as String),
-    identifier: json['identifier'] as String,
-    label: json['label'] as String,
-    canSend: json['can_send'] == true,
-    canReceive: json['can_receive'] == true,
-    phoneDiscoverable: json['phone_discoverable'] == true,
-    loginPhone: json['login_phone'] as String?,
-    simLabel: json['sim_label'] as String?,
-    preferred: json['preferred'] == true,
-    version: (json['version'] as num?)?.toInt() ?? 1,
-    active: json['active'] != false,
-  );
+  factory PaymentMethod.fromJson(Map<String, dynamic> json) =>
+      PaymentMethod._parse(json, receivingProjection: false);
+
+  /// The server receiving projection intentionally omits private source roles,
+  /// login phone, SIM and preferences. It cannot grant sending capabilities.
+  factory PaymentMethod.fromReceivingJson(Map<String, dynamic> json) =>
+      PaymentMethod._parse(json, receivingProjection: true);
+
+  static PaymentMethod _parse(
+    Map<String, dynamic> json, {
+    required bool receivingProjection,
+  }) {
+    final id = PaymentWire.text(json, 'id');
+    final manual = id == 'manual';
+    final owner = PaymentWire.text(json, 'owner_id', empty: manual);
+    final provider = PaymentWire.text(json, 'provider');
+    final kind = PaymentMethodKind.values.byName(
+      PaymentWire.choice(
+        json,
+        'kind',
+        PaymentMethodKind.values.map((value) => value.name),
+      ),
+    );
+    final method = PaymentMethod(
+      id: id,
+      ownerId: owner,
+      provider: provider,
+      kind: kind,
+      identifier: PaymentWire.text(json, 'identifier'),
+      label: PaymentWire.text(json, 'label'),
+      canSend: receivingProjection
+          ? false
+          : PaymentWire.boolean(json, 'can_send'),
+      canReceive: PaymentWire.boolean(json, 'can_receive'),
+      phoneDiscoverable: receivingProjection
+          ? false
+          : PaymentWire.boolean(json, 'phone_discoverable'),
+      loginPhone: receivingProjection
+          ? null
+          : PaymentWire.optionalText(json, 'login_phone'),
+      simLabel: receivingProjection
+          ? null
+          : PaymentWire.optionalText(json, 'sim_label'),
+      preferred: receivingProjection
+          ? false
+          : PaymentWire.boolean(json, 'preferred'),
+      version: PaymentWire.integer(json, 'version', min: manual ? 0 : 1),
+      active: PaymentWire.boolean(json, 'active'),
+    );
+    if (!RegExp(r'^[a-z0-9_]{2,32}$').hasMatch(provider) ||
+        method.label.length > 60 ||
+        method.identifier.length < 3 ||
+        method.identifier.length > 40 ||
+        (manual &&
+            (owner.isNotEmpty ||
+                method.version != 0 ||
+                !method.canReceive ||
+                method.canSend)) ||
+        (kind == PaymentMethodKind.mobileWallet &&
+            !RegExp(r'^\+2507[0-9]{8}$').hasMatch(method.identifier)) ||
+        (kind == PaymentMethodKind.merchantCode &&
+            (!RegExp(r'^[0-9]{3,20}$').hasMatch(method.identifier) ||
+                method.canSend)) ||
+        ((kind == PaymentMethodKind.bankAccount ||
+                kind == PaymentMethodKind.bankAlias) &&
+            !RegExp(r'^[A-Za-z0-9 -]{3,40}$').hasMatch(method.identifier)) ||
+        (method.loginPhone != null &&
+            !RegExp(r'^\+2507[0-9]{8}$').hasMatch(method.loginPhone!)) ||
+        (method.simLabel?.length ?? 0) > 40 ||
+        (!receivingProjection &&
+            (!method.canSend && !method.canReceive ||
+                method.preferred && !method.canSend ||
+                method.phoneDiscoverable && !method.canReceive))) {
+      throw const FormatException('Invalid payment method');
+    }
+    return method;
+  }
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -163,11 +317,26 @@ class PaymentFee {
   int? totalUpperBound(int amount) =>
       upperBound == null ? null : amount + upperBound!;
 
-  factory PaymentFee.fromJson(Map<String, dynamic> json) => PaymentFee(
-    certainty: FeeCertainty.values.byName(json['certainty'] as String),
-    francs: (json['francs'] as num?)?.toInt(),
-    allIn: json['all_in'] == true,
-  );
+  factory PaymentFee.fromJson(Map<String, dynamic> json) {
+    final certainty = FeeCertainty.values.byName(
+      PaymentWire.choice(
+        json,
+        'certainty',
+        FeeCertainty.values.map((value) => value.name),
+      ),
+    );
+    final francs = json['francs'] == null
+        ? null
+        : PaymentWire.integer(json, 'francs');
+    if (certainty != FeeCertainty.unknown && francs == null) {
+      throw const FormatException('Known payment fee needs whole francs');
+    }
+    return PaymentFee(
+      certainty: certainty,
+      francs: francs,
+      allIn: PaymentWire.boolean(json, 'all_in'),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     'certainty': certainty.name,
@@ -209,19 +378,24 @@ class PaymentOption {
       '${destination.identifier}|$rail';
 
   factory PaymentOption.fromJson(Map<String, dynamic> json) => PaymentOption(
-    id: json['id'] as String,
-    source: PaymentMethod.fromJson(json['source'] as Map<String, dynamic>),
-    destination: PaymentMethod.fromJson(
-      json['destination'] as Map<String, dynamic>,
+    id: PaymentWire.text(json, 'id'),
+    source: PaymentMethod.fromJson(PaymentWire.object(json['source'])),
+    destination: PaymentMethod.fromReceivingJson(
+      PaymentWire.object(json['destination']),
     ),
-    rail: json['rail'] as String,
-    fee: PaymentFee.fromJson(json['fee'] as Map<String, dynamic>),
-    adapterVersion: (json['adapter_version'] as num).toInt(),
-    tariffVersion: (json['tariff_version'] as num).toInt(),
-    steps: (json['steps'] as num?)?.toInt(),
-    supportsReference: json['supports_reference'] == true,
-    handoffMode: json['handoff_mode'] as String? ?? 'instructions',
-    unavailableReason: json['unavailable_reason'] as String?,
+    rail: PaymentWire.text(json, 'rail'),
+    fee: PaymentFee.fromJson(PaymentWire.object(json['fee'])),
+    adapterVersion: PaymentWire.integer(json, 'adapter_version', min: 1),
+    tariffVersion: PaymentWire.integer(json, 'tariff_version', min: 1),
+    steps: json['steps'] == null
+        ? null
+        : PaymentWire.integer(json, 'steps', min: 1),
+    supportsReference: PaymentWire.boolean(json, 'supports_reference'),
+    handoffMode: PaymentWire.choice(json, 'handoff_mode', const [
+      'instructions',
+      'dial',
+    ]),
+    unavailableReason: PaymentWire.optionalText(json, 'unavailable_reason'),
   );
 }
 
@@ -276,22 +450,39 @@ class PaymentRecipient {
 
   factory PaymentRecipient.fromJson(Map<String, dynamic> json) =>
       PaymentRecipient(
-        label: json['label'] as String? ?? '',
-        methods: (json['methods'] as List? ?? const [])
-            .map(
-              (x) =>
-                  PaymentMethod.fromJson(Map<String, dynamic>.from(x as Map)),
-            )
-            .toList(),
-        assurance: json['assurance'] as String? ?? 'unverified',
-        lookup: json['lookup'] as String?,
-        linkToken: json['link_token'] as String?,
-        fixedAmount: (json['fixed_amount'] as num?)?.toInt(),
-        reference: json['reference'] as String? ?? '',
+        label: PaymentWire.text(json, 'label'),
+        methods: PaymentWire.rows(
+          json['methods'],
+        ).map(PaymentMethod.fromReceivingJson).toList(growable: false),
+        assurance: PaymentWire.choice(json, 'assurance', const [
+          'manual',
+          'shared',
+          'sharedLink',
+        ]),
+        lookup: PaymentWire.optionalText(json, 'lookup'),
+        linkToken: PaymentWire.optionalText(json, 'link_token'),
+        fixedAmount: json['fixed_amount'] == null ? null : _fixedAmount(json),
+        reference: json['reference'] == null
+            ? ''
+            : PaymentWire.text(json, 'reference', empty: true),
         purpose: json['purpose'] == null
             ? null
-            : PaymentPurpose.values.byName(json['purpose'] as String),
+            : PaymentPurpose.values.byName(
+                PaymentWire.choice(
+                  json,
+                  'purpose',
+                  PaymentPurpose.values.map((value) => value.name),
+                ),
+              ),
       );
+
+  static int _fixedAmount(Map<String, dynamic> json) {
+    final amount = PaymentWire.integer(json, 'fixed_amount', min: 1);
+    if (amount > 10000000) {
+      throw const FormatException('Invalid recipient amount');
+    }
+    return amount;
+  }
 }
 
 class PaymentDraft {
@@ -349,26 +540,53 @@ class PaymentDraft {
     attemptId: attemptId ?? (evidence == null ? null : this.attemptId),
   );
 
-  factory PaymentDraft.fromJson(Map<String, dynamic> json) => PaymentDraft(
-    id: json['id'] as String,
-    ownerId: json['owner_id'] as String,
-    lookup: json['lookup'] as String? ?? '',
-    linkToken: json['link_token'] as String?,
-    manualMethod: json['manual_method'] == null
-        ? null
-        : PaymentMethod.fromJson(json['manual_method'] as Map<String, dynamic>),
-    amount: json['amount'] as String? ?? '',
-    purpose: PaymentPurpose.values.byName(
-      json['purpose'] as String? ?? 'transfer',
-    ),
-    sourceId: json['source_id'] as String?,
-    reference: json['reference'] as String? ?? '',
-    revision: (json['revision'] as num?)?.toInt() ?? 0,
-    evidence: PaymentEvidence.values.byName(
-      json['evidence'] as String? ?? 'draft',
-    ),
-    attemptId: json['attempt_id'] as String?,
-  );
+  factory PaymentDraft.fromJson(Map<String, dynamic> json) {
+    String text(String field, {bool emptyAllowed = false}) {
+      final value = json[field];
+      if (value is! String || (!emptyAllowed && value.isEmpty)) {
+        throw FormatException('Invalid payment draft field: $field');
+      }
+      return value;
+    }
+
+    String? optionalText(String field) {
+      final value = json[field];
+      if (value == null) return null;
+      return text(field);
+    }
+
+    final revision = json['revision'];
+    if (revision is! int || revision < 0 || revision > 2147483647) {
+      throw const FormatException('Invalid payment draft revision');
+    }
+    final purpose = text('purpose');
+    final evidence = text('evidence');
+    if (!PaymentPurpose.values.any((value) => value.name == purpose) ||
+        !PaymentEvidence.values.any((value) => value.name == evidence)) {
+      throw const FormatException('Invalid payment draft state');
+    }
+    final method = json['manual_method'];
+    if (method != null &&
+        (method is! Map || method.keys.any((key) => key is! String))) {
+      throw const FormatException('Invalid manual payment method');
+    }
+    return PaymentDraft(
+      id: text('id'),
+      ownerId: text('owner_id'),
+      lookup: text('lookup', emptyAllowed: true),
+      linkToken: optionalText('link_token'),
+      manualMethod: method == null
+          ? null
+          : PaymentMethod.fromJson(Map<String, dynamic>.from(method as Map)),
+      amount: text('amount', emptyAllowed: true),
+      purpose: PaymentPurpose.values.byName(purpose),
+      sourceId: optionalText('source_id'),
+      reference: text('reference', emptyAllowed: true),
+      revision: revision,
+      evidence: PaymentEvidence.values.byName(evidence),
+      attemptId: optionalText('attempt_id'),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     'id': id,

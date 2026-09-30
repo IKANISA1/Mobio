@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
 import 'package:mobi_app/features/biopay/data/face_capture.dart';
@@ -23,20 +24,22 @@ import 'face_shortcut_test.dart' show shortcut;
 
 class CaptureFixture implements FaceCapture {
   bool ready = false;
-  int captures = 0, stops = 0;
+  int starts = 0, captures = 0, stops = 0;
+  Completer<Uint8List>? pendingCapture;
   @override
   CameraController? get controller => null;
   @override
   bool get isReady => ready;
   @override
   Future<void> start({required bool front}) async {
+    starts++;
     ready = true;
   }
 
   @override
   Future<Uint8List> capture() async {
     captures++;
-    return Uint8List.fromList([1, 2, 3]);
+    return pendingCapture?.future ?? Uint8List.fromList([1, 2, 3]);
   }
 
   @override
@@ -47,10 +50,26 @@ class CaptureFixture implements FaceCapture {
 }
 
 class FaceFixture extends BioPayFaceService {
+  int generation = 0;
+  @override
+  AccountSnapshot captureAccount() =>
+      AccountSnapshot(account!, 'fixture', generation);
+  @override
+  bool isCurrent(AccountSnapshot snapshot) =>
+      snapshot.userId == account && snapshot.generation == generation;
+
   String? account = '11111111-1111-4111-8111-111111111111';
   bool statusUnavailable = false;
+  BioPayEnrollmentStatus status = const BioPayEnrollmentStatus(
+    status: 'not_started',
+  );
+  final actions = <String>[];
+  Object? actionError;
+  final methodUpdates = <String>[];
   final pending = Completer<PreparedFaceUssdShortcut>();
   int scans = 0, enrolls = 0, handoffs = 0;
+  Completer<String>? pendingEnrollment;
+  Completer<BioPayEnrollmentStatus>? pendingStatus;
   String? selected;
   bool? consent;
   @override
@@ -58,8 +77,17 @@ class FaceFixture extends BioPayFaceService {
   @override
   Future<BioPayEnrollmentStatus> enrollmentStatus() async {
     if (statusUnavailable) throw const FaceServiceException('TIMEOUT');
-    return const BioPayEnrollmentStatus(status: 'not_started');
+    return pendingStatus?.future ?? status;
   }
+
+  @override
+  Future<void> setEnrollmentAction(String action) async {
+    actions.add(action);
+    if (actionError != null) throw actionError!;
+  }
+
+  @override
+  Future<void> changeMethod(String id) async => methodUpdates.add(id);
 
   @override
   Future<PreparedFaceUssdShortcut> resolveShortcut({
@@ -85,7 +113,7 @@ class FaceFixture extends BioPayFaceService {
     enrolls++;
     selected = methodId;
     this.consent = consent;
-    return 'active';
+    return pendingEnrollment?.future ?? 'active';
   }
 }
 
@@ -117,7 +145,11 @@ class GatewayFixture extends PaymentDiscoveryService {
         'identifier': '+250788767816',
         'label': 'Receiving B',
         'can_receive': true,
+        'can_send': false,
+        'phone_discoverable': false,
+        'preferred': false,
         'active': true,
+        'version': 1,
       },
     ],
   };
@@ -133,6 +165,7 @@ Future<void> mount(
   Size size = const Size(390, 844),
   double textScale = 1,
   GoRouter? router,
+  bool settle = true,
 }) async {
   await tester.binding.setSurfaceSize(size);
   addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -170,7 +203,11 @@ Future<void> mount(
             ),
     ),
   );
-  await tester.pumpAndSettle();
+  if (settle) {
+    await tester.pumpAndSettle();
+  } else {
+    await tester.pump();
+  }
 }
 
 Future<void> scan(WidgetTester tester) async {
@@ -181,15 +218,402 @@ Future<void> scan(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets(
+    'retained scan button cannot start capture in a replaced session',
+    (tester) async {
+      final face = FaceFixture(), camera = CaptureFixture();
+      await mount(tester, face, camera, GatewayFixture());
+      final oldCallback = tester
+          .widget<MobiButton>(find.widgetWithText(MobiButton, 'Open camera'))
+          .onPressed!;
+      face.generation++;
+      AccountContext.changes.value++;
+      await tester.pumpAndSettle();
+      oldCallback();
+      await tester.pumpAndSettle();
+      expect(camera.starts, 0);
+      expect(face.scans, 0);
+    },
+  );
+  testWidgets('retained enrollment controls cannot populate a new session', (
+    tester,
+  ) async {
+    final face = FaceFixture(), camera = CaptureFixture();
+    await mount(tester, face, camera, GatewayFixture(), enroll: true);
+    final consentCallback = tester
+        .widget<CheckboxListTile>(find.byType(CheckboxListTile))
+        .onChanged!;
+    final methodCallback = tester
+        .widget<DropdownButtonFormField<String>>(
+          find.byType(DropdownButtonFormField<String>),
+        )
+        .onChanged!;
+    face.generation++;
+    AccountContext.changes.value++;
+    await tester.pumpAndSettle();
+    consentCallback(true);
+    methodCallback('44444444-4444-4444-8444-444444444444');
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value,
+      isFalse,
+    );
+    expect(
+      tester
+          .widget<DropdownButtonFormField<String>>(
+            find.byType(DropdownButtonFormField<String>),
+          )
+          .initialValue,
+      isNull,
+    );
+    expect(face.methodUpdates, isEmpty);
+    expect(face.enrolls, 0);
+  });
+  testWidgets(
+    'retained enrollment action cannot mutate the replacement session',
+    (tester) async {
+      final face = FaceFixture()
+        ..status = const BioPayEnrollmentStatus(
+          status: 'active',
+          hasFace: true,
+        );
+      await mount(
+        tester,
+        face,
+        CaptureFixture(),
+        GatewayFixture(),
+        enroll: true,
+      );
+      final oldCallback = tester
+          .widget<TextButton>(
+            find.widgetWithText(TextButton, 'Pause face lookup'),
+          )
+          .onPressed!;
+      face.generation++;
+      AccountContext.changes.value++;
+      await tester.pumpAndSettle();
+      oldCallback();
+      await tester.pumpAndSettle();
+      expect(face.actions, isEmpty);
+    },
+  );
   test('unconfirmed Face status is unavailable, not unenrolled', () {
     expect(const BioPayEnrollmentStatus().label, 'Unavailable');
-    expect(BioPayEnrollmentStatus.fromJson({}).label, 'Unavailable');
+    expect(() => BioPayEnrollmentStatus.fromJson({}), throwsFormatException);
     expect(
-      BioPayEnrollmentStatus.fromJson({'status': 'not_started'}).label,
+      BioPayEnrollmentStatus.fromJson({
+        'status': 'not_started',
+        'has_face': false,
+        'receiving_method_id': null,
+        'pending_vector_id': null,
+      }).label,
       'Set up',
     );
   });
 
+  testWidgets('loading status does not claim absent enrollment', (
+    tester,
+  ) async {
+    final face = FaceFixture()..pendingStatus = Completer();
+    await mount(
+      tester,
+      face,
+      CaptureFixture(),
+      GatewayFixture(),
+      enroll: true,
+      settle: false,
+    );
+    expect(find.text('Please wait…'), findsOneWidget);
+    expect(find.text('Set up'), findsNothing);
+    expect(
+      find.text('Face lookup is unavailable. Try again or use a number or QR.'),
+      findsNothing,
+    );
+    face.pendingStatus!.complete(
+      const BioPayEnrollmentStatus(status: 'not_started'),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Please wait…'), findsNothing);
+  });
+  for (final prior in ['active', 'paused']) {
+    testWidgets(
+      'confirmed $prior cache permits truthful recovery during outage',
+      (tester) async {
+        final face = FaceFixture()
+          ..status = BioPayEnrollmentStatus(
+            status: prior,
+            hasFace: true,
+            receivingMethodId: '44444444-4444-4444-8444-444444444444',
+          );
+        final camera = CaptureFixture();
+        await mount(tester, face, camera, GatewayFixture(), enroll: true);
+        face.statusUnavailable = true;
+        // A confirmed action refreshes status; failure cannot invent enrollment
+        // absence or hide the already-confirmed recovery controls.
+        await tester.tap(
+          find.text(
+            prior == 'paused' ? 'Resume face lookup' : 'Pause face lookup',
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.text(
+            'Face lookup is unavailable. Try again or use a number or QR.',
+          ),
+          findsWidgets,
+        );
+        expect(find.text('Remove my face'), findsOneWidget);
+        expect(
+          find.text(
+            prior == 'paused' ? 'Pause face lookup' : 'Resume face lookup',
+          ),
+          findsOneWidget,
+        );
+        expect(face.actions.single, prior == 'paused' ? 'resume' : 'pause');
+        final captureButton = tester.widget<MobiButton>(
+          find.widgetWithText(MobiButton, 'Update face'),
+        );
+        expect(captureButton.onPressed, isNull);
+        expect(camera.starts, 0);
+        await tester.tap(find.text('Remove my face'));
+        await tester.pumpAndSettle();
+        expect(face.actions.last, 'remove');
+        expect(find.text('Remove my face'), findsNothing);
+        expect(find.text('Pause face lookup'), findsNothing);
+        expect(find.text('Resume face lookup'), findsNothing);
+        face.generation++;
+        AccountContext.changes.value++;
+        await tester.pumpAndSettle();
+        expect(find.text('Remove my face'), findsNothing);
+        expect(find.text('Pause face lookup'), findsNothing);
+        expect(find.text('Resume face lookup'), findsNothing);
+      },
+    );
+  }
+  testWidgets(
+    'confirmed first enrollment retains recovery when its refresh is unavailable',
+    (tester) async {
+      final enrollment = Completer<String>();
+      final face = FaceFixture()..pendingEnrollment = enrollment;
+      final camera = CaptureFixture();
+      await mount(tester, face, camera, GatewayFixture(), enroll: true);
+      expect(find.text('Remove my face'), findsNothing);
+      expect(find.text('Pause face lookup'), findsNothing);
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Receiving B · •••• 7816').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(CheckboxListTile));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.widgetWithText(MobiButton, 'Open camera'),
+      );
+      await tester.tap(find.widgetWithText(MobiButton, 'Open camera'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(MobiButton, 'Capture once'));
+      await tester.pump();
+      expect(face.enrolls, 1);
+      face.statusUnavailable = true;
+      enrollment.complete('active');
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'Face lookup is unavailable. Try again or use a number or QR.',
+        ),
+        findsWidgets,
+      );
+      expect(find.text('Face setup saved'), findsNothing);
+      expect(find.text('Pause face lookup'), findsOneWidget);
+      expect(find.text('Remove my face'), findsOneWidget);
+      expect(
+        tester
+            .widget<MobiButton>(find.widgetWithText(MobiButton, 'Update face'))
+            .onPressed,
+        isNull,
+      );
+      await tester.ensureVisible(find.text('Pause face lookup'));
+      await tester.tap(find.text('Pause face lookup'));
+      await tester.pumpAndSettle();
+      expect(face.actions, ['pause']);
+      expect(find.text('Resume face lookup'), findsOneWidget);
+      await tester.ensureVisible(find.text('Remove my face'));
+      await tester.tap(find.text('Remove my face'));
+      await tester.pumpAndSettle();
+      expect(face.actions, ['pause', 'remove']);
+      expect(find.text('Remove my face'), findsNothing);
+      expect(find.text('Resume face lookup'), findsNothing);
+    },
+  );
+  testWidgets(
+    'confirmed outage recovery cache clears on same-owner replacement',
+    (tester) async {
+      final face = FaceFixture()
+        ..status = const BioPayEnrollmentStatus(
+          status: 'active',
+          hasFace: true,
+          receivingMethodId: '44444444-4444-4444-8444-444444444444',
+        );
+      await mount(
+        tester,
+        face,
+        CaptureFixture(),
+        GatewayFixture(),
+        enroll: true,
+      );
+      face.statusUnavailable = true;
+      await tester.tap(find.text('Pause face lookup'));
+      await tester.pumpAndSettle();
+      final oldRemove = tester
+          .widget<TextButton>(find.widgetWithText(TextButton, 'Remove my face'))
+          .onPressed!;
+      expect(find.text('Resume face lookup'), findsOneWidget);
+      face.generation++;
+      AccountContext.changes.value++;
+      await tester.pumpAndSettle();
+      expect(find.text('Resume face lookup'), findsNothing);
+      expect(find.text('Remove my face'), findsNothing);
+      oldRemove();
+      await tester.pumpAndSettle();
+      expect(face.actions, ['pause']);
+    },
+  );
+  for (final prior in ['not_started', 'active']) {
+    testWidgets(
+      'unknown enrollment from $prior blocks fresh capture until status refresh',
+      (tester) async {
+        final enrollment = Completer<String>();
+        final face = FaceFixture()
+          ..pendingEnrollment = enrollment
+          ..status = BioPayEnrollmentStatus(
+            status: prior,
+            hasFace: prior == 'active',
+            receivingMethodId: prior == 'active'
+                ? '44444444-4444-4444-8444-444444444444'
+                : null,
+          );
+        final camera = CaptureFixture();
+        await mount(tester, face, camera, GatewayFixture(), enroll: true);
+        if (prior == 'not_started') {
+          await tester.tap(find.byType(DropdownButtonFormField<String>));
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('Receiving B · •••• 7816').last);
+          await tester.pumpAndSettle();
+        }
+        await tester.tap(find.byType(CheckboxListTile));
+        await tester.pumpAndSettle();
+        final open = find.widgetWithText(
+          MobiButton,
+          prior == 'active' ? 'Update face' : 'Open camera',
+        );
+        await tester.ensureVisible(open);
+        await tester.tap(open);
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(MobiButton, 'Capture once'));
+        await tester.pump();
+        expect(face.enrolls, 1);
+        enrollment.completeError(
+          const FaceServiceException(
+            'OUTCOME_UNKNOWN',
+            operation: 'biopay_face:enroll',
+            operationId: 'original-enrollment',
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.text(
+            'Face lookup is unavailable. Try again or use a number or QR.',
+          ),
+          findsWidgets,
+        );
+        expect(find.text('Face setup saved'), findsNothing);
+        final blocked = find.widgetWithText(
+          MobiButton,
+          prior == 'active' ? 'Update face' : 'Open camera',
+        );
+        expect(tester.widget<MobiButton>(blocked).onPressed, isNull);
+        await tester.ensureVisible(blocked);
+        await tester.tap(blocked);
+        await tester.pumpAndSettle();
+        expect(face.enrolls, 1);
+        expect(camera.starts, 1);
+        expect(
+          find.text('Remove my face'),
+          prior == 'active' ? findsOneWidget : findsNothing,
+        );
+        expect(
+          find.text('Pause face lookup'),
+          prior == 'active' ? findsOneWidget : findsNothing,
+        );
+        if (prior == 'active') {
+          face.statusUnavailable = true;
+          await tester.ensureVisible(find.text('Pause face lookup'));
+          await tester.tap(find.text('Pause face lookup'));
+          await tester.pumpAndSettle();
+          expect(face.actions, ['pause']);
+          expect(face.enrolls, 1);
+          expect(find.text('Resume face lookup'), findsOneWidget);
+          expect(tester.widget<MobiButton>(blocked).onPressed, isNull);
+          face
+            ..status = const BioPayEnrollmentStatus(
+              status: 'paused',
+              hasFace: true,
+              receivingMethodId: '44444444-4444-4444-8444-444444444444',
+            )
+            ..statusUnavailable = false;
+        }
+        // A confirmed status read permits an explicit fresh capture. No new
+        // mutation is dispatched merely by refreshing or enabling its button.
+        await tester.ensureVisible(find.text('Check setup status'));
+        await tester.tap(find.text('Check setup status'));
+        await tester.pumpAndSettle();
+        expect(face.enrolls, 1);
+        if (prior == 'not_started') {
+          await tester.tap(find.byType(DropdownButtonFormField<String>));
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('Receiving B · •••• 7816').last);
+          await tester.pumpAndSettle();
+        }
+        expect(tester.widget<MobiButton>(blocked).onPressed, isNotNull);
+      },
+    );
+  }
+  testWidgets(
+    'unknown management outcome cannot advance confirmed cache or claim ready',
+    (tester) async {
+      final face = FaceFixture()
+        ..status = const BioPayEnrollmentStatus(
+          status: 'active',
+          hasFace: true,
+          receivingMethodId: '44444444-4444-4444-8444-444444444444',
+        );
+      await mount(
+        tester,
+        face,
+        CaptureFixture(),
+        GatewayFixture(),
+        enroll: true,
+      );
+      face.actionError = const FaceServiceException('OUTCOME_UNKNOWN');
+      await tester.tap(find.text('Pause face lookup'));
+      await tester.pumpAndSettle();
+      expect(face.actions, ['pause']);
+      expect(
+        find.text(
+          'Face lookup is unavailable. Try again or use a number or QR.',
+        ),
+        findsWidgets,
+      );
+      expect(find.text('Resume face lookup'), findsNothing);
+      expect(find.text('Pause face lookup'), findsOneWidget);
+      expect(find.text('Remove my face'), findsOneWidget);
+      expect(
+        tester
+            .widget<MobiButton>(find.widgetWithText(MobiButton, 'Update face'))
+            .onPressed,
+        isNull,
+      );
+    },
+  );
   testWidgets(
     'Face status outage disables enrollment until a confirmed refresh',
     (tester) async {
@@ -293,7 +717,7 @@ void main() {
       expect(gateway.launches, 1);
     },
   );
-  for (final reason in ['leave', 'background', 'account']) {
+  for (final reason in ['leave', 'background', 'account', 'generation']) {
     testWidgets('$reason while resolving cannot open dialer', (tester) async {
       final face = FaceFixture(),
           camera = CaptureFixture(),
@@ -307,12 +731,74 @@ void main() {
         );
       }
       if (reason == 'account') face.account = 'another-user';
+      if (reason == 'generation') {
+        face.generation++;
+        AccountContext.changes.value++;
+      }
       face.pending.complete(shortcut());
       await tester.pumpAndSettle();
       expect(gateway.launches, 0);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     });
   }
+  testWidgets(
+    'same-owner session replacement during camera capture cannot resolve',
+    (tester) async {
+      final face = FaceFixture(),
+          camera = CaptureFixture(),
+          gateway = GatewayFixture();
+      camera.pendingCapture = Completer<Uint8List>();
+      await mount(tester, face, camera, gateway);
+      await scan(tester);
+      expect(camera.captures, 1);
+      face.generation++;
+      AccountContext.changes.value++;
+      final bytes = Uint8List.fromList([8, 7, 6]);
+      camera.pendingCapture!.complete(bytes);
+      await tester.pumpAndSettle();
+      expect(face.scans, 0);
+      expect(gateway.launches, 0);
+      expect(bytes, everyElement(0));
+      expect(camera.ready, isFalse);
+    },
+  );
+  testWidgets(
+    'same-owner session replacement discards a pending enrollment reply',
+    (tester) async {
+      final face = FaceFixture(),
+          camera = CaptureFixture(),
+          gateway = GatewayFixture();
+      face.pendingEnrollment = Completer<String>();
+      await mount(tester, face, camera, gateway, enroll: true);
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Receiving B · •••• 7816').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(CheckboxListTile));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(
+        find.widgetWithText(MobiButton, 'Open camera'),
+      );
+      await tester.tap(find.widgetWithText(MobiButton, 'Open camera'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(MobiButton, 'Capture once'));
+      await tester.pump();
+      expect(face.enrolls, 1);
+      face.generation++;
+      AccountContext.changes.value++;
+      face.pendingEnrollment!.complete('active');
+      await tester.pumpAndSettle();
+      expect(find.text('Face setup saved'), findsNothing);
+      expect(find.text('Pause face lookup'), findsNothing);
+      expect(find.text('Remove my face'), findsNothing);
+      expect(find.text('Receiving B · •••• 7816'), findsNothing);
+      expect(
+        tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value,
+        isFalse,
+      );
+      expect(gateway.launches, 0);
+    },
+  );
   testWidgets('no match offers manual and QR, never payer enrollment', (
     tester,
   ) async {

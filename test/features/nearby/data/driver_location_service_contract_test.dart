@@ -23,6 +23,7 @@ void main() {
       for (final row in [
         {...validDriver, 'member_id': null},
         {...validDriver, 'member_id': '12345'},
+        {...validDriver, 'member_id': ' 123456 '},
         {...validDriver, 'driver_id': 'not-a-uuid'},
         {...validDriver, 'latitude': 91},
         {...validDriver, 'longitude': double.nan},

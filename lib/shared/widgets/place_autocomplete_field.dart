@@ -10,7 +10,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/location/location_providers.dart';
 import 'package:mobi_app/core/location/places_exception.dart';
 import 'package:mobi_app/core/location/places_service.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 import 'package:mobi_shared_types/models/place.dart';
@@ -262,7 +262,7 @@ class _PlaceAutocompleteFieldState
           debounceDuration: const Duration(milliseconds: 300),
           loadingBuilder: (context) => _buildShimmerLoading(cs),
           builder: (context, controller, focusNode) {
-            return ClayCard(
+            return MobiTonalCard(
               padding: const EdgeInsets.all(24),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
@@ -37,7 +37,7 @@ class TripRepeatPicker extends StatelessWidget {
           caption: isRecurring ? 'Weekly' : 'One trip',
         ),
         const SizedBox(height: AppSpacing.md),
-        ClayCard(
+        MobiTonalCard(
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [

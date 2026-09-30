@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
@@ -119,7 +119,7 @@ class PermissionAccessDialog extends StatelessWidget {
           color: Colors.transparent,
           child: Semantics(
             label: '${config.title}. ${config.message}',
-            child: ClayCard(
+            child: MobiTonalCard(
               padding: const EdgeInsets.all(28),
               borderRadius: 32,
               child: Column(

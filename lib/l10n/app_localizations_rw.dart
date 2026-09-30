@@ -738,6 +738,10 @@ class AppLocalizationsRw extends AppLocalizations {
   String get faceTimeout => 'Byatinze. Ongera ugerageze.';
 
   @override
+  String get faceOutcomeUnknown =>
+      'Ibyavuye muri iki gikorwa ntibiramenyekana. Banza urebe uko bihagaze mbere yo kongera kugerageza.';
+
+  @override
   String get faceSignIn => 'Ongera winjire kugira ngo ukomeze.';
 
   @override

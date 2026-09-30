@@ -87,13 +87,27 @@ if [[ -z "${MOBIO_ANDROID_CANDIDATE_MANIFEST:-}" || -z "${MOBIO_ANDROID_RELEASE_
   exit 2
 fi
 
-python3 scripts/release/android_candidate_manifest.py --root "$repo_root" verify \
+verified_receipt="$(python3 scripts/release/android_candidate_manifest.py --root "$repo_root" verify \
   --aab "$aab_path" \
   --candidate "$MOBIO_ANDROID_CANDIDATE_MANIFEST" \
   --approval "$MOBIO_ANDROID_RELEASE_APPROVAL" \
   --track "$track" \
   --release-status "$release_status" \
-  --package "$package_name"
+  --package "$package_name")"
+approved_artifact_sha256="$(python3 - "$verified_receipt" <<'PY'
+import json, re, sys
+try:
+    receipt = json.loads(sys.argv[1])
+    digest = receipt.get("artifact_sha256") if isinstance(receipt, dict) else None
+    if (receipt.get("status") != "BOUND_APPROVAL_VERIFIED" or not isinstance(digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", digest)):
+        raise ValueError("invalid verifier receipt")
+except (ValueError, AttributeError):
+    print("NO-GO: approved artifact verification receipt is unavailable.", file=sys.stderr)
+    raise SystemExit(1)
+print(digest)
+PY
+)"
 
 json_from_candidate() {
   local candidate="$1"
@@ -216,16 +230,45 @@ curl -fsS \
   --data-binary "@$aab_path" \
   "${upload_base}/edits/${edit_id}/bundles?uploadType=media" > "$bundle_json"
 
-uploaded_version_code="$(python3 - "$bundle_json" <<'PY'
-import json, sys
-data = json.load(open(sys.argv[1]))
-print(data.get("versionCode", ""))
+uploaded_version_code="$(python3 - "$bundle_json" "$version_code" "$approved_artifact_sha256" <<'PY'
+import json, re, sys
+
+def unique_fields(fields):
+    data = {}
+    for name, value in fields:
+        if name in data:
+            raise ValueError("duplicate receipt field")
+        data[name] = value
+    return data
+
+try:
+    expected = sys.argv[2]
+    if not re.fullmatch(r"[1-9][0-9]{0,9}", expected):
+        raise ValueError("invalid approved source version")
+    with open(sys.argv[1], encoding="utf-8") as source:
+        data = json.load(source, object_pairs_hook=unique_fields)
+    actual = data.get("versionCode") if isinstance(data, dict) else None
+    # The verifier above binds source version, compiled manifest and approved
+    # artifact. The Play Bundle contract returns an integer, never a coercible
+    # display string. An upload acknowledgement for another version cannot
+    # authorize a track update, even when the upload itself returned success.
+    if (type(actual) is not int or not 1 <= actual <= 2147483647
+            or str(actual) != expected):
+        raise ValueError("unconfirmed approved version")
+    uploaded_digest = data.get("sha256")
+    # Use the immutable successful verifier output captured before provider
+    # access, rather than rereading a candidate that may have changed later.
+    if (not isinstance(uploaded_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", uploaded_digest)
+            or uploaded_digest != sys.argv[3]):
+        raise ValueError("unconfirmed approved artifact")
+except (OSError, UnicodeDecodeError, ValueError):
+    print("NO-GO: Google Play bundle receipt does not confirm the approved versionCode and artifact SHA-256.",
+          file=sys.stderr)
+    raise SystemExit(1)
+print(actual)
 PY
 )"
-if [[ -z "$uploaded_version_code" ]]; then
-  echo "Google Play bundle upload did not return a versionCode." >&2
-  exit 1
-fi
 
 track_body="$tmp_dir/track.json"
 VERSION_CODE="$uploaded_version_code" \

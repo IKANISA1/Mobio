@@ -40,7 +40,7 @@ Deliverables:
 
 - Update the audit into an implementation tracker with each route/surface mapped to owner, status, and proof required.
 - Keep inactive legacy routes explicitly unavailable or remove deep-link exposure only if product approves.
-- Keep `design.md` and route inventories aligned with the later BioPay USSD/AWS reactivation scope instead of the older inactive-BioPay assumption.
+- Keep the product route/state mapping aligned with the later BioPay USSD/AWS reactivation scope. The external `revolut-design` skill is the sole visual authority; product mappings and acceptance evidence live under `docs/design/`.
 - Add a route inventory test that fails when new screens, dialogs, or inactive legacy routes are introduced without tracker coverage.
 
 Acceptance gates:

@@ -15,6 +15,7 @@ import 'package:mobi_app/features/nearby/data/driver_location_service.dart';
 import 'package:mobi_app/features/nearby/presentation/widgets/nearby_location_notice.dart';
 import 'package:mobi_app/features/profile/application/profile_services.dart';
 import 'package:mobi_app/shared/models/vehicle_type_model.dart';
+import 'package:mobi_app/shared/models/discovery_person.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
 import 'package:mobi_app/shared/widgets/driver_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
@@ -36,7 +37,7 @@ import 'package:mobi_shared_types/models/vehicle_type.dart';
 
 /// Nearby screen with list-first browsing.
 class NearbyScreen extends ConsumerStatefulWidget {
-  final ValueChanged<Trip> onChat;
+  final ValueChanged<DiscoveryPerson> onChat;
   final ValueChanged<String> onTripDetails;
   final VoidCallback? onBack;
 
@@ -255,29 +256,16 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen>
     final cs = Theme.of(context).colorScheme;
     final mediaPadding = MediaQuery.paddingOf(context);
 
-    final List<Trip> driverTrips;
-    if (_nearbyDrivers.isNotEmpty) {
-      driverTrips = _nearbyDrivers
-          .map(
-            (d) => Trip(
-              id: null,
-              authorId: d.driverId,
-              authorName: displayMobioMemberId(d.memberId) ?? '',
-              origin: 'Nearby',
-              destination: '',
-              departureDate: '',
-              departureTime: '',
-              role: 'driver',
-              vehicleTypeStr: d.vehicleTypeId,
-              originLat: d.latitude,
-              originLng: d.longitude,
-              description: '${d.distanceKm.toStringAsFixed(1)} km away',
-            ),
-          )
-          .toList();
-    } else {
-      driverTrips = [];
-    }
+    final people = _nearbyDrivers
+        .map(
+          (driver) => DiscoveryPerson(
+            peerId: driver.driverId,
+            memberId: driver.memberId.isEmpty ? null : driver.memberId,
+            vehicleTypeId: driver.vehicleTypeId,
+            distanceKm: driver.distanceKm,
+          ),
+        )
+        .toList(growable: false);
 
     return SoftGradient(
       tone: SoftGradientTone.nearby,
@@ -430,18 +418,14 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen>
                             )
                           : _locationState != LocationAccessState.granted
                           ? const SliverToBoxAdapter(child: SizedBox.shrink())
-                          : driverTrips.isNotEmpty
+                          : people.isNotEmpty
                           ? SliverList.builder(
-                              itemCount: driverTrips.length,
+                              itemCount: people.length,
                               itemBuilder: (context, index) {
-                                final driverTrip = driverTrips[index];
-                                final card = DriverCard(
-                                  trip: driverTrip,
-                                  onChat: () => widget.onChat(driverTrip),
-                                  onTap: driverTrip.id != null
-                                      ? () =>
-                                            widget.onTripDetails(driverTrip.id!)
-                                      : null,
+                                final person = people[index];
+                                final card = DriverCard.person(
+                                  person: person,
+                                  onChat: () => widget.onChat(person),
                                 );
 
                                 if (MediaQuery.disableAnimationsOf(context)) {

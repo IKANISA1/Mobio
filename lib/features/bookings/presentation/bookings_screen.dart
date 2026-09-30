@@ -5,13 +5,14 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
 import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/features/bookings/application/booking_services.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_confirm_dialog.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
@@ -237,6 +238,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   );
 
   Widget _buildContent(BuildContext context) {
+    final actionToken = AccountActionToken.capture();
     final mediaPadding = MediaQuery.paddingOf(context);
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final grouped = _groupTrips(_currentTrips);
@@ -248,7 +250,9 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         child: Stack(
           children: [
             RefreshIndicator(
-              onRefresh: _loadTrips,
+              onRefresh: () async {
+                if (mounted && actionToken.isCurrent) await _loadTrips();
+              },
               color: Theme.of(context).colorScheme.primary,
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(
@@ -282,7 +286,11 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                             child: MobiToggle(
                               labels: const ['Mine', 'Nearby'],
                               selectedIndex: _activeToggle,
-                              onChanged: _switchToggle,
+                              onChanged: (index) {
+                                if (mounted && actionToken.isCurrent) {
+                                  _switchToggle(index);
+                                }
+                              },
                             ),
                           ),
                         ],
@@ -330,7 +338,11 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                       context,
                     ).colorScheme.primary.withValues(alpha: 0.22),
                     child: InkWell(
-                      onTap: widget.onSchedule,
+                      onTap: () {
+                        if (mounted && actionToken.isCurrent) {
+                          widget.onSchedule();
+                        }
+                      },
                       customBorder: const CircleBorder(),
                       splashColor: Colors.white.withValues(
                         alpha: ext.pressedWhiteAlpha,
@@ -376,32 +388,41 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   }
 
   Widget _buildErrorState() {
+    final actionToken = AccountActionToken.capture();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
       child: MobiErrorState(
         title: 'Unable to load trips',
         subtitle: _error,
         icon: LucideIcons.alertTriangle,
-        onRetry: _loadTrips,
+        onRetry: () {
+          if (mounted && actionToken.isCurrent) unawaited(_loadTrips());
+        },
         height: 220,
       ),
     );
   }
 
   Widget _buildAuthRequiredState() {
+    final actionToken = AccountActionToken.capture();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
       child: AiEmptyState(
         title: 'Sign in to manage trips',
         icon: LucideIcons.lock,
         height: 260,
-        onAction: () => context.go('/login?redirect=/bookings'),
+        onAction: () {
+          if (mounted && actionToken.isCurrent) {
+            context.go('/login?redirect=/bookings');
+          }
+        },
         actionLabel: 'Sign in',
       ),
     );
   }
 
   Widget _buildEmptyState() {
+    final actionToken = AccountActionToken.capture();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
       child: AiEmptyState(
@@ -410,7 +431,13 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
             : 'No nearby trips',
         icon: _activeToggle == 0 ? LucideIcons.calendar : LucideIcons.mapPin,
         height: 260,
-        onAction: _activeToggle == 0 ? widget.onSchedule : _loadTrips,
+        onAction: _activeToggle == 0
+            ? () {
+                if (mounted && actionToken.isCurrent) widget.onSchedule();
+              }
+            : () async {
+                if (mounted && actionToken.isCurrent) await _loadTrips();
+              },
         actionLabel: _activeToggle == 0 ? 'Schedule' : 'Refresh',
       ),
     );
@@ -454,6 +481,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   }
 
   Widget _buildTripCard(Trip trip) {
+    final actionToken = AccountActionToken.capture();
     final isNearby = _activeToggle == 1;
     final route = '${trip.origin} → ${trip.destination}';
     final timeDisplay = trip.departureTime.isNotEmpty
@@ -482,10 +510,14 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         tag: 'trip_card_${trip.id ?? trip.hashCode}',
         child: Material(
           type: MaterialType.transparency,
-          child: ClayCard(
+          child: MobiTonalCard(
             padding: const EdgeInsets.all(AppSpacing.md),
             borderRadius: AppRadii.xl,
-            onTap: () => widget.onTripDetails(trip.id ?? ''),
+            onTap: () {
+              if (mounted && actionToken.isCurrent) {
+                widget.onTripDetails(trip.id ?? '');
+              }
+            },
             child: Row(
               children: [
                 SizedBox.square(
@@ -550,7 +582,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                       children: [
                         if (!isNearby && trip.status != 'cancelled')
                           InkWell(
-                            onTap: () => _cancelTrip(trip),
+                            onTap: () => _cancelTrip(trip, actionToken),
                             borderRadius: BorderRadius.circular(AppRadii.pill),
                             child: Container(
                               constraints: const BoxConstraints(
@@ -591,7 +623,8 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
     );
   }
 
-  Future<void> _cancelTrip(Trip trip) async {
+  Future<void> _cancelTrip(Trip trip, AccountActionToken actionToken) async {
+    if (!mounted || !actionToken.isCurrent) return;
     if (SupabaseConfig.isLocalUiPreview) {
       if (mounted) {
         setState(() {
@@ -616,11 +649,15 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
     );
 
     if (confirmed == true &&
+        mounted &&
+        actionToken.isCurrent &&
         trip.id != null &&
         AccountContext.isCurrent(account)) {
       try {
         await ref.read(tripServiceProvider).cancelTrip(trip.id!);
-        if (mounted && AccountContext.isCurrent(account)) {
+        if (mounted &&
+            actionToken.isCurrent &&
+            AccountContext.isCurrent(account)) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('Trip cancelled.'),
@@ -630,7 +667,9 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
           unawaited(_loadTrips()); // Refresh
         }
       } on Object catch (e) {
-        if (mounted && AccountContext.isCurrent(account)) {
+        if (mounted &&
+            actionToken.isCurrent &&
+            AccountContext.isCurrent(account)) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(

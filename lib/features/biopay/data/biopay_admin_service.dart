@@ -1,4 +1,5 @@
 import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_admin.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
@@ -35,9 +36,7 @@ class BioPayAdminService {
     final response = await RequestDeadline.read(
       _requireSupabase().rpc<dynamic>('rpc_admin_biopay_summary'),
     );
-    return BioPayAdminSummary.fromJson(
-      Map<String, dynamic>.from(response as Map),
-    );
+    return BioPayAdminSummary.fromJson(BioPayWireRecord.object(response));
   }
 
   Future<List<BioPayAdminPayee>> listPayees({
@@ -52,8 +51,9 @@ class BioPayAdminService {
         params: {'p_search': _nullableText(search), 'p_limit': limit},
       ),
     );
-    if (response is! List)
+    if (response is! List) {
       throw const FormatException('Invalid BioPay payee list');
+    }
     return response.map((row) {
       if (row is! Map) throw const FormatException('Invalid BioPay payee row');
       return BioPayAdminPayee.fromJson(Map<String, dynamic>.from(row));
@@ -69,11 +69,13 @@ class BioPayAdminService {
         params: {'p_limit': limit},
       ),
     );
-    if (response is! List)
+    if (response is! List) {
       throw const FormatException('Invalid BioPay request list');
+    }
     return response.map((row) {
-      if (row is! Map)
+      if (row is! Map) {
         throw const FormatException('Invalid BioPay request row');
+      }
       return BioPayUssdPaymentRequest.fromJson(Map<String, dynamic>.from(row));
     }).toList();
   }
@@ -85,7 +87,7 @@ class BioPayAdminService {
       _requireSupabase().rpc<dynamic>('rpc_admin_biopay_system_status'),
     );
     final databaseStatus = BioPayAdminSystemStatus.fromJson(
-      Map<String, dynamic>.from(response as Map),
+      BioPayWireRecord.object(response),
     );
     try {
       final faceStatus = await faceService.health();
@@ -139,9 +141,26 @@ class BioPayAdminService {
       operationId: request.id,
     );
 
-    return BioPayUssdPaymentRequest.fromJson(
-      Map<String, dynamic>.from(response as Map),
-    );
+    try {
+      final confirmed = BioPayUssdPaymentRequest.fromJson(
+        BioPayWireRecord.object(response),
+      );
+      if (!confirmed.hasSameInstruction(request) ||
+          confirmed.status != BioPayRequestStatus.confirmed ||
+          confirmed.confirmationSource != confirmationSource.trim()) {
+        throw const FormatException(
+          'BioPay admin confirmation receipt mismatch',
+        );
+      }
+      return confirmed;
+    } on FormatException catch (error) {
+      throw MutationOutcomeUnknownException(
+        operation: 'rpc_admin_biopay_confirm_external',
+        operationId: request.id,
+        originalError: error,
+        debugMessage: error.message,
+      );
+    }
   }
 
   BioPayAdminSnapshot previewSnapshot({String? search}) {

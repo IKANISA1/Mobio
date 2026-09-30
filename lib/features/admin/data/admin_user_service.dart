@@ -1,5 +1,7 @@
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/admin/data/admin_base_service.dart';
+import 'package:mobi_app/features/admin/domain/admin_wire_record.dart';
 import 'package:mobi_shared_types/models/admin/admin_models.dart';
 
 class AdminUserService extends AdminBaseService {
@@ -27,7 +29,7 @@ class AdminUserService extends AdminBaseService {
       return requireRows(
         rows,
         'rpc_admin_list_users',
-      ).map(AdminUserListItem.fromJson).toList();
+      ).map(AdminWireRecord.user).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching admin users: $error');
       rethrow;
@@ -72,9 +74,22 @@ class AdminUserService extends AdminBaseService {
         operationId: userId,
       );
 
-      return AdminTokenAdjustmentReceipt.fromJson(
-        requireRow(data, 'rpc_admin_adjust_user_tokens'),
-      );
+      try {
+        return AdminWireRecord.tokenAdjustment(
+          requireRow(data, 'rpc_admin_adjust_user_tokens'),
+          userId: userId,
+          amountTokens: amountTokens,
+        );
+      } on FormatException catch (error) {
+        // A successful HTTP response with a broken receipt cannot prove that
+        // the submitted credit did not happen. Reconcile before retrying it.
+        throw MutationOutcomeUnknownException(
+          operation: 'rpc_admin_adjust_user_tokens',
+          operationId: userId,
+          originalError: error,
+          debugMessage: error.message,
+        );
+      }
     } on Object catch (error) {
       AppLogger.error('Error adjusting user TOKENS: $error');
       rethrow;
@@ -89,7 +104,7 @@ class AdminUserService extends AdminBaseService {
       return requireRows(
         rows,
         'rpc_admin_list_whatsapp_numbers',
-      ).map(AdminWhatsappNumberItem.fromJson).toList();
+      ).map(AdminWireRecord.whatsapp).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching admin WhatsApp numbers: $error');
       rethrow;
@@ -119,14 +134,27 @@ class AdminUserService extends AdminBaseService {
         operationId: phoneE164,
       );
 
-      final typedRows = requireRows(rows, 'rpc_admin_upsert_whatsapp_number');
-      if (typedRows.isEmpty) {
-        throw StateError(
-          'Admin WhatsApp number was not returned by the server.',
-        );
-      }
-
-      return AdminWhatsappNumberItem.fromJson(typedRows.first);
+      return _confirmReceipt(
+        () {
+          final typedRows = requireRows(
+            rows,
+            'rpc_admin_upsert_whatsapp_number',
+          );
+          if (typedRows.length != 1) {
+            throw const FormatException(
+              'Admin WhatsApp upsert must return exactly one row.',
+            );
+          }
+          return AdminWireRecord.whatsapp(
+            typedRows.single,
+            expectedPhone: phoneE164.trim().replaceAll(RegExp(r'\s+'), ''),
+            expectedCountry: countryCode.trim().replaceAll(RegExp(r'\s+'), ''),
+            expectedActive: isActive,
+          );
+        },
+        operation: 'rpc_admin_upsert_whatsapp_number',
+        operationId: phoneE164,
+      );
     } on Object catch (error) {
       AppLogger.error('Error upserting admin WhatsApp number: $error');
       rethrow;
@@ -147,18 +175,46 @@ class AdminUserService extends AdminBaseService {
         operationId: id,
       );
 
-      final typedRows = requireRows(
-        rows,
-        'rpc_admin_set_whatsapp_number_active',
+      return _confirmReceipt(
+        () {
+          final typedRows = requireRows(
+            rows,
+            'rpc_admin_set_whatsapp_number_active',
+          );
+          if (typedRows.length != 1) {
+            throw const FormatException(
+              'Admin WhatsApp update must return exactly one row.',
+            );
+          }
+          return AdminWireRecord.whatsapp(
+            typedRows.single,
+            expectedId: id,
+            expectedActive: isActive,
+          );
+        },
+        operation: 'rpc_admin_set_whatsapp_number_active',
+        operationId: id,
       );
-      if (typedRows.isEmpty) {
-        throw StateError('Admin WhatsApp number update returned no row.');
-      }
-
-      return AdminWhatsappNumberItem.fromJson(typedRows.first);
     } on Object catch (error) {
       AppLogger.error('Error updating admin WhatsApp number status: $error');
       rethrow;
+    }
+  }
+
+  T _confirmReceipt<T>(
+    T Function() parse, {
+    required String operation,
+    required String operationId,
+  }) {
+    try {
+      return parse();
+    } on FormatException catch (error) {
+      throw MutationOutcomeUnknownException(
+        operation: operation,
+        operationId: operationId,
+        originalError: error,
+        debugMessage: error.message,
+      );
     }
   }
 }

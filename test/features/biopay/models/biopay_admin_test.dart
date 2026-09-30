@@ -18,7 +18,7 @@ void main() {
     expect(summary.matchRateLabel, '87.5%');
 
     final payee = BioPayAdminPayee.fromJson({
-      'user_id': 'user-1',
+      'user_id': '11111111-1111-4111-8111-111111111111',
       'handle': 'BP-123456',
       'display_name': 'BioPay User',
       'provider': 'opencv_sface_v1',
@@ -67,6 +67,8 @@ void main() {
       'liveness_status': 'provider_liveness_not_required',
       'status': 'active',
       'has_face': true,
+      'receiving_method_id': '44444444-4444-4444-8444-444444444444',
+      'pending_vector_id': null,
       'consent_granted_at': '2026-06-12T10:00:00Z',
       'server_verified_at': '2026-09-06T10:00:00Z',
     });
@@ -77,18 +79,32 @@ void main() {
 
   test('legacy or consentless profiles are never ready in app or Admin', () {
     final profile = <String, dynamic>{
+      'user_id': '11111111-1111-4111-8111-111111111111',
+      'handle': 'BP-482013',
+      'display_name': 'Mobio member',
+      'provider_collection_id': null,
+      'request_count': 0,
+      'confirmed_count': 0,
+      'last_request_at': null,
+      'server_verified_at': null,
       'provider': 'opencv_sface_v1',
       'provider_subject_id': 'legacy-face',
       'status': 'active',
       'consent_granted_at': '2026-06-12T10:00:00Z',
       'enrolled_at': '2026-06-12T10:00:00Z',
     };
-    expect(BioPayEnrollmentStatus.fromJson(profile).isEnrolled, isFalse);
+    expect(
+      () => BioPayEnrollmentStatus.fromJson(profile),
+      throwsFormatException,
+    );
     expect(BioPayAdminPayee.fromJson(profile).isEnrolled, isFalse);
     profile['server_verified_at'] = '2026-09-06T10:00:00Z';
     profile['consent_granted_at'] = null;
     profile['enrolled_at'] = null;
-    expect(BioPayEnrollmentStatus.fromJson(profile).isEnrolled, isFalse);
+    expect(
+      () => BioPayEnrollmentStatus.fromJson(profile),
+      throwsFormatException,
+    );
     expect(BioPayAdminPayee.fromJson(profile).isEnrolled, isFalse);
   });
 }

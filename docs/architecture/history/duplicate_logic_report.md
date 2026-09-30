@@ -16,10 +16,9 @@
 - **MOBI** uses `countries` for dialing codes and active state.
 - **Resolution:** `momo_providers` is deprecated. `sender_id` and MoMo-specific USSD formats have been merged into MOBI's `countries` table.
 
-## 3. UI and Theming
-- **PayLedger** has a standalone Jetpack Compose design system ("Sovereign Architect").
-- **MOBI** has a Flutter design system (`design.md`, Soft Liquid Glass).
-- **Resolution:** Drop PayLedger's UI entirely. Rebuild Ledger dashboards in Flutter using `MobiSurfacePanel`, `ClayCard`, etc.
+## 3. UI implementation boundaries
+- The historical native/Flutter integration comparison does not define a visual reference or authorise restoring a ledger dashboard.
+- The external `revolut-design` skill is the sole design authority for current Mobio app, web and admin surfaces; `docs/design/README.md` indexes product evidence.
 
 ## 4. BioPay Backend API vs Supabase Edge Functions
 - **BioPay** uses a FastAPI Python backend for vector matching and profile management.

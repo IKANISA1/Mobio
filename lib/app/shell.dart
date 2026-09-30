@@ -51,6 +51,7 @@ class _MobiShellState extends ConsumerState<MobiShell> {
       return;
     }
 
+    AccountContext.changes.addListener(_onAccountChanged);
     _syncNotificationListener();
     unawaited(_syncRoleFromSession());
     _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
@@ -61,8 +62,20 @@ class _MobiShellState extends ConsumerState<MobiShell> {
     });
   }
 
+  void _onAccountChanged() {
+    if (!mounted) return;
+    // Clear the old role as soon as local authority is fenced, even while the
+    // SDK still exposes the outgoing session during signout or verification.
+    ref.read(roleProvider.notifier).set(AppRole.passenger);
+    unawaited(FirebaseAnalyticsService.instance.setUserContext());
+    _syncNotificationListener();
+    unawaited(_syncRoleFromSession());
+  }
+
   @override
   void dispose() {
+    _roleSyncRevision++;
+    AccountContext.changes.removeListener(_onAccountChanged);
     _authSubscription?.cancel();
     super.dispose();
   }
@@ -120,7 +133,9 @@ class _MobiShellState extends ConsumerState<MobiShell> {
 
     final currentUser = Supabase.instance.client.auth.currentUser;
     _notificationService?.stopListening();
-    if (currentUser != null && !currentUser.isAnonymous) {
+    if (currentUser != null &&
+        !currentUser.isAnonymous &&
+        AccountContext.hasVerifiedSession) {
       _notificationService?.startListening();
       // Re-register FCM token for push notifications on auth change
       unawaited(PushNotificationService.instance.registerToken());

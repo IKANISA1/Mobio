@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 
@@ -62,7 +62,7 @@ class MobiFeatureTile extends StatelessWidget {
             vertical: AppSpacing.lg,
           );
 
-    return ClayCard(
+    return MobiTonalCard(
       onTap: onTap,
       padding: tilePadding,
       child: Row(

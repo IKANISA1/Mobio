@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/features/notifications/application/notification_services.dart';
 import 'package:mobi_app/features/profile/application/notification_consent_provider.dart';
@@ -14,7 +16,20 @@ import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 import 'package:mobi_shared_types/models/notification_consent_settings.dart';
 
 class ProfileNotificationConsentSection extends ConsumerWidget {
-  const ProfileNotificationConsentSection({super.key});
+  const ProfileNotificationConsentSection({super.key})
+    : _captureOverride = null,
+      _isCurrentOverride = null;
+
+  @visibleForTesting
+  const ProfileNotificationConsentSection.test({
+    super.key,
+    required AccountSnapshot Function() captureAccount,
+    required bool Function(AccountSnapshot) isCurrent,
+  }) : _captureOverride = captureAccount,
+       _isCurrentOverride = isCurrent;
+
+  final AccountSnapshot Function()? _captureOverride;
+  final bool Function(AccountSnapshot)? _isCurrentOverride;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,7 +54,11 @@ class ProfileNotificationConsentSection extends ConsumerWidget {
             side: BorderSide(color: cs.outlineVariant.withValues(alpha: 0.16)),
           ),
           child: consent.when(
-            data: (settings) => _ConsentControls(settings: settings),
+            data: (settings) => _ConsentControls(
+              settings: settings,
+              captureAccount: _captureOverride,
+              isCurrent: _isCurrentOverride,
+            ),
             loading: () => const Padding(
               padding: EdgeInsets.all(AppSpacing.lg),
               child: Center(child: CircularProgressIndicator()),
@@ -79,9 +98,15 @@ class ProfileNotificationConsentSection extends ConsumerWidget {
 }
 
 class _ConsentControls extends ConsumerWidget {
-  const _ConsentControls({required this.settings});
+  const _ConsentControls({
+    required this.settings,
+    this.captureAccount,
+    this.isCurrent,
+  });
 
   final NotificationConsentSettings settings;
+  final AccountSnapshot Function()? captureAccount;
+  final bool Function(AccountSnapshot)? isCurrent;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -112,18 +137,32 @@ class _ConsentControls extends ConsumerWidget {
     );
   }
 
+  AccountSnapshot? _captureAccount() =>
+      captureAccount?.call() ??
+      (SupabaseConfig.isLocalUiPreview ? null : AccountContext.capture());
+
+  bool _current(BuildContext context, AccountSnapshot? account) =>
+      context.mounted &&
+      (account == null
+          ? SupabaseConfig.isLocalUiPreview
+          : isCurrent?.call(account) ?? AccountContext.isCurrent(account));
+
   Future<void> _save(
     BuildContext context,
-    Future<void> Function() action,
-  ) async {
+    Future<void> Function() action, {
+    AccountSnapshot? expectedAccount,
+  }) async {
+    AccountSnapshot? account;
     try {
+      account = expectedAccount ?? _captureAccount();
+      if (!context.mounted || !_current(context, account)) return;
       await action();
-      if (!context.mounted) return;
+      if (!context.mounted || !_current(context, account)) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Notification consent updated.')),
       );
     } on Object catch (error) {
-      if (!context.mounted) return;
+      if (!context.mounted || !_current(context, account)) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -143,22 +182,33 @@ class _ConsentControls extends ConsumerWidget {
     BuildContext context,
     bool value,
   ) async {
+    AccountSnapshot? account;
+    try {
+      account = _captureAccount();
+    } on Object {
+      return;
+    }
+    if (!context.mounted || !_current(context, account)) return;
     if (value) {
       final pushService = ref.read(pushNotificationServiceProvider);
       final hasPermission = await pushService.hasPermission();
+      if (!context.mounted || !_current(context, account)) return;
       if (!hasPermission) {
-        if (!context.mounted) return;
+        if (!context.mounted || !_current(context, account)) return;
         final action = await PermissionAccessDialog.show(
           context,
           config: PermissionAccessDialogConfig.notifications(),
         );
-        if (action != PermissionAccessDialogAction.grantAccess) {
+        if (!context.mounted ||
+            !_current(context, account) ||
+            action != PermissionAccessDialogAction.grantAccess) {
           return;
         }
 
         final granted = await pushService.requestPermission();
+        if (!context.mounted || !_current(context, account)) return;
         if (!granted) {
-          if (!context.mounted) return;
+          if (!context.mounted || !_current(context, account)) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('Notification access was not enabled.'),
@@ -172,12 +222,13 @@ class _ConsentControls extends ConsumerWidget {
       await pushService.registerToken();
     }
 
-    if (!context.mounted) return;
+    if (!context.mounted || !_current(context, account)) return;
     await _save(
       context,
       () => ref
           .read(notificationConsentProvider.notifier)
           .setPromotionalPush(value),
+      expectedAccount: account,
     );
   }
 }

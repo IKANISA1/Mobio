@@ -44,6 +44,8 @@ class AdminLayoutTokens {
   );
 }
 
+// Revolut Business imagery supplies the quiet workspace hierarchy. These
+// responsive operational controls adapt that pattern to Mobio's own records.
 class AdminWorkspaceFrame extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -261,7 +263,7 @@ class AdminPanel extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(AppSpacing.lg),
-    this.radius = AppRadii.xxl,
+    this.radius = AdminLayoutTokens.panelRadius,
   });
 
   @override
@@ -308,7 +310,7 @@ class AdminSectionHeader extends StatelessWidget {
                   title,
                   style: AppTypography.titleMd.copyWith(
                     color: Theme.of(context).colorScheme.onSurface,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -456,51 +458,56 @@ class AdminSearchField extends StatelessWidget {
 
     return Semantics(
       label: hintText,
-      child: TextField(
-        controller: controller,
-        onChanged: onChanged,
-        textInputAction: TextInputAction.search,
-        autocorrect: false,
-        enableSuggestions: false,
-        style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: AppTypography.bodyMd.copyWith(color: cs.onSurfaceVariant),
-          prefixIcon: Icon(
-            LucideIcons.search,
-            size: 18,
-            color: cs.onSurfaceVariant,
-          ),
-          suffixIcon: controller.text.isEmpty
-              ? null
-              : IconButton(
-                  tooltip: 'Clear search',
-                  onPressed: () {
-                    controller.clear();
-                    onChanged?.call('');
-                  },
-                  icon: Icon(
-                    LucideIcons.x,
-                    size: 16,
-                    color: cs.onSurfaceVariant,
-                  ),
-                ),
-          filled: true,
-          fillColor: ext.surfaceContainerLow,
-          isDense: true,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppRadii.pill),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppRadii.pill),
-            borderSide: BorderSide(
-              color: cs.outlineVariant.withValues(alpha: 0.6),
+      child: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: controller,
+        builder: (context, value, _) => TextField(
+          controller: controller,
+          onChanged: onChanged,
+          textInputAction: TextInputAction.search,
+          autocorrect: false,
+          enableSuggestions: false,
+          style: AppTypography.bodyMd.copyWith(color: cs.onSurface),
+          decoration: InputDecoration(
+            hintText: hintText,
+            hintStyle: AppTypography.bodyMd.copyWith(
+              color: cs.onSurfaceVariant,
             ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppRadii.pill),
-            borderSide: BorderSide(color: cs.primary.withValues(alpha: 0.5)),
+            prefixIcon: Icon(
+              LucideIcons.search,
+              size: 18,
+              color: cs.onSurfaceVariant,
+            ),
+            suffixIcon: value.text.isEmpty
+                ? null
+                : IconButton(
+                    tooltip: 'Clear search',
+                    onPressed: () {
+                      controller.clear();
+                      onChanged?.call('');
+                    },
+                    icon: Icon(
+                      LucideIcons.x,
+                      size: 16,
+                      color: cs.onSurfaceVariant,
+                    ),
+                  ),
+            filled: true,
+            fillColor: ext.surfaceContainerLow,
+            isDense: true,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadii.pill),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadii.pill),
+              borderSide: BorderSide(
+                color: cs.outlineVariant.withValues(alpha: 0.6),
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppRadii.pill),
+              borderSide: BorderSide(color: cs.primary, width: 2),
+            ),
           ),
         ),
       ),
@@ -544,14 +551,9 @@ class AdminFilterChip extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: isSelected
-                ? cs.primary.withValues(alpha: 0.12)
+                ? ext.surfaceContainerHighest
                 : ext.surfaceContainerLow,
             borderRadius: BorderRadius.circular(AppRadii.pill),
-            border: Border.all(
-              color: isSelected
-                  ? cs.primary.withValues(alpha: 0.28)
-                  : cs.outlineVariant.withValues(alpha: 0.6),
-            ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -560,7 +562,7 @@ class AdminFilterChip extends StatelessWidget {
                 Icon(
                   icon,
                   size: 14,
-                  color: isSelected ? cs.primary : cs.onSurfaceVariant,
+                  color: isSelected ? cs.onSurface : cs.onSurfaceVariant,
                 ),
                 const SizedBox(width: AppSpacing.xs),
               ],
@@ -568,11 +570,7 @@ class AdminFilterChip extends StatelessWidget {
                 child: Text(
                   label,
                   style: AppTypography.labelMd.copyWith(
-                    color: isSelected
-                        ? (cs.brightness == Brightness.light
-                              ? cs.onSurface
-                              : cs.primary)
-                        : cs.onSurfaceVariant,
+                    color: isSelected ? cs.onSurface : cs.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -604,11 +602,14 @@ class AdminActionChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
-    final accent = _toneColor(context, tone);
+    final enabled = onTap != null && !isBusy;
+    final accent = onTap == null && !isBusy
+        ? ext.textDisabled
+        : _toneColor(context, tone);
 
     return Semantics(
       button: true,
-      enabled: onTap != null && !isBusy,
+      enabled: enabled,
       value: isBusy ? 'Loading' : null,
       liveRegion: isBusy,
       child: Material(
@@ -655,7 +656,9 @@ class AdminActionChip extends StatelessWidget {
                       child: Text(
                         label,
                         style: AppTypography.labelMd.copyWith(
-                          color: cs.brightness == Brightness.light
+                          color: onTap == null && !isBusy
+                              ? ext.textDisabled
+                              : cs.brightness == Brightness.light
                               ? cs.onSurface
                               : accent,
                         ),
@@ -1113,24 +1116,28 @@ class AdminIconButton extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: ext.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.6)),
-          ),
-          child: Icon(
-            icon,
-            semanticLabel: label,
-            size: 18,
-            color: cs.onSurface,
+    return Semantics(
+      label: label,
+      button: true,
+      enabled: onPressed != null,
+      excludeSemantics: true,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(AppRadii.pill),
+          child: Ink(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: ext.surfaceContainerLow,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 18,
+              color: onPressed == null ? ext.textDisabled : cs.onSurface,
+            ),
           ),
         ),
       ),

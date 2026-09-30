@@ -1,17 +1,63 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:mobi_app/core/async/account_epoch.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/biopay/domain/face_shortcut.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FaceServiceException implements Exception {
-  const FaceServiceException(this.code);
+  const FaceServiceException(this.code, {this.operation, this.operationId});
   final String code;
+  final String? operation;
+  final String? operationId;
 }
 
 class BioPayFaceService {
-  BioPayFaceService({this.supabase});
+  BioPayFaceService({
+    this.supabase,
+    AccountSnapshot Function()? captureAccount,
+    bool Function(AccountSnapshot)? isCurrent,
+  }) : _captureOverride = captureAccount,
+       _isCurrentOverride = isCurrent;
   final SupabaseClient? supabase;
+  final AccountSnapshot Function()? _captureOverride;
+  final bool Function(AccountSnapshot)? _isCurrentOverride;
+
+  // Successful states emitted by the provider and its SQL authority. A missing
+  // or invented state cannot confirm a mutation that may already have run.
+  static const _mutationStatuses = <String, Set<String>>{
+    'enroll': {'active', 'processing', 'cancelled'},
+    'resolve': {
+      'dial_ready',
+      'no_match',
+      'ambiguous',
+      'recipient_unavailable',
+      'unavailable',
+      'route_unavailable',
+    },
+    'pause': {'updated'},
+    'resume': {'updated'},
+    'remove': {'updated'},
+    'change_method': {'updated'},
+    'handoff': {'recorded'},
+  };
+
+  AccountSnapshot captureAccount() {
+    try {
+      final account = _captureOverride?.call() ?? AccountContext.capture();
+      if (!isCurrent(account)) throw const StaleAccountWork();
+      return account;
+    } on Object {
+      throw const FaceServiceException('AUTH_EXPIRED');
+    }
+  }
+
+  bool isCurrent(AccountSnapshot account) =>
+      ownerId == account.userId &&
+      (_isCurrentOverride?.call(account) ?? AccountContext.isCurrent(account));
   String? get ownerId => supabase?.auth.currentUser?.isAnonymous == false
       ? supabase?.auth.currentUser?.id
       : null;
@@ -20,18 +66,36 @@ class BioPayFaceService {
     Map<String, Object?> body = const {},
   ]) async {
     final client = supabase;
-    final account = ownerId;
-    if (client == null || account == null) {
+    if (client == null || ownerId == null) {
       throw const FaceServiceException('AUTH_EXPIRED');
     }
+    final account = captureAccount();
+    final operationId =
+        (body['idempotency_key'] ?? body['request_id'] ?? body['method_id'])
+            ?.toString();
+    FaceServiceException unconfirmed() => FaceServiceException(
+      'OUTCOME_UNKNOWN',
+      operation: 'biopay_face:$action',
+      operationId: operationId,
+    );
     try {
-      final response = await client.functions
-          .invoke('biopay-face-provider', body: {'action': action, ...body})
-          .timeout(const Duration(seconds: 15));
-      if (account != ownerId) throw const FaceServiceException('AUTH_EXPIRED');
+      final request = client.functions.invoke(
+        'biopay-face-provider',
+        body: {'action': action, ...body},
+      );
+      final response = action == 'status'
+          ? await RequestDeadline.read(request)
+          : await RequestDeadline.mutation(
+              request,
+              operation: 'biopay_face:$action',
+              operationId: operationId,
+            );
+      if (!isCurrent(account)) {
+        throw const FaceServiceException('AUTH_EXPIRED');
+      }
       final result = response.data;
-      if (result is! Map) {
-        throw const FaceServiceException('SERVICE_UNAVAILABLE');
+      if (result is! Map || result.keys.any((key) => key is! String)) {
+        throw const FormatException('Invalid Face reply');
       }
       final data = Map<String, dynamic>.from(result);
       if (data['success'] == false) {
@@ -39,7 +103,17 @@ class BioPayFaceService {
           data['code']?.toString() ?? 'SERVICE_UNAVAILABLE',
         );
       }
+      if (data['success'] != true ||
+          (action != 'status' &&
+              _mutationStatuses[action]?.contains(data['status']) != true)) {
+        throw const FormatException('Invalid Face acknowledgement');
+      }
       return data;
+    } on MutationOutcomeUnknownException {
+      throw unconfirmed();
+    } on FormatException {
+      if (action != 'status') throw unconfirmed();
+      throw const FaceServiceException('SERVICE_UNAVAILABLE');
     } on FunctionException catch (error) {
       final details = error.details;
       throw FaceServiceException(
@@ -74,7 +148,15 @@ class BioPayFaceService {
       'consent': consent,
       'consent_version': 'face-discovery-v1',
     });
-    return result['status']?.toString() ?? 'processing';
+    final status = result['status'];
+    if (status is! String || !_mutationStatuses['enroll']!.contains(status)) {
+      throw FaceServiceException(
+        'OUTCOME_UNKNOWN',
+        operation: 'biopay_face:enroll',
+        operationId: idempotencyKey,
+      );
+    }
+    return status;
   }
 
   Future<PreparedFaceUssdShortcut> resolveShortcut({
@@ -98,7 +180,15 @@ class BioPayFaceService {
             },
       );
     }
-    return PreparedFaceUssdShortcut.fromJson(result);
+    try {
+      return PreparedFaceUssdShortcut.fromJson(result);
+    } on Object {
+      throw FaceServiceException(
+        'OUTCOME_UNKNOWN',
+        operation: 'biopay_face:resolve',
+        operationId: idempotencyKey,
+      );
+    }
   }
 
   Future<void> changeMethod(String id) async {
@@ -123,9 +213,12 @@ class BioPayFaceService {
         productionReady: false,
       );
     }
-    final response = await supabase!.functions
-        .invoke('biopay-face-provider/health', method: HttpMethod.get)
-        .timeout(const Duration(seconds: 15));
+    final response = await RequestDeadline.read(
+      supabase!.functions.invoke(
+        'biopay-face-provider/health',
+        method: HttpMethod.get,
+      ),
+    );
     return BioPayFaceProviderStatus.fromJson(
       Map<String, dynamic>.from(response.data as Map),
     );
@@ -142,22 +235,44 @@ class BioPayEnrollmentStatus {
   final String status;
   final String? receivingMethodId;
   final bool hasFace, pending;
-  factory BioPayEnrollmentStatus.fromJson(Map<String, dynamic> json) =>
-      BioPayEnrollmentStatus(
-        status: switch (json['status']) {
-          'not_started' ||
-          'active' ||
-          'paused' ||
-          'deleted' ||
-          'processing' ||
-          'reenrollment_required' ||
-          'receiving_method_required' => json['status'] as String,
-          _ => 'unavailable',
-        },
-        receivingMethodId: json['receiving_method_id'] as String?,
-        hasFace: json['has_face'] == true,
-        pending: json['pending_vector_id'] != null,
-      );
+  factory BioPayEnrollmentStatus.fromJson(Map<String, dynamic> json) {
+    // Exact fields emitted by rpc_biopay_face_authority('status'). Nullable
+    // method/vector values are intentional; missing fields are not absence.
+    final status = json['status'];
+    if (status is! String ||
+        !const {
+          'not_started',
+          'active',
+          'paused',
+          'deleted',
+          'processing',
+          'reenrollment_required',
+          'receiving_method_required',
+          'rejected',
+        }.contains(status) ||
+        json['has_face'] is! bool ||
+        !json.containsKey('receiving_method_id') ||
+        !json.containsKey('pending_vector_id')) {
+      throw const FormatException('Invalid Face enrollment status');
+    }
+    final method = json['receiving_method_id'];
+    final vector = json['pending_vector_id'];
+    if ((method != null &&
+            (method is! String ||
+                !RegExp(
+                  r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+                ).hasMatch(method))) ||
+        (vector != null &&
+            (vector is! String || vector.isEmpty || vector.trim() != vector))) {
+      throw const FormatException('Invalid Face enrollment references');
+    }
+    return BioPayEnrollmentStatus(
+      status: status == 'rejected' ? 'unavailable' : status,
+      receivingMethodId: method as String?,
+      hasFace: json['has_face'] as bool,
+      pending: vector != null,
+    );
+  }
   factory BioPayEnrollmentStatus.preview() =>
       const BioPayEnrollmentStatus(status: 'not_started');
   bool get isEnrolled => hasFace && status == 'active';

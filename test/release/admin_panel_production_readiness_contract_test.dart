@@ -61,20 +61,25 @@ void main() {
 
       expect(workflow, contains("flutter-version: '3.44.3'"));
       expect(workflow, isNot(contains("flutter-version: '3.38.9'")));
-      expect(workflow, contains('Run admin PWA readiness contracts'));
       expect(
         workflow,
         contains(
-          'test/release/admin_panel_production_readiness_contract_test.dart',
+          'Verify full Flutter app including admin PWA readiness contracts',
         ),
       );
+      expect(workflow, contains('./scripts/ci/verify_flutter.sh'));
       expect(workflow, contains('Verify generated PWA bundles'));
       expect(
         workflow,
         contains('./scripts/web/verify_pwa_bundles.sh build/pwa'),
       );
-      expect(workflow, contains('Deploy combined Pages site'));
-      expect(workflow, contains('pages deploy build/pwa/site'));
+      expect(
+        workflow,
+        contains('Record exact PWA candidate and intended destination'),
+      );
+      expect(workflow, contains('pages-release-candidate'));
+      expect(workflow, isNot(contains('pages deploy')));
+      expect(workflow, isNot(contains('CLOUDFLARE_API_TOKEN')));
       expect(workflow, isNot(contains('Deploy admin PWA')));
       expect(
         preparePwa,
@@ -105,7 +110,7 @@ void main() {
     });
 
     test(
-      'legacy Pages deployment delegates to the verified combined build',
+      'legacy Pages entrypoint delegates to a candidate with separate promotion',
       () {
         final legacy = File(
           '.github/workflows/cloudflare-pages.yml',
@@ -124,7 +129,17 @@ void main() {
         expect(legacy, isNot(contains('inputs.directory')));
         expect(combined, contains('workflow_call:'));
         expect(combined, contains('environment: Mobio'));
-        expect(combined, contains('pages deploy build/pwa/site'));
+        expect(
+          combined,
+          contains('scripts/web/pwa_candidate_manifest.py create'),
+        );
+        expect(combined, isNot(contains('pages deploy')));
+        final deployment = File(
+          'scripts/web/deploy_cloudflare_pwas.sh',
+        ).readAsStringSync();
+        expect(deployment, contains('promote'));
+        expect(deployment, isNot(contains('prepare_pwa_bundles.sh')));
+        expect(deployment, isNot(contains('npx wrangler')));
       },
     );
 
@@ -266,8 +281,8 @@ void main() {
       expect(tripMigration, contains('p.member_id ilike'));
     });
 
-    test('keeps active admin workspace aligned with design.md', () {
-      final design = File('design.md').readAsStringSync();
+    test('keeps active admin workspace bound to the Revolut authority', () {
+      final design = File('docs/design/README.md').readAsStringSync();
       final adminUi = File(
         'lib/features/admin/presentation/widgets/admin_ui.dart',
       ).readAsStringSync();
@@ -278,8 +293,9 @@ void main() {
         'lib/features/admin/presentation/admin_audit_log_screen.dart',
       ).readAsStringSync();
 
-      expect(design, contains('reduce headline intensity'));
-      expect(design, contains('use the same chip and spacing language'));
+      expect(design, contains('revolut-design'));
+      expect(File('design.md').existsSync(), isFalse);
+      expect(File('docs/product/admin_design_system.md').existsSync(), isFalse);
       // Typography belongs to the design system, not the production scope
       // boundary. Responsive rendering is covered by the preview suite.
       expect(adminUi, contains('AdminFilterChip'));

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/async/external_action.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/location/google_maps_deep_link_service.dart';
 import 'package:mobi_app/core/location/location_providers.dart';
@@ -261,7 +262,11 @@ class _EvChargerLocatorScreenState
 
   Future<void> _openChargerChat(Uri uri) async {
     try {
-      if (await launchUrl(uri, mode: LaunchMode.externalApplication)) return;
+      if (await ExternalAction.run(
+        launchUrl(uri, mode: LaunchMode.externalApplication),
+        operation: 'open_external_link',
+      ))
+        return;
     } on Object {
       // A missing external app must leave the charger list usable.
     }

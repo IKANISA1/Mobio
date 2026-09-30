@@ -301,6 +301,7 @@
   "faceRecipientUnavailable": "This recipient has no available receiving number. Use a number or QR.",
   "faceCameraError": "Camera unavailable. Check permission, then try again.",
   "faceTimeout": "This is taking too long. Try again.",
+  "faceOutcomeUnknown": "The result is unconfirmed. Check the current status or activity before trying again.",
   "faceSignIn": "Sign in again to continue.",
   "faceSelectMethod": "Choose a receiving MoMo number first.",
   "faceDialFailed": "The dialer could not open. Copy the code or try another method.",

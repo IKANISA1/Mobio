@@ -458,6 +458,7 @@ Widget _screenFor(
 }) {
   return switch (screen) {
     'home' || 'home_shell' => HomeScreen(
+      onChatPerson: (_) => go('chat'),
       mode: mode,
       onModeChanged: onModeChanged,
       onChat: (_) => go('chat'),

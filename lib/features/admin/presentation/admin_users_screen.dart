@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/admin/application/admin_services.dart';
 import 'package:mobi_app/features/admin/application/admin_users_provider.dart';
@@ -26,6 +27,9 @@ class AdminUsersScreen extends ConsumerStatefulWidget {
 }
 
 class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
+  final _actionToken = AccountActionToken.capture();
+  bool get _actionIsCurrent => mounted && _actionToken.isCurrent;
+
   late final TextEditingController _searchController;
 
   @override
@@ -41,7 +45,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
   }
 
   void _showSnackBar(String message, {bool isError = false}) {
-    if (!mounted) return;
+    if (!_actionIsCurrent) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -53,6 +57,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
   }
 
   Future<void> _showUserSheet(AdminUserListItem user) async {
+    if (!_actionIsCurrent) return;
     final currentUserId = ref.read(adminServiceProvider).currentUserId;
 
     await MobiBottomSheet.show<void>(
@@ -61,6 +66,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
         user: user,
         currentUserId: currentUserId,
         onUpdateRole: (nextRole) async {
+          if (!_actionIsCurrent) return;
           try {
             await ref
                 .read(adminUsersProvider.notifier)
@@ -76,6 +82,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
           }
         },
         onAddInsuranceReward: () async {
+          if (!_actionIsCurrent) return;
           try {
             await ref
                 .read(adminUsersProvider.notifier)
@@ -108,7 +115,9 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
           label: 'Refresh',
           icon: LucideIcons.refreshCw,
           isBusy: asyncState.isLoading,
-          onTap: controller.refresh,
+          onTap: () {
+            if (_actionIsCurrent) controller.refresh();
+          },
         ),
       ],
       child: asyncState.when(
@@ -125,7 +134,9 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
               action: AdminActionChip(
                 label: 'Retry',
                 icon: LucideIcons.refreshCw,
-                onTap: controller.refresh,
+                onTap: () {
+                  if (_actionIsCurrent) controller.refresh();
+                },
               ),
             ),
           ],
@@ -142,8 +153,12 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
         AdminUserFilterBar(
           searchController: _searchController,
           roleFilter: state.roleFilter,
-          onSearchChanged: controller.onSearchChanged,
-          onRoleFilterChanged: controller.onRoleFilterChanged,
+          onSearchChanged: (value) {
+            if (_actionIsCurrent) controller.onSearchChanged(value);
+          },
+          onRoleFilterChanged: (value) {
+            if (_actionIsCurrent) controller.onRoleFilterChanged(value);
+          },
         ),
         const SizedBox(height: AppSpacing.lg),
         if (state.selectedIds.isNotEmpty) ...[
@@ -151,6 +166,7 @@ class _AdminUsersScreenState extends ConsumerState<AdminUsersScreen> {
             selectedCount: state.selectedIds.length,
             bulkUpdatingRole: state.bulkUpdatingRole,
             onApplyRole: (role) async {
+              if (!_actionIsCurrent) return;
               try {
                 final result = await controller.applyRoleToSelected(role);
                 final parts = [

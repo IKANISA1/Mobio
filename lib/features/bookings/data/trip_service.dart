@@ -178,12 +178,16 @@ class TripService {
       writeAcknowledged = true;
       authority.requireCurrent();
 
-      final trip = await getTripById(TripWireRecord.requireId(tripId));
+      final createdId = TripWireRecord.requireId(tripId);
+      final trip = await getTripById(createdId);
       authority.requireCurrent();
       if (trip == null) {
         throw const NotFoundException(message: 'Scheduled trip was not found.');
       }
 
+      if (trip.id != createdId || trip.authorId != userId) {
+        throw const FormatException('Created trip identity mismatch');
+      }
       return trip;
     } on MutationOutcomeUnknownException {
       // The server may still commit. Preserve the same request identity and
@@ -191,10 +195,26 @@ class TripService {
       rethrow;
     } on StaleAccountWork {
       rethrow;
-    } on AppException {
+    } on AppException catch (error, stackTrace) {
+      if (writeAcknowledged) {
+        throw MutationOutcomeUnknownException(
+          operation: 'create_trip',
+          operationId: clientRequestId,
+          originalError: error,
+          stackTrace: stackTrace,
+        );
+      }
       restoreCooldown();
       rethrow;
     } on Object catch (error, stackTrace) {
+      if (writeAcknowledged) {
+        throw MutationOutcomeUnknownException(
+          operation: 'create_trip',
+          operationId: clientRequestId,
+          originalError: error,
+          stackTrace: stackTrace,
+        );
+      }
       restoreCooldown();
       throw AppExceptionMapper.mapAndLog(
         error,
@@ -222,6 +242,9 @@ class TripService {
       authority.requireCurrent();
 
       if (row == null) return null;
+      if (row['id'] != tripId) {
+        throw const FormatException('Scheduled trip identity mismatch');
+      }
       return _publicTripFromJson(row);
     } on StaleAccountWork {
       rethrow;
@@ -258,9 +281,13 @@ class TripService {
       authority.requireCurrent();
 
       return expandTripsForScheduleWindow(
-        rows.map<Trip>(
-          (row) => TripWireRecord.parse(row, redactWhatsApp: false),
-        ),
+        rows.map<Trip>((row) {
+          final trip = TripWireRecord.parse(row, redactWhatsApp: false);
+          if (trip.authorId != userId) {
+            throw const FormatException('Scheduled trip owner mismatch');
+          }
+          return trip;
+        }),
         DateTime.now(),
       );
     } on StaleAccountWork {
@@ -352,12 +379,9 @@ class TripService {
       authority.requireCurrent();
 
       return (rows as List<dynamic>).map((row) {
-        final json = Map<String, dynamic>.from(row as Map);
-        json['id'] = json.remove('trip_id');
-        json['status'] ??= 'active';
-        json['is_active'] ??= true;
-        json['whatsapp'] = '';
-        return TripWireRecord.parse(json);
+        return TripWireRecord.parsePoolOccurrence(
+          Map<String, dynamic>.from(row as Map),
+        );
       }).toList();
     } on StaleAccountWork {
       rethrow;
@@ -396,12 +420,16 @@ class TripService {
     String? note,
   }) async {
     final authority = _captureAuthority();
-    _requireUserId(authority, 'Please sign in to edit this trip.');
+    final userId = _requireUserId(
+      authority,
+      'Please sign in to edit this trip.',
+    );
     final normalizedTripId = tripId.trim();
     if (normalizedTripId.isEmpty) {
       throw const ValidationException(message: 'Trip ID is required.');
     }
 
+    var writeAcknowledged = false;
     try {
       final updatedTripId = await RequestDeadline.mutation(
         _supabase.rpc(
@@ -431,20 +459,46 @@ class TripService {
         operationId: normalizedTripId,
         timeout: _networkTimeout,
       );
+      writeAcknowledged = true;
       authority.requireCurrent();
 
-      final trip = await getTripById(TripWireRecord.requireId(updatedTripId));
+      final returnedId = TripWireRecord.requireId(updatedTripId);
+      if (returnedId != normalizedTripId) {
+        throw const FormatException('Updated trip identity mismatch');
+      }
+      final trip = await getTripById(returnedId);
       authority.requireCurrent();
       if (trip == null) {
         throw const NotFoundException(message: 'Updated trip was not found.');
+      }
+      if (trip.authorId != userId) {
+        throw const FormatException('Updated trip owner mismatch');
       }
 
       return trip;
     } on StaleAccountWork {
       rethrow;
-    } on AppException {
+    } on MutationOutcomeUnknownException {
+      rethrow;
+    } on AppException catch (error, stackTrace) {
+      if (writeAcknowledged) {
+        throw MutationOutcomeUnknownException(
+          operation: 'update_trip',
+          operationId: normalizedTripId,
+          originalError: error,
+          stackTrace: stackTrace,
+        );
+      }
       rethrow;
     } on Object catch (error, stackTrace) {
+      if (writeAcknowledged) {
+        throw MutationOutcomeUnknownException(
+          operation: 'update_trip',
+          operationId: normalizedTripId,
+          originalError: error,
+          stackTrace: stackTrace,
+        );
+      }
       throw AppExceptionMapper.mapAndLog(
         error,
         stackTrace,

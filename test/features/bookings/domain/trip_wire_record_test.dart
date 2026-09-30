@@ -14,6 +14,10 @@ void main() {
     'status': 'active',
     'is_active': true,
     'whatsapp': '+250788123456',
+    'is_recurring': false,
+    'recurring_days': <int>[],
+    'recurrence_end_date': null,
+    'recurrence_skip_dates': <String>[],
   };
 
   test('public trip parser validates identity and redacts contact', () {
@@ -44,4 +48,79 @@ void main() {
     }
     expect(() => TripWireRecord.requireId('not-a-uuid'), throwsFormatException);
   });
+  test(
+    'recurrence flags and day indices do not inherit generated defaults',
+    () {
+      for (final invalid in [
+        {...row}..remove('is_recurring'),
+        {...row}..remove('recurring_days'),
+        {...row}..remove('recurrence_skip_dates'),
+        {...row, 'is_recurring': true},
+        {
+          ...row,
+          'recurring_days': [0.5],
+        },
+        {
+          ...row,
+          'recurring_days': [7],
+        },
+        {
+          ...row,
+          'recurring_days': [0, 0],
+        },
+        {...row, 'recurrence_end_date': '2026-02-31'},
+        {
+          ...row,
+          'recurrence_skip_dates': ['2026-02-31'],
+        },
+      ]) {
+        expect(() => TripWireRecord.parse(invalid), throwsFormatException);
+      }
+    },
+  );
+
+  test(
+    'optional coordinates stay nullable but reject nonfinite/out-of-range values',
+    () {
+      expect(
+        TripWireRecord.parse({...row, 'origin_lat': null}).originLat,
+        isNull,
+      );
+      for (final invalid in [
+        {...row, 'origin_lat': double.nan},
+        {...row, 'dest_lat': 91},
+        {...row, 'dest_lng': -181},
+        {...row, 'origin_lng': '30'},
+      ]) {
+        expect(() => TripWireRecord.parse(invalid), throwsFormatException);
+      }
+    },
+  );
+
+  test(
+    'pool occurrence uses its declared projection without losing original identity',
+    () {
+      final projection =
+          <String, dynamic>{
+              ...row,
+              'trip_id': row['id'],
+              'score': 85.4,
+              'reason': 'Same travel day',
+            }
+            ..remove('id')
+            ..remove('is_recurring')
+            ..remove('recurring_days')
+            ..remove('recurrence_skip_dates');
+      final occurrence = TripWireRecord.parsePoolOccurrence(projection);
+      expect(occurrence.id, row['id']);
+      expect(occurrence.isRecurring, false);
+      expect(occurrence.isActive, true);
+      expect(occurrence.whatsapp, isEmpty);
+      expect(
+        () =>
+            TripWireRecord.parsePoolOccurrence({...projection, 'score': null}),
+        throwsFormatException,
+      );
+    },
+  );
 }

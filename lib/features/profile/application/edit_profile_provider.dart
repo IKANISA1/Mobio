@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobi_app/core/async/account_epoch.dart';
 import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/localization/country_providers.dart';
@@ -19,12 +20,36 @@ final editProfileProvider =
     );
 
 class EditProfileController extends AsyncNotifier<EditProfileState> {
+  AccountActionToken? _formAccount;
+
+  void _requireFormAccount([AccountActionToken? expected]) {
+    if (!ref.mounted ||
+        (expected != null && !identical(expected, _formAccount)) ||
+        _formAccount?.isCurrent != true)
+      throw const StaleAccountWork();
+  }
+
   @override
   FutureOr<EditProfileState> build() async {
-    return _loadInitialData();
+    final formAccount = AccountActionToken.capture();
+    _formAccount = formAccount;
+    void invalidateOldForm() {
+      if (!ref.mounted || _formAccount?.isCurrent == true) return;
+      state = const AsyncValue.loading();
+      ref.invalidateSelf();
+    }
+
+    AccountContext.changes.addListener(invalidateOldForm);
+    ref.onDispose(
+      () => AccountContext.changes.removeListener(invalidateOldForm),
+    );
+    final result = await _loadInitialData();
+    _requireFormAccount(formAccount);
+    return result;
   }
 
   Future<EditProfileState> _loadInitialData() async {
+    final formAccount = _formAccount;
     if (SupabaseConfig.isLocalUiPreview) {
       final agencyNames = await ref
           .read(publicTransportServiceProvider)
@@ -65,6 +90,7 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
     final plans = await planService.getAll();
     final agencyNames = await publicTransportService.getAgencyNames();
     if (account != null) AccountContext.requireCurrent(account);
+    _requireFormAccount(formAccount);
 
     if (!SupabaseConfig.isConfigured ||
         Supabase.instance.client.auth.currentSession == null) {
@@ -139,13 +165,19 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
 
   void setCountryCode(String code) {
     final currentState = state.value;
-    if (currentState == null) return;
+    if (currentState == null ||
+        state.isLoading ||
+        _formAccount?.isCurrent != true)
+      return;
     state = AsyncValue.data(currentState.copyWith(countryCode: code));
   }
 
   void toggleDriverMode() {
     final currentState = state.value;
-    if (currentState == null) return;
+    if (currentState == null ||
+        state.isLoading ||
+        _formAccount?.isCurrent != true)
+      return;
     state = AsyncValue.data(
       currentState.copyWith(isDriver: !currentState.isDriver),
     );
@@ -153,7 +185,10 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
 
   void setVehicleTypeId(String id) {
     final currentState = state.value;
-    if (currentState == null) return;
+    if (currentState == null ||
+        state.isLoading ||
+        _formAccount?.isCurrent != true)
+      return;
     state = AsyncValue.data(currentState.copyWith(vehicleTypeId: id));
   }
 
@@ -166,7 +201,9 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
     required String rentalVehicleModel,
   }) async {
     final s = state.value;
-    if (s == null) return false;
+    if (s == null || state.isLoading || state.hasError) return false;
+    _requireFormAccount();
+    final formAccount = _formAccount!;
 
     final normalizedPlate = vehicleNumberPlate
         .toUpperCase()
@@ -240,8 +277,10 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         previousIsDriver: s.initialIsDriver,
       );
       AccountContext.requireCurrent(account);
+      _requireFormAccount(formAccount);
       return true;
     } on Object {
+      _requireFormAccount(formAccount);
       final finalState = state.value;
       if (AccountContext.isCurrent(account) && finalState != null) {
         state = AsyncValue.data(finalState.copyWith(isSaving: false));

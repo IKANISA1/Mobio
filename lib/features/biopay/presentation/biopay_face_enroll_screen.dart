@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
 import 'package:mobi_app/features/biopay/data/face_capture.dart';
@@ -26,24 +28,59 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
     with WidgetsBindingObserver {
   late final FaceCapture _capture;
   BioPayEnrollmentStatus _status = const BioPayEnrollmentStatus();
+  BioPayEnrollmentStatus? _confirmedStatus;
+  AccountSnapshot? _confirmedAccount;
   List<PaymentMethod> _methods = [];
   String? _methodId;
   Object? _error;
   bool _busy = false, _consent = false, _foreground = true;
   int _generation = 0;
+  AccountSnapshot? _viewAccount;
   Timer? _poll;
   @override
   void initState() {
     super.initState();
     _capture = ref.read(faceCaptureFactoryProvider)();
     WidgetsBinding.instance.addObserver(this);
+    try {
+      _viewAccount = ref.read(biopayFaceServiceProvider).captureAccount();
+    } on Object {
+      _viewAccount = null;
+    }
+    AccountContext.changes.addListener(_onAccountChanged);
     unawaited(_load());
+  }
+
+  void _onAccountChanged() {
+    if (!mounted) return;
+    final service = ref.read(biopayFaceServiceProvider);
+    final previous = _viewAccount;
+    if (previous != null && service.isCurrent(previous)) return;
+    try {
+      _viewAccount = service.captureAccount();
+    } on Object {
+      _viewAccount = null;
+    }
+    _generation++;
+    _poll?.cancel();
+    unawaited(_capture.stop().catchError((Object _) {}));
+    setState(() {
+      _busy = false;
+      _consent = false;
+      _status = const BioPayEnrollmentStatus(status: 'unavailable');
+      _confirmedStatus = null;
+      _confirmedAccount = null;
+      _methods = [];
+      _methodId = null;
+      _error = const FaceServiceException('AUTH_EXPIRED');
+    });
   }
 
   @override
   void dispose() {
     _generation++;
     _poll?.cancel();
+    AccountContext.changes.removeListener(_onAccountChanged);
     WidgetsBinding.instance.removeObserver(this);
     unawaited(_capture.stop().catchError((Object _) {}));
     super.dispose();
@@ -65,11 +102,26 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
     if (_busy || !_foreground) return;
     final generation = ++_generation;
     final face = ref.read(biopayFaceServiceProvider);
-    final owner = face.ownerId;
+    AccountSnapshot account;
+    try {
+      account = face.captureAccount();
+    } on Object {
+      setState(() => _error = const FaceServiceException('AUTH_EXPIRED'));
+      return;
+    }
+    bool current() =>
+        mounted &&
+        _foreground &&
+        generation == _generation &&
+        face.isCurrent(account);
     setState(() => _busy = true);
     try {
       final status = await face.enrollmentStatus();
-      if (face.ownerId != owner) return;
+      if (!current()) return;
+      if (!status.isUnavailable) {
+        _confirmedStatus = status;
+        _confirmedAccount = account;
+      }
       final methods =
           workspaceMethods(
                 await ref
@@ -83,7 +135,7 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
                     m.kind == PaymentMethodKind.mobileWallet,
               )
               .toList();
-      if (!mounted || generation != _generation || face.ownerId != owner) {
+      if (!current()) {
         return;
       }
       setState(() {
@@ -99,7 +151,7 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
         _poll = Timer(const Duration(seconds: 3), () => unawaited(_load()));
       }
     } on Object catch (error) {
-      if (mounted && generation == _generation) {
+      if (current()) {
         setState(() {
           _status = const BioPayEnrollmentStatus();
           _methods = [];
@@ -108,30 +160,84 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
         });
       }
     } finally {
-      if (mounted && generation == _generation) setState(() => _busy = false);
+      if (mounted && generation == _generation) {
+        setState(() {
+          _busy = false;
+          if (!face.isCurrent(account)) {
+            _status = const BioPayEnrollmentStatus();
+            _methods = [];
+            _methodId = null;
+            _error = const FaceServiceException('AUTH_EXPIRED');
+          }
+        });
+      }
     }
   }
 
-  Future<void> _action(Future<void> Function() action) async {
+  Future<void> _action(
+    Future<void> Function() action, {
+    String? enrollmentAction,
+  }) async {
     if (_busy) return;
     final generation = ++_generation;
+    final face = ref.read(biopayFaceServiceProvider);
+    AccountSnapshot account;
+    try {
+      account = face.captureAccount();
+    } on Object {
+      return;
+    }
+    bool current() =>
+        mounted &&
+        _foreground &&
+        generation == _generation &&
+        face.isCurrent(account);
     var succeeded = false;
     setState(() => _busy = true);
     try {
       await action();
       succeeded = true;
-      if (mounted && generation == _generation) setState(() => _error = null);
+      if (current()) {
+        // The management acknowledgement confirms a new state even when the
+        // subsequent status refresh fails. Never revive an older active cache
+        // after confirmed removal, or offer pause after confirmed pause.
+        final prior =
+            _confirmedAccount != null && face.isCurrent(_confirmedAccount!)
+            ? _confirmedStatus
+            : null;
+        if (enrollmentAction != null && prior != null) {
+          _confirmedAccount = account;
+          _confirmedStatus = BioPayEnrollmentStatus(
+            status: switch (enrollmentAction) {
+              'remove' => 'deleted',
+              'pause' => 'paused',
+              'resume' => 'active',
+              _ => prior.status,
+            },
+            receivingMethodId: enrollmentAction == 'remove'
+                ? null
+                : prior.receivingMethodId,
+            hasFace: enrollmentAction != 'remove' && prior.hasFace,
+            pending: enrollmentAction == 'resume' && prior.pending,
+          );
+        }
+        setState(() => _error = null);
+      }
     } on Object catch (error) {
-      if (mounted && generation == _generation) {
+      if (current()) {
         setState(() {
           _error = error;
           _methodId = _status.receivingMethodId;
+          if (error is FaceServiceException &&
+              error.code == 'OUTCOME_UNKNOWN') {
+            _status = const BioPayEnrollmentStatus();
+          }
         });
       }
     } finally {
       if (mounted && generation == _generation) {
         setState(() => _busy = false);
-        if (succeeded) await _load();
+        if (current() && succeeded) await _load();
       }
     }
   }
@@ -141,11 +247,14 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
         !_foreground ||
         _status.isUnavailable ||
         !_consent ||
-        _methodId == null)
+        _methodId == null) {
       return;
+    }
     final service = ref.read(biopayFaceServiceProvider);
-    final account = service.ownerId;
-    if (account == null) {
+    AccountSnapshot account;
+    try {
+      account = service.captureAccount();
+    } on Object {
       setState(() => _error = const FaceServiceException('AUTH_EXPIRED'));
       return;
     }
@@ -160,7 +269,7 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
         mounted &&
         _foreground &&
         generation == _generation &&
-        service.ownerId == account;
+        service.isCurrent(account);
     try {
       if (!_capture.isReady) {
         await _capture.start(front: true);
@@ -184,15 +293,30 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
           pending: result == 'processing',
           receivingMethodId: _methodId,
         );
+        if (result == 'active') {
+          // This acknowledgement confirms enrollment for the captured account.
+          // Keep recovery available if the next status read is unavailable;
+          // the fresh status still determines current readiness.
+          _confirmedStatus = _status;
+          _confirmedAccount = account;
+        }
         _consent = false;
       });
     } on Object catch (error) {
-      if (current()) setState(() => _error = error);
+      if (current()) {
+        setState(() {
+          _error = error;
+          if (error is FaceServiceException &&
+              error.code == 'OUTCOME_UNKNOWN') {
+            _status = const BioPayEnrollmentStatus();
+          }
+        });
+      }
     } finally {
       bytes?.fillRange(0, bytes.length, 0);
       if (mounted && generation == _generation) {
         setState(() => _busy = false);
-        if (submitted) await _load();
+        if (current() && submitted) await _load();
       }
     }
   }
@@ -200,6 +324,22 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
   @override
   Widget build(BuildContext context) {
     final l = paymentCopy(context);
+    final renderedAccount = _viewAccount;
+    final renderedGeneration = _generation;
+    final face = ref.read(biopayFaceServiceProvider);
+    bool renderedCurrent() =>
+        mounted &&
+        _foreground &&
+        renderedGeneration == _generation &&
+        renderedAccount != null &&
+        face.isCurrent(renderedAccount);
+    final confirmed =
+        _confirmedAccount != null && face.isCurrent(_confirmedAccount!)
+        ? _confirmedStatus
+        : null;
+    // Cached confirmation permits recovery actions, never current-ready or
+    // absent claims while the fresh status is unavailable.
+    final recoveryStatus = _status.isUnavailable ? confirmed : _status;
     final camera = _capture.controller;
     final ready = camera?.value.isInitialized == true;
     return BioPayFlowScreen(
@@ -213,7 +353,9 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
           if (_status.status != 'not_started') ...[
             Semantics(
               liveRegion: true,
-              child: Text(faceStatusCopy(context, _status)),
+              child: Text(
+                _busy ? l.faceWorking : faceStatusCopy(context, _status),
+              ),
             ),
             const SizedBox(height: 20),
           ],
@@ -237,6 +379,7 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
             onChanged: _busy
                 ? null
                 : (id) {
+                    if (!renderedCurrent()) return;
                     setState(() => _methodId = id);
                     if (id != null && _status.hasFace) {
                       unawaited(
@@ -253,20 +396,28 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
             onPressed: _busy
                 ? null
                 : () async {
-                    _generation++;
+                    if (!renderedCurrent()) return;
+                    final account = renderedAccount;
+                    final service = ref.read(biopayFaceServiceProvider);
+                    final generation = ++_generation;
+                    bool current() =>
+                        mounted &&
+                        generation == _generation &&
+                        account != null &&
+                        service.isCurrent(account);
                     _poll?.cancel();
                     setState(() => _busy = true);
                     try {
                       await _capture.stop();
-                      if (!context.mounted) return;
+                      if (!context.mounted || !current()) return;
                       await context.push('/profile/payment-methods');
-                      if (!mounted) return;
+                      if (!current()) return;
                       setState(() => _busy = false);
                       await _load();
                     } on Object catch (error) {
-                      if (mounted) setState(() => _error = error);
+                      if (current()) setState(() => _error = error);
                     } finally {
-                      if (mounted) setState(() => _busy = false);
+                      if (current()) setState(() => _busy = false);
                     }
                   },
             child: Text(l.faceManageMethods),
@@ -281,7 +432,11 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
                 value: _consent,
                 onChanged: _busy
                     ? null
-                    : (value) => setState(() => _consent = value ?? false),
+                    : (value) {
+                        if (renderedCurrent()) {
+                          setState(() => _consent = value ?? false);
+                        }
+                      },
                 title: Text(l.faceConsent),
               ),
             ),
@@ -308,48 +463,67 @@ class _BioPayFaceEnrollScreenState extends ConsumerState<BioPayFaceEnrollScreen>
                       !_consent ||
                       _methodId == null
                   ? null
-                  : _captureFace,
+                  : () {
+                      if (renderedCurrent()) unawaited(_captureFace());
+                    },
               isLoading: _busy,
               child: Text(
                 _capture.isReady
                     ? l.faceCapture
-                    : _status.hasFace
+                    : recoveryStatus?.hasFace == true
                     ? l.faceUpdate
                     : l.faceStartCamera,
               ),
             ),
           ],
-          if (_status.hasFace) ...[
+          if (recoveryStatus?.hasFace == true) ...[
             const SizedBox(height: 12),
             TextButton(
               onPressed: _busy
                   ? null
-                  : () => _action(
-                      () => ref
-                          .read(biopayFaceServiceProvider)
-                          .setEnrollmentAction(
-                            _status.status == 'paused' ? 'resume' : 'pause',
+                  : () {
+                      if (!renderedCurrent()) return;
+                      unawaited(
+                        _action(
+                          () => face.setEnrollmentAction(
+                            recoveryStatus?.status == 'paused'
+                                ? 'resume'
+                                : 'pause',
                           ),
-                    ),
+                          enrollmentAction: recoveryStatus?.status == 'paused'
+                              ? 'resume'
+                              : 'pause',
+                        ),
+                      );
+                    },
               child: Text(
-                _status.status == 'paused' ? l.faceResume : l.facePause,
+                recoveryStatus?.status == 'paused' ? l.faceResume : l.facePause,
               ),
             ),
           ],
-          if (_status.hasFace || _status.pending)
+          if (recoveryStatus?.hasFace == true || _status.pending)
             TextButton(
               onPressed: _busy
                   ? null
-                  : () => _action(
-                      () => ref
-                          .read(biopayFaceServiceProvider)
-                          .setEnrollmentAction('remove'),
-                    ),
+                  : () {
+                      if (renderedCurrent()) {
+                        unawaited(
+                          _action(
+                            () => face.setEnrollmentAction('remove'),
+                            enrollmentAction: 'remove',
+                          ),
+                        );
+                      }
+                    },
               child: Text(l.faceRemove),
             ),
           if (_status.pending || _error != null)
             TextButton(
-              onPressed: _busy ? null : _load,
+              onPressed: _busy
+                  ? null
+                  : () {
+                      if (renderedCurrent()) unawaited(_load());
+                    },
               child: Text(l.faceRefresh),
             ),
           if (_error != null) ...[

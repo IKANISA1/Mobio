@@ -42,8 +42,10 @@ separately. This is not a claim of deployment or assistive-device acceptance.
   composer. BioPay action and insurance text can wrap without ellipsis.
 - Headings and text use semantic foreground colors in both themes. The brightest
   BioPay and wallet gradient stops were adjusted within their existing color
-  families for legibility. These small accessibility adaptations are recorded in
-  `design.md`; Mobio identity and workflows are preserved.
+  families for legibility. These small accessibility adaptations were recorded in
+  the now-removed local specification and remain documented in this report;
+  Mobio identity and workflows are preserved. The external `revolut-design`
+  skill governs subsequent work.
 - Decorative entry, loading and pulse animations respect reduced motion.
 - NFC card screen disposal no longer reads a disposed widget ref. Foreground NFC
   suspension is released after cancellation; physical NFC behavior still needs

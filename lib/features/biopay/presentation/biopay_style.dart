@@ -6,20 +6,13 @@ const bioPayBlue = AppColors.primary;
 const bioPayNfcPurple = AppColors.secondaryDim;
 const bioPayQrOrange = AppColors.warning;
 const bioPayScanTeal = AppColors.tertiary;
-const bioPayInk = Color(0xFF191C1F);
-const bioPayMuted = Color(0xFF717173);
-const bioPayCanvas = Color(0xFFF7F7F7);
-const bioPayPanel = Color(0xFFF4F5F6);
-const bioPayChrome = Color(0xFF000D19);
-const bioPayDarkPanel = Color(0xFF161618);
-const bioPayDarkPanelAlt = Color(0xFF222224);
 
-ThemeData bioPayLightTheme(BuildContext context) {
+ThemeData bioPayReferenceTheme(BuildContext context) {
   return Theme.of(context);
 }
 
-class BioPayLightCanvas extends StatelessWidget {
-  const BioPayLightCanvas({super.key, required this.child});
+class BioPayTaskCanvas extends StatelessWidget {
+  const BioPayTaskCanvas({super.key, required this.child});
 
   final Widget child;
 
@@ -53,14 +46,6 @@ class BioPayIconBox extends StatelessWidget {
         decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.72)),
-          boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: 0.14),
-              blurRadius: 24,
-              offset: const Offset(0, 12),
-            ),
-          ],
         ),
         child: Icon(icon, color: color, size: iconSize),
       ),

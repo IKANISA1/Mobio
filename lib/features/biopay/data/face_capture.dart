@@ -40,12 +40,12 @@ class CameraFaceCapture implements FaceCapture {
       try {
         await camera.initialize();
         if (generation != _generation) {
-          await camera.dispose();
+          await camera.dispose().timeout(const Duration(seconds: 8));
           return;
         }
         _controller = camera;
       } catch (_) {
-        await camera.dispose();
+        await camera.dispose().timeout(const Duration(seconds: 8));
         rethrow;
       }
     }();

@@ -112,7 +112,7 @@ For each journey exercise success, cancellation, empty/no-result, invalid input,
 
 ## Phase 4 — Review Revolut fidelity and accessibility
 
-The selected [revolut-design skill](/Users/jeanbosco/.codex/skills/revolut-design/SKILL.md) is the design authority. Repository `design.md`, tokens, screenshots and acceptance records are product adapters/evidence and cannot override it. Update conflicting adapter wording only when required for the implementation under review.
+The selected [external revolut-design skill](</Volumes/PRO-G40/Application Data/Codex/Codex-Home/skills/revolut-design/SKILL.md>) and its bundled references are the sole design authority for app, web, public website and admin. Repository tokens, source mappings, screenshots and acceptance records are product adapters/evidence and cannot override it. Local design specifications have been removed. Use `docs/design/README.md` to locate the product evidence, and resolve new visual patterns through the skill's applicable reference.
 
 Keep source cohorts separate: September 2026 iOS Dark · Glow for native overview/task patterns; selected blue-indigo onboarding references for WhatsApp login; the dated UK public website cohort for marketing; official Business imagery for Admin hierarchy with explicit table adaptations. Existing Mobio mappings are Home blue, BioPay teal, Trips/Nearby purple, wallet-related overview muted blue-violet, Profile/Plus vivid violet and quiet neutral detail/utility surfaces. These examples do not limit the full colour-role review.
 

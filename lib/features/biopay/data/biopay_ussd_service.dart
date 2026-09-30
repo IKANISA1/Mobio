@@ -1,4 +1,5 @@
 import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
 import 'package:mobi_app/features/biopay/domain/payment_entry.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -31,8 +32,24 @@ class BioPayUssdService {
       operation: 'rpc_create_biopay_ussd_request',
     );
 
-    return BioPayUssdPaymentRequest.fromJson(
-      Map<String, dynamic>.from(response as Map),
+    return _confirmResponse(
+      response,
+      operation: 'rpc_create_biopay_ussd_request',
+      validate: (request) {
+        final normalizedLabel = payeeLabel.trim().isEmpty
+            ? 'BioPay merchant'
+            : payeeLabel.trim();
+        final normalizedProvider = providerCode.trim().isEmpty
+            ? 'mtn_rw'
+            : providerCode.trim();
+        if (request.status != BioPayRequestStatus.readyToDial ||
+            request.channel != channel ||
+            request.amountMinor != amountMinor ||
+            request.payeeLabel != normalizedLabel ||
+            request.providerCode != normalizedProvider) {
+          throw const FormatException('Created BioPay request mismatch');
+        }
+      },
     );
   }
 
@@ -102,8 +119,9 @@ class BioPayUssdService {
       ),
     );
 
-    return BioPayUssdPaymentRequest.fromJson(
-      Map<String, dynamic>.from(response as Map),
+    return BioPayUssdPaymentRequest.fromResolvedJson(
+      BioPayWireRecord.object(response),
+      token: token,
     );
   }
 
@@ -123,8 +141,16 @@ class BioPayUssdService {
       operationId: request.id,
     );
 
-    return BioPayUssdPaymentRequest.fromJson(
-      Map<String, dynamic>.from(response as Map),
+    return _confirmResponse(
+      response,
+      operation: 'rpc_record_biopay_ussd_dialer_opened',
+      operationId: request.id,
+      validate: (confirmed) {
+        if (confirmed.status != BioPayRequestStatus.dialerOpened ||
+            !confirmed.hasSameInstruction(request)) {
+          throw const FormatException('BioPay request receipt mismatch');
+        }
+      },
     );
   }
 
@@ -144,8 +170,16 @@ class BioPayUssdService {
       operationId: request.id,
     );
 
-    return BioPayUssdPaymentRequest.fromJson(
-      Map<String, dynamic>.from(response as Map),
+    return _confirmResponse(
+      response,
+      operation: 'rpc_mark_biopay_ussd_user_paid',
+      operationId: request.id,
+      validate: (confirmed) {
+        if (confirmed.status != BioPayRequestStatus.userMarkedPaid ||
+            !confirmed.hasSameInstruction(request)) {
+          throw const FormatException('BioPay request receipt mismatch');
+        }
+      },
     );
   }
 
@@ -164,8 +198,9 @@ class BioPayUssdService {
       throw const FormatException('Invalid BioPay request list');
     }
     return response.map((row) {
-      if (row is! Map)
+      if (row is! Map) {
         throw const FormatException('Invalid BioPay request row');
+      }
       return BioPayUssdPaymentRequest.fromJson(Map<String, dynamic>.from(row));
     }).toList();
   }
@@ -194,8 +229,17 @@ class BioPayUssdService {
       operationId: request.id,
     );
 
-    return BioPayUssdPaymentRequest.fromJson(
-      Map<String, dynamic>.from(response as Map),
+    return _confirmResponse(
+      response,
+      operation: 'rpc_confirm_biopay_ussd_external',
+      operationId: request.id,
+      validate: (confirmed) {
+        if (confirmed.status != BioPayRequestStatus.confirmed ||
+            confirmed.confirmationSource != confirmationSource.trim() ||
+            !confirmed.hasSameInstruction(request)) {
+          throw const FormatException('BioPay request receipt mismatch');
+        }
+      },
     );
   }
 
@@ -294,9 +338,12 @@ class BioPayUssdService {
     final phone = await insuranceAgentWhatsapp();
     final digits = phone.replaceAll(RegExp(r'\D'), '');
     if (digits.isEmpty) return false;
-    return launchUrl(
-      insuranceAgentWhatsAppUri(phone),
-      mode: LaunchMode.externalApplication,
+    return RequestDeadline.mutation(
+      launchUrl(
+        insuranceAgentWhatsAppUri(phone),
+        mode: LaunchMode.externalApplication,
+      ),
+      operation: 'open_insurance_agent_whatsapp',
     );
   }
 
@@ -308,5 +355,27 @@ class BioPayUssdService {
       );
     }
     return client;
+  }
+
+  BioPayUssdPaymentRequest _confirmResponse(
+    Object? response, {
+    required String operation,
+    String? operationId,
+    required void Function(BioPayUssdPaymentRequest) validate,
+  }) {
+    try {
+      final request = BioPayUssdPaymentRequest.fromJson(
+        BioPayWireRecord.object(response),
+      );
+      validate(request);
+      return request;
+    } on FormatException catch (error) {
+      throw MutationOutcomeUnknownException(
+        operation: operation,
+        operationId: operationId,
+        originalError: error,
+        debugMessage: error.message,
+      );
+    }
   }
 }

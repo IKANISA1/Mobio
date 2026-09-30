@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/vehicle_type_icon.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
@@ -18,7 +18,7 @@ class ScheduledTripCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    return ClayCard(
+    return MobiTonalCard(
       onTap: onTap,
       semanticLabel: 'View trip details',
       padding: const EdgeInsets.all(AppSpacing.lg),

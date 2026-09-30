@@ -1474,6 +1474,12 @@ abstract class AppLocalizations {
   /// **'This is taking too long. Try again.'**
   String get faceTimeout;
 
+  /// No description provided for @faceOutcomeUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'The result is unconfirmed. Check the current status or activity before trying again.'**
+  String get faceOutcomeUnknown;
+
   /// No description provided for @faceSignIn.
   ///
   /// In en, this message translates to:

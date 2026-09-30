@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobi_app/core/location/google_maps_deep_link_service.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_design_system/theme/app_typography.dart';
 import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 
@@ -36,7 +36,7 @@ class RouteMapCard extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
-    return ClayCard(
+    return MobiTonalCard(
       padding: const EdgeInsets.all(24),
       borderRadius: 32,
       child: Column(

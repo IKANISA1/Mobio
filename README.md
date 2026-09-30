@@ -14,7 +14,7 @@ git -C /Volumes/PRO-G40/mobio status
 
 - [Architecture and ownership](docs/architecture/README.md)
 - [Product scope](docs/product/scope.md) and its dated expansion documents
-- [Critical rules](CRITICAL_RULES.md) and [design system](design.md)
+- [Critical rules](CRITICAL_RULES.md) and [design authority and evidence](docs/design/README.md)
 - [Development workflow](docs/development/flutter_dart_2026_workflow.md)
 - [Release procedures](docs/release/google-play-submission.md)
 
@@ -22,7 +22,7 @@ git -C /Volumes/PRO-G40/mobio status
 
 Use Flutter **3.44.3 / Dart 3.12.2**, pinned in `.flutter-version`. Scripts honor
 `FLUTTER_BIN`; on this workstation they prefer
-`/Volumes/PRO-G40/flutter_3_44/bin/flutter`.
+`/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/flutter`.
 
 ```sh
 ./scripts/ci/bootstrap_flutter.sh

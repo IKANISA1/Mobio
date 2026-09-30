@@ -30,22 +30,78 @@ class AppNotification {
     required this.createdAt,
   });
 
-  factory AppNotification.fromJson(Map<String, dynamic> json) {
+  factory AppNotification.fromJson(
+    Map<String, dynamic> json, {
+    String? expectedUserId,
+  }) {
+    final id = NotificationWireRecord.id(json, 'id');
+    final userId = NotificationWireRecord.id(json, 'user_id');
+    if (expectedUserId != null && userId != expectedUserId) {
+      throw const FormatException('Notification owner mismatch');
+    }
     return AppNotification(
-      id: json['id'] as String,
-      userId: json['user_id'] as String,
-      type: json['type'] as String? ?? 'general',
-      title: json['title'] as String? ?? '',
-      body: json['body'] as String?,
-      metadata: (json['metadata'] as Map<String, dynamic>?) ?? {},
-      isRead: json['is_read'] as bool? ?? false,
-      visibleInApp: json['visible_in_app'] as bool? ?? true,
-      createdAt: json['created_at'] as String? ?? '',
+      id: id,
+      userId: userId,
+      type: NotificationWireRecord.text(json, 'type'),
+      title: NotificationWireRecord.text(json, 'title'),
+      body: NotificationWireRecord.optionalText(json, 'body'),
+      metadata: NotificationWireRecord.object(json['metadata']),
+      isRead: NotificationWireRecord.flag(json, 'is_read'),
+      visibleInApp: NotificationWireRecord.flag(json, 'visible_in_app'),
+      createdAt: NotificationWireRecord.date(json, 'created_at'),
     );
   }
 
   String get route {
     return _activeNotificationRoute(metadata['route'], type);
+  }
+}
+
+abstract final class NotificationWireRecord {
+  static final _uuid = RegExp(
+    r'^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$',
+  );
+
+  static Map<String, dynamic> object(Object? value) {
+    if (value is! Map || value.keys.any((key) => key is! String)) {
+      throw const FormatException('Invalid notification object');
+    }
+    return Map<String, dynamic>.from(value);
+  }
+
+  static String id(Map<String, dynamic> row, String key) {
+    final value = text(row, key);
+    if (!_uuid.hasMatch(value)) {
+      throw FormatException('Invalid notification ID: $key');
+    }
+    return value;
+  }
+
+  static String text(Map<String, dynamic> row, String key) {
+    final value = row[key];
+    if (value is! String) {
+      throw FormatException('Invalid notification field: $key');
+    }
+    return value;
+  }
+
+  static String? optionalText(Map<String, dynamic> row, String key) =>
+      row[key] == null ? null : text(row, key);
+
+  static bool flag(Map<String, dynamic> row, String key) {
+    final value = row[key];
+    if (value is! bool) {
+      throw FormatException('Invalid notification flag: $key');
+    }
+    return value;
+  }
+
+  static String date(Map<String, dynamic> row, String key) {
+    final value = text(row, key);
+    if (DateTime.tryParse(value) == null) {
+      throw FormatException('Invalid notification date: $key');
+    }
+    return value;
   }
 }
 
@@ -176,7 +232,16 @@ class NotificationService {
       );
 
       _verifyAccount(userId, generation);
-      return rows.map<AppNotification>(AppNotification.fromJson).toList();
+      return rows.map((row) {
+        final notification = AppNotification.fromJson(
+          row,
+          expectedUserId: userId,
+        );
+        if (!notification.visibleInApp) {
+          throw const FormatException('Invisible inbox row');
+        }
+        return notification;
+      }).toList();
     } on Object catch (e, st) {
       throw AppExceptionMapper.mapAndLog(
         e,
@@ -204,7 +269,16 @@ class NotificationService {
       );
 
       _verifyAccount(userId, generation);
-      return rows.map<AppNotification>(AppNotification.fromJson).toList();
+      return rows.map((row) {
+        final notification = AppNotification.fromJson(
+          row,
+          expectedUserId: userId,
+        );
+        if (!notification.visibleInApp || notification.isRead) {
+          throw const FormatException('Invalid unread inbox row');
+        }
+        return notification;
+      }).toList();
     } on Object catch (e, st) {
       throw AppExceptionMapper.mapAndLog(
         e,
@@ -266,6 +340,12 @@ class NotificationService {
         throw const app.NotFoundException(
           message:
               'This notification is no longer available. Refresh to continue.',
+        );
+      }
+      if (rows.length != 1 || rows.single['id'] != notificationId) {
+        throw app.MutationOutcomeUnknownException(
+          operation: 'mark_notification_read',
+          operationId: notificationId,
         );
       }
     } on Object catch (e, st) {
@@ -338,7 +418,10 @@ class NotificationService {
           callback: (payload) {
             try {
               _verifyAccount(userId, generation);
-              final notification = AppNotification.fromJson(payload.newRecord);
+              final notification = AppNotification.fromJson(
+                payload.newRecord,
+                expectedUserId: userId,
+              );
               if (!notification.visibleInApp) {
                 return;
               }
@@ -354,9 +437,18 @@ class NotificationService {
 
   /// Stops the realtime subscription.
   void stopListening() {
-    _channel?.unsubscribe();
+    final channel = _channel;
     _channel = null;
     _listeningUserId = null;
+    if (channel != null) unawaited(_unsubscribe(channel));
+  }
+
+  Future<void> _unsubscribe(RealtimeChannel channel) async {
+    try {
+      await channel.unsubscribe().timeout(const Duration(seconds: 3));
+    } on Object catch (error) {
+      AppLogger.error('Notification subscription cleanup failed: $error');
+    }
   }
 
   /// Disposes of resources.

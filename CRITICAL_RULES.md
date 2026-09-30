@@ -12,7 +12,7 @@
 - Every user-facing ID (driver ID, passenger ID, display ID) **MUST** be exactly **6 numeric digits** (`000000`–`999999`).
 - **No letters.** No alphanumeric. No UUIDs shown to users.
 - Internal Supabase UUIDs exist for database operations but are **never displayed** in the UI.
-- The canonical implementation is `AppConstants.getDriverId(String id)` in [`app_constants.dart`](file:///Volumes/PRO-G40/mobio/lib/core/constants/app_constants.dart), which hashes any string into a 6-digit number.
+- The canonical value is the server-owned `profiles.member_id`, preserved as a six-digit string, including leading zeros. Display it through `displayMobioMemberId` in `lib/core/utils/mobio_member_id.dart`. Missing IDs show an unavailable label; never hash a UUID or fabricate a replacement ID.
 - **Validation rule**: `RegExp(r'^\d{6}$')` — if a user-facing ID doesn't match this pattern, it is a bug.
 
 ---
@@ -30,21 +30,22 @@
 
 ---
 
-## Rule 3: UI Must Never Be Changed Without Following `design.md`
+## Rule 3: App, Web and Admin Must Follow `revolut-design` Exactly
 
-- The **sole source of truth** for all UI decisions is [`design.md`](file:///Volumes/PRO-G40/mobio/design.md) — the current Mobio design system and its dated source-cohort mappings.
-- **No ad-hoc colors, fonts, spacing, shadows, radii, or component styles may be introduced** that are not defined in `design.md`.
-- All UI changes **must reference** the exact token from the design system (color token, typography token, spacing token, shadow token, component spec).
-- If a new visual element or pattern is needed, `design.md` **must be updated first** with the new token/spec before any code is written.
-- Violating the design system (e.g., using a hardcoded hex color, custom font size, or non-standard border radius) is a **blocking bug** that must be reverted immediately.
+- The **sole design authority** is the [external `revolut-design` skill](</Volumes/PRO-G40/Application Data/Codex/Codex-Home/skills/revolut-design/SKILL.md>) and its bundled references. Its selected visual typologies and full applicable colour system govern every Mobio app, web, public website and admin screen and state.
+- Preserve Mobio's own name, logo, app icon, supported features, navigation, workflows, content and backend behavior.
+- Do not introduce ad-hoc colours, fonts, spacing, shadows, radii or component styles from another reference. Framework controls must use the shared reference-adapted semantic roles rather than leaking default library styling.
+- Repository tokens, product mappings, dated comparisons, screenshots and acceptance records are implementation evidence. They are not a second design authority. [The product evidence index](docs/design/README.md) locates them.
+- For a missing pattern, consult the applicable skill reference and record its cohort, comparator or explicit adaptation before implementing the shared role. Unknown source values remain explicitly unverified.
+- Do not restore deleted local design specifications or introduce competing inspiration. Run `python3 scripts/ci/check_design_authority.py` for design or instruction changes.
+- A 100% fidelity result requires complete visual and workflow evidence for the declared scope. Mobile release acceptance additionally follows the skill's `MOBILE-DESIGN-100` rule; build/test success cannot substitute for acceptance.
 
-### Enforced Design Tokens
+### Shared Implementation Adapters
 
 | Category | Source Files |
 |---|---|
 | Colors | `packages/design-system/lib/src/theme/app_colors.dart` |
 | Typography | `packages/design-system/lib/src/theme/app_typography.dart` |
-| Shadows | `packages/design-system/lib/src/theme/app_shadows.dart` |
 | Theme | `packages/design-system/lib/src/theme/app_theme.dart` |
 | Theme Extension | `packages/design-system/lib/src/theme/mobi_theme_extension.dart` |
 | Components | `lib/shared/widgets/*` |
@@ -62,25 +63,26 @@
 
 ---
 
-## Rule 5: SUPABASE_URL and SUPABASE_ANON_KEY Must Be Set for Every Build
+## Rule 5: All Four Public Runtime Defines Must Be Set for Every Build
 
 > [!CAUTION]
 > **This is the #1 production blocker.** An APK/AAB built without these flags ships a dead app — no auth, no data, no BioPay, nothing works.
 
-- **Every** `flutter build apk`, `flutter build appbundle`, and `flutter run` command **MUST** include `--dart-define=SUPABASE_URL=...` and `--dart-define=SUPABASE_ANON_KEY=...`.
+- **Every** `flutter build apk`, `flutter build appbundle`, and `flutter run` command **MUST** include all four defines: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `PRIVACY_POLICY_URL` and `ACCOUNT_DELETION_URL`.
 - **Never run bare `flutter build appbundle`** — it produces an AAB that crashes on the config-error screen in production.
 - The **only** sanctioned way to build a release binary is via the release script:
   ```bash
   ./scripts/release/build_android_release.sh appbundle   # AAB for Play Store
   ./scripts/release/build_android_release.sh apk         # APK for sideloading
   ```
-- The script sources `.env` automatically and **hard-fails** if `SUPABASE_URL`, `SUPABASE_ANON_KEY`, or `PRIVACY_POLICY_URL` are missing.
+- The script sources `.env` automatically and **hard-fails** if any of the four required public values are missing.
 - If building manually (not recommended), the full command is:
   ```bash
   flutter build appbundle --release \
     --dart-define=SUPABASE_URL=https://your-project.supabase.co \
     --dart-define=SUPABASE_ANON_KEY=your-anon-key \
-    --dart-define=PRIVACY_POLICY_URL=https://your-domain/privacy-policy.html
+    --dart-define=PRIVACY_POLICY_URL=https://your-domain/privacy-policy.html \
+    --dart-define=ACCOUNT_DELETION_URL=https://your-domain/account-deletion.html
   ```
 - **Agent enforcement**: Any AI agent or CI pipeline that calls `flutter build apk` or `flutter build appbundle` **without** these `--dart-define` flags is producing **invalid output** and must be stopped immediately.
 - Runtime guard: `lib/app/bootstrap.dart` throws `StateError` in release mode if `SupabaseConfig.isConfigured` is `false`. This is intentional — it is better to crash on launch than to ship a silently broken app.
@@ -105,7 +107,7 @@
 |---|---|
 | **1. User ID** | 6 numeric digits only — no letters, no UUIDs in UI |
 | **2. Default Country** | Rwanda (RW) — always pre-selected, never prompted |
-| **3. UI Integrity** | Follow `design.md` exactly — no ad-hoc styles |
+| **3. UI Integrity** | External `revolut-design` skill only — app, web, public website and admin |
 | **4. Auth Method** | WhatsApp OTP required for passenger/driver app access; admin OTP is separate and allowlisted |
-| **5. Build Env Vars** | `SUPABASE_URL` + `SUPABASE_ANON_KEY` mandatory on every APK/AAB build — use `./scripts/release/build_android_release.sh` |
+| **5. Build Env Vars** | All four public runtime defines are mandatory on every APK/AAB build — use `./scripts/release/build_android_release.sh` |
 | **6. Route Scope** | No route ETA, distance, polyline, matrix, fare-distance, dispatch, or Google Routes API in active marketplace |

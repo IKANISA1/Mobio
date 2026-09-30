@@ -1,8 +1,11 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
 import 'package:mobi_app/features/biopay/data/face_capture.dart';
@@ -26,20 +29,51 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen>
   late final FaceCapture _capture;
   final _gate = FaceHandoffGate();
   int _generation = 0;
+  AccountSnapshot? _viewAccount;
   bool _foreground = true, _busy = false, _opened = false;
   Object? _error;
   PreparedFaceUssdShortcut? _shortcut;
+  AccountSnapshot? _shortcutAccount;
   @override
   void initState() {
     super.initState();
     _capture = ref.read(faceCaptureFactoryProvider)();
     WidgetsBinding.instance.addObserver(this);
+    try {
+      _viewAccount = ref.read(biopayFaceServiceProvider).captureAccount();
+    } on Object {
+      _viewAccount = null;
+    }
+    AccountContext.changes.addListener(_onAccountChanged);
+  }
+
+  void _onAccountChanged() {
+    if (!mounted) return;
+    final service = ref.read(biopayFaceServiceProvider);
+    final previous = _viewAccount;
+    if (previous != null && service.isCurrent(previous)) return;
+    try {
+      _viewAccount = service.captureAccount();
+    } on Object {
+      _viewAccount = null;
+    }
+    _generation++;
+    _gate.cancel();
+    unawaited(_capture.stop().catchError((Object _) {}));
+    setState(() {
+      _shortcut = null;
+      _shortcutAccount = null;
+      _busy = false;
+      _opened = false;
+      _error = const FaceServiceException('AUTH_EXPIRED');
+    });
   }
 
   @override
   void dispose() {
     _generation++;
     _gate.cancel();
+    AccountContext.changes.removeListener(_onAccountChanged);
     WidgetsBinding.instance.removeObserver(this);
     unawaited(_capture.stop().catchError((Object _) {}));
     super.dispose();
@@ -61,7 +95,19 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen>
     if (_busy || !_foreground) return;
     final generation = ++_generation;
     final service = ref.read(biopayFaceServiceProvider);
-    final ticket = _gate.begin(service.ownerId);
+    AccountSnapshot account;
+    try {
+      account = service.captureAccount();
+    } on Object {
+      setState(() => _error = const FaceServiceException('AUTH_EXPIRED'));
+      return;
+    }
+    bool current() =>
+        mounted &&
+        _foreground &&
+        generation == _generation &&
+        service.isCurrent(account);
+    final ticket = _gate.begin(account.identity);
     if (ticket == null) {
       setState(() => _error = const FaceServiceException('AUTH_EXPIRED'));
       return;
@@ -70,6 +116,7 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen>
       _busy = true;
       _error = null;
       _shortcut = null;
+      _shortcutAccount = null;
       _opened = false;
     });
     Uint8List? bytes;
@@ -80,63 +127,92 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen>
       }
       bytes = await _capture.capture();
       await _capture.stop();
-      if (!_gate.accepts(ticket, service.ownerId)) return;
+      if (!current() || !_gate.accepts(ticket, account.identity)) return;
       final shortcut = await service.resolveShortcut(
         imageBytes: bytes,
         idempotencyKey: newBioPayUuid(),
       );
       await _capture.stop();
-      if (!mounted || !_gate.accepts(ticket, service.ownerId)) return;
-      setState(() => _shortcut = shortcut);
+      if (!current() || !_gate.accepts(ticket, account.identity)) return;
+      setState(() {
+        _shortcut = shortcut;
+        _shortcutAccount = account;
+      });
       final native = ref.read(paymentDiscoveryServiceProvider);
       if (native.deviceFamily != 'android') return;
-      if (!_gate.claim(ticket, service.ownerId, shortcut, DateTime.now())) {
+      if (!current() ||
+          !_gate.claim(ticket, account.identity, shortcut, DateTime.now())) {
         return;
       }
       final launched = await native.openReviewedInstruction({
         'mode': 'dial',
         'instruction': shortcut.ussdCode,
       });
+      if (!current()) return;
       if (launched) {
         unawaited(
           service.recordHandoff(shortcut.requestId).catchError((Object _) {}),
         );
       }
-      if (mounted &&
-          _shortcut?.requestId == shortcut.requestId &&
-          service.ownerId == ticket.account) {
+      if (current() && _shortcut?.requestId == shortcut.requestId) {
         setState(() {
           _opened = launched;
           if (!launched) _error = const FaceServiceException('DIAL_FAILED');
         });
       }
     } on Object catch (error) {
-      if (mounted && generation == _generation) setState(() => _error = error);
+      if (current()) setState(() => _error = error);
     } finally {
       bytes?.fillRange(0, bytes.length, 0);
       _gate.finish(ticket);
-      if (mounted && generation == _generation) setState(() => _busy = false);
+      if (mounted && generation == _generation) {
+        setState(() {
+          _busy = false;
+          if (!service.isCurrent(account)) {
+            _shortcut = null;
+            _shortcutAccount = null;
+            _error = const FaceServiceException('AUTH_EXPIRED');
+          }
+        });
+      }
     }
   }
 
   Future<void> _openAlternative(String route) async {
     if (_busy) return;
-    _generation++;
+    final account = _viewAccount;
+    final service = ref.read(biopayFaceServiceProvider);
+    final generation = ++_generation;
+    bool current() =>
+        mounted &&
+        generation == _generation &&
+        account != null &&
+        service.isCurrent(account);
     _gate.cancel();
     setState(() => _busy = true);
     try {
       await _capture.stop();
-      if (mounted) await context.push(route);
+      if (!mounted || !current()) return;
+      await context.push(route);
     } on Object catch (error) {
-      if (mounted) setState(() => _error = error);
+      if (current()) setState(() => _error = error);
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (current()) setState(() => _busy = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l = paymentCopy(context);
+    final renderedAccount = _viewAccount;
+    final renderedGeneration = _generation;
+    final service = ref.read(biopayFaceServiceProvider);
+    bool renderedCurrent() =>
+        mounted &&
+        _foreground &&
+        renderedGeneration == _generation &&
+        renderedAccount != null &&
+        service.isCurrent(renderedAccount);
     final camera = _capture.controller;
     final shortcut = _shortcut;
     final hasCamera = camera?.value.isInitialized == true;
@@ -165,7 +241,11 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen>
               ),
             const SizedBox(height: 20),
             MobiButton(
-              onPressed: _busy ? null : _scan,
+              onPressed: _busy
+                  ? null
+                  : () {
+                      if (renderedCurrent()) unawaited(_scan());
+                    },
               isLoading: _busy,
               child: Text(
                 _busy
@@ -192,6 +272,11 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen>
               MobiButton(
                 variant: MobiButtonVariant.ghost,
                 onPressed: () async {
+                  if (!renderedCurrent() || !identical(shortcut, _shortcut)) {
+                    return;
+                  }
+                  final account = _shortcutAccount;
+                  if (account == null || !service.isCurrent(account)) return;
                   if (!shortcut.isCurrent(DateTime.now())) {
                     setState(() {
                       _shortcut = null;
@@ -199,10 +284,14 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen>
                     });
                     return;
                   }
-                  await Clipboard.setData(
-                    ClipboardData(text: shortcut.ussdCode),
+                  await RequestDeadline.mutation(
+                    Clipboard.setData(ClipboardData(text: shortcut.ussdCode)),
+                    operation: 'copy_face_ussd_shortcut',
+                    timeout: const Duration(seconds: 5),
                   );
-                  if (context.mounted) {
+                  if (context.mounted &&
+                      renderedCurrent() &&
+                      service.isCurrent(account)) {
                     ScaffoldMessenger.of(
                       context,
                     ).showSnackBar(SnackBar(content: Text(l.faceCopied)));
@@ -228,11 +317,23 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen>
             ),
             const SizedBox(height: 8),
             TextButton(
-              onPressed: _busy ? null : () => _openAlternative('/biopay/send'),
+              onPressed: _busy
+                  ? null
+                  : () {
+                      if (renderedCurrent()) {
+                        unawaited(_openAlternative('/biopay/send'));
+                      }
+                    },
               child: Text(l.faceManual),
             ),
             TextButton(
-              onPressed: _busy ? null : () => _openAlternative('/biopay/scan'),
+              onPressed: _busy
+                  ? null
+                  : () {
+                      if (renderedCurrent()) {
+                        unawaited(_openAlternative('/biopay/scan'));
+                      }
+                    },
               child: Text(l.faceQr),
             ),
           ],

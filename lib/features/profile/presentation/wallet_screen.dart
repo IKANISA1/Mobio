@@ -1,20 +1,20 @@
 import 'dart:async';
-import 'package:mobi_app/core/auth/account_context.dart';
-import 'package:mobi_app/core/auth/account_bound_view.dart';
-import 'package:mobi_app/features/profile/data/wallet_operation_journal.dart';
-import 'package:mobi_app/features/profile/domain/wallet_operation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/account_action_token.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/utils/mobio_member_id.dart';
 import 'package:mobi_app/features/profile/application/profile_services.dart';
+import 'package:mobi_app/features/profile/data/wallet_operation_journal.dart';
 import 'package:mobi_app/features/profile/domain/wallet.dart';
-import 'package:mobi_app/shared/widgets/glass_card.dart';
+import 'package:mobi_app/features/profile/domain/wallet_operation.dart';
+import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
@@ -29,9 +29,22 @@ import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 import 'package:mobi_design_system/theme/mobi_visual_family.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class WalletScreen extends ConsumerStatefulWidget {
-  const WalletScreen({super.key, required this.onBack});
+  const WalletScreen({super.key, required this.onBack})
+    : _captureOverride = null,
+      _isCurrentOverride = null;
+  @visibleForTesting
+  const WalletScreen.test({
+    super.key,
+    required this.onBack,
+    required AccountSnapshot Function() captureAccount,
+    required bool Function(AccountSnapshot) isCurrent,
+  }) : _captureOverride = captureAccount,
+       _isCurrentOverride = isCurrent;
+  final AccountSnapshot Function()? _captureOverride;
+  final bool Function(AccountSnapshot)? _isCurrentOverride;
 
   final VoidCallback onBack;
 
@@ -41,9 +54,31 @@ class WalletScreen extends ConsumerStatefulWidget {
 
 class _WalletScreenState extends ConsumerState<WalletScreen> {
   static const int _minimumRedemptionTokens = 5000;
+  AccountSnapshot? _viewAccount;
+  AccountSnapshot? _captureAccount() {
+    try {
+      return widget._captureOverride?.call() ?? AccountContext.capture();
+    } on Object {
+      return null;
+    }
+  }
+
+  bool _currentAccount(AccountSnapshot? account) =>
+      mounted &&
+      (account == null
+          ? widget._captureOverride == null &&
+                SupabaseConfig.canRunWithoutBackend
+          : widget._isCurrentOverride?.call(account) ??
+                AccountContext.isCurrent(account));
+  _WalletAction _actionFor(AccountSnapshot? account) => _WalletAction(
+    account,
+    AccountActionToken.capture(captureAccount: _captureAccount),
+    () => _currentAccount(account),
+  );
+  _WalletAction _captureAction() => _actionFor(_captureAccount());
 
   WalletOperationRecord? _activeOperation;
-  int _loadRevision=0;
+  int _loadRevision = 0;
   StreamSubscription<AuthState>? _authChanges;
   WalletSummary? _summary;
   List<TokenLedgerEntry> _ledger = const [];
@@ -53,41 +88,82 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
 
   final _format = NumberFormat.decimalPattern();
 
+  void _accountChanged() {
+    if (!mounted) return;
+    _loadRevision++;
+    _viewAccount = _captureAccount();
+    setState(() {
+      _summary = null;
+      _ledger = const [];
+      _activeOperation = null;
+      _isBusy = false;
+      _isLoading = false;
+      _error = _viewAccount == null && !SupabaseConfig.canRunWithoutBackend
+          ? 'Sign in again to view your Wallet.'
+          : null;
+    });
+    if (_viewAccount != null || SupabaseConfig.canRunWithoutBackend) {
+      unawaited(_load());
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _viewAccount = _captureAccount();
+    AccountContext.changes.addListener(_accountChanged);
     if (SupabaseConfig.isConfigured) {
-      _authChanges=Supabase.instance.client.auth.onAuthStateChange.listen((_) {
-        if (!mounted) return;
-        setState(() { _summary=null; _ledger=const []; _activeOperation=null; _isBusy=false; });
-        unawaited(_load());
+      _authChanges = Supabase.instance.client.auth.onAuthStateChange.listen((
+        _,
+      ) {
+        _accountChanged();
       });
     }
     _load();
   }
-  @override void dispose() { _loadRevision++; unawaited(_authChanges?.cancel()); super.dispose(); }
 
-  Future<void> _load() async {
-    if (!mounted) return;
-    final revision=++_loadRevision;
-    setState(() { _isLoading=true; _error=null; });
+  @override
+  void dispose() {
+    AccountContext.changes.removeListener(_accountChanged);
+    _loadRevision++;
+    unawaited(_authChanges?.cancel());
+    super.dispose();
+  }
+
+  Future<void> _load({_WalletAction? action}) async {
+    final origin = action ?? _captureAction();
+    if (!origin.isCurrent) return;
+    final account = origin.account;
+    final revision = ++_loadRevision;
+    _viewAccount = account;
+    bool current() => origin.isCurrent && revision == _loadRevision;
+    setState(() {
+      _isLoading = true;
+      _error = null;
+      _summary = null;
+      _ledger = const [];
+      _activeOperation = null;
+    });
     try {
-      final account = AccountContext.capture();
+      if (account == null) throw StateError('Verified wallet account required');
+      if (!current()) return;
       final wallet = ref.read(walletServiceProvider);
       final summary = await wallet.getSummary();
+      if (!current()) return;
       final ledger = await wallet.listLedger();
+      if (!current()) return;
       final operation = await wallet.activeOperation();
-      AccountContext.requireCurrent(account);
-      if (!mounted || revision!=_loadRevision) return;
+      if (!current()) return;
       setState(() {
         _summary = summary;
         _ledger = ledger;
-        _activeOperation=operation;
+        _activeOperation = operation;
         _isLoading = false;
       });
     } on Object {
-      if (!mounted || revision!=_loadRevision) return;
-      if (SupabaseConfig.canRunWithoutBackend) {
+      if (!current()) return;
+      if (SupabaseConfig.canRunWithoutBackend &&
+          widget._captureOverride == null) {
         setState(() {
           _summary = _previewWalletSummary;
           _ledger = _previewLedgerEntries();
@@ -102,7 +178,13 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     }
   }
 
-  Future<void> _shareInvite() async {
+  Future<void> _shareInvite(_WalletAction origin) async {
+    if (!origin.isCurrent ||
+        (origin.account == null && !SupabaseConfig.isLocalUiPreview)) {
+      return;
+    }
+    final revision = _loadRevision;
+    bool current() => origin.isCurrent && revision == _loadRevision;
     try {
       final referral = _summary?.shareUrl?.trim().isNotEmpty == true
           ? ReferralCode(
@@ -112,17 +194,30 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
               rewardTokens: 100,
             )
           : await ref.read(referralServiceProvider).getOrCreateCode();
-      if (!mounted) return;
-      await SharePlus.instance.share(
-        ShareParams(text: _inviteShareMessage(referral)),
+      if (!current()) return;
+      await RequestDeadline.mutation(
+        SharePlus.instance.share(
+          ShareParams(text: _inviteShareMessage(referral)),
+        ),
+        operation: 'share_referral_invite',
+        timeout: const Duration(seconds: 60),
       );
-      await _load();
+      if (!current()) return;
+      if (!origin.isCurrent) return;
+      await _load(action: origin);
     } on Object catch (_) {
+      if (!current()) return;
       _showSnackBar('Unable to prepare invite link.');
     }
   }
 
-  Future<void> _copyInvite() async {
+  Future<void> _copyInvite(_WalletAction origin) async {
+    if (!origin.isCurrent ||
+        (origin.account == null && !SupabaseConfig.isLocalUiPreview)) {
+      return;
+    }
+    final revision = _loadRevision;
+    bool current() => origin.isCurrent && revision == _loadRevision;
     try {
       final referral = _summary?.shareUrl?.trim().isNotEmpty == true
           ? ReferralCode(
@@ -132,134 +227,165 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
               rewardTokens: 100,
             )
           : await ref.read(referralServiceProvider).getOrCreateCode();
-      await Clipboard.setData(ClipboardData(text: referral.shareUrl));
+      if (!current()) return;
+      await RequestDeadline.mutation(
+        Clipboard.setData(ClipboardData(text: referral.shareUrl)),
+        operation: 'copy_referral_invite',
+      );
+      if (!current()) return;
       _showSnackBar('Invite link copied.');
-      await _load();
+      if (!origin.isCurrent) return;
+      await _load(action: origin);
     } on Object catch (_) {
+      if (!current()) return;
       _showSnackBar('Unable to copy invite link.');
     }
   }
 
-  Future<void> _redeemInviteCode() async {
-    if (!AccountContext.hasVerifiedSession || _isBusy) return;
-    final sheetAccount = AccountContext.capture();
+  Future<void> _redeemInviteCode(_WalletAction origin) async {
+    if (!origin.isCurrent || origin.account == null || _isBusy) return;
     final codeController = TextEditingController();
 
     await MobiBottomSheet.show<void>(
       context: context,
       builder: (context) {
         String? sheetError;
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            final code = codeController.text.trim().toUpperCase();
-            final canApply = code.length >= 4;
+        return _WalletFormLifetime(
+          controllers: [codeController],
+          child: StatefulBuilder(
+            builder: (context, setSheetState) {
+              final code = codeController.text.trim().toUpperCase();
+              final canApply = code.length >= 4;
 
-            return AccountBoundView(account:sheetAccount, child:Padding(
-              padding: EdgeInsets.fromLTRB(
-                24,
-                24,
-                24,
-                MediaQuery.of(context).viewInsets.bottom + 24,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Enter invite code',
-                    style: AppTypography.titleLg.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
+              return _WalletAccountView(
+                origin: origin,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    24,
+                    24,
+                    24,
+                    MediaQuery.of(context).viewInsets.bottom + 24,
                   ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    'Add a Mobio invite code to get 100 TOKENS. The person who invited you also gets 100 TOKENS.',
-                    style: AppTypography.bodySm.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  TextField(
-                    controller: codeController,
-                    textCapitalization: TextCapitalization.characters,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp('[a-zA-Z0-9]')),
-                      LengthLimitingTextInputFormatter(16),
-                    ],
-                    onChanged: (_) => setSheetState(() => sheetError = null),
-                    decoration: const InputDecoration(
-                      labelText: 'Invite code',
-                      hintText: 'MOBIOCODE',
-                    ),
-                  ),
-                  if (sheetError != null) ...[
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      sheetError!,
-                      style: AppTypography.bodySm.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: AppSpacing.lg),
-                  Row(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: MobiButton(
-                          variant: MobiButtonVariant.ghost,
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Cancel'),
+                      Text(
+                        'Enter invite code',
+                        style: AppTypography.titleLg.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: MobiButton(
-                          onPressed: canApply
-                              ? () async {
-                                  try {
-                                    await ref
-                                        .read(referralServiceProvider)
-                                        .completeSignup(
-                                          code: code,
-                                          metadata: const {
-                                            'source': 'manual_wallet_code',
-                                          },
-                                        );
-                                    if (!context.mounted) return;
-                                    Navigator.of(context).pop();
-                                    _showSnackBar(
-                                      'Invite code applied. 100 TOKENS added when eligible.',
-                                    );
-                                    await _load();
-                                  } on Object {
-                                    setSheetState(() {
-                                      sheetError =
-                                          'Unable to apply this invite code.';
-                                    });
-                                  }
-                                }
-                              : null,
-                          child: const Text('Apply'),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        'Add a Mobio invite code to get 100 TOKENS. The person who invited you also gets 100 TOKENS.',
+                        style: AppTypography.bodySm.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      TextField(
+                        controller: codeController,
+                        textCapitalization: TextCapitalization.characters,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp('[a-zA-Z0-9]'),
+                          ),
+                          LengthLimitingTextInputFormatter(16),
+                        ],
+                        onChanged: (_) {
+                          if (origin.isCurrent && context.mounted) {
+                            setSheetState(() => sheetError = null);
+                          }
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Invite code',
+                          hintText: 'MOBIOCODE',
+                        ),
+                      ),
+                      if (sheetError != null) ...[
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          sheetError!,
+                          style: AppTypography.bodySm.copyWith(
+                            color: Theme.of(context).colorScheme.error,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: AppSpacing.lg),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: MobiButton(
+                              variant: MobiButtonVariant.ghost,
+                              onPressed: () {
+                                if (origin.isCurrent && context.mounted) {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: MobiButton(
+                              onPressed: canApply
+                                  ? () async {
+                                      if (!origin.isCurrent ||
+                                          !context.mounted) {
+                                        return;
+                                      }
+                                      try {
+                                        await ref
+                                            .read(referralServiceProvider)
+                                            .completeSignup(
+                                              code: code,
+                                              metadata: const {
+                                                'source': 'manual_wallet_code',
+                                              },
+                                            );
+                                        if (!origin.isCurrent ||
+                                            !context.mounted) {
+                                          return;
+                                        }
+                                        Navigator.of(context).pop();
+                                        _showSnackBar(
+                                          'Invite code applied. 100 TOKENS added when eligible.',
+                                        );
+                                        if (!origin.isCurrent) return;
+                                        await _load(action: origin);
+                                      } on Object {
+                                        if (!origin.isCurrent ||
+                                            !context.mounted) {
+                                          return;
+                                        }
+                                        setSheetState(() {
+                                          sheetError =
+                                              'Unable to apply this invite code.';
+                                        });
+                                      }
+                                    }
+                                  : null,
+                              child: const Text('Apply'),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ));
-          },
+                ),
+              );
+            },
+          ),
         );
       },
     );
-
-    codeController.dispose();
   }
 
-  Future<void> _showTransferSheet() async {
-    if (!AccountContext.hasVerifiedSession || _isBusy) return;
-    final sheetAccount = AccountContext.capture();
+  Future<void> _showTransferSheet(_WalletAction origin) async {
+    if (!origin.isCurrent || origin.account == null || _isBusy) return;
     final memberController = TextEditingController();
     final amountController = TextEditingController();
     final noteController = TextEditingController();
@@ -269,174 +395,190 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
       builder: (context) {
         String? sheetError;
         String? memberIdError;
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            final memberId = normalizeMobioMemberId(memberController.text);
-            final amount = int.tryParse(amountController.text);
-            final canSend = memberId != null && amount != null && amount > 0;
+        return _WalletFormLifetime(
+          controllers: [memberController, amountController, noteController],
+          child: StatefulBuilder(
+            builder: (context, setSheetState) {
+              final memberId = normalizeMobioMemberId(memberController.text);
+              final amount = int.tryParse(amountController.text);
+              final canSend = memberId != null && amount != null && amount > 0;
 
-            return AccountBoundView(account:sheetAccount, child:Padding(
-              padding: EdgeInsets.fromLTRB(
-                24,
-                24,
-                24,
-                MediaQuery.of(context).viewInsets.bottom + 24,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+              return _WalletAccountView(
+                origin: origin,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    24,
+                    24,
+                    24,
+                    MediaQuery.of(context).viewInsets.bottom + 24,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.12),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          LucideIcons.send,
-                          size: 20,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Transfer TOKENS',
-                              style: AppTypography.titleLg.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
+                      Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.12),
+                              shape: BoxShape.circle,
                             ),
-                            Text(
-                              'Send from your Mobio wallet to a 6-digit member ID.',
-                              style: AppTypography.bodySm.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
+                            child: Icon(
+                              LucideIcons.send,
+                              size: 20,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Transfer TOKENS',
+                                  style: AppTypography.titleLg.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                  ),
+                                ),
+                                Text(
+                                  'Send from your Mobio wallet to a 6-digit member ID.',
+                                  style: AppTypography.bodySm.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  TextField(
-                    controller: memberController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(mobioMemberIdLength),
-                    ],
-                    maxLength: mobioMemberIdLength,
-                    onChanged: (value) {
-                      setSheetState(() {
-                        memberIdError = value.isEmpty
-                            ? null
-                            : mobioMemberIdInputError(value);
-                        if (sheetError?.contains('Mobio ID') == true ||
-                            sheetError?.contains('member ID') == true) {
-                          sheetError = null;
-                        }
-                      });
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Receiver 6-digit ID',
-                      counterText: '',
-                      helperText: memberIdError == null
-                          ? 'Use the exact 6-digit Mobio member ID.'
-                          : null,
-                      errorText: memberIdError,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  TextField(
-                    controller: amountController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    onChanged: (_) {
-                      setSheetState(() {
-                        if (sheetError == 'Enter a valid TOKEN amount.') {
-                          sheetError = null;
-                        }
-                      });
-                    },
-                    decoration: const InputDecoration(labelText: 'TOKENS'),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  TextField(
-                    controller: noteController,
-                    maxLines: 2,
-                    textCapitalization: TextCapitalization.sentences,
-                    decoration: const InputDecoration(labelText: 'Note'),
-                  ),
-                  if (sheetError != null) ...[
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      sheetError!,
-                      style: AppTypography.bodySm.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: AppSpacing.lg),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: MobiButton(
-                          variant: MobiButtonVariant.ghost,
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Cancel'),
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: MobiButton(
-                          onPressed: canSend
-                              ? () {
-                                  final memberId = normalizeMobioMemberId(
-                                    memberController.text,
-                                  );
-                                  final amount = int.tryParse(
-                                    amountController.text,
-                                  );
-                                  Navigator.of(context).pop();
-                                  _confirmAndTransferTokens(
-                                    receiverMemberId: memberId!,
-                                    amountTokens: amount!,
-                                    note: noteController.text.trim(),
-                                  );
-                                }
+                      const SizedBox(height: AppSpacing.lg),
+                      TextField(
+                        controller: memberController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(mobioMemberIdLength),
+                        ],
+                        maxLength: mobioMemberIdLength,
+                        onChanged: (value) {
+                          if (!origin.isCurrent || !context.mounted) return;
+                          setSheetState(() {
+                            memberIdError = value.isEmpty
+                                ? null
+                                : mobioMemberIdInputError(value);
+                            if (sheetError?.contains('Mobio ID') == true ||
+                                sheetError?.contains('member ID') == true) {
+                              sheetError = null;
+                            }
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Receiver 6-digit ID',
+                          counterText: '',
+                          helperText: memberIdError == null
+                              ? 'Use the exact 6-digit Mobio member ID.'
                               : null,
-                          child: const Text('Send'),
+                          errorText: memberIdError,
                         ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      TextField(
+                        controller: amountController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        onChanged: (_) {
+                          if (!origin.isCurrent || !context.mounted) return;
+                          setSheetState(() {
+                            if (sheetError == 'Enter a valid TOKEN amount.') {
+                              sheetError = null;
+                            }
+                          });
+                        },
+                        decoration: const InputDecoration(labelText: 'TOKENS'),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      TextField(
+                        controller: noteController,
+                        maxLines: 2,
+                        textCapitalization: TextCapitalization.sentences,
+                        decoration: const InputDecoration(labelText: 'Note'),
+                      ),
+                      if (sheetError != null) ...[
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          sheetError!,
+                          style: AppTypography.bodySm.copyWith(
+                            color: Theme.of(context).colorScheme.error,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: AppSpacing.lg),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: MobiButton(
+                              variant: MobiButtonVariant.ghost,
+                              onPressed: () {
+                                if (origin.isCurrent && context.mounted) {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: MobiButton(
+                              onPressed: canSend
+                                  ? () {
+                                      if (!origin.isCurrent ||
+                                          !context.mounted) {
+                                        return;
+                                      }
+                                      final memberId = normalizeMobioMemberId(
+                                        memberController.text,
+                                      );
+                                      final amount = int.tryParse(
+                                        amountController.text,
+                                      );
+                                      Navigator.of(context).pop();
+                                      _confirmAndTransferTokens(
+                                        origin: origin,
+                                        receiverMemberId: memberId!,
+                                        amountTokens: amount!,
+                                        note: noteController.text.trim(),
+                                      );
+                                    }
+                                  : null,
+                              child: const Text('Send'),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ));
-          },
+                ),
+              );
+            },
+          ),
         );
       },
     );
-
-    memberController.dispose();
-    amountController.dispose();
-    noteController.dispose();
   }
 
-  Future<void> _showRedeemSheet() async {
-    if (!AccountContext.hasVerifiedSession || _isBusy) return;
-    final sheetAccount = AccountContext.capture();
+  Future<void> _showRedeemSheet(_WalletAction origin) async {
+    if (!origin.isCurrent || origin.account == null || _isBusy) return;
     final balance = _summary?.balanceTokens ?? 0;
     final amountController = TextEditingController(
       text: balance > 0 ? balance.toString() : '',
@@ -446,167 +588,203 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
       context: context,
       builder: (context) {
         String? sheetError;
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            final amount = int.tryParse(amountController.text);
+        return _WalletFormLifetime(
+          controllers: [amountController],
+          child: StatefulBuilder(
+            builder: (context, setSheetState) {
+              final amount = int.tryParse(amountController.text);
 
-            return AccountBoundView(account:sheetAccount, child:Padding(
-              padding: EdgeInsets.fromLTRB(
-                24,
-                24,
-                24,
-                MediaQuery.of(context).viewInsets.bottom + 24,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+              return _WalletAccountView(
+                origin: origin,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    24,
+                    24,
+                    24,
+                    MediaQuery.of(context).viewInsets.bottom + 24,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.primary.withValues(alpha: 0.12),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          LucideIcons.banknote,
-                          size: 20,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Redeem TOKENS',
-                              style: AppTypography.titleLg.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
+                      Row(
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.12),
+                              shape: BoxShape.circle,
                             ),
-                            Text(
-                              'Transfer TOKENS to the admin wallet for manual MoMo cash payout.',
-                              style: AppTypography.bodySm.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
+                            child: Icon(
+                              LucideIcons.banknote,
+                              size: 20,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
-                          ],
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Redeem TOKENS',
+                                  style: AppTypography.titleLg.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                  ),
+                                ),
+                                Text(
+                                  'Transfer TOKENS to the admin wallet for manual MoMo cash payout.',
+                                  style: AppTypography.bodySm.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      TextField(
+                        controller: amountController,
+                        autofocus: true,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        onChanged: (_) {
+                          if (origin.isCurrent && context.mounted) {
+                            setSheetState(() => sheetError = null);
+                          }
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'TOKENS to redeem',
+                          helperText:
+                              'Minimum ${_format.format(_minimumRedemptionTokens)} TOKENS. Default is your full balance.',
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  TextField(
-                    controller: amountController,
-                    autofocus: true,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    onChanged: (_) => setSheetState(() => sheetError = null),
-                    decoration: InputDecoration(
-                      labelText: 'TOKENS to redeem',
-                      helperText:
-                          'Minimum ${_format.format(_minimumRedemptionTokens)} TOKENS. Default is your full balance.',
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    'Available ${_format.format(balance)} TOKENS',
-                    style: AppTypography.labelMd.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  if (sheetError != null) ...[
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      sheetError!,
-                      style: AppTypography.bodySm.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: AppSpacing.lg),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: MobiButton(
-                          variant: MobiButtonVariant.ghost,
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Cancel'),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        'Available ${_format.format(balance)} TOKENS',
+                        style: AppTypography.labelMd.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      const SizedBox(width: AppSpacing.sm),
-                      Expanded(
-                        child: MobiButton(
-                          onPressed: amount == null
-                              ? null
-                              : () {
-                                  if (amount < _minimumRedemptionTokens) {
-                                    setSheetState(() {
-                                      sheetError =
-                                          'Redeem at least ${_format.format(_minimumRedemptionTokens)} TOKENS.';
-                                    });
-                                    return;
-                                  }
-                                  if (amount > balance) {
-                                    setSheetState(() {
-                                      sheetError =
-                                          'Your wallet does not have enough TOKENS.';
-                                    });
-                                    return;
-                                  }
+                      if (sheetError != null) ...[
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          sheetError!,
+                          style: AppTypography.bodySm.copyWith(
+                            color: Theme.of(context).colorScheme.error,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: AppSpacing.lg),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: MobiButton(
+                              variant: MobiButtonVariant.ghost,
+                              onPressed: () {
+                                if (origin.isCurrent && context.mounted) {
                                   Navigator.of(context).pop();
-                                  _confirmAndRedeemTokens(amountTokens: amount);
-                                },
-                          child: const Text('Send'),
-                        ),
+                                }
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: MobiButton(
+                              onPressed: amount == null
+                                  ? null
+                                  : () {
+                                      if (!origin.isCurrent ||
+                                          !context.mounted) {
+                                        return;
+                                      }
+                                      if (amount < _minimumRedemptionTokens) {
+                                        setSheetState(() {
+                                          sheetError =
+                                              'Redeem at least ${_format.format(_minimumRedemptionTokens)} TOKENS.';
+                                        });
+                                        return;
+                                      }
+                                      if (amount > balance) {
+                                        setSheetState(() {
+                                          sheetError =
+                                              'Your wallet does not have enough TOKENS.';
+                                        });
+                                        return;
+                                      }
+                                      Navigator.of(context).pop();
+                                      _confirmAndRedeemTokens(
+                                        origin: origin,
+                                        amountTokens: amount,
+                                      );
+                                    },
+                              child: const Text('Send'),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ));
-          },
+                ),
+              );
+            },
+          ),
         );
       },
     );
-
-    amountController.dispose();
   }
 
-  Future<void> _confirmAndRedeemTokens({required int amountTokens}) async {
-    if (_isBusy || !mounted || !AccountContext.hasVerifiedSession) return;
-    final account=AccountContext.capture();
+  Future<void> _confirmAndRedeemTokens({
+    required int amountTokens,
+    required _WalletAction origin,
+  }) async {
+    if (_isBusy || !origin.isCurrent || origin.account == null) return;
     setState(() => _isBusy = true);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AccountBoundView(account:account,child:AlertDialog(
-        title: const Text('Confirm redemption'),
-        content: Text(
-          'Redeem ${_format.format(amountTokens)} TOKENS for MoMo cash. The TOKENS will move to the admin wallet and the payout will be sent manually to your registered MoMo number.',
+      builder: (context) => _WalletAccountView(
+        origin: origin,
+        child: AlertDialog(
+          title: const Text('Confirm redemption'),
+          content: Text(
+            'Redeem ${_format.format(amountTokens)} TOKENS for MoMo cash. The TOKENS will move to the admin wallet and the payout will be sent manually to your registered MoMo number.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                if (origin.isCurrent && context.mounted) {
+                  Navigator.of(context).pop(false);
+                }
+              },
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (origin.isCurrent && context.mounted) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+              child: const Text('Redeem'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Redeem'),
-          ),
-        ],
-      )),
+      ),
     );
 
-    if (confirmed != true || !mounted || !AccountContext.isCurrent(account)) {
-      if (mounted && AccountContext.isCurrent(account)) setState(() => _isBusy = false);
+    if (confirmed != true || !mounted || !origin.isCurrent) {
+      if (mounted && origin.isCurrent) setState(() => _isBusy = false);
       return;
     }
 
@@ -618,63 +796,76 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             amountTokens: amountTokens,
             idempotencyKey: WalletOperationJournal.newOperationId(),
           );
-      await _load();
-      if (!mounted || !AccountContext.isCurrent(account)) return;
-      if (await _showRedemptionReceipt(receipt.value)) {
-        AccountContext.requireCurrent(account);
-        await ref.read(walletServiceProvider).closeOperation(receipt.operation,cancel:false);
-        await _load();
+      if (!origin.isCurrent) return;
+      await _load(action: origin);
+      if (!mounted || !origin.isCurrent) return;
+      if (await _showRedemptionReceipt(receipt.value, origin)) {
+        if (!origin.isCurrent) return;
+        await ref
+            .read(walletServiceProvider)
+            .closeOperation(receipt.operation, cancel: false);
+        if (!origin.isCurrent) return;
+        await _load(action: origin);
       }
     } on Object catch (error) {
-      if (AccountContext.isCurrent(account)) _showSnackBar(_redemptionError(error));
+      if (origin.isCurrent) _showSnackBar(_redemptionError(error));
     } finally {
-      if (mounted && AccountContext.isCurrent(account)) setState(() => _isBusy = false);
+      if (mounted && origin.isCurrent) setState(() => _isBusy = false);
     }
   }
 
-  Future<bool> _showRedemptionReceipt(WalletRedemptionReceipt receipt) async {
-    if (!mounted) return false;
-    final account=AccountContext.capture();
-    final acknowledged=await showDialog<bool>(
-      barrierDismissible:false,
+  Future<bool> _showRedemptionReceipt(
+    WalletRedemptionReceipt receipt,
+    _WalletAction origin,
+  ) async {
+    if (!origin.isCurrent) return false;
+    final acknowledged = await showDialog<bool>(
+      barrierDismissible: false,
       context: context,
-      builder: (context) => AccountBoundView(account:account,child:AlertDialog(
-        title: const Text('Redemption sent'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('${_format.format(receipt.amountTokens)} TOKENS'),
-            const SizedBox(height: AppSpacing.sm),
-            Text('${_format.format(receipt.amountRwf)} RWF'),
-            const SizedBox(height: AppSpacing.sm),
-            Text('Admin wallet ${receipt.adminMemberId}'),
-            if (receipt.momoNumber?.trim().isNotEmpty == true) ...[
+      builder: (context) => _WalletAccountView(
+        origin: origin,
+        child: AlertDialog(
+          title: const Text('Redemption sent'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${_format.format(receipt.amountTokens)} TOKENS'),
               const SizedBox(height: AppSpacing.sm),
-              Text('MoMo ${receipt.momoNumber}'),
+              Text('${_format.format(receipt.amountRwf)} RWF'),
+              const SizedBox(height: AppSpacing.sm),
+              Text('Admin wallet ${receipt.adminMemberId}'),
+              if (receipt.momoNumber?.trim().isNotEmpty == true) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Text('MoMo ${receipt.momoNumber}'),
+              ],
+              const SizedBox(height: AppSpacing.sm),
+              Text('Request ${_shortId(receipt.redemptionId)}'),
             ],
-            const SizedBox(height: AppSpacing.sm),
-            Text('Request ${_shortId(receipt.redemptionId)}'),
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () {
+                if (origin.isCurrent && context.mounted) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+              child: const Text('Done'),
+            ),
           ],
         ),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Done'),
-          ),
-        ],
-      )),
+      ),
     );
-    return acknowledged==true && AccountContext.isCurrent(account);
+    return acknowledged == true && origin.isCurrent;
   }
 
   Future<void> _confirmAndTransferTokens({
     required String receiverMemberId,
     required int amountTokens,
     String? note,
+    required _WalletAction origin,
   }) async {
-    if (_isBusy || !mounted || !AccountContext.hasVerifiedSession) return;
-    final account=AccountContext.capture();
+    if (_isBusy || !origin.isCurrent || origin.account == null) return;
     setState(() => _isBusy = true);
     final normalizedNote = note?.trim() ?? '';
     late final WalletTransferRecipient recipient;
@@ -683,58 +874,67 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
           .read(walletServiceProvider)
           .lookupTransferRecipient(receiverMemberId: receiverMemberId);
     } on Object catch (error) {
-      if (AccountContext.isCurrent(account)) {
+      if (origin.isCurrent) {
         _showSnackBar(_transferError(error, duringLookup: true));
       }
-      if (mounted && AccountContext.isCurrent(account)) setState(() => _isBusy = false);
+      if (mounted && origin.isCurrent) setState(() => _isBusy = false);
       return;
     }
 
-    if (!mounted || !AccountContext.isCurrent(account)) return;
+    if (!mounted || !origin.isCurrent) return;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AccountBoundView(account:account,child:AlertDialog(
-        title: const Text('Confirm transfer'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Send ${_format.format(amountTokens)} TOKENS to'),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              recipient.displayName,
-              style: AppTypography.titleMd.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text('Member ID ${recipient.memberId}'),
-            if (normalizedNote.isNotEmpty) ...[
+      builder: (context) => _WalletAccountView(
+        origin: origin,
+        child: AlertDialog(
+          title: const Text('Confirm transfer'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Send ${_format.format(amountTokens)} TOKENS to'),
               const SizedBox(height: AppSpacing.sm),
-              Text('Note: $normalizedNote'),
+              Text(
+                recipient.displayName,
+                style: AppTypography.titleMd.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text('Member ID ${recipient.memberId}'),
+              if (normalizedNote.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.sm),
+                Text('Note: $normalizedNote'),
+              ],
             ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                if (origin.isCurrent && context.mounted) {
+                  Navigator.of(context).pop(false);
+                }
+              },
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (origin.isCurrent && context.mounted) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+              child: const Text('Send'),
+            ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Send'),
-          ),
-        ],
-      )),
+      ),
     );
 
-    if (confirmed != true || !mounted || !AccountContext.isCurrent(account)) {
-      if (mounted && AccountContext.isCurrent(account)) setState(() => _isBusy = false);
+    if (confirmed != true || !mounted || !origin.isCurrent) {
+      if (mounted && origin.isCurrent) setState(() => _isBusy = false);
       return;
     }
-
-
 
     setState(() => _isBusy = true);
     try {
@@ -746,17 +946,26 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             idempotencyKey: WalletOperationJournal.newOperationId(),
             note: normalizedNote,
           );
-      await _load();
-      if (!mounted || !AccountContext.isCurrent(account)) return;
-      if (await _showTransferReceipt(receipt:receipt.value,recipient:recipient,amountTokens:amountTokens)) {
-        AccountContext.requireCurrent(account);
-        await ref.read(walletServiceProvider).closeOperation(receipt.operation,cancel:false);
-        await _load();
+      if (!origin.isCurrent) return;
+      await _load(action: origin);
+      if (!mounted || !origin.isCurrent) return;
+      if (await _showTransferReceipt(
+        receipt: receipt.value,
+        recipient: recipient,
+        amountTokens: amountTokens,
+        origin: origin,
+      )) {
+        if (!origin.isCurrent) return;
+        await ref
+            .read(walletServiceProvider)
+            .closeOperation(receipt.operation, cancel: false);
+        if (!origin.isCurrent) return;
+        await _load(action: origin);
       }
     } on Object catch (error) {
-      if (AccountContext.isCurrent(account)) _showSnackBar(_transferError(error));
+      if (origin.isCurrent) _showSnackBar(_transferError(error));
     } finally {
-      if (mounted && AccountContext.isCurrent(account)) setState(() => _isBusy = false);
+      if (mounted && origin.isCurrent) setState(() => _isBusy = false);
     }
   }
 
@@ -764,34 +973,41 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     required WalletTransferReceipt receipt,
     required WalletTransferRecipient recipient,
     required int amountTokens,
+    required _WalletAction origin,
   }) async {
-    if (!mounted) return false;
-    final account=AccountContext.capture();
-    final acknowledged=await showDialog<bool>(
-      barrierDismissible:false,
+    if (!origin.isCurrent) return false;
+    final acknowledged = await showDialog<bool>(
+      barrierDismissible: false,
       context: context,
-      builder: (context) => AccountBoundView(account:account,child:AlertDialog(
-        title: const Text('Transfer sent'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('${_format.format(amountTokens)} TOKENS'),
-            const SizedBox(height: AppSpacing.sm),
-            Text('${recipient.displayName} · ${recipient.memberId}'),
-            const SizedBox(height: AppSpacing.sm),
-            Text('Receipt ${_shortId(receipt.transferId)}'),
+      builder: (context) => _WalletAccountView(
+        origin: origin,
+        child: AlertDialog(
+          title: const Text('Transfer sent'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${_format.format(amountTokens)} TOKENS'),
+              const SizedBox(height: AppSpacing.sm),
+              Text('${recipient.displayName} · ${recipient.memberId}'),
+              const SizedBox(height: AppSpacing.sm),
+              Text('Receipt ${_shortId(receipt.transferId)}'),
+            ],
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () {
+                if (origin.isCurrent && context.mounted) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+              child: const Text('Done'),
+            ),
           ],
         ),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Done'),
-          ),
-        ],
-      )),
+      ),
     );
-    return acknowledged==true && AccountContext.isCurrent(account);
+    return acknowledged == true && origin.isCurrent;
   }
 
   String _transferError(Object error, {bool duringLookup = false}) {
@@ -843,28 +1059,72 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     return 'Redemption outcome is not confirmed. Refresh and review the pending request before retrying.';
   }
 
-  Future<void> _reviewPendingOperation() async {
-    final operation=_activeOperation;
-    if(operation==null||_isBusy)return;
-    final account=AccountContext.capture();
-    final confirmed=await showDialog<bool>(context:context,barrierDismissible:false,
-      builder:(context)=>AccountBoundView(account:account,child:AlertDialog(
-        title:Text(operation.committed?'Recorded wallet request':'Unresolved wallet request'),
-        content:Text('${operation.kind}: ${_format.format(operation.amountTokens)} TOKENS\n'
-          'Request ${operation.operationId}\n'
-          '${operation.committed ? "The request was recorded. Redemption does not confirm a MoMo payout." : "Execution is not confirmed by this snapshot. Cancellation locks and rechecks against any in-flight execution."}'),
-        actions:[TextButton(onPressed:()=>Navigator.of(context).pop(false),child:const Text('Keep open')),
-          FilledButton(onPressed:()=>Navigator.of(context).pop(true),
-            child:Text(operation.committed?'Acknowledge receipt':'Cancel unsubmitted request'))],
-      )));
-    if(confirmed!=true||!mounted||!AccountContext.isCurrent(account))return;
-    setState(()=>_isBusy=true);
-    try{
-      await ref.read(walletServiceProvider).closeOperation(operation,cancel:!operation.committed);
-      await _load();
+  Future<void> _reviewPendingOperation(_WalletAction origin) async {
+    final operation = _activeOperation;
+    if (!origin.isCurrent ||
+        origin.account == null ||
+        operation == null ||
+        _isBusy) {
+      return;
+    }
+    final confirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => _WalletAccountView(
+        origin: origin,
+        child: AlertDialog(
+          title: Text(
+            operation.committed
+                ? 'Recorded wallet request'
+                : 'Unresolved wallet request',
+          ),
+          content: Text(
+            '${operation.kind}: ${_format.format(operation.amountTokens)} TOKENS\n'
+            'Request ${operation.operationId}\n'
+            '${operation.committed ? "The request was recorded. Redemption does not confirm a MoMo payout." : "Execution is not confirmed by this snapshot. Cancellation locks and rechecks against any in-flight execution."}',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                if (origin.isCurrent && context.mounted) {
+                  Navigator.of(context).pop(false);
+                }
+              },
+              child: const Text('Keep open'),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (origin.isCurrent && context.mounted) {
+                  Navigator.of(context).pop(true);
+                }
+              },
+              child: Text(
+                operation.committed
+                    ? 'Acknowledge receipt'
+                    : 'Cancel unsubmitted request',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (confirmed != true || !mounted || !origin.isCurrent) return;
+    setState(() => _isBusy = true);
+    try {
+      await ref
+          .read(walletServiceProvider)
+          .closeOperation(operation, cancel: !operation.committed);
+      if (!origin.isCurrent) return;
+      await _load(action: origin);
     } on Object {
-      if(mounted&&AccountContext.isCurrent(account))_showSnackBar('Request state changed or is unavailable. Refresh to reconcile.');
-    } finally {if(mounted&&AccountContext.isCurrent(account))setState(()=>_isBusy=false);}
+      if (mounted && origin.isCurrent) {
+        _showSnackBar(
+          'Request state changed or is unavailable. Refresh to reconcile.',
+        );
+      }
+    } finally {
+      if (mounted && origin.isCurrent) setState(() => _isBusy = false);
+    }
   }
 
   static String _shortId(String value) {
@@ -884,6 +1144,11 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
       MobiVisualTheme(family: MobiVisualFamily.value, builder: _buildContent);
 
   Widget _buildContent(BuildContext context) {
+    final origin = _actionFor(_viewAccount);
+    Future<void> refresh() async {
+      if (origin.isCurrent) await _load(action: origin);
+    }
+
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
@@ -896,17 +1161,19 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
           child: Column(
             children: [
               MobiPageHeader(
-                onBack: widget.onBack,
+                onBack: () {
+                  if (origin.isCurrent) widget.onBack();
+                },
                 title: 'Wallet',
                 trailing: IconButton(
                   tooltip: 'Refresh',
-                  onPressed: _load,
+                  onPressed: refresh,
                   icon: const Icon(LucideIcons.refreshCw),
                 ),
               ),
               Expanded(
                 child: RefreshIndicator.adaptive(
-                  onRefresh: _load,
+                  onRefresh: refresh,
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(24, 12, 24, 140),
                     children: [
@@ -914,37 +1181,78 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                         const LoadingSkeleton(height: 156, borderRadius: 28),
                         const SizedBox(height: AppSpacing.md),
                         const LoadingSkeleton(height: 360, borderRadius: 28),
-                      ] else if (_error != null) ...[
+                      ] else if (_error != null || _summary == null) ...[
                         MobiErrorState(
                           title: 'Wallet unavailable',
-                          subtitle: _error,
+                          subtitle:
+                              _error ?? 'Sign in again to view your Wallet.',
                           icon: LucideIcons.walletCards,
-                          onRetry: _load,
+                          onRetry: refresh,
                           retryLabel: 'Refresh',
                           height: 260,
                         ),
                       ] else ...[
                         if (_activeOperation != null) ...[
-                          ListTile(title:const Text('Wallet request needs review'),
-                            subtitle:const Text('Reconcile the existing request before starting a different one.'),
-                            trailing:const Icon(Icons.receipt_long),onTap:_reviewPendingOperation),
-                          const SizedBox(height:AppSpacing.md),
+                          Material(
+                            type: MaterialType.transparency,
+                            child: ListTile(
+                              title: const Text('Wallet request needs review'),
+                              subtitle: const Text(
+                                'Reconcile the existing request before starting a different one.',
+                              ),
+                              trailing: const Icon(Icons.receipt_long),
+                              onTap: () {
+                                if (origin.isCurrent) {
+                                  unawaited(_reviewPendingOperation(origin));
+                                }
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.md),
                         ],
                         _WalletBalanceCard(summary: _summary!, format: _format),
                         const SizedBox(height: AppSpacing.md),
                         _WalletActionRail(
                           isBusy: _isBusy,
-                          onTransfer: _showTransferSheet,
-                          onRedeem: _showRedeemSheet,
-                          onShare: _shareInvite,
-                          onCopy: _copyInvite,
+                          onTransfer: () {
+                            if (origin.isCurrent) {
+                              unawaited(_showTransferSheet(origin));
+                            }
+                          },
+                          onRedeem: () {
+                            if (origin.isCurrent) {
+                              unawaited(_showRedeemSheet(origin));
+                            }
+                          },
+                          onShare: () {
+                            if (origin.isCurrent) {
+                              unawaited(_shareInvite(origin));
+                            }
+                          },
+                          onCopy: () {
+                            if (origin.isCurrent) {
+                              unawaited(_copyInvite(origin));
+                            }
+                          },
                         ),
                         const SizedBox(height: AppSpacing.md),
                         _InviteCard(
                           summary: _summary!,
-                          onShare: _shareInvite,
-                          onCopy: _copyInvite,
-                          onRedeem: _redeemInviteCode,
+                          onShare: () {
+                            if (origin.isCurrent) {
+                              unawaited(_shareInvite(origin));
+                            }
+                          },
+                          onCopy: () {
+                            if (origin.isCurrent) {
+                              unawaited(_copyInvite(origin));
+                            }
+                          },
+                          onRedeem: () {
+                            if (origin.isCurrent) {
+                              unawaited(_redeemInviteCode(origin));
+                            }
+                          },
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         Text(
@@ -961,7 +1269,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                             child: _LedgerRow(entry: entry, format: _format),
                           ),
                         if (_ledger.isEmpty)
-                          ClayCard(
+                          MobiTonalCard(
                             padding: const EdgeInsets.all(18),
                             child: Text(
                               'No wallet activity yet.',
@@ -1026,7 +1334,7 @@ class _WalletBalanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return ClayCard(
+    return MobiTonalCard(
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1197,7 +1505,7 @@ class _WalletActionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return ClayCard(
+    return MobiTonalCard(
       onTap: onTap,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
       child: Column(
@@ -1246,7 +1554,7 @@ class _InviteCard extends StatelessWidget {
     final code = summary.referralCode?.trim();
     final shareUrl = _walletInviteUrl(summary);
     final qrData = _walletInviteQrData(summary);
-    return ClayCard(
+    return MobiTonalCard(
       padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1448,7 +1756,7 @@ class _LedgerRow extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final isCredit = entry.direction == 'credit';
     final date = DateFormat('d MMM, HH:mm').format(entry.createdAt.toLocal());
-    return ClayCard(
+    return MobiTonalCard(
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
@@ -1536,4 +1844,54 @@ String _inviteShareMessage(ReferralCode referral) {
   return 'You are getting Mobio for quick rides and instant payment. '
       'Use invite code ${referral.code} to get 100 TOKENS. '
       'I get 100 TOKENS too after you sign up: ${referral.shareUrl}';
+}
+
+class _WalletAction {
+  _WalletAction(this.account, this.token, this._accountIsCurrent);
+  final AccountSnapshot? account;
+  final AccountActionToken token;
+  final bool Function() _accountIsCurrent;
+  bool get isCurrent => token.isCurrent && _accountIsCurrent();
+}
+
+class _WalletAccountView extends StatelessWidget {
+  const _WalletAccountView({required this.origin, required this.child});
+  final _WalletAction origin;
+  final Widget child;
+  @override
+  Widget build(BuildContext context) => ValueListenableBuilder<int>(
+    valueListenable: AccountContext.changes,
+    builder: (_, _, _) => origin.isCurrent
+        ? child
+        : const Material(
+            child: Center(
+              child: Text(
+                'Account changed. Close this view and sign in again.',
+              ),
+            ),
+          ),
+  );
+}
+
+// A modal pop completes before its exit transition unmounts its fields. Keep
+// their controllers alive until that route subtree is actually removed.
+class _WalletFormLifetime extends StatefulWidget {
+  const _WalletFormLifetime({required this.controllers, required this.child});
+  final List<TextEditingController> controllers;
+  final Widget child;
+  @override
+  State<_WalletFormLifetime> createState() => _WalletFormLifetimeState();
+}
+
+class _WalletFormLifetimeState extends State<_WalletFormLifetime> {
+  @override
+  void dispose() {
+    for (final controller in widget.controllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

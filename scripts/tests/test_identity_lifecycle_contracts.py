@@ -3,6 +3,7 @@ import json
 import re
 import unittest
 from pathlib import Path
+from source_contract_helpers import compact_source
 
 ROOT = Path(__file__).resolve().parents[2]
 HARDENING = ROOT / 'supabase/hardening/2026-09-28'
@@ -17,10 +18,15 @@ class CanonicalMemberIdTests(unittest.TestCase):
         self.assertIn('create unique index if not exists profiles_member_id_unique', self.sql.lower())
         self.assertIn('alter column member_id set not null', self.sql.lower())
 
-    def test_duplicate_historical_ids_are_reconciled(self):
-        self.assertIn('row_number() over', self.sql.lower())
-        self.assertIn('r.rn > 1', self.sql)
-        self.assertIn('set member_id = null', self.sql.lower())
+    def test_duplicate_historical_ids_require_preserved_identity_remediation(self):
+        sql = self.sql.lower()
+        self.assertIn('group by member_id having count(*) > 1', sql)
+        self.assertIn('invalid_count > 0 or duplicate_count > 0', sql)
+        self.assertIn("raise exception 'member_id_remediation_required'", sql)
+        self.assertLess(sql.index('lock table public.profiles'), sql.index('do $preflight$'))
+        self.assertLess(sql.index("raise exception 'member_id_remediation_required'"), sql.index('do $backfill$'))
+        self.assertIn('where member_id is null order by', sql)
+        self.assertNotIn('set member_id = null', sql)
 
     def test_allocator_serializes_check_then_assignment(self):
         self.assertIn('pg_advisory_xact_lock', self.sql)
@@ -37,7 +43,9 @@ class CanonicalMemberIdTests(unittest.TestCase):
         helper = (ROOT / 'lib/core/utils/mobio_member_id.dart').read_text()
         self.assertNotIn('hashCode', helper)
         self.assertNotIn('stableSeed', helper)
-        self.assertIn('return normalizeMobioMemberId(memberId);', helper)
+        display = compact_source(helper[helper.index('String? displayMobioMemberId'):])
+        self.assertIn('if(!isValidMobioMemberId(memberId))returnnull;', display)
+        self.assertIn('returnmemberId!.trim();', display)
 
     def test_production_trip_cards_do_not_fabricate_member_ids(self):
         paths = [
@@ -88,11 +96,11 @@ class AccountLifecycleTests(unittest.TestCase):
         self.assertIn("title: 'Sign out'", text)
 
     def test_push_registration_rechecks_owner_after_token_await(self):
-        text = (ROOT / 'lib/features/notifications/data/push_notification_service.dart').read_text()
-        token = text.index('await _messaging.getToken()')
+        text = compact_source((ROOT / 'lib/features/notifications/data/push_notification_service.dart').read_text())
+        token = text.index('await_messaging.getToken()')
         register = text.index("rpc('rpc_push_register'",token)
         self.assertIn('AccountContext.requireCurrent(account)',text[token:register])
-        self.assertIn("'p_session_id': account.sessionId",text[register:])
+        self.assertIn("'p_session_id':account.sessionId",text[register:])
 
     def test_push_unregister_is_scoped_to_owner_and_token(self):
         text = (ROOT / 'lib/features/notifications/data/push_notification_service.dart').read_text()

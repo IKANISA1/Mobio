@@ -1,6 +1,5 @@
 import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
-import 'package:mobi_app/core/utils/mobio_member_id.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Data class representing a nearby driver returned by the RPC.
@@ -33,7 +32,7 @@ class NearbyDriver {
           r'^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$',
         ).hasMatch(driverId) ||
         memberId is! String ||
-        !isValidMobioMemberId(memberId) ||
+        !RegExp(r'^[0-9]{6}$').hasMatch(memberId) ||
         vehicleTypeId is! String ||
         vehicleTypeId.trim().isEmpty ||
         latitude is! num ||

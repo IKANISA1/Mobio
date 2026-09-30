@@ -1,5 +1,6 @@
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/admin/data/admin_base_service.dart';
+import 'package:mobi_app/features/admin/domain/admin_wire_record.dart';
 import 'package:mobi_shared_types/models/admin/admin_models.dart';
 
 class AdminTripService extends AdminBaseService {
@@ -29,7 +30,7 @@ class AdminTripService extends AdminBaseService {
       return requireRows(
         rows,
         'rpc_admin_list_trips',
-      ).map(AdminTripListItem.fromJson).toList();
+      ).map(AdminWireRecord.trip).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching admin trips: $error');
       rethrow;

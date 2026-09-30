@@ -1,53 +1,109 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/data/biopay_nfc_card_payload.dart';
 import 'package:mobi_app/features/biopay/data/biopay_nfc_service.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_nfc_foreground_listener.dart';
+import 'package:mobi_app/features/biopay/presentation/payment_composer_screen.dart';
 import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
 
 class PaymentNfcLinkScreen extends ConsumerStatefulWidget {
-  const PaymentNfcLinkScreen({super.key});
+  const PaymentNfcLinkScreen({
+    super.key,
+    this.nfcService = const BioPayNfcService(),
+  });
+  final BioPayNfcService nfcService;
   @override
   ConsumerState<PaymentNfcLinkScreen> createState() =>
       _PaymentNfcLinkScreenState();
 }
 
 class _PaymentNfcLinkScreenState extends ConsumerState<PaymentNfcLinkScreen> {
-  final _nfc = const BioPayNfcService();
+  BioPayNfcService get _nfc => widget.nfcService;
   late final BioPayNfcForegroundSuspendedNotifier _foreground;
-  bool _suspendedForeground = false;
+  AccountSnapshot? _viewAccount;
+  int _revision = 0;
+  int? _suspension;
+  bool _accountLost = false;
   List<Map<String, dynamic>> _links = const [];
   Map<String, dynamic>? _selected;
   bool _busy = false, _error = false, _written = false, _locked = false;
+
+  bool _current(AccountSnapshot? account, int revision) =>
+      mounted &&
+      !_accountLost &&
+      revision == _revision &&
+      account != null &&
+      ref.read(paymentDiscoveryServiceProvider).isCurrent(account);
+
   @override
   void initState() {
     super.initState();
     _foreground = ref.read(bioPayNfcForegroundSuspendedProvider.notifier);
+    AccountContext.changes.addListener(_accountChanged);
     unawaited(_load());
   }
 
-  void _suspendForeground() {
-    _suspendedForeground = true;
-    _foreground.setSuspended(true);
+  void _accountChanged() {
+    if (_accountLost ||
+        _viewAccount == null ||
+        ref.read(paymentDiscoveryServiceProvider).isCurrent(_viewAccount!)) {
+      return;
+    }
+    _revision++;
+    _accountLost = true;
+    setState(() {
+      _links = const [];
+      _selected = null;
+      _busy = false;
+      _written = false;
+      _locked = false;
+      _error = true;
+    });
+    unawaited(_cancelAndRelease(_suspension));
   }
 
-  void _resumeForeground() {
-    if (!_suspendedForeground) return;
-    _suspendedForeground = false;
-    _foreground.setSuspended(false);
+  int _suspendForeground() {
+    final lease = _foreground.acquireSuspension();
+    _suspension = lease;
+    return lease;
+  }
+
+  void _releaseForeground(int? lease) {
+    if (lease == null) return;
+    if (_suspension == lease) _suspension = null;
+    _foreground.releaseSuspension(lease);
+  }
+
+  Future<void> _cancelAndRelease(int? lease) async {
+    if (lease == null || !_foreground.ownsSuspension(lease)) return;
+    try {
+      await _nfc.cancelActiveSession();
+    } finally {
+      _releaseForeground(lease);
+    }
   }
 
   Future<void> _load() async {
+    if (_accountLost) return;
+    final revision = ++_revision;
+    AccountSnapshot? account;
     try {
-      final workspace = await ref
-          .read(paymentDiscoveryServiceProvider)
-          .call('workspace', {});
-      if (!mounted) return;
-      setState(
-        () => _links = (workspace['links'] as List? ?? const [])
+      final service = ref.read(paymentDiscoveryServiceProvider);
+      account = service.captureAccount();
+      _viewAccount = account;
+      final workspace = await service.call('workspace', {});
+      if (!_current(account, revision)) return;
+      setState(() {
+        _selected = null;
+        _written = false;
+        _locked = false;
+        _links = (workspace['links'] as List)
             .map((x) => Map<String, dynamic>.from(x as Map))
             .where(
               (x) =>
@@ -56,115 +112,144 @@ class _PaymentNfcLinkScreenState extends ConsumerState<PaymentNfcLinkScreen> {
                     x['expires_at'] as String,
                   ).isAfter(DateTime.now()),
             )
-            .toList(),
-      );
+            .toList();
+      });
     } on Object {
-      if (mounted) setState(() => _error = true);
+      if (mounted && revision == _revision) setState(() => _error = true);
     }
   }
 
   Future<void> _write() async {
     final link = _selected;
-    if (_busy || link == null) return;
+    final account = _viewAccount;
+    if (_busy || link == null || !_current(account, _revision)) return;
+    final revision = ++_revision;
     setState(() {
       _busy = true;
       _error = false;
       _written = false;
       _locked = false;
     });
-    _suspendForeground();
+    final lease = _suspendForeground();
     try {
       final preview = await ref
           .read(paymentDiscoveryServiceProvider)
           .previewLink(link['token'] as String);
+      if (!_current(account, revision) || !_foreground.ownsSuspension(lease)) {
+        return;
+      }
       if (preview['available'] != true) throw StateError('Link unavailable.');
       final result = await _nfc.writeCard(
         BioPayNfcCardPayload.paymentLink(link['token'] as String),
+        onStep: (_) {
+          if (!_current(account, revision) ||
+              !_foreground.ownsSuspension(lease)) {
+            throw const StaleAccountWork();
+          }
+        },
       );
-      if (mounted) setState(() => _written = result.verified);
+      if (_current(account, revision) && _foreground.ownsSuspension(lease)) {
+        setState(() => _written = result.verified);
+      }
     } on Object {
-      if (mounted) setState(() => _error = true);
+      if (_current(account, revision)) setState(() => _error = true);
     } finally {
-      await _nfc.cancelActiveSession();
-      if (mounted) {
-        _resumeForeground();
-        setState(() => _busy = false);
+      if (_current(account, revision)) {
+        await _cancelAndRelease(lease);
+        if (_current(account, revision)) setState(() => _busy = false);
       }
     }
   }
 
   Future<void> _lock() async {
     final link = _selected;
-    if (!_written || link == null || _busy) return;
+    final account = _viewAccount;
+    final revision = _revision;
+    if (!_written || link == null || _busy || !_current(account, revision)) {
+      return;
+    }
     final l = paymentCopy(context);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l.bpNfcLock),
-        content: Text(l.bpNfcLockNotice),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l.bpCancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l.bpNfcLock),
-          ),
-        ],
+      builder: (context) => PaymentAccountView(
+        isCurrent: () => _current(account, revision),
+        child: AlertDialog(
+          title: Text(l.bpNfcLock),
+          content: Text(l.bpNfcLockNotice),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(l.bpCancel),
+            ),
+            TextButton(
+              onPressed: () {
+                if (_current(account, revision)) Navigator.pop(context, true);
+              },
+              child: Text(l.bpNfcLock),
+            ),
+          ],
+        ),
       ),
     );
-    if (!mounted || confirmed != true) return;
+    if (!_current(account, revision) ||
+        confirmed != true ||
+        !identical(link, _selected)) {
+      return;
+    }
     setState(() {
       _busy = true;
       _error = false;
     });
-    _suspendForeground();
+    final lease = _suspendForeground();
     try {
       await _nfc.lockVerifiedCard(
         BioPayNfcCardPayload.paymentLink(link['token'] as String),
+        onStep: (_) {
+          if (!_current(account, revision) ||
+              !_foreground.ownsSuspension(lease)) {
+            throw const StaleAccountWork();
+          }
+        },
       );
-      if (mounted) setState(() => _locked = true);
+      if (_current(account, revision) && _foreground.ownsSuspension(lease)) {
+        setState(() => _locked = true);
+      }
     } on Object {
-      if (mounted) setState(() => _error = true);
+      if (_current(account, revision)) setState(() => _error = true);
     } finally {
-      await _nfc.cancelActiveSession();
-      if (mounted) {
-        _resumeForeground();
-        setState(() => _busy = false);
+      if (_current(account, revision)) {
+        await _cancelAndRelease(lease);
+        if (_current(account, revision)) setState(() => _busy = false);
       }
     }
   }
 
   @override
   void dispose() {
-    unawaited(_cancelAndResumeForeground());
+    _revision++;
+    AccountContext.changes.removeListener(_accountChanged);
+    unawaited(_cancelAndRelease(_suspension));
     super.dispose();
-  }
-
-  Future<void> _cancelAndResumeForeground() async {
-    try {
-      await _nfc.cancelActiveSession();
-    } finally {
-      // Defer the provider notification until the route has finished disposal.
-      _resumeForeground();
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l = paymentCopy(context);
+    final account = _viewAccount;
+    final revision = _revision;
     return PaymentTaskScaffold(
       title: l.bpNfcWrite,
       busy: _busy,
       onBack: () => context.canPop() ? context.pop() : context.go('/profile'),
       action: PaymentAction(
         label: _busy ? l.bpNfcHold : l.bpNfcWrite,
-        onPressed: _busy || _selected == null ? null : _write,
+        onPressed: _busy || _selected == null || !_current(account, revision)
+            ? null
+            : _write,
       ),
       children: [
         Text(l.bpNfcScoped),
-        if (_error) PaymentError(l.bpNfcRecovery),
+        if (_error) PaymentError(_accountLost ? l.bpSignIn : l.bpNfcRecovery),
         if (_written) Semantics(liveRegion: true, child: Text(l.bpNfcVerified)),
         if (_locked) Text(l.bpNfcLocked),
         if (_written && !_locked)
@@ -185,20 +270,23 @@ class _PaymentNfcLinkScreenState extends ConsumerState<PaymentNfcLinkScreen> {
                 : null,
             onTap: _busy
                 ? null
-                : () => setState(() {
-                    _selected = link;
-                    _written = false;
-                    _locked = false;
-                  }),
+                : () {
+                    if (!_current(account, revision)) return;
+                    setState(() {
+                      _selected = link;
+                      _written = false;
+                      _locked = false;
+                    });
+                  },
           ),
         PaymentAction(
           label: l.bpRequests,
           secondary: true,
-          onPressed: _busy
+          onPressed: _busy || !_current(account, revision)
               ? null
               : () async {
                   await context.push('/biopay/requests');
-                  if (mounted) await _load();
+                  if (_current(account, revision)) await _load();
                 },
         ),
       ],

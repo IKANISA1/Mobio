@@ -4,14 +4,7 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo_root"
 
-: "${CLOUDFLARE_PAGES_PROJECT_NAME:=${CLOUDFLARE_PAGES_CLIENT_PROJECT_NAME:-}}"
-: "${CLOUDFLARE_PAGES_PROJECT_NAME:?Missing CLOUDFLARE_PAGES_PROJECT_NAME}"
-
-branch="${1:-main}"
-output_root="${2:-build/pwa}"
-
-"$repo_root/scripts/web/prepare_pwa_bundles.sh" "$output_root"
-
-npx wrangler pages deploy "$output_root/site" \
-  --project-name="$CLOUDFLARE_PAGES_PROJECT_NAME" \
-  --branch="$branch"
+# Promotion consumes an unchanged prepared site. It never rebuilds, installs a
+# deployment tool, or accepts a partial/optional gate set. All destination fields
+# and evidence paths must be explicitly supplied; legacy positional calls fail.
+exec python3 "$repo_root/scripts/web/pwa_candidate_manifest.py" --root "$repo_root" promote "$@"

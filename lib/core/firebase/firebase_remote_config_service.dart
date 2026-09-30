@@ -1,5 +1,6 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 
 class FirebaseRemoteConfigService {
@@ -17,18 +18,27 @@ class FirebaseRemoteConfigService {
     }
 
     final remoteConfig = FirebaseRemoteConfig.instance;
-    await remoteConfig.setConfigSettings(
-      RemoteConfigSettings(
-        fetchTimeout: const Duration(seconds: 20),
-        minimumFetchInterval: kDebugMode
-            ? Duration.zero
-            : const Duration(hours: 6),
+    await RequestDeadline.read(
+      remoteConfig.setConfigSettings(
+        RemoteConfigSettings(
+          fetchTimeout: const Duration(seconds: 20),
+          minimumFetchInterval: kDebugMode
+              ? Duration.zero
+              : const Duration(hours: 6),
+        ),
       ),
+      timeout: const Duration(seconds: 5),
     );
-    await remoteConfig.setDefaults(_defaults);
+    await RequestDeadline.read(
+      remoteConfig.setDefaults(_defaults),
+      timeout: const Duration(seconds: 5),
+    );
 
     try {
-      await remoteConfig.fetchAndActivate();
+      await RequestDeadline.read(
+        remoteConfig.fetchAndActivate(),
+        timeout: const Duration(seconds: 20),
+      );
     } on Object catch (error, stackTrace) {
       AppLogger.warning(
         'Firebase Remote Config fetch failed. Falling back to defaults.',

@@ -321,7 +321,9 @@ void main() {
     // router in app/router/return_navigation_test.dart.
     expect(appRouter, isNot(contains('if (Navigator.of(context).canPop())')));
     expect(walletScreen, contains('SupabaseConfig.canRunWithoutBackend'));
-    expect(driverPlusScreen, contains('SupabaseConfig.canRunWithoutBackend'));
+    // The page's explicit local preview gate is stricter than the legacy
+    // no-backend alias; real account failures still render unavailable.
+    expect(driverPlusScreen, contains('SupabaseConfig.isLocalUiPreview'));
     expect(walletScreen, contains('_previewWalletSummary'));
     expect(walletScreen, contains('_previewLedgerEntries'));
     expect(walletScreen, contains('_walletLedgerLabel(entry.reason)'));
@@ -335,8 +337,24 @@ void main() {
     expect(driverPlusScreen, contains("title: 'Mobio Plus unavailable'"));
     expect(walletScreen, contains('MobiErrorState'));
     expect(driverPlusScreen, contains('MobiErrorState'));
-    expect(walletScreen, contains('onRetry: _load'));
-    expect(driverPlusScreen, contains('onRetry: _load'));
+    expect(walletScreen, contains('onRetry: refresh'));
+    expect(walletScreen, contains('onRefresh: refresh'));
+    expect(
+      RegExp(
+        r'Future<void>\s+refresh\(\)\s+async\s*\{\s*if\s*\(origin\.isCurrent\)\s*await\s+_load\(action:\s*origin\);',
+      ).hasMatch(walletScreen),
+      isTrue,
+    );
+    // Refresh uses the rendered account; retained A callbacks cannot read B.
+    // Positive and replacement races use actual widgets in the profile suite.
+    expect(driverPlusScreen, contains('onRetry: refresh'));
+    expect(driverPlusScreen, contains('onRefresh: refresh'));
+    expect(
+      RegExp(
+        r'Future<void>\s+refresh\(\)\s+async\s*\{\s*if\s*\(_current\(renderedAccount\)\)\s*await\s+_load\(\);',
+      ).hasMatch(driverPlusScreen),
+      isTrue,
+    );
     expect(walletScreen, contains("retryLabel: 'Refresh'"));
     expect(driverPlusScreen, contains("retryLabel: 'Refresh'"));
 

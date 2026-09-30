@@ -184,6 +184,100 @@ void main() {
     expect(camera.starts, 2);
   });
 
+  testWidgets(
+    'camera timeout keeps restart disabled and late start obeys latest lifecycle',
+    (tester) async {
+      final camera = _CameraChannel()
+        ..pendingStart = Completer<Map<String, Object?>>()
+        ..install();
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: BioPayQrScannerSurface(
+                  onDetect: (_) {},
+                  cameraActionTimeout: const Duration(milliseconds: 2),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 3));
+      expect(
+        find.text(
+          'Camera action is still pending. Wait for completion or close this screen.',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester
+            .widget<TextButton>(find.widgetWithText(TextButton, 'Retry camera'))
+            .onPressed,
+        isNull,
+      );
+      expect(camera.starts, 1);
+      final stopsBefore = camera.stops;
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      await tester.pump();
+      camera.pendingStart!.complete(_CameraChannel.startedCamera);
+      await tester.pumpAndSettle();
+      expect(camera.starts, 1);
+      expect(camera.stops, stopsBefore + 1);
+      expect(
+        tester
+            .widget<MobileScanner>(find.byType(MobileScanner))
+            .controller!
+            .value
+            .isRunning,
+        isFalse,
+      );
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+      expect(camera.starts, 2);
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpAndSettle();
+    },
+  );
+
+  testWidgets(
+    'disposing during an unconfirmed camera start drains real work before disposal',
+    (tester) async {
+      final camera = _CameraChannel()
+        ..pendingStart = Completer<Map<String, Object?>>()
+        ..install();
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: BioPayQrScannerSurface(
+                  onDetect: (_) {},
+                  cameraActionTimeout: const Duration(milliseconds: 2),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 3));
+      final stopsBefore = camera.stops;
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump(const Duration(milliseconds: 3));
+      expect(camera.stops, stopsBefore);
+      camera.pendingStart!.complete(_CameraChannel.startedCamera);
+      await tester.pumpAndSettle();
+      expect(camera.starts, 1);
+      expect(camera.stops, stopsBefore + 1);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('denied camera recovery fits narrow enlarged text', (
     tester,
   ) async {
@@ -243,6 +337,18 @@ class _CameraChannel {
   bool authorized = true;
   bool unavailable = false;
   int starts = 0;
+  int stops = 0;
+  Completer<Map<String, Object?>>? pendingStart;
+  static const startedCamera = <String, Object?>{
+    'textureId': 17,
+    'cameraDirection': 1,
+    'numberOfCameras': 1,
+    'currentTorchState': 0,
+    'handlesCropAndRotation': true,
+    'naturalDeviceOrientation': 'PORTRAIT_UP',
+    'sensorOrientation': 90,
+    'size': {'width': 1920.0, 'height': 1080.0},
+  };
 
   void install() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -263,16 +369,11 @@ class _CameraChannel {
                     code: 'MOBILE_SCANNER_NO_CAMERA_ERROR',
                   );
                 }
-                return <String, Object?>{
-                  'textureId': 17,
-                  'cameraDirection': 1,
-                  'numberOfCameras': 1,
-                  'currentTorchState': 0,
-                  'handlesCropAndRotation': true,
-                  'naturalDeviceOrientation': 'PORTRAIT_UP',
-                  'sensorOrientation': 90,
-                  'size': {'width': 1920.0, 'height': 1080.0},
-                };
+                if (pendingStart != null) return await pendingStart!.future;
+                return startedCamera;
+              case 'stop':
+                stops++;
+                return null;
               default:
                 return null;
             }

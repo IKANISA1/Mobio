@@ -4,6 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/features/admin/application/admin_users_state.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
 import 'package:mobi_design_system/theme/app_theme.dart';
+import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 import 'package:mobi_shared_types/models/admin/admin_models.dart';
 
 void main() {
@@ -72,6 +73,72 @@ void main() {
 
     expect(controller.text, isEmpty);
     expect(changed, isEmpty);
+  });
+
+  testWidgets(
+    'AdminSearchField exposes clear after typing and hides it after clearing',
+    (tester) async {
+      final controller = TextEditingController();
+      addTearDown(controller.dispose);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: Scaffold(
+            body: AdminSearchField(
+              controller: controller,
+              hintText: 'Search users',
+            ),
+          ),
+        ),
+      );
+      expect(find.byTooltip('Clear search'), findsNothing);
+      await tester.enterText(find.byType(TextField), '000123');
+      await tester.pump();
+      expect(find.byTooltip('Clear search'), findsOneWidget);
+      await tester.tap(find.byTooltip('Clear search'));
+      await tester.pump();
+      expect(controller.text, isEmpty);
+      expect(find.byTooltip('Clear search'), findsNothing);
+    },
+  );
+
+  testWidgets('admin disabled actions retain named controls and cannot run', (
+    tester,
+  ) async {
+      var calls = 0;
+      final semantics = tester.ensureSemantics();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.darkTheme,
+        home: Scaffold(
+          body: Column(
+            children: [
+              const AdminIconButton(
+                icon: LucideIcons.refreshCw,
+                label: 'Refresh',
+              ),
+              AdminActionChip(
+                label: 'Saving',
+                isBusy: true,
+                onTap: () => calls++,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    final icon = tester.widget<Icon>(find.byIcon(LucideIcons.refreshCw));
+    final ext = AppTheme.darkTheme.extension<MobiThemeExtension>()!;
+    expect(icon.color, ext.textDisabled);
+    expect(
+      tester.getSize(find.bySemanticsLabel('Refresh')),
+      const Size(48, 48),
+    );
+    await tester.tap(find.text('Saving'));
+    await tester.pump();
+      expect(calls, 0);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      semantics.dispose();
   });
 
   testWidgets('AdminSortMenu emits selected sort value', (tester) async {

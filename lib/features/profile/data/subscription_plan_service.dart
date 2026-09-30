@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_shared_types/models/subscription_plan_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -68,14 +69,14 @@ class SubscriptionPlanService {
       ]);
 
       return SubscriptionOperationsSnapshot(
-        paymentRequests: (results[0] as List<dynamic>)
-            .whereType<Map<String, dynamic>>()
-            .map(SubscriptionPaymentRequestOpsRow.fromJson)
-            .toList(),
-        smsReceipts: (results[1] as List<dynamic>)
-            .whereType<Map<String, dynamic>>()
-            .map(MomoSmsReceiptOpsRow.fromJson)
-            .toList(),
+        paymentRequests: _requireRows(
+          results[0],
+          'subscription requests',
+        ).map(SubscriptionPaymentRequestOpsRow.fromJson).toList(),
+        smsReceipts: _requireRows(
+          results[1],
+          'subscription SMS receipts',
+        ).map(MomoSmsReceiptOpsRow.fromJson).toList(),
       );
     } on Object catch (e) {
       AppLogger.error('Error fetching subscription operations: $e');
@@ -85,11 +86,19 @@ class SubscriptionPlanService {
 
   Future<int> expireStalePaymentRequests() async {
     try {
-      final response = await supabase
-          .rpc<dynamic>('rpc_admin_expire_driver_subscription_payment_requests')
-          .timeout(_networkTimeout);
+      final response = await RequestDeadline.mutation(
+        supabase.rpc<dynamic>(
+          'rpc_admin_expire_driver_subscription_payment_requests',
+        ),
+        operation: 'rpc_admin_expire_driver_subscription_payment_requests',
+        timeout: _networkTimeout,
+      );
       final row = Map<String, dynamic>.from(response as Map);
-      return (row['expired_count'] as num?)?.toInt() ?? 0;
+      final count = row['expired_count'];
+      if (count is! int || count < 0) {
+        throw const FormatException('Invalid subscription expiry count');
+      }
+      return count;
     } on Object catch (e) {
       AppLogger.error('Error expiring subscription payment requests: $e');
       rethrow;
@@ -101,12 +110,15 @@ class SubscriptionPlanService {
     String? reviewNote,
   }) async {
     try {
-      await supabase
-          .rpc<dynamic>(
-            'rpc_admin_confirm_momo_sms_receipt',
-            params: {'p_receipt_id': receiptId, 'p_review_note': reviewNote},
-          )
-          .timeout(_networkTimeout);
+      await RequestDeadline.mutation(
+        supabase.rpc<dynamic>(
+          'rpc_admin_confirm_momo_sms_receipt',
+          params: {'p_receipt_id': receiptId, 'p_review_note': reviewNote},
+        ),
+        operation: 'rpc_admin_confirm_momo_sms_receipt',
+        operationId: receiptId,
+        timeout: _networkTimeout,
+      );
     } on Object catch (e) {
       AppLogger.error('Error confirming MoMo SMS receipt: $e');
       rethrow;
@@ -139,20 +151,26 @@ class SubscriptionPlanService {
     bool isActive = true,
   }) async {
     try {
-      await supabase.rpc(
-        'rpc_admin_upsert_subscription_plan',
-        params: {
-          'p_vehicle_type_id': vehicleTypeId,
-          'p_country_id': countryId,
-          'p_interval_days': intervalDays,
-          'p_price': price,
-          'p_currency': currency,
-          'p_is_active': isActive,
-        },
+      await RequestDeadline.mutation(
+        supabase.rpc(
+          'rpc_admin_upsert_subscription_plan',
+          params: {
+            'p_vehicle_type_id': vehicleTypeId,
+            'p_country_id': countryId,
+            'p_interval_days': intervalDays,
+            'p_price': price,
+            'p_currency': currency,
+            'p_is_active': isActive,
+          },
+        ),
+        operation: 'rpc_admin_upsert_subscription_plan',
+        operationId: '$vehicleTypeId:$countryId:$intervalDays',
+        timeout: _networkTimeout,
       );
       invalidateCache();
     } on Object catch (e) {
       AppLogger.error('Error upserting subscription plan: $e');
+      invalidateCache();
       rethrow;
     }
   }
@@ -160,13 +178,19 @@ class SubscriptionPlanService {
   /// Toggle active state.
   Future<void> toggleActive(String id, bool isActive) async {
     try {
-      await supabase.rpc(
-        'rpc_admin_set_subscription_plan_active',
-        params: {'p_plan_id': id, 'p_is_active': isActive},
+      await RequestDeadline.mutation(
+        supabase.rpc(
+          'rpc_admin_set_subscription_plan_active',
+          params: {'p_plan_id': id, 'p_is_active': isActive},
+        ),
+        operation: 'rpc_admin_set_subscription_plan_active',
+        operationId: id,
+        timeout: _networkTimeout,
       );
       invalidateCache();
     } on Object catch (e) {
       AppLogger.error('Error toggling subscription plan: $e');
+      invalidateCache();
       rethrow;
     }
   }
@@ -174,18 +198,32 @@ class SubscriptionPlanService {
   /// Admin delete.
   Future<void> delete(String id) async {
     try {
-      await supabase.rpc(
-        'rpc_admin_delete_subscription_plan',
-        params: {'p_plan_id': id},
+      await RequestDeadline.mutation(
+        supabase.rpc(
+          'rpc_admin_delete_subscription_plan',
+          params: {'p_plan_id': id},
+        ),
+        operation: 'rpc_admin_delete_subscription_plan',
+        operationId: id,
+        timeout: _networkTimeout,
       );
       invalidateCache();
     } on Object catch (e) {
       AppLogger.error('Error deleting subscription plan: $e');
+      invalidateCache();
       rethrow;
     }
   }
 
   void invalidateCache() => _cached = null;
+
+  List<Map<String, dynamic>> _requireRows(Object? raw, String operation) {
+    if (raw is! List) throw FormatException('Invalid $operation response');
+    return raw.map((row) {
+      if (row is! Map) throw FormatException('Invalid $operation row');
+      return Map<String, dynamic>.from(row);
+    }).toList();
+  }
 }
 
 class SubscriptionOperationsSnapshot {
@@ -234,22 +272,62 @@ class SubscriptionPaymentRequestOpsRow {
   final DateTime? expiresAt;
 
   factory SubscriptionPaymentRequestOpsRow.fromJson(Map<String, dynamic> json) {
+    final id = json['id'];
+    final profileId = json['profile_id'];
+    final vehicleTypeId = json['vehicle_type_id'];
+    final paymentMethod = json['payment_method'];
+    final amountRwf = json['amount_rwf'];
+    final amountTokens = json['amount_tokens'];
+    final currency = json['currency'];
+    final referenceCode = json['reference_code'];
+    final momoPayCode = json['momo_pay_code'];
+    final status = json['status'];
+    final createdAt = DateTime.tryParse(json['created_at'] as String? ?? '');
+    final expiresAt = DateTime.tryParse(json['expires_at'] as String? ?? '');
+    if (id is! String ||
+        id.isEmpty ||
+        profileId is! String ||
+        profileId.isEmpty ||
+        vehicleTypeId is! String ||
+        vehicleTypeId.isEmpty ||
+        !const {'tokens', 'momo_ussd'}.contains(paymentMethod) ||
+        amountRwf is! int ||
+        amountRwf <= 0 ||
+        amountTokens is! int ||
+        amountTokens <= 0 ||
+        currency != 'RWF' ||
+        referenceCode is! String ||
+        referenceCode.isEmpty ||
+        momoPayCode is! String ||
+        momoPayCode.isEmpty ||
+        !const {
+          'pending',
+          'dialer_opened',
+          'confirmed',
+          'expired',
+          'cancelled',
+          'failed',
+        }.contains(status) ||
+        createdAt == null ||
+        expiresAt == null) {
+      throw const FormatException('Invalid subscription request row');
+    }
     return SubscriptionPaymentRequestOpsRow(
-      id: json['id'] as String? ?? '',
-      profileId: json['profile_id'] as String? ?? '',
-      vehicleTypeId: json['vehicle_type_id'] as String? ?? '',
-      paymentMethod: json['payment_method'] as String? ?? '',
-      amountRwf: (json['amount_rwf'] as num?)?.toInt() ?? 0,
-      amountTokens: (json['amount_tokens'] as num?)?.toInt() ?? 0,
-      currency: json['currency'] as String? ?? 'RWF',
-      referenceCode: json['reference_code'] as String? ?? '',
-      momoPayCode: json['momo_pay_code'] as String? ?? '',
-      status: json['status'] as String? ?? '',
+      id: id,
+      profileId: profileId,
+      vehicleTypeId: vehicleTypeId,
+      paymentMethod: paymentMethod as String,
+      amountRwf: amountRwf,
+      amountTokens: amountTokens,
+      currency: currency as String,
+      referenceCode: referenceCode,
+      momoPayCode: momoPayCode,
+      status: status as String,
       providerTransactionRef: json['provider_transaction_ref'] as String?,
       confirmationSource: json['confirmation_source'] as String?,
-      createdAt: DateTime.tryParse(json['created_at'] as String? ?? ''),
+      createdAt: createdAt,
       confirmedAt: DateTime.tryParse(json['confirmed_at'] as String? ?? ''),
-      expiresAt: DateTime.tryParse(json['expires_at'] as String? ?? ''),
+      expiresAt: expiresAt,
     );
   }
 }
@@ -282,18 +360,33 @@ class MomoSmsReceiptOpsRow {
   final DateTime? createdAt;
 
   factory MomoSmsReceiptOpsRow.fromJson(Map<String, dynamic> json) {
+    final id = json['id'];
+    final momoPayCode = json['momo_pay_code'];
+    final status = json['status'];
+    final amountRwf = json['amount_rwf'];
+    final createdAt = DateTime.tryParse(json['created_at'] as String? ?? '');
+    if (id is! String ||
+        id.isEmpty ||
+        momoPayCode is! String ||
+        momoPayCode.isEmpty ||
+        status is! String ||
+        status.isEmpty ||
+        (amountRwf != null && (amountRwf is! int || amountRwf <= 0)) ||
+        createdAt == null) {
+      throw const FormatException('Invalid subscription SMS receipt row');
+    }
     return MomoSmsReceiptOpsRow(
-      id: json['id'] as String? ?? '',
+      id: id,
       sender: json['sender'] as String?,
       receivedAt: DateTime.tryParse(json['received_at'] as String? ?? ''),
-      amountRwf: (json['amount_rwf'] as num?)?.toInt(),
-      momoPayCode: json['momo_pay_code'] as String? ?? '',
+      amountRwf: amountRwf as int?,
+      momoPayCode: momoPayCode,
       referenceCode: json['reference_code'] as String?,
       payerPhone: json['payer_phone'] as String?,
       providerTransactionRef: json['provider_transaction_ref'] as String?,
       matchedPaymentRequestId: json['matched_payment_request_id'] as String?,
-      status: json['status'] as String? ?? '',
-      createdAt: DateTime.tryParse(json['created_at'] as String? ?? ''),
+      status: status,
+      createdAt: createdAt,
     );
   }
 }

@@ -176,9 +176,9 @@ class _PaymentLinkStatusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: bioPayDarkPanel.withValues(alpha: 0.76),
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
       ),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
@@ -188,7 +188,7 @@ class _PaymentLinkStatusCard extends StatelessWidget {
             BioPayIconBox(
               icon: icon,
               color: bioPayBlue,
-              background: Colors.white,
+              background: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
@@ -198,7 +198,7 @@ class _PaymentLinkStatusCard extends StatelessWidget {
                   Text(
                     title,
                     style: AppTypography.titleMd.copyWith(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -206,7 +206,7 @@ class _PaymentLinkStatusCard extends StatelessWidget {
                   Text(
                     body,
                     style: AppTypography.bodySm.copyWith(
-                      color: Colors.white.withValues(alpha: 0.68),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       height: 1.25,
                     ),
                   ),
