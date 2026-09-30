@@ -6,6 +6,11 @@ abstract final class TripWireRecord {
     r'^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$',
   );
   static final RegExp _date = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+  static final RegExp _time24 = RegExp(r'^([01]\d|2[0-3]):([0-5]\d)$');
+  static final RegExp _time12 = RegExp(
+    r'^(0?[1-9]|1[0-2]):([0-5]\d)\s+(AM|PM)$',
+    caseSensitive: false,
+  );
   static const _roles = {'driver', 'passenger'};
   static const _vehicleTypes = {
     'cab',
@@ -30,6 +35,38 @@ abstract final class TripWireRecord {
       throw const FormatException('Invalid trip RPC ID');
     }
     return value;
+  }
+
+  /// New SQL rows use HH24:MI; valid historical AM/PM rows remain readable.
+  /// Impossible and partial values cannot become a different scheduled time.
+  static ({int hour, int minute}) parseDepartureTime(Object? value) {
+    if (value is! String) {
+      throw const FormatException('Invalid scheduled trip departure time');
+    }
+    final text = value.trim();
+    final clock = _time24.firstMatch(text);
+    if (clock != null) {
+      return (
+        hour: int.parse(clock.group(1)!),
+        minute: int.parse(clock.group(2)!),
+      );
+    }
+    final legacy = _time12.firstMatch(text);
+    if (legacy != null) {
+      final hour = int.parse(legacy.group(1)!) % 12;
+      return (
+        hour: hour + (legacy.group(3)!.toUpperCase() == 'PM' ? 12 : 0),
+        minute: int.parse(legacy.group(2)!),
+      );
+    }
+    throw const FormatException('Invalid scheduled trip departure time');
+  }
+
+  static DateTime parseDepartureDate(Object? value) {
+    if (!_validDate(value)) {
+      throw const FormatException('Invalid scheduled trip departure date');
+    }
+    return DateTime.parse(value! as String);
   }
 
   static Trip parse(Map<String, dynamic> row, {bool redactWhatsApp = true}) {
@@ -65,6 +102,8 @@ abstract final class TripWireRecord {
         isActive is! bool) {
       throw const FormatException('Invalid scheduled trip RPC row');
     }
+    parseDepartureDate(departureDate);
+    parseDepartureTime(departureTime);
     final isRecurring = row['is_recurring'];
     final recurringDays = row['recurring_days'];
     final skipDates = row['recurrence_skip_dates'];
@@ -96,7 +135,9 @@ abstract final class TripWireRecord {
   static bool _validDate(Object? value) {
     if (value is! String || !_date.hasMatch(value)) return false;
     final parsed = DateTime.tryParse(value);
-    return parsed != null && parsed.toIso8601String().substring(0, 10) == value;
+    return parsed != null &&
+        parsed.year >= 1 &&
+        parsed.toIso8601String().substring(0, 10) == value;
   }
 
   static void _optionalCoordinate(

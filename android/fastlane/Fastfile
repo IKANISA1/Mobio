@@ -1,3 +1,9 @@
+require "digest"
+require "fileutils"
+require "json"
+require "open3"
+require "tmpdir"
+
 default_platform(:android)
 
 def play_json_key_data
@@ -30,6 +36,7 @@ def play_release_status
 end
 
 def require_candidate_approval!(track, status)
+  UI.user_error!("Approved artifacts must be used within the guarded upload block") unless block_given?
   root = File.expand_path("../..", __dir__)
   candidate = ENV["MOBIO_ANDROID_CANDIDATE_MANIFEST"]
   approval = ENV["MOBIO_ANDROID_RELEASE_APPROVAL"]
@@ -38,15 +45,44 @@ def require_candidate_approval!(track, status)
   end
 
   aab = ENV.fetch("ANDROID_RELEASE_AAB", "build/app/outputs/bundle/release/app-release.aab")
-  verified = system(
+  receipt_json, _verifier_error, verified = Open3.capture3(
     "python3", File.join(root, "scripts/release/android_candidate_manifest.py"),
     "--root", root, "verify", "--aab", File.expand_path(aab, root),
     "--candidate", File.expand_path(candidate, root),
     "--approval", File.expand_path(approval, root),
     "--track", track, "--release-status", status, "--package", "rw.mobi.app"
   )
-  UI.user_error!("Artifact-bound release approval failed") unless verified
-  File.expand_path(aab, root)
+  UI.user_error!("Artifact-bound release approval failed") unless verified.success?
+  begin
+    receipt = JSON.parse(receipt_json, max_nesting: 10)
+  rescue JSON::ParserError
+    UI.user_error!("Approved artifact verification receipt is unavailable")
+  end
+  unless receipt.is_a?(Hash) && receipt["status"] == "BOUND_APPROVAL_VERIFIED" &&
+         receipt["track"] == track && receipt["artifact_sha256"].is_a?(String) &&
+         /\A[0-9a-f]{64}\z/.match?(receipt["artifact_sha256"])
+    UI.user_error!("Approved artifact verification receipt is unavailable")
+  end
+
+  staged_directory = Dir.mktmpdir("mobio-approved-aab-")
+  begin
+    staged_aab = File.join(staged_directory, "approved-release.aab")
+    # Never upload the writable build path. Open without following a link, then
+    # compare the private copy with the successful verifier's artifact digest.
+    File.open(File.expand_path(aab, root), File::RDONLY | File::NOFOLLOW | File::NONBLOCK) do |source|
+      UI.user_error!("Approved AAB must remain a regular file") unless source.stat.file?
+      File.open(staged_aab, File::WRONLY | File::CREAT | File::EXCL, 0600) do |staged|
+        IO.copy_stream(source, staged)
+      end
+    end
+    unless Digest::SHA256.file(staged_aab).hexdigest == receipt["artifact_sha256"]
+      UI.user_error!("Approved AAB changed after verification")
+    end
+    File.chmod(0444, staged_aab)
+    yield staged_aab
+  ensure
+    FileUtils.remove_entry_secure(staged_directory)
+  end
 end
 
 platform :android do
@@ -59,18 +95,19 @@ platform :android do
   lane :deploy do
     target_track = play_track
     target_status = play_release_status
-    approved_aab = require_candidate_approval!(target_track, target_status)
-    upload_to_play_store(
-      json_key_data: play_json_key_data,
-      track: target_track,
-      aab: approved_aab,
-      mapping: "../build/app/outputs/mapping/release/mapping.txt",
-      skip_upload_apk: true,
-      skip_upload_metadata: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
-      release_status: target_status,
-    )
+    require_candidate_approval!(target_track, target_status) do |approved_aab|
+      upload_to_play_store(
+        json_key_data: play_json_key_data,
+        track: target_track,
+        aab: approved_aab,
+        mapping: "../build/app/outputs/mapping/release/mapping.txt",
+        skip_upload_apk: true,
+        skip_upload_metadata: true,
+        skip_upload_images: true,
+        skip_upload_screenshots: true,
+        release_status: target_status,
+      )
+    end
   end
 
   desc "Retired: metadata changes require a separate governed release path"
@@ -80,18 +117,19 @@ platform :android do
 
   desc "Upload AAB only to internal track"
   lane :upload_aab do
-    approved_aab = require_candidate_approval!("internal", "draft")
-    upload_to_play_store(
-      json_key_data: play_json_key_data,
-      track: "internal",
-      aab: approved_aab,
-      mapping: "../build/app/outputs/mapping/release/mapping.txt",
-      skip_upload_apk: true,
-      skip_upload_metadata: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
-      release_status: "draft",
-    )
+    require_candidate_approval!("internal", "draft") do |approved_aab|
+      upload_to_play_store(
+        json_key_data: play_json_key_data,
+        track: "internal",
+        aab: approved_aab,
+        mapping: "../build/app/outputs/mapping/release/mapping.txt",
+        skip_upload_apk: true,
+        skip_upload_metadata: true,
+        skip_upload_images: true,
+        skip_upload_screenshots: true,
+        release_status: "draft",
+      )
+    end
   end
 
   desc "Retired: promote by uploading the approved AAB through deploy"

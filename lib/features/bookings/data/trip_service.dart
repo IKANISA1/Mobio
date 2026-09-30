@@ -554,11 +554,8 @@ List<Trip> expandTripsForScheduleWindow(
   final expanded = <Trip>[];
 
   for (final trip in trips) {
-    final baseDate = _parseIsoDate(trip.departureDate);
-    if (baseDate == null) {
-      expanded.add(trip);
-      continue;
-    }
+    final baseDate = TripWireRecord.parseDepartureDate(trip.departureDate);
+    TripWireRecord.parseDepartureTime(trip.departureTime);
 
     if (!trip.isRecurring || trip.recurringDays.isEmpty) {
       if (!baseDate.isBefore(today)) {
@@ -567,9 +564,9 @@ List<Trip> expandTripsForScheduleWindow(
       continue;
     }
 
-    final recurrenceEnd =
-        _parseIsoDate(trip.recurrenceEndDate ?? '') ??
-        baseDate.add(const Duration(days: 90));
+    final recurrenceEnd = trip.recurrenceEndDate == null
+        ? baseDate.add(const Duration(days: 90))
+        : TripWireRecord.parseDepartureDate(trip.recurrenceEndDate);
     var day = _maxDate(today, baseDate);
     final lastDay = _minDate(recurrenceEnd, horizon);
 
@@ -597,15 +594,9 @@ List<Trip> expandTripsForScheduleWindow(
   return expanded;
 }
 
-DateTime? _parseIsoDate(String value) {
-  final parsed = DateTime.tryParse(value.trim());
-  if (parsed == null) return null;
-  return DateTime(parsed.year, parsed.month, parsed.day);
-}
-
 int _compareTripsByDeparture(Trip a, Trip b) {
-  final aDate = _parseIsoDate(a.departureDate) ?? DateTime(9999);
-  final bDate = _parseIsoDate(b.departureDate) ?? DateTime(9999);
+  final aDate = TripWireRecord.parseDepartureDate(a.departureDate);
+  final bDate = TripWireRecord.parseDepartureDate(b.departureDate);
   final dateCompare = aDate.compareTo(bDate);
   if (dateCompare != 0) return dateCompare;
   return _minutesFromTimeText(
@@ -630,18 +621,6 @@ String _startsAtUtcText(DateTime date, String timeText) {
 }
 
 int _minutesFromTimeText(String value) {
-  final trimmed = value.trim();
-  final match = RegExp(r'^(\d{1,2}):(\d{2})').firstMatch(trimmed);
-  if (match == null) return 24 * 60;
-
-  var hour = int.tryParse(match.group(1) ?? '') ?? 0;
-  final minute = int.tryParse(match.group(2) ?? '') ?? 0;
-  final lower = trimmed.toLowerCase();
-  if (lower.contains('pm') && hour < 12) {
-    hour += 12;
-  } else if (lower.contains('am') && hour == 12) {
-    hour = 0;
-  }
-
-  return hour.clamp(0, 23) * 60 + minute.clamp(0, 59);
+  final clock = TripWireRecord.parseDepartureTime(value);
+  return clock.hour * 60 + clock.minute;
 }

@@ -48,6 +48,68 @@ void main() {
     }
     expect(() => TripWireRecord.requireId('not-a-uuid'), throwsFormatException);
   });
+
+  test('departure clock retains canonical SQL and valid historical AM/PM', () {
+    for (final entry in <String, ({int hour, int minute})>{
+      '00:00': (hour: 0, minute: 0),
+      '09:00': (hour: 9, minute: 0),
+      '23:59': (hour: 23, minute: 59),
+      '03:45 PM': (hour: 15, minute: 45),
+      '3:45 pm': (hour: 15, minute: 45),
+      '12:00 AM': (hour: 0, minute: 0),
+      '12:00 PM': (hour: 12, minute: 0),
+    }.entries) {
+      expect(TripWireRecord.parseDepartureTime(entry.key), entry.value);
+      expect(
+        TripWireRecord.parse({
+          ...row,
+          'departure_time': entry.key,
+        }).departureTime,
+        entry.key,
+      );
+    }
+  });
+
+  test('impossible and partial departure clocks never enter a trip row', () {
+    for (final value in <Object?>[
+      null,
+      900,
+      '',
+      'nonsense',
+      '99:99',
+      '09:99',
+      '24:00',
+      '00:30 AM',
+      '13:30 PM',
+      '09:00 garbage',
+      '09:00:01',
+      '03:45 PM trailing',
+      '3:45',
+      '09:00 AM PM',
+    ]) {
+      expect(
+        () => TripWireRecord.parseDepartureTime(value),
+        throwsFormatException,
+      );
+      expect(
+        () => TripWireRecord.parse({...row, 'departure_time': value}),
+        throwsFormatException,
+      );
+    }
+  });
+
+  test('departure date never rolls invalid values into another date', () {
+    expect(
+      TripWireRecord.parseDepartureDate('2026-10-01'),
+      DateTime(2026, 10, 1),
+    );
+    for (final value in [null, '0000-01-01', '2026-02-31', 'today']) {
+      expect(
+        () => TripWireRecord.parseDepartureDate(value),
+        throwsFormatException,
+      );
+    }
+  });
   test(
     'recurrence flags and day indices do not inherit generated defaults',
     () {

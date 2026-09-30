@@ -166,6 +166,39 @@ void main() {
   });
 
   group('ScheduleTripState.fromTrip', () {
+    test(
+      'edit prefill rejects invalid clocks instead of clamping or using now',
+      () {
+        for (final value in [
+          '99:99',
+          '09:99',
+          'nonsense',
+          '03:45 PM trailing',
+        ]) {
+          final trip = Trip(
+            authorId: 'author',
+            origin: 'Kigali',
+            destination: 'Musanze',
+            departureDate: '2026-10-01',
+            departureTime: value,
+          );
+          expect(() => ScheduleTripState.fromTrip(trip), throwsFormatException);
+        }
+        expect(
+          () => ScheduleTripState.fromTrip(
+            const Trip(
+              authorId: 'author',
+              origin: 'Kigali',
+              destination: 'Musanze',
+              departureDate: '2026-02-31',
+              departureTime: '09:00',
+            ),
+          ),
+          throwsFormatException,
+        );
+      },
+    );
+
     test('prefills edit mode from an existing scheduled trip', () {
       final trip = Trip.fromJson({
         'id': 'trip-1',

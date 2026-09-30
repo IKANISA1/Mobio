@@ -266,12 +266,47 @@ def verify_aab_signature(aab: Path) -> None:
     except (OSError, zipfile.BadZipFile) as error:
         raise ManifestError("Android App Bundle is unreadable") from error
     try:
-        result = subprocess.run(["jarsigner", "-verify", str(aab)], text=True,
+        result = subprocess.run(["jarsigner", "-J-Duser.language=en", "-J-Duser.country=US",
+                                 "-verify", "-strict", str(aab)], text=True,
                                 capture_output=True, timeout=60, check=False)
-    except FileNotFoundError as error:
-        raise ManifestError("jarsigner unavailable; signed AAB cannot be checked") from error
-    require(result.returncode == 0 and "jar verified." in result.stdout.lower(),
+    except (OSError, subprocess.TimeoutExpired) as error:
+        raise ManifestError("jarsigner unavailable or timed out; signed AAB cannot be checked") from error
+    # JDK strict exit code 4 is shared by self-signing/untrusted chains AND
+    # expired, future-dated or disabled signatures. Android certificates may be
+    # self-signed, so accepting code 4 unconditionally is unsafe. Allow only the
+    # specific trust-path warnings below; every other diagnostic fails closed,
+    # including informational warnings for weak (not yet disabled) algorithms.
+    # https://docs.oracle.com/en/java/javase/21/docs/specs/man/jarsigner.html#errors-and-warnings
+    require(result.returncode in (0, 4),
             "Android App Bundle signature did not verify")
+    expected_result = ("jar verified." if result.returncode == 0
+                       else "jar verified, with signer errors.")
+    lines = [line.strip() for line in (result.stdout + "\n" + result.stderr).splitlines()
+             if line.strip()]
+    require(lines.count(expected_result) == 1, "Android App Bundle signature did not verify")
+    trust_warnings = {
+        "This jar contains entries whose signer certificate is self-signed.",
+        "This jar contains entries whose certificate chain is invalid. Reason: "
+        "PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: "
+        "unable to find valid certification path to requested target",
+    }
+    informational = {
+        "Warning:", "Error:",
+        "Re-run with the -verbose and -certs options for more details.",
+        "The signer certificate will expire within six months.",
+        "This jar contains entries whose signer certificate will expire within six months.",
+        "POSIX file permission and/or symlink attributes detected. These attributes are ignored "
+        "when signing and are not protected by the signature.",
+    }
+    no_timestamp = re.compile(
+        r"This jar contains signatures that do not include a timestamp\. Without a timestamp, "
+        r"users may not be able to validate this jar after any of the signer certificates expire "
+        r"\(as early as [0-9]{4}-[0-9]{2}-[0-9]{2}\)\.")
+    require(all(line == expected_result or line in trust_warnings or line in informational
+                or no_timestamp.fullmatch(line) for line in lines),
+            "Android App Bundle has disallowed signature warnings")
+    require((result.returncode == 4) == any(line in trust_warnings for line in lines),
+            "Android App Bundle signature warnings do not match strict verification")
 
 
 def migration_state(root: Path) -> tuple[str, list[dict[str, str]]]:
@@ -459,6 +494,9 @@ def canonical(value: dict) -> bytes:
 
 def verify(root: Path, aab: Path, candidate_path: Path, approval_path: Path,
            track: str, release_status: str, package: str) -> None:
+    require(not candidate_path.name.endswith(".example.json")
+            and not approval_path.name.endswith(".example.json"),
+            "Example release evidence is not eligible")
     aab = regular(aab)
     verify_aab_signature(aab)
     candidate_path, approval_path = regular(candidate_path), regular(approval_path)

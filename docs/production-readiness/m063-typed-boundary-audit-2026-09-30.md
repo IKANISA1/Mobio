@@ -272,3 +272,25 @@ secret-scan and platform outcomes. There are no deferred fixes for the
 enumerated owned required-state, identity/correlation and notification callback
 defects. External rollout and acceptance are separate from these local source
 and test results.
+
+## Scheduled departure-time completion correction
+
+The final independent review found that nonempty `departure_time` values could
+still pass the row adapter and then be clamped or replaced by current time in
+edit/occurrence helpers. `TripWireRecord.parseDepartureTime` now returns typed
+hour/minute values only for canonical SQL HH24:MI or valid historical AM/PM
+clock values. Invalid hours/minutes, partial values and trailing garbage fail
+before publication. Edit prefill and occurrence sorting/timestamps use the same
+parser; noon/midnight retain their exact meaning. The date helper also requires
+a valid date-only value rather than substituting today. The deliberate 90-day
+recurrence horizon remains the explicit behavior for an absent optional end date.
+
+New boundary/edit/occurrence regressions include impossible and partial clocks,
+a malformed date, canonical 24-hour values, valid legacy 12-hour values and exact
+midnight/noon UTC occurrences. Current integrated evidence is in the aggregate
+report; these changes do not alter product scope or introduce route calculations.
+
+Final isolated Trip verification: all 38 cases passed in the five domain, edit
+state, service, account-race and mutation-receipt test files. This run covers the
+strict departure correction and its valid SQL/legacy cases. Repository-wide
+Flutter integration remains pending in the aggregate report.
