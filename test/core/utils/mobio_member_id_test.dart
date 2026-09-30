@@ -11,6 +11,11 @@ void main() {
     test('sanitizes pasted separators before normalization', () {
       expect(mobioMemberIdDigits('482 913'), '482913');
       expect(normalizeMobioMemberId('482-913'), '482913');
+      expect(normalizeMobioMemberId('M482913'), isNull);
+      expect(
+        mobioMemberIdInputError('M482913'),
+        'Use only digits, spaces or hyphens.',
+      );
     });
 
     test('rejects short and long values with helpful errors', () {
@@ -25,7 +30,10 @@ void main() {
 
     test('displays only authoritative six-digit member IDs', () {
       expect(displayMobioMemberId('482913'), '482913');
+      expect(displayMobioMemberId(' 482913 '), '482913');
       expect(displayMobioMemberId('M00042'), isNull);
+      expect(displayMobioMemberId('M482913'), isNull);
+      expect(displayMobioMemberId('482-913'), isNull);
       expect(displayMobioMemberId(null), isNull);
     });
   });

@@ -8,6 +8,7 @@ import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/location/location_access_state.dart';
 import 'package:mobi_app/core/permissions/permission_providers.dart';
+import 'package:mobi_app/core/utils/mobio_member_id.dart';
 import 'package:mobi_app/features/bookings/application/booking_services.dart';
 import 'package:mobi_app/features/bookings/data/trip_service.dart';
 import 'package:mobi_app/features/home/presentation/widgets/home_header.dart';
@@ -235,7 +236,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
   Trip _tripForNearbyDriver(NearbyDriver driver) {
     return Trip(
       authorId: driver.driverId,
-      authorName: driver.memberId,
+      authorName: displayMobioMemberId(driver.memberId) ?? '',
       origin: 'Nearby',
       destination: '',
       departureDate: '',

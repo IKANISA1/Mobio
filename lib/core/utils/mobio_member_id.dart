@@ -8,6 +8,7 @@ String mobioMemberIdDigits(String value) {
 
 String? normalizeMobioMemberId(String? value) {
   if (value == null) return null;
+  if (!RegExp(r'^[0-9 -]+$').hasMatch(value.trim())) return null;
   final digits = mobioMemberIdDigits(value);
   if (digits.length == mobioMemberIdLength) return digits;
   return null;
@@ -19,6 +20,10 @@ bool isValidMobioMemberId(String? value) {
 }
 
 String? mobioMemberIdInputError(String value) {
+  if (value.trim().isNotEmpty &&
+      !RegExp(r'^[0-9 -]+$').hasMatch(value.trim())) {
+    return 'Use only digits, spaces or hyphens.';
+  }
   final digits = mobioMemberIdDigits(value);
   if (digits.isEmpty) return 'Enter the receiver 6-digit Mobio ID.';
   if (digits.length < mobioMemberIdLength) {
@@ -32,5 +37,6 @@ String? mobioMemberIdInputError(String value) {
 }
 
 String? displayMobioMemberId(String? memberId) {
-  return normalizeMobioMemberId(memberId);
+  if (!isValidMobioMemberId(memberId)) return null;
+  return memberId!.trim();
 }

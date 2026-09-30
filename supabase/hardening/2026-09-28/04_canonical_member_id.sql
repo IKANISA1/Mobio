@@ -115,5 +115,49 @@ create trigger assign_mobio_member_id
 before insert on public.profiles
 for each row execute function public.fn_assign_mobio_member_id();
 
+-- The earlier lookup stripped non-digits and selected an arbitrary first row.
+-- After the canonical constraint, lookup must use the exact unique ID.
+create or replace function public.rpc_lookup_wallet_transfer_recipient(
+  p_receiver_member_id text
+)
+returns json
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare
+  v_user_id uuid := public.verified_app_user_id();
+  v_profile public.profiles%rowtype;
+begin
+  if v_user_id is null then
+    raise exception 'AUTHENTICATION_REQUIRED';
+  end if;
+  if p_receiver_member_id is null
+     or p_receiver_member_id !~ '^[0-9]{6}$' then
+    raise exception 'INVALID_MEMBER_ID';
+  end if;
+
+  select * into v_profile
+  from public.profiles
+  where member_id = p_receiver_member_id;
+  if not found then
+    raise exception 'RECEIVER_NOT_FOUND';
+  end if;
+  if v_profile.id = v_user_id then
+    raise exception 'SELF_TRANSFER_NOT_ALLOWED';
+  end if;
+
+  return json_build_object(
+    'member_id', v_profile.member_id,
+    'display_name', coalesce(
+      nullif(v_profile.display_name, ''),
+      nullif(v_profile.name, ''),
+      'Mobio member'
+    )
+  );
+end;
+$$;
+
 notify pgrst, 'reload schema';
 commit;

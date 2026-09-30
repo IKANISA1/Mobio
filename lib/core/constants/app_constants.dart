@@ -21,16 +21,6 @@ class AppConstants {
     return _debugMockUsers;
   }
 
-  /// Hash an ID string to a 6-digit driver number.
-  static String getDriverId(String id) {
-    int hash = 0;
-    for (int i = 0; i < id.length; i++) {
-      hash = ((hash << 5) - hash) + id.codeUnitAt(i);
-      hash &= 0x7FFFFFFF;
-    }
-    return (hash % 900000 + 100000).toString();
-  }
-
   // ── Debug-only mock data ──────────────────────────────────────────
 
   static final List<Trip> _debugMockTrips = [

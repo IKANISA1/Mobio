@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/utils/mobio_member_id.dart';
 import 'package:mobi_app/features/chat/domain/chat_conversation.dart';
 import 'package:mobi_app/shared/widgets/glass_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_motion.dart';
@@ -64,7 +65,9 @@ class ConversationList extends StatelessWidget {
             : (name != null && name.isNotEmpty)
             ? name
             : 'Trip participant';
-        final memberId = (peerProfile['member_id'] as String?)?.trim();
+        final memberId = displayMobioMemberId(
+          peerProfile['member_id'] as String?,
+        );
 
         return ClayCard(
               borderRadius: 36,

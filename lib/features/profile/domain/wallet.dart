@@ -84,6 +84,20 @@ class WalletTransferRecipient {
       displayName: json['display_name'] as String? ?? 'Mobio member',
     );
   }
+
+  factory WalletTransferRecipient.fromLookupJson(
+    Map<String, dynamic> json, {
+    required String requestedMemberId,
+  }) {
+    if (!RegExp(r'^[0-9]{6}$').hasMatch(requestedMemberId)) {
+      throw StateError('INVALID_MEMBER_ID');
+    }
+    final recipient = WalletTransferRecipient.fromJson(json);
+    if (recipient.memberId != requestedMemberId) {
+      throw StateError('RECIPIENT_ID_MISMATCH');
+    }
+    return recipient;
+  }
 }
 
 class WalletTransferReceipt {

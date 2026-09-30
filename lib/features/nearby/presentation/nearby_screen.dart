@@ -9,6 +9,7 @@ import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/location/google_maps_deep_link_service.dart';
 import 'package:mobi_app/core/location/location_access_state.dart';
 import 'package:mobi_app/core/permissions/permission_providers.dart';
+import 'package:mobi_app/core/utils/mobio_member_id.dart';
 import 'package:mobi_app/features/nearby/application/nearby_providers.dart';
 import 'package:mobi_app/features/nearby/data/driver_location_service.dart';
 import 'package:mobi_app/features/nearby/presentation/widgets/nearby_location_notice.dart';
@@ -182,7 +183,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen>
       drivers.add(
         NearbyDriver(
           driverId: trip.authorId,
-          memberId: AppConstants.getDriverId(trip.authorId),
+          memberId: '',
           vehicleTypeId: type == VehicleType.private_ ? 'private' : type.name,
           latitude: trip.originLat ?? -1.9441,
           longitude: trip.originLng ?? 30.0619,
@@ -224,7 +225,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen>
         (driver) => GoogleMapsLocation(
           latitude: driver.latitude,
           longitude: driver.longitude,
-          label: driver.memberId,
+          label: displayMobioMemberId(driver.memberId) ?? 'Driver',
         ),
       ),
     );
@@ -261,7 +262,7 @@ class _NearbyScreenState extends ConsumerState<NearbyScreen>
             (d) => Trip(
               id: null,
               authorId: d.driverId,
-              authorName: '',
+              authorName: displayMobioMemberId(d.memberId) ?? '',
               origin: 'Nearby',
               destination: '',
               departureDate: '',

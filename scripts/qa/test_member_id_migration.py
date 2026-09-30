@@ -71,7 +71,13 @@ def main() -> int:
             create role anon nologin;
             create role authenticated nologin;
             create role service_role nologin;
-            create table public.profiles(id uuid primary key, created_at timestamptz, member_id text);
+            create function public.verified_app_user_id() returns uuid language sql stable as $$
+              select nullif(current_setting('request.jwt.claim.sub', true),'')::uuid
+            $$;
+            create table public.profiles(
+              id uuid primary key, created_at timestamptz, member_id text,
+              name text, display_name text
+            );
         """)
 
         sql("""
@@ -121,6 +127,29 @@ def main() -> int:
               and bool_and(member_id ~ '^[0-9]{6}$')
             from public.profiles;
         """).stdout.strip() == "t")
+        lookup = sql("""
+            begin;
+            set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000006';
+            select public.rpc_lookup_wallet_transfer_recipient('123456')->>'member_id';
+            commit;
+        """)
+        check("recipient lookup returns the exact canonical ID", "123456" in lookup.stdout)
+        prefixed = sql("""
+            begin;
+            set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000006';
+            select public.rpc_lookup_wallet_transfer_recipient('M123456');
+            commit;
+        """, success=False)
+        check("recipient lookup rejects noncanonical prefixed ID", prefixed.returncode != 0
+              and "INVALID_MEMBER_ID" in prefixed.stderr)
+        self_lookup = sql("""
+            begin;
+            set local request.jwt.claim.sub='00000000-0000-4000-8000-000000000004';
+            select public.rpc_lookup_wallet_transfer_recipient('123456');
+            commit;
+        """, success=False)
+        check("recipient lookup rejects self transfer", self_lookup.returncode != 0
+              and "SELF_TRANSFER_NOT_ALLOWED" in self_lookup.stderr)
         sql("""
             begin;
             set local request.jwt.claim.role='authenticated';

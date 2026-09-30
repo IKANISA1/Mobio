@@ -44,8 +44,9 @@ class WalletService {
         )
         .timeout(_timeout);
     AccountContext.requireCurrent(account);
-    return WalletTransferRecipient.fromJson(
+    return WalletTransferRecipient.fromLookupJson(
       Map<String, dynamic>.from(response as Map),
+      requestedMemberId: receiverMemberId,
     );
   }
 

@@ -683,7 +683,9 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
           .read(walletServiceProvider)
           .lookupTransferRecipient(receiverMemberId: receiverMemberId);
     } on Object catch (error) {
-      if (AccountContext.isCurrent(account)) _showSnackBar(_transferError(error));
+      if (AccountContext.isCurrent(account)) {
+        _showSnackBar(_transferError(error, duringLookup: true));
+      }
       if (mounted && AccountContext.isCurrent(account)) setState(() => _isBusy = false);
       return;
     }
@@ -792,13 +794,16 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     return acknowledged==true && AccountContext.isCurrent(account);
   }
 
-  String _transferError(Object error) {
+  String _transferError(Object error, {bool duringLookup = false}) {
     final value = error.toString();
     if (value.contains('LEGACY_WALLET_REVIEW_REQUIRED')) {
       return 'An older wallet request needs support review before a new request can be sent. No new request was submitted.';
     }
     if (value.contains('RECEIVER_NOT_FOUND')) {
       return 'No wallet was found for that 6-digit member ID.';
+    }
+    if (value.contains('RECIPIENT_ID_MISMATCH')) {
+      return 'Recipient details changed. No transfer was sent. Refresh and check the member ID before trying again.';
     }
     if (value.contains('SELF_TRANSFER_NOT_ALLOWED')) {
       return 'You cannot transfer TOKENS to your own wallet.';
@@ -811,6 +816,9 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     }
     if (value.contains('INVALID_MEMBER_ID')) {
       return 'Enter a valid 6-digit member ID.';
+    }
+    if (duringLookup) {
+      return 'Recipient could not be verified. No transfer was sent. Check the member ID and try again.';
     }
     return 'Transfer outcome is not confirmed. Refresh and review the pending request before retrying.';
   }
