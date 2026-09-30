@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/location/location_access_state.dart';
 import 'package:mobi_app/core/permissions/permission_providers.dart';
 import 'package:mobi_app/core/utils/mobio_member_id.dart';
@@ -302,9 +303,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       return;
     }
 
-    final started = await ref
-        .read(driverLocationSharingServiceProvider)
-        .start();
+    bool started;
+    try {
+      started = await ref.read(driverLocationSharingServiceProvider).start();
+    } on MutationOutcomeUnknownException {
+      if (!mounted) return;
+      setState(() => _isDriverOnline = false);
+      _showSnackBar(
+        'Driver online status could not be confirmed. Check it before trying again.',
+        isError: true,
+      );
+      return;
+    } on Object {
+      if (!mounted) return;
+      setState(() => _isDriverOnline = false);
+      _showSnackBar(
+        'Live location sharing is unavailable right now.',
+        isError: true,
+      );
+      return;
+    }
     if (!mounted) {
       return;
     }
@@ -325,7 +343,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
       return;
     }
 
-    await ref.read(driverLocationSharingServiceProvider).stop();
+    try {
+      await ref.read(driverLocationSharingServiceProvider).stop();
+    } on MutationOutcomeUnknownException {
+      if (!mounted) return;
+      setState(() => _isDriverOnline = false);
+      if (showMessage) {
+        _showSnackBar(
+          'Sharing stopped on this device. Server online status could not be confirmed.',
+          isError: true,
+        );
+      }
+      return;
+    } on Object {
+      if (!mounted) return;
+      setState(() => _isDriverOnline = false);
+      if (showMessage) {
+        _showSnackBar(
+          'Sharing stopped on this device. Check your online status before trying again.',
+          isError: true,
+        );
+      }
+      return;
+    }
     if (mounted) {
       setState(() => _isDriverOnline = false);
       if (showMessage) {

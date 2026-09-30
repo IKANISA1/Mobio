@@ -380,42 +380,53 @@ class _TripChatScreenState extends ConsumerState<TripChatScreen> {
       return;
     }
 
-    final peerId = conversation.peerIdFor(currentUserId);
-    final peerProfile = await _loadPeerProfile(peerId);
-    if (!_active || revision != _viewRevision) return;
-    final trip =
-        _trip ??
-        (conversation.tripId == null
-            ? null
-            : await _tripService.getTripById(conversation.tripId!));
-    if (!_active || revision != _viewRevision) return;
-    final isPeerBlocked = await _chatService.isPeerBlocked(peerId);
-    if (!_active || revision != _viewRevision) return;
-    final gatedDriverId = _plusGatedDriverIdForTrip(trip, currentUserId);
-    final driverPlusStatus = gatedDriverId == null
-        ? null
-        : await _driverPlusService.getStatus(driverId: gatedDriverId);
+    try {
+      final peerId = conversation.peerIdFor(currentUserId);
+      final peerProfile = await _loadPeerProfile(peerId);
+      if (!_active || revision != _viewRevision) return;
+      final trip =
+          _trip ??
+          (conversation.tripId == null
+              ? null
+              : await _tripService.getTripById(conversation.tripId!));
+      if (!_active || revision != _viewRevision) return;
+      final isPeerBlocked = await _chatService.isPeerBlocked(peerId);
+      if (!_active || revision != _viewRevision) return;
+      final gatedDriverId = _plusGatedDriverIdForTrip(trip, currentUserId);
+      final driverPlusStatus = gatedDriverId == null
+          ? null
+          : await _driverPlusService.getStatus(driverId: gatedDriverId);
 
-    if (revision != _viewRevision) return;
+      if (revision != _viewRevision) return;
 
-    if (!_active) {
-      return;
+      if (!_active) {
+        return;
+      }
+
+      setState(() {
+        _conversation = conversation;
+        _selectedConversationId = conversation.id;
+        _trip = trip;
+        _tripDriverPlusStatus = driverPlusStatus;
+        _profileCache[peerId] = peerProfile;
+        _isPeerBlocked = isPeerBlocked;
+        _isSending = false;
+        _isModerating = false;
+        _deliveryRevision++;
+        _isLoading = false;
+      });
+
+      _composerController.clear();
+    } on Object catch (error) {
+      if (!_active || revision != _viewRevision) return;
+      setState(() {
+        _isLoading = false;
+        _error = userMessageForError(
+          error,
+          fallback: 'Unable to open this chat right now.',
+        );
+      });
     }
-
-    setState(() {
-      _conversation = conversation;
-      _selectedConversationId = conversation.id;
-      _trip = trip;
-      _tripDriverPlusStatus = driverPlusStatus;
-      _profileCache[peerId] = peerProfile;
-      _isPeerBlocked = isPeerBlocked;
-      _isSending = false;
-      _isModerating = false;
-      _deliveryRevision++;
-      _isLoading = false;
-    });
-
-    _composerController.clear();
   }
 
   String? _plusGatedDriverIdForTrip(Trip? trip, String currentUserId) {

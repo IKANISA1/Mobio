@@ -76,7 +76,8 @@ abstract final class AppExceptionMapper {
 
     if (error is TimeoutException) {
       return NetworkException(
-        message: 'The request took too long. Please try again.',
+        message:
+            'The request took too long. Check its current status before trying again.',
         debugMessage: error.message,
         originalError: error,
         stackTrace: stackTrace,

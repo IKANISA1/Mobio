@@ -37,6 +37,24 @@ class NetworkException extends AppException {
   });
 }
 
+/// A write may have committed after the client stopped waiting for its reply.
+/// Callers must read the authoritative state or reconcile [operationId] before
+/// offering another attempt with a new request identity.
+class MutationOutcomeUnknownException extends AppException {
+  const MutationOutcomeUnknownException({
+    required this.operation,
+    this.operationId,
+    super.message =
+        'The result could not be confirmed. Check the current status before trying again.',
+    super.debugMessage,
+    super.originalError,
+    super.stackTrace,
+  });
+
+  final String operation;
+  final String? operationId;
+}
+
 /// Authentication / session error.
 class AuthException extends AppException {
   const AuthException({

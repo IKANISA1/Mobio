@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_shared_types/models/trip.dart';
@@ -84,33 +85,38 @@ class TripService {
     }
     final previousCreateTime = _lastCreateTime;
     _lastCreateTime = now;
+    var writeAcknowledged = false;
 
     try {
-      final tripId = await _supabase
-          .rpc(
-            'rpc_create_trip',
-            params: {
-              'p_payload': {
-                'origin': origin,
-                'origin_place_id': originPlaceId,
-                'origin_lat': originLat,
-                'origin_lng': originLng,
-                'destination': destination,
-                'destination_place_id': destinationPlaceId,
-                'dest_lat': destLat,
-                'dest_lng': destLng,
-                'departure_date': departureDate,
-                'departure_time': departureTime,
-                'role': role,
-                'vehicle_type': vehicleType,
-                'is_recurring': isRecurring,
-                'recurring_days': recurringDays,
-                'client_request_id': clientRequestId,
-                'note': note,
-              },
+      final tripId = await RequestDeadline.mutation(
+        _supabase.rpc(
+          'rpc_create_trip',
+          params: {
+            'p_payload': {
+              'origin': origin,
+              'origin_place_id': originPlaceId,
+              'origin_lat': originLat,
+              'origin_lng': originLng,
+              'destination': destination,
+              'destination_place_id': destinationPlaceId,
+              'dest_lat': destLat,
+              'dest_lng': destLng,
+              'departure_date': departureDate,
+              'departure_time': departureTime,
+              'role': role,
+              'vehicle_type': vehicleType,
+              'is_recurring': isRecurring,
+              'recurring_days': recurringDays,
+              'client_request_id': clientRequestId,
+              'note': note,
             },
-          )
-          .timeout(_networkTimeout);
+          },
+        ),
+        operation: 'create_trip',
+        operationId: clientRequestId,
+        timeout: _networkTimeout,
+      );
+      writeAcknowledged = true;
 
       final trip = await getTripById(tripId as String);
       if (trip == null) {
@@ -118,11 +124,15 @@ class TripService {
       }
 
       return trip;
+    } on MutationOutcomeUnknownException {
+      // The server may still commit. Preserve the same request identity and
+      // cooldown until the caller reconciles its trips.
+      rethrow;
     } on AppException {
-      _lastCreateTime = previousCreateTime;
+      if (!writeAcknowledged) _lastCreateTime = previousCreateTime;
       rethrow;
     } on Object catch (error, stackTrace) {
-      _lastCreateTime = previousCreateTime;
+      if (!writeAcknowledged) _lastCreateTime = previousCreateTime;
       throw AppExceptionMapper.mapAndLog(
         error,
         stackTrace,
@@ -142,7 +152,8 @@ class TripService {
           .from('trips')
           .select(_publicTripSelect)
           .eq('id', tripId)
-          .maybeSingle();
+          .maybeSingle()
+          .timeout(_networkTimeout);
 
       if (row == null) return null;
       return _publicTripFromJson(row);
@@ -306,31 +317,34 @@ class TripService {
     }
 
     try {
-      final updatedTripId = await _supabase
-          .rpc(
-            'rpc_update_trip',
-            params: {
-              'p_trip_id': normalizedTripId,
-              'p_payload': {
-                'origin': origin,
-                'origin_place_id': originPlaceId,
-                'origin_lat': originLat,
-                'origin_lng': originLng,
-                'destination': destination,
-                'destination_place_id': destinationPlaceId,
-                'dest_lat': destLat,
-                'dest_lng': destLng,
-                'departure_date': departureDate,
-                'departure_time': departureTime,
-                'role': role,
-                'vehicle_type': vehicleType,
-                'is_recurring': isRecurring,
-                'recurring_days': recurringDays,
-                'note': note,
-              },
+      final updatedTripId = await RequestDeadline.mutation(
+        _supabase.rpc(
+          'rpc_update_trip',
+          params: {
+            'p_trip_id': normalizedTripId,
+            'p_payload': {
+              'origin': origin,
+              'origin_place_id': originPlaceId,
+              'origin_lat': originLat,
+              'origin_lng': originLng,
+              'destination': destination,
+              'destination_place_id': destinationPlaceId,
+              'dest_lat': destLat,
+              'dest_lng': destLng,
+              'departure_date': departureDate,
+              'departure_time': departureTime,
+              'role': role,
+              'vehicle_type': vehicleType,
+              'is_recurring': isRecurring,
+              'recurring_days': recurringDays,
+              'note': note,
             },
-          )
-          .timeout(_networkTimeout);
+          },
+        ),
+        operation: 'update_trip',
+        operationId: normalizedTripId,
+        timeout: _networkTimeout,
+      );
 
       final trip = await getTripById(updatedTripId as String);
       if (trip == null) {
@@ -361,12 +375,15 @@ class TripService {
     _requireUserId('Please sign in to cancel a trip.');
 
     try {
-      await _supabase
-          .rpc(
-            'rpc_cancel_trip',
-            params: {'p_trip_id': tripId, 'p_reason': null},
-          )
-          .timeout(_networkTimeout);
+      await RequestDeadline.mutation(
+        _supabase.rpc(
+          'rpc_cancel_trip',
+          params: {'p_trip_id': tripId, 'p_reason': null},
+        ),
+        operation: 'cancel_trip',
+        operationId: tripId,
+        timeout: _networkTimeout,
+      );
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {

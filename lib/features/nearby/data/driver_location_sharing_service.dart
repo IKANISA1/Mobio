@@ -90,7 +90,7 @@ class DriverLocationSharingService {
     // The subscription is owned by this service and cancelled in stop().
     // ignore: cancel_subscriptions
     final subscription = _locationService.backgroundPositionStream().listen(
-      (position) => unawaited(_publish(position)),
+      (position) => unawaited(_publishSafely(position)),
       onError: (Object error, StackTrace stackTrace) {
         AppLogger.error('Driver live sharing stream failed: $error');
       },
@@ -109,5 +109,13 @@ class DriverLocationSharingService {
 
   Future<void> _publish(Position position) {
     return _publishLocation(position, _vehicleTypeId);
+  }
+
+  Future<void> _publishSafely(Position position) async {
+    try {
+      await _publish(position);
+    } on Object catch (error) {
+      AppLogger.error('Driver live sharing update unconfirmed: $error');
+    }
   }
 }

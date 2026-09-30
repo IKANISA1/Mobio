@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/features/profile/data/wallet_operation_journal.dart';
 import 'package:mobi_app/features/profile/domain/wallet_operation.dart';
@@ -87,9 +88,11 @@ class WalletService {
       final result=WalletOperationRecord.fromJson(Map<String,dynamic>.from(executed as Map),ownerId:account.userId);
       if(result.operationId!=durableId||!result.committed)throw StateError('INVALID_WALLET_RECEIPT');
       return result;
-    } on TimeoutException {
+    } on Object catch (error) {
+      if (!RequestDeadline.responseWasLost(error)) rethrow;
       // A deadline does NOT cancel the server transaction. Preserve the pointer
-      // and reconcile through status. Do not automatically execute another ID.
+      // after any lost response and reconcile through status. Do not
+      // automatically execute another ID.
       throw UnknownWalletOutcome(durableId);
     }
   }

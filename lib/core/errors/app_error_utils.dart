@@ -17,7 +17,7 @@ String userMessageForError(
   }
 
   if (error is TimeoutException) {
-    return 'The request took too long. Please try again.';
+    return 'The request took too long. Check its current status before trying again.';
   }
 
   final raw = error.toString().trim();

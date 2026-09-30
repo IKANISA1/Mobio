@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/admin/application/admin_services.dart';
 import 'package:mobi_app/features/admin/data/admin_service.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
@@ -95,9 +96,9 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
             ? reportedTotal
             : (_campaignPage * _campaignRowsPerPage) + campaigns.length;
       });
-    } on Object catch (error) {
+    } on Object {
       if (!mounted) return;
-      setState(() => _campaignError = error.toString());
+      setState(() => _campaignError = 'Campaign status is unavailable. Try refreshing.');
     } finally {
       if (mounted) setState(() => _isLoadingCampaigns = false);
     }
@@ -152,8 +153,11 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
         _titleController.clear();
         _bodyController.clear();
       }
-    } on Object catch (error) {
-      if (mounted) _showSnackBar('Broadcast failed: $error', isError: true);
+    } on MutationOutcomeUnknownException catch (error) {
+      if (mounted) _showSnackBar(error.message, isError: true);
+      if (mounted) await _loadCampaigns();
+    } on Object {
+      if (mounted) _showSnackBar('Unable to submit the broadcast.', isError: true);
     } finally {
       if (mounted) setState(() => _isSending = false);
     }
@@ -184,8 +188,11 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
       if (!mounted) return;
       _showSnackBar(approved ? 'Promo approved.' : 'Promo rejected.');
       await _loadCampaigns();
-    } on Object catch (error) {
-      if (mounted) _showSnackBar('Review failed: $error', isError: true);
+    } on MutationOutcomeUnknownException catch (error) {
+      if (mounted) _showSnackBar(error.message, isError: true);
+      await _loadCampaigns();
+    } on Object {
+      if (mounted) _showSnackBar('Unable to review this campaign.', isError: true);
     } finally {
       if (mounted) setState(() => _campaignActionId = null);
     }
@@ -230,8 +237,11 @@ class _AdminBroadcastsScreenState extends ConsumerState<AdminBroadcastsScreen> {
       if (!mounted) return;
       _showSnackBar('Promo sent to $count consenting members.');
       await _loadCampaigns();
-    } on Object catch (error) {
-      if (mounted) _showSnackBar('Send failed: $error', isError: true);
+    } on MutationOutcomeUnknownException catch (error) {
+      if (mounted) _showSnackBar(error.message, isError: true);
+      await _loadCampaigns();
+    } on Object {
+      if (mounted) _showSnackBar('Unable to confirm this send.', isError: true);
     } finally {
       if (mounted) setState(() => _campaignActionId = null);
     }

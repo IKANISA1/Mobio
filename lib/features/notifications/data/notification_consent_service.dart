@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_shared_types/models/notification_consent_settings.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -15,12 +16,14 @@ class NotificationConsentService {
     if (userId == null) return const NotificationConsentSettings();
 
     try {
-      final rows = await _supabase
-          .from('notification_consents')
-          .select('consent_type, channel, status')
-          .eq('profile_id', userId)
-          .eq('consent_type', 'promotional')
-          .inFilter('channel', const ['in_app', 'push']);
+      final rows = await RequestDeadline.read(
+        _supabase
+            .from('notification_consents')
+            .select('consent_type, channel, status')
+            .eq('profile_id', userId)
+            .eq('consent_type', 'promotional')
+            .inFilter('channel', const ['in_app', 'push']),
+      );
 
       return NotificationConsentSettings.fromRows(rows);
     } on Object catch (e) {
@@ -56,9 +59,13 @@ class NotificationConsentService {
     ];
 
     try {
-      await _supabase
-          .from('notification_consents')
-          .upsert(rows, onConflict: 'profile_id,consent_type,channel');
+      await RequestDeadline.mutation(
+        _supabase
+            .from('notification_consents')
+            .upsert(rows, onConflict: 'profile_id,consent_type,channel'),
+        operation: 'save_notification_consent',
+        operationId: userId,
+      );
       return settings;
     } on Object catch (e) {
       AppLogger.error('Error saving notification consent settings: $e');

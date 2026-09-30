@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/app/app_providers.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/auth/admin_session_guard.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_enums.dart';
@@ -41,6 +42,7 @@ class _MobiShellState extends ConsumerState<MobiShell> {
       : null;
   ProfileService get _profileService => ref.read(profileServiceProvider);
   StreamSubscription<AuthState>? _authSubscription;
+  int _roleSyncRevision = 0;
 
   @override
   void initState() {
@@ -66,6 +68,7 @@ class _MobiShellState extends ConsumerState<MobiShell> {
   }
 
   Future<void> _syncRoleFromSession() async {
+    final revision = ++_roleSyncRevision;
     if (!mounted || !SupabaseConfig.isConfigured) {
       return;
     }
@@ -78,8 +81,21 @@ class _MobiShellState extends ConsumerState<MobiShell> {
       return;
     }
 
-    final profile = await _profileService.getMyProfile();
-    if (!mounted) {
+    AccountSnapshot account;
+    try {
+      account = AccountContext.capture();
+    } on Object {
+      AdminSessionGuard.revoke();
+      ref.read(roleProvider.notifier).set(AppRole.passenger);
+      return;
+    }
+
+    final profile = await _profileService.getMyProfile().catchError(
+      (Object _) => null,
+    );
+    if (!mounted ||
+        revision != _roleSyncRevision ||
+        !AccountContext.isCurrent(account)) {
       return;
     }
 

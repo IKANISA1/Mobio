@@ -71,7 +71,10 @@ class _BioPayNfcScreenState extends ConsumerState<BioPayNfcScreen> {
 
     if (!SupabaseConfig.isConfigured) return;
 
-    final profile = await ref.read(profileServiceProvider).getMyProfile();
+    final profile = await ref
+        .read(profileServiceProvider)
+        .getMyProfile()
+        .catchError((Object _) => null);
     final momoNumber = profile?.momoNumber?.trim() ?? '';
     final momoPayCode = profile?.momoPayCode?.trim() ?? '';
     final whatsapp = profile?.whatsapp?.trim() ?? '';

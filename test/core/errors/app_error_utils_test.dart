@@ -28,7 +28,7 @@ void main() {
     test('maps TimeoutException to a friendly timeout message', () {
       expect(
         userMessageForError(TimeoutException('deadline exceeded')),
-        'The request took too long. Please try again.',
+        'The request took too long. Check its current status before trying again.',
       );
     });
 

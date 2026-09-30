@@ -20,6 +20,7 @@ dependencies:
 
   # Networking
   dio: ^5.9.2
+  http: 1.6.0
 
   # Local Storage
   shared_preferences: ^2.5.4
@@ -78,8 +79,6 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  # Use the already locked HTTP client to test Supabase without network calls.
-  http: 1.6.0
   flutter_lints: ^6.0.0
   build_runner: ^2.4.0
   freezed: ^3.2.3

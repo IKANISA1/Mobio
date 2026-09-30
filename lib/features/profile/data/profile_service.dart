@@ -1,3 +1,6 @@
+import 'package:mobi_app/core/async/account_epoch.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_shared_types/models/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -23,35 +26,44 @@ class ProfileService {
 
   /// Fetches the current user's profile row.
   Future<Profile?> getMyProfile() async {
-    final userId = _currentUserId;
-    if (userId == null) return null;
+    final user = _supabase.auth.currentUser;
+    if (user == null || user.isAnonymous) return null;
+    final account = AccountContext.capture();
+    if (account.userId != user.id) throw const StaleAccountWork();
 
     try {
-      final row = await _supabase
-          .from('profiles')
-          .select()
-          .eq('id', userId)
-          .maybeSingle();
+      final row = await RequestDeadline.read(
+        _supabase
+            .from('profiles')
+            .select()
+            .eq('id', account.userId)
+            .maybeSingle(),
+      );
+      AccountContext.requireCurrent(account);
       return row == null ? null : Profile.fromJson(row);
     } on Object catch (e) {
       AppLogger.error('Error fetching profile: $e');
-      return null;
+      rethrow;
     }
   }
 
   /// Fetches the limited public profile shape allowed for peer UI surfaces.
   Future<Profile?> getProfileById(String userId) async {
+    final account = AccountContext.capture();
     try {
-      final rows = await _supabase.rpc(
-        'rpc_get_public_profile',
-        params: {'p_profile_id': userId},
+      final rows = await RequestDeadline.read(
+        _supabase.rpc(
+          'rpc_get_public_profile',
+          params: {'p_profile_id': userId},
+        ),
       );
+      AccountContext.requireCurrent(account);
 
       if (rows is! List || rows.isEmpty) return null;
       return Profile.fromJson(Map<String, dynamic>.from(rows.first as Map));
     } on Object catch (e) {
       AppLogger.error('Error fetching public profile $userId: $e');
-      return null;
+      rethrow;
     }
   }
 
@@ -98,7 +110,11 @@ class ProfileService {
 
       if (payload.isEmpty) return;
 
-      await _supabase.rpc('rpc_update_profile', params: {'p_payload': payload});
+      await RequestDeadline.mutation(
+        _supabase.rpc('rpc_update_profile', params: {'p_payload': payload}),
+        operation: 'update_profile',
+        operationId: _currentUserId,
+      );
     } on Object catch (e) {
       AppLogger.error('Error updating profile via RPC: $e');
       rethrow;
@@ -178,7 +194,11 @@ class ProfileService {
     if (updates.isEmpty) return;
 
     try {
-      await _supabase.from('profiles').update(updates).eq('id', userId);
+      await RequestDeadline.mutation(
+        _supabase.from('profiles').update(updates).eq('id', userId),
+        operation: 'legacy_update_profile',
+        operationId: userId,
+      );
     } on Object catch (e) {
       AppLogger.error('Error updating profile: $e');
       rethrow;
@@ -198,15 +218,19 @@ class ProfileService {
     String? rentalVehicleModel,
   }) async {
     try {
-      await _supabase.rpc(
-        'rpc_enable_driver_mode',
-        params: {
-          'p_vehicle_type': vehicleType,
-          'p_vehicle_number_plate': vehicleNumberPlate,
-          'p_bus_agency_name': busAgencyName,
-          'p_bus_passenger_capacity': busPassengerCapacity,
-          'p_rental_vehicle_model': rentalVehicleModel,
-        },
+      await RequestDeadline.mutation(
+        _supabase.rpc(
+          'rpc_enable_driver_mode',
+          params: {
+            'p_vehicle_type': vehicleType,
+            'p_vehicle_number_plate': vehicleNumberPlate,
+            'p_bus_agency_name': busAgencyName,
+            'p_bus_passenger_capacity': busPassengerCapacity,
+            'p_rental_vehicle_model': rentalVehicleModel,
+          },
+        ),
+        operation: 'enable_driver_mode',
+        operationId: _currentUserId,
       );
     } on Object catch (e) {
       AppLogger.error('Error enabling driver mode: $e');
@@ -217,7 +241,11 @@ class ProfileService {
   /// Disables driver mode via `rpc_disable_driver_mode` RPC.
   Future<void> disableDriverMode() async {
     try {
-      await _supabase.rpc('rpc_disable_driver_mode');
+      await RequestDeadline.mutation(
+        _supabase.rpc('rpc_disable_driver_mode'),
+        operation: 'disable_driver_mode',
+        operationId: _currentUserId,
+      );
     } on Object catch (e) {
       AppLogger.error('Error disabling driver mode: $e');
       rethrow;
@@ -235,10 +263,9 @@ class ProfileService {
     if (uid == null) return {'average_score': 0.0, 'total_ratings': 0};
 
     try {
-      final rows = await _supabase
-          .from('ratings')
-          .select('score')
-          .eq('rated_user_id', uid);
+      final rows = await RequestDeadline.read(
+        _supabase.from('ratings').select('score').eq('rated_user_id', uid),
+      );
 
       final ratings = rows as List<dynamic>;
       if (ratings.isEmpty) {
@@ -256,7 +283,7 @@ class ProfileService {
       };
     } on Object catch (e) {
       AppLogger.error('Error fetching user rating: $e');
-      return {'average_score': 0.0, 'total_ratings': 0};
+      rethrow;
     }
   }
 

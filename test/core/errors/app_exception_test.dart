@@ -67,6 +67,7 @@ void main() {
       );
       expect(result, isA<NetworkException>());
       expect(result.message, contains('too long'));
+      expect(result.message, isNot(contains('Please try again.')));
     });
 
     test('maps FormatException to ServerException', () {

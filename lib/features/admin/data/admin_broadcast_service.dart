@@ -1,6 +1,8 @@
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/admin/data/admin_base_service.dart';
 import 'package:mobi_shared_types/models/admin/admin_models.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
 
 class AdminBroadcastService extends AdminBaseService {
   AdminBroadcastService({super.supabase});
@@ -12,16 +14,19 @@ class AdminBroadcastService extends AdminBaseService {
     Map<String, dynamic>? metadata,
   }) async {
     try {
-      final result = await supabaseClient.rpc(
-        'rpc_admin_request_campaign_approval',
-        params: {
-          'p_campaign_type': campaignType,
-          'p_title': title,
-          'p_body': body,
-          'p_metadata': metadata ?? const {},
-        },
+      final result = await RequestDeadline.mutation(
+        supabaseClient.rpc(
+          'rpc_admin_request_campaign_approval',
+          params: {
+            'p_campaign_type': campaignType,
+            'p_title': title,
+            'p_body': body,
+            'p_metadata': metadata ?? const {},
+          },
+        ),
+        operation: 'request_campaign_approval',
       );
-      return result?.toString() ?? '';
+      return _requireUuid(result, 'campaign approval ID');
     } on Object catch (e) {
       AppLogger.error('Error requesting campaign approval: $e');
       rethrow;
@@ -48,28 +53,33 @@ class AdminBroadcastService extends AdminBaseService {
   }) async {
     try {
       return _parseCampaignRows(
-        await supabaseClient.rpc(
-          'rpc_admin_list_campaign_approvals',
-          params: {
-            'p_status': _nullableText(status),
-            'p_campaign_type': _nullableText(campaignType),
-            'p_search': _nullableText(search),
-            'p_limit': limit,
-            'p_offset': offset,
-          },
-        ),
-      );
-    } on Object catch (e) {
-      try {
-        return _parseCampaignRows(
-          await supabaseClient.rpc(
+        await RequestDeadline.read(
+          supabaseClient.rpc(
             'rpc_admin_list_campaign_approvals',
             params: {
               'p_status': _nullableText(status),
               'p_campaign_type': _nullableText(campaignType),
+              'p_search': _nullableText(search),
               'p_limit': limit,
               'p_offset': offset,
             },
+          ),
+        ),
+      );
+    } on PostgrestException catch (e) {
+      if (e.code != 'PGRST202') rethrow;
+      try {
+        return _parseCampaignRows(
+          await RequestDeadline.read(
+            supabaseClient.rpc(
+              'rpc_admin_list_campaign_approvals',
+              params: {
+                'p_status': _nullableText(status),
+                'p_campaign_type': _nullableText(campaignType),
+                'p_limit': limit,
+                'p_offset': offset,
+              },
+            ),
           ),
         );
       } on Object {
@@ -82,17 +92,13 @@ class AdminBroadcastService extends AdminBaseService {
   Future<List<AdminNotificationConsentSummary>>
   getNotificationConsentSummary() async {
     try {
-      final rows = await supabaseClient.rpc(
-        'rpc_admin_get_notification_consent_summary',
+      final rows = await RequestDeadline.read(
+        supabaseClient.rpc('rpc_admin_get_notification_consent_summary'),
       );
-      final list = rows as List<dynamic>? ?? const [];
-      return list
-          .whereType<Map<String, dynamic>>()
-          .map(AdminNotificationConsentSummary.fromJson)
-          .toList();
+      return _parseRows(rows, AdminNotificationConsentSummary.fromJson);
     } on Object catch (e) {
       AppLogger.error('Error loading notification consent summary: $e');
-      return const [];
+      rethrow;
     }
   }
 
@@ -100,9 +106,11 @@ class AdminBroadcastService extends AdminBaseService {
     required String campaignId,
   }) async {
     try {
-      final rows = await supabaseClient.rpc(
-        'rpc_admin_get_campaign_audience_preview',
-        params: {'p_campaign_id': campaignId},
+      final rows = await RequestDeadline.read(
+        supabaseClient.rpc(
+          'rpc_admin_get_campaign_audience_preview',
+          params: {'p_campaign_id': campaignId},
+        ),
       );
       return AdminCampaignAudiencePreview.fromJson(_firstRow(rows));
     } on Object catch (e) {
@@ -115,15 +123,13 @@ class AdminBroadcastService extends AdminBaseService {
     required String campaignId,
   }) async {
     try {
-      final rows = await supabaseClient.rpc(
-        'rpc_admin_get_campaign_audit_timeline',
-        params: {'p_campaign_id': campaignId},
+      final rows = await RequestDeadline.read(
+        supabaseClient.rpc(
+          'rpc_admin_get_campaign_audit_timeline',
+          params: {'p_campaign_id': campaignId},
+        ),
       );
-      final list = rows as List<dynamic>? ?? const [];
-      return list
-          .whereType<Map<String, dynamic>>()
-          .map(AdminAuditLogItem.fromJson)
-          .toList();
+      return _parseRows(rows, AdminAuditLogItem.fromJson);
     } on Object catch (e) {
       AppLogger.error('Error loading campaign audit timeline: $e');
       rethrow;
@@ -134,18 +140,16 @@ class AdminBroadcastService extends AdminBaseService {
     int days = 30,
   }) async {
     try {
-      final rows = await supabaseClient.rpc(
-        'rpc_admin_get_notification_consent_trend',
-        params: {'p_days': days},
+      final rows = await RequestDeadline.read(
+        supabaseClient.rpc(
+          'rpc_admin_get_notification_consent_trend',
+          params: {'p_days': days},
+        ),
       );
-      final list = rows as List<dynamic>? ?? const [];
-      return list
-          .whereType<Map<String, dynamic>>()
-          .map(AdminNotificationConsentTrendPoint.fromJson)
-          .toList();
+      return _parseRows(rows, AdminNotificationConsentTrendPoint.fromJson);
     } on Object catch (e) {
       AppLogger.error('Error loading notification consent trend: $e');
-      return const [];
+      rethrow;
     }
   }
 
@@ -155,13 +159,17 @@ class AdminBroadcastService extends AdminBaseService {
     String? notes,
   }) async {
     try {
-      await supabaseClient.rpc(
-        'rpc_admin_approve_campaign',
-        params: {
-          'p_campaign_id': campaignId,
-          'p_approved': approved,
-          'p_notes': _nullableText(notes),
-        },
+      await RequestDeadline.mutation(
+        supabaseClient.rpc(
+          'rpc_admin_approve_campaign',
+          params: {
+            'p_campaign_id': campaignId,
+            'p_approved': approved,
+            'p_notes': _nullableText(notes),
+          },
+        ),
+        operation: 'approve_campaign',
+        operationId: campaignId,
       );
     } on Object catch (e) {
       AppLogger.error('Error approving campaign: $e');
@@ -171,11 +179,15 @@ class AdminBroadcastService extends AdminBaseService {
 
   Future<int> sendApprovedCampaign({required String campaignId}) async {
     try {
-      final count = await supabaseClient.rpc(
-        'rpc_admin_send_approved_campaign',
-        params: {'p_campaign_id': campaignId},
+      final count = await RequestDeadline.mutation(
+        supabaseClient.rpc(
+          'rpc_admin_send_approved_campaign',
+          params: {'p_campaign_id': campaignId},
+        ),
+        operation: 'send_approved_campaign',
+        operationId: campaignId,
       );
-      return count as int? ?? 0;
+      return _requireCount(count);
     } on Object catch (e) {
       AppLogger.error('Error sending approved campaign: $e');
       rethrow;
@@ -188,15 +200,18 @@ class AdminBroadcastService extends AdminBaseService {
     Map<String, dynamic>? metadata,
   }) async {
     try {
-      final count = await supabaseClient.rpc(
-        'rpc_admin_send_promo',
-        params: {
-          'p_title': title,
-          'p_body': body,
-          'p_metadata': metadata ?? const {},
-        },
+      final count = await RequestDeadline.mutation(
+        supabaseClient.rpc(
+          'rpc_admin_send_promo',
+          params: {
+            'p_title': title,
+            'p_body': body,
+            'p_metadata': metadata ?? const {},
+          },
+        ),
+        operation: 'send_promo',
       );
-      return count as int? ?? 0;
+      return _requireCount(count);
     } on Object catch (e) {
       AppLogger.error('Error sending promo broadcast: $e');
       rethrow;
@@ -209,15 +224,18 @@ class AdminBroadcastService extends AdminBaseService {
     Map<String, dynamic>? metadata,
   }) async {
     try {
-      final count = await supabaseClient.rpc(
-        'rpc_admin_send_announcement',
-        params: {
-          'p_title': title,
-          'p_body': body,
-          'p_metadata': metadata ?? const {},
-        },
+      final count = await RequestDeadline.mutation(
+        supabaseClient.rpc(
+          'rpc_admin_send_announcement',
+          params: {
+            'p_title': title,
+            'p_body': body,
+            'p_metadata': metadata ?? const {},
+          },
+        ),
+        operation: 'send_announcement',
       );
-      return count as int? ?? 0;
+      return _requireCount(count);
     } on Object catch (e) {
       AppLogger.error('Error sending announcement broadcast: $e');
       rethrow;
@@ -230,19 +248,37 @@ class AdminBroadcastService extends AdminBaseService {
   }
 
   List<AdminCampaignApprovalItem> _parseCampaignRows(Object? rows) {
-    final list = rows as List<dynamic>? ?? const [];
-    return list
-        .whereType<Map<String, dynamic>>()
-        .map(AdminCampaignApprovalItem.fromJson)
-        .toList();
+    return _parseRows(rows, AdminCampaignApprovalItem.fromJson);
   }
 
   Map<String, dynamic> _firstRow(Object? rows) {
-    if (rows is Map<String, dynamic>) return rows;
-    if (rows is List<dynamic> && rows.isNotEmpty) {
-      final first = rows.first;
-      if (first is Map<String, dynamic>) return first;
+    final row = rows is List && rows.length == 1 ? rows.single : rows;
+    if (row is! Map) throw const FormatException('Invalid admin RPC row');
+    return Map<String, dynamic>.from(row);
+  }
+
+  List<T> _parseRows<T>(Object? rows, T Function(Map<String, dynamic>) parse) {
+    if (rows is! List) throw const FormatException('Invalid admin RPC rows');
+    return rows.map((row) {
+      if (row is! Map) throw const FormatException('Invalid admin RPC row');
+      return parse(Map<String, dynamic>.from(row));
+    }).toList();
+  }
+
+  int _requireCount(Object? value) {
+    if (value is! int || value < 0) {
+      throw const FormatException('Invalid admin RPC count');
     }
-    return const {};
+    return value;
+  }
+
+  String _requireUuid(Object? value, String label) {
+    if (value is! String ||
+        !RegExp(
+          r'^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$',
+        ).hasMatch(value)) {
+      throw FormatException('Invalid $label');
+    }
+    return value;
   }
 }

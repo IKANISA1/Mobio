@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_shared_types/models/favorite_address.dart';
@@ -77,20 +78,27 @@ class FavoriteAddressService {
 
     try {
       final row = id == null
-          ? await _supabase
-                .from('favorite_addresses')
-                .insert(payload)
-                .select()
-                .single()
-                .timeout(_networkTimeout)
-          : await _supabase
-                .from('favorite_addresses')
-                .update(payload)
-                .eq('id', id)
-                .eq('profile_id', userId)
-                .select()
-                .single()
-                .timeout(_networkTimeout);
+          ? await RequestDeadline.mutation(
+              _supabase
+                  .from('favorite_addresses')
+                  .insert(payload)
+                  .select()
+                  .single(),
+              operation: 'create_favorite_address',
+              timeout: _networkTimeout,
+            )
+          : await RequestDeadline.mutation(
+              _supabase
+                  .from('favorite_addresses')
+                  .update(payload)
+                  .eq('id', id)
+                  .eq('profile_id', userId)
+                  .select()
+                  .single(),
+              operation: 'update_favorite_address',
+              operationId: id,
+              timeout: _networkTimeout,
+            );
 
       return FavoriteAddress.fromJson(Map<String, dynamic>.from(row as Map));
     } on AppException {
@@ -108,12 +116,16 @@ class FavoriteAddressService {
     final userId = _requireUserId();
 
     try {
-      await _supabase
-          .from('favorite_addresses')
-          .delete()
-          .eq('id', id)
-          .eq('profile_id', userId)
-          .timeout(_networkTimeout);
+      await RequestDeadline.mutation(
+        _supabase
+            .from('favorite_addresses')
+            .delete()
+            .eq('id', id)
+            .eq('profile_id', userId),
+        operation: 'delete_favorite_address',
+        operationId: id,
+        timeout: _networkTimeout,
+      );
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
