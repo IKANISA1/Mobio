@@ -79,6 +79,22 @@ These are intentional and must not be replaced with a timeout on the shared tail
 - SharedPreferences/file serialization for theme choices, opaque pending IDs and local journals is local state. Actual-completion ordering is preserved where needed; it is not a network retry loop.
 - Local QR rasterization and byte encoding are rendering work. Their error handling remains distinct from uncertainty about a persisted server/native side effect.
 
+### Confirmed wallet close and native journal cleanup
+
+The final audit found a local-state robustness seam after the server had already
+confirmed a wallet acknowledgement/cancellation: the UI could wait indefinitely
+for journal cleanup. `WalletService.closeOperation` now observes that cleanup for
+four seconds. Cleanup timeout, false removal acknowledgement or native error
+does not relabel the independently validated server closure or send another RPC.
+
+`WalletOperationJournal` serializes its actual read/reload/save/remove completion
+across owners. The caller deadline sits outside that queue. A late cleanup must
+settle before a newer pointer can be written, and an obsolete clear checks the
+owner and operation inside the queue before removal. This preserves recovery
+identity when the UI observer expires. The locked SharedPreferences method-channel
+fixtures in `wallet_service_boundary_test.dart` exercise held native reads/removes,
+late success/error, newer-pointer preservation and confirmed closure behavior.
+
 ## Inactive compatibility helpers
 
 `features/biopay/data/biopay_nfc_card_payload.dart:287` declares `readBioPayNfcCardPayloadFromActiveTag`, with a raw native NDEF read. The final repository reference search found only its declaration; all active card/foreground reads use the bounded adapters listed above. This unused helper is excluded from the active request conclusion and would need a bounded observer before activation.
@@ -114,3 +130,20 @@ The integrated Flutter suite and final local release gates belong to the aggrega
 ## Remaining local request-boundary implementation gaps
 
 None identified in the audited active boundaries. Intentional queue/modal/stream/local-state exceptions above remain in place. Full integrated verification remains aggregate readiness work; no production release assertion is made here.
+
+## Final local storage and OTP fixture verification
+
+The wallet service/native-journal boundary file passed all **19 cases**, including
+nine new storage regressions; focused analysis found no issues. Persistent local
+receipts: `build/qa/readiness-closeout-20260930/wallet-cleanup.log` and
+`wallet-cleanup-analysis.log`, with exit-code files both equal to zero.
+
+The OTP fixture batch passed all **36 cases**, including new app/admin held-
+interceptor deadline cases. A controlled clock and actual Dio adapter-entry
+barriers replace assumptions about dispatch within two milliseconds of real
+time. Late completion preserves the published unconfirmed outcome; no second
+send occurs even after the offered cooldown. Immediate metadata assertions are
+preserved on the same clock. Production OTP source is unchanged. Focused analysis
+found no issues; persistent `otp-deadline-fixture*` log/exit receipts are in the
+same evidence directory. These focused counts overlap full Flutter integration
+and are not additional distinct totals.

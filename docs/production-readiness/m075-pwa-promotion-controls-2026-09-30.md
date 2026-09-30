@@ -234,6 +234,6 @@ candidate/compiled-manifest cases passed afterward, including three example
 negatives. The Android module now has 45 cases; current integrated results are
 recorded in the aggregate readiness report.
 
-The final-source helper suite passed all 500 tests in 778.310 seconds, including
+The final-source helper suite passed all 500 tests in 145.110 seconds, including
 all 45 Android validator/signature cases. Focused results above overlap that
 total; full Flutter integration is reported separately in the aggregate.

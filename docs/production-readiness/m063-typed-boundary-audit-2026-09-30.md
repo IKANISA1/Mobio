@@ -265,7 +265,7 @@ Pinned runtime: Flutter 3.44.3 / Dart 3.12, using
   persisted-field mismatches and an actual HTTP successful but stale receipt
   classified as unknown. Evidence: `/tmp/mobio-route-receipt-final.log`.
 - Repository structure check passed with Flutter 3.44.3 (2,971 source/document
-  files at the final check). `git diff --check` passed.
+  files at that earlier scoped check). `git diff --check` passed.
 
 The aggregate report owns full-repository analyzer/tests, release-script,
 secret-scan and platform outcomes. There are no deferred fixes for the
@@ -293,4 +293,11 @@ report; these changes do not alter product scope or introduce route calculations
 Final isolated Trip verification: all 38 cases passed in the five domain, edit
 state, service, account-race and mutation-receipt test files. This run covers the
 strict departure correction and its valid SQL/legacy cases. Repository-wide
-Flutter integration remains pending in the aggregate report.
+Flutter integration finished with 1,495 passed and 169 visual comparisons failed;
+no functional failures remained. The exact frozen-source result and unchanged
+source hashes are recorded in the aggregate report.
+
+The restarted full run exposed three saved-agency fixtures without departure
+fields. Valid `2026-10-01` / `09:00` schedule fields were added to those fixtures,
+preserving the strict parser. All four catalog/agency regression cases passed;
+final repository-wide results remain in the aggregate report.

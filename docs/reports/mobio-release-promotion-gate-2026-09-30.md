@@ -51,8 +51,8 @@ It is not a signed release, Play upload, hosted CI pass, or G08 approval.
   even when a synthetic approval is authenticated. Two executable negatives failed before the correction. All 34 current
   candidate/compiled-manifest tests passed afterward, including three example
   cases. The unchanged signature policy retains its 42-case result above; the
-  module now has 45 distinct cases. Current integrated totals are recorded in
-  the aggregate report after verification completes.
+  module now has 45 distinct cases. Current integrated helper totals are recorded in
+  the aggregate report; Flutter integration is reported separately.
 - **Play receipt:** 14 executable fake-provider cases are present in the helper
   suite. The real shell path requires matching canonical integer `versionCode`
   and exact lowercase artifact `sha256` before track update/commit, preserving
@@ -62,7 +62,7 @@ It is not a signed release, Play upload, hosted CI pass, or G08 approval.
 - **Production gates:** 36/36 cases passed with the Fastlane staging correction.
   Candidate workflows, retired upload paths and approval-before-credential
   ordering remain enforced.
-- **Current helper integration:** all 500 Python tests passed in 778.310
+- **Current helper integration:** all 500 Python tests passed in 145.110
   seconds on the final source, including all 45 Android manifest/signature cases,
   14 actual Fastlane lane cases and 14 Play receipt cases. These counts overlap
   the focused results above.

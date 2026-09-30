@@ -18,14 +18,15 @@ concurrent design work to `main` in `9aa98e8`. The previous
 `e3cabecfee1b7295696c0a71b973126673e75011`. Final corrections and verification
 therefore use an isolated managed worktree based on `9aa98e8`, published in
 [draft PR 2](https://github.com/IKANISA1/Mobio/pull/2). The publication receipt is
-recorded below; full Flutter integration remains pending.
+recorded below; full Flutter integration is complete with the visual failures
+explicitly retained.
 
 The [file inventory](mobio-local-goal-file-changes-2026-09-30.tsv) compares the
 current source with `e3cabec` and includes additions, modifications and
 deletions. It identifies readiness work, preserved concurrent design work and
-three pre-existing Drive evidence reports independently. Its 314 paths comprise
-246 readiness files, 65 concurrent design files and three prior Drive reports;
-211 modified, 88 added and 15 deleted paths. This closeout does not
+three pre-existing Drive evidence reports independently. Its 316 paths comprise
+248 readiness files, 65 concurrent design files and three prior Drive reports;
+213 modified, 88 added and 15 deleted paths. This closeout does not
 import another Drive archive. The external `revolut-design` skill remains the
 sole design authority; deleted competing specifications and preserved golden
 baselines are not restored.
@@ -49,7 +50,16 @@ baselines are not restored.
   boundary. The deliberate optional 90-day recurrence horizon is preserved.
   New tests cover single and recurring rows, historical noon/midnight,
   impossible clocks, trailing text and date rollover. Five incomplete synthetic
-  constructors were corrected before final integration.
+  constructors were corrected before integration. The post-restart full run
+  additionally found three saved bus-agency fixtures without departure fields;
+  valid fields were supplied, and all four catalog/agency cases passed without
+  relaxing production validation.
+- **Wallet cleanup:** confirmed server close has a four-second best-effort
+  local-cleanup observer. The journal retains actual native completion ordering
+  across owners, so an expired observer cannot allow late cleanup to erase a
+  newer recovery pointer. All 19 focused boundaries passed, including nine new
+  held native read/remove/write and late success/error cases. No automatic retry
+  or financial re-execution is introduced.
 - **Approved Android bytes:** the Fastlane verifier formerly returned the
   writable original path. Executable lane tests reproduced replacement after
   approval. Both lanes now copy an opened regular file into a private exclusive
@@ -64,6 +74,13 @@ baselines are not restored.
   files are rejected before promotion, matching the existing receipt restriction.
   Two executable cases failed before the correction; all 34 candidate/compiled
   identity cases passed afterward, including three example-path negatives.
+- **OTP deadline fixtures:** the full run exposed a real-time two-millisecond
+  fixture expiring before mock dispatch. Both roles now prove adapter entry on
+  the controlled clock before testing a hung reply. Immediate metadata replies
+  use the same clock, and two held-interceptor cases also prove the total deadline
+  before dispatch. All 36 focused cases passed; late success leaves the published
+  unconfirmed result unchanged and cannot trigger another send. Production OTP
+  source is unchanged.
 - **Evidence integrity:** the inventory's rename parsing is corrected, and
   historical, focused and current integrated results are identified explicitly.
   Overlapping focused counts are not added into a distinct aggregate total.
@@ -72,21 +89,27 @@ baselines are not restored.
 
 The clean-checkout bootstrap completed using Flutter 3.44.3 and Dart 3.12.2.
 Generated dependencies/localizations produced no additional tracked changes.
-Full Flutter integration is still running. Its final result is required before goal closure; the follow-up draft may be opened with this pending result explicitly recorded.
+The full suite finished on frozen source `646ef277fa8cf9593a1b1b2a40a7b362e0080be4`.
+All seven local implementation/testing requirements passed the completion audit.
+The full command has exit 1 because its 169 visual comparisons failed; it is not
+a green full-suite or visual-acceptance result.
 
 | Check | Observed result |
 | --- | --- |
-| Full Dart analysis | Passed, exit 0: zero errors/warnings and 198 informational lint findings. The earlier 15 missing-required-argument errors in five new Trip fixtures are repaired. |
+| Full Dart analysis | Passed, exit 0: zero errors/warnings and 197 informational lint findings. The earlier 15 missing-required-argument errors in five new Trip fixtures are repaired. |
+| Focused OTP deadlines and outcomes | Passed: 36 cases, including two new pre-dispatch regressions; focused analysis has no issues. These cases overlap the full Flutter result. |
+| Focused Wallet cleanup and boundaries | Passed: 19 cases, including nine new native-storage regressions; focused analysis has no issues. These cases overlap the full Flutter result. |
 | Focused Trip regressions | Passed: 38 cases across strict row parsing, edit prefill, occurrence expansion/sorting, account-generation races and create/update receipt boundaries. |
-| Full Flutter suite, including reference goldens | Pending final process. Golden baselines are preserved; functional failures must be resolved before the local goal closes. |
-| Python helper suite | Passed: all 500 tests in 778.310 seconds on the final validator source, including all 45 Android manifest/signature cases, 14 actual Fastlane lane cases and 14 Play receipt cases. The earlier 497-case run is historical and overlaps this run. |
+| Full Flutter suite, including reference goldens | Terminal, exit 1 in 10:16: **1,495 passed, 169 failed**. All failures are golden pixel comparisons: six payment-discovery and 163 Revolut-reference cases. Zero functional failures. Baselines are preserved; M076 visual acceptance remains open. |
+| Frozen source readback | All 1,426 non-document tracked file SHA-256 hashes match the pre-run manifest; no source or baseline changed during verification. The 138 script/Fastlane helper files also match the source used by the 500-case helper run. |
+| Python helper suite | Passed: all 500 tests in 145.110 seconds on the unchanged validator/helper source, including all 45 Android manifest/signature cases, 14 actual Fastlane lane cases and 14 Play receipt cases. The earlier 497-case run is historical and overlaps this run. |
 | Actual Fastlane lane suite | 14 tests passed; both lanes, successful staging, denied/malformed approval, replaced original, unsafe nonregular/symlink inputs and cleanup after credential/upload failures. These tests also occur in the helper suite. |
 | Android manifest/signature suite | 45 tests passed in the final helper suite; compiled identity readback, approval/example-path binding and real strong/unsigned-appended/tampered/expired/future/weak/disabled archive fixtures. These cases overlap the helper total. |
-| Repository structure | Passed, 2,986 indexed source/document files at the initial isolated check. |
+| Repository structure | Passed, 2,986 indexed source/document files in the final isolated check. |
 | Design authority | Passed; external authority hashes verified locally 3/3. Visual acceptance remains separate. |
 | GitHub Actions pins | Passed. |
 | Secret-pattern scan and whitespace | Passed after all production corrections; staged whitespace is checked again before commit. |
-| Prescribed Android release script | Invoked with the pinned SDK; stopped before compilation because `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `PRIVACY_POLICY_URL` and `ACCOUNT_DELETION_URL` are unavailable. No fabricated configuration or signed Android artifact is asserted. |
+| Prescribed Android release script | Invoked with the pinned SDK; stopped before compilation because `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `PRIVACY_POLICY_URL` and `ACCOUNT_DELETION_URL` are absent from the isolated checkout. No fabricated configuration or signed Android artifact is asserted. |
 
 The earlier `9aa98e8` publication reported 472 Python tests and a full Flutter
 run with 1,464 passed and 170 failed: 169 visual comparisons plus a BioPay
@@ -104,16 +127,35 @@ validator requires those receipts; local synthetic fixtures do not manufacture
 them. No payment execution, route computation, production activation, provider
 upload or visual baseline approval is performed by this closeout.
 
-## Source publication receipt
+## Source publication and completion evidence
 
-The source correction commit is
-`c8e4fdcd2bf78e3140fafe68263e9e4c22a685a1`, normally pushed to
-`origin/codex/mobio-readiness-closeout-20260930`. Fresh readback confirmed local
-HEAD, remote branch and the open draft [PR 2](https://github.com/IKANISA1/Mobio/pull/2)
-head all equal that commit, with base `main` and a clean worktree. The PR is
-attached to this Codex task.
+The final verified source commit is
+`646ef277fa8cf9593a1b1b2a40a7b362e0080be4`. It includes the earlier strict-trip,
+Fastlane, signature and example-file corrections in `c8e4fdc`, the wallet native
+journal and valid agency fixtures in `913d06a`, and deterministic OTP fixtures.
+The canonical member-ID implementation and the preserved concurrent design
+work are in the branch's `9aa98e8` base.
 
-This receipt is a documentation follow-up to the source commit. Later result
-recording can advance the draft head; it does not change the production source
-verified by the 500 helper and 38 Trip cases. Full Flutter integration is still
-running and is required before the active local goal is declared complete.
+Publication uses `origin/codex/mobio-readiness-closeout-20260930` and the open
+[draft PR 2](https://github.com/IKANISA1/Mobio/pull/2), attached to this task. The
+report and inventory are a documentation follow-up to the verified source.
+Their commit advances the draft head without changing any of the 1,426 verified
+source/test/baseline files. Final publication requires local HEAD, remote branch
+and draft PR head to match, with base `main`, draft/open status and a clean
+worktree; the exact resulting documentation head is recorded in the publication
+readback rather than embedded into its own commit.
+
+Persistent local receipts are under
+`build/qa/readiness-closeout-20260930/`: `final-verification.json`,
+`source-code-inventory.json`, `helper-source-parity.json`, full Flutter/analyzer/
+Python logs and exit files, focused Wallet/OTP receipts, final structure/design/
+pin/secret/release-attempt receipts and `publication.json`. These generated
+receipts remain ignored; this committed report records their observed results.
+Diagnostic runs are retained with `before-agency-fix`, `before-wallet-fix` and
+`before-otp-fixture-fix` suffixes. Their overlapping counts do not replace the
+final integrated result.
+
+No required local implementation fix remains for M006, M054, M055, M057, M063,
+M075 or M081. Publication readback is the final completion gate. The 169 visual
+failures and missing real configuration/signing/hosted/provider/device/store/
+independent approval receipts retain production **NO-GO**.
