@@ -16,9 +16,9 @@ A separate user-owned publication chat committed the existing readiness and
 concurrent design work to `main` in `9aa98e8`. The previous
 [PR 1](https://github.com/IKANISA1/Mobio/pull/1) is merged; its recorded head is
 `e3cabecfee1b7295696c0a71b973126673e75011`. Final corrections and verification
-therefore use an isolated managed worktree based on `9aa98e8`, followed by a new
-draft PR. Its publication receipt will be recorded after the verified commit
-exists.
+therefore use an isolated managed worktree based on `9aa98e8`, published in
+[draft PR 2](https://github.com/IKANISA1/Mobio/pull/2). The publication receipt is
+recorded below; full Flutter integration remains pending.
 
 The [file inventory](mobio-local-goal-file-changes-2026-09-30.tsv) compares the
 current source with `e3cabec` and includes additions, modifications and
@@ -106,7 +106,14 @@ upload or visual baseline approval is performed by this closeout.
 
 ## Source publication receipt
 
-Pending verified local commit, normal branch push and follow-up draft PR
-readback. The final receipt must identify the branch, commit and remote/PR head
-and confirm a clean worktree. A merged historical PR cannot serve as the new
-corrections' draft publication target.
+The source correction commit is
+`c8e4fdcd2bf78e3140fafe68263e9e4c22a685a1`, normally pushed to
+`origin/codex/mobio-readiness-closeout-20260930`. Fresh readback confirmed local
+HEAD, remote branch and the open draft [PR 2](https://github.com/IKANISA1/Mobio/pull/2)
+head all equal that commit, with base `main` and a clean worktree. The PR is
+attached to this Codex task.
+
+This receipt is a documentation follow-up to the source commit. Later result
+recording can advance the draft head; it does not change the production source
+verified by the 500 helper and 38 Trip cases. Full Flutter integration is still
+running and is required before the active local goal is declared complete.
