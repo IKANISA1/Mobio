@@ -1,7 +1,10 @@
 import 'package:intl/intl.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
 import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/errors/app_exception_mapper.dart';
+import 'package:mobi_app/features/bookings/domain/trip_wire_record.dart';
 import 'package:mobi_shared_types/models/trip.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 
@@ -13,12 +16,21 @@ import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 /// - Getting trip details by ID
 /// - Updating own scheduled trip posts
 /// - Cancelling trips (status + is_active)
+class TripAuthority {
+  const TripAuthority({required this.userId, required this.requireCurrent});
+
+  final String? userId;
+  final void Function() requireCurrent;
+}
+
 class TripService {
   final SupabaseClient _supabase;
+  final TripAuthority Function()? _captureOverride;
 
   /// Minimum interval between trip creation calls (prevents double-tap / DoS).
   static const _createCooldown = Duration(seconds: 3);
   static DateTime? _lastCreateTime;
+  static String? _lastCreateOwner;
 
   /// Network timeout for data-fetching operations.
   static const _networkTimeout = Duration(seconds: 15);
@@ -32,13 +44,46 @@ class TripService {
       'destination_place_id, client_request_id, cancelled_at, created_at, '
       'updated_at';
 
-  TripService({SupabaseClient? supabase})
-    : _supabase = supabase ?? Supabase.instance.client;
+  TripService({
+    SupabaseClient? supabase,
+    TripAuthority Function()? captureAuthority,
+  }) : _supabase = supabase ?? Supabase.instance.client,
+       _captureOverride = captureAuthority;
 
   String? get _currentUserId => _supabase.auth.currentUser?.id;
 
-  String _requireUserId(String message) {
-    final userId = _currentUserId;
+  TripAuthority _captureAuthority() {
+    final override = _captureOverride;
+    if (override != null) return override();
+    final currentUser = _supabase.auth.currentUser;
+    final sdkUserId = currentUser?.id;
+    final userId = currentUser == null || currentUser.isAnonymous
+        ? null
+        : currentUser.id;
+    final sessionId = AccountContext.sessionId(_supabase.auth.currentSession);
+    AccountSnapshot? verified;
+    if (userId != null) {
+      // A signed-in SDK user without a verified account ticket must not fall
+      // back to a guest authority while logout or login is in progress.
+      verified = AccountContext.capture();
+      if (verified.userId != userId) throw const StaleAccountWork();
+    }
+    return TripAuthority(
+      userId: userId,
+      requireCurrent: () {
+        if (_currentUserId != sdkUserId ||
+            AccountContext.sessionId(_supabase.auth.currentSession) !=
+                sessionId ||
+            (verified != null && !AccountContext.isCurrent(verified))) {
+          throw const StaleAccountWork();
+        }
+      },
+    );
+  }
+
+  String _requireUserId(TripAuthority authority, String message) {
+    authority.requireCurrent();
+    final userId = authority.userId;
     if (userId == null || userId.isEmpty) {
       throw AuthException(message: message);
     }
@@ -46,8 +91,7 @@ class TripService {
   }
 
   Trip _publicTripFromJson(Map<String, dynamic> row) {
-    final safeRow = Map<String, dynamic>.from(row)..['whatsapp'] = '';
-    return Trip.fromJson(safeRow);
+    return TripWireRecord.parse(row);
   }
 
   // ---------------------------------------------------------------------------
@@ -73,19 +117,34 @@ class TripService {
     String? clientRequestId,
     String? note,
   }) async {
-    _requireUserId('Please sign in to schedule a trip.');
+    final authority = _captureAuthority();
+    final userId = _requireUserId(
+      authority,
+      'Please sign in to schedule a trip.',
+    );
 
     // Debounce: reject rapid duplicate submissions
     final now = DateTime.now();
-    if (_lastCreateTime != null &&
+    if (_lastCreateOwner == userId &&
+        _lastCreateTime != null &&
         now.difference(_lastCreateTime!) < _createCooldown) {
       throw const ValidationException(
         message: 'Please wait a moment before scheduling another trip.',
       );
     }
     final previousCreateTime = _lastCreateTime;
+    final previousCreateOwner = _lastCreateOwner;
     _lastCreateTime = now;
+    _lastCreateOwner = userId;
     var writeAcknowledged = false;
+    void restoreCooldown() {
+      if (!writeAcknowledged &&
+          _lastCreateOwner == userId &&
+          identical(_lastCreateTime, now)) {
+        _lastCreateTime = previousCreateTime;
+        _lastCreateOwner = previousCreateOwner;
+      }
+    }
 
     try {
       final tripId = await RequestDeadline.mutation(
@@ -117,8 +176,10 @@ class TripService {
         timeout: _networkTimeout,
       );
       writeAcknowledged = true;
+      authority.requireCurrent();
 
-      final trip = await getTripById(tripId as String);
+      final trip = await getTripById(TripWireRecord.requireId(tripId));
+      authority.requireCurrent();
       if (trip == null) {
         throw const NotFoundException(message: 'Scheduled trip was not found.');
       }
@@ -128,11 +189,13 @@ class TripService {
       // The server may still commit. Preserve the same request identity and
       // cooldown until the caller reconciles its trips.
       rethrow;
+    } on StaleAccountWork {
+      rethrow;
     } on AppException {
-      if (!writeAcknowledged) _lastCreateTime = previousCreateTime;
+      restoreCooldown();
       rethrow;
     } on Object catch (error, stackTrace) {
-      if (!writeAcknowledged) _lastCreateTime = previousCreateTime;
+      restoreCooldown();
       throw AppExceptionMapper.mapAndLog(
         error,
         stackTrace,
@@ -147,6 +210,8 @@ class TripService {
 
   /// Fetches a single trip by ID. Returns null if not found.
   Future<Trip?> getTripById(String tripId) async {
+    final authority = _captureAuthority();
+    authority.requireCurrent();
     try {
       final row = await _supabase
           .from('trips')
@@ -154,9 +219,12 @@ class TripService {
           .eq('id', tripId)
           .maybeSingle()
           .timeout(_networkTimeout);
+      authority.requireCurrent();
 
       if (row == null) return null;
       return _publicTripFromJson(row);
+    } on StaleAccountWork {
+      rethrow;
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
@@ -171,7 +239,9 @@ class TripService {
   /// Fetches trips created by the current user, ordered by departure.
   /// Excludes trips with departure dates in the past.
   Future<List<Trip>> getMyTrips() async {
-    final userId = _currentUserId;
+    final authority = _captureAuthority();
+    authority.requireCurrent();
+    final userId = authority.userId;
     if (userId == null) return [];
 
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
@@ -185,11 +255,16 @@ class TripService {
           .order('departure_date', ascending: true)
           .order('departure_time', ascending: true)
           .timeout(_networkTimeout);
+      authority.requireCurrent();
 
       return expandTripsForScheduleWindow(
-        rows.map<Trip>(Trip.fromJson),
+        rows.map<Trip>(
+          (row) => TripWireRecord.parse(row, redactWhatsApp: false),
+        ),
         DateTime.now(),
       );
+    } on StaleAccountWork {
+      rethrow;
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
@@ -210,7 +285,9 @@ class TripService {
   /// Passenger live availability is intentionally not modelled here.
   /// Excludes trips with departure dates in the past.
   Future<List<Trip>> getNearbyTrips({String? role}) async {
-    final userId = _currentUserId;
+    final authority = _captureAuthority();
+    authority.requireCurrent();
+    final userId = authority.userId;
     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
     final normalizedRole = role?.trim().toLowerCase();
 
@@ -234,12 +311,15 @@ class TripService {
           .order('departure_time', ascending: true)
           .limit(50)
           .timeout(_networkTimeout);
+      authority.requireCurrent();
 
       return expandTripsForScheduleWindow(
         rows.map<Trip>(_publicTripFromJson),
         DateTime.now(),
         limit: 50,
       );
+    } on StaleAccountWork {
+      rethrow;
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
@@ -260,6 +340,8 @@ class TripService {
 
   /// Returns server-ranked pool or driver/passenger suggestions for a trip.
   Future<List<Trip>> getPoolSuggestions(String tripId, {int limit = 10}) async {
+    final authority = _captureAuthority();
+    authority.requireCurrent();
     try {
       final rows = await _supabase
           .rpc(
@@ -267,6 +349,7 @@ class TripService {
             params: {'p_trip_id': tripId, 'p_limit': limit},
           )
           .timeout(_networkTimeout);
+      authority.requireCurrent();
 
       return (rows as List<dynamic>).map((row) {
         final json = Map<String, dynamic>.from(row as Map);
@@ -274,8 +357,10 @@ class TripService {
         json['status'] ??= 'active';
         json['is_active'] ??= true;
         json['whatsapp'] = '';
-        return Trip.fromJson(json);
+        return TripWireRecord.parse(json);
       }).toList();
+    } on StaleAccountWork {
+      rethrow;
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
@@ -310,7 +395,8 @@ class TripService {
     List<int> recurringDays = const [],
     String? note,
   }) async {
-    _requireUserId('Please sign in to edit this trip.');
+    final authority = _captureAuthority();
+    _requireUserId(authority, 'Please sign in to edit this trip.');
     final normalizedTripId = tripId.trim();
     if (normalizedTripId.isEmpty) {
       throw const ValidationException(message: 'Trip ID is required.');
@@ -345,13 +431,17 @@ class TripService {
         operationId: normalizedTripId,
         timeout: _networkTimeout,
       );
+      authority.requireCurrent();
 
-      final trip = await getTripById(updatedTripId as String);
+      final trip = await getTripById(TripWireRecord.requireId(updatedTripId));
+      authority.requireCurrent();
       if (trip == null) {
         throw const NotFoundException(message: 'Updated trip was not found.');
       }
 
       return trip;
+    } on StaleAccountWork {
+      rethrow;
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
@@ -372,7 +462,8 @@ class TripService {
   /// Only the trip author can cancel their own trip. RLS enforces this at the
   /// database layer, but this explicit check provides proper error feedback.
   Future<void> cancelTrip(String tripId) async {
-    _requireUserId('Please sign in to cancel a trip.');
+    final authority = _captureAuthority();
+    _requireUserId(authority, 'Please sign in to cancel a trip.');
 
     try {
       await RequestDeadline.mutation(
@@ -384,6 +475,9 @@ class TripService {
         operationId: tripId,
         timeout: _networkTimeout,
       );
+      authority.requireCurrent();
+    } on StaleAccountWork {
+      rethrow;
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {

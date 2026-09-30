@@ -2,6 +2,7 @@ import 'package:mobi_app/core/async/account_epoch.dart';
 import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
+import 'package:mobi_app/features/profile/domain/profile_wire_record.dart';
 import 'package:mobi_shared_types/models/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -14,11 +15,29 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// - Fetching user rating via `get_user_rating()` RPC
 class ProfileService {
   final SupabaseClient _supabase;
+  final AccountSnapshot Function()? _captureOverride;
+  final void Function(AccountSnapshot)? _requireCurrentOverride;
 
-  ProfileService({SupabaseClient? supabase})
-    : _supabase = supabase ?? Supabase.instance.client;
+  ProfileService({
+    SupabaseClient? supabase,
+    AccountSnapshot Function()? captureAccount,
+    void Function(AccountSnapshot)? requireCurrent,
+  }) : _supabase = supabase ?? Supabase.instance.client,
+       _captureOverride = captureAccount,
+       _requireCurrentOverride = requireCurrent;
 
   String? get _currentUserId => _supabase.auth.currentUser?.id;
+
+  AccountSnapshot _captureAccount() {
+    final account = _captureOverride?.call() ?? AccountContext.capture();
+    if (_currentUserId != account.userId) throw const StaleAccountWork();
+    return account;
+  }
+
+  void _requireCurrent(AccountSnapshot account) {
+    if (_currentUserId != account.userId) throw const StaleAccountWork();
+    (_requireCurrentOverride ?? AccountContext.requireCurrent)(account);
+  }
 
   // ---------------------------------------------------------------------------
   // Read
@@ -28,7 +47,7 @@ class ProfileService {
   Future<Profile?> getMyProfile() async {
     final user = _supabase.auth.currentUser;
     if (user == null || user.isAnonymous) return null;
-    final account = AccountContext.capture();
+    final account = _captureAccount();
     if (account.userId != user.id) throw const StaleAccountWork();
 
     try {
@@ -39,8 +58,10 @@ class ProfileService {
             .eq('id', account.userId)
             .maybeSingle(),
       );
-      AccountContext.requireCurrent(account);
-      return row == null ? null : Profile.fromJson(row);
+      _requireCurrent(account);
+      return row == null
+          ? null
+          : ProfileWireRecord.parse(row, expectedId: account.userId);
     } on Object catch (e) {
       AppLogger.error('Error fetching profile: $e');
       rethrow;
@@ -49,7 +70,7 @@ class ProfileService {
 
   /// Fetches the limited public profile shape allowed for peer UI surfaces.
   Future<Profile?> getProfileById(String userId) async {
-    final account = AccountContext.capture();
+    final account = _captureAccount();
     try {
       final rows = await RequestDeadline.read(
         _supabase.rpc(
@@ -57,10 +78,19 @@ class ProfileService {
           params: {'p_profile_id': userId},
         ),
       );
-      AccountContext.requireCurrent(account);
+      _requireCurrent(account);
 
-      if (rows is! List || rows.isEmpty) return null;
-      return Profile.fromJson(Map<String, dynamic>.from(rows.first as Map));
+      if (rows is! List) {
+        throw const FormatException('Invalid public profile RPC response');
+      }
+      if (rows.isEmpty) return null;
+      if (rows.length != 1 || rows.first is! Map) {
+        throw const FormatException('Invalid public profile RPC row count');
+      }
+      return ProfileWireRecord.parse(
+        Map<String, dynamic>.from(rows.first as Map),
+        expectedId: userId,
+      );
     } on Object catch (e) {
       AppLogger.error('Error fetching public profile $userId: $e');
       rethrow;
@@ -110,11 +140,14 @@ class ProfileService {
 
       if (payload.isEmpty) return;
 
+      final account = _captureAccount();
+
       await RequestDeadline.mutation(
         _supabase.rpc('rpc_update_profile', params: {'p_payload': payload}),
         operation: 'update_profile',
-        operationId: _currentUserId,
+        operationId: account.userId,
       );
+      _requireCurrent(account);
     } on Object catch (e) {
       AppLogger.error('Error updating profile via RPC: $e');
       rethrow;
@@ -132,6 +165,7 @@ class ProfileService {
     String? rentalVehicleModel,
     required bool previousIsDriver,
   }) async {
+    final account = _captureAccount();
     final isBusDriver = isDriver && vehicleTypeId == 'bus';
     final isRentalOwner = isDriver && vehicleTypeId == 'rentals';
 
@@ -146,6 +180,7 @@ class ProfileService {
       rentalVehicleModel: isRentalOwner ? rentalVehicleModel : null,
       includeRentalFields: true,
     );
+    _requireCurrent(account);
 
     if (previousIsDriver != isDriver) {
       if (isDriver) {
@@ -159,6 +194,7 @@ class ProfileService {
       } else {
         await disableDriverMode();
       }
+      _requireCurrent(account);
     }
   }
 
@@ -194,11 +230,13 @@ class ProfileService {
     if (updates.isEmpty) return;
 
     try {
+      final account = _captureAccount();
       await RequestDeadline.mutation(
         _supabase.from('profiles').update(updates).eq('id', userId),
         operation: 'legacy_update_profile',
         operationId: userId,
       );
+      _requireCurrent(account);
     } on Object catch (e) {
       AppLogger.error('Error updating profile: $e');
       rethrow;
@@ -218,6 +256,7 @@ class ProfileService {
     String? rentalVehicleModel,
   }) async {
     try {
+      final account = _captureAccount();
       await RequestDeadline.mutation(
         _supabase.rpc(
           'rpc_enable_driver_mode',
@@ -230,8 +269,9 @@ class ProfileService {
           },
         ),
         operation: 'enable_driver_mode',
-        operationId: _currentUserId,
+        operationId: account.userId,
       );
+      _requireCurrent(account);
     } on Object catch (e) {
       AppLogger.error('Error enabling driver mode: $e');
       rethrow;
@@ -241,11 +281,13 @@ class ProfileService {
   /// Disables driver mode via `rpc_disable_driver_mode` RPC.
   Future<void> disableDriverMode() async {
     try {
+      final account = _captureAccount();
       await RequestDeadline.mutation(
         _supabase.rpc('rpc_disable_driver_mode'),
         operation: 'disable_driver_mode',
-        operationId: _currentUserId,
+        operationId: account.userId,
       );
+      _requireCurrent(account);
     } on Object catch (e) {
       AppLogger.error('Error disabling driver mode: $e');
       rethrow;
@@ -257,30 +299,38 @@ class ProfileService {
   // ---------------------------------------------------------------------------
 
   /// Fetches user rating by querying the `ratings` table directly.
-  /// Returns `{ 'average_score': double, 'total_ratings': int }`.
-  Future<Map<String, dynamic>> getUserRating([String? userId]) async {
+  Future<UserRating> getUserRating([String? userId]) async {
+    final account = _captureAccount();
     final uid = userId ?? _currentUserId;
-    if (uid == null) return {'average_score': 0.0, 'total_ratings': 0};
+    if (uid == null) throw const StaleAccountWork();
 
     try {
       final rows = await RequestDeadline.read(
         _supabase.from('ratings').select('score').eq('rated_user_id', uid),
       );
 
-      final ratings = rows as List<dynamic>;
+      _requireCurrent(account);
+      final ratings = rows;
       if (ratings.isEmpty) {
-        return {'average_score': 0.0, 'total_ratings': 0};
+        return const UserRating(averageScore: 0, totalRatings: 0);
       }
 
       double total = 0;
       for (final row in ratings) {
-        total += (row['score'] as num).toDouble();
+        if (row['score'] is! num) {
+          throw const FormatException('Invalid rating row');
+        }
+        final score = (row['score'] as num).toDouble();
+        if (!score.isFinite || score < 1 || score > 5) {
+          throw const FormatException('Invalid rating score');
+        }
+        total += score;
       }
 
-      return {
-        'average_score': total / ratings.length,
-        'total_ratings': ratings.length,
-      };
+      return UserRating(
+        averageScore: total / ratings.length,
+        totalRatings: ratings.length,
+      );
     } on Object catch (e) {
       AppLogger.error('Error fetching user rating: $e');
       rethrow;
@@ -310,4 +360,11 @@ class ProfileService {
   }
 
   // ---------------------------------------------------------------------------
+}
+
+class UserRating {
+  const UserRating({required this.averageScore, required this.totalRatings});
+
+  final double averageScore;
+  final int totalRatings;
 }

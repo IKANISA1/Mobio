@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_admin.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
@@ -31,8 +32,8 @@ class BioPayAdminService {
   Future<BioPayAdminSummary> getSummary() async {
     if (supabase == null) return BioPayAdminSummary.preview();
 
-    final response = await _requireSupabase().rpc<dynamic>(
-      'rpc_admin_biopay_summary',
+    final response = await RequestDeadline.read(
+      _requireSupabase().rpc<dynamic>('rpc_admin_biopay_summary'),
     );
     return BioPayAdminSummary.fromJson(
       Map<String, dynamic>.from(response as Map),
@@ -45,12 +46,16 @@ class BioPayAdminService {
   }) async {
     if (supabase == null) return previewSnapshot(search: search).payees;
 
-    final response = await _requireSupabase().rpc<dynamic>(
-      'rpc_admin_biopay_list_payees',
-      params: {'p_search': _nullableText(search), 'p_limit': limit},
+    final response = await RequestDeadline.read(
+      _requireSupabase().rpc<dynamic>(
+        'rpc_admin_biopay_list_payees',
+        params: {'p_search': _nullableText(search), 'p_limit': limit},
+      ),
     );
-    final rows = response is List ? response : const [];
-    return rows.whereType<Map<Object?, Object?>>().map((row) {
+    if (response is! List)
+      throw const FormatException('Invalid BioPay payee list');
+    return response.map((row) {
+      if (row is! Map) throw const FormatException('Invalid BioPay payee row');
       return BioPayAdminPayee.fromJson(Map<String, dynamic>.from(row));
     }).toList();
   }
@@ -58,12 +63,17 @@ class BioPayAdminService {
   Future<List<BioPayUssdPaymentRequest>> listRequests({int limit = 50}) async {
     if (supabase == null) return previewSnapshot().requests;
 
-    final response = await _requireSupabase().rpc<dynamic>(
-      'rpc_admin_biopay_list_requests',
-      params: {'p_limit': limit},
+    final response = await RequestDeadline.read(
+      _requireSupabase().rpc<dynamic>(
+        'rpc_admin_biopay_list_requests',
+        params: {'p_limit': limit},
+      ),
     );
-    final rows = response is List ? response : const [];
-    return rows.whereType<Map<Object?, Object?>>().map((row) {
+    if (response is! List)
+      throw const FormatException('Invalid BioPay request list');
+    return response.map((row) {
+      if (row is! Map)
+        throw const FormatException('Invalid BioPay request row');
       return BioPayUssdPaymentRequest.fromJson(Map<String, dynamic>.from(row));
     }).toList();
   }
@@ -71,8 +81,8 @@ class BioPayAdminService {
   Future<BioPayAdminSystemStatus> getSystemStatus() async {
     if (supabase == null) return BioPayAdminSystemStatus.preview();
 
-    final response = await _requireSupabase().rpc<dynamic>(
-      'rpc_admin_biopay_system_status',
+    final response = await RequestDeadline.read(
+      _requireSupabase().rpc<dynamic>('rpc_admin_biopay_system_status'),
     );
     final databaseStatus = BioPayAdminSystemStatus.fromJson(
       Map<String, dynamic>.from(response as Map),
@@ -117,12 +127,16 @@ class BioPayAdminService {
       );
     }
 
-    final response = await _requireSupabase().rpc<dynamic>(
-      'rpc_admin_biopay_confirm_external',
-      params: {
-        'p_request_id': request.id,
-        'p_confirmation_source': confirmationSource,
-      },
+    final response = await RequestDeadline.mutation(
+      _requireSupabase().rpc<dynamic>(
+        'rpc_admin_biopay_confirm_external',
+        params: {
+          'p_request_id': request.id,
+          'p_confirmation_source': confirmationSource,
+        },
+      ),
+      operation: 'rpc_admin_biopay_confirm_external',
+      operationId: request.id,
     );
 
     return BioPayUssdPaymentRequest.fromJson(

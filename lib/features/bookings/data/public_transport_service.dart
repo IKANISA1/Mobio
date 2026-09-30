@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/errors/app_exception_mapper.dart';
@@ -99,37 +100,49 @@ class PublicTransportService {
     String serviceArea = 'rwanda',
     bool isActive = true,
   }) async {
-    await _client
-        .rpc(
-          'rpc_admin_upsert_transport_agency',
-          params: {
-            'p_agency_id': id,
-            'p_name': name,
-            'p_phone': phone,
-            'p_whatsapp': whatsapp,
-            'p_email': email,
-            'p_service_area': serviceArea,
-            'p_is_active': isActive,
-          },
-        )
-        .timeout(_networkTimeout);
+    await RequestDeadline.mutation(
+      _client.rpc(
+        'rpc_admin_upsert_transport_agency',
+        params: {
+          'p_agency_id': id,
+          'p_name': name,
+          'p_phone': phone,
+          'p_whatsapp': whatsapp,
+          'p_email': email,
+          'p_service_area': serviceArea,
+          'p_is_active': isActive,
+        },
+      ),
+      operation: 'rpc_admin_upsert_transport_agency',
+      operationId: id,
+      timeout: _networkTimeout,
+    );
     invalidateAgencyCache();
   }
 
   Future<void> setAgencyActive(String id, bool isActive) async {
-    await _client
-        .rpc(
-          'rpc_admin_set_transport_agency_active',
-          params: {'p_agency_id': id, 'p_is_active': isActive},
-        )
-        .timeout(_networkTimeout);
+    await RequestDeadline.mutation(
+      _client.rpc(
+        'rpc_admin_set_transport_agency_active',
+        params: {'p_agency_id': id, 'p_is_active': isActive},
+      ),
+      operation: 'rpc_admin_set_transport_agency_active',
+      operationId: id,
+      timeout: _networkTimeout,
+    );
     invalidateAgencyCache();
   }
 
   Future<void> removeAgency(String id) async {
-    await _client
-        .rpc('rpc_admin_remove_transport_agency', params: {'p_agency_id': id})
-        .timeout(_networkTimeout);
+    await RequestDeadline.mutation(
+      _client.rpc(
+        'rpc_admin_remove_transport_agency',
+        params: {'p_agency_id': id},
+      ),
+      operation: 'rpc_admin_remove_transport_agency',
+      operationId: id,
+      timeout: _networkTimeout,
+    );
     invalidateAgencyCache();
   }
 
@@ -147,21 +160,22 @@ class PublicTransportService {
     int offset = 0,
   }) async {
     try {
-      final rows = await _client
-          .rpc(
-            'rpc_search_bus_schedules',
-            params: {
-              'p_origin_search': originSearch,
-              'p_destination_search': destinationSearch,
-              'p_departure_date': departureDate == null
-                  ? null
-                  : _dateOnly(departureDate),
-              'p_agency_id': agencyId,
-              'p_limit': limit,
-              'p_offset': offset,
-            },
-          )
-          .timeout(_networkTimeout);
+      final rows = await RequestDeadline.read(
+        _client.rpc(
+          'rpc_search_bus_schedules',
+          params: {
+            'p_origin_search': originSearch,
+            'p_destination_search': destinationSearch,
+            'p_departure_date': departureDate == null
+                ? null
+                : _dateOnly(departureDate),
+            'p_agency_id': agencyId,
+            'p_limit': limit,
+            'p_offset': offset,
+          },
+        ),
+        timeout: _networkTimeout,
+      );
 
       return (rows as List<dynamic>)
           .map(
@@ -183,18 +197,21 @@ class PublicTransportService {
 
   Future<BusSeatHold> holdSeats(BusSeatHoldRequest request) async {
     try {
-      final rows = await _client
-          .rpc(
-            'rpc_hold_bus_seats',
-            params: {
-              'p_schedule_id': request.scheduleId,
-              'p_seat_count': request.seatCount,
-              'p_seat_numbers': request.seatNumbers,
-              'p_passenger_name': request.passengerName,
-              'p_passenger_phone': request.passengerPhone,
-            },
-          )
-          .timeout(_networkTimeout);
+      final rows = await RequestDeadline.mutation(
+        _client.rpc(
+          'rpc_hold_bus_seats',
+          params: {
+            'p_schedule_id': request.scheduleId,
+            'p_seat_count': request.seatCount,
+            'p_seat_numbers': request.seatNumbers,
+            'p_passenger_name': request.passengerName,
+            'p_passenger_phone': request.passengerPhone,
+          },
+        ),
+        operation: 'rpc_hold_bus_seats',
+        operationId: request.scheduleId,
+        timeout: _networkTimeout,
+      );
 
       return BusSeatHold.fromJson(_firstRpcRow(rows as Object));
     } on AppException {
@@ -215,17 +232,20 @@ class PublicTransportService {
     Map<String, dynamic> metadata = const {},
   }) async {
     try {
-      final rows = await _client
-          .rpc(
-            'rpc_confirm_bus_booking',
-            params: {
-              'p_booking_id': bookingId,
-              'p_payment_provider': paymentProvider,
-              'p_provider_reference': providerReference,
-              'p_metadata': metadata,
-            },
-          )
-          .timeout(_networkTimeout);
+      final rows = await RequestDeadline.mutation(
+        _client.rpc(
+          'rpc_confirm_bus_booking',
+          params: {
+            'p_booking_id': bookingId,
+            'p_payment_provider': paymentProvider,
+            'p_provider_reference': providerReference,
+            'p_metadata': metadata,
+          },
+        ),
+        operation: 'rpc_confirm_bus_booking',
+        operationId: bookingId,
+        timeout: _networkTimeout,
+      );
 
       final confirmation = BusBookingConfirmation.fromJson(
         _firstRpcRow(rows as Object),
@@ -250,9 +270,15 @@ class PublicTransportService {
 
   Future<void> cancelBooking(String bookingId) async {
     try {
-      await _client
-          .rpc('rpc_cancel_bus_booking', params: {'p_booking_id': bookingId})
-          .timeout(_networkTimeout);
+      await RequestDeadline.mutation(
+        _client.rpc(
+          'rpc_cancel_bus_booking',
+          params: {'p_booking_id': bookingId},
+        ),
+        operation: 'rpc_cancel_bus_booking',
+        operationId: bookingId,
+        timeout: _networkTimeout,
+      );
     } on AppException {
       rethrow;
     } on Object catch (error, stackTrace) {
@@ -291,22 +317,25 @@ class PublicTransportService {
 
   Future<String> ingestBusLocation(BusLocationIngestRequest request) async {
     try {
-      final eventId = await _client
-          .rpc(
-            'rpc_ingest_bus_location',
-            params: {
-              'p_bus_id': request.busId,
-              'p_latitude': request.latitude,
-              'p_longitude': request.longitude,
-              'p_heading_degrees': request.headingDegrees,
-              'p_speed_kph': request.speedKph,
-              'p_accuracy_meters': request.accuracyMeters,
-              'p_tracking_source_id': request.trackingSourceId,
-              'p_recorded_at': request.recordedAt?.toIso8601String(),
-              'p_metadata': request.metadata,
-            },
-          )
-          .timeout(_networkTimeout);
+      final eventId = await RequestDeadline.mutation(
+        _client.rpc(
+          'rpc_ingest_bus_location',
+          params: {
+            'p_bus_id': request.busId,
+            'p_latitude': request.latitude,
+            'p_longitude': request.longitude,
+            'p_heading_degrees': request.headingDegrees,
+            'p_speed_kph': request.speedKph,
+            'p_accuracy_meters': request.accuracyMeters,
+            'p_tracking_source_id': request.trackingSourceId,
+            'p_recorded_at': request.recordedAt?.toIso8601String(),
+            'p_metadata': request.metadata,
+          },
+        ),
+        operation: 'rpc_ingest_bus_location',
+        operationId: request.busId,
+        timeout: _networkTimeout,
+      );
 
       return eventId as String;
     } on AppException {

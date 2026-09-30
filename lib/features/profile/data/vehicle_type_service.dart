@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/shared/models/vehicle_type_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -30,13 +31,13 @@ class VehicleTypeService {
         query = query.eq('is_active', true);
       }
 
-      final vtResponse = await query.order('sort_order');
+      final vtResponse = await RequestDeadline.read(query.order('sort_order'));
       final vtRows = vtResponse as List<dynamic>;
 
       // Fetch country allocations
-      final vtcResponse = await _supabase
-          .from('vehicle_type_countries')
-          .select();
+      final vtcResponse = await RequestDeadline.read(
+        _supabase.from('vehicle_type_countries').select(),
+      );
 
       final vtcRows = vtcResponse as List<dynamic>;
 
@@ -104,16 +105,20 @@ class VehicleTypeService {
 
   /// Update a vehicle type (admin only).
   Future<void> update(VehicleTypeModel model) async {
-    await _supabase.rpc(
-      'rpc_admin_update_vehicle_type',
-      params: {
-        'p_vehicle_type_id': model.id,
-        'p_label': model.label,
-        'p_icon_name': model.iconName,
-        'p_image_url': model.imageUrl,
-        'p_sort_order': model.sortOrder,
-        'p_is_active': model.isActive,
-      },
+    await RequestDeadline.mutation(
+      _supabase.rpc(
+        'rpc_admin_update_vehicle_type',
+        params: {
+          'p_vehicle_type_id': model.id,
+          'p_label': model.label,
+          'p_icon_name': model.iconName,
+          'p_image_url': model.imageUrl,
+          'p_sort_order': model.sortOrder,
+          'p_is_active': model.isActive,
+        },
+      ),
+      operation: 'rpc_admin_update_vehicle_type',
+      operationId: model.id,
     );
     invalidateCache();
   }
@@ -123,9 +128,16 @@ class VehicleTypeService {
     String vehicleTypeId,
     List<String> countryIds,
   ) async {
-    await _supabase.rpc(
-      'rpc_admin_set_vehicle_type_countries',
-      params: {'p_vehicle_type_id': vehicleTypeId, 'p_country_ids': countryIds},
+    await RequestDeadline.mutation(
+      _supabase.rpc(
+        'rpc_admin_set_vehicle_type_countries',
+        params: {
+          'p_vehicle_type_id': vehicleTypeId,
+          'p_country_ids': countryIds,
+        },
+      ),
+      operation: 'rpc_admin_set_vehicle_type_countries',
+      operationId: vehicleTypeId,
     );
 
     invalidateCache();
@@ -133,9 +145,13 @@ class VehicleTypeService {
 
   /// Toggle active status for a vehicle type (admin only).
   Future<void> toggleActive(String vehicleTypeId, bool isActive) async {
-    await _supabase.rpc(
-      'rpc_admin_set_vehicle_type_active',
-      params: {'p_vehicle_type_id': vehicleTypeId, 'p_is_active': isActive},
+    await RequestDeadline.mutation(
+      _supabase.rpc(
+        'rpc_admin_set_vehicle_type_active',
+        params: {'p_vehicle_type_id': vehicleTypeId, 'p_is_active': isActive},
+      ),
+      operation: 'rpc_admin_set_vehicle_type_active',
+      operationId: vehicleTypeId,
     );
     invalidateCache();
   }

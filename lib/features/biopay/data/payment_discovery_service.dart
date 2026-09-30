@@ -2,6 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
+import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/features/biopay/domain/payment_discovery.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -48,12 +51,20 @@ class PaymentDiscoveryService implements PaymentDiscoveryGateway {
     if (account == null || client == null) {
       throw StateError('Verified sign-in required.');
     }
+    final sessionId = AccountContext.sessionId(client!.auth.currentSession);
     dynamic result;
     try {
-      result = await client!.rpc<dynamic>(
+      final request = client!.rpc<dynamic>(
         'rpc_biopay_discovery',
         params: {'p_action': action, 'p_data': data},
       );
+      result = const {'workspace', 'sharing', 'resolve'}.contains(action)
+          ? await RequestDeadline.read(request)
+          : await RequestDeadline.mutation(
+              request,
+              operation: 'rpc_biopay_discovery:$action',
+              operationId: (data['id'] ?? data['quote_id'])?.toString(),
+            );
     } on PostgrestException catch (error) {
       final message = error.message;
       throw PaymentDiscoveryException(
@@ -69,8 +80,12 @@ class PaymentDiscoveryService implements PaymentDiscoveryGateway {
             : 'refreshRequired',
       );
     }
-    if (ownerId != account) throw StateError('The signed-in account changed.');
-    return Map<String, dynamic>.from(result as Map);
+    if (ownerId != account ||
+        AccountContext.sessionId(client!.auth.currentSession) != sessionId) {
+      throw const StaleAccountWork();
+    }
+    if (result is! Map) throw const FormatException('Invalid BioPay response');
+    return Map<String, dynamic>.from(result);
   }
 
   Future<Map<String, dynamic>> adminCall(
@@ -81,23 +96,39 @@ class PaymentDiscoveryService implements PaymentDiscoveryGateway {
     if (account == null || client == null) {
       throw StateError('Admin connection required.');
     }
-    final response = await client!.rpc<dynamic>(
+    final sessionId = AccountContext.sessionId(client!.auth.currentSession);
+    final request = client!.rpc<dynamic>(
       'rpc_admin_biopay_routes',
       params: {'p_action': action, 'p_data': data},
     );
-    if (account != client!.auth.currentUser?.id) {
-      throw StateError('Account changed.');
+    final response = action == 'list'
+        ? await RequestDeadline.read(request)
+        : await RequestDeadline.mutation(
+            request,
+            operation: 'rpc_admin_biopay_routes:$action',
+            operationId: data['id']?.toString(),
+          );
+    if (account != client!.auth.currentUser?.id ||
+        AccountContext.sessionId(client!.auth.currentSession) != sessionId) {
+      throw const StaleAccountWork();
     }
-    return Map<String, dynamic>.from(response as Map);
+    if (response is! Map) {
+      throw const FormatException('Invalid BioPay admin response');
+    }
+    return Map<String, dynamic>.from(response);
   }
 
   Future<Map<String, dynamic>> previewLink(String token) async {
     if (client == null) throw StateError('Connect to preview this request.');
-    final result = await client!.rpc<dynamic>(
-      'rpc_biopay_link_preview',
-      params: {'p_token': token},
+    final result = await RequestDeadline.read(
+      client!.rpc<dynamic>(
+        'rpc_biopay_link_preview',
+        params: {'p_token': token},
+      ),
     );
-    return Map<String, dynamic>.from(result as Map);
+    if (result is! Map)
+      throw const FormatException('Invalid BioPay link preview');
+    return Map<String, dynamic>.from(result);
   }
 
   // Only an opaque draft ID is stored on disk. Receiving details and bearer

@@ -13,22 +13,23 @@ class AdminComplianceService extends AdminBaseService {
     int offset = 0,
   }) async {
     try {
-      final rows = await supabaseClient.rpc(
-        'rpc_admin_list_audit_logs',
-        params: {
-          'p_limit': limit,
-          'p_offset': offset,
-          'p_action': _nullableText(action),
-          'p_target_type': _nullableText(targetType),
-          'p_search': _nullableText(search),
-        },
+      final rows = await read(
+        supabaseClient.rpc(
+          'rpc_admin_list_audit_logs',
+          params: {
+            'p_limit': limit,
+            'p_offset': offset,
+            'p_action': _nullableText(action),
+            'p_target_type': _nullableText(targetType),
+            'p_search': _nullableText(search),
+          },
+        ),
       );
 
-      final list = rows as List<dynamic>? ?? const [];
-      return list
-          .whereType<Map<String, dynamic>>()
-          .map(AdminAuditLogItem.fromJson)
-          .toList();
+      return requireRows(
+        rows,
+        'rpc_admin_list_audit_logs',
+      ).map(AdminAuditLogItem.fromJson).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching admin audit logs: $error');
       rethrow;
@@ -42,21 +43,22 @@ class AdminComplianceService extends AdminBaseService {
     int offset = 0,
   }) async {
     try {
-      final rows = await supabaseClient.rpc(
-        'rpc_admin_list_user_reports',
-        params: {
-          'p_status': status,
-          'p_search': _nullableText(search),
-          'p_limit': limit,
-          'p_offset': offset,
-        },
+      final rows = await read(
+        supabaseClient.rpc(
+          'rpc_admin_list_user_reports',
+          params: {
+            'p_status': status,
+            'p_search': _nullableText(search),
+            'p_limit': limit,
+            'p_offset': offset,
+          },
+        ),
       );
 
-      final list = rows as List<dynamic>? ?? const [];
-      return list
-          .whereType<Map<String, dynamic>>()
-          .map(AdminUserReportItem.fromJson)
-          .toList();
+      return requireRows(
+        rows,
+        'rpc_admin_list_user_reports',
+      ).map(AdminUserReportItem.fromJson).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching user reports: $error');
       rethrow;
@@ -69,13 +71,17 @@ class AdminComplianceService extends AdminBaseService {
     String? notes,
   }) async {
     try {
-      await supabaseClient.rpc(
-        'rpc_admin_review_user_report',
-        params: {
-          'p_report_id': reportId,
-          'p_status': status,
-          'p_resolution_notes': _nullableText(notes),
-        },
+      await mutate(
+        supabaseClient.rpc(
+          'rpc_admin_review_user_report',
+          params: {
+            'p_report_id': reportId,
+            'p_status': status,
+            'p_resolution_notes': _nullableText(notes),
+          },
+        ),
+        operation: 'rpc_admin_review_user_report',
+        operationId: reportId,
       );
     } on Object catch (error) {
       AppLogger.error('Error reviewing user report: $error');
@@ -92,23 +98,24 @@ class AdminComplianceService extends AdminBaseService {
     int offset = 0,
   }) async {
     try {
-      final rows = await supabaseClient.rpc(
-        'rpc_admin_list_operational_health_events',
-        params: {
-          'p_status': _nullableText(status),
-          'p_severity': _nullableText(severity),
-          'p_service': _nullableText(service),
-          'p_search': _nullableText(search),
-          'p_limit': limit,
-          'p_offset': offset,
-        },
+      final rows = await read(
+        supabaseClient.rpc(
+          'rpc_admin_list_operational_health_events',
+          params: {
+            'p_status': _nullableText(status),
+            'p_severity': _nullableText(severity),
+            'p_service': _nullableText(service),
+            'p_search': _nullableText(search),
+            'p_limit': limit,
+            'p_offset': offset,
+          },
+        ),
       );
 
-      final list = rows as List<dynamic>? ?? const [];
-      return list
-          .whereType<Map<String, dynamic>>()
-          .map(AdminOperationalHealthEventItem.fromJson)
-          .toList();
+      return requireRows(
+        rows,
+        'rpc_admin_list_operational_health_events',
+      ).map(AdminOperationalHealthEventItem.fromJson).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching operational health events: $error');
       rethrow;

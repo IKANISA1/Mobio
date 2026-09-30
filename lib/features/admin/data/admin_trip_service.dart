@@ -13,22 +13,23 @@ class AdminTripService extends AdminBaseService {
     int offset = 0,
   }) async {
     try {
-      final rows = await supabaseClient.rpc(
-        'rpc_admin_list_trips',
-        params: {
-          'p_status': status,
-          'p_role': role,
-          'p_search': search?.trim().isEmpty == true ? null : search?.trim(),
-          'p_limit': limit,
-          'p_offset': offset,
-        },
+      final rows = await read(
+        supabaseClient.rpc(
+          'rpc_admin_list_trips',
+          params: {
+            'p_status': status,
+            'p_role': role,
+            'p_search': search?.trim().isEmpty == true ? null : search?.trim(),
+            'p_limit': limit,
+            'p_offset': offset,
+          },
+        ),
       );
 
-      final list = rows as List<dynamic>? ?? const [];
-      return list
-          .whereType<Map<String, dynamic>>()
-          .map(AdminTripListItem.fromJson)
-          .toList();
+      return requireRows(
+        rows,
+        'rpc_admin_list_trips',
+      ).map(AdminTripListItem.fromJson).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching admin trips: $error');
       rethrow;
@@ -37,9 +38,13 @@ class AdminTripService extends AdminBaseService {
 
   Future<void> cancelTrip({required String tripId, String? reason}) async {
     try {
-      await supabaseClient.rpc(
-        'rpc_admin_cancel_trip',
-        params: {'p_trip_id': tripId, 'p_reason': reason},
+      await mutate(
+        supabaseClient.rpc(
+          'rpc_admin_cancel_trip',
+          params: {'p_trip_id': tripId, 'p_reason': reason},
+        ),
+        operation: 'rpc_admin_cancel_trip',
+        operationId: tripId,
       );
     } on Object catch (error) {
       AppLogger.error('Error cancelling admin trip: $error');

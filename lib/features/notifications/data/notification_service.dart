@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/errors/app_exception.dart' as app;
 import 'package:mobi_app/core/errors/app_exception_mapper.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
@@ -108,16 +110,22 @@ class NotificationService {
   final _notificationController = StreamController<AppNotification>.broadcast();
   late final StreamSubscription<AuthState> _authSubscription;
   String? _observedUserId;
+  String? _observedSessionId;
   int _accountGeneration = 0;
   bool _disposed = false;
 
   NotificationService({SupabaseClient? supabase})
     : _supabase = supabase ?? Supabase.instance.client {
     _observedUserId = _currentUserId;
+    _observedSessionId = AccountContext.sessionId(
+      _supabase.auth.currentSession,
+    );
     _authSubscription = _supabase.auth.onAuthStateChange.listen((state) {
       final userId = state.session?.user.id;
-      if (_observedUserId != userId) {
+      final sessionId = AccountContext.sessionId(state.session);
+      if (_observedUserId != userId || _observedSessionId != sessionId) {
         _observedUserId = userId;
+        _observedSessionId = sessionId;
         _accountGeneration++;
       }
     });
@@ -134,6 +142,8 @@ class NotificationService {
   void _verifyAccount(String userId, int generation) {
     if (_disposed ||
         _currentUserId != userId ||
+        AccountContext.sessionId(_supabase.auth.currentSession) !=
+            _observedSessionId ||
         _accountGeneration != generation) {
       throw const app.AuthException(
         message: 'Your account changed. Refresh to continue.',
@@ -155,13 +165,15 @@ class NotificationService {
     final generation = _accountGeneration;
 
     try {
-      final rows = await _supabase
-          .from('notifications')
-          .select()
-          .eq('user_id', userId)
-          .eq('visible_in_app', true)
-          .order('created_at', ascending: false)
-          .limit(limit);
+      final rows = await RequestDeadline.read(
+        _supabase
+            .from('notifications')
+            .select()
+            .eq('user_id', userId)
+            .eq('visible_in_app', true)
+            .order('created_at', ascending: false)
+            .limit(limit),
+      );
 
       _verifyAccount(userId, generation);
       return rows.map<AppNotification>(AppNotification.fromJson).toList();
@@ -181,13 +193,15 @@ class NotificationService {
     final generation = _accountGeneration;
 
     try {
-      final rows = await _supabase
-          .from('notifications')
-          .select()
-          .eq('user_id', userId)
-          .eq('is_read', false)
-          .eq('visible_in_app', true)
-          .order('created_at', ascending: false);
+      final rows = await RequestDeadline.read(
+        _supabase
+            .from('notifications')
+            .select()
+            .eq('user_id', userId)
+            .eq('is_read', false)
+            .eq('visible_in_app', true)
+            .order('created_at', ascending: false),
+      );
 
       _verifyAccount(userId, generation);
       return rows.map<AppNotification>(AppNotification.fromJson).toList();
@@ -207,13 +221,15 @@ class NotificationService {
     final generation = _accountGeneration;
 
     try {
-      final result = await _supabase
-          .from('notifications')
-          .select('id')
-          .eq('user_id', userId)
-          .eq('is_read', false)
-          .eq('visible_in_app', true)
-          .count(CountOption.exact);
+      final result = await RequestDeadline.read(
+        _supabase
+            .from('notifications')
+            .select('id')
+            .eq('user_id', userId)
+            .eq('is_read', false)
+            .eq('visible_in_app', true)
+            .count(CountOption.exact),
+      );
       _verifyAccount(userId, generation);
       return result.count;
     } on Object catch (e, st) {
@@ -234,13 +250,17 @@ class NotificationService {
     final userId = _requireUserId();
     final generation = _accountGeneration;
     try {
-      final rows = await _supabase
-          .from('notifications')
-          .update({'is_read': true})
-          .eq('id', notificationId)
-          .eq('user_id', userId)
-          .eq('visible_in_app', true)
-          .select('id');
+      final rows = await RequestDeadline.mutation(
+        _supabase
+            .from('notifications')
+            .update({'is_read': true})
+            .eq('id', notificationId)
+            .eq('user_id', userId)
+            .eq('visible_in_app', true)
+            .select('id'),
+        operation: 'mark_notification_read',
+        operationId: notificationId,
+      );
       _verifyAccount(userId, generation);
       if (rows.isEmpty) {
         throw const app.NotFoundException(
@@ -263,12 +283,16 @@ class NotificationService {
     final generation = _accountGeneration;
 
     try {
-      await _supabase
-          .from('notifications')
-          .update({'is_read': true})
-          .eq('user_id', userId)
-          .eq('is_read', false)
-          .eq('visible_in_app', true);
+      await RequestDeadline.mutation(
+        _supabase
+            .from('notifications')
+            .update({'is_read': true})
+            .eq('user_id', userId)
+            .eq('is_read', false)
+            .eq('visible_in_app', true),
+        operation: 'mark_all_notifications_read',
+        operationId: userId,
+      );
       _verifyAccount(userId, generation);
     } on Object catch (e, st) {
       throw AppExceptionMapper.mapAndLog(
@@ -298,6 +322,8 @@ class NotificationService {
 
     stopListening();
 
+    final generation = _accountGeneration;
+
     _channel = _supabase
         .channel('notifications_$userId')
         .onPostgresChanges(
@@ -311,6 +337,7 @@ class NotificationService {
           ),
           callback: (payload) {
             try {
+              _verifyAccount(userId, generation);
               final notification = AppNotification.fromJson(payload.newRecord);
               if (!notification.visibleInApp) {
                 return;

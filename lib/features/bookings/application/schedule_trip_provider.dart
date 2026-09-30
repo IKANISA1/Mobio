@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
@@ -55,6 +57,16 @@ final scheduleTripProvider =
     >(ScheduleTripController.new);
 
 class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
+  AccountSnapshot? _captureAccount() =>
+      SupabaseConfig.isLocalUiPreview ? null : AccountContext.capture();
+
+  bool _isCurrent(AccountSnapshot? account) =>
+      ref.mounted && (account == null || AccountContext.isCurrent(account));
+
+  void _requireCurrent(AccountSnapshot? account) {
+    if (!_isCurrent(account)) throw const StaleAccountWork();
+  }
+
   static const PlaceDetails _previewCurrentPickup = PlaceDetails(
     placeId: 'current-location-preview',
     formattedAddress: 'Kigali Heights, KG 7 Ave, Kigali',
@@ -120,14 +132,19 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
             );
     }
 
+    final account = _captureAccount();
     final vt = await ref.read(vehicleTypeServiceProvider).getAll();
+    _requireCurrent(account);
     final favorites = await _loadFavoriteAddresses();
+    _requireCurrent(account);
     final agencyNames = await _loadAgencyNames();
+    _requireCurrent(account);
 
     if (args.isEditMode) {
       final trip = await ref
           .read(tripServiceProvider)
           .getTripById(args.editingTripId!);
+      _requireCurrent(account);
       if (trip == null) {
         throw const NotFoundException(message: 'Scheduled trip was not found.');
       }
@@ -155,6 +172,8 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   Future<List<FavoriteAddress>> _loadFavoriteAddresses() async {
     try {
       return await ref.read(favoriteAddressServiceProvider).list();
+    } on StaleAccountWork {
+      rethrow;
     } on Object catch (error) {
       debugPrint('Unable to load favorite addresses: $error');
       return const [];
@@ -167,6 +186,8 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
           .read(publicTransportServiceProvider)
           .getAgencyNames();
       return names.isEmpty ? PublicTransportService.fallbackAgencyNames : names;
+    } on StaleAccountWork {
+      rethrow;
     } on Object catch (error) {
       debugPrint('Unable to load bus agencies: $error');
       return PublicTransportService.fallbackAgencyNames;
@@ -456,6 +477,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   Future<Trip?> submitTrip({required String note}) async {
+    final account = _captureAccount();
     final s = state.value;
     if (s == null) return null;
 
@@ -522,6 +544,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
               recurringDays: s.recurringDays,
               note: note.trim().isEmpty ? null : note.trim(),
             );
+        _requireCurrent(account);
         state = AsyncValue.data(
           s.copyWith(
             createdTrip: trip,
@@ -533,7 +556,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
         );
         return trip;
       } on Object {
-        final finalState = state.value;
+        final finalState = _isCurrent(account) ? state.value : null;
         if (finalState != null) {
           state = AsyncValue.data(finalState.copyWith(isSubmitting: false));
         }
@@ -571,10 +594,12 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
             clientRequestId: s.clientRequestId,
             note: note.trim().isEmpty ? null : note.trim(),
           );
-      await _loadPoolSuggestions(trip);
+      _requireCurrent(account);
+      await _loadPoolSuggestions(trip, account);
+      _requireCurrent(account);
       return trip;
     } on Object {
-      final finalState = state.value;
+      final finalState = _isCurrent(account) ? state.value : null;
       if (finalState != null) {
         state = AsyncValue.data(finalState.copyWith(isSubmitting: false));
       }
@@ -582,7 +607,8 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     }
   }
 
-  Future<void> _loadPoolSuggestions(Trip trip) async {
+  Future<void> _loadPoolSuggestions(Trip trip, AccountSnapshot? account) async {
+    _requireCurrent(account);
     final tripId = trip.id;
     final currentState = state.value;
     if (currentState == null) {
@@ -608,6 +634,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
       final suggestions = await ref
           .read(tripServiceProvider)
           .getPoolSuggestions(tripId, limit: 8);
+      _requireCurrent(account);
       final finalState = state.value;
       if (finalState != null) {
         state = AsyncValue.data(
@@ -619,7 +646,10 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
           ),
         );
       }
+    } on StaleAccountWork {
+      rethrow;
     } on Object catch (error) {
+      _requireCurrent(account);
       debugPrint('Unable to load pool suggestions: $error');
       final finalState = state.value;
       if (finalState != null) {

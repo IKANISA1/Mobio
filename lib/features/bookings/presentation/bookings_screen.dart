@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
@@ -50,6 +53,8 @@ class BookingsScreen extends ConsumerStatefulWidget {
 }
 
 class _BookingsScreenState extends ConsumerState<BookingsScreen> {
+  int _loadRevision = 0;
+  AccountSnapshot? _viewAccount;
   int _activeToggle = 0; // 0 = mine, 1 = nearby
   bool _isLoading = true;
   bool _authRequired = false;
@@ -60,29 +65,64 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadTrips();
+    _viewAccount = _currentAccount();
+    AccountContext.changes.addListener(_onAccountChanged);
+    unawaited(_loadTrips());
+  }
+
+  AccountSnapshot? _currentAccount() {
+    if (!SupabaseConfig.isConfigured || SupabaseConfig.isLocalUiPreview) {
+      return null;
+    }
+    try {
+      return AccountContext.capture();
+    } on Object {
+      return null;
+    }
+  }
+
+  void _onAccountChanged() {
+    if (!mounted) return;
+    final current = _currentAccount();
+    if (current?.identity == _viewAccount?.identity &&
+        current?.generation == _viewAccount?.generation) {
+      return;
+    }
+    _viewAccount = current;
+    unawaited(_loadTrips());
+  }
+
+  @override
+  void dispose() {
+    AccountContext.changes.removeListener(_onAccountChanged);
+    _loadRevision++;
+    super.dispose();
   }
 
   @override
   void didUpdateWidget(covariant BookingsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.mode != widget.mode) {
-      _loadTrips();
+      unawaited(_loadTrips());
     }
   }
 
   Future<void> _loadTrips() async {
+    final revision = ++_loadRevision;
+    final account = _currentAccount();
     setState(() {
       _isLoading = true;
       _authRequired = false;
       _error = null;
+      _myTrips = [];
+      _nearbyTrips = [];
     });
 
     if (SupabaseConfig.isLocalUiPreview) {
       final trips = AppConstants.mockTrips;
       final myRole = widget.mode == 'driver' ? 'driver' : 'passenger';
       final nearbyRole = widget.mode == 'driver' ? 'passenger' : 'driver';
-      if (mounted) {
+      if (mounted && revision == _loadRevision) {
         setState(() {
           _myTrips = trips
               .where((trip) => trip.role == myRole)
@@ -105,7 +145,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         Supabase.instance.client.auth.currentSession != null;
 
     if (!hasSession) {
-      if (mounted) {
+      if (mounted && revision == _loadRevision) {
         setState(() {
           _myTrips = [];
           _nearbyTrips = [];
@@ -123,7 +163,9 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         tripService.getCounterpartScheduledTrips(widget.mode),
       ]);
 
-      if (mounted) {
+      if (mounted &&
+          revision == _loadRevision &&
+          (account == null || AccountContext.isCurrent(account))) {
         setState(() {
           _myTrips = results[0];
           _nearbyTrips = results[1];
@@ -132,7 +174,9 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         });
       }
     } on Object catch (e) {
-      if (mounted) {
+      if (mounted &&
+          revision == _loadRevision &&
+          (account == null || AccountContext.isCurrent(account))) {
         setState(() {
           _isLoading = false;
           _error = userMessageForError(
@@ -560,6 +604,9 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       return;
     }
 
+    final account = _currentAccount();
+    if (account == null) return;
+
     final confirmed = await MobiConfirmDialog.show(
       context: context,
       title: 'Cancel trip?',
@@ -568,20 +615,22 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       isDestructive: true,
     );
 
-    if (confirmed == true && trip.id != null) {
+    if (confirmed == true &&
+        trip.id != null &&
+        AccountContext.isCurrent(account)) {
       try {
         await ref.read(tripServiceProvider).cancelTrip(trip.id!);
-        if (mounted) {
+        if (mounted && AccountContext.isCurrent(account)) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('Trip cancelled.'),
               backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
-          _loadTrips(); // Refresh
+          unawaited(_loadTrips()); // Refresh
         }
       } on Object catch (e) {
-        if (mounted) {
+        if (mounted && AccountContext.isCurrent(account)) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(

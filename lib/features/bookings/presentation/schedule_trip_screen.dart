@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/permissions/permission_providers.dart';
 import 'package:mobi_app/features/bookings/application/schedule_trip_provider.dart';
@@ -59,6 +61,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
     _noteController = TextEditingController();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final args = ref.read(scheduleTripArgsProvider.notifier);
       final editingTripId = widget.editingTripId;
       if (editingTripId != null && editingTripId.isNotEmpty) {
@@ -86,17 +89,30 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   }
 
   Future<void> _handleSubmit(WidgetRef ref) async {
+    AccountSnapshot? account;
+    try {
+      account = SupabaseConfig.isLocalUiPreview
+          ? null
+          : AccountContext.capture();
+    } on Object {
+      _showSnackBar('Please sign in again to schedule a trip.', isError: true);
+      return;
+    }
+    bool current() =>
+        mounted && (account == null || AccountContext.isCurrent(account));
     final controller = ref.read(scheduleTripProvider.notifier);
     try {
       final state = ref.read(scheduleTripProvider).value;
       final trip = await controller.submitTrip(
         note: _submissionNote(state, _noteController.text),
       );
+      if (!current()) return;
       if (trip != null) {
         final scheduleState = ref.read(scheduleTripProvider).value;
         final suggestions = scheduleState?.poolSuggestions ?? const [];
         if (suggestions.isNotEmpty) {
           await _showScheduledPostSuggestionsSheet(suggestions);
+          if (!current()) return;
         }
         final poolMessage = scheduleState?.poolSuggestionMessage;
         if (poolMessage != null && poolMessage.isNotEmpty) {
@@ -111,6 +127,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
         _showSnackBar(message);
       }
     } on Object catch (e) {
+      if (!current()) return;
       _showSnackBar(
         userMessageForError(
           e,

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/localization/country_providers.dart';
@@ -52,10 +54,17 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
     final planService = ref.read(subscriptionPlanServiceProvider);
     final publicTransportService = ref.read(publicTransportServiceProvider);
 
+    final account =
+        SupabaseConfig.isConfigured &&
+            Supabase.instance.client.auth.currentSession != null
+        ? AccountContext.capture()
+        : null;
+
     final countries = await countryService.getCountries();
     final vehicleTypes = await vehicleTypeService.getAll();
     final plans = await planService.getAll();
     final agencyNames = await publicTransportService.getAgencyNames();
+    if (account != null) AccountContext.requireCurrent(account);
 
     if (!SupabaseConfig.isConfigured ||
         Supabase.instance.client.auth.currentSession == null) {
@@ -70,6 +79,7 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
 
     try {
       final profile = await profileService.getMyProfile();
+      if (account != null) AccountContext.requireCurrent(account);
       final profileCountryCode = profile?.countryCode?.trim().isNotEmpty == true
           ? profile!.countryCode!
           : null;
@@ -114,6 +124,8 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
         initialBusPassengerCapacity: resolvedBusPassengerCapacity,
         initialRentalVehicleModel: resolvedRentalVehicleModel,
       );
+    } on StaleAccountWork {
+      rethrow;
     } on Object {
       return EditProfileState(
         countries: countries,
@@ -207,6 +219,8 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
 
     if (SupabaseConfig.isLocalUiPreview) return true;
 
+    final account = AccountContext.capture();
+
     final profileService = ref.read(profileServiceProvider);
 
     state = AsyncValue.data(s.copyWith(isSaving: true));
@@ -225,10 +239,11 @@ class EditProfileController extends AsyncNotifier<EditProfileState> {
             : null,
         previousIsDriver: s.initialIsDriver,
       );
+      AccountContext.requireCurrent(account);
       return true;
     } on Object {
       final finalState = state.value;
-      if (finalState != null) {
+      if (AccountContext.isCurrent(account) && finalState != null) {
         state = AsyncValue.data(finalState.copyWith(isSaving: false));
       }
       rethrow;

@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/features/biopay/domain/biopay_ussd_payment.dart';
 import 'package:mobi_app/features/biopay/domain/payment_entry.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -16,15 +17,18 @@ class BioPayUssdService {
     String providerCode = 'mtn_rw',
     String? payeePhone,
   }) async {
-    final response = await _requireSupabase().rpc<dynamic>(
-      'rpc_create_biopay_ussd_request',
-      params: {
-        'p_channel': channel.wireName,
-        'p_amount_minor': amountMinor,
-        'p_payee_label': payeeLabel,
-        'p_provider_code': providerCode,
-        'p_payee_phone': payeePhone,
-      },
+    final response = await RequestDeadline.mutation(
+      _requireSupabase().rpc<dynamic>(
+        'rpc_create_biopay_ussd_request',
+        params: {
+          'p_channel': channel.wireName,
+          'p_amount_minor': amountMinor,
+          'p_payee_label': payeeLabel,
+          'p_provider_code': providerCode,
+          'p_payee_phone': payeePhone,
+        },
+      ),
+      operation: 'rpc_create_biopay_ussd_request',
     );
 
     return BioPayUssdPaymentRequest.fromJson(
@@ -91,9 +95,11 @@ class BioPayUssdService {
   }
 
   Future<BioPayUssdPaymentRequest> resolveRequest(String token) async {
-    final response = await _requireSupabase().rpc<dynamic>(
-      'rpc_resolve_biopay_ussd_request',
-      params: {'p_token': token},
+    final response = await RequestDeadline.read(
+      _requireSupabase().rpc<dynamic>(
+        'rpc_resolve_biopay_ussd_request',
+        params: {'p_token': token},
+      ),
     );
 
     return BioPayUssdPaymentRequest.fromJson(
@@ -108,9 +114,13 @@ class BioPayUssdService {
       return request.copyWith(status: BioPayRequestStatus.dialerOpened);
     }
 
-    final response = await _requireSupabase().rpc<dynamic>(
-      'rpc_record_biopay_ussd_dialer_opened',
-      params: {'p_request_id': request.id},
+    final response = await RequestDeadline.mutation(
+      _requireSupabase().rpc<dynamic>(
+        'rpc_record_biopay_ussd_dialer_opened',
+        params: {'p_request_id': request.id},
+      ),
+      operation: 'rpc_record_biopay_ussd_dialer_opened',
+      operationId: request.id,
     );
 
     return BioPayUssdPaymentRequest.fromJson(
@@ -125,9 +135,13 @@ class BioPayUssdService {
       return request.copyWith(status: BioPayRequestStatus.userMarkedPaid);
     }
 
-    final response = await _requireSupabase().rpc<dynamic>(
-      'rpc_mark_biopay_ussd_user_paid',
-      params: {'p_request_id': request.id},
+    final response = await RequestDeadline.mutation(
+      _requireSupabase().rpc<dynamic>(
+        'rpc_mark_biopay_ussd_user_paid',
+        params: {'p_request_id': request.id},
+      ),
+      operation: 'rpc_mark_biopay_ussd_user_paid',
+      operationId: request.id,
     );
 
     return BioPayUssdPaymentRequest.fromJson(
@@ -140,12 +154,18 @@ class BioPayUssdService {
   }) async {
     if (supabase == null) return previewActivityRequests();
 
-    final response = await _requireSupabase().rpc<dynamic>(
-      'rpc_list_biopay_ussd_requests',
-      params: {'p_limit': limit},
+    final response = await RequestDeadline.read(
+      _requireSupabase().rpc<dynamic>(
+        'rpc_list_biopay_ussd_requests',
+        params: {'p_limit': limit},
+      ),
     );
-    final rows = response is List ? response : const [];
-    return rows.whereType<Map<Object?, Object?>>().map((row) {
+    if (response is! List) {
+      throw const FormatException('Invalid BioPay request list');
+    }
+    return response.map((row) {
+      if (row is! Map)
+        throw const FormatException('Invalid BioPay request row');
       return BioPayUssdPaymentRequest.fromJson(Map<String, dynamic>.from(row));
     }).toList();
   }
@@ -162,12 +182,16 @@ class BioPayUssdService {
       );
     }
 
-    final response = await _requireSupabase().rpc<dynamic>(
-      'rpc_confirm_biopay_ussd_external',
-      params: {
-        'p_request_id': request.id,
-        'p_confirmation_source': confirmationSource,
-      },
+    final response = await RequestDeadline.mutation(
+      _requireSupabase().rpc<dynamic>(
+        'rpc_confirm_biopay_ussd_external',
+        params: {
+          'p_request_id': request.id,
+          'p_confirmation_source': confirmationSource,
+        },
+      ),
+      operation: 'rpc_confirm_biopay_ussd_external',
+      operationId: request.id,
     );
 
     return BioPayUssdPaymentRequest.fromJson(
@@ -198,11 +222,7 @@ class BioPayUssdService {
     final launched = await launchUssdCode(request.ussdCode);
     if (!launched) return null;
 
-    try {
-      return await recordDialerOpened(request);
-    } on Object {
-      return request.copyWith(status: BioPayRequestStatus.dialerOpened);
-    }
+    return recordDialerOpened(request);
   }
 
   @Deprecated(
@@ -246,12 +266,14 @@ class BioPayUssdService {
     if (client == null) return defaultInsuranceAgentWhatsapp;
 
     try {
-      final response = await client.rpc<dynamic>(
-        'rpc_get_public_app_setting',
-        params: {
-          'p_key': 'insurance_agent_whatsapp_e164',
-          'p_fallback': defaultInsuranceAgentWhatsapp,
-        },
+      final response = await RequestDeadline.read(
+        client.rpc<dynamic>(
+          'rpc_get_public_app_setting',
+          params: {
+            'p_key': 'insurance_agent_whatsapp_e164',
+            'p_fallback': defaultInsuranceAgentWhatsapp,
+          },
+        ),
       );
       final value = response?.toString().trim() ?? '';
       return value.isEmpty ? defaultInsuranceAgentWhatsapp : value;

@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/admin/data/admin_broadcast_service.dart';
 import 'package:mobi_app/features/admin/data/admin_compliance_service.dart';
@@ -38,9 +39,11 @@ class AdminService {
 
   Future<bool> checkAdminAccess(String phoneE164) async {
     try {
-      final result = await _supabase.rpc(
-        'rpc_check_admin_access',
-        params: {'p_phone_e164': phoneE164},
+      final result = await RequestDeadline.read(
+        _supabase.rpc(
+          'rpc_check_admin_access',
+          params: {'p_phone_e164': phoneE164},
+        ),
       );
       return result == true;
     } on Object catch (error) {

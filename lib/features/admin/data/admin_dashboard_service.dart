@@ -7,8 +7,10 @@ class AdminDashboardService extends AdminBaseService {
 
   Future<AdminDashboardStats> getDashboardStats() async {
     try {
-      final data = await supabaseClient.rpc('get_dashboard_stats');
-      return AdminDashboardStats.fromJson(data as Map<String, dynamic>?);
+      final data = await read(supabaseClient.rpc('get_dashboard_stats'));
+      return AdminDashboardStats.fromJson(
+        requireRow(data, 'get_dashboard_stats'),
+      );
     } on Object catch (error) {
       AppLogger.error('Error fetching admin dashboard stats: $error');
       rethrow;
@@ -19,16 +21,17 @@ class AdminDashboardService extends AdminBaseService {
     int limit = 20,
   }) async {
     try {
-      final rows = await supabaseClient.rpc(
-        'rpc_admin_list_access_attempts',
-        params: {'p_limit': limit},
+      final rows = await read(
+        supabaseClient.rpc(
+          'rpc_admin_list_access_attempts',
+          params: {'p_limit': limit},
+        ),
       );
 
-      final list = rows as List<dynamic>? ?? const [];
-      return list
-          .whereType<Map<String, dynamic>>()
-          .map(AdminAccessAttemptItem.fromJson)
-          .toList();
+      return requireRows(
+        rows,
+        'rpc_admin_list_access_attempts',
+      ).map(AdminAccessAttemptItem.fromJson).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching admin access attempts: $error');
       rethrow;
@@ -44,20 +47,22 @@ class AdminDashboardService extends AdminBaseService {
     }
 
     try {
-      final rows = await supabaseClient
-          .from('notifications')
-          .select(
-            'id, user_id, type, title, body, is_read, metadata, created_at',
-          )
-          .eq('user_id', userId)
-          .like('type', 'admin_%')
-          .order('created_at', ascending: false)
-          .limit(limit);
+      final rows = await read(
+        supabaseClient
+            .from('notifications')
+            .select(
+              'id, user_id, type, title, body, is_read, metadata, created_at',
+            )
+            .eq('user_id', userId)
+            .like('type', 'admin_%')
+            .order('created_at', ascending: false)
+            .limit(limit),
+      );
 
-      return (rows as List<dynamic>? ?? const [])
-          .whereType<Map<String, dynamic>>()
-          .map(AdminNotificationItem.fromJson)
-          .toList();
+      return requireRows(
+        rows,
+        'admin_notifications',
+      ).map(AdminNotificationItem.fromJson).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching admin notifications: $error');
       rethrow;
@@ -66,8 +71,12 @@ class AdminDashboardService extends AdminBaseService {
 
   Future<AdminPlatformSettings> getPlatformSettings() async {
     try {
-      final data = await supabaseClient.rpc('rpc_admin_get_platform_settings');
-      return AdminPlatformSettings.fromJson(data as Map<String, dynamic>?);
+      final data = await read(
+        supabaseClient.rpc('rpc_admin_get_platform_settings'),
+      );
+      return AdminPlatformSettings.fromJson(
+        requireRow(data, 'rpc_admin_get_platform_settings'),
+      );
     } on Object catch (error) {
       AppLogger.error('Error fetching platform settings: $error');
       rethrow;
@@ -79,11 +88,17 @@ class AdminDashboardService extends AdminBaseService {
     required String value,
   }) async {
     try {
-      final data = await supabaseClient.rpc(
-        'rpc_admin_upsert_platform_setting',
-        params: {'p_key': key, 'p_value': value},
+      final data = await mutate(
+        supabaseClient.rpc(
+          'rpc_admin_upsert_platform_setting',
+          params: {'p_key': key, 'p_value': value},
+        ),
+        operation: 'rpc_admin_upsert_platform_setting',
+        operationId: key,
       );
-      return AdminPlatformSettings.fromJson(data as Map<String, dynamic>?);
+      return AdminPlatformSettings.fromJson(
+        requireRow(data, 'rpc_admin_upsert_platform_setting'),
+      );
     } on Object catch (error) {
       AppLogger.error('Error updating platform setting: $error');
       rethrow;
@@ -95,16 +110,17 @@ class AdminDashboardService extends AdminBaseService {
     int limit = 8,
   }) async {
     try {
-      final rows = await supabaseClient.rpc(
-        'rpc_admin_list_token_redemption_requests',
-        params: {'p_status': status, 'p_limit': limit},
+      final rows = await read(
+        supabaseClient.rpc(
+          'rpc_admin_list_token_redemption_requests',
+          params: {'p_status': status, 'p_limit': limit},
+        ),
       );
 
-      final list = rows as List<dynamic>? ?? const [];
-      return list
-          .whereType<Map<String, dynamic>>()
-          .map(AdminTokenRedemptionItem.fromJson)
-          .toList();
+      return requireRows(
+        rows,
+        'rpc_admin_list_token_redemption_requests',
+      ).map(AdminTokenRedemptionItem.fromJson).toList();
     } on Object catch (error) {
       AppLogger.error('Error fetching token redemptions: $error');
       rethrow;
@@ -117,16 +133,20 @@ class AdminDashboardService extends AdminBaseService {
     String? adminNote,
   }) async {
     try {
-      final data = await supabaseClient.rpc(
-        'rpc_admin_update_token_redemption_status',
-        params: {
-          'p_request_id': requestId,
-          'p_status': status,
-          'p_admin_note': adminNote,
-        },
+      final data = await mutate(
+        supabaseClient.rpc(
+          'rpc_admin_update_token_redemption_status',
+          params: {
+            'p_request_id': requestId,
+            'p_status': status,
+            'p_admin_note': adminNote,
+          },
+        ),
+        operation: 'rpc_admin_update_token_redemption_status',
+        operationId: requestId,
       );
       return AdminTokenRedemptionItem.fromJson(
-        Map<String, dynamic>.from(data as Map),
+        requireRow(data, 'rpc_admin_update_token_redemption_status'),
       );
     } on Object catch (error) {
       AppLogger.error('Error updating token redemption: $error');
@@ -141,11 +161,15 @@ class AdminDashboardService extends AdminBaseService {
     }
 
     try {
-      await supabaseClient
-          .from('notifications')
-          .update({'is_read': true})
-          .eq('id', notificationId)
-          .eq('user_id', userId);
+      await mutate(
+        supabaseClient
+            .from('notifications')
+            .update({'is_read': true})
+            .eq('id', notificationId)
+            .eq('user_id', userId),
+        operation: 'mark_admin_notification_read',
+        operationId: notificationId,
+      );
     } on Object catch (error) {
       AppLogger.error('Error marking admin notification as read: $error');
       rethrow;
@@ -159,12 +183,16 @@ class AdminDashboardService extends AdminBaseService {
     }
 
     try {
-      await supabaseClient
-          .from('notifications')
-          .update({'is_read': true})
-          .eq('user_id', userId)
-          .eq('is_read', false)
-          .like('type', 'admin_%');
+      await mutate(
+        supabaseClient
+            .from('notifications')
+            .update({'is_read': true})
+            .eq('user_id', userId)
+            .eq('is_read', false)
+            .like('type', 'admin_%'),
+        operation: 'mark_all_admin_notifications_read',
+        operationId: userId,
+      );
     } on Object catch (error) {
       AppLogger.error('Error marking all admin notifications as read: $error');
       rethrow;

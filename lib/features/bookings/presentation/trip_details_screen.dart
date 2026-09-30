@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
@@ -42,6 +45,8 @@ class TripDetailsScreen extends ConsumerStatefulWidget {
 class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
   TripService get _tripService => ref.read(tripServiceProvider);
 
+  int _loadRevision = 0;
+  AccountSnapshot? _viewAccount;
   Trip? _trip;
   bool _isLoading = true;
   bool _isCancelling = false;
@@ -50,20 +55,56 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadTrip();
+    _viewAccount = _currentAccount();
+    AccountContext.changes.addListener(_onAccountChanged);
+    unawaited(_loadTrip());
+  }
+
+  AccountSnapshot? _currentAccount() {
+    if (!SupabaseConfig.isConfigured || SupabaseConfig.isLocalUiPreview) {
+      return null;
+    }
+    try {
+      return AccountContext.capture();
+    } on Object {
+      return null;
+    }
+  }
+
+  void _onAccountChanged() {
+    if (!mounted) return;
+    final current = _currentAccount();
+    if (current?.identity == _viewAccount?.identity &&
+        current?.generation == _viewAccount?.generation) {
+      return;
+    }
+    _viewAccount = current;
+    unawaited(_loadTrip());
+  }
+
+  @override
+  void dispose() {
+    AccountContext.changes.removeListener(_onAccountChanged);
+    _loadRevision++;
+    super.dispose();
   }
 
   Future<void> _loadTrip() async {
+    final revision = ++_loadRevision;
+    final account = _currentAccount();
     setState(() {
       _isLoading = true;
       _error = null;
+      _trip = null;
     });
 
     try {
       final trip = SupabaseConfig.isLocalUiPreview
           ? _previewTrip(widget.tripId)
           : await _tripService.getTripById(widget.tripId);
-      if (mounted) {
+      if (mounted &&
+          revision == _loadRevision &&
+          (account == null || AccountContext.isCurrent(account))) {
         setState(() {
           _trip = trip;
           _isLoading = false;
@@ -71,7 +112,9 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
         });
       }
     } on Object catch (error) {
-      if (mounted) {
+      if (mounted &&
+          revision == _loadRevision &&
+          (account == null || AccountContext.isCurrent(account))) {
         setState(() {
           _isLoading = false;
           _error = userMessageForError(
@@ -91,6 +134,8 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
   }
 
   Future<void> _handleCancel() async {
+    final account = _currentAccount();
+    if (!SupabaseConfig.isLocalUiPreview && account == null) return;
     final confirmed = await MobiConfirmDialog.show(
       context: context,
       title: 'Cancel trip?',
@@ -99,13 +144,17 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
       isDestructive: true,
     );
 
-    if (!confirmed || _trip?.id == null) return;
+    if (!confirmed ||
+        _trip?.id == null ||
+        (account != null && !AccountContext.isCurrent(account))) {
+      return;
+    }
 
     setState(() => _isCancelling = true);
 
     try {
       await _tripService.cancelTrip(_trip!.id!);
-      if (mounted) {
+      if (mounted && (account == null || AccountContext.isCurrent(account))) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: const Text('Trip cancelled.'),
@@ -115,7 +164,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
         widget.onBack();
       }
     } on Object catch (e) {
-      if (mounted) {
+      if (mounted && (account == null || AccountContext.isCurrent(account))) {
         setState(() => _isCancelling = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
