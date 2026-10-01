@@ -22,7 +22,7 @@ recorded below; full Flutter integration is complete with the visual failures
 explicitly retained.
 
 The [file inventory](mobio-local-goal-file-changes-2026-09-30.tsv) compares the
-current source with `e3cabec` and includes additions, modifications and
+completed closeout snapshot `72b4c36` with `e3cabec` and includes additions, modifications and
 deletions. It identifies readiness work, preserved concurrent design work and
 three pre-existing Drive evidence reports independently. Its 316 paths comprise
 248 readiness files, 65 concurrent design files and three prior Drive reports;
@@ -30,6 +30,11 @@ three pre-existing Drive evidence reports independently. Its 316 paths comprise
 import another Drive archive. The external `revolut-design` skill remains the
 sole design authority; deleted competing specifications and preserved golden
 baselines are not restored.
+
+The [1 October local QA continuation](mobio-local-qa-continuation-2026-10-01.md)
+records subsequent CI/indexing changes separately. The 316-path inventory and
+full Flutter result below remain evidence for this completed closeout snapshot;
+they are not a test result or inventory of every later branch change.
 
 ## Requirement-to-evidence matrix
 
