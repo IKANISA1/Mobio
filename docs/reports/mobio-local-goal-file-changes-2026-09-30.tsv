@@ -1,297 +1,317 @@
-file	change	reason
-.github/workflows/cloudflare-pages.yml	modified	Make PWA publication fail closed on missing, stale or mismatched required evidence and retain verified candidates for review.
-.github/workflows/cloudflare-pwa.yml	modified	Make PWA publication fail closed on missing, stale or mismatched required evidence and retain verified candidates for review.
-AGENTS.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-CRITICAL_RULES.md	modified	Document authoritative six-digit IDs and all four mandatory public runtime defines for builds.
-README.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-design.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-docs/README.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-docs/architecture/history/README-before-20260905.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-docs/architecture/history/duplicate_logic_report.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-docs/design/README.md	added	Record and verify the corresponding local readiness implementation and evidence.
-docs/design/authority.json	added	Record and verify the corresponding local readiness implementation and evidence.
-docs/development/agent-prompts.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-docs/product/admin_design_system.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-docs/product/design_system_audit.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-docs/product/mobio_100_percent_mobile_readiness_goal_and_plan_2026-06-08.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-docs/product/revolut_full_repo_flutter_admin_comparative_audit_2026-06-13.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-docs/product/revolut_secondary_palette_critical_analysis_2026-06-09.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-docs/product/scope.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-docs/production-readiness/01-repo-inventory.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-docs/production-readiness/m054-request-boundary-audit-2026-09-30.md	added	Record implementation requirements, audited source coverage, test evidence and concrete limits for the corresponding local goal.
-docs/production-readiness/m055-account-callback-audit-2026-09-30.md	added	Record implementation requirements, audited source coverage, test evidence and concrete limits for the corresponding local goal.
-docs/production-readiness/m063-typed-boundary-audit-2026-09-30.md	added	Record implementation requirements, audited source coverage, test evidence and concrete limits for the corresponding local goal.
-docs/production-readiness/m075-pwa-promotion-controls-2026-09-30.md	added	Record exact Android/PWA publishing entrypoints, independent approval requirements, actual artifact readback, negative tests and service inventory limits.
-docs/release/README.md	modified	Record source requirements, review evidence, implementation rationale and limits for the local readiness objectives.
-docs/reports/mobio-local-goal-file-changes-2026-09-30.tsv	added	List every added or modified local remediation file with its reason for review and selective publication.
-docs/reports/mobio-local-readiness-goal-2026-09-30.md	added	Record the seven objective requirements, source coverage, exact local verification and draft-PR publication with remaining production gates.
-docs/reports/mobio-release-promotion-gate-2026-09-30.md	modified	Record source requirements, review evidence, implementation rationale and limits for the local readiness objectives.
-docs/testing/fullstack-qa-plan-20260914.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-docs/testing/navigation-accessibility-20260920.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-landing/index.html	modified	Record and verify the corresponding local readiness implementation and evidence.
-landing/play-review/foreground-location-demo.html	modified	Record and verify the corresponding local readiness implementation and evidence.
-landing/style.css	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/app/router/screen_wrappers.dart	modified	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
-lib/app/shell.dart	modified	Guard shell bootstrap/location/analytics work against a replaced account generation.
-lib/core/async/client_operation_id.dart	added	Give each newly initiated client mutation one stable UUID so an uncertain receipt can retain its operation identity.
-lib/core/async/external_action.dart	added	Apply finite observers to native sharing, clipboard and link actions while preserving unconfirmed side effects.
-lib/core/async/request_deadline.dart	modified	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
-lib/core/auth/account_action_token.dart	added	Bind rendered callbacks and modal results to the original session and notifier revision before any later action.
-lib/core/auth/admin_session_boundary.dart	modified	Invalidate protected content and delayed UI callbacks immediately when their originating account generation changes.
-lib/core/auth/auth_session_storage.dart	modified	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
-lib/core/auth/play_integrity_service.dart	modified	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
-lib/core/firebase/firebase_analytics_service.dart	modified	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
-lib/core/firebase/firebase_auth_service.dart	modified	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
-lib/core/firebase/firebase_bootstrap_service.dart	modified	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
-lib/core/firebase/firebase_remote_config_service.dart	modified	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
-lib/core/localization/country_service.dart	modified	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
-lib/core/location/google_maps_deep_link_service.dart	modified	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
-lib/core/location/location_service.dart	modified	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
-lib/core/location/places_service.dart	modified	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
-lib/core/permissions/app_permission_service.dart	modified	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
-lib/features/admin/application/admin_dashboard_provider.dart	modified	Prevent a delayed dashboard read, modal or multi-write sequence from using a replacement account session.
-lib/features/admin/data/admin_broadcast_service.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/data/admin_compliance_service.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/data/admin_dashboard_service.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/data/admin_trip_service.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/data/admin_user_service.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/data/otp_service.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/domain/admin_wire_record.dart	added	Validate admin IDs, roles, states, dates and integers before records enter administrative screens.
-lib/features/admin/presentation/admin_audit_log_screen.dart	modified	Close audited account, outcome or typed-boundary defects within the existing approved feature.
-lib/features/admin/presentation/admin_auth_screen.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/presentation/admin_broadcasts_screen.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/presentation/admin_dashboard_screen.dart	modified	Retain the originating account for admin modal writes, private data, refresh and toolbar/quick navigation in both responsive layouts.
-lib/features/admin/presentation/admin_ev_chargers_screen.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/presentation/admin_operational_health_screen.dart	modified	Close audited account, outcome or typed-boundary defects within the existing approved feature.
-lib/features/admin/presentation/admin_reports_screen.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/presentation/admin_subscriptions_screen.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/presentation/admin_transport_agencies_screen.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/presentation/admin_trips_screen.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/presentation/admin_users_screen.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/presentation/admin_vehicle_types_screen.dart	modified	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
-lib/features/admin/presentation/widgets/admin_dashboard_panels.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/features/admin/presentation/widgets/admin_ui.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/features/admin/presentation/widgets/privacy_health_card.dart	modified	Bind retained admin privacy refresh callbacks to their originating view session before private dispatch.
-lib/features/admin/presentation/widgets/push_delivery_health_card.dart	modified	Bind retained push-delivery health refresh callbacks to their originating view session before private dispatch.
-lib/features/auth/data/whatsapp_login_service.dart	modified	Integrate and verify the local account, typed-response and request-boundary remediation.
-lib/features/auth/presentation/whatsapp_login_screen.dart	modified	Integrate and verify the local account, typed-response and request-boundary remediation.
-lib/features/biopay/application/payment_composer_controller.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/data/biopay_admin_service.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/data/biopay_device_nfc_service.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/data/biopay_face_service.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/data/biopay_nfc_service.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/data/biopay_qr_export_io.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/data/biopay_qr_export_web.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/data/biopay_ussd_service.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/data/face_capture.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/data/payment_discovery_service.dart	modified	Validate exact method roles, fees, versions, recipient projections and correlated RPC receipts; preserve the originating account generation.
-lib/features/biopay/domain/biopay_admin.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/domain/biopay_ussd_payment.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/domain/payment_discovery.dart	modified	Validate exact method roles, fees, versions, recipient projections and correlated RPC receipts; preserve the originating account generation.
-lib/features/biopay/domain/payment_discovery_response.dart	added	Validate action-specific authoritative RPC projections and exact mutation receipts, versions, submitted fields and historical currency.
-lib/features/biopay/domain/payment_entry.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/presentation/biopay_admin_console_screen.dart	modified	Reject retained operational action and confirmation callbacks after account or session replacement.
-lib/features/biopay/presentation/biopay_face_enroll_screen.dart	modified	Distinguish unavailable from confirmed setup absence, retain callback authority, advance recovery cache only from confirmed enrollment/management and block recapture after unknown enrollment.
-lib/features/biopay/presentation/biopay_face_scan_screen.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/presentation/biopay_flow_shared.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/presentation/biopay_home_screen.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/features/biopay/presentation/biopay_nfc_foreground_listener.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/presentation/biopay_nfc_screen.dart	modified	Clear stale receiving data and bind native NFC actions and suspension cleanup to the originating account.
-lib/features/biopay/presentation/biopay_nfc_write_card_screen.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/presentation/biopay_payment_link_screen.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/features/biopay/presentation/biopay_request_payment_screen.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/presentation/biopay_style.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/features/biopay/presentation/face_copy.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/presentation/payment_composer_screen.dart	modified	Carry immutable account/controller origins into rendered refresh, preparation, handoff and save actions; revalidate injected private workspace responses.
-lib/features/biopay/presentation/payment_library_screen.dart	modified	Guard retained library/request-editor refresh, row, template, acknowledgement and navigation callbacks after owner or generation replacement.
-lib/features/biopay/presentation/payment_link_arrival_screen.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/presentation/payment_methods_screen.dart	modified	Retain account and view revision on rendered refresh/add/edit/sharing callbacks before private dispatch or navigation.
-lib/features/biopay/presentation/payment_nfc_link_screen.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/biopay/presentation/payment_provider_routes_screen.dart	modified	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
-lib/features/bookings/application/schedule_trip_provider.dart	modified	Validate scheduled-trip/public-transport projections and receipts and reject stale account/location/favorite callbacks.
-lib/features/bookings/data/public_transport_service.dart	modified	Validate scheduled-trip/public-transport projections and receipts and reject stale account/location/favorite callbacks.
-lib/features/bookings/data/trip_service.dart	modified	Validate scheduled-trip/public-transport projections and receipts and reject stale account/location/favorite callbacks.
-lib/features/bookings/domain/public_transport_wire_record.dart	added	Reject lossy catalog, schedule, fare, hold and confirmation projections instead of fabricating valid transport state.
-lib/features/bookings/domain/trip_wire_record.dart	modified	Validate scheduled-trip/public-transport projections and receipts and reject stale account/location/favorite callbacks.
-lib/features/bookings/presentation/bookings_screen.dart	modified	Fence rendered mode, detail, cancellation and empty-state schedule/refresh callbacks before dispatch after account replacement.
-lib/features/bookings/presentation/schedule_trip_screen.dart	modified	Bind rendered trip actions, form callbacks and delayed permission results to their original account before dispatch or navigation.
-lib/features/bookings/presentation/trip_details_screen.dart	modified	Bind rendered trip actions, form callbacks and delayed permission results to their original account before dispatch or navigation.
-lib/features/bookings/presentation/widgets/trip_repeat_picker.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/features/bookings/presentation/widgets/trip_timing_picker.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/features/chat/data/chat_delivery_coordinator.dart	modified	Validate chat record/receipt identity and state, preserve recovery operations and reject late work from a replaced account.
-lib/features/chat/data/chat_service.dart	modified	Validate chat record/receipt identity and state, preserve recovery operations and reject late work from a replaced account.
-lib/features/chat/domain/chat_conversation.dart	modified	Validate chat record/receipt identity and state, preserve recovery operations and reject late work from a replaced account.
-lib/features/chat/domain/chat_history_page.dart	modified	Validate chat record/receipt identity and state, preserve recovery operations and reject late work from a replaced account.
-lib/features/chat/domain/chat_message.dart	modified	Validate chat record/receipt identity and state, preserve recovery operations and reject late work from a replaced account.
-lib/features/chat/domain/chat_wire_record.dart	added	Require correct chat identity, message state, cursor and nullable historical receipt contracts before accepting server data.
-lib/features/chat/presentation/chat_screen.dart	modified	Validate chat record/receipt identity and state, preserve recovery operations and reject late work from a replaced account.
-lib/features/chat/presentation/widgets/conversation_list.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/features/chat/presentation/widgets/trip_context_card.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/features/ev_chargers/data/ev_charger_service.dart	modified	Integrate and verify the local account, typed-response and request-boundary remediation.
-lib/features/ev_chargers/presentation/ev_charger_locator_screen.dart	modified	Integrate and verify the local account, typed-response and request-boundary remediation.
-lib/features/home/presentation/home_screen.dart	modified	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
-lib/features/home/presentation/widgets/scheduled_trip_card.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/features/nearby/data/driver_location_service.dart	modified	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
-lib/features/nearby/data/driver_location_sharing_service.dart	modified	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
-lib/features/nearby/presentation/nearby_screen.dart	modified	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
-lib/features/notifications/data/notification_consent_service.dart	modified	Validate notification ownership, clear old private state, observe cleanup and prevent stale consent/inbox callbacks.
-lib/features/notifications/data/notification_service.dart	modified	Validate notification ownership, clear old private state, observe cleanup and prevent stale consent/inbox callbacks.
-lib/features/notifications/data/push_notification_service.dart	modified	Validate notification ownership, clear old private state, observe cleanup and prevent stale consent/inbox callbacks.
-lib/features/notifications/presentation/notifications_screen.dart	modified	Validate notification ownership, clear old private state, observe cleanup and prevent stale consent/inbox callbacks.
-lib/features/privacy/data/privacy_service.dart	modified	Integrate and verify the local account, typed-response and request-boundary remediation.
-lib/features/privacy/presentation/privacy_request_screen.dart	modified	Integrate and verify the local account, typed-response and request-boundary remediation.
-lib/features/profile/application/edit_profile_provider.dart	modified	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
-lib/features/profile/application/notification_consent_provider.dart	modified	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
-lib/features/profile/data/driver_plus_service.dart	modified	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
-lib/features/profile/data/favorite_address_service.dart	modified	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
-lib/features/profile/data/referral_attribution_service.dart	modified	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
-lib/features/profile/data/referral_service.dart	modified	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
-lib/features/profile/data/subscription_plan_service.dart	modified	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
-lib/features/profile/data/wallet_service.dart	modified	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
-lib/features/profile/domain/wallet.dart	modified	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
-lib/features/profile/presentation/driver_plus_screen.dart	modified	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
-lib/features/profile/presentation/edit_profile_screen.dart	modified	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
-lib/features/profile/presentation/profile_screen.dart	modified	Bind Profile private follow-up reads, rendered actions and external-link continuations to their originating session; clear old private state immediately.
-lib/features/profile/presentation/wallet_screen.dart	modified	Fence sequential private wallet reads and all rendered/form/native/receipt callbacks by their origin while preserving operation identity and unknown-outcome reconciliation; fix modal controller lifetime and pending-row Material context.
-lib/features/profile/presentation/widgets/profile_favorite_addresses_section.dart	modified	Retain account authority for retry/add/delete, clear replaced-session sheet fields and prevent stale place/save callbacks from writing.
-lib/features/profile/presentation/widgets/profile_notification_consent_section.dart	modified	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
-lib/l10n/app_en.arb	modified	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
-lib/l10n/app_fr.arb	modified	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
-lib/l10n/app_localizations.dart	modified	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
-lib/l10n/app_localizations_en.dart	modified	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
-lib/l10n/app_localizations_fr.dart	modified	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
-lib/l10n/app_localizations_rw.dart	modified	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
-lib/l10n/app_rw.arb	modified	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
-lib/shared/models/discovery_person.dart	added	Represent nearby people with their authoritative member ID and peer identity without fabricating scheduled-trip records.
-lib/shared/widgets/ai_empty_state.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/shared/widgets/driver_card.dart	modified	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
-lib/shared/widgets/glass_card.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/shared/widgets/glass_container.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/shared/widgets/mobi_error_state.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/shared/widgets/mobi_feature_tile.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/shared/widgets/mobi_metric_tile.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/shared/widgets/mobi_state_banner.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/shared/widgets/mobi_tonal_card.dart	added	Record and verify the corresponding local readiness implementation and evidence.
-lib/shared/widgets/permission_access_dialog.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/shared/widgets/place_autocomplete_field.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-lib/shared/widgets/route_map_card.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-packages/design-system/README.md	modified	Record and verify the corresponding local readiness implementation and evidence.
-packages/design-system/lib/mobi_design_system.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-packages/design-system/lib/src/theme/app_shadows.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-packages/design-system/lib/src/theme/app_theme.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-packages/design-system/lib/src/theme/mobi_theme_extension.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-packages/design-system/lib/theme/app_shadows.dart	modified	Record and verify the corresponding local readiness implementation and evidence.
-scripts/ci/check_design_authority.py	added	Record and verify the corresponding local readiness implementation and evidence.
-scripts/ci/verify_flutter.sh	modified	Record and verify the corresponding local readiness implementation and evidence.
-scripts/qa/verify_landing_web_host.mjs	added	Record and verify the corresponding local readiness implementation and evidence.
-scripts/release/android_candidate_manifest.py	modified	Verify artifact and source bindings, mandatory receipts and independent approval; reject incomplete or altered promotion evidence.
-scripts/release/upload_google_play_release.sh	modified	Require returned Play version and payload SHA-256 to match the approved artifact before any track update or edit commit.
-scripts/tests/source_contract_helpers.py	added	Check executable Dart source tokens independently of formatting and comments without accepting comments as implemented guards.
-scripts/tests/test_android_candidate_manifest.py	modified	Verify artifact and source bindings, mandatory receipts and independent approval; reject incomplete or altered promotion evidence.
-scripts/tests/test_design_authority.py	added	Record and verify the corresponding local readiness implementation and evidence.
-scripts/tests/test_google_play_upload_receipt.py	added	Run the actual uploader with executable local provider fakes; reject wrong/missing/mistyped upload identity before track writes and retain a valid positive case.
-scripts/tests/test_identity_lifecycle_contracts.py	modified	Check executable source contracts independently of Dart formatting and preserve fail-closed remediation/release assertions.
-scripts/tests/test_increment05_contracts.py	modified	Check executable source contracts independently of Dart formatting and preserve fail-closed remediation/release assertions.
-scripts/tests/test_increment06_contracts.py	modified	Check executable source contracts independently of Dart formatting and preserve fail-closed remediation/release assertions.
-scripts/tests/test_increment07_contracts.py	modified	Check executable source contracts independently of Dart formatting and preserve fail-closed remediation/release assertions.
-scripts/tests/test_increment08_contracts.py	modified	Check executable source contracts independently of Dart formatting and preserve fail-closed remediation/release assertions.
-scripts/tests/test_pwa_candidate_manifest.py	added	Exercise real packaging and shell promotion through a fake publishing adapter; reject missing, stale, altered, skipped, self-approved or wrong-destination evidence before publishing.
-scripts/tests/test_source_contract_helpers.py	added	Prove comment, string and layout handling cannot create false source-contract acceptance.
-scripts/web/deploy_cloudflare_pwas.sh	modified	Make PWA publication fail closed on missing, stale or mismatched required evidence and retain verified candidates for review.
-scripts/web/pwa_candidate_manifest.py	added	Bind clean full source, actual packaged PWA bytes, migration/model policy and exact destination to fresh independent authenticated approval and all twelve required passed receipts.
-test/app/router/admin_session_boundary_test.dart	added	Verify admin session boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/app/router/payment_link_launch_test.dart	modified	Verify payment link launch with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/core/async/external_action_test.dart	added	Verify external action with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/core/async/request_deadline_test.dart	modified	Verify request deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/core/auth/account_action_token_test.dart	added	Verify account action token with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/core/firebase/firebase_analytics_deadline_test.dart	added	Verify firebase analytics deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/core/location/places_connectivity_deadline_test.dart	added	Verify places connectivity deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/core/permissions/app_permission_deadline_test.dart	added	Verify app permission deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/admin/admin_dashboard_account_race_test.dart	added	Exercise admin dashboard account race with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
-test/features/admin/admin_dashboard_recovery_test.dart	modified	Exercise admin dashboard recovery with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
-test/features/admin/admin_health_refresh_account_race_test.dart	added	Exercise stale retained and late health refresh replies with positive current-session reads.
-test/features/admin/admin_modal_account_guard_test.dart	added	Verify admin modal account guard with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/admin/admin_navigation_account_race_test.dart	added	Verify current and retained toolbar/quick Users, Trips and Health navigation in both responsive layouts using actual GoRouter widgets.
-test/features/admin/admin_private_read_account_race_test.dart	added	Add focused regression evidence for admin private read account race.
-test/features/admin/data/admin_broadcast_service_contract_test.dart	modified	Verify admin broadcast service contract with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/admin/data/admin_compliance_broadcast_boundary_test.dart	added	Verify admin compliance broadcast boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/admin/data/admin_typed_boundary_test.dart	added	Verify admin typed boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/admin/widgets/admin_ui_test.dart	modified	Verify admin ui test with local positive, malformed-response or account-replacement regressions for the corresponding readiness boundary.
-test/features/auth/data/otp_send_outcome_test.dart	added	Verify otp send outcome with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/auth/whatsapp_login_screen_test.dart	modified	Verify whatsapp login screen with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/biopay_admin_account_race_test.dart	added	Exercise biopay admin account race with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
-test/features/biopay/biopay_device_nfc_account_race_test.dart	added	Add focused regression evidence for biopay device nfc account race.
-test/features/biopay/biopay_device_nfc_service_test.dart	modified	Exercise biopay device nfc service with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
-test/features/biopay/biopay_nfc_foreground_deadline_test.dart	added	Verify biopay nfc foreground deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/biopay_nfc_service_deadline_test.dart	added	Verify biopay nfc service deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/biopay_nfc_unknown_outcome_screen_test.dart	added	Verify biopay nfc unknown outcome screen with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/biopay_payment_surfaces_test.dart	modified	Verify biopay payment surfaces with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/biopay_rpc_receipt_boundary_test.dart	added	Verify biopay rpc receipt boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/biopay_scan_recovery_test.dart	modified	Verify biopay scan recovery with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/data/account_callback_service_race_test.dart	added	Verify account callback service race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/data/biopay_face_service_boundary_test.dart	added	Verify biopay face service boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/data/payment_discovery_receipt_test.dart	added	Verify payment discovery receipt with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/data/payment_route_receipt_test.dart	added	Reject wrong route versions and persisted configuration and prove valid SQL transitions and unknown successful mismatched receipts.
-test/features/biopay/face_shortcut_test.dart	modified	Verify face shortcut with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/face_shortcut_widgets_test.dart	modified	Verify face shortcut widgets with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/face_unknown_outcome_copy_test.dart	added	Verify face unknown outcome copy with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/models/biopay_admin_test.dart	modified	Verify biopay admin with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/models/biopay_ussd_payment_test.dart	modified	Verify biopay ussd payment with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/models/biopay_wire_boundary_test.dart	added	Verify biopay wire boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/models/face_enrollment_status_boundary_test.dart	added	Exercise face enrollment status boundary with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
-test/features/biopay/models/payment_discovery_boundary_test.dart	added	Verify payment discovery boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/payment_account_callback_race_test.dart	added	Verify payment account callback race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/payment_discovery_test.dart	modified	Verify payment discovery with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/payment_discovery_widgets_test.dart	modified	Verify payment discovery widgets with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/payment_library_workspace_boundary_test.dart	added	Exercise payment library workspace boundary with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
-test/features/biopay/payment_methods_account_race_test.dart	added	Verify payment methods account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/payment_nfc_account_race_test.dart	added	Verify payment nfc account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/biopay/payment_rendered_callback_origin_test.dart	added	Verify retained composer/library callbacks before and after replacement-account reloads, same-owner generations and positive current workflows; reject malformed injected workspace responses.
-test/features/bookings/application/schedule_trip_account_race_test.dart	added	Verify schedule trip account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/bookings/booking_rendered_callback_race_test.dart	added	Exercise actual scheduler and trip widgets after session replacement, plus successful current-session location and cancellation.
-test/features/bookings/data/public_transport_service_boundary_test.dart	added	Verify public transport service boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/bookings/data/trip_create_receipt_boundary_test.dart	added	Verify trip create receipt boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/bookings/domain/public_transport_wire_record_test.dart	added	Verify public transport wire record with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/bookings/domain/trip_wire_record_test.dart	modified	Verify trip wire record with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/chat/data/chat_realtime_recovery_test.dart	modified	Verify chat realtime recovery with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/chat/data/chat_service_test.dart	modified	Verify chat service with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/chat/data/chat_typed_boundary_test.dart	added	Verify chat typed boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/ev_chargers/data/ev_charger_service_boundary_test.dart	added	Verify ev charger service boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/home/home_rendered_callback_race_test.dart	added	Verify retained Home mode/online/navigation/filter/detail callbacks cannot act after generation replacement and current actions remain usable.
-test/features/home/home_screen_preview_test.dart	modified	Verify home screen preview with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/nearby/data/driver_location_service_contract_test.dart	modified	Verify driver location service contract with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/nearby/data/driver_location_sharing_service_test.dart	modified	Verify driver location sharing service with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/notifications/data/notification_service_test.dart	modified	Verify notification service with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/notifications/presentation/notifications_screen_test.dart	modified	Verify notifications screen with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/preview/accessibility_resilience_test.dart	modified	Verify accessibility resilience with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/preview/revolut_reference_golden_test.dart	modified	Verify revolut reference golden with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/privacy/data/privacy_service_boundary_test.dart	added	Verify privacy service boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/profile/application_notification_consent_race_test.dart	added	Verify application notification consent race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/profile/data/driver_plus_receipt_boundary_test.dart	added	Verify driver plus receipt boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/profile/data/favorite_address_service_account_race_test.dart	added	Verify favorite address service account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/profile/data/subscription_plan_boundary_test.dart	added	Verify subscription plan boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/profile/data/wallet_service_boundary_test.dart	added	Verify wallet service boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/profile/domain/wallet_wire_record_test.dart	added	Verify wallet wire record with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/profile/presentation/driver_plus_account_race_test.dart	added	Verify driver plus account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/profile/presentation/profile_rendered_callback_race_test.dart	added	Prove stale Profile actions, delayed Face follow-ups, enrollment returns and native fallbacks cannot acquire a replacement session, while current actions remain usable.
-test/features/profile/presentation/wallet_rendered_callback_race_test.dart	added	Verify actual wallet private-read, form, confirmation, receipt, native and invite races while retaining current transfer/redemption operation identity and safe unknown outcomes.
-test/features/profile/providers/edit_profile_account_race_test.dart	added	Verify edit profile account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/features/profile/widgets/profile_favorite_addresses_account_race_test.dart	added	Verify stale retry/add/delete, late reads, private sheet clearing and stale save/place selection; retain positive current address actions.
-test/features/profile/widgets/profile_notification_consent_account_race_test.dart	added	Verify profile notification consent account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/helpers/biopay_nfc_test_channels.dart	added	Acknowledge synthetic native NFC operations and drain disposal callbacks so widget tests retain production deadlines.
-test/helpers/payment_discovery_fixture.dart	modified	Verify payment discovery fixture with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/increment05/session_and_wallet_test.dart	modified	Verify session and wallet with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/increment06/chat_delivery_test.dart	modified	Verify chat delivery with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/increment08/native_session_read_deadline_test.dart	added	Verify native session read deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/release/admin_panel_production_readiness_contract_test.dart	modified	Exercise admin panel production readiness contract with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
-test/release/chat_fullstack_contract_test.dart	modified	Exercise chat fullstack contract with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
-test/release/notification_delivery_contract_test.dart	modified	Exercise notification delivery contract with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
-test/release/scope_boundary_test.dart	modified	Exercise scope boundary with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
-test/release/wallet_driver_plus_contract_test.dart	modified	Exercise wallet driver plus contract with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
-test/shared/models/discovery_person_test.dart	added	Verify discovery person with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/shared/models/member_id_boundary_parity_test.dart	added	Verify member id boundary parity with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-test/shared/widgets/driver_person_card_test.dart	added	Verify driver person card with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
-tool/face_receiving_preview_service.dart	modified	Implement and verify the local request, account, typed-contract or artifact-promotion requirement in this module.
-tool/revolut_visual_proof_app.dart	modified	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
-web/index.html	modified	Record and verify the corresponding local readiness implementation and evidence.
-web/manifest.json	modified	Record and verify the corresponding local readiness implementation and evidence.
+file	change	workstream	reason
+.github/workflows/cloudflare-pages.yml	modified	Readiness goal	Make PWA publication fail closed on missing, stale or mismatched required evidence and retain verified candidates for review.
+.github/workflows/cloudflare-pwa.yml	modified	Readiness goal	Make PWA publication fail closed on missing, stale or mismatched required evidence and retain verified candidates for review.
+AGENTS.md	modified	Concurrent design work	Preserve the separate design chat instructions selecting external revolut-design as the sole visual authority and its evidence/validation workflow.
+CRITICAL_RULES.md	modified	Readiness goal	Document authoritative six-digit IDs and all four mandatory public runtime defines for builds.
+README.md	modified	Concurrent design work	Preserve the separate design chat correction pointing current UI work to the external design authority and product evidence index.
+android/fastlane/Fastfile	modified	Readiness goal	Upload only a private read-only AAB copy whose SHA-256 matches the immutable verifier receipt, reject source replacement/nonregular paths and clean staging in both lanes.
+assets/google_fonts/Manrope-200.ttf	deleted	Concurrent design work	Preserve the separate design chat deletion of this Manrope font asset under the selected external reference typography; this deletion is concurrent design context.
+assets/google_fonts/Manrope-300.ttf	deleted	Concurrent design work	Preserve the separate design chat deletion of this Manrope font asset under the selected external reference typography; this deletion is concurrent design context.
+assets/google_fonts/Manrope-500.ttf	deleted	Concurrent design work	Preserve the separate design chat deletion of this Manrope font asset under the selected external reference typography; this deletion is concurrent design context.
+assets/google_fonts/Manrope-600.ttf	deleted	Concurrent design work	Preserve the separate design chat deletion of this Manrope font asset under the selected external reference typography; this deletion is concurrent design context.
+assets/google_fonts/Manrope-700.ttf	deleted	Concurrent design work	Preserve the separate design chat deletion of this Manrope font asset under the selected external reference typography; this deletion is concurrent design context.
+assets/google_fonts/Manrope-800.ttf	deleted	Concurrent design work	Preserve the separate design chat deletion of this Manrope font asset under the selected external reference typography; this deletion is concurrent design context.
+assets/google_fonts/Manrope-Regular.ttf	deleted	Concurrent design work	Preserve the separate design chat deletion of this Manrope font asset under the selected external reference typography; this deletion is concurrent design context.
+design.md	deleted	Concurrent design work	Preserve the separate design chat deletion of this superseded local visual specification or shadow/glass component under the sole external revolut-design authority.
+docs/README.md	modified	Concurrent design work	Preserve the separate design chat correction of this document to identify dated visual findings as historical evidence and direct current work to the sole external design authority.
+docs/architecture/history/README-before-20260905.md	modified	Concurrent design work	Preserve the separate design chat correction of this document to identify dated visual findings as historical evidence and direct current work to the sole external design authority.
+docs/architecture/history/duplicate_logic_report.md	modified	Concurrent design work	Preserve the separate design chat correction of this document to identify dated visual findings as historical evidence and direct current work to the sole external design authority.
+docs/design/README.md	added	Concurrent design work	Preserve the separate design chat evidence index for current reference mappings and acceptance records under the external design authority.
+docs/design/authority.json	added	Concurrent design work	Preserve the separate design chat machine-readable declaration of the sole external design authority for instruction validation.
+docs/development/agent-prompts.md	modified	Concurrent design work	Preserve the separate design chat correction of this document to identify dated visual findings as historical evidence and direct current work to the sole external design authority.
+docs/product/admin_design_system.md	deleted	Concurrent design work	Preserve the separate design chat deletion of this superseded local visual specification or shadow/glass component under the sole external revolut-design authority.
+docs/product/design_system_audit.md	deleted	Concurrent design work	Preserve the separate design chat deletion of this superseded local visual specification or shadow/glass component under the sole external revolut-design authority.
+docs/product/mobio_100_percent_mobile_readiness_goal_and_plan_2026-06-08.md	modified	Concurrent design work	Preserve the separate design chat correction of this document to identify dated visual findings as historical evidence and direct current work to the sole external design authority.
+docs/product/revolut_full_repo_flutter_admin_comparative_audit_2026-06-13.md	modified	Concurrent design work	Preserve the separate design chat correction of this document to identify dated visual findings as historical evidence and direct current work to the sole external design authority.
+docs/product/revolut_recommendations_implementation_log_2026-06-13.md	modified	Concurrent design work	Preserve the separate design chat correction of this document to identify dated visual findings as historical evidence and direct current work to the sole external design authority.
+docs/product/revolut_reference_design_gap_analysis_2026-06-08.md	modified	Concurrent design work	Preserve the separate design chat correction of this document to identify dated visual findings as historical evidence and direct current work to the sole external design authority.
+docs/product/revolut_secondary_palette_critical_analysis_2026-06-09.md	deleted	Concurrent design work	Preserve the separate design chat deletion of this superseded local visual specification or shadow/glass component under the sole external revolut-design authority.
+docs/product/scope.md	modified	Concurrent design work	Preserve the separate design chat correction of this document to identify dated visual findings as historical evidence and direct current work to the sole external design authority.
+docs/production-readiness/01-repo-inventory.md	modified	Concurrent design work	Preserve the separate design chat correction of this document to identify dated visual findings as historical evidence and direct current work to the sole external design authority.
+docs/production-readiness/m054-request-boundary-audit-2026-09-30.md	added	Readiness goal	Record implementation requirements, audited source coverage, test evidence and concrete limits for the corresponding local goal.
+docs/production-readiness/m055-account-callback-audit-2026-09-30.md	added	Readiness goal	Record implementation requirements, audited source coverage, test evidence and concrete limits for the corresponding local goal.
+docs/production-readiness/m063-typed-boundary-audit-2026-09-30.md	added	Readiness goal	Record implementation requirements, audited source coverage, test evidence and concrete limits for the corresponding local goal.
+docs/production-readiness/m075-pwa-promotion-controls-2026-09-30.md	added	Readiness goal	Record artifact/source-bound Pages approvals, publishing entrypoint inventory, immutable Fastlane staging and strict Android archive-signature verification with scoped local evidence.
+docs/release/README.md	modified	Readiness goal	Document exact compiled AAB package/version readback and fail-closed candidate/promotion requirements without recording runtime values or signing material.
+docs/reports/drive-comparative-review-2026-09-27.md	added	Pre-existing Drive evidence	Retain the pre-existing exhaustive Drive comparison report committed by the separate main-publication chat; no new Drive download or import occurred in this closeout.
+docs/reports/drive-ignored-code-parity-2026-09-27.tsv	added	Pre-existing Drive evidence	Retain the pre-existing Drive-to-ignored/generated-code parity evidence committed by the separate main-publication chat; this is prior review evidence.
+docs/reports/drive-source-parity-2026-09-27.tsv	added	Pre-existing Drive evidence	Retain the pre-existing per-source-file Drive hash/parity inventory committed by the separate main-publication chat; this is prior review evidence.
+docs/reports/mobio-local-goal-file-changes-2026-09-30.tsv	added	Readiness goal	Inventory each added, modified or deleted path since the local goal baseline, with explicit attribution and reason for readiness, concurrent design or pre-existing Drive evidence.
+docs/reports/mobio-local-readiness-goal-2026-09-30.md	added	Readiness goal	Record the seven local readiness objectives, final integrated verification and unresolved production prerequisites with source/publication evidence.
+docs/reports/mobio-release-promotion-gate-2026-09-30.md	modified	Readiness goal	Record implemented release-control corrections, their scoped verification and the remaining external release gates.
+docs/reports/mobio_flutter_mobile_screen_inventory_2026-06-07.md	modified	Concurrent design work	Preserve the separate design chat correction of this document to identify dated visual findings as historical evidence and direct current work to the sole external design authority.
+docs/testing/fullstack-qa-plan-20260914.md	modified	Concurrent design work	Preserve the separate design chat correction of this document to identify dated visual findings as historical evidence and direct current work to the sole external design authority.
+docs/testing/navigation-accessibility-20260920.md	modified	Concurrent design work	Preserve the separate design chat correction of this document to identify dated visual findings as historical evidence and direct current work to the sole external design authority.
+landing/index.html	modified	Concurrent design work	Preserve the separate design chat landing markup, shared visual references and Mobio identity under the external design authority.
+landing/play-review/foreground-location-demo.html	modified	Concurrent design work	Preserve the separate design chat Play-review demonstration presentation under the external design authority.
+landing/style.css	modified	Concurrent design work	Preserve the separate design chat landing surface, colour and typography styling under the external design authority.
+lib/app/router/screen_wrappers.dart	modified	Readiness goal	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
+lib/app/shell.dart	modified	Readiness goal	Guard shell bootstrap/location/analytics work against a replaced account generation.
+lib/core/async/client_operation_id.dart	added	Readiness goal	Give each newly initiated client mutation one stable UUID so an uncertain receipt can retain its operation identity.
+lib/core/async/external_action.dart	added	Readiness goal	Apply finite observers to native sharing, clipboard and link actions while preserving unconfirmed side effects.
+lib/core/async/request_deadline.dart	modified	Readiness goal	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
+lib/core/auth/account_action_token.dart	added	Readiness goal	Bind rendered callbacks and modal results to the original session and notifier revision before any later action.
+lib/core/auth/admin_session_boundary.dart	modified	Readiness goal	Invalidate protected content and delayed UI callbacks immediately when their originating account generation changes.
+lib/core/auth/auth_session_storage.dart	modified	Readiness goal	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
+lib/core/auth/play_integrity_service.dart	modified	Readiness goal	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
+lib/core/firebase/firebase_analytics_service.dart	modified	Readiness goal	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
+lib/core/firebase/firebase_auth_service.dart	modified	Readiness goal	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
+lib/core/firebase/firebase_bootstrap_service.dart	modified	Readiness goal	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
+lib/core/firebase/firebase_remote_config_service.dart	modified	Readiness goal	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
+lib/core/localization/country_service.dart	modified	Readiness goal	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
+lib/core/location/google_maps_deep_link_service.dart	modified	Readiness goal	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
+lib/core/location/location_service.dart	modified	Readiness goal	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
+lib/core/location/places_service.dart	modified	Readiness goal	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
+lib/core/permissions/app_permission_service.dart	modified	Readiness goal	Bound active transport/native operations and prevent late auth, analytics, location or permission replies from fabricating success.
+lib/features/admin/application/admin_dashboard_provider.dart	modified	Readiness goal	Prevent a delayed dashboard read, modal or multi-write sequence from using a replacement account session.
+lib/features/admin/data/admin_broadcast_service.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/data/admin_compliance_service.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/data/admin_dashboard_service.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/data/admin_trip_service.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/data/admin_user_service.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/data/otp_service.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/domain/admin_wire_record.dart	added	Readiness goal	Validate admin IDs, roles, states, dates and integers before records enter administrative screens.
+lib/features/admin/presentation/admin_audit_log_screen.dart	modified	Readiness goal	Close audited account, outcome or typed-boundary defects within the existing approved feature.
+lib/features/admin/presentation/admin_auth_screen.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/presentation/admin_broadcasts_screen.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/presentation/admin_dashboard_screen.dart	modified	Readiness goal	Retain the originating account for admin modal writes, private data, refresh and toolbar/quick navigation in both responsive layouts.
+lib/features/admin/presentation/admin_ev_chargers_screen.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/presentation/admin_operational_health_screen.dart	modified	Readiness goal	Close audited account, outcome or typed-boundary defects within the existing approved feature.
+lib/features/admin/presentation/admin_reports_screen.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/presentation/admin_subscriptions_screen.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/presentation/admin_transport_agencies_screen.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/presentation/admin_trips_screen.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/presentation/admin_users_screen.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/presentation/admin_vehicle_types_screen.dart	modified	Readiness goal	Reject malformed administrative records and prevent delayed reads or modal actions from reaching another account generation.
+lib/features/admin/presentation/widgets/admin_dashboard_panels.dart	modified	Concurrent design work	Preserve the separate design chat dashboard alert surface correction using shared semantic colour tokens.
+lib/features/admin/presentation/widgets/admin_ui.dart	modified	Concurrent design work	Preserve the separate design chat admin controls, semantic colours, disabled states and search-clear behavior.
+lib/features/admin/presentation/widgets/privacy_health_card.dart	modified	Readiness goal	Bind retained admin privacy refresh callbacks to their originating view session before private dispatch.
+lib/features/admin/presentation/widgets/push_delivery_health_card.dart	modified	Readiness goal	Bind retained push-delivery health refresh callbacks to their originating view session before private dispatch.
+lib/features/auth/data/whatsapp_login_service.dart	modified	Readiness goal	Bound OTP requests and preserve uncertain send outcomes so lost acknowledgements cannot report successful delivery or allow unsafe automatic retries.
+lib/features/auth/presentation/whatsapp_login_screen.dart	modified	Readiness goal	Show OTP unknown-outcome recovery and protect rendered login callbacks against stale session results.
+lib/features/biopay/application/payment_composer_controller.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/data/biopay_admin_service.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/data/biopay_device_nfc_service.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/data/biopay_face_service.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/data/biopay_nfc_service.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/data/biopay_qr_export_io.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/data/biopay_qr_export_web.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/data/biopay_ussd_service.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/data/face_capture.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/data/payment_discovery_service.dart	modified	Readiness goal	Validate exact method roles, fees, versions, recipient projections and correlated RPC receipts; preserve the originating account generation.
+lib/features/biopay/domain/biopay_admin.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/domain/biopay_ussd_payment.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/domain/payment_discovery.dart	modified	Readiness goal	Validate exact method roles, fees, versions, recipient projections and correlated RPC receipts; preserve the originating account generation.
+lib/features/biopay/domain/payment_discovery_response.dart	added	Readiness goal	Validate action-specific authoritative RPC projections and exact mutation receipts, versions, submitted fields and historical currency.
+lib/features/biopay/domain/payment_entry.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/presentation/biopay_admin_console_screen.dart	modified	Readiness goal	Reject retained operational action and confirmation callbacks after account or session replacement.
+lib/features/biopay/presentation/biopay_face_enroll_screen.dart	modified	Readiness goal	Distinguish unavailable from confirmed setup absence, retain callback authority, advance recovery cache only from confirmed enrollment/management and block recapture after unknown enrollment.
+lib/features/biopay/presentation/biopay_face_scan_screen.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/presentation/biopay_flow_shared.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/presentation/biopay_home_screen.dart	modified	Concurrent design work	Preserve the separate design chat BioPay reference theme and semantic surface/text colours without changing approved feature scope.
+lib/features/biopay/presentation/biopay_nfc_foreground_listener.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/presentation/biopay_nfc_screen.dart	modified	Readiness goal	Clear stale receiving data and bind native NFC actions and suspension cleanup to the originating account.
+lib/features/biopay/presentation/biopay_nfc_write_card_screen.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/presentation/biopay_payment_link_screen.dart	modified	Concurrent design work	Preserve the separate design chat payment-link status-card surfaces and text colours under the reference theme.
+lib/features/biopay/presentation/biopay_request_payment_screen.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/presentation/biopay_style.dart	modified	Concurrent design work	Preserve the separate design chat BioPay theme mapping and semantic colours under the external design authority.
+lib/features/biopay/presentation/face_copy.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/presentation/payment_composer_screen.dart	modified	Readiness goal	Carry immutable account/controller origins into rendered refresh, preparation, handoff and save actions; revalidate injected private workspace responses.
+lib/features/biopay/presentation/payment_library_screen.dart	modified	Readiness goal	Guard retained library/request-editor refresh, row, template, acknowledgement and navigation callbacks after owner or generation replacement.
+lib/features/biopay/presentation/payment_link_arrival_screen.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/presentation/payment_methods_screen.dart	modified	Readiness goal	Retain account and view revision on rendered refresh/add/edit/sharing callbacks before private dispatch or navigation.
+lib/features/biopay/presentation/payment_nfc_link_screen.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/biopay/presentation/payment_provider_routes_screen.dart	modified	Readiness goal	Bound native/HTTP work, distinguish unknown write outcomes and guard approved BioPay UI against late results after an account change.
+lib/features/bookings/application/schedule_trip_provider.dart	modified	Readiness goal	Validate scheduled-trip/public-transport projections and receipts and reject stale account/location/favorite callbacks.
+lib/features/bookings/application/schedule_trip_state.dart	modified	Readiness goal	Parse edit-prefill departure dates and clocks through the strict typed boundary so impossible values cannot clamp or fall back to the current time.
+lib/features/bookings/data/public_transport_service.dart	modified	Readiness goal	Validate scheduled-trip/public-transport projections and receipts and reject stale account/location/favorite callbacks.
+lib/features/bookings/data/trip_service.dart	modified	Readiness goal	Validate trip reads and mutation receipts; require strict departure date/time for every recurrence expansion and sort, preserving valid AM/PM noon and midnight.
+lib/features/bookings/domain/public_transport_wire_record.dart	added	Readiness goal	Reject lossy catalog, schedule, fare, hold and confirmation projections instead of fabricating valid transport state.
+lib/features/bookings/domain/trip_wire_record.dart	modified	Readiness goal	Reject malformed scheduled-trip rows and recurrence fields; accept exact SQL 24-hour and valid legacy AM/PM clocks without silent date rollover or partial time parsing.
+lib/features/bookings/presentation/bookings_screen.dart	modified	Readiness goal	Fence rendered mode, detail, cancellation and empty-state schedule/refresh callbacks before dispatch after account replacement.
+lib/features/bookings/presentation/schedule_trip_screen.dart	modified	Readiness goal	Bind rendered trip actions, form callbacks and delayed permission results to their original account before dispatch or navigation.
+lib/features/bookings/presentation/trip_details_screen.dart	modified	Readiness goal	Bind rendered trip actions, form callbacks and delayed permission results to their original account before dispatch or navigation.
+lib/features/bookings/presentation/widgets/trip_repeat_picker.dart	modified	Concurrent design work	Preserve the separate design chat recurrence-picker control surfaces under the shared reference theme.
+lib/features/bookings/presentation/widgets/trip_timing_picker.dart	modified	Concurrent design work	Preserve the separate design chat trip date/time-picker control surfaces under the shared reference theme.
+lib/features/chat/data/chat_delivery_coordinator.dart	modified	Readiness goal	Validate chat record/receipt identity and state, preserve recovery operations and reject late work from a replaced account.
+lib/features/chat/data/chat_service.dart	modified	Readiness goal	Validate chat record/receipt identity and state, preserve recovery operations and reject late work from a replaced account.
+lib/features/chat/domain/chat_conversation.dart	modified	Readiness goal	Validate chat record/receipt identity and state, preserve recovery operations and reject late work from a replaced account.
+lib/features/chat/domain/chat_history_page.dart	modified	Readiness goal	Validate chat record/receipt identity and state, preserve recovery operations and reject late work from a replaced account.
+lib/features/chat/domain/chat_message.dart	modified	Readiness goal	Validate chat record/receipt identity and state, preserve recovery operations and reject late work from a replaced account.
+lib/features/chat/domain/chat_wire_record.dart	added	Readiness goal	Require correct chat identity, message state, cursor and nullable historical receipt contracts before accepting server data.
+lib/features/chat/presentation/chat_screen.dart	modified	Readiness goal	Validate chat record/receipt identity and state, preserve recovery operations and reject late work from a replaced account.
+lib/features/chat/presentation/widgets/conversation_list.dart	modified	Concurrent design work	Preserve the separate design chat conversation-row surface styling under shared semantic tokens.
+lib/features/chat/presentation/widgets/trip_context_card.dart	modified	Concurrent design work	Preserve the separate design chat trip-context card surface treatment under the reference theme.
+lib/features/ev_chargers/data/ev_charger_service.dart	modified	Readiness goal	Bound charger reads and reject malformed IDs, location fields or response shapes at the service boundary.
+lib/features/ev_chargers/presentation/ev_charger_locator_screen.dart	modified	Readiness goal	Prevent delayed charger actions and response updates from reaching a replacement account generation.
+lib/features/home/presentation/home_screen.dart	modified	Readiness goal	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
+lib/features/home/presentation/widgets/scheduled_trip_card.dart	modified	Concurrent design work	Preserve the separate design chat scheduled-trip card surface treatment under the reference theme.
+lib/features/nearby/data/driver_location_service.dart	modified	Readiness goal	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
+lib/features/nearby/data/driver_location_sharing_service.dart	modified	Readiness goal	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
+lib/features/nearby/presentation/nearby_screen.dart	modified	Readiness goal	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
+lib/features/notifications/data/notification_consent_service.dart	modified	Readiness goal	Validate notification ownership, clear old private state, observe cleanup and prevent stale consent/inbox callbacks.
+lib/features/notifications/data/notification_service.dart	modified	Readiness goal	Validate notification ownership, clear old private state, observe cleanup and prevent stale consent/inbox callbacks.
+lib/features/notifications/data/push_notification_service.dart	modified	Readiness goal	Validate notification ownership, clear old private state, observe cleanup and prevent stale consent/inbox callbacks.
+lib/features/notifications/presentation/notifications_screen.dart	modified	Readiness goal	Validate notification ownership, clear old private state, observe cleanup and prevent stale consent/inbox callbacks.
+lib/features/privacy/data/privacy_service.dart	modified	Readiness goal	Bound privacy reads/writes and validate owner-correlated success receipts while preserving uncertain mutation outcomes.
+lib/features/privacy/presentation/privacy_request_screen.dart	modified	Readiness goal	Guard privacy request callbacks and late follow-ups with the originating account and expose uncertain request outcomes.
+lib/features/profile/application/edit_profile_provider.dart	modified	Readiness goal	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
+lib/features/profile/application/notification_consent_provider.dart	modified	Readiness goal	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
+lib/features/profile/data/driver_plus_service.dart	modified	Readiness goal	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
+lib/features/profile/data/favorite_address_service.dart	modified	Readiness goal	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
+lib/features/profile/data/referral_attribution_service.dart	modified	Readiness goal	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
+lib/features/profile/data/referral_service.dart	modified	Readiness goal	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
+lib/features/profile/data/subscription_plan_service.dart	modified	Readiness goal	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
+lib/features/profile/data/wallet_operation_journal.dart	modified	Readiness goal	Serialize actual wallet-journal completion so a cleanup whose UI observer expired cannot erase a newer recovery pointer or overlap later native storage work.
+lib/features/profile/data/wallet_service.dart	modified	Readiness goal	Bind wallet work to its originating session, validate authoritative receipts and bound best-effort local cleanup without relabeling confirmed server closure.
+lib/features/profile/domain/wallet.dart	modified	Readiness goal	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
+lib/features/profile/presentation/driver_plus_screen.dart	modified	Readiness goal	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
+lib/features/profile/presentation/edit_profile_screen.dart	modified	Readiness goal	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
+lib/features/profile/presentation/profile_screen.dart	modified	Readiness goal	Bind Profile private follow-up reads, rendered actions and external-link continuations to their originating session; clear old private state immediately.
+lib/features/profile/presentation/wallet_screen.dart	modified	Readiness goal	Fence sequential private wallet reads and all rendered/form/native/receipt callbacks by their origin while preserving operation identity and unknown-outcome reconciliation; fix modal controller lifetime and pending-row Material context.
+lib/features/profile/presentation/widgets/profile_favorite_addresses_section.dart	modified	Readiness goal	Retain account authority for retry/add/delete, clear replaced-session sheet fields and prevent stale place/save callbacks from writing.
+lib/features/profile/presentation/widgets/profile_notification_consent_section.dart	modified	Readiness goal	Bind profile, wallet, referral, favorite-address or subscription work to its originating session and validate authoritative receipts.
+lib/l10n/app_en.arb	modified	Readiness goal	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
+lib/l10n/app_fr.arb	modified	Readiness goal	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
+lib/l10n/app_localizations.dart	modified	Readiness goal	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
+lib/l10n/app_localizations_en.dart	modified	Readiness goal	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
+lib/l10n/app_localizations_fr.dart	modified	Readiness goal	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
+lib/l10n/app_localizations_rw.dart	modified	Readiness goal	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
+lib/l10n/app_rw.arb	modified	Readiness goal	Provide generated and source en/rw/fr copy for an unconfirmed Face mutation outcome without claiming no enrollment.
+lib/shared/models/discovery_person.dart	added	Readiness goal	Represent nearby people with their authoritative member ID and peer identity without fabricating scheduled-trip records.
+lib/shared/widgets/ai_empty_state.dart	modified	Concurrent design work	Preserve the separate design chat ai empty state surface and state styling under shared reference-theme tokens.
+lib/shared/widgets/driver_card.dart	modified	Readiness goal	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
+lib/shared/widgets/glass_card.dart	deleted	Concurrent design work	Preserve the separate design chat deletion of this superseded local visual specification or shadow/glass component under the sole external revolut-design authority.
+lib/shared/widgets/glass_container.dart	deleted	Concurrent design work	Preserve the separate design chat deletion of this superseded local visual specification or shadow/glass component under the sole external revolut-design authority.
+lib/shared/widgets/mobi_error_state.dart	modified	Concurrent design work	Preserve the separate design chat mobi error state surface and state styling under shared reference-theme tokens.
+lib/shared/widgets/mobi_feature_tile.dart	modified	Concurrent design work	Preserve the separate design chat mobi feature tile surface and state styling under shared reference-theme tokens.
+lib/shared/widgets/mobi_metric_tile.dart	modified	Concurrent design work	Preserve the separate design chat mobi metric tile surface and state styling under shared reference-theme tokens.
+lib/shared/widgets/mobi_state_banner.dart	modified	Concurrent design work	Preserve the separate design chat mobi state banner surface and state styling under shared reference-theme tokens.
+lib/shared/widgets/mobi_tonal_card.dart	added	Concurrent design work	Preserve the separate design chat shared tonal card replacing superseded glass/clay surface components.
+lib/shared/widgets/permission_access_dialog.dart	modified	Concurrent design work	Preserve the separate design chat permission-dialog surfaces and controls under shared semantic tokens.
+lib/shared/widgets/place_autocomplete_field.dart	modified	Concurrent design work	Preserve the separate design chat place-search control treatment under the shared reference theme.
+lib/shared/widgets/route_map_card.dart	modified	Concurrent design work	Preserve the separate design chat tonal card for stored places/external map links; no routing capability is added.
+packages/design-system/README.md	modified	Concurrent design work	Preserve the separate design chat package documentation linking implementation tokens to the sole external design authority.
+packages/design-system/lib/mobi_design_system.dart	modified	Concurrent design work	Preserve the separate design chat shared API update after removing superseded shadow treatments.
+packages/design-system/lib/src/theme/app_shadows.dart	deleted	Concurrent design work	Preserve the separate design chat deletion of this superseded local visual specification or shadow/glass component under the sole external revolut-design authority.
+packages/design-system/lib/src/theme/app_theme.dart	modified	Concurrent design work	Preserve the separate design chat shared light/dark control and surface themes under the external reference system.
+packages/design-system/lib/src/theme/mobi_theme_extension.dart	modified	Concurrent design work	Preserve the separate design chat theme-token correction removing superseded glass/clay shadow fields.
+packages/design-system/lib/theme/app_shadows.dart	deleted	Concurrent design work	Preserve the separate design chat deletion of this superseded local visual specification or shadow/glass component under the sole external revolut-design authority.
+scripts/ci/check_design_authority.py	added	Concurrent design work	Preserve the separate design chat validator rejecting competing visual specifications and checking authoritative instruction references.
+scripts/ci/verify_flutter.sh	modified	Concurrent design work	Preserve the separate design chat CI integration of the design-authority validation gate.
+scripts/qa/verify_landing_web_host.mjs	added	Concurrent design work	Preserve the separate design chat local checks for landing hosting behavior and approved visual assets.
+scripts/release/android_candidate_manifest.py	modified	Readiness goal	Bind actual compiled Android package/version and exact source/artifact approvals; require strict archive signatures and reject unsigned additions, invalid certificate dates and weak/disabled algorithms. Reject example candidate/approval files even when authenticated input otherwise matches.
+scripts/release/upload_google_play_release.sh	modified	Readiness goal	Require returned Play version and payload SHA-256 to match the approved artifact before any track update or edit commit.
+scripts/tests/source_contract_helpers.py	added	Readiness goal	Check executable Dart source tokens independently of formatting and comments without accepting comments as implemented guards.
+scripts/tests/test_android_candidate_manifest.py	modified	Readiness goal	Verify compiled manifest identity and artifact/source approval rejection, including real ephemeral signed archives with unsigned/tampered entries, unsafe algorithms and invalid certificate dates. Reproduce and reject example candidate, approval and re-authenticated receipt pointers.
+scripts/tests/test_design_authority.py	added	Concurrent design work	Preserve the separate design chat regressions for sole-authority declarations and conflicting local design specifications.
+scripts/tests/test_fastlane_approved_artifact.py	added	Readiness goal	Execute both actual Ruby upload lanes with synthetic approvals/providers to verify approved bytes, source-replacement rejection, track binding and cleanup after success or failure.
+scripts/tests/test_google_play_upload_receipt.py	added	Readiness goal	Run the actual uploader with executable local provider fakes; reject wrong/missing/mistyped upload identity before track writes and retain a valid positive case.
+scripts/tests/test_identity_lifecycle_contracts.py	modified	Readiness goal	Check executable source contracts independently of Dart formatting and preserve fail-closed remediation/release assertions.
+scripts/tests/test_increment05_contracts.py	modified	Readiness goal	Check executable source contracts independently of Dart formatting and preserve fail-closed remediation/release assertions.
+scripts/tests/test_increment06_contracts.py	modified	Readiness goal	Check executable source contracts independently of Dart formatting and preserve fail-closed remediation/release assertions.
+scripts/tests/test_increment07_contracts.py	modified	Readiness goal	Check executable source contracts independently of Dart formatting and preserve fail-closed remediation/release assertions.
+scripts/tests/test_increment08_contracts.py	modified	Readiness goal	Check executable source contracts independently of Dart formatting and preserve fail-closed remediation/release assertions.
+scripts/tests/test_pwa_candidate_manifest.py	added	Readiness goal	Exercise real packaging and shell promotion through a fake publishing adapter; reject missing, stale, altered, skipped, self-approved or wrong-destination evidence before publishing.
+scripts/tests/test_source_contract_helpers.py	added	Readiness goal	Prove comment, string and layout handling cannot create false source-contract acceptance.
+scripts/web/deploy_cloudflare_pwas.sh	modified	Readiness goal	Make PWA publication fail closed on missing, stale or mismatched required evidence and retain verified candidates for review.
+scripts/web/pwa_candidate_manifest.py	added	Readiness goal	Bind clean full source, actual packaged PWA bytes, migration/model policy and exact destination to fresh independent authenticated approval and all twelve required passed receipts.
+test/app/router/admin_session_boundary_test.dart	added	Readiness goal	Verify admin session boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/app/router/payment_link_launch_test.dart	modified	Readiness goal	Verify payment link launch with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/core/async/external_action_test.dart	added	Readiness goal	Verify external action with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/core/async/request_deadline_test.dart	modified	Readiness goal	Verify request deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/core/auth/account_action_token_test.dart	added	Readiness goal	Verify account action token with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/core/firebase/firebase_analytics_deadline_test.dart	added	Readiness goal	Verify firebase analytics deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/core/location/places_connectivity_deadline_test.dart	added	Readiness goal	Verify places connectivity deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/core/permissions/app_permission_deadline_test.dart	added	Readiness goal	Verify app permission deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/admin/admin_dashboard_account_race_test.dart	added	Readiness goal	Exercise admin dashboard account race with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
+test/features/admin/admin_dashboard_recovery_test.dart	modified	Readiness goal	Exercise admin dashboard recovery with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
+test/features/admin/admin_health_refresh_account_race_test.dart	added	Readiness goal	Exercise stale retained and late health refresh replies with positive current-session reads.
+test/features/admin/admin_modal_account_guard_test.dart	added	Readiness goal	Verify admin modal account guard with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/admin/admin_navigation_account_race_test.dart	added	Readiness goal	Verify current and retained toolbar/quick Users, Trips and Health navigation in both responsive layouts using actual GoRouter widgets.
+test/features/admin/admin_private_read_account_race_test.dart	added	Readiness goal	Add focused regression evidence for admin private read account race.
+test/features/admin/data/admin_broadcast_service_contract_test.dart	modified	Readiness goal	Verify admin broadcast service contract with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/admin/data/admin_compliance_broadcast_boundary_test.dart	added	Readiness goal	Verify admin compliance broadcast boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/admin/data/admin_typed_boundary_test.dart	added	Readiness goal	Verify admin typed boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/admin/widgets/admin_ui_test.dart	modified	Concurrent design work	Preserve the separate design chat executable search-clear and disabled-control/semantics regressions.
+test/features/auth/data/otp_send_outcome_test.dart	added	Readiness goal	Verify app/admin OTP acknowledgement, cooldown and single-send recovery with deterministic clocks and adapter barriers for deadlines before dispatch and during a hung reply.
+test/features/auth/whatsapp_login_screen_test.dart	modified	Readiness goal	Verify whatsapp login screen with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/biopay_admin_account_race_test.dart	added	Readiness goal	Exercise biopay admin account race with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
+test/features/biopay/biopay_device_nfc_account_race_test.dart	added	Readiness goal	Add focused regression evidence for biopay device nfc account race.
+test/features/biopay/biopay_device_nfc_service_test.dart	modified	Readiness goal	Exercise biopay device nfc service with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
+test/features/biopay/biopay_nfc_foreground_deadline_test.dart	added	Readiness goal	Verify biopay nfc foreground deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/biopay_nfc_service_deadline_test.dart	added	Readiness goal	Verify biopay nfc service deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/biopay_nfc_unknown_outcome_screen_test.dart	added	Readiness goal	Verify biopay nfc unknown outcome screen with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/biopay_payment_surfaces_test.dart	modified	Readiness goal	Verify biopay payment surfaces with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/biopay_rpc_receipt_boundary_test.dart	added	Readiness goal	Verify biopay rpc receipt boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/biopay_scan_recovery_test.dart	modified	Readiness goal	Verify biopay scan recovery with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/data/account_callback_service_race_test.dart	added	Readiness goal	Verify account callback service race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/data/biopay_face_service_boundary_test.dart	added	Readiness goal	Verify biopay face service boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/data/payment_discovery_receipt_test.dart	added	Readiness goal	Verify payment discovery receipt with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/data/payment_route_receipt_test.dart	added	Readiness goal	Reject wrong route versions and persisted configuration and prove valid SQL transitions and unknown successful mismatched receipts.
+test/features/biopay/face_shortcut_test.dart	modified	Readiness goal	Verify face shortcut with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/face_shortcut_widgets_test.dart	modified	Readiness goal	Verify face shortcut widgets with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/face_unknown_outcome_copy_test.dart	added	Readiness goal	Verify face unknown outcome copy with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/models/biopay_admin_test.dart	modified	Readiness goal	Verify biopay admin with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/models/biopay_ussd_payment_test.dart	modified	Readiness goal	Verify biopay ussd payment with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/models/biopay_wire_boundary_test.dart	added	Readiness goal	Verify biopay wire boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/models/face_enrollment_status_boundary_test.dart	added	Readiness goal	Exercise face enrollment status boundary with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
+test/features/biopay/models/payment_discovery_boundary_test.dart	added	Readiness goal	Verify payment discovery boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/payment_account_callback_race_test.dart	added	Readiness goal	Verify payment account callback race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/payment_discovery_test.dart	modified	Readiness goal	Verify payment discovery with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/payment_discovery_widgets_test.dart	modified	Readiness goal	Verify payment discovery widgets with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/payment_library_workspace_boundary_test.dart	added	Readiness goal	Exercise payment library workspace boundary with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
+test/features/biopay/payment_methods_account_race_test.dart	added	Readiness goal	Verify payment methods account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/payment_nfc_account_race_test.dart	added	Readiness goal	Verify payment nfc account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/biopay/payment_rendered_callback_origin_test.dart	added	Readiness goal	Verify retained composer/library callbacks before and after replacement-account reloads, same-owner generations and positive current workflows; reject malformed injected workspace responses.
+test/features/bookings/application/schedule_trip_account_race_test.dart	added	Readiness goal	Verify schedule trip account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/bookings/booking_rendered_callback_race_test.dart	added	Readiness goal	Exercise actual scheduler and trip widgets after session replacement, plus successful current-session location and cancellation.
+test/features/bookings/data/public_transport_service_boundary_test.dart	added	Readiness goal	Verify public transport service boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/bookings/data/trip_create_receipt_boundary_test.dart	added	Readiness goal	Verify trip create receipt boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/bookings/data/trip_service_test.dart	modified	Readiness goal	Verify scheduled-trip expansion and ordering, including single/nonrecurring malformed clocks and exact legacy noon/midnight occurrence times.
+test/features/bookings/domain/public_transport_wire_record_test.dart	added	Readiness goal	Verify public transport wire record with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/bookings/domain/trip_wire_record_test.dart	modified	Readiness goal	Verify strict scheduled-trip IDs, fields and recurrence plus valid SQL/legacy clocks and rejection of impossible, partial or trailing date/time values.
+test/features/bookings/models/schedule_trip_state_test.dart	modified	Readiness goal	Verify edit prefill retains valid scheduled-trip state and rejects malformed clocks or rollover dates instead of substituting/clamping values.
+test/features/bookings/models/transport_agency_catalog_test.dart	modified	Readiness goal	Provide a valid departure date and SQL clock in the shared saved-bus fixture so all three agency-prefill cases exercise agency parsing under the strict typed trip contract; retain production date/time validation.
+test/features/chat/data/chat_realtime_recovery_test.dart	modified	Readiness goal	Verify chat realtime recovery with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/chat/data/chat_service_test.dart	modified	Readiness goal	Verify chat service with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/chat/data/chat_typed_boundary_test.dart	added	Readiness goal	Verify chat typed boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/ev_chargers/data/ev_charger_service_boundary_test.dart	added	Readiness goal	Verify ev charger service boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/home/home_rendered_callback_race_test.dart	added	Readiness goal	Verify retained Home mode/online/navigation/filter/detail callbacks cannot act after generation replacement and current actions remain usable.
+test/features/home/home_screen_preview_test.dart	modified	Readiness goal	Verify home screen preview with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/nearby/data/driver_location_service_contract_test.dart	modified	Readiness goal	Verify driver location service contract with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/nearby/data/driver_location_sharing_service_test.dart	modified	Readiness goal	Verify driver location sharing service with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/notifications/data/notification_service_test.dart	modified	Readiness goal	Verify notification service with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/notifications/presentation/notifications_screen_test.dart	modified	Readiness goal	Verify notifications screen with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/preview/accessibility_resilience_test.dart	modified	Readiness goal	Verify accessibility resilience with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/preview/revolut_reference_golden_test.dart	modified	Readiness goal	Verify revolut reference golden with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/privacy/data/privacy_service_boundary_test.dart	added	Readiness goal	Verify privacy service boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/profile/application_notification_consent_race_test.dart	added	Readiness goal	Verify application notification consent race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/profile/data/driver_plus_receipt_boundary_test.dart	added	Readiness goal	Verify driver plus receipt boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/profile/data/favorite_address_service_account_race_test.dart	added	Readiness goal	Verify favorite address service account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/profile/data/subscription_plan_boundary_test.dart	added	Readiness goal	Verify subscription plan boundary with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/profile/data/wallet_service_boundary_test.dart	added	Readiness goal	Verify strict wallet receipts and recipient correlation plus hung/erroring native cleanup, confirmed server closure and late journal completion ordering.
+test/features/profile/domain/wallet_wire_record_test.dart	added	Readiness goal	Verify wallet wire record with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/profile/presentation/driver_plus_account_race_test.dart	added	Readiness goal	Verify driver plus account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/profile/presentation/profile_rendered_callback_race_test.dart	added	Readiness goal	Prove stale Profile actions, delayed Face follow-ups, enrollment returns and native fallbacks cannot acquire a replacement session, while current actions remain usable.
+test/features/profile/presentation/wallet_rendered_callback_race_test.dart	added	Readiness goal	Verify actual wallet private-read, form, confirmation, receipt, native and invite races while retaining current transfer/redemption operation identity and safe unknown outcomes.
+test/features/profile/providers/edit_profile_account_race_test.dart	added	Readiness goal	Verify edit profile account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/features/profile/widgets/profile_favorite_addresses_account_race_test.dart	added	Readiness goal	Verify stale retry/add/delete, late reads, private sheet clearing and stale save/place selection; retain positive current address actions.
+test/features/profile/widgets/profile_notification_consent_account_race_test.dart	added	Readiness goal	Verify profile notification consent account race with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/helpers/biopay_nfc_test_channels.dart	added	Readiness goal	Acknowledge synthetic native NFC operations and drain disposal callbacks so widget tests retain production deadlines.
+test/helpers/payment_discovery_fixture.dart	modified	Readiness goal	Verify payment discovery fixture with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/increment05/session_and_wallet_test.dart	modified	Readiness goal	Verify session and wallet with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/increment06/chat_delivery_test.dart	modified	Readiness goal	Verify chat delivery with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/increment08/native_session_read_deadline_test.dart	added	Readiness goal	Verify native session read deadline with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/release/admin_panel_production_readiness_contract_test.dart	modified	Readiness goal	Exercise admin panel production readiness contract with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
+test/release/chat_fullstack_contract_test.dart	modified	Readiness goal	Exercise chat fullstack contract with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
+test/release/notification_delivery_contract_test.dart	modified	Readiness goal	Exercise notification delivery contract with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
+test/release/scope_boundary_test.dart	modified	Readiness goal	Exercise scope boundary with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
+test/release/wallet_driver_plus_contract_test.dart	modified	Readiness goal	Exercise wallet driver plus contract with local synthetic positive, malformed-response or session-replacement cases before accepting the changed boundary.
+test/shared/models/discovery_person_test.dart	added	Readiness goal	Verify discovery person with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/shared/models/member_id_boundary_parity_test.dart	added	Readiness goal	Verify member id boundary parity with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+test/shared/widgets/driver_person_card_test.dart	added	Readiness goal	Verify driver person card with local regression fixtures; retain legitimate SQL projections and reject stale or malformed results.
+tool/face_receiving_preview_service.dart	modified	Readiness goal	Implement and verify the local request, account, typed-contract or artifact-promotion requirement in this module.
+tool/revolut_visual_proof_app.dart	modified	Readiness goal	Represent nearby people independently of scheduled trips, preserve authoritative member IDs and guard account-bound discovery callbacks.
+web/index.html	modified	Concurrent design work	Preserve the separate design chat web-shell loading presentation and external design-authority references.
+web/manifest.json	modified	Concurrent design work	Preserve the separate design chat web manifest appearance settings while retaining Mobio application identity.

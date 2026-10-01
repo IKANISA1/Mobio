@@ -265,10 +265,39 @@ Pinned runtime: Flutter 3.44.3 / Dart 3.12, using
   persisted-field mismatches and an actual HTTP successful but stale receipt
   classified as unknown. Evidence: `/tmp/mobio-route-receipt-final.log`.
 - Repository structure check passed with Flutter 3.44.3 (2,971 source/document
-  files at the final check). `git diff --check` passed.
+  files at that earlier scoped check). `git diff --check` passed.
 
 The aggregate report owns full-repository analyzer/tests, release-script,
 secret-scan and platform outcomes. There are no deferred fixes for the
 enumerated owned required-state, identity/correlation and notification callback
 defects. External rollout and acceptance are separate from these local source
 and test results.
+
+## Scheduled departure-time completion correction
+
+The final independent review found that nonempty `departure_time` values could
+still pass the row adapter and then be clamped or replaced by current time in
+edit/occurrence helpers. `TripWireRecord.parseDepartureTime` now returns typed
+hour/minute values only for canonical SQL HH24:MI or valid historical AM/PM
+clock values. Invalid hours/minutes, partial values and trailing garbage fail
+before publication. Edit prefill and occurrence sorting/timestamps use the same
+parser; noon/midnight retain their exact meaning. The date helper also requires
+a valid date-only value rather than substituting today. The deliberate 90-day
+recurrence horizon remains the explicit behavior for an absent optional end date.
+
+New boundary/edit/occurrence regressions include impossible and partial clocks,
+a malformed date, canonical 24-hour values, valid legacy 12-hour values and exact
+midnight/noon UTC occurrences. Current integrated evidence is in the aggregate
+report; these changes do not alter product scope or introduce route calculations.
+
+Final isolated Trip verification: all 38 cases passed in the five domain, edit
+state, service, account-race and mutation-receipt test files. This run covers the
+strict departure correction and its valid SQL/legacy cases. Repository-wide
+Flutter integration finished with 1,495 passed and 169 visual comparisons failed;
+no functional failures remained. The exact frozen-source result and unchanged
+source hashes are recorded in the aggregate report.
+
+The restarted full run exposed three saved-agency fixtures without departure
+fields. Valid `2026-10-01` / `09:00` schedule fields were added to those fixtures,
+preserving the strict parser. All four catalog/agency regression cases passed;
+final repository-wide results remain in the aggregate report.

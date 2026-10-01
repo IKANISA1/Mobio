@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if [[ -n "${MOBIO_CAPTURE_DIR:-}" ]]; then
+  printf '%s\n' \
+    "MOBIO_CAPTURE_DIR is for review image export only; it bypasses golden comparisons." \
+    "Unset MOBIO_CAPTURE_DIR before running Flutter verification." >&2
+  exit 2
+fi
+
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo_root"
 

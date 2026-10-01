@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobi_app/features/bookings/domain/transport_agency_catalog.dart';
+import 'package:mobi_app/features/bookings/domain/trip_wire_record.dart';
 import 'package:mobi_app/shared/models/vehicle_type_model.dart';
 import 'package:mobi_shared_types/models/favorite_address.dart';
 import 'package:mobi_shared_types/models/place.dart';
@@ -329,23 +330,10 @@ List<String> _normalizedAgencyNames(List<String> agencies) {
 }
 
 DateTime _parseTripDate(String value) {
-  return DateTime.tryParse(value) ?? DateTime.now();
+  return TripWireRecord.parseDepartureDate(value);
 }
 
 TimeOfDay _parseTripTime(String value) {
-  final match = RegExp(r'^(\d{1,2}):(\d{2})').firstMatch(value.trim());
-  if (match == null) {
-    return TimeOfDay.now();
-  }
-
-  var hour = int.tryParse(match.group(1) ?? '') ?? TimeOfDay.now().hour;
-  final minute = int.tryParse(match.group(2) ?? '') ?? TimeOfDay.now().minute;
-  final lower = value.toLowerCase();
-  if (lower.contains('pm') && hour < 12) {
-    hour += 12;
-  } else if (lower.contains('am') && hour == 12) {
-    hour = 0;
-  }
-
-  return TimeOfDay(hour: hour.clamp(0, 23), minute: minute.clamp(0, 59));
+  final clock = TripWireRecord.parseDepartureTime(value);
+  return TimeOfDay(hour: clock.hour, minute: clock.minute);
 }

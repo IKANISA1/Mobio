@@ -131,9 +131,9 @@ publisher must add its own exact artifact/destination and applicable required
 receipts before becoming usable. Generic provider CLIs operated outside these
 repository entrypoints are outside this inventory.
 
-## Local verification
+## Earlier PWA implementation verification
 
-- **36 Python tests passed**: 35 candidate/promotion cases plus the existing real
+- The earlier scoped PWA run passed **36 Python tests**: 35 candidate/promotion cases plus the existing real
   packaging test. The positive case prepares the site through the real
   packager/stamper, verifies twelve synthetic signed receipts and runs the real
   shell promotion with a fake publishing adapter. The adapter records the exact
@@ -146,7 +146,7 @@ repository entrypoints are outside this inventory.
   modified/added/missing site bytes; symlink/hardlink/FIFO/oversized inputs;
   forged restamped worker/routing contracts; unreviewed tools; absent deployment
   credentials; and the retired positional shell invocation.
-- **7 Flutter admin readiness contract tests passed.** Focused Dart analysis:
+- The earlier scoped Flutter run passed **7 admin readiness contract tests**. Focused Dart analysis:
   **No issues found**. Shell syntax and Python compilation passed.
 - Repository structure check: **2,984 source/document files; Flutter 3.44.3** at
   the pre-report check. Secret-pattern scan and `git diff --check` passed.
@@ -157,30 +157,83 @@ Logs: `/tmp/mobio-m075-pwa-final-tests.log`,
 `/tmp/mobio-m075-pwa-secret-scan.log`. Full-repository integrated checks and the
 aggregate seven-item completion evidence are owned by the aggregate report.
 
-## Final promotion-scope completion review
+## Promotion-scope review and closeout corrections
 
-The final source review confirmed the shipped Android Play uploader and both
-direct Fastlane upload lanes invoke the Android candidate verifier before
-credential access/upload. Android candidates inspect the actual compiled base
-manifest and bind its package/version to source and build inputs. Both Pages
-workflow entrypoints only build candidates; Pages promotion verifies the actual
-prepared tree through the gated script. The service inventory above remains
-build/dry-run only. These controls cover the existing repository promotion
-entrypoints; they do not claim to prevent independent use of generic provider
-CLIs outside the repository.
+The source review covered the shipped Android Play uploader, both direct
+Fastlane upload lanes and both Pages workflow entrypoints. Android candidates
+inspect the actual compiled base manifest and bind its package/version to source
+and build inputs. Pages workflow entrypoints build candidates; Pages promotion
+verifies the prepared tree through the gated script. The service inventory above
+remains build/dry-run only. This inventory covers the existing repository
+promotion entrypoints; independent use of generic provider CLIs is outside it.
 
 This review found one concrete Android reviewer-separation defect: a correctly
 signed approval naming `BUILD-BOT` was accepted for builder `build-bot`. Android
 now uses a case-insensitive comparison, matching the PWA verifier, and the new
 negative regression retains complete matching receipts and a valid signature.
-The final Android manifest/production-gate run passed **67 tests** (31 manifest
-tests and 36 promotion-gate tests), including actual compiled identity fixtures.
-Python compilation and `git diff --check` passed. Log:
+The earlier Android manifest/production-gate run passed 31 manifest tests and
+36 promotion-gate tests, including compiled identity fixtures. Those counts are
+historical scoped receipts and overlap the later suites below. Log:
 `/tmp/mobio-m075-android-reviewer-final-tests.log`.
 
-No further concrete promotion-control implementation gap was identified in this
-review. At this review, current production source remains uncommitted, so a new production
-candidate must wait for a clean reviewed source commit. Real signed artifacts,
-current observations and independent release authority remain separate required
-evidence; no production candidate, deployment, commit or push was performed by
-this review.
+### Fastlane artifact preservation
+
+Closeout review found that the verifier could approve the original build path,
+then replacement bytes at that path could reach `deploy` or `upload_aab`.
+`android/fastlane/Fastfile` now captures the verifier's immutable JSON receipt,
+requires its success status, requested track and lowercase SHA-256 digest, and
+opens the source without following symlinks or blocking on a FIFO. A regular
+source is copied into an exclusive file in a private temporary directory. Its
+digest must equal the approved digest before credential access/upload. Both lanes
+upload only this copy, made read only, and remove staging after success or any
+failure. Replacing the writable build path during upload cannot change the
+staged artifact.
+
+**14 executable Fastlane cases passed** in
+`scripts/tests/test_fastlane_approved_artifact.py`. They execute both actual Ruby
+lane blocks with synthetic verifier/upload adapters. Coverage includes approved
+bytes and track binding, absent/rejected/malformed approval receipts, replacement
+after verification, original-path replacement during upload, symlink/FIFO inputs,
+credential/upload errors, staging cleanup and retired lanes. **36 production-gate
+tests passed** after the correction. Ruby/Bash syntax, Python compilation,
+secret-pattern scan and whitespace checks passed in this scoped verification.
+Logs: `/tmp/mobio-closeout-fastlane-tests.log`,
+`/tmp/mobio-closeout-fastlane-production-gates.log`,
+`/tmp/mobio-closeout-fastlane-secret-scan.log`.
+
+### Strict Android archive signatures
+
+The Android validator now runs `jarsigner -verify -strict` with fixed English
+diagnostics. A plain successful exit can accept added unsigned entries; strict
+verification and a narrow diagnostic allowlist reject unsigned additions,
+tampered signed bytes, expired/future certificates and weak/disabled algorithms.
+Strong complete Android archives signed by a self-signed certificate remain
+eligible for candidate verification. Only the expected trust-path warnings are
+allowed; unavailable tools, timeouts or unrecognized diagnostics fail closed.
+This verifies archive coverage and signature mechanics; trusted signer provenance
+is still a separate release requirement.
+
+**42 Android candidate-manifest tests passed** in
+`scripts/tests/test_android_candidate_manifest.py`: the earlier 31 cases plus
+11 closeout regressions. The new cases include seven real ephemeral signed
+archive fixtures and four tool/diagnostic cases. Temporary signing material was
+removed. Python syntax, secret-pattern scan and whitespace checks passed. Log:
+`/tmp/mobio-signature-closeout-tests.log`.
+
+Full-repository integrated results and source publication are recorded in
+`docs/reports/mobio-local-readiness-goal-2026-09-30.md`. Scoped suites above overlap
+that run and must not be added to its totals. Synthetic approvals and provider
+adapters establish local control flow and byte preservation; this work produced
+no production candidate, provider deployment, Play acceptance or independent
+release approval.
+
+Android example-file completion: otherwise valid candidate and approval names
+ending `.example.json` are now rejected, matching the existing example-receipt
+restriction. Two reproducing tests failed before correction; all 34 current
+candidate/compiled-manifest cases passed afterward, including three example
+negatives. The Android module now has 45 cases; current integrated results are
+recorded in the aggregate readiness report.
+
+The final-source helper suite passed all 500 tests in 145.110 seconds, including
+all 45 Android validator/signature cases. Focused results above overlap that
+total; full Flutter integration is reported separately in the aggregate.

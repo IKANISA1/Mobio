@@ -63,7 +63,7 @@ provider recognition, physical NFC/camera/dialer, or store acceptance.
 | Admin dashboard navigation | Toolbar Users/Health and both responsive quick-action Users/Trips closures retain the rendered account token before GoRouter dispatch. Replaced-session callbacks cannot navigate, while current toolbar and pushed-route actions remain usable. | `admin_dashboard_screen.dart`; **16 actual-widget tests** at 900/1440 px for retained/current toolbar and quick actions |
 | Consent and push preferences | Read/save service calls capture verified authority. Controller serializes saves, accepts only latest current revision and restores confirmed state after latest failure. Permission check/dialog/request, push registration and save feedback retain the originating snapshot. | consent service/controller/section and push service; 4 controller races, 3 permission-widget races, existing section test and 2 HTTP-backed consent races |
 | Face scan | Scan authority includes actual snapshot identity/generation, local lifecycle revision and handoff ticket/expiry. Account change clears shortcut and stops camera. A late capture/resolve/dial/record cannot create a handoff; captured bytes are cleared. Clipboard and retained primary/manual/QR callbacks carry their rendered ticket. | Face service/scan screen; service reply races, same-owner capture/resolve races, retained primary callback, leave/background cases and successful localized widgets |
-| Face enrollment | Status/method loads, polling, consent, capture/enroll and management-navigation return retain snapshot plus revision. Account change clears methods/consent/status and stops camera/poll. Rendered choice/consent/camera/pause/remove/refresh callbacks retain the original ticket. Late enrollment acknowledgement cannot restore prior-account state. Current-account confirmed cache supports recovery during an outage; confirmed management acknowledgements advance that cache and unknown ones leave current status unavailable. Public health read remains public. | Face service/enrollment screen; same-owner delayed enrollment, retained consent/method/action widget and HTTP-backed service races |
+| Face enrollment | Status/method loads, polling, consent, capture/enroll and management-navigation return retain snapshot plus revision. Account change clears methods/consent/status and stops camera/poll. Rendered choice/consent/camera/pause/remove/refresh callbacks retain the original ticket. Late enrollment acknowledgement cannot restore prior-account state. Current-account confirmed cache supports recovery during an outage; confirmed enrollment and management acknowledgements advance that cache before refresh, and unknown outcomes leave current status unavailable without automatic recapture. Public health read remains public. | Face service/enrollment screen; same-owner delayed enrollment, retained consent/method/action widget and HTTP-backed service races |
 | Discovery service and composer controller | Private gateway calls, native instruction dispatch and remembered draft pointers retain captured snapshot. Controller edits/resume/quote/prepare/record reject stale tickets. Typed quote/prepared/record parsing rejects incomplete evidence or revision before promoting UI state, including injected gateways. | discovery service/domain, composer controller; strict boundary tests, same-owner quote race, 4 malformed controller reply cases and HTTP-backed workspace/removal races |
 | Composer presentation | Workspace/draft/entry/contact follow-up retains view snapshot and load revision. Manual/source/support modals hide private content after invalidation. Controller identity and account ticket guard returning modal choices and external handoff. | `payment_composer_screen.dart`; old workspace, late contact and open manual-modal widget races |
 | Library, recent actions and request editor | Library reads/actions and pay-again navigation retain view snapshot/revision. Request editor clears fields/methods on invalidation; create-link acknowledgement and navigation/date-picker return retain origin ticket. Open share sheet clears token/methods and guards clipboard/share/gallery follow-up. | `payment_library_screen.dart`; library/request late reply, pay-again and open share-sheet widget races |
@@ -93,7 +93,7 @@ scope; this audit adds no routing, settlement or ride lifecycle feature.
 | Unavailable differs from confirmed no enrollment | Default/unconfigured status is unavailable. Only a valid SQL `not_started` projection is confirmed setup absence. Missing/unknown status, missing/malformed `has_face`, or missing nullable method/vector keys throws a format error; UI shows unavailable. Declared SQL `rejected` remains unavailable and preserves its face flag. | `BioPayEnrollmentStatus.fromJson`; 14 projection/negative tests in `face_enrollment_status_boundary_test.dart`, including intentional null SQL values; widget outage/refresh test |
 | Loading does not claim absence | Initial pending status displays working copy; it shows neither setup absence nor a failed status before the read finishes. | Actual enrollment-widget held-status regression |
 | Preserve safe recovery from verified prior state | A failed refresh shows current unavailable status and disables new capture. A previously confirmed same-session face still permits pause/resume/remove; the cache is never displayed as current readiness. | Active and paused outage widget cases verify available recovery, unavailable copy and disabled camera |
-| Advance only from confirmed management evidence | Successful pause/resume/remove acknowledgements update confirmed cache before refresh. A failed refresh after removal cannot restore older active recovery controls. Unknown outcome marks current status unavailable, keeps only prior confirmed recovery, and does not advance to paused/removed. | Actual active/paused management transition cases and unknown-management regression; service acknowledgement tests complement injected widget fixtures |
+| Advance only from confirmed enrollment and management evidence | A confirmed active first enrollment and successful pause/resume/remove acknowledgements update confirmed cache before refresh. A failed refresh after removal cannot restore older active recovery controls. Unknown enrollment or management outcome marks current status unavailable, keeps only prior confirmed recovery, blocks a new capture until status refresh and never advances unconfirmed state. | Actual first-enrollment/refresh-outage, not-started/active unknown-enrollment and active/paused management transition cases; service acknowledgement tests complement injected widget fixtures |
 | Never carry cache into a replaced session | The cache stores its `AccountSnapshot`; generation invalidation clears it and retained recovery callbacks cannot dispatch. | Same-owner replacement during outage regression, retained action/choice/capture tests and HTTP-backed Face reply races |
 
 The SQL projection inspected is
@@ -296,22 +296,20 @@ replace account generation, invoke the old closures and assert no dispatch or
 navigation; current-action positive fixtures prevent a blanket-disable fix.
 Final repository-wide analysis and tests are recorded in the aggregate report.
 
-## Remaining local M055 / M057 defects and limits
+## Completion evidence and limits
 
-The assigned Wallet continuation and the previously reported health-card/Driver
-Plus retained refresh, Face management-cache transition, active Device NFC,
-admin dashboard multiwrite and root admin modal/read fixes are implemented with
-the named focused evidence. Wallet and the newly expanded PaymentMethods
-retained-dispatch suites are frozen and passing.
+The Wallet, PaymentMethods, Composer/Library, favorite-address, Home, Bookings,
+AdminDashboard and Face follow-ups named in the earlier integration review are
+implemented in the current source. Actual retained-callback tests distinguish
+old-session rejection from current-session positive behavior, including callbacks
+held through a new account reload. Face regression cases cover confirmed first
+enrollment followed by a refresh outage and unconfirmed enrollment from both
+not-started and prior-active states. The current authoritative aggregate results
+are recorded in `docs/reports/mobio-local-readiness-goal-2026-09-30.md`; older
+focused counts above overlap and do not replace that integration result.
 
-The independent integration review additionally identified retained rendered
-callbacks in Composer/Library, favorite retry/add/delete, and Home/Bookings/Admin
-Dashboard paths. Those companion fixes belong to the typed/request/root agents;
-their final implementation and verification receipts have not yet been received
-for this document update. They remain explicit local follow-ups here until their
-owners freeze and the aggregate integration gate passes. Earlier late-data race
-tests do not establish those predispatch retained-callback checks.
-
-Repository-wide integration remains the final local gate and may identify
-interactions beyond these focused mocks. External acceptance and rollout
-dependencies retain their separate readiness status.
+A separate user-owned chat published readiness and concurrent design work in
+`9aa98e8cf5173fe7e3565f52cae37b14b9560785`. Final verification/corrections use an
+isolated checkout of that source to avoid edits arriving during tests. Unaccepted
+golden comparisons, physical-device/provider acceptance and rollout dependencies
+retain their separate status. No visual baseline was regenerated for this goal.

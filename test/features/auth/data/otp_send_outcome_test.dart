@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+// Exercise deadlines with the existing locked test clock; no new dependency.
+// ignore: depend_on_referenced_packages
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobi_app/core/constants/app_enums.dart';
@@ -13,6 +16,8 @@ class _Adapter implements HttpClientAdapter {
   _Adapter(this.reply);
   final Future<ResponseBody> Function() reply;
   int calls = 0;
+  final entered = Completer<RequestOptions>();
+  final settled = Completer<void>();
   @override
   Future<ResponseBody> fetch(
     RequestOptions options,
@@ -20,12 +25,29 @@ class _Adapter implements HttpClientAdapter {
     Future<void>? cancelFuture,
   ) {
     calls++;
-    return reply();
+    if (!entered.isCompleted) entered.complete(options);
+    return reply().whenComplete(() {
+      if (!settled.isCompleted) settled.complete();
+    });
   }
 
   @override
   void close({bool force = false}) {}
 }
+
+OtpResult _sendBeforeDeadline(Future<OtpResult> Function() send) =>
+    fakeAsync((clock) {
+      final results = <OtpResult>[];
+      unawaited(send().then(results.add));
+      // Immediate response fixtures test parsing and outcome classification.
+      // Run Dio's scheduled work before advancing time, so host scheduling
+      // cannot turn a known fixture response into an unrelated deadline case.
+      clock
+        ..flushMicrotasks()
+        ..elapse(Duration.zero);
+      expect(results, hasLength(1));
+      return results.single;
+    });
 
 void main() {
   for (final admin in [false, true]) {
@@ -47,7 +69,7 @@ void main() {
     for (final success in [true, false]) {
       test(
         '${admin ? 'admin' : 'app'} preserves usable send metadata: $success',
-        () async {
+        () {
           final adapter = _Adapter(
             () async => ResponseBody.fromString(
               jsonEncode({
@@ -64,7 +86,7 @@ void main() {
           final dio = Dio(BaseOptions(baseUrl: 'https://otp-fixture.invalid'))
             ..httpClientAdapter = adapter;
           addTearDown(dio.close);
-          final result = await send(dio);
+          final result = _sendBeforeDeadline(() => send(dio));
           expect(result.success, success);
           expect(result.deliveryUnconfirmed, isFalse);
           expect(
@@ -78,7 +100,7 @@ void main() {
       for (final message in [null, 42, true, <Object>[], <String, Object>{}]) {
         test(
           '${admin ? 'admin' : 'app'} preserves send outcome with optional message $message: $success',
-          () async {
+          () {
             final adapter = _Adapter(
               () async => ResponseBody.fromString(
                 jsonEncode({
@@ -95,7 +117,7 @@ void main() {
             final dio = Dio(BaseOptions(baseUrl: 'https://otp-fixture.invalid'))
               ..httpClientAdapter = adapter;
             addTearDown(dio.close);
-            final result = await send(dio);
+            final result = _sendBeforeDeadline(() => send(dio));
             expect(result.success, success);
             expect(result.deliveryUnconfirmed, isFalse);
             expect(
@@ -114,7 +136,7 @@ void main() {
     ]) {
       test(
         '${admin ? 'admin' : 'app'} still requires a boolean send acknowledgement: $body',
-        () async {
+        () {
           final adapter = _Adapter(
             () async => ResponseBody.fromString(
               jsonEncode(body),
@@ -127,7 +149,7 @@ void main() {
           final dio = Dio(BaseOptions(baseUrl: 'https://otp-fixture.invalid'))
             ..httpClientAdapter = adapter;
           addTearDown(dio.close);
-          final result = await send(dio);
+          final result = _sendBeforeDeadline(() => send(dio));
           expect(result.success, isFalse);
           expect(result.deliveryUnconfirmed, isTrue);
           expect(result.retryAfterSeconds, 60);
@@ -137,7 +159,7 @@ void main() {
     }
     test(
       '${admin ? 'admin' : 'app'} send loses transport reply without claiming delivery failed or resending',
-      () async {
+      () {
         final adapter = _Adapter(
           () =>
               Future<ResponseBody>.error(http.ClientException('response lost')),
@@ -145,7 +167,7 @@ void main() {
         final dio = Dio(BaseOptions(baseUrl: 'https://otp-fixture.invalid'))
           ..httpClientAdapter = adapter;
         addTearDown(dio.close);
-        final result = await send(dio);
+        final result = _sendBeforeDeadline(() => send(dio));
         expect(result.success, isFalse);
         expect(result.deliveryUnconfirmed, isTrue);
         expect(result.retryAfterSeconds, 60);
@@ -155,34 +177,135 @@ void main() {
     );
     test(
       '${admin ? 'admin' : 'app'} send total deadline releases a hung callback',
-      () async {
-        final reply = Completer<ResponseBody>();
-        final adapter = _Adapter(() => reply.future);
-        final dio = Dio(BaseOptions(baseUrl: 'https://otp-fixture.invalid'))
-          ..httpClientAdapter = adapter;
-        addTearDown(dio.close);
-        final result = await send(
-          dio,
-          timeout: const Duration(milliseconds: 2),
-        );
-        expect(result.deliveryUnconfirmed, isTrue);
-        expect(adapter.calls, 1);
-        reply.complete(
-          ResponseBody.fromString(
-            '{"success":true}',
-            200,
-            headers: {
-              Headers.contentTypeHeader: ['application/json'],
-            },
-          ),
-        );
-        await Future<void>.delayed(Duration.zero);
-        expect(adapter.calls, 1);
+      () {
+        fakeAsync((clock) {
+          final reply = Completer<ResponseBody>();
+          final adapter = _Adapter(() => reply.future);
+          final dio = Dio(BaseOptions(baseUrl: 'https://otp-fixture.invalid'))
+            ..httpClientAdapter = adapter;
+          addTearDown(dio.close);
+          final results = <OtpResult>[];
+          unawaited(
+            send(
+              dio,
+              timeout: const Duration(milliseconds: 2),
+            ).then(results.add),
+          );
+          // Dio schedules interceptors and adapter entry on zero-duration
+          // timers. Run those without advancing the deadline clock, and require
+          // actual adapter entry before testing a hung transport response.
+          clock
+            ..flushMicrotasks()
+            ..elapse(Duration.zero);
+          expect(adapter.entered.isCompleted, isTrue);
+          expect(adapter.calls, 1);
+          expect(reply.isCompleted, isFalse);
+          expect(adapter.settled.isCompleted, isFalse);
+          expect(results, isEmpty);
+
+          clock.elapse(const Duration(milliseconds: 1));
+          expect(results, isEmpty);
+          clock.elapse(const Duration(milliseconds: 1));
+          expect(results, hasLength(1));
+          final result = results.single;
+          expect(result.success, isFalse);
+          expect(result.deliveryUnconfirmed, isTrue);
+          expect(result.retryAfterSeconds, 60);
+          expect(result.message, contains('Check WhatsApp'));
+          expect(adapter.settled.isCompleted, isFalse);
+          expect(adapter.calls, 1);
+
+          reply.complete(
+            ResponseBody.fromString(
+              '{"success":true}',
+              200,
+              headers: {
+                Headers.contentTypeHeader: ['application/json'],
+              },
+            ),
+          );
+          clock
+            ..flushMicrotasks()
+            ..elapse(Duration.zero);
+          expect(adapter.settled.isCompleted, isTrue);
+          // A late success neither changes the published unknown result nor
+          // retries automatically, including after the offered cooldown.
+          clock.elapse(const Duration(seconds: 61));
+          expect(results, hasLength(1));
+          expect(results.single, same(result));
+          expect(results.single.deliveryUnconfirmed, isTrue);
+          expect(adapter.calls, 1);
+        });
+      },
+    );
+    test(
+      '${admin ? 'admin' : 'app'} total deadline also bounds waiting before adapter dispatch',
+      () {
+        fakeAsync((clock) {
+          final dispatchAllowed = Completer<void>();
+          final interceptorEntered = Completer<void>();
+          final adapter = _Adapter(
+            () async => ResponseBody.fromString(
+              '{"success":true}',
+              200,
+              headers: {
+                Headers.contentTypeHeader: ['application/json'],
+              },
+            ),
+          );
+          final dio = Dio(BaseOptions(baseUrl: 'https://otp-fixture.invalid'))
+            ..httpClientAdapter = adapter;
+          dio.interceptors.add(
+            InterceptorsWrapper(
+              onRequest: (options, handler) {
+                interceptorEntered.complete();
+                unawaited(
+                  dispatchAllowed.future.then((_) => handler.next(options)),
+                );
+              },
+            ),
+          );
+          addTearDown(dio.close);
+          final results = <OtpResult>[];
+          unawaited(
+            send(
+              dio,
+              timeout: const Duration(milliseconds: 2),
+            ).then(results.add),
+          );
+          clock
+            ..flushMicrotasks()
+            ..elapse(Duration.zero);
+          expect(interceptorEntered.isCompleted, isTrue);
+          expect(adapter.entered.isCompleted, isFalse);
+          expect(adapter.calls, 0);
+          expect(results, isEmpty);
+          clock.elapse(const Duration(milliseconds: 2));
+          expect(results, hasLength(1));
+          final result = results.single;
+          expect(result.success, isFalse);
+          expect(result.deliveryUnconfirmed, isTrue);
+          expect(adapter.calls, 0);
+
+          // The observer deadline is not transport cancellation. The original
+          // late dispatch may finish, but it never becomes a second send.
+          dispatchAllowed.complete();
+          clock
+            ..flushMicrotasks()
+            ..elapse(Duration.zero);
+          expect(adapter.entered.isCompleted, isTrue);
+          expect(adapter.settled.isCompleted, isTrue);
+          clock.elapse(const Duration(seconds: 61));
+          expect(results, hasLength(1));
+          expect(results.single, same(result));
+          expect(results.single.deliveryUnconfirmed, isTrue);
+          expect(adapter.calls, 1);
+        });
       },
     );
     test(
       '${admin ? 'admin' : 'app'} explicit rejection retains server cooldown',
-      () async {
+      () {
         final adapter = _Adapter(
           () async => ResponseBody.fromString(
             '{"success":false,"retryAfterSeconds":42,"message":"Rejected"}',
@@ -195,7 +318,7 @@ void main() {
         final dio = Dio(BaseOptions(baseUrl: 'https://otp-fixture.invalid'))
           ..httpClientAdapter = adapter;
         addTearDown(dio.close);
-        final result = await send(dio);
+        final result = _sendBeforeDeadline(() => send(dio));
         expect(result.deliveryUnconfirmed, isFalse);
         expect(result.retryAfterSeconds, 42);
         expect(result.message, 'Rejected');

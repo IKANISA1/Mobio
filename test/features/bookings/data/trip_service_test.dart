@@ -209,6 +209,68 @@ void main() {
   });
 
   group('expandTripsForScheduleWindow', () {
+    test(
+      'one malformed trip cannot bypass clock validation or gain an occurrence',
+      () {
+        for (final value in [
+          '99:99',
+          '09:99',
+          'nonsense',
+          '03:45 PM trailing',
+        ]) {
+          for (final recurring in [false, true]) {
+            final trip = Trip(
+              authorId: 'author',
+              origin: 'Kigali',
+              destination: 'Musanze',
+              departureDate: '2026-06-15',
+              departureTime: value,
+              isRecurring: recurring,
+              recurringDays: const [0],
+            );
+            expect(
+              () => expandTripsForScheduleWindow([trip], DateTime(2026, 6, 15)),
+              throwsFormatException,
+            );
+          }
+        }
+      },
+    );
+
+    test('legacy noon and midnight sort and expand without losing AM/PM', () {
+      const noon = Trip(
+        id: 'noon',
+        authorId: 'author',
+        origin: 'Kigali',
+        destination: 'Musanze',
+        departureDate: '2026-06-15',
+        departureTime: '12:00 PM',
+        isRecurring: true,
+        recurringDays: [0],
+        recurrenceEndDate: '2026-06-15',
+      );
+      const midnight = Trip(
+        id: 'midnight',
+        authorId: 'author',
+        origin: 'Kigali',
+        destination: 'Musanze',
+        departureDate: '2026-06-15',
+        departureTime: '12:00 AM',
+        isRecurring: true,
+        recurringDays: [0],
+        recurrenceEndDate: '2026-06-15',
+      );
+      final rows = expandTripsForScheduleWindow([
+        noon,
+        midnight,
+      ], DateTime(2026, 6, 15));
+      expect(rows.map((trip) => trip.id), ['midnight', 'noon']);
+      expect(rows.map((trip) => trip.startsAt), [
+        '2026-06-15T00:00:00.000Z',
+        '2026-06-15T12:00:00.000Z',
+      ]);
+    });
+
     test('expands recurring trips into upcoming bounded occurrences', () {
       final rows = [
         Trip.fromJson({

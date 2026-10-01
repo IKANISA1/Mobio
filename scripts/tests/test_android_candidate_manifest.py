@@ -1,4 +1,4 @@
-"""Artifact-bound promotion fixtures; no provider, device or signing keys."""
+"""Artifact-bound promotion fixtures; signing keys are synthetic and temporary."""
 from __future__ import annotations
 
 import base64
@@ -9,6 +9,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -179,6 +180,108 @@ class CompiledManifestTests(unittest.TestCase):
             self.inspect(b"\0" * (manifest.MAX_MANIFEST_BYTES + 1))
 
 
+class AabSignatureTests(unittest.TestCase):
+    """Exercise the real JDK verifier with throwaway certificates and archives."""
+
+    @classmethod
+    def setUpClass(cls):
+        temporary = tempfile.TemporaryDirectory(prefix="mobio-signature-tests-")
+        cls.addClassCleanup(temporary.cleanup)
+        cls.root = Path(temporary.name)
+        cls.signed = {}
+        for label, key_options in (
+            ("valid", []),
+            ("expired", ["-startdate", "-2d", "-validity", "1"]),
+            ("future", ["-startdate", "+2d"]),
+            ("weak_key", ["-keysize", "1024"]),
+        ):
+            key = cls.root / f"{label}.p12"
+            subprocess.run([
+                "keytool", "-genkeypair", "-alias", "fixture", "-keyalg", "RSA",
+                "-keysize", "2048", "-validity", "365", "-dname", "CN=Mobio Synthetic Test",
+                "-keystore", str(key), "-storetype", "PKCS12", "-storepass", "fixture-only",
+                "-keypass", "fixture-only", "-noprompt", *key_options,
+            ], text=True, capture_output=True, check=True, timeout=90)
+            cls.signed[label] = cls.sign_archive(label, key)
+        cls.signed["disabled_digest"] = cls.sign_archive(
+            "disabled_digest", cls.root / "valid.p12", ["-digestalg", "SHA-1", "-sigalg", "SHA1withRSA"])
+
+    @classmethod
+    def sign_archive(cls, label, key, options=()):
+        path = cls.root / f"{label}.aab"
+        write_aab(path, AAPT2_MANIFEST)
+        subprocess.run([
+            "jarsigner", "-keystore", str(key), "-storepass", "fixture-only",
+            *options, str(path), "fixture",
+        ], text=True, capture_output=True, check=True, timeout=90)
+        return path
+
+    def setUp(self):
+        self.aab = self.root / "verification.aab"
+        shutil.copyfile(self.signed["valid"], self.aab)
+
+    def test_complete_strong_self_signed_archive_is_accepted(self):
+        REAL_VERIFY_AAB_SIGNATURE(self.aab)
+
+    def test_appended_unsigned_entry_is_rejected(self):
+        with zipfile.ZipFile(self.aab, "a") as archive:
+            archive.writestr("base/assets/unsigned.txt", b"not covered by the signature")
+        with self.assertRaisesRegex(manifest.ManifestError, "signature did not verify"):
+            REAL_VERIFY_AAB_SIGNATURE(self.aab)
+
+    def test_modified_signed_payload_is_rejected(self):
+        with zipfile.ZipFile(self.aab) as archive:
+            entries = [(entry, archive.read(entry)) for entry in archive.infolist()]
+        with zipfile.ZipFile(self.aab, "w") as archive:
+            for entry, body in entries:
+                archive.writestr(entry, b"tampered" if entry.filename == "BundleConfig.pb" else body)
+        with self.assertRaisesRegex(manifest.ManifestError, "signature did not verify"):
+            REAL_VERIFY_AAB_SIGNATURE(self.aab)
+
+    def test_expired_certificate_is_rejected_despite_self_signing_warning(self):
+        with self.assertRaisesRegex(manifest.ManifestError, "disallowed signature warnings"):
+            REAL_VERIFY_AAB_SIGNATURE(self.signed["expired"])
+
+    def test_future_certificate_is_rejected_despite_self_signing_warning(self):
+        with self.assertRaisesRegex(manifest.ManifestError, "disallowed signature warnings"):
+            REAL_VERIFY_AAB_SIGNATURE(self.signed["future"])
+
+    def test_weak_key_is_rejected_even_before_jdk_disables_it(self):
+        with self.assertRaisesRegex(manifest.ManifestError, "disallowed signature warnings"):
+            REAL_VERIFY_AAB_SIGNATURE(self.signed["weak_key"])
+
+    def test_disabled_digest_is_rejected(self):
+        with self.assertRaisesRegex(manifest.ManifestError, "signature did not verify"):
+            REAL_VERIFY_AAB_SIGNATURE(self.signed["disabled_digest"])
+
+    def test_verification_requires_strict_and_fixed_english_output(self):
+        result = subprocess.CompletedProcess([], 0, "jar verified.\n", "")
+        with patch.object(manifest.subprocess, "run", return_value=result) as run:
+            REAL_VERIFY_AAB_SIGNATURE(self.aab)
+        self.assertEqual(run.call_args.args[0], [
+            "jarsigner", "-J-Duser.language=en", "-J-Duser.country=US", "-verify", "-strict", str(self.aab),
+        ])
+
+    def test_unknown_warnings_are_rejected_even_with_zero_exit_status(self):
+        result = subprocess.CompletedProcess([], 0, "jar verified.\nWarning:\nUnknown signature defect\n", "")
+        with patch.object(manifest.subprocess, "run", return_value=result):
+            with self.assertRaisesRegex(manifest.ManifestError, "disallowed signature warnings"):
+                REAL_VERIFY_AAB_SIGNATURE(self.aab)
+
+    def test_code_four_without_specific_trust_warning_is_rejected(self):
+        result = subprocess.CompletedProcess([], 4, "jar verified, with signer errors.\n", "")
+        with patch.object(manifest.subprocess, "run", return_value=result):
+            with self.assertRaisesRegex(manifest.ManifestError, "warnings do not match"):
+                REAL_VERIFY_AAB_SIGNATURE(self.aab)
+
+    def test_missing_tool_and_timeout_fail_closed(self):
+        for error in (FileNotFoundError("synthetic missing tool"), subprocess.TimeoutExpired("jarsigner", 60)):
+            with self.subTest(error=type(error).__name__):
+                with patch.object(manifest.subprocess, "run", side_effect=error):
+                    with self.assertRaisesRegex(manifest.ManifestError, "unavailable or timed out"):
+                        REAL_VERIFY_AAB_SIGNATURE(self.aab)
+
+
 class CandidateManifestTests(unittest.TestCase):
     def setUp(self) -> None:
         temp = tempfile.TemporaryDirectory()
@@ -281,6 +384,35 @@ class CandidateManifestTests(unittest.TestCase):
     def test_case_variant_of_builder_cannot_approve_the_candidate(self):
         self.create_approval({"reviewer": self.candidate_data["build_actor"].upper()})
         with self.assertRaisesRegex(manifest.ManifestError, "Distinct named release reviewer"):
+            self.verify()
+
+    def test_example_candidate_is_ineligible_even_with_matching_signed_approval(self):
+        example = self.candidate.with_name("release-candidate.example.json")
+        shutil.copyfile(self.candidate, example)
+        self.candidate = example
+        with self.assertRaisesRegex(manifest.ManifestError, "Example release evidence"):
+            self.verify()
+
+    def test_example_approval_is_ineligible_even_with_valid_signature_and_receipts(self):
+        example = self.approval.with_name("approval.example.json")
+        shutil.copyfile(self.approval, example)
+        self.approval = example
+        with self.assertRaisesRegex(manifest.ManifestError, "Example release evidence"):
+            self.verify()
+
+    def test_example_receipt_is_ineligible_even_with_matching_hash_and_resigned_approval(self):
+        approval = json.loads(self.approval.read_text())
+        row = next(row for row in approval["checks"] if row["id"] == "flutter_full")
+        original = self.approval.parent / row["file"]
+        example = original.with_name("flutter_full.example.json")
+        shutil.copyfile(original, example)
+        row.update(file=example.name, sha256=manifest.digest(example))
+        approval.pop("signature_hmac_sha256")
+        approval["signature_hmac_sha256"] = hmac.new(
+            self.key, manifest.canonical(approval), hashlib.sha256
+        ).hexdigest()
+        write_json(self.approval, approval)
+        with self.assertRaisesRegex(manifest.ManifestError, "Unsafe check evidence path"):
             self.verify()
 
     def rebind_wrong_manifest(self) -> None:
