@@ -1,5 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { boundedFetch, UpstreamRequestError } from "../_shared/bounded-fetch.ts";
+import {
+  boundedFetch,
+  UpstreamRequestError,
+} from "../_shared/bounded-fetch.ts";
 
 import {
   errorResponse,
@@ -9,6 +12,11 @@ import {
 } from "../_shared/http.ts";
 import { recordEdgeFunctionFailure } from "../_shared/observability.ts";
 import { createAdminClient, createUserClient } from "../_shared/supabase.ts";
+import { requireAppUser } from "../_shared/app-user.ts";
+import {
+  HttpError as AuthorityHttpError,
+  readJsonObject,
+} from "../_shared/validation.ts";
 
 type LatLng = {
   latitude: number;
@@ -35,8 +43,16 @@ type MapsGatewayRequest = {
   travelMode?: string;
 };
 
+export type MapsQuota = {
+  allowed: boolean;
+  remaining: number;
+  retry_after_seconds: number;
+  window_ends_at: string;
+};
+
 type MapsGatewayDeps = {
   authenticate?: (authorization: string) => Promise<{ id: string }>;
+  consumeQuota?: (authorization: string, action: string) => Promise<MapsQuota>;
   fetchImpl?: typeof fetch;
   recordFailure?: (error: unknown, userId: string | null) => Promise<void>;
 };
@@ -47,41 +63,6 @@ const RWANDA_BOUNDS = {
   low: { latitude: -2.95, longitude: 28.8 },
   high: { latitude: -1.0, longitude: 30.95 },
 } as const;
-
-// ── Rate Limiter ────────────────────────────────────────────────────────
-
-const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
-const RATE_LIMIT_MAX_REQUESTS = 100;
-
-class RateLimiter {
-  private buckets = new Map<string, { count: number; windowStart: number }>();
-
-  /** Returns true if the request is allowed, false if rate-limited. */
-  allow(userId: string): boolean {
-    const now = Date.now();
-    const bucket = this.buckets.get(userId);
-
-    if (!bucket || now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) {
-      this.buckets.set(userId, { count: 1, windowStart: now });
-      return true;
-    }
-
-    bucket.count++;
-    return bucket.count <= RATE_LIMIT_MAX_REQUESTS;
-  }
-
-  /** Periodic cleanup to avoid unbounded memory growth. */
-  prune(): void {
-    const now = Date.now();
-    for (const [userId, bucket] of this.buckets) {
-      if (now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) {
-        this.buckets.delete(userId);
-      }
-    }
-  }
-}
-
-const rateLimiter = new RateLimiter();
 
 // ── Response Cache ──────────────────────────────────────────────────────
 
@@ -130,11 +111,16 @@ export async function handleMapsGatewayRequest(
   request: Request,
   deps: MapsGatewayDeps = {},
 ) {
-  const authenticate = deps.authenticate ?? requireUser;
+  const authenticate = deps.authenticate ??
+    (() => requireAppUser(request));
+  const consumeQuota = deps.consumeQuota ?? consumeAccountQuota;
   const upstreamFetch = deps.fetchImpl ?? fetch;
-  const fetchImpl: typeof fetch = (input, init) => boundedFetch(input, init, {
-    fetcher: upstreamFetch, timeoutMs: 8_000, maxResponseBytes: 500_000,
-  });
+  const fetchImpl: typeof fetch = (input, init) =>
+    boundedFetch(input, init, {
+      fetcher: upstreamFetch,
+      timeoutMs: 8_000,
+      maxResponseBytes: 500_000,
+    });
   const recordFailure = deps.recordFailure ?? defaultRecordFailure;
   const corsResponse = handleCors(request);
   if (corsResponse) {
@@ -156,23 +142,26 @@ export async function handleMapsGatewayRequest(
     const user = await authenticate(authorization);
     userIdForTelemetry = user.id;
 
-    // ── Rate limiting ───────────────────────────────────────────────
-    if (!rateLimiter.allow(user.id)) {
-      console.warn(
-        JSON.stringify({
-          service: "maps-gateway",
-          event: "rate_limited",
-          user_id: user.id,
-        }),
-      );
-      return errorResponse(
+    const body = await readJsonObject(request) as MapsGatewayRequest;
+    validateRequest(body);
+    // Unsupported routing remains unavailable even if the account quota is full.
+    if (body.action === "compute_route") {
+      await handleAction(body, { fetchImpl });
+      throw new HttpError(410, "Route calculation is outside Mobio scope");
+    }
+    // Charge before cache/provider access. The RPC rechecks the exact bearer and
+    // commits the account bucket atomically across sessions and gateway instances.
+    const quota = await consumeQuota(authorization, body.action!);
+    if (!quota.allowed) {
+      const response = errorResponse(
         "Too many requests. Please try again later.",
         429,
-        { retryAfterSeconds: 60 },
+        { retryAfterSeconds: quota.retry_after_seconds },
+        request,
       );
+      response.headers.set("Retry-After", String(quota.retry_after_seconds));
+      return response;
     }
-
-    const body = await request.json() as MapsGatewayRequest;
     const startedAt = Date.now();
 
     // ── Cache check ─────────────────────────────────────────────────
@@ -221,13 +210,21 @@ export async function handleMapsGatewayRequest(
       return errorResponse("Invalid JSON body", 400, undefined, request);
     }
 
-    if (error instanceof HttpError) {
+    if (error instanceof AuthorityHttpError || error instanceof HttpError) {
       return errorResponse(error.message, error.status, error.details, request);
     }
 
     if (error instanceof UpstreamRequestError) {
-      console.error("maps-gateway: bounded upstream request failed", error.code);
-      return errorResponse("Maps temporarily unavailable. Please try again.", 503, undefined, request);
+      console.error(
+        "maps-gateway: bounded upstream request failed",
+        error.code,
+      );
+      return errorResponse(
+        "Maps temporarily unavailable. Please try again.",
+        503,
+        undefined,
+        request,
+      );
     }
     console.error("maps-gateway: request failed");
     await recordFailure(error, userIdForTelemetry);
@@ -236,8 +233,6 @@ export async function handleMapsGatewayRequest(
 }
 
 if (import.meta.main) {
-  // Prune stale rate-limit buckets every 10 minutes in the served runtime.
-  setInterval(() => rateLimiter.prune(), 10 * 60 * 1000);
   Deno.serve((request) => handleMapsGatewayRequest(request));
 }
 
@@ -249,18 +244,100 @@ async function defaultRecordFailure(error: unknown, userId: string | null) {
   });
 }
 
-async function requireUser(authorization: string) {
-  const client = createUserClient(authorization);
-  const {
-    data: { user },
-    error,
-  } = await client.auth.getUser();
-
-  if (error || !user) {
-    throw new HttpError(401, "Authentication required");
+async function consumeAccountQuota(
+  authorization: string,
+  action: string,
+): Promise<MapsQuota> {
+  let result;
+  try {
+    result = await createUserClient(authorization)
+      .rpc("rpc_consume_maps_quota", { p_action: action })
+      .abortSignal(AbortSignal.timeout(5_000));
+  } catch {
+    throw new HttpError(
+      503,
+      "Maps quota temporarily unavailable. Please try again.",
+    );
   }
+  const { data, error } = result;
+  if (error) {
+    if (
+      error.code === "42501" &&
+      error.message === "ADMIN_REAUTHENTICATION_REQUIRED"
+    ) {
+      throw new HttpError(
+        403,
+        "Admin sign-in must be verified again",
+        { code: "ADMIN_REAUTHENTICATION_REQUIRED" },
+      );
+    }
+    if (error.code === "42501") {
+      throw new HttpError(401, "Authentication required");
+    }
+    throw new HttpError(
+      503,
+      "Maps quota temporarily unavailable. Please try again.",
+    );
+  }
+  if (
+    !data || typeof data.allowed !== "boolean" ||
+    !Number.isInteger(data.remaining) || data.remaining < 0 ||
+    data.remaining > 99 ||
+    !Number.isInteger(data.retry_after_seconds) ||
+    data.retry_after_seconds < 0 ||
+    data.retry_after_seconds > 300 || typeof data.window_ends_at !== "string" ||
+    !Number.isFinite(Date.parse(data.window_ends_at)) ||
+    (data.allowed && data.retry_after_seconds !== 0) ||
+    (!data.allowed && (data.remaining !== 0 || data.retry_after_seconds < 1))
+  ) {
+    throw new HttpError(
+      503,
+      "Maps quota temporarily unavailable. Please try again.",
+    );
+  }
+  return data as MapsQuota;
+}
 
-  return user;
+function validateRequest(body: MapsGatewayRequest) {
+  if (
+    ![
+      "autocomplete",
+      "geocode",
+      "text_search",
+      "place_details",
+      "reverse_geocode",
+      "compute_route",
+    ].includes(body.action ?? "")
+  ) {
+    throw new HttpError(400, "Unsupported maps action", {
+      action: body.action ?? null,
+    });
+  }
+  if (body.action === "compute_route") return;
+  for (
+    const field of ["query", "placeId", "sessionToken", "languageCode"] as const
+  ) {
+    if (body[field] != null && typeof body[field] !== "string") {
+      throw new HttpError(400, `${field} must be a string`);
+    }
+  }
+  if (
+    body.limit != null &&
+    (typeof body.limit !== "number" || !Number.isFinite(body.limit))
+  ) {
+    throw new HttpError(400, "limit must be a number");
+  }
+  parseLatLng(body.near, "near");
+  if (body.action === "place_details" && !body.placeId?.trim()) {
+    throw new HttpError(400, "placeId is required for place_details");
+  }
+  if (body.action === "reverse_geocode") {
+    const location = parseLatLng(body.location, "location");
+    if (!location) {
+      throw new HttpError(400, "location is required for reverse_geocode");
+    }
+    assertRwandaPoint(location, "location");
+  }
 }
 
 async function handleAction(

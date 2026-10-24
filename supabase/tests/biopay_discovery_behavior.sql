@@ -29,6 +29,15 @@ do $$ begin
     $sessions$;
   end if;
 end $$;
+-- The reduced fast fixture has no interactive proof table. Full replay loads
+-- the explicit positive helper before this rolled-back suite.
+do $$ begin
+  if to_regclass('mobio_private.consumer_session_proofs') is not null then
+    perform pg_temp.qa_seed_interactive_authority(array(
+      select ('00000000-0000-4000-8000-' || lpad(n::text,12,'0'))::uuid
+      from generate_series(1,4) n));
+  end if;
+end $$;
 -- The same behavioral suite also runs in the reduced, Auth-free fast fixture.
 -- Full-schema tests use real session rows and the same complete JWT shape that
 -- PostgREST receives. The anonymous and Admin-purpose negatives remain explicit.

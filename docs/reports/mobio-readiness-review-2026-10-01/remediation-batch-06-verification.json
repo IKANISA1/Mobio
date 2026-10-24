@@ -1,0 +1,715 @@
+{
+  "checkpoint": "2026-10-02",
+  "production_ready": false,
+  "goal_active": false,
+  "review_routes_enabled": false,
+  "platform_candidate": "Frozen batch05 only; batch06 source archive has no platform claim",
+  "checks": {
+    "batch-06-isolated-reviewer-booking-03-result.json": {
+      "exit_code": 0,
+      "elapsed_seconds": 72.97,
+      "bound_inputs": 3420,
+      "changed_copied_source": [],
+      "log": "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/batch-06-isolated-reviewer-booking-03.log",
+      "command": [
+        "python3",
+        "scripts/qa/run_flutter_tests.py",
+        "--flutter-bin",
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/flutter",
+        "--source-result",
+        "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/batch-06-isolated-reviewer-booking-03-ui-source.json",
+        "--",
+        "test/core/auth/review_session_context_test.dart",
+        "test/features/store_review",
+        "test/features/bookings",
+        "--reporter",
+        "expanded"
+      ],
+      "input_snapshot": "batch-06-isolated-retry-03-inputs.json"
+    },
+    "batch-06-isolated-preserved-source.json": {
+      "archive": "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/mobio-remediation-batch-06-isolated-source.zip",
+      "files": 3420,
+      "bytes": 152333326,
+      "sha256": "8f28bc2a8b20496d0f27abc40acd1fa853b59c7c3a4af98be38656bff07fd628",
+      "elapsed_seconds": 3.32,
+      "readback_matches": true,
+      "copied_source_unchanged": true,
+      "source_snapshot": "batch-06-isolated-retry-03-inputs.json",
+      "platform_artifact": false
+    },
+    "batch-06-privacy-http-result.json": {
+      "captured_at_utc": "2026-10-02T00:38:20.957671+00:00",
+      "exit_code": 0,
+      "run": "build/qa/readiness-20261001/goal/batch-06-privacy-http/run-29498",
+      "bound_input_count": 196,
+      "migration_count": 130,
+      "source_unchanged": true,
+      "owned_cleanup_absent": true,
+      "baseline_checks": 17,
+      "corrected_checks": 22,
+      "parent_http_checks": 108,
+      "admin_http_checks": 227,
+      "privacy_http_checks": 212,
+      "privacy_provider_calls": {
+        "google": 1,
+        "faceQuery": 1,
+        "maintenanceSearchable": 8,
+        "cleanupAbsent": 0,
+        "cleanupDelete": 0,
+        "push": 1
+      },
+      "statuses": [
+        {
+          "name": "healthy consumer read-only REST admission",
+          "status": 200,
+          "code": null
+        },
+        {
+          "name": "fresh Admin read-only REST admission",
+          "status": 200,
+          "code": null
+        },
+        {
+          "name": "reviewer before ordinary fence admission",
+          "status": 403,
+          "code": "AUTHORITY_DENIED"
+        },
+        {
+          "name": "reviewer before ordinary fence Maps",
+          "status": 403,
+          "code": null
+        },
+        {
+          "name": "reviewer before ordinary fence Face",
+          "status": 403,
+          "code": "AUTH_EXPIRED"
+        },
+        {
+          "name": "revoked consumer before fence admission",
+          "status": 401,
+          "code": "AUTHORITY_DENIED"
+        },
+        {
+          "name": "revoked consumer before fence Maps",
+          "status": 401,
+          "code": null
+        },
+        {
+          "name": "revoked consumer before fence Face",
+          "status": 401,
+          "code": "AUTH_EXPIRED"
+        },
+        {
+          "name": "consumer subject cannot activate service fence",
+          "status": 403,
+          "code": "42501"
+        },
+        {
+          "name": "healthy Admin operator cannot activate service fence",
+          "status": 403,
+          "code": "42501"
+        },
+        {
+          "name": "fenced consumer read-only REST admission",
+          "status": 403,
+          "code": "PT403"
+        },
+        {
+          "name": "fenced consumer admission",
+          "status": 403,
+          "code": "AUTHORITY_DENIED"
+        },
+        {
+          "name": "fenced consumer Maps",
+          "status": 403,
+          "code": null
+        },
+        {
+          "name": "fenced consumer Face",
+          "status": 403,
+          "code": "AUTH_EXPIRED"
+        },
+        {
+          "name": "service late profile update",
+          "status": 403,
+          "code": "42501"
+        },
+        {
+          "name": "service late profile insertion",
+          "status": 403,
+          "code": "42501"
+        },
+        {
+          "name": "actual GoTrue late user update",
+          "status": 500,
+          "code": null
+        },
+        {
+          "name": "post-fence actual ordinary OTP verification",
+          "status": 500,
+          "code": null
+        },
+        {
+          "name": "revoked consumer after another subject fence admission",
+          "status": 401,
+          "code": "AUTHORITY_DENIED"
+        },
+        {
+          "name": "revoked consumer after another subject fence Maps",
+          "status": 401,
+          "code": null
+        },
+        {
+          "name": "revoked consumer after another subject fence Face",
+          "status": 401,
+          "code": "AUTH_EXPIRED"
+        },
+        {
+          "name": "reviewer after ordinary fence admission",
+          "status": 403,
+          "code": "AUTHORITY_DENIED"
+        },
+        {
+          "name": "reviewer after ordinary fence Maps",
+          "status": 403,
+          "code": null
+        },
+        {
+          "name": "reviewer after ordinary fence Face",
+          "status": 403,
+          "code": "AUTH_EXPIRED"
+        },
+        {
+          "name": "fenced fresh Admin read-only REST admission",
+          "status": 403,
+          "code": "PT403"
+        },
+        {
+          "name": "fenced fresh Admin admission",
+          "status": 403,
+          "code": "AUTHORITY_DENIED"
+        },
+        {
+          "name": "fenced fresh Admin Maps",
+          "status": 403,
+          "code": null
+        },
+        {
+          "name": "fenced fresh Admin Face",
+          "status": 403,
+          "code": "AUTH_EXPIRED"
+        },
+        {
+          "name": "post-fence actual Admin OTP verification",
+          "status": 500,
+          "code": null
+        },
+        {
+          "name": "healthy control retains read-only REST admission",
+          "status": 200,
+          "code": null
+        }
+      ],
+      "evidence": {
+        "baseline.json": {
+          "path": "build/qa/readiness-20261001/goal/batch-06-privacy-http/run-29498/baseline.json",
+          "bytes": 2495,
+          "sha256": "be885f90103adc8d23a5bb52767df6b0315f619f8dff06553c2a4afb812b5498"
+        },
+        "corrected.json": {
+          "path": "build/qa/readiness-20261001/goal/batch-06-privacy-http/run-29498/corrected.json",
+          "bytes": 2966,
+          "sha256": "8231aadc90e26387a8ebcfef41dd2548348e978a0129f39c9416622e120110fb"
+        },
+        "handler-http.json": {
+          "path": "build/qa/readiness-20261001/goal/batch-06-privacy-http/run-29498/handler-http.json",
+          "bytes": 68351,
+          "sha256": "0bd35e0a61b1801ac939db123e7ffda905dc266bccf4942c2a9cf7928eb52486"
+        },
+        "source-before.json": {
+          "path": "build/qa/readiness-20261001/goal/batch-06-privacy-http/run-29498/source-before.json",
+          "bytes": 26362,
+          "sha256": "c0b57e51bb49b0c3e242e20c259d91a43fdaa6845369c69597c26a0f19110173"
+        },
+        "source-after.json": {
+          "path": "build/qa/readiness-20261001/goal/batch-06-privacy-http/run-29498/source-after.json",
+          "bytes": 26362,
+          "sha256": "c0b57e51bb49b0c3e242e20c259d91a43fdaa6845369c69597c26a0f19110173"
+        },
+        "source-stability.json": {
+          "path": "build/qa/readiness-20261001/goal/batch-06-privacy-http/run-29498/source-stability.json",
+          "bytes": 26,
+          "sha256": "f4ab8ba8c373bd9ecdad5b6f9bc3e29107f42d908e4c832d3434e488c89b7140"
+        },
+        "cleanup.json": {
+          "path": "build/qa/readiness-20261001/goal/batch-06-privacy-http/run-29498/cleanup.json",
+          "bytes": 133,
+          "sha256": "f8b80ac7b0758b874ccf4346347def79126f3a3d8baae5a66abcf2565c67c15a"
+        },
+        "owned-cleanup.json": {
+          "path": "build/qa/readiness-20261001/goal/batch-06-privacy-http/run-29498/owned-cleanup.json",
+          "bytes": 794,
+          "sha256": "fbda713ef887da356a2f4bd07b2a15a70b12ff27d2be88390c7f3e243647939b"
+        }
+      },
+      "limits": {
+        "physical_erasure": false,
+        "real_provider_delivery": false,
+        "external_in_flight_retracted": false,
+        "production_acceptance": false,
+        "post_fence_otp_recovery_ux": "Currentfailclosed500 remains a known recovery gap"
+      },
+      "frozen_batch05_platform_candidate_includes_new_qa_module": false
+    },
+    "batch-06-dependency-scorecard.json": {
+      "metadata_entries": 250,
+      "currently_resolved_entries": 234,
+      "resolver_only_entries": [
+        "cupertino_ui",
+        "ffi_leak_tracker",
+        "flutter_local_notifications_web",
+        "geoclue",
+        "geolocator_linux",
+        "gsettings",
+        "jni",
+        "jni_flutter",
+        "jni_util",
+        "listen",
+        "material_ui",
+        "package_info_plus",
+        "package_info_plus_platform_interface",
+        "passkeys_platform_interface",
+        "record_use",
+        "supabase_common"
+      ],
+      "update_counts": {
+        "upgradable": 110,
+        "resolvable": 131,
+        "latest": 150
+      },
+      "current_pub_flags": {
+        "isDiscontinued": [],
+        "isCurrentRetracted": [],
+        "isCurrentAffectedByAdvisory": []
+      },
+      "actual_package_config_roots": 235,
+      "license_root_files": 229,
+      "manual_license_review": [
+        "dbus",
+        "gtk",
+        "nm"
+      ],
+      "inputs": {
+        "pubspec.yaml": "f7b2b67774e5929d28b95dea357b96d70fe57842981d9b4835d22723c86a1527",
+        "pubspec.lock": "270a313a027b72f219710de9ba8bb7ff62118f6389fc69750d65a3fdac281fb5"
+      },
+      "changed_constraints": false,
+      "changed_lockfile": false,
+      "scope": "Dart resolver metadata + actual current cached package root license files. No native/backend/image/CI advisory scan or legal compatibility acceptance.",
+      "published_advisory_status_is_not_full_security_acceptance": true
+    },
+    "batch-06-transport-candidate-catalogue-result.json": {
+      "status": "local private installation/catalogue/cleanup passed",
+      "migrations": 132,
+      "primary_chain_unchanged_at130": true,
+      "input_count": 173,
+      "actual_permission_catalogue_sha256": "d3d7640824ac516484c8e47f508c8a305307af3f4915054f25800ccdc5c2cc50",
+      "checks": {
+        "driver-result.json": {
+          "runner_exit_code": 0,
+          "primary_inputs_stable": true,
+          "changed_private_paths": [
+            "supabase/.temp/cli-latest"
+          ],
+          "changed_private_source_paths": [],
+          "known_generated_cache": [
+            "supabase/.temp/cli-latest"
+          ],
+          "review_inputs_stable": true,
+          "cleanup_evidence": "fixture-result.json / fixture-logs/cleanup.log",
+          "status": "inspect independently: runner, source stability, cleanup and actual cases"
+        },
+        "fixture-result.json": {
+          "project": "mobio_replay_17087",
+          "workdir": "/var/folders/yx/gzgvttgj2ljd6n_vs2qzdjq80000gn/T/tmp.vZKZiY74zj",
+          "original_test_exit_code": 0,
+          "cleanup_exit_code": 0,
+          "cleanup_succeeded": true,
+          "logs_retained": true,
+          "workdir_removed": true
+        },
+        "fixture-logs/catalogue-install-result.json": {
+          "before_canonical_sha256": "09ad7923ff04d51fe7256b5fa4cf0529bebdab520dfd919fe848ff0443771440",
+          "root_reviewed_before_matches": true,
+          "after_canonical_sha256": "007096fa23c9c95c6a8833fb1204db9c837116daa2736674e178178568f95b73",
+          "public_metadata_preserved": true,
+          "scheduler_unchanged": true,
+          "existing_constraints_preserved": true,
+          "validated_conservation_constraint": true
+        },
+        "fixture-logs/permission-clock-catalogue-result.json": {
+          "status": "passed",
+          "routines": 4,
+          "intentional_volatility_changes": 4,
+          "intentional_body_changes": 1,
+          "other_exported_metadata_preserved": true,
+          "before_sha256": "ca9ded86a3b099829c50a3d17e63da33deb72807c0fcb3f5e362c1f20132ddfe",
+          "after_sha256": "d3d7640824ac516484c8e47f508c8a305307af3f4915054f25800ccdc5c2cc50"
+        }
+      },
+      "owned_absence": {
+        "containers": true,
+        "volumes": true,
+        "networks": true,
+        "workdir": true
+      },
+      "cumulative_behavior_and_races_not_run": true
+    },
+    "latest/batch-06-review-root-integration/native-v2-all-24-tests-02.json": {
+      "private_only": true,
+      "command": [
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/flutter",
+        "test",
+        "test/core/auth/native_nfc_account_admission_test.dart",
+        "test/core/auth/native_nfc_uncertain_kit_terminal_test.dart",
+        "--dart-define=SUPABASE_URL=https://review-transport.invalid",
+        "--dart-define=SUPABASE_ANON_KEY=fixture-public-key",
+        "--dart-define=PRIVACY_POLICY_URL=https://example.invalid/privacy",
+        "--dart-define=ACCOUNT_DELETION_URL=https://example.invalid/delete",
+        "--reporter",
+        "expanded"
+      ],
+      "exit_code": 0,
+      "seconds": 14.11,
+      "bound": 3465,
+      "changed": [],
+      "verification_passed": true,
+      "test_completion_marker": true
+    },
+    "latest/batch-06-review-root-integration/exit-focused-analyze-02.json": {
+      "private_only": true,
+      "command": [
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/dart",
+        "analyze",
+        "lib/core/auth/supabase_session_service.dart",
+        "lib/core/async/sharing_owned_work.dart",
+        "lib/core/permissions/app_permission_service.dart",
+        "lib/features/nearby",
+        "lib/features/profile/data/profile_service.dart",
+        "lib/core/location/location_service.dart",
+        "lib/app/review_session_exit.dart",
+        "lib/app/router/screen_wrappers.dart",
+        "lib/features/profile/presentation/profile_screen.dart",
+        "lib/features/biopay/data/biopay_device_nfc_service.dart",
+        "lib/features/store_review/presentation/review_discovery_profile_views.dart",
+        "test/core/auth/account_context_review_integration_test.dart",
+        "test/core/auth/review_exit_owned_cleanup_test.dart",
+        "test/app/review_exit_root_journey_test.dart",
+        "test/app/review_exit_sdk_fixture.dart",
+        "test/features/nearby/data/sharing_owned_cleanup_test.dart",
+        "test/features/store_review/review_profile_exit_widget_test.dart"
+      ],
+      "exit_code": 0,
+      "seconds": 6.63,
+      "bound": 3472,
+      "changed": [],
+      "verification_passed": true,
+      "test_completion_marker": null
+    },
+    "latest/batch-06-review-root-integration/exit-unit-fixture-final-analyze-01.json": {
+      "private_only": true,
+      "command": [
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/dart",
+        "analyze",
+        "test/core/auth/review_exit_owned_cleanup_test.dart",
+        "test/app/review_exit_root_journey_test.dart"
+      ],
+      "exit_code": 0,
+      "seconds": 4.64,
+      "bound": 3472,
+      "changed": [],
+      "verification_passed": true,
+      "test_completion_marker": null
+    },
+    "latest/batch-06-review-root-integration/exit-HCE-RJ02-RJ03-map37-02.json": {
+      "private_only": true,
+      "command": [
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/flutter",
+        "test",
+        "--no-pub",
+        "--reporter",
+        "expanded",
+        "--dart-define=SUPABASE_URL=https://review-transport.invalid",
+        "--dart-define=SUPABASE_ANON_KEY=fixture-public-key",
+        "--dart-define=PRIVACY_POLICY_URL=https://example.invalid/privacy",
+        "--dart-define=ACCOUNT_DELETION_URL=https://example.invalid/delete",
+        "test/core/auth/review_exit_owned_cleanup_test.dart",
+        "test/app/review_exit_root_journey_test.dart",
+        "--name",
+        "^(E|RJ0[23] )"
+      ],
+      "exit_code": 0,
+      "seconds": 14.61,
+      "bound": 3472,
+      "changed": [],
+      "verification_passed": true,
+      "test_completion_marker": true
+    },
+    "latest/batch-06-undici-root-qualification/frozen-install-04.json": {
+      "private_only": true,
+      "command": [
+        "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/batch-06-undici-root-qualification/node-runtime/node-v24.21.0-darwin-arm64/bin/node",
+        "/Users/jeanbosco/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/pnpm/bin/pnpm.mjs",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--pm-on-fail=error",
+        "--engine-strict",
+        "--registry=https://registry.npmjs.org/",
+        "--store-dir=/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/batch-06-undici-root-qualification/store",
+        "--cache-dir=/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/batch-06-undici-root-qualification/cache",
+        "--reporter=ndjson"
+      ],
+      "exit_code": 0,
+      "seconds": 0.62,
+      "primary_inputs": 28,
+      "candidate_inputs": 28,
+      "changed": [],
+      "manager_version": "11.25.0",
+      "node_version": "24.21.0",
+      "lifecycle_scripts_executed": false,
+      "environment_record": "resolver-02-environment-record.json"
+    },
+    "latest/batch-06-undici-root-qualification/entrypoint-typecheck-06.json": {
+      "private_only": true,
+      "command": [
+        "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/batch-06-undici-root-qualification/node-runtime/node-v24.21.0-darwin-arm64/bin/node",
+        "/Users/jeanbosco/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/pnpm/bin/pnpm.mjs",
+        "run",
+        "check"
+      ],
+      "exit_code": 0,
+      "seconds": 1.47,
+      "primary_inputs": 28,
+      "candidate_inputs": 28,
+      "changed": [],
+      "manager_version": "11.25.0",
+      "node_version": "24.21.0",
+      "original_package_script": "check"
+    },
+    "latest/batch-06-undici-root-qualification/original-tests-06.json": {
+      "private_only": true,
+      "command": [
+        "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/batch-06-undici-root-qualification/node-runtime/node-v24.21.0-darwin-arm64/bin/node",
+        "/Users/jeanbosco/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/pnpm/bin/pnpm.mjs",
+        "run",
+        "test"
+      ],
+      "exit_code": 0,
+      "seconds": 0.79,
+      "primary_inputs": 28,
+      "candidate_inputs": 28,
+      "changed": [],
+      "manager_version": "11.25.0",
+      "node_version": "24.21.0",
+      "original_package_script": "test"
+    },
+    "latest/batch-06-undici-consumer-probes/runs/root-01/actual-original-wrangler-docker-dry-run.json": {
+      "command": [
+        "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/batch-06-undici-root-qualification/node-runtime/node-v24.21.0-darwin-arm64/bin/node",
+        "node_modules/wrangler/bin/wrangler.js",
+        "deploy",
+        "--dry-run",
+        "--config",
+        "./wrangler.jsonc",
+        "--outdir",
+        "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/batch-06-undici-consumer-probes/runs/root-01/actual-original-wrangler-docker-dry-run/worker-bundle"
+      ],
+      "cwd": "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/batch-06-undici-root-qualification/checkout/cloudflare/face-service",
+      "exit_code": 0,
+      "seconds": 1454.55,
+      "private_only": true,
+      "inputs_unchanged": {
+        "primary": 28,
+        "candidate": 28,
+        "installed": 24
+      },
+      "log_sha256": "fdada1ac4884fc2b061b7d2a4be4108d763667dded0e1fb79de39c975e51717b",
+      "natural_exit": true,
+      "cleanup": {},
+      "package_manager_dispatch_qualified": false
+    }
+  },
+  "required_repository_checks": {
+    "structure": "passed3421 at recorded check",
+    "design_authority": "passed3422 indexed paths;5/5 available external hashes; no visual acceptance",
+    "secret_pattern_scan": "passed",
+    "diff_check": "passed"
+  },
+  "private_discovery_profile": {
+    "status": "tested private candidate; primary inactive",
+    "passed_tests": 221,
+    "bound_inputs": 3427,
+    "unchanged": true,
+    "result": "build/qa/readiness-20261001/goal/batch-06-private-discovery-result-03.json",
+    "original_failed_tests": 13,
+    "analysis_errors": 0,
+    "analysis_warnings": 0
+  },
+  "transport_verification_history": {
+    "private132_installed": true,
+    "original_actual_races_passed": 11,
+    "authority_receipt_clock_cases_passed": 29,
+    "full_private_postgres_pass": true,
+    "result": "build/qa/readiness-20261001/goal/batch-06-transport-verify-05-result.json",
+    "signed_api_pending": true,
+    "migration_bytes_unchanged": true,
+    "primary_chain": 130,
+    "sources_unchanged": 173,
+    "failed_runs_retained": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "direct_owned_cleanup_absent": true,
+    "quantity_only_scope_compatibility_open": true
+  },
+  "private_chat_inbox": {
+    "inputs": 3434,
+    "initial_combined_passes": 323,
+    "initial_combined_failures": 2,
+    "corrected_overlapping_subset_passes": 43,
+    "full_combined_rerun": false,
+    "analysis_errors": 0,
+    "analysis_warnings": 0,
+    "active": false,
+    "evidence": "build/qa/readiness-20261001/goal/batch-06-private-chat-result-02.json"
+  },
+  "private_signed_permission_api": {
+    "schema_migrations": 132,
+    "primary_migrations": 130,
+    "permission_checks": 42,
+    "admin_checks": 227,
+    "privacy_checks": 212,
+    "parent_http_checks": 108,
+    "private_bound_inputs": 296,
+    "primary_bound_inputs": 293,
+    "source_stable": true,
+    "owned_cleanup_and_direct_readback": true,
+    "passed": true,
+    "production_acceptance": false,
+    "evidence": "build/qa/readiness-20261001/goal/batch-06-permission-api-result.json"
+  },
+  "decoder_admission_mitigation": {
+    "activated_paths": [
+      "services/face-inference/inference.py",
+      "services/face-inference/tests/test_decode_formats.py"
+    ],
+    "tests_passed": 28,
+    "real_cached_models_and_local_http": true,
+    "package_version_changed": false,
+    "linux_image_verified": false,
+    "production_acceptance": false,
+    "evidence": "build/qa/readiness-20261001/goal/batch-06-backend-decoder-execution/activation/result.json"
+  },
+  "independent_permission_clock_activation": {
+    "active_local_migrations": 131,
+    "quantity_only_migration_active": false,
+    "private_bound_inputs": 295,
+    "primary_bound_inputs": 293,
+    "permission_assertions": 42,
+    "admin_assertions": 227,
+    "privacy_assertions": 212,
+    "parent_http_assertions": 108,
+    "overlapping_suites": true,
+    "owned_cleanup_directly_verified": true,
+    "hosted_deployment": false,
+    "evidence": "build/qa/readiness-20261001/goal/batch-06-permission-clock-standalone/safe-result.json"
+  },
+  "private_root_execution_checkpoint": {
+    "account_integration": 30,
+    "interactive_sdk": 14,
+    "new_app_links": 9,
+    "existing_app_links": 16,
+    "shared_review_world": 17,
+    "bound_inputs": 3448,
+    "changed": [],
+    "push_nfc_initial_passed": 28,
+    "push_nfc_initial_failed": 13,
+    "push_cleanup_passed": 14,
+    "push_cleanup_bound_inputs": 3449,
+    "native_coordinator_scenarios_passed": 12,
+    "MainActivity_compiled": false,
+    "runtime_routes_activated": false,
+    "production_acceptance": false,
+    "evidence": "build/qa/readiness-20261001/goal/batch-06-review-root-integration/combined-tests-02-result.json"
+  },
+  "goal_runtime_status": "usageLimited",
+  "goal_objective_incomplete": true,
+  "goal_scope_authorized": true,
+  "checkpoint_updated_at_utc": "2026-10-02T08:37:09.496058+00:00",
+  "pillow_12_3_local_activation": {
+    "active_local": true,
+    "not_deployed": true,
+    "changes": [
+      {
+        "path": "services/face-inference/requirements.in",
+        "before": "7145c57c63600f94e217c0804ab51a78c2782b11810abb03949fa8b5a265dfeb",
+        "after": "4e8638011ff823e878bdeff02ed2c5e5eaeac1424be1bf6c881096acfb5ac39f"
+      },
+      {
+        "path": "services/face-inference/requirements.lock",
+        "before": "4cb3102509ea1f6d153741cf117c24530aaaeba6703a76d900fe8701108b998f",
+        "after": "0c212a5db0b3224f99986b13775224452981bfb320aba99b40feb552ea4c07e7"
+      }
+    ],
+    "remaining18_primary_inputs_unchanged": true,
+    "macos_cases": 28,
+    "linux_arm64_cases": 28,
+    "Linux_image": "sha256:e4ff7d64da4f6352305040465d7fc79217eecb39c823f1807fdcccac0b28b6a3",
+    "does_not_claim_model_accuracy_or_provider_acceptance": true
+  },
+  "latest_private_logout_checkpoint": {
+    "managed_input_map": "build/qa/readiness-20261001/goal/batch-06-review-root-integration/managed-inputs-37-unit-fixture-arity.json",
+    "bound_inputs": 3472,
+    "primary_activated": false,
+    "native_v2_cases_completed": 24,
+    "owned_cleanup_and_Profile_journey_cases_completed": 13,
+    "owned_cleanup_cases": 11,
+    "Profile_journeys": [
+      "RJ02",
+      "RJ03"
+    ],
+    "full_75_consumer_batch_completed": false,
+    "full_11_root_journey_batch_completed": false,
+    "whole_analysis_current_completed": false,
+    "current_batch06_platform_builds_completed": false,
+    "geolocator_native_stream_cancellation_receipt": "unresolved",
+    "MainActivity_full_compile_completed": false,
+    "production_acceptance": false,
+    "remaining_execution_order": [
+      "Complete 75 account/cleanup/sharing/Profile consumers and all 11 root journeys",
+      "Verify broader affected consumers and whole analysis; reconcile required CI and repository checks",
+      "Reconcile exact primary predecessors while preserving unrelated edits",
+      "Sanctioned configured platform build batch and affected browser/device comparison",
+      "Complete remaining original readiness findings and external acceptance gates"
+    ]
+  },
+  "latest_private_undici_checkpoint": {
+    "primary_activated": false,
+    "strict_graph_packages": 114,
+    "mutation_cases": 29,
+    "frozen_install_completed": true,
+    "pnpm_original_check_completed": true,
+    "pnpm_original_handler_tests_completed": 7,
+    "direct_Miniflare_loopback_disposal_completed": true,
+    "direct_original_Wrangler_Docker_dry_run_completed": true,
+    "pnpm_build_script_dispatch_completed": false,
+    "no_install_lifecycle_script_executed": true,
+    "no_hook_module_executed": true,
+    "deployed": false,
+    "global_runtime_changed": false
+  }
+}

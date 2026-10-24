@@ -1,0 +1,17 @@
+{
+  "SUPABASE_URL": {
+    "present": true,
+    "host": "paysnhuxngsvzdpwlosv.supabase.co"
+  },
+  "SUPABASE_ANON_KEY": {
+    "present": true
+  },
+  "PRIVACY_POLICY_URL": {
+    "present": true,
+    "host": "mobio.ikanisa.com"
+  },
+  "ACCOUNT_DELETION_URL": {
+    "present": true,
+    "host": "mobio.ikanisa.com"
+  }
+}

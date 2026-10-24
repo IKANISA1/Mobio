@@ -12,6 +12,9 @@ import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/location/location_providers.dart';
 import 'package:mobi_app/core/permissions/permission_providers.dart';
 import 'package:mobi_app/features/bookings/application/booking_services.dart';
+import 'package:mobi_app/features/bookings/application/review_scheduled_post_providers.dart';
+import 'package:mobi_app/features/bookings/application/review_scheduled_posts.dart';
+import 'package:mobi_app/features/store_review/domain/review_world_authority.dart';
 import 'package:mobi_app/features/bookings/application/schedule_trip_state.dart';
 import 'package:mobi_app/features/bookings/data/public_transport_service.dart';
 import 'package:mobi_app/features/profile/application/profile_services.dart';
@@ -54,7 +57,12 @@ final scheduleTripProvider =
     AsyncNotifierProvider.autoDispose<
       ScheduleTripController,
       ScheduleTripState
-    >(ScheduleTripController.new);
+    >(
+      ScheduleTripController.new,
+      retry: (retryCount, error) => error is ReviewWorldUnavailable
+          ? null
+          : ProviderContainer.defaultRetry(retryCount, error),
+    );
 
 class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   ScheduleTripController() : _captureOverride = null, _isCurrentOverride = null;
@@ -69,10 +77,36 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   final AccountSnapshot? Function()? _captureOverride;
   final bool Function(AccountSnapshot?)? _isCurrentOverride;
   AccountSnapshot? _draftAccount;
+  bool _reviewSelected = false;
+  bool _reviewSubmitted = false;
+  ReviewScheduledPostGateway? _reviewGateway;
+  ReviewScheduledPostIntent? _reviewIntent;
+
+  bool get isReviewSession => _reviewSelected;
+  bool get isReviewCurrent =>
+      _reviewIntent != null &&
+      _reviewGateway?.hasCurrentAuthority(_reviewIntent!) == true;
+  DateTime get comparisonNow => _reviewSelected
+      ? requireReviewScheduledPosts(
+          _reviewGateway,
+        ).calendarNow(_requireReviewDraft())
+      : DateTime.now();
+
+  ReviewScheduledPostIntent _requireReviewDraft() {
+    final intent = _reviewIntent;
+    if (intent == null || !isReviewCurrent) {
+      throw const ReviewWorldUnavailable('world_locked');
+    }
+    return intent;
+  }
+
   int _buildRevision = 0;
   int _locationRevision = 0;
 
   AccountSnapshot? _captureAccount() {
+    if (_reviewSelected) {
+      throw const ReviewWorldUnavailable('ordinary_capture_denied_for_review');
+    }
     if (_draftAccount != null) _requireCurrent(_draftAccount);
     return _captureOverride != null
         ? _captureOverride()
@@ -133,11 +167,33 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     final buildRevision = ++_buildRevision;
     _locationRevision++;
     _draftAccount = null;
+    _reviewSubmitted = false;
+    _reviewGateway = null;
+    _reviewIntent = null;
+    _reviewSelected = ref.watch(reviewScheduledPostsSelectedProvider);
     ref.onDispose(() {
       _buildRevision++;
       _locationRevision++;
     });
     final args = ref.watch(scheduleTripArgsProvider);
+
+    if (_reviewSelected) {
+      final gateway = requireReviewScheduledPosts(
+        ref.watch(reviewScheduledPostGatewayProvider),
+      );
+      _reviewGateway = gateway;
+      final intent = gateway.capture(targetId: args.editingTripId);
+      _reviewIntent = intent;
+      void onReviewChanged() {
+        if (!gateway.hasCurrentAuthority(intent) && ref.mounted) {
+          ref.invalidateSelf();
+        }
+      }
+
+      gateway.addListener(onReviewChanged);
+      ref.onDispose(() => gateway.removeListener(onReviewChanged));
+      return gateway.initialState(intent, mode: args.mode);
+    }
 
     if (SupabaseConfig.isLocalUiPreview && _captureOverride == null) {
       final editingTrip = args.isEditMode ? AppConstants.mockTrips.first : null;
@@ -285,6 +341,11 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   Future<void> handleCurrentLocation() async {
+    if (_reviewSelected) {
+      final gateway = requireReviewScheduledPosts(_reviewGateway);
+      setOrigin(gateway.places(_requireReviewDraft()).first);
+      return;
+    }
     final account = _captureAccount();
     final revision = ++_locationRevision;
     final buildRevision = _buildRevision;
@@ -352,6 +413,13 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   void setOrigin(PlaceDetails? details) {
+    if (_reviewSelected && details != null) {
+      details = requireReviewScheduledPosts(
+        _reviewGateway,
+      ).requirePlace(_requireReviewDraft(), details);
+    } else if (_reviewSelected) {
+      _requireReviewDraft();
+    }
     _locationRevision++;
     final currentState = state.value;
     if (currentState == null) return;
@@ -365,6 +433,13 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   void setDestination(PlaceDetails? details) {
+    if (_reviewSelected && details != null) {
+      details = requireReviewScheduledPosts(
+        _reviewGateway,
+      ).requirePlace(_requireReviewDraft(), details);
+    } else if (_reviewSelected) {
+      _requireReviewDraft();
+    }
     final currentState = state.value;
     if (currentState == null) return;
     state = AsyncValue.data(
@@ -373,11 +448,23 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   void useFavoriteAsOrigin(FavoriteAddress address) {
-    setOrigin(address.toPlaceDetails());
+    setOrigin(
+      _reviewSelected
+          ? requireReviewScheduledPosts(
+              _reviewGateway,
+            ).favoritePlace(_requireReviewDraft(), address)
+          : address.toPlaceDetails(),
+    );
   }
 
   void useFavoriteAsDestination(FavoriteAddress address) {
-    setDestination(address.toPlaceDetails());
+    setDestination(
+      _reviewSelected
+          ? requireReviewScheduledPosts(
+              _reviewGateway,
+            ).favoritePlace(_requireReviewDraft(), address)
+          : address.toPlaceDetails(),
+    );
   }
 
   Future<bool> saveFavoriteAddress({
@@ -385,6 +472,10 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
     required String label,
     required String addressType,
   }) async {
+    if (_reviewSelected) {
+      _requireReviewDraft();
+      return false; // The current route offers read-only fixture shortcuts.
+    }
     final account = _captureAccount();
     final buildRevision = _buildRevision;
     bool current() => buildRevision == _buildRevision && _isCurrent(account);
@@ -438,6 +529,10 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   Future<void> deleteFavoriteAddress(FavoriteAddress address) async {
+    if (_reviewSelected) {
+      _requireReviewDraft();
+      throw const ReviewWorldUnavailable('review_favorites_are_read_only');
+    }
     final account = _captureAccount();
     final buildRevision = _buildRevision;
     bool current() => buildRevision == _buildRevision && _isCurrent(account);
@@ -474,6 +569,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   void setVehicleId(String id) {
+    if (_reviewSelected) _requireReviewDraft();
     final currentState = state.value;
     if (currentState == null) return;
     state = AsyncValue.data(
@@ -490,6 +586,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   void setRentalVehicleModel(String model) {
+    if (_reviewSelected) _requireReviewDraft();
     final currentState = state.value;
     if (currentState == null) return;
     state = AsyncValue.data(
@@ -498,6 +595,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   void setBusAgencyName(String agency) {
+    if (_reviewSelected) _requireReviewDraft();
     final currentState = state.value;
     if (currentState == null) return;
     state = AsyncValue.data(
@@ -506,6 +604,21 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   void setRole(String role) {
+    if (_reviewSelected &&
+        !requireReviewScheduledPosts(
+          _reviewGateway,
+        ).canUseRole(_requireReviewDraft(), role)) {
+      final current = state.value;
+      if (current != null) {
+        state = AsyncValue.data(
+          current.copyWith(
+            validationMessage: 'This session cannot create a driver post.',
+            showErrors: true,
+          ),
+        );
+      }
+      return;
+    }
     final currentState = state.value;
     if (currentState == null) return;
     state = AsyncValue.data(
@@ -514,6 +627,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   void setDate(DateTime date) {
+    if (_reviewSelected) _requireReviewDraft();
     final currentState = state.value;
     if (currentState == null) return;
     state = AsyncValue.data(
@@ -522,6 +636,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   void setTime(TimeOfDay time) {
+    if (_reviewSelected) _requireReviewDraft();
     final currentState = state.value;
     if (currentState == null) return;
     state = AsyncValue.data(
@@ -530,6 +645,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   void toggleRecurring() {
+    if (_reviewSelected) _requireReviewDraft();
     final currentState = state.value;
     if (currentState == null) return;
     state = AsyncValue.data(
@@ -541,6 +657,7 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   void toggleRecurringDay(int dayIndex) {
+    if (_reviewSelected) _requireReviewDraft();
     final currentState = state.value;
     if (currentState == null) return;
 
@@ -556,6 +673,8 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
   }
 
   Future<Trip?> submitTrip({required String note}) async {
+    if (_reviewSelected) return _submitReviewTrip(note);
+
     final account = _captureAccount();
     final s = state.value;
     if (s == null) return null;
@@ -681,6 +800,49 @@ class ScheduleTripController extends AsyncNotifier<ScheduleTripState> {
       final finalState = _isCurrent(account) ? state.value : null;
       if (finalState != null) {
         state = AsyncValue.data(finalState.copyWith(isSubmitting: false));
+      }
+      rethrow;
+    }
+  }
+
+  Trip? _submitReviewTrip(String note) {
+    if (_reviewSubmitted) {
+      throw const ReviewWorldUnavailable('review_post_already_submitted');
+    }
+    final intent = _requireReviewDraft();
+    final gateway = requireReviewScheduledPosts(_reviewGateway);
+    final current = state.value;
+    if (current == null || current.isSubmitting) return null;
+    final message = current.validateForSubmit(gateway.calendarNow(intent));
+    if (message != null) {
+      state = AsyncValue.data(
+        current.copyWith(showErrors: true, validationMessage: message),
+      );
+      return null;
+    }
+    state = AsyncValue.data(current.copyWith(isSubmitting: true));
+    try {
+      final post = gateway.submit(intent, current, note);
+      _reviewSubmitted = true;
+      if (!ref.mounted || !gateway.hasCurrentAuthority(intent)) {
+        throw const ReviewWorldUnavailable('world_locked');
+      }
+      final suggestions = current.isEditMode
+          ? const <Trip>[]
+          : gateway.suggestions(intent, post);
+      state = AsyncValue.data(
+        current.copyWith(
+          createdTrip: post,
+          editingTrip: current.isEditMode ? post : null,
+          isSubmitting: false,
+          poolSuggestions: suggestions,
+          validationMessage: null,
+        ),
+      );
+      return post;
+    } on Object {
+      if (ref.mounted && gateway.hasCurrentAuthority(intent)) {
+        state = AsyncValue.data(current.copyWith(isSubmitting: false));
       }
       rethrow;
     }

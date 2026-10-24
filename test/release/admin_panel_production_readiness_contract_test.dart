@@ -248,9 +248,11 @@ void main() {
         'supabase/migrations/20260615123000_admin_trip_search_pagination.sql',
       ).readAsStringSync();
 
-      for (final source in [reports, audit, health, trips]) {
+      for (final source in [audit, health]) {
         expect(source, contains('limit: _rowsPerPage + 1'));
         expect(source, contains('offset: _page * _rowsPerPage'));
+      }
+      for (final source in [reports, audit, health, trips]) {
         expect(source, isNot(contains('limit: 100')));
         expect(source, isNot(contains('limit: 120')));
         expect(source, isNot(contains('limit: 200')));
@@ -259,6 +261,8 @@ void main() {
       // User request arguments, next-page detection and retained filters are
       // exercised behaviorally in admin_users_provider_test.dart. Local
       // variable names are not part of the pagination contract.
+      // Reports/trips request limits, next-page offsets, sentinel handling and
+      // retained filters are exercised in admin_query_race_test.dart.
       expect(usersState, contains('hasNextPage'));
       expect(usersState, contains('paginationTotal'));
       expect(usersScreen, isNot(contains('_pageUsers')));

@@ -1,5 +1,6 @@
 import { assertEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
 import { handleVerifyLoginOtp } from "../verify-login-otp/index.ts";
+import { hashOtpCode } from "./otp-security.ts";
 import { handleVerifyAdminOtp } from "../verify-otp/index.ts";
 
 const phone = "+250700000001";
@@ -54,6 +55,8 @@ async function withOtpFixture(
     claimFails?: boolean;
     sessionFails?: boolean;
     adminAllowed?: boolean;
+    hashMode?: "wrong_phone" | "wrong_purpose" | "legacy" | "plaintext";
+    appProofFails?: boolean;
   } = {},
 ) {
   const values = {
@@ -72,7 +75,15 @@ async function withOtpFixture(
     phone,
     purpose,
     code: validCode,
-    code_hash: null,
+    code_hash: options.hashMode === "plaintext" ? null : await hashOtpCode(
+      validCode,
+      options.hashMode === "legacy" ? undefined : {
+        phone: options.hashMode === "wrong_phone" ? "+250700000002" : phone,
+        purpose: options.hashMode === "wrong_purpose"
+          ? "other_purpose"
+          : purpose,
+      },
+    ),
     attempts: 0,
     verified: false,
     expires_at: new Date(Date.now() + 300_000).toISOString(),
@@ -174,16 +185,26 @@ async function withOtpFixture(
   // OTP concurrency is the subject of this fixture. The real lease binding
   // protocol is exercised separately; a successful Admin response must still
   // pass through registration before credentials can leave the endpoint.
-  const registerLease = async (_client: unknown, userId: string, accessToken: string, otpId: string) => {
+  const registerLease = async (
+    _client: unknown,
+    userId: string,
+    accessToken: string,
+    otpId: string,
+  ) => {
     assertEquals(userId, "fixture-user");
     assertEquals(accessToken, "fixture-access");
     assertEquals(otpId, row.id);
     registered += 1;
     const stamp = new Date().toISOString();
-    return { active: true as const, session_id: "11111111-1111-4111-8111-111111111111",
-      user_id: userId, server_now: stamp, authenticated_at: stamp,
+    return {
+      active: true as const,
+      session_id: "11111111-1111-4111-8111-111111111111",
+      user_id: userId,
+      server_now: stamp,
+      authenticated_at: stamp,
       idle_expires_at: new Date(Date.now() + 15 * 60_000).toISOString(),
-      absolute_expires_at: new Date(Date.now() + 8 * 60 * 60_000).toISOString() };
+      absolute_expires_at: new Date(Date.now() + 8 * 60 * 60_000).toISOString(),
+    };
   };
 
   try {
@@ -200,7 +221,18 @@ async function withOtpFixture(
           }),
         });
         return purpose === "app_login"
-          ? handleVerifyLoginOtp(request, { createSession })
+          ? handleVerifyLoginOtp(request, {
+            createSession,
+            registerAppSession: async (_client, userId, token, otpId) => {
+              if (options.appProofFails) {
+                throw new Error("Fixture proof unavailable");
+              }
+              assertEquals(userId, "fixture-user");
+              assertEquals(token, "fixture-access");
+              assertEquals(otpId, row.id);
+              registered++;
+            },
+          })
           : handleVerifyAdminOtp(request, { createSession, registerLease });
       },
       issuedSessions: () => issued,
@@ -217,22 +249,41 @@ async function withOtpFixture(
 }
 
 for (const purpose of ["app_login", "admin_login"] as const) {
-  Deno.test(`${purpose}: only one concurrent verification may issue a session`, async () => {
-    await withOtpFixture(purpose, async ({ verify, issuedSessions, registeredLeases, row }) => {
-      const responses = await Promise.all([verify(), verify()]);
-      assertEquals(
-        issuedSessions(),
-        1,
-        "OTP must be consumed before issuing a session",
-      );
-      assertEquals(responses.map((response) => response.status).sort(), [
-        200,
-        409,
-      ]);
-      assertEquals(row.verified, true);
-      assertEquals(row.attempts, 1);
-      assertEquals(registeredLeases(), purpose === "admin_login" ? 1 : 0);
+  for (
+    const hashMode of [
+      "wrong_phone",
+      "wrong_purpose",
+      "legacy",
+      "plaintext",
+    ] as const
+  ) {
+    Deno.test(`${purpose}: ${hashMode} code cannot grant a session`, async () => {
+      await withOtpFixture(purpose, async ({ verify, issuedSessions, row }) => {
+        assertEquals((await verify()).status, 400);
+        assertEquals(issuedSessions(), 0);
+        assertEquals(row.verified, false);
+      }, { hashMode, simultaneousReads: 1 });
     });
+  }
+  Deno.test(`${purpose}: only one concurrent verification may issue a session`, async () => {
+    await withOtpFixture(
+      purpose,
+      async ({ verify, issuedSessions, registeredLeases, row }) => {
+        const responses = await Promise.all([verify(), verify()]);
+        assertEquals(
+          issuedSessions(),
+          1,
+          "OTP must be consumed before issuing a session",
+        );
+        assertEquals(responses.map((response) => response.status).sort(), [
+          200,
+          409,
+        ]);
+        assertEquals(row.verified, true);
+        assertEquals(row.attempts, 1);
+        assertEquals(registeredLeases(), 1);
+      },
+    );
   });
 
   Deno.test(`${purpose}: concurrent guesses cannot bypass the five-attempt limit`, async () => {
@@ -259,12 +310,16 @@ for (const purpose of ["app_login", "admin_login"] as const) {
   });
 
   Deno.test(`${purpose}: a consumed code cannot be replayed`, async () => {
-    await withOtpFixture(purpose, async ({ verify, issuedSessions, registeredLeases }) => {
-      assertEquals((await verify()).status, 200);
-      assertEquals((await verify()).status, 400);
-      assertEquals(issuedSessions(), 1);
-      assertEquals(registeredLeases(), purpose === "admin_login" ? 1 : 0);
-    }, { simultaneousReads: 1 });
+    await withOtpFixture(
+      purpose,
+      async ({ verify, issuedSessions, registeredLeases }) => {
+        assertEquals((await verify()).status, 200);
+        assertEquals((await verify()).status, 400);
+        assertEquals(issuedSessions(), 1);
+        assertEquals(registeredLeases(), 1);
+      },
+      { simultaneousReads: 1 },
+    );
   });
 
   for (

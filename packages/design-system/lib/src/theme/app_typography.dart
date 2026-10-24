@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Typography scale for the MOBI Revolut-reference shell.
 /// Headline/Display: Inter 600, measured native typography adapter
@@ -11,18 +10,19 @@ import 'package:google_fonts/google_fonts.dart';
 class AppTypography {
   AppTypography._();
 
-  static TextStyle get _heading => GoogleFonts.inter();
-  static TextStyle get _inter => GoogleFonts.inter();
+  // One registered family lets copyWith(fontWeight: ...) select its bundled face.
 
   // ─── Display ───
-  static TextStyle displayLg = _heading.copyWith(
+  static TextStyle displayLg = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 36,
     fontWeight: FontWeight.w600,
     height: 1.12,
     letterSpacing: 0,
   );
 
-  static TextStyle displayMd = _heading.copyWith(
+  static TextStyle displayMd = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 30,
     fontWeight: FontWeight.w600,
     height: 1.14,
@@ -30,21 +30,24 @@ class AppTypography {
   );
 
   // ─── Headline ───
-  static TextStyle headlineLg = _heading.copyWith(
+  static TextStyle headlineLg = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 24,
     fontWeight: FontWeight.w600,
     height: 1.2,
     letterSpacing: 0,
   );
 
-  static TextStyle headlineMd = _heading.copyWith(
+  static TextStyle headlineMd = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 20,
     fontWeight: FontWeight.w600,
     height: 1.2,
     letterSpacing: 0,
   );
 
-  static TextStyle headlineSm = _heading.copyWith(
+  static TextStyle headlineSm = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 18,
     fontWeight: FontWeight.w600,
     height: 1.25,
@@ -52,71 +55,82 @@ class AppTypography {
   );
 
   // ─── Title ───
-  static TextStyle titleLg = _heading.copyWith(
+  static TextStyle titleLg = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 18,
     fontWeight: FontWeight.w600,
     height: 1.28,
     letterSpacing: 0,
   );
 
-  static TextStyle titleMd = _heading.copyWith(
+  static TextStyle titleMd = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 16,
     fontWeight: FontWeight.w500,
     height: 1.28,
   );
 
   // ─── Body ───
-  static TextStyle bodyLg = _inter.copyWith(
+  static TextStyle bodyLg = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 16,
     fontWeight: FontWeight.w600,
     height: 1.45,
   );
 
-  static TextStyle bodyMd = _inter.copyWith(
+  static TextStyle bodyMd = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 15,
     fontWeight: FontWeight.w400,
     height: 1.45,
   );
 
-  static TextStyle bodySm = _inter.copyWith(
+  static TextStyle bodySm = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 14,
     fontWeight: FontWeight.w400,
     height: 1.42,
   );
 
   // ─── Label ───
-  static TextStyle labelSm = _inter.copyWith(
+  static TextStyle labelSm = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 11,
     fontWeight: FontWeight.w500,
     letterSpacing: 0,
   );
 
-  static TextStyle labelMd = _inter.copyWith(
+  static TextStyle labelMd = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 13,
     fontWeight: FontWeight.w500,
     letterSpacing: 0,
   );
 
-  static TextStyle labelLg = _inter.copyWith(
+  static TextStyle labelLg = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 13,
     fontWeight: FontWeight.w500,
     letterSpacing: 0,
   );
 
   // ─── Special ───
-  static TextStyle heroNumber = _heading.copyWith(
+  static TextStyle heroNumber = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 44,
     fontWeight: FontWeight.w600,
     height: 0.94,
     letterSpacing: 0,
   );
 
-  static TextStyle chipText = _inter.copyWith(
+  static TextStyle chipText = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 12,
     fontWeight: FontWeight.w600,
   );
 
-  static TextStyle badgeText = _inter.copyWith(
+  static TextStyle badgeText = TextStyle(
+    fontFamily: 'Inter',
     fontSize: 11,
     fontWeight: FontWeight.w500,
     letterSpacing: 0,

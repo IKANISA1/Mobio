@@ -10,6 +10,8 @@ import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/features/bookings/application/booking_services.dart';
+import 'package:mobi_app/features/bookings/application/review_scheduled_post_providers.dart';
+import 'package:mobi_app/features/bookings/application/review_scheduled_posts.dart';
 import 'package:mobi_app/features/bookings/data/trip_service.dart';
 import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
@@ -46,6 +48,32 @@ class TripDetailsScreen extends ConsumerStatefulWidget {
 class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
   TripService get _tripService => ref.read(tripServiceProvider);
 
+  bool _reviewSelected = false;
+  ReviewScheduledPostGateway? _reviewGateway;
+  ReviewScheduledPostIntent? _reviewIntent;
+  bool _reviewRefreshQueued = false;
+
+  ScheduledPostUiAction _actionToken() => _reviewSelected
+      ? ScheduledPostUiAction.review(_reviewGateway, _reviewIntent)
+      : ScheduledPostUiAction.ordinary(AccountActionToken.capture());
+
+  void _onReviewChanged() {
+    if (!mounted) return;
+    if (_reviewIntent == null ||
+        _reviewGateway?.isCurrent(_reviewIntent!) != true) {
+      _loadRevision++;
+      _reviewIntent = null;
+      _trip = null;
+      _isLoading = true;
+    }
+    if (_reviewRefreshQueued) return;
+    _reviewRefreshQueued = true;
+    scheduleMicrotask(() {
+      _reviewRefreshQueued = false;
+      if (mounted) unawaited(_loadTrip());
+    });
+  }
+
   int _loadRevision = 0;
   AccountSnapshot? _viewAccount;
   Trip? _trip;
@@ -56,12 +84,18 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
   @override
   void initState() {
     super.initState();
+    _reviewSelected = ref.read(reviewScheduledPostsSelectedProvider);
+    _reviewGateway = _reviewSelected
+        ? ref.read(reviewScheduledPostGatewayProvider)
+        : null;
+    _reviewGateway?.addListener(_onReviewChanged);
     _viewAccount = _currentAccount();
     AccountContext.changes.addListener(_onAccountChanged);
     unawaited(_loadTrip());
   }
 
   AccountSnapshot? _currentAccount() {
+    if (_reviewSelected) return null;
     if (!SupabaseConfig.isConfigured || SupabaseConfig.isLocalUiPreview) {
       return null;
     }
@@ -74,6 +108,10 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
 
   void _onAccountChanged() {
     if (!mounted) return;
+    if (_reviewSelected) {
+      _onReviewChanged();
+      return;
+    }
     final current = _currentAccount();
     if (current?.identity == _viewAccount?.identity &&
         current?.generation == _viewAccount?.generation) {
@@ -86,11 +124,17 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
   @override
   void dispose() {
     AccountContext.changes.removeListener(_onAccountChanged);
+    _reviewGateway?.removeListener(_onReviewChanged);
     _loadRevision++;
     super.dispose();
   }
 
   Future<void> _loadTrip() async {
+    if (_reviewSelected) {
+      _loadReviewTrip();
+      return;
+    }
+
     final revision = ++_loadRevision;
     final account = _currentAccount();
     setState(() {
@@ -127,6 +171,31 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
     }
   }
 
+  void _loadReviewTrip() {
+    final revision = ++_loadRevision;
+    try {
+      final gateway = requireReviewScheduledPosts(_reviewGateway);
+      final intent = gateway.capture(targetId: widget.tripId);
+      final trip = gateway.get(intent);
+      if (!mounted || revision != _loadRevision || !gateway.isCurrent(intent))
+        return;
+      setState(() {
+        _reviewIntent = intent;
+        _trip = trip;
+        _isLoading = false;
+        _error = null;
+      });
+    } on Object {
+      if (!mounted || revision != _loadRevision) return;
+      setState(() {
+        _reviewIntent = null;
+        _trip = null;
+        _isLoading = false;
+        _error = 'This post is unavailable in the current session.';
+      });
+    }
+  }
+
   Trip? _previewTrip(String id) {
     for (final trip in AppConstants.mockTrips) {
       if (trip.id == id) return trip;
@@ -134,8 +203,48 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
     return null;
   }
 
-  Future<void> _handleCancel(AccountActionToken actionToken, Trip trip) async {
+  Future<void> _handleReviewCancel(ScheduledPostUiAction action) async {
+    final gateway = action.gateway;
+    final intent = action.intent;
+    if (gateway == null || intent == null || !action.isCurrent) return;
+    final confirmed = await MobiConfirmDialog.show(
+      context: context,
+      title: 'Cancel trip?',
+      body: 'This cannot be undone.',
+      confirmLabel: 'Cancel trip',
+      isDestructive: true,
+    );
+    if (!mounted || confirmed != true || !action.isCurrent) return;
+    setState(() => _isCancelling = true);
+    try {
+      gateway.cancel(intent);
+      if (!mounted || !action.hasAuthority) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Trip cancelled.')));
+      widget.onBack();
+    } on Object {
+      if (mounted && action.hasAuthority) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('This post changed. Refresh before cancelling it.'),
+          ),
+        );
+      }
+    } finally {
+      if (mounted && action.hasAuthority) setState(() => _isCancelling = false);
+    }
+  }
+
+  Future<void> _handleCancel(
+    ScheduledPostUiAction actionToken,
+    Trip trip,
+  ) async {
     if (!mounted || !actionToken.isCurrent) return;
+    if (_reviewSelected) {
+      await _handleReviewCancel(actionToken);
+      return;
+    }
     final account = _currentAccount();
     if (!SupabaseConfig.isLocalUiPreview && account == null) return;
     final confirmed = await MobiConfirmDialog.show(
@@ -190,8 +299,9 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
     }
   }
 
-  void _openChat(AccountActionToken actionToken, Trip trip) {
+  void _openChat(ScheduledPostUiAction actionToken, Trip trip) {
     if (!mounted || !actionToken.isCurrent) return;
+    if (_reviewSelected && _reviewGateway?.chatAvailable != true) return;
     final currentUserId = _currentUserIdForChat();
     if (trip.id == null || currentUserId == null) {
       return;
@@ -207,6 +317,13 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
   }
 
   String? _currentUserIdForChat() {
+    if (_reviewSelected) {
+      final intent = _reviewIntent;
+      return intent != null &&
+              _reviewGateway?.hasCurrentAuthority(intent) == true
+          ? intent.actorId
+          : null;
+    }
     if (SupabaseConfig.isLocalUiPreview) {
       return 'preview-user';
     }
@@ -297,7 +414,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
   }
 
   Widget _buildError() {
-    final actionToken = AccountActionToken.capture();
+    final actionToken = _actionToken();
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.screenPadding),
@@ -313,7 +430,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
   }
 
   Widget _buildContent() {
-    final actionToken = AccountActionToken.capture();
+    final actionToken = _actionToken();
     final trip = _trip!;
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
@@ -326,7 +443,10 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
     final isCancelled = trip.status == 'cancelled';
     final currentUserId = _currentUserIdForChat();
     final isTripOwner = currentUserId != null && trip.authorId == currentUserId;
-    final canChat = currentUserId != null && trip.id?.isNotEmpty == true;
+    final canChat =
+        currentUserId != null &&
+        trip.id?.isNotEmpty == true &&
+        (!_reviewSelected || _reviewGateway?.chatAvailable == true);
     final contactLabel = trip.whatsapp.trim().isNotEmpty
         ? trip.whatsapp.trim()
         : 'In-app chat';
@@ -441,6 +561,7 @@ class _TripDetailsScreenState extends ConsumerState<TripDetailsScreen> {
                   originPlaceId: trip.originPlaceId,
                   destPlaceId: trip.destinationPlaceId,
                   height: 200,
+                  allowExternalMap: !_reviewSelected,
                 ),
               ),
 
@@ -628,8 +749,6 @@ class _TripDetailFactRow extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 value.isEmpty ? '—' : value,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
                 style: AppTypography.bodyMd.copyWith(
                   color: cs.onSurface,
                   fontWeight: FontWeight.w600,

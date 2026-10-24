@@ -235,7 +235,7 @@ class _ProfileFavoriteAddressesSectionState
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         MobiSectionHeader(
           title: 'Favorite addresses',

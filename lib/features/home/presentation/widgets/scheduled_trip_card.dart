@@ -23,77 +23,71 @@ class ScheduledTripCard extends StatelessWidget {
       semanticLabel: 'View trip details',
       padding: const EdgeInsets.all(AppSpacing.lg),
       borderRadius: AppRadii.hero,
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox.square(
-            dimension: 58,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [cs.primary, cs.secondary],
+          Row(
+            children: [
+              SizedBox.square(
+                dimension: 58,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [cs.primary, cs.secondary],
+                    ),
+                  ),
+                  child: Center(
+                    child: VehicleTypeIcon.fromId(
+                      vehicleTypeId: trip.vehicleTypeStr,
+                      size: 25,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
-              child: Center(
-                child: VehicleTypeIcon.fromId(
-                  vehicleTypeId: trip.vehicleTypeStr,
-                  size: 25,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Text(
                   '${trip.origin} → ${trip.destination}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.titleMd.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    color: cs.onSurface,
                   ),
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  trip.departureTime,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.bodySm.copyWith(
-                    color: cs.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              if (onTap != null) const Icon(LucideIcons.chevronRight, size: 18),
+            ],
           ),
-          const SizedBox(width: AppSpacing.sm),
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                const MobiStatusBadge(
-                  label: 'Upcoming',
-                  tone: MobiStatusBadgeTone.positive,
+          const SizedBox(height: AppSpacing.xs),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.xs,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
+                trip.departureTime,
+                style: AppTypography.bodySm.copyWith(
+                  color: cs.onSurfaceVariant,
                 ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  trip.authorName.trim().isNotEmpty
-                      ? trip.authorName.trim()
-                      : trip.vehicleTypeStr.toUpperCase(),
-                  style: AppTypography.labelMd.copyWith(
-                    color: cs.onSurfaceVariant,
-                  ),
+              ),
+              const MobiStatusBadge(
+                label: 'Upcoming',
+                tone: MobiStatusBadgeTone.positive,
+              ),
+              Text(
+                trip.authorName.trim().isNotEmpty
+                    ? trip.authorName.trim()
+                    : trip.vehicleTypeStr.toUpperCase(),
+                style: AppTypography.labelMd.copyWith(
+                  color: cs.onSurfaceVariant,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(width: AppSpacing.xs),
-          if (onTap != null) const Icon(LucideIcons.chevronRight, size: 18),
         ],
       ),
     );

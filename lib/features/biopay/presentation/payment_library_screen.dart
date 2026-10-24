@@ -532,7 +532,12 @@ class _PaymentLibraryScreenState extends ConsumerState<PaymentLibraryScreen> {
             ),
           ),
           Text(paymentEvidenceLabel(l, evidence)),
-          Text('${DateTime.parse(row['updated_at'] as String).toLocal()}'),
+          Text(
+            paymentDateTimeLabel(
+              context,
+              DateTime.parse(row['updated_at'] as String),
+            ),
+          ),
           if (snapshot?['source'] case final Map<String, dynamic> source)
             Text(source['label'] as String? ?? ''),
           if (row['discovery_quote_id'] != null &&
@@ -609,6 +614,11 @@ class _PaymentRequestEditorState extends ConsumerState<PaymentRequestEditor> {
   late DateTime _expires = _startedAt.add(const Duration(days: 7));
   AccountSnapshot? _viewAccount;
   int _revision = 0;
+  bool get _validInput =>
+      _label.text.trim().isNotEmpty &&
+      _selected.isNotEmpty &&
+      (_scope != 'method' || _selected.length == 1) &&
+      (_scope != 'request' || _any || parseRwf(_amount.text) != null);
   bool _current(AccountSnapshot? account) =>
       mounted &&
       account != null &&
@@ -713,10 +723,7 @@ class _PaymentRequestEditorState extends ConsumerState<PaymentRequestEditor> {
     if (_busy || !_current(account)) return;
     final revision = ++_revision;
     final amount = _scope == 'request' && !_any ? parseRwf(_amount.text) : null;
-    if (_selected.isEmpty ||
-        (_scope == 'method' && _selected.length != 1) ||
-        (_scope == 'request' && !_any && amount == null) ||
-        _label.text.trim().isEmpty) {
+    if (!_validInput) {
       setState(() => _error = true);
       return;
     }
@@ -774,13 +781,29 @@ class _PaymentRequestEditorState extends ConsumerState<PaymentRequestEditor> {
       title: l.bpCreateRequest,
       busy: _busy,
       onBack: back,
-      action: PaymentAction(
-        label: l.bpCreateRequest,
-        onPressed: _busy
-            ? null
-            : () {
-                if (current()) unawaited(_create(account));
-              },
+      action: MergeSemantics(
+        child: Semantics(
+          hint: _validInput
+              ? null
+              : [
+                  if (_label.text.trim().isEmpty) l.bpLabel,
+                  if (_selected.isEmpty ||
+                      (_scope == 'method' && _selected.length != 1))
+                    _scope == 'method' ? l.bpMethodScope : l.bpMethods,
+                  if (_scope == 'request' &&
+                      !_any &&
+                      parseRwf(_amount.text) == null)
+                    l.bpWholeAmount,
+                ].join(' · '),
+          child: PaymentAction(
+            label: l.bpCreateRequest,
+            onPressed: _busy || !current() || !_validInput
+                ? null
+                : () {
+                    if (current()) unawaited(_create(account));
+                  },
+          ),
+        ),
       ),
       children: [
         if (_error) PaymentError(l.bpCheckFields),
@@ -805,6 +828,9 @@ class _PaymentRequestEditorState extends ConsumerState<PaymentRequestEditor> {
           controller: _label,
           maxLength: 60,
           decoration: InputDecoration(labelText: l.bpLabel),
+          onChanged: (_) {
+            if (current()) setState(() {});
+          },
         ),
         for (final m in _methods)
           CheckboxListTile(
@@ -856,6 +882,9 @@ class _PaymentRequestEditorState extends ConsumerState<PaymentRequestEditor> {
                 LengthLimitingTextInputFormatter(8),
               ],
               decoration: InputDecoration(labelText: l.bpAmount),
+              onChanged: (_) {
+                if (current()) setState(() {});
+              },
             ),
         ],
         DropdownButtonFormField<PaymentPurpose>(

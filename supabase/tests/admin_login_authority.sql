@@ -34,6 +34,9 @@ insert into auth.users(id,phone,phone_confirmed_at,raw_app_meta_data,raw_user_me
 select user_id,'+250700004001',now(),'{"provider":"whatsapp_cloud_otp"}','{}',false from qa_admin_actor;
 insert into auth.sessions(id,user_id,created_at,not_after)
 select session_id,user_id,now(),now()+interval '1 hour' from qa_admin_actor;
+-- Explicit SQL-only positive OTP/session setup; no Admin lease or grant is added.
+select pg_temp.qa_seed_interactive_authority(array(select user_id from qa_admin_actor));
+
 insert into public.profile_platform_permissions(profile_id,permission_key)
 select user_id,'admin.users.read' from qa_admin_actor;
 select pg_temp.qa_claims('whatsapp_cloud_otp');

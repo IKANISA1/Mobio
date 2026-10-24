@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:mobi_app/core/async/account_epoch.dart';
 import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/auth/admin_session_guard.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/biopay/domain/face_shortcut.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -43,6 +44,7 @@ class BioPayFaceService {
     'remove': {'updated'},
     'change_method': {'updated'},
     'handoff': {'recorded'},
+    'prepare_handoff': {'dial_ready'},
   };
 
   AccountSnapshot captureAccount() {
@@ -83,7 +85,8 @@ class BioPayFaceService {
         'biopay-face-provider',
         body: {'action': action, ...body},
       );
-      final response = action == 'status'
+      final readOnly = action == 'status' || action == 'prepare_handoff';
+      final response = readOnly
           ? await RequestDeadline.read(request)
           : await RequestDeadline.mutation(
               request,
@@ -99,6 +102,7 @@ class BioPayFaceService {
       }
       final data = Map<String, dynamic>.from(result);
       if (data['success'] == false) {
+        _rejectFreshness(account, data['code'], response.status);
         throw FaceServiceException(
           data['code']?.toString() ?? 'SERVICE_UNAVAILABLE',
         );
@@ -112,10 +116,18 @@ class BioPayFaceService {
     } on MutationOutcomeUnknownException {
       throw unconfirmed();
     } on FormatException {
-      if (action != 'status') throw unconfirmed();
+      if (action != 'status' && action != 'prepare_handoff') {
+        throw unconfirmed();
+      }
       throw const FaceServiceException('SERVICE_UNAVAILABLE');
     } on FunctionException catch (error) {
+      if (!isCurrent(account)) throw const FaceServiceException('AUTH_EXPIRED');
       final details = error.details;
+      _rejectFreshness(
+        account,
+        details is Map ? details['code'] : null,
+        error.status,
+      );
       throw FaceServiceException(
         details is Map
             ? details['code']?.toString() ?? 'SERVICE_UNAVAILABLE'
@@ -123,6 +135,19 @@ class BioPayFaceService {
       );
     } on TimeoutException {
       throw const FaceServiceException('TIMEOUT');
+    }
+  }
+
+  void _rejectFreshness(AccountSnapshot account, Object? code, int status) {
+    if (status == 403 &&
+        code == 'ADMIN_REAUTHENTICATION_REQUIRED' &&
+        isCurrent(account) &&
+        supabase?.auth.currentUser?.appMetadata['provider'] ==
+            'admin_whatsapp_otp') {
+      AdminSessionGuard.rejectSession(
+        userId: account.userId,
+        sessionId: account.sessionId,
+      );
     }
   }
 
@@ -206,6 +231,15 @@ class BioPayFaceService {
     await invoke('handoff', {'request_id': requestId});
   }
 
+  Future<PreparedFaceUssdShortcut> prepareHandoff(String requestId) async {
+    final reply = await invoke('prepare_handoff', {'request_id': requestId});
+    try {
+      return PreparedFaceUssdShortcut.fromJson(reply);
+    } on FormatException {
+      throw const FaceServiceException('SERVICE_UNAVAILABLE');
+    }
+  }
+
   Future<BioPayFaceProviderStatus> health() async {
     if (supabase == null) {
       return const BioPayFaceProviderStatus(
@@ -213,12 +247,14 @@ class BioPayFaceService {
         productionReady: false,
       );
     }
+    final account = captureAccount();
     final response = await RequestDeadline.read(
       supabase!.functions.invoke(
         'biopay-face-provider/health',
         method: HttpMethod.get,
       ),
     );
+    if (!isCurrent(account)) throw const FaceServiceException('AUTH_EXPIRED');
     return BioPayFaceProviderStatus.fromJson(
       Map<String, dynamic>.from(response.data as Map),
     );

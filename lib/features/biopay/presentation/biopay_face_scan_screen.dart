@@ -140,13 +140,30 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen>
       });
       final native = ref.read(paymentDiscoveryServiceProvider);
       if (native.deviceFamily != 'android') return;
+      // Revalidate current recipient and route immediately before handing the
+      // shortcut to the OS. Preparation records no dialer launch or payment.
+      final prepared = await service.prepareHandoff(shortcut.requestId);
       if (!current() ||
-          !_gate.claim(ticket, account.identity, shortcut, DateTime.now())) {
+          prepared.requestId != shortcut.requestId ||
+          prepared.payeeId != shortcut.payeeId ||
+          prepared.receivingMethodId != shortcut.receivingMethodId ||
+          prepared.receivingMethodVersion != shortcut.receivingMethodVersion ||
+          prepared.provider != shortcut.provider ||
+          prepared.routeId != shortcut.routeId ||
+          prepared.routeVersion != shortcut.routeVersion ||
+          prepared.ussdCode != shortcut.ussdCode) {
+        if (current()) {
+          throw const FaceServiceException('RECIPIENT_UNAVAILABLE');
+        }
+        return;
+      }
+      if (!current() ||
+          !_gate.claim(ticket, account.identity, prepared, DateTime.now())) {
         return;
       }
       final launched = await native.openReviewedInstruction({
         'mode': 'dial',
-        'instruction': shortcut.ussdCode,
+        'instruction': prepared.ussdCode,
       });
       if (!current()) return;
       if (launched) {
@@ -316,6 +333,19 @@ class _BioPayFaceScanScreenState extends ConsumerState<BioPayFaceScanScreen>
               ),
             ),
             const SizedBox(height: 8),
+            if (_error is FaceServiceException &&
+                (_error as FaceServiceException).code ==
+                    'ADMIN_REAUTHENTICATION_REQUIRED')
+              TextButton(
+                onPressed: _busy
+                    ? null
+                    : () {
+                        if (renderedCurrent()) {
+                          unawaited(_openAlternative('/admin-auth'));
+                        }
+                      },
+                child: Text(l.faceSignIn),
+              ),
             TextButton(
               onPressed: _busy
                   ? null

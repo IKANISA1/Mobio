@@ -46,21 +46,26 @@ void main() {
       },
     );
 
-    test('iOS plist declares camera only for active BioPay scanning', () {
-      final plist = File('ios/Runner/Info.plist').readAsStringSync();
+    test(
+      'iOS plist declares camera for approved BioPay scanning and lookup',
+      () {
+        final plist = File('ios/Runner/Info.plist').readAsStringSync();
 
-      expect(plist, contains('NSCameraUsageDescription'));
-      expect(plist, contains('NFCReaderUsageDescription'));
-      expect(plist, contains('BioPay QR scanning'));
-      expect(plist, contains('AWS-backed face enrollment'));
-      expect(plist, contains('USSD dialer'));
-      expect(plist, isNot(contains('face scan')));
-      expect(plist, isNot(contains('scan BioPay faces')));
-      expect(plist, isNot(contains('calculate routes')));
-      expect(plist, isNot(contains('route calculation')));
-      expect(plist, contains('nearby drivers and passengers'));
-      expect(plist, contains('Google Maps handoff'));
-    });
+        expect(plist, contains('NSCameraUsageDescription'));
+        expect(plist, contains('NFCReaderUsageDescription'));
+        expect(plist, contains('BioPay QR scanning'));
+        // The 20 September Face-USSD approval supersedes the AWS shortcut.
+        expect(plist, contains('optional face enrollment or account lookup'));
+        expect(plist, isNot(contains('AWS-backed face enrollment')));
+        expect(plist, contains('USSD dialer'));
+        expect(plist, isNot(contains('face scan')));
+        expect(plist, isNot(contains('scan BioPay faces')));
+        expect(plist, isNot(contains('calculate routes')));
+        expect(plist, isNot(contains('route calculation')));
+        expect(plist, contains('nearby drivers and passengers'));
+        expect(plist, contains('Google Maps handoff'));
+      },
+    );
 
     test('profile edit flow does not expose BioPay handle editing', () {
       final editScreen = File(
@@ -110,7 +115,11 @@ void main() {
         expect(router, contains("path: '/admin/finance'"));
         expect(router, contains("=> '/admin/biopay'"));
         expect(adminUi, isNot(contains("label: 'Finance'")));
-        expect(adminUi, contains("label: 'BioPay'"));
+        expect(adminUi, contains('label: copy.navigation(config.route)'));
+        final adminCopy = File(
+          'lib/features/admin/presentation/admin_copy.dart',
+        ).readAsStringSync();
+        expect(adminCopy, contains("'/admin/biopay' => 'BioPay'"));
         expect(adminUi, contains("route: '/admin/biopay'"));
         expect(adminUi, isNot(contains("route: '/admin/finance'")));
         expect(adminService, isNot(contains('listRiskFlags')));
@@ -223,7 +232,7 @@ void main() {
         'docs/product/biopay_ussd_aws_reactivation_scope_2026-06-12.md',
       ).readAsStringSync();
       final referenceMap = File(
-        'docs/product/biopay_reference_screen_gap_map_2026-06-12.md',
+        'docs/product/biopay_screen_workflow_map_2026-06-12.md',
       ).readAsStringSync();
       final biopayService = File(
         'lib/features/biopay/data/biopay_ussd_service.dart',
@@ -343,10 +352,7 @@ void main() {
       expect(scopeDoc, contains('external-payment assistant'));
       expect(scopeDoc, contains('FACE_PROVIDER=aws_rekognition'));
       expect(scopeDoc, contains('USSD dialer'));
-      expect(
-        referenceMap,
-        contains('Reference repo: `/Volumes/PRO-G40/BioPay`'),
-      );
+      expect(referenceMap, contains('revolut-design/SKILL.md'));
       expect(referenceMap, contains('Confirm Match'));
       expect(referenceMap, contains('hide the raw full USSD string'));
       expect(referenceMap, contains('BioPay Ops'));
@@ -354,9 +360,7 @@ void main() {
       expect(referenceMap, contains('RWF amount field'));
       expect(
         referenceMap,
-        contains(
-          'Face enrollment UI reference repo: `/Volumes/PRO-G40/MEMORIES`',
-        ),
+        contains('sole design authority for Mobio app, web'),
       );
       expect(referenceMap, contains('Center`, `Turn`, `Hold'));
       expect(

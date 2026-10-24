@@ -69,6 +69,8 @@ class _AdminSessionBoundaryState extends State<AdminSessionBoundary>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _changes.addListener(_accountChanged);
+    AdminSessionGuard.changes.addListener(_guardChanged);
+    widget.router.routeInformationProvider.addListener(_routeChanged);
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted && _protected) setState(() {});
     });
@@ -77,6 +79,10 @@ class _AdminSessionBoundaryState extends State<AdminSessionBoundary>
   @override
   void didUpdateWidget(AdminSessionBoundary oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.router != widget.router) {
+      oldWidget.router.routeInformationProvider.removeListener(_routeChanged);
+      widget.router.routeInformationProvider.addListener(_routeChanged);
+    }
     if (oldWidget.accountChanges != widget.accountChanges) {
       (oldWidget.accountChanges ?? AccountContext.changes).removeListener(
         _accountChanged,
@@ -85,9 +91,19 @@ class _AdminSessionBoundaryState extends State<AdminSessionBoundary>
     }
   }
 
+  void _routeChanged() {
+    // The masked Router child cannot rebuild itself after a recovery route
+    // change. Observe the route provider so the unprotected login can mount.
+    if (mounted) setState(() {});
+  }
+
   void _accountChanged() {
     _lastInteraction = DateTime.fromMillisecondsSinceEpoch(0);
     if (mounted) setState(() {});
+  }
+
+  void _guardChanged() {
+    if (mounted && _protected) setState(() {});
   }
 
   Future<void> _refresh({required bool userActivity}) async {
@@ -128,6 +144,8 @@ class _AdminSessionBoundaryState extends State<AdminSessionBoundary>
   @override
   void dispose() {
     _changes.removeListener(_accountChanged);
+    AdminSessionGuard.changes.removeListener(_guardChanged);
+    widget.router.routeInformationProvider.removeListener(_routeChanged);
     _timer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();

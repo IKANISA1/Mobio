@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:mobi_design_system/theme/app_colors.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
@@ -427,13 +426,33 @@ class AppTheme {
       timePickerTheme: TimePickerThemeData(
         backgroundColor: cs.surfaceContainerLow,
         shape: panelShape,
-        hourMinuteColor: cs.surfaceContainerHighest,
-        hourMinuteTextColor: cs.onSurface,
-        dayPeriodColor: cs.surfaceContainerHigh,
-        dayPeriodTextColor: cs.onSurface,
+        hourMinuteColor: WidgetStateColor.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? cs.primaryContainer
+              : cs.surfaceContainerHighest,
+        ),
+        hourMinuteTextColor: WidgetStateColor.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? cs.onPrimaryContainer
+              : cs.onSurface,
+        ),
+        dayPeriodColor: WidgetStateColor.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? cs.primaryContainer
+              : cs.surfaceContainerHigh,
+        ),
+        dayPeriodTextColor: WidgetStateColor.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? cs.onPrimaryContainer
+              : cs.onSurface,
+        ),
         dialBackgroundColor: cs.surfaceContainerHigh,
         dialHandColor: cs.primary,
-        dialTextColor: cs.onSurface,
+        dialTextColor: WidgetStateColor.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? cs.onPrimary
+              : cs.onSurface,
+        ),
         entryModeIconColor: cs.onSurfaceVariant,
         helpTextStyle: AppTypography.labelMd.copyWith(
           color: cs.onSurfaceVariant,
@@ -456,7 +475,7 @@ class AppTheme {
     Color onSurface,
     Color onSurfaceVariant,
   ) {
-    return GoogleFonts.interTextTheme(base).copyWith(
+    return base.apply(fontFamily: 'Inter').copyWith(
       displayLarge: AppTypography.displayLg.copyWith(color: onSurface),
       displayMedium: AppTypography.displayMd.copyWith(color: onSurface),
       headlineLarge: AppTypography.headlineLg.copyWith(color: onSurface),

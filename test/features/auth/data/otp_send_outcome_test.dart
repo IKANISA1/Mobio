@@ -31,7 +31,7 @@ void main() {
   for (final admin in [false, true]) {
     Future<OtpResult> send(
       Dio dio, {
-      Duration timeout = const Duration(milliseconds: 100),
+      Duration timeout = const Duration(seconds: 15),
     }) => admin
         ? OtpService.sendOtp(
             phone: '0788123456',
@@ -153,19 +153,34 @@ void main() {
         expect(adapter.calls, 1);
       },
     );
-    test(
+    testWidgets(
       '${admin ? 'admin' : 'app'} send total deadline releases a hung callback',
-      () async {
+      (tester) async {
+        const timeout = Duration(seconds: 15);
         final reply = Completer<ResponseBody>();
         final adapter = _Adapter(() => reply.future);
         final dio = Dio(BaseOptions(baseUrl: 'https://otp-fixture.invalid'))
           ..httpClientAdapter = adapter;
         addTearDown(dio.close);
-        final result = await send(
-          dio,
-          timeout: const Duration(milliseconds: 2),
-        );
+        OtpResult? settledResult;
+        final pending = send(dio, timeout: timeout).then((result) {
+          settledResult = result;
+          return result;
+        });
+
+        // Drain Dio's queued dispatch without advancing the request deadline.
+        await tester.pump(Duration.zero);
+        expect(adapter.calls, 1);
+        expect(settledResult, isNull);
+
+        await tester.pump(timeout - const Duration(milliseconds: 1));
+        expect(settledResult, isNull);
+        await tester.pump(const Duration(milliseconds: 1));
+        final result = await pending;
+        expect(result.success, isFalse);
         expect(result.deliveryUnconfirmed, isTrue);
+        expect(result.retryAfterSeconds, 60);
+        expect(result.message, contains('Check WhatsApp'));
         expect(adapter.calls, 1);
         reply.complete(
           ResponseBody.fromString(
@@ -176,7 +191,7 @@ void main() {
             },
           ),
         );
-        await Future<void>.delayed(Duration.zero);
+        await tester.pump(Duration.zero);
         expect(adapter.calls, 1);
       },
     );

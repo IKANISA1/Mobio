@@ -19,12 +19,23 @@ import {
   normalizePhoneWithCountry,
 } from "../_shared/phone.ts";
 import {
-  googlePlayReviewMetadata,
-  isGooglePlayReviewOtp,
+  activeStoreReviewConfiguration,
+  isGooglePlayReviewPhone,
+  storeReviewChallengeHashes,
+  storeReviewCredentials,
 } from "../_shared/play-review-login.ts";
 import { checkPlayIntegrityEvidence } from "../_shared/play-integrity.ts";
 import { createAdminClient, createAnonClient } from "../_shared/supabase.ts";
-import { assertVerifiedPhoneUser, resolveVerifiedPhoneUser } from "../_shared/verified-phone-identity.ts";
+import {
+  assertVerifiedPhoneUser,
+  resolveVerifiedPhoneUser,
+} from "../_shared/verified-phone-identity.ts";
+
+import {
+  createStoreReviewSession,
+  registerIssuedAppSession,
+} from "../_shared/store-review-session.ts";
+import { HttpError } from "../_shared/validation.ts";
 
 type AppLoginRole = "passenger" | "driver";
 
@@ -70,7 +81,8 @@ function displayNameForRole(role: AppLoginRole): string {
 }
 
 async function findProfileByVerifiedOwner(
-  supabase: ReturnType<typeof createAdminClient>, ownerId: string,
+  supabase: ReturnType<typeof createAdminClient>,
+  ownerId: string,
 ): Promise<ExistingProfileRow | null> {
   const { data, error } = await supabase.from("profiles").select(
     "id, name, display_name, phone, role, location, vehicle, category, is_driver, vehicle_type, whatsapp, whatsapp_e164, country_code, momo_number, momo_pay_code, avatar_url, created_at",
@@ -85,11 +97,18 @@ export async function ensureAppUserSession(
   requestedRole: AppLoginRole,
   normalizedPhone: string,
   requestedCountryCode: string | null,
-  forceRequestedRole = false,
+  otpReference: string,
 ) {
   const verifiedOwner = await resolveVerifiedPhoneUser({
     lookupOwner: async (phone) => {
-      const { data, error } = await supabase.rpc("rpc_lookup_verified_phone_owner", { p_phone: phone });
+      const { data, error } = await supabase.rpc(
+        "rpc_lookup_whatsapp_otp_phone_owner",
+        {
+          p_phone: phone,
+          p_otp_reference: otpReference,
+          p_purpose: "app_login",
+        },
+      );
       if (error) throw new Error("PHONE_DIRECTORY_UNAVAILABLE");
       return data as string | null;
     },
@@ -100,15 +119,14 @@ export async function ensureAppUserSession(
     },
   }, normalizedPhone);
   const profileSeed = verifiedOwner
-    ? await findProfileByVerifiedOwner(supabase, verifiedOwner.id) : null;
+    ? await findProfileByVerifiedOwner(supabase, verifiedOwner.id)
+    : null;
   const existingRole = profileSeed?.role?.trim();
   if (existingRole == "admin") {
     throw new Error("ADMIN_PROFILE_REQUIRES_ADMIN_LOGIN");
   }
 
-  const effectiveRole: AppLoginRole = forceRequestedRole
-    ? requestedRole
-    : existingRole == "driver"
+  const effectiveRole: AppLoginRole = existingRole == "driver"
     ? "driver"
     : requestedRole;
   const displayName = profileSeed?.display_name?.trim() ||
@@ -154,6 +172,8 @@ export async function ensureAppUserSession(
     assertVerifiedPhoneUser(authUser, verifiedOwner!.id, normalizedPhone);
     const { error } = await supabase.auth.admin.updateUserById(authUser.id, {
       password,
+      email: fallbackEmail,
+      email_confirm: true,
       user_metadata: {
         ...(authUser.user_metadata ?? {}),
         name: displayName,
@@ -203,7 +223,7 @@ export async function ensureAppUserSession(
 
   const { data: signInData, error: signInError } = await anonClient.auth
     .signInWithPassword({
-      phone: normalizedPhone,
+      email: fallbackEmail,
       password,
     });
 
@@ -211,7 +231,11 @@ export async function ensureAppUserSession(
     throw signInError ?? new Error("Unable to create app session.");
   }
 
-  assertVerifiedPhoneUser(signInData.session.user, authUser.id, normalizedPhone);
+  assertVerifiedPhoneUser(
+    signInData.session.user,
+    authUser.id,
+    normalizedPhone,
+  );
   return {
     userId: authUser.id,
     role: effectiveRole,
@@ -221,7 +245,14 @@ export async function ensureAppUserSession(
 
 export async function handleVerifyLoginOtp(
   req: Request,
-  dependencies: { createSession?: typeof ensureAppUserSession } = {},
+  dependencies: {
+    createSession?: typeof ensureAppUserSession;
+    createReviewSession?: typeof createStoreReviewSession;
+    registerAppSession?: typeof registerIssuedAppSession;
+    createAdmin?: typeof createAdminClient;
+    createAnon?: typeof createAnonClient;
+    checkIntegrity?: typeof checkPlayIntegrityEvidence;
+  } = {},
 ): Promise<Response> {
   const corsResponse = handleCors(req);
   if (corsResponse) {
@@ -256,17 +287,68 @@ export async function handleVerifyLoginOtp(
     requestedRole = normalizeRole(body?.role);
     const countryCode = normalizeCountryCode(body?.countryCode);
     const purpose = "app_login";
-    const supabase = createAdminClient(10_000);
-    const anonClient = createAnonClient(10_000);
-    const isReviewLogin = isGooglePlayReviewOtp(phone, code);
-    const integrityCheck = await checkPlayIntegrityEvidence(
-      body,
-      "app_login_verify_otp",
-      req,
-      isReviewLogin,
-    );
+    const supabase = (dependencies.createAdmin ?? createAdminClient)(10_000);
+    const anonClient = (dependencies.createAnon ?? createAnonClient)(10_000);
+    const isReviewLogin = isGooglePlayReviewPhone(phone);
+    const integrityCheck =
+      await (dependencies.checkIntegrity ?? checkPlayIntegrityEvidence)(
+        body,
+        "app_login_verify_otp",
+        req,
+        isReviewLogin,
+      );
     if (!integrityCheck.ok && integrityCheck.response) {
       return integrityCheck.response;
+    }
+
+    if (isReviewLogin) {
+      const credentials = storeReviewCredentials();
+      const configuration = await activeStoreReviewConfiguration(
+        supabase,
+        credentials,
+      );
+      const challengeId = typeof body?.challengeId === "string"
+        ? body.challengeId
+        : "";
+      const hashes = await storeReviewChallengeHashes(
+        credentials,
+        configuration,
+        challengeId,
+        code,
+      );
+      const claimed = await supabase.rpc("rpc_claim_store_review_challenge", {
+        p_challenge_id: challengeId,
+        p_user_id: credentials.userId,
+        p_generation: credentials.generation,
+        p_role: configuration.role,
+        p_phone_hash: hashes.phoneHash,
+        p_code_hash: hashes.codeHash,
+      });
+      if (claimed.error || !claimed.data || claimed.data.claimed !== true) {
+        return errorResponse(
+          "Review code or challenge unavailable. Request a new code.",
+          400,
+          undefined,
+          req,
+        );
+      }
+      const issued =
+        await (dependencies.createReviewSession ?? createStoreReviewSession)(
+          supabase,
+          anonClient,
+          configuration,
+          challengeId,
+        );
+      return jsonResponse(
+        {
+          success: true,
+          mode: "synthetic_review",
+          message: "Verified",
+          ...issued,
+        },
+        200,
+        req,
+      );
     }
 
     const { data: otpRows, error: fetchError } = await supabase
@@ -329,12 +411,9 @@ export async function handleVerifyLoginOtp(
     const codeHash = otpRecord.code_hash
       ? await hashOtpCode(code, { phone, purpose })
       : null;
-    const legacyCodeHash = otpRecord.code_hash ? await hashOtpCode(code) : null;
     const isValidCode = otpRecord.code_hash
-      ? codeHash == otpRecord.code_hash ||
-        legacyCodeHash == otpRecord.code_hash ||
-        isReviewLogin
-      : otpRecord.code == code;
+      ? codeHash == otpRecord.code_hash
+      : false;
 
     const claimed = await claimOtpVerificationAttempt(supabase, {
       id: otpRecord.id,
@@ -388,8 +467,14 @@ export async function handleVerifyLoginOtp(
         requestedRole,
         phone,
         countryCode,
-        isReviewLogin,
+        String(otpRecord.id),
       );
+    await (dependencies.registerAppSession ?? registerIssuedAppSession)(
+      supabase,
+      userId,
+      session.access_token,
+      String(otpRecord.id),
+    );
 
     await tryRecordAppAuthAttempt({
       supabase,
@@ -403,7 +488,6 @@ export async function handleVerifyLoginOtp(
         role,
         stage: "verify_login_otp",
         ...integrityCheck.metadata,
-        ...(isReviewLogin ? googlePlayReviewMetadata() : {}),
       },
       request: req,
     });
@@ -446,6 +530,9 @@ export async function handleVerifyLoginOtp(
       );
     }
 
+    if (error instanceof HttpError) {
+      return errorResponse(error.message, error.status, undefined, req);
+    }
     console.error("verify-login-otp: verification or session operation failed");
     return errorResponse("Internal error", 500, undefined, req);
   }

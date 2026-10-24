@@ -16,6 +16,9 @@ select user_id, '+250700001001', now(),
   '{"provider":"admin_whatsapp_otp","qa_fixture":true}', '{}' from qa_permission_actor;
 insert into auth.sessions(id, user_id, created_at, not_after)
 select session_id, user_id, now(), now()+interval '1 hour' from qa_permission_actor;
+-- Explicit SQL-only positive OTP/session setup; no Admin lease or grant is added.
+select pg_temp.qa_seed_interactive_authority(array(select user_id from qa_permission_actor));
+
 -- A delegated explicit grant still requires the separate Admin login marker
 -- and verified-phone allowlist. Leave profile.role as passenger so this test
 -- measures the explicit grant instead of the existing full-Admin fallback.

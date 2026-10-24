@@ -1248,15 +1248,16 @@ class BioPayQrScannerSurfaceState extends ConsumerState<BioPayQrScannerSurface>
                 fit: StackFit.expand,
                 children: [
                   const _QrScannerCornerGuide(),
-                  Positioned(
-                    right: 14,
-                    top: 14,
-                    child: IconButton.filledTonal(
-                      tooltip: 'Torch',
-                      onPressed: _cameraPending > 0 ? null : _toggleTorch,
-                      icon: const Icon(LucideIcons.flashlight),
+                  if (!kIsWeb)
+                    Positioned(
+                      right: 14,
+                      top: 14,
+                      child: IconButton.filledTonal(
+                        tooltip: 'Torch',
+                        onPressed: _cameraPending > 0 ? null : _toggleTorch,
+                        icon: const Icon(LucideIcons.flashlight),
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),

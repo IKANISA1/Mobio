@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobi_app/core/backend/supabase_provider.dart';
 import 'package:mobi_app/features/profile/data/driver_plus_service.dart';
@@ -25,11 +26,14 @@ final referralServiceProvider = Provider(
   (ref) => ReferralService(supabase: ref.read(supabaseClientProvider)),
 );
 
-final referralAttributionServiceProvider = Provider(
-  (ref) => ReferralAttributionService(
+final referralAttributionServiceProvider = Provider((ref) {
+  final service = ReferralAttributionService(
     referralService: ref.read(referralServiceProvider),
-  ),
-);
+  );
+  ref.onDispose(() => unawaited(service.dispose()));
+  unawaited(service.initialize());
+  return service;
+});
 
 final subscriptionPlanServiceProvider = Provider(
   (ref) => SubscriptionPlanService(supabase: ref.read(supabaseClientProvider)),

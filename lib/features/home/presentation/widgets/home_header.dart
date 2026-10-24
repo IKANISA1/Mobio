@@ -141,6 +141,12 @@ class _HomeModeSegment extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final isLight = cs.brightness == Brightness.light;
+    // Keep the account-toggle fill adapter and give Light selection a
+    // contrast-bearing outline when family surface roles share one tint.
+    final selectedFill = isLight
+        ? cs.onSurface.withValues(alpha: 0.16)
+        : cs.surfaceContainerHighest;
 
     return Expanded(
       child: Semantics(
@@ -161,15 +167,16 @@ class _HomeModeSegment extends StatelessWidget {
               child: Container(
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: selected
-                      ? cs.surfaceContainerHighest
-                      : Colors.transparent,
+                  color: selected ? selectedFill : Colors.transparent,
                   borderRadius: BorderRadius.circular(AppRadii.pill),
                   border: selected
                       ? Border.all(
-                          color: Colors.white.withValues(
-                            alpha: ext.surfacePanelBorderAlpha,
-                          ),
+                          color: isLight
+                              ? cs.onSurfaceVariant
+                              : Colors.white.withValues(
+                                  alpha: ext.surfacePanelBorderAlpha,
+                                ),
+                          width: isLight ? 2 : 1,
                         )
                       : null,
                 ),

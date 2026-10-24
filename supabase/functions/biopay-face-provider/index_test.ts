@@ -5,6 +5,7 @@ import {
 import { handleBiopayFaceProviderRequest } from "./index.ts";
 import { BioPayAuthority, FaceError } from "../_shared/biopay-authority.ts";
 import { FACE_MODEL } from "../_shared/face-provider.ts";
+import { HttpError } from "../_shared/validation.ts";
 const user = {
   id: "11111111-1111-4111-8111-111111111111",
   sessionId: "22222222-2222-4222-8222-222222222222",
@@ -225,3 +226,182 @@ Deno.test("authentication is checked before body and all service calls", async (
   assertEquals(response.status, 401);
   assertEquals(h.calls.length, 0);
 });
+
+Deno.test("exact SQL freshness rejection remains actionable and prevents inference", async () => {
+  const client = {
+    rpc: () =>
+      Promise.resolve({
+        data: null,
+        error: { code: "42501", message: "ADMIN_REAUTHENTICATION_REQUIRED" },
+      }),
+  };
+  let calls = 0;
+  const response = await handleBiopayFaceProviderRequest(
+    new Request("https://fixture.invalid", {
+      method: "POST",
+      body: JSON.stringify({
+        action: "resolve",
+        image_b64: btoa("synthetic-image"),
+        idempotency_key: "0123456789abcdef",
+      }),
+    }),
+    {
+      authenticate: async () => user,
+      authority: new BioPayAuthority(client as never),
+      provider: {
+        configured: true,
+        call: async () => {
+          calls++;
+          return {};
+        },
+      },
+    },
+  );
+  assertEquals(response.status, 403);
+  assertEquals((await response.json()).code, "ADMIN_REAUTHENTICATION_REQUIRED");
+  assertEquals(calls, 0);
+});
+
+Deno.test("interactive status surfaces activation reauthentication instead of silently processing", async () => {
+  const actions: string[] = [];
+  const response = await handleBiopayFaceProviderRequest(
+    new Request("https://fixture.invalid", {
+      method: "POST",
+      body: JSON.stringify({ action: "status" }),
+    }),
+    {
+      authenticate: async () => user,
+      authority: {
+        reserve: async () => {
+          throw new Error("Status must not reserve an operation");
+        },
+        readiness: async () => ({}),
+        call: async (_user, action) => {
+          actions.push(action);
+          if (action === "status") {
+            return {
+              status: "processing",
+              pending_vector_id: vector,
+            };
+          }
+          throw new FaceError("ADMIN_REAUTHENTICATION_REQUIRED", 403);
+        },
+      },
+      provider: { configured: true, call: async () => ({ searchable: true }) },
+    },
+  );
+  assertEquals(response.status, 403);
+  assertEquals((await response.json()).code, "ADMIN_REAUTHENTICATION_REQUIRED");
+  assertEquals(actions, ["status", "activate"]);
+});
+
+Deno.test("prepare_handoff transports only the exact prior request to current SQL authority", async () => {
+  const calls: unknown[] = [];
+  let inference = 0;
+  const response = await handleBiopayFaceProviderRequest(
+    new Request("https://fixture.invalid", {
+      method: "POST",
+      body: JSON.stringify({
+        action: "prepare_handoff",
+        request_id: "prior-request",
+        payee_id: "forged-recipient",
+        ussd_code: "*999#",
+        receiving_method_id: "forged-method",
+      }),
+    }),
+    {
+      authenticate: async () => user,
+      authority: {
+        reserve: async () => {
+          throw new Error("Preparation must not reserve another scan");
+        },
+        readiness: async () => ({}),
+        call: async (actor, action, data) => {
+          calls.push({ actor, action, data });
+          return {
+            status: "dial_ready",
+            request_id: "prior-request",
+            ussd_code: "*182*1*1*0788001102#",
+          };
+        },
+      },
+      provider: {
+        configured: true,
+        call: async () => {
+          inference++;
+          return {};
+        },
+      },
+    },
+  );
+  assertEquals(response.status, 200);
+  const result = await response.json();
+  assertEquals(result.ussd_code, "*182*1*1*0788001102#");
+  assertEquals(calls, [{
+    actor: user,
+    action: "prepare_handoff",
+    data: { operation_id: "prior-request" },
+  }]);
+  assertEquals(inference, 0);
+});
+
+for (
+  const [name, rejection, expectedStatus, expectedCode] of [
+    [
+      "trusted exact Admin lease rejection",
+      new HttpError("Admin sign-in must be verified again", 403, {
+        code: "ADMIN_REAUTHENTICATION_REQUIRED",
+      }),
+      403,
+      "ADMIN_REAUTHENTICATION_REQUIRED",
+    ],
+    [
+      "generic proof rejection",
+      new HttpError("No proof", 403),
+      403,
+      "AUTH_EXPIRED",
+    ],
+    [
+      "ordinary invalid Auth transport",
+      new HttpError("No live Auth session", 401, {
+        code: "ADMIN_REAUTHENTICATION_REQUIRED",
+      }),
+      401,
+      "AUTH_EXPIRED",
+    ],
+    [
+      "similar unrecognized code",
+      new HttpError("No proof", 403, {
+        code: "ADMIN_REAUTHENTICATION_REQUIRED_EXTRA",
+      }),
+      403,
+      "AUTH_EXPIRED",
+    ],
+    [
+      "untyped message text",
+      new Error("ADMIN_REAUTHENTICATION_REQUIRED"),
+      503,
+      "SERVICE_UNAVAILABLE",
+    ],
+  ] as const
+) {
+  Deno.test(`Face front-door rejection preserves only ${name}`, async () => {
+    const state = harness();
+    const response = await handleBiopayFaceProviderRequest(
+      new Request("https://fixture.invalid/biopay-face-provider", {
+        method: "POST",
+        body: "invalid JSON must not be parsed after Auth denial",
+      }),
+      {
+        authenticate: async () => {
+          throw rejection;
+        },
+        authority: state.authority,
+        provider: state.provider,
+      },
+    );
+    assertEquals(response.status, expectedStatus);
+    assertEquals((await response.json()).code, expectedCode);
+    assertEquals(state.calls, []);
+  });
+}

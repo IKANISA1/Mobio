@@ -252,89 +252,10 @@ void main() {
       expect(faceProvider, isNot(contains('tflite')));
     });
 
-    test(
-      'WhatsApp OTP functions invalidate stale codes and hash with context',
-      () {
-        final otpSecurity = File(
-          'supabase/functions/_shared/otp-security.ts',
-        ).readAsStringSync();
-        final sendLoginOtp = File(
-          'supabase/functions/send-login-otp/index.ts',
-        ).readAsStringSync();
-        final verifyLoginOtp = File(
-          'supabase/functions/verify-login-otp/index.ts',
-        ).readAsStringSync();
-        final playReviewLogin = File(
-          'supabase/functions/_shared/play-review-login.ts',
-        ).readAsStringSync();
-        final sendAdminOtp = File(
-          'supabase/functions/send-otp/index.ts',
-        ).readAsStringSync();
-        final verifyAdminOtp = File(
-          'supabase/functions/verify-otp/index.ts',
-        ).readAsStringSync();
-
-        expect(otpSecurity, contains('OTP_HASH_SECRET'));
-        expect(otpSecurity, contains('context?: OtpHashContext'));
-        expect(sendLoginOtp, contains('const purpose = "app_login"'));
-        expect(
-          sendLoginOtp,
-          contains('await hashOtpCode(code, { phone, purpose })'),
-        );
-        expect(sendLoginOtp, contains('.neq("id", insertedOtp.id)'));
-        expect(sendLoginOtp, contains('isGooglePlayReviewPhone(phone)'));
-        expect(sendLoginOtp, contains('GOOGLE_PLAY_REVIEW_OTP'));
-        expect(
-          sendLoginOtp,
-          contains('Google Play review OTP prepared for app login.'),
-        );
-        expect(sendAdminOtp, contains('const purpose = "admin_login"'));
-        expect(
-          sendAdminOtp,
-          contains('await hashOtpCode(code, { phone, purpose })'),
-        );
-        expect(sendAdminOtp, contains('.neq("id", insertedOtp.id)'));
-
-        for (final predicate in [
-          '.eq("phone", input.phone)',
-          '.eq("purpose", input.purpose)',
-          '.eq("attempts", input.expectedAttempts)',
-          '.eq("verified", false)',
-          '.gt("expires_at", new Date().toISOString())',
-          '.select("id")',
-        ]) {
-          expect(otpSecurity, contains(predicate));
-        }
-
-        for (final source in [verifyLoginOtp, verifyAdminOtp]) {
-          expect(source, contains('await claimOtpVerificationAttempt'));
-          expect(source, contains('if (!claimed)'));
-          expect(
-            source.indexOf('dependencies.createSession ??'),
-            greaterThan(source.indexOf('await claimOtpVerificationAttempt')),
-          );
-          expect(
-            source,
-            contains('await hashOtpCode(code, { phone, purpose })'),
-          );
-          expect(source, contains('const legacyCodeHash'));
-          expect(source, isNot(contains('const { error: verifyError }')));
-          expect(source, contains('.eq("phone", phone)'));
-          expect(source, contains('.eq("purpose", purpose)'));
-        }
-
-        expect(playReviewLogin, contains('GOOGLE_PLAY_REVIEW_PHONE'));
-        expect(playReviewLogin, contains('+250788767816'));
-        expect(playReviewLogin, contains('GOOGLE_PLAY_REVIEW_OTP'));
-        expect(playReviewLogin, contains('123456'));
-        expect(verifyLoginOtp, contains('isGooglePlayReviewOtp(phone, code)'));
-        expect(verifyLoginOtp, contains('googlePlayReviewMetadata()'));
-        expect(verifyLoginOtp, contains('forceRequestedRole = false'));
-        expect(verifyLoginOtp, contains('isReviewLogin,'));
-        expect(verifyLoginOtp, contains('momo_number: momoNumber'));
-        expect(verifyLoginOtp, contains('momo_pay_code: momoPayCode'));
-      },
-    );
+    // OTP admission is exercised by native Deno handler tests in
+    // supabase/functions, discovered by scripts/ci/verify_backend.sh.
+    // Retired source-string assertions required obsolete public credentials
+    // and could not establish atomic claims or session isolation.
 
     test(
       'shared unavailable response documents the approved product scope',

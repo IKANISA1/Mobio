@@ -776,4 +776,716 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faceRefresh => 'Vérifier l’enregistrement';
+
+  @override
+  String get adminUsersTitle => 'Utilisateurs';
+
+  @override
+  String get adminUsersSubtitle => 'Répertoire et rôles.';
+
+  @override
+  String get adminRefresh => 'Actualiser';
+
+  @override
+  String get adminClose => 'Fermer';
+
+  @override
+  String get adminClear => 'Effacer';
+
+  @override
+  String get adminDirectory => 'Répertoire';
+
+  @override
+  String get adminSearchAndFilter => 'Rechercher et filtrer';
+
+  @override
+  String get adminSearchUsers => 'Rechercher des utilisateurs';
+
+  @override
+  String get adminFilterAll => 'Tous';
+
+  @override
+  String get adminFilterAdmins => 'Administrateurs';
+
+  @override
+  String get adminFilterDrivers => 'Chauffeurs';
+
+  @override
+  String get adminFilterPassengers => 'Passagers';
+
+  @override
+  String get adminRoleAdmin => 'Administrateur';
+
+  @override
+  String get adminRoleDriver => 'Chauffeur';
+
+  @override
+  String get adminRolePassenger => 'Passager';
+
+  @override
+  String get adminRoleUnknown => 'Rôle indisponible';
+
+  @override
+  String adminReviewRole(String role) {
+    return 'Examiner le rôle $role';
+  }
+
+  @override
+  String get adminUnavailable => 'Indisponible';
+
+  @override
+  String get adminOnline => 'En ligne';
+
+  @override
+  String get adminOffline => 'Hors ligne';
+
+  @override
+  String get adminPhone => 'Téléphone';
+
+  @override
+  String get adminVehicle => 'Véhicule';
+
+  @override
+  String get adminNotAssigned => 'Non attribué';
+
+  @override
+  String get adminJoined => 'Inscription';
+
+  @override
+  String get adminDriverProfile => 'Profil chauffeur';
+
+  @override
+  String get adminPassengerProfile => 'Profil passager';
+
+  @override
+  String get adminMatchingUsers => 'Utilisateurs correspondants';
+
+  @override
+  String get adminAdminProfiles => 'Profils administrateurs';
+
+  @override
+  String get adminPageAtSnapshot => 'Cette page au moment de l’instantané';
+
+  @override
+  String get adminCountUnavailable => 'Nombre exact indisponible';
+
+  @override
+  String get adminMatchingCountUnavailable =>
+      'Nombre exact de correspondances indisponible';
+
+  @override
+  String get adminUsersUnavailable => 'Utilisateurs indisponibles';
+
+  @override
+  String get adminUsersLoadFailed =>
+      'Impossible de charger les utilisateurs. Vérifiez votre connexion et réessayez.';
+
+  @override
+  String get adminAccountChangedTitle => 'Le compte a changé';
+
+  @override
+  String get adminAccountChangedBody =>
+      'Rouvrez le répertoire avec le compte actuel.';
+
+  @override
+  String get adminAccountPanelChanged =>
+      'Le compte a changé. Fermez ce panneau.';
+
+  @override
+  String get adminNoUsers => 'Aucun utilisateur';
+
+  @override
+  String get adminTryFilter => 'Essayez un autre filtre.';
+
+  @override
+  String get adminQueryFailed =>
+      'Impossible d’actualiser le répertoire. Réessayez.';
+
+  @override
+  String get adminUserUpdateFailed =>
+      'Impossible de modifier cet utilisateur. Actualisez et réessayez.';
+
+  @override
+  String get adminReviewUnavailable => 'Cet examen n’est plus disponible.';
+
+  @override
+  String get adminReviewShowFailed =>
+      'Impossible d’afficher cet examen. Actualisez les utilisateurs avant de recommencer.';
+
+  @override
+  String get adminReviewContinueFailed =>
+      'Impossible de poursuivre cet examen. Vérifiez son état enregistré avant d’en commencer un autre.';
+
+  @override
+  String get adminStatusUnconfirmed =>
+      'L’état n’a pas pu être confirmé. Ce lot reste non résolu.';
+
+  @override
+  String get adminCloseBatchTitle => 'Clore ce lot de changements de rôle ?';
+
+  @override
+  String get adminCloseBatchBody =>
+      'Arrêtez les changements restants et enregistrez l’état final. Les changements confirmés sont conservés. Un autre examen sera possible après confirmation de la clôture par le serveur.';
+
+  @override
+  String get adminCloseBatch => 'Clore le lot';
+
+  @override
+  String get adminCloseThisBatch => 'Clore ce lot';
+
+  @override
+  String get adminClosureUnconfirmed =>
+      'La clôture n’a pas pu être confirmée. Vérifiez ce lot avant d’en commencer un autre.';
+
+  @override
+  String get adminReviewTitle => 'Examiner les changements de rôle des profils';
+
+  @override
+  String get adminReviewDisclosure =>
+      'Les destinataires et rôles demandés sont figés pour cet examen. Le rôle Administrateur d’un profil n’accorde pas l’accès administrateur de confiance.';
+
+  @override
+  String get adminTrustedAccessDisclosure =>
+      'Le rôle Administrateur d’un profil n’accorde pas l’accès administrateur de confiance.';
+
+  @override
+  String get adminReviewExpired =>
+      'Cet instantané a expiré. Annulez et actualisez les utilisateurs pour un nouvel examen.';
+
+  @override
+  String get adminAllExcluded =>
+      'Tous les profils sélectionnés sont exclus. Aucun changement de rôle ne sera envoyé.';
+
+  @override
+  String get adminReviewUnavailableRefresh =>
+      'Cet examen n’est plus disponible. Annulez et actualisez les utilisateurs.';
+
+  @override
+  String get adminConfirming => 'Confirmation…';
+
+  @override
+  String get adminOutcomesTitle => 'Résultats des changements de rôle';
+
+  @override
+  String get adminReservationClosedEmpty =>
+      'Réservation close. Aucun changement de rôle n’a été envoyé.';
+
+  @override
+  String get adminBatchClosed =>
+      'Ce lot est clos. Ses résultats enregistrés restent disponibles.';
+
+  @override
+  String get adminUnknownGuidance =>
+      'Le résultat de certains changements est inconnu. Vérifiez leur état et clôturez ce lot avant un autre examen. Aucun changement ne sera renvoyé automatiquement.';
+
+  @override
+  String get adminUnsealedGuidance =>
+      'Vérifiez l’état de cette réservation et clôturez ce lot avant un autre examen. Aucun changement ne sera renvoyé automatiquement.';
+
+  @override
+  String get adminCheckStatus => 'Vérifier l’état';
+
+  @override
+  String get adminOwnExcluded => 'Exclu : votre propre profil';
+
+  @override
+  String get adminSameRoleExcluded => 'Exclu : possède déjà le rôle demandé';
+
+  @override
+  String get adminOwnProfileExcluded =>
+      'Votre propre profil est exclu des changements de rôle.';
+
+  @override
+  String get adminReviewProfileRole =>
+      'Examiner un changement de rôle du profil';
+
+  @override
+  String get adminEnabled => 'Activé';
+
+  @override
+  String get adminDisabled => 'Désactivé';
+
+  @override
+  String get adminStatusConfirmed => 'Confirmé';
+
+  @override
+  String get adminStatusKnownRejected => 'Rejet confirmé';
+
+  @override
+  String get adminStatusUnknown => 'Inconnu';
+
+  @override
+  String get adminStatusNotStarted => 'Non commencé';
+
+  @override
+  String get adminStatusSkipped => 'Ignoré';
+
+  @override
+  String get adminStatusSubmitting => 'Envoi en cours';
+
+  @override
+  String get adminPhaseChecking => 'Vérification des changements précédents…';
+
+  @override
+  String get adminPhaseReady =>
+      'Les résultats enregistrés figurent ci-dessous.';
+
+  @override
+  String get adminPhaseReserving => 'Préparation du lot confirmé…';
+
+  @override
+  String get adminPhaseSubmitting => 'Envoi des changements examinés…';
+
+  @override
+  String get adminPhaseReconciling =>
+      'Vérification de l’état faisant autorité…';
+
+  @override
+  String get adminPhaseSealing => 'Clôture de ce lot…';
+
+  @override
+  String get adminPhaseUnresolved =>
+      'L’état de ce lot doit encore être vérifié, puis le lot clôturé.';
+
+  @override
+  String get adminPhaseBlocked =>
+      'Les changements de rôle sont actuellement indisponibles.';
+
+  @override
+  String get adminRejectChanged =>
+      'Ce profil a changé depuis l’instantané. Actualisez-le pour un nouvel examen.';
+
+  @override
+  String get adminRejectMissing => 'Le profil examiné n’est plus disponible.';
+
+  @override
+  String get adminRejectReauthenticate =>
+      'Reconnectez-vous avant d’examiner un autre changement de rôle.';
+
+  @override
+  String get adminRejectGeneric =>
+      'Le serveur a rejeté ce changement. Il n’a pas été confirmé.';
+
+  @override
+  String get adminSnapshotExpired =>
+      'L’instantané a expiré. Actualisez les utilisateurs avant de changer les rôles ou d’ouvrir une autre page.';
+
+  @override
+  String get adminSortOnline => 'En ligne d’abord';
+
+  @override
+  String get adminSortNameAsc => 'Nom A–Z';
+
+  @override
+  String get adminSortNameDesc => 'Nom Z–A';
+
+  @override
+  String get adminSortRole => 'Rôle';
+
+  @override
+  String get adminSortNewest => 'Les plus récents';
+
+  @override
+  String get adminMember => 'Membre';
+
+  @override
+  String get adminStatus => 'État';
+
+  @override
+  String get adminClearVisibleSelection =>
+      'Effacer la sélection des utilisateurs visibles';
+
+  @override
+  String get adminSelectVisibleUsers =>
+      'Sélectionner les utilisateurs visibles';
+
+  @override
+  String get adminClearSearch => 'Effacer la recherche';
+
+  @override
+  String get adminSortRows => 'Trier les lignes';
+
+  @override
+  String get adminRows => 'Lignes';
+
+  @override
+  String get adminPreviousPage => 'Page précédente';
+
+  @override
+  String get adminNextPage => 'Page suivante';
+
+  @override
+  String get adminBack => 'Retour';
+
+  @override
+  String get adminNavOps => 'Opérations';
+
+  @override
+  String get adminNavFleet => 'Véhicules';
+
+  @override
+  String get adminNavAgencies => 'Agences';
+
+  @override
+  String get adminNavEv => 'Véhicules électriques';
+
+  @override
+  String get adminNavPlans => 'Formules';
+
+  @override
+  String get adminNavTrips => 'Trajets';
+
+  @override
+  String get adminNavReports => 'Signalements';
+
+  @override
+  String get adminNavHealth => 'État du système';
+
+  @override
+  String get adminNavAudit => 'Audit';
+
+  @override
+  String get adminNavBroadcasts => 'Diffusions';
+
+  @override
+  String get adminNavAccount => 'Compte';
+
+  @override
+  String get adminRewardTitle => 'Ajouter la récompense d’assurance';
+
+  @override
+  String adminRewardAction(String amount) {
+    return 'Ajouter $amount TOKENS';
+  }
+
+  @override
+  String adminRewardConfirm(String amount, String name) {
+    return 'Créditer $amount TOKENS à $name. Récompense pour l’achat d’une assurance automobile.';
+  }
+
+  @override
+  String adminRewardAdded(String amount, String name) {
+    return '$amount TOKENS ajoutés à $name.';
+  }
+
+  @override
+  String get adminRewardSubmit => 'Ajouter des TOKENS';
+
+  @override
+  String adminAccountReference(String id) {
+    return 'Référence du compte : $id';
+  }
+
+  @override
+  String adminMemberReference(String id) {
+    return 'Membre $id';
+  }
+
+  @override
+  String adminRoleChange(String before, String after) {
+    return '$before → $after';
+  }
+
+  @override
+  String adminReviewedRoleChange(String before, String after) {
+    return 'Demande examinée : $before → $after';
+  }
+
+  @override
+  String adminDriverStateChange(String before, String after) {
+    return 'Profil chauffeur : $before → $after';
+  }
+
+  @override
+  String adminStatusCount(String status, String count) {
+    return '$status : $count';
+  }
+
+  @override
+  String adminSnapshotAt(String date) {
+    return 'Instantané du $date';
+  }
+
+  @override
+  String adminSnapshotRange(String date, String expiry) {
+    return 'Instantané du $date · expire le $expiry';
+  }
+
+  @override
+  String adminSortBy(String label) {
+    return 'Trier par $label';
+  }
+
+  @override
+  String adminPagination(String start, String end, String total) {
+    return '$start–$end sur $total';
+  }
+
+  @override
+  String adminClearSelectionFor(String name) {
+    return 'Désélectionner $name';
+  }
+
+  @override
+  String adminSelectPerson(String name) {
+    return 'Sélectionner $name';
+  }
+
+  @override
+  String adminPersonSemantics(String name, String role, String status) {
+    return '$name, $role, $status';
+  }
+
+  @override
+  String get adminErrorSignIn => 'Reconnectez-vous pour charger les membres.';
+
+  @override
+  String get adminErrorSessionUnavailable =>
+      'La session de votre compte est indisponible.';
+
+  @override
+  String get adminErrorLoadMembers =>
+      'Impossible de charger les membres. Actualisez et réessayez.';
+
+  @override
+  String get adminErrorSessionChanged =>
+      'La session de votre compte a changé. Reconnectez-vous.';
+
+  @override
+  String get adminErrorReleaseSnapshot =>
+      'Impossible de libérer l’instantané précédent. Actualisez pour réessayer.';
+
+  @override
+  String get adminErrorMemberSnapshotExpired =>
+      'Cet instantané des membres a expiré. Actualisez pour obtenir les résultats actuels.';
+
+  @override
+  String get adminErrorPageExpired =>
+      'Actualisez cet instantané avant de changer de page.';
+
+  @override
+  String get adminErrorReviewBusy =>
+      'Actualisez ou terminez l’examen actuel avant de changer les rôles.';
+
+  @override
+  String get adminErrorSelectPage =>
+      'Sélectionnez les membres sur cette page de l’instantané.';
+
+  @override
+  String get adminErrorReviewExpired =>
+      'Cet examen a expiré. Clôturez sa réservation avant un nouvel examen.';
+
+  @override
+  String get adminErrorJournalBefore =>
+      'Le stockage de reprise n’a pas pu être vérifié. Aucun changement de rôle n’a été envoyé.';
+
+  @override
+  String get adminErrorReserveUnknown =>
+      'Le résultat de la réservation est inconnu. Vérifiez-le ou clôturez la réservation avant un autre examen.';
+
+  @override
+  String get adminErrorReserveFailed =>
+      'La réservation n’a pas pu être terminée. Vérifiez-la ou clôturez-la avant un autre examen.';
+
+  @override
+  String get adminErrorBatchExpired =>
+      'Ce lot a expiré. Clôturez-le avant un autre examen.';
+
+  @override
+  String get adminErrorJournalRemaining =>
+      'Le stockage de reprise n’a pas pu être vérifié. Les changements restants n’ont pas été envoyés.';
+
+  @override
+  String get adminErrorChangeUnconfirmed =>
+      'Ce changement de rôle n’est pas confirmé. Vérifiez l’état ou clôturez le lot.';
+
+  @override
+  String get adminErrorRequestRejected =>
+      'Cette demande a été rejetée. Clôturez le lot avant un autre examen.';
+
+  @override
+  String get adminErrorChangeUnknown =>
+      'Le résultat d’un changement de rôle est inconnu. Vérifiez l’état ou clôturez le lot.';
+
+  @override
+  String get adminErrorReviewOutcomes =>
+      'Examinez les résultats par destinataire, puis clôturez ce lot avant un autre examen.';
+
+  @override
+  String get adminErrorEarlierUncertain =>
+      'Une réservation précédente est incertaine et un autre lot est ouvert. Clôturez d’abord la réservation précédente.';
+
+  @override
+  String get adminErrorDelayedReservation =>
+      'Le résultat de la réservation est inconnu. Clôturez-la pour empêcher un envoi tardif.';
+
+  @override
+  String get adminErrorOutstanding =>
+      'Un lot non clos a été trouvé. Examinez ses résultats et clôturez-le avant un autre examen.';
+
+  @override
+  String get adminErrorRecoveryUnverified =>
+      'La reprise n’a pas pu être vérifiée. Aucun changement de rôle ne sera renvoyé.';
+
+  @override
+  String get adminErrorClosureUnverified =>
+      'La clôture n’a pas pu être vérifiée. Vérifiez l’état ou clôturez à nouveau cette réservation.';
+
+  @override
+  String get adminErrorMemberBusy =>
+      'Attendez la fin de la modification du membre.';
+
+  @override
+  String get adminErrorGeneric =>
+      'Cette action n’a pas pu être terminée. Vérifiez l’état enregistré avant de continuer.';
+
+  @override
+  String get adminErrorNetwork =>
+      'Connexion impossible. Vérifiez Internet et réessayez.';
+
+  @override
+  String get adminErrorForbidden =>
+      'Vous n’avez pas l’autorisation d’effectuer cette action.';
+
+  @override
+  String adminConfirmCount(int count, String countText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Confirmer $countText changements',
+      one: 'Confirmer 1 changement',
+      zero: 'Confirmer 0 changement',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminReviewSummary(
+    int eligible,
+    String eligibleText,
+    int excluded,
+    String excludedText,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      eligible,
+      locale: localeName,
+      other: '$eligibleText changements',
+      one: '1 changement',
+      zero: '0 changement',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      excluded,
+      locale: localeName,
+      other: '$excludedText exclus',
+      one: '1 exclu',
+      zero: '0 exclu',
+    );
+    return '$_temp0 · $_temp1';
+  }
+
+  @override
+  String adminMatchingCount(int count, String countText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countText utilisateurs correspondants',
+      one: '1 utilisateur correspondant',
+      zero: '0 utilisateur correspondant',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminSelectedCount(int count, String countText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countText sélectionnés sur cette page',
+      one: '1 sélectionné sur cette page',
+      zero: '0 sélectionné sur cette page',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminSnapshotAgeUpper(int seconds, String secondsText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: 'Âge maximal de l’instantané : $secondsText s.',
+      one: 'Âge maximal de l’instantané : 1 s.',
+      zero: 'Âge maximal de l’instantané : 0 s.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminSnapshotAgeExact(int seconds, String secondsText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: 'Âge de l’instantané : $secondsText s.',
+      one: 'Âge de l’instantané : 1 s.',
+      zero: 'Âge de l’instantané : 0 s.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminSnapshotRemaining(int seconds, String secondsText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other:
+          'L’examen de l’instantané reste disponible pendant $secondsText s.',
+      one: 'L’examen de l’instantané reste disponible pendant 1 s.',
+      zero: 'L’examen de l’instantané reste disponible pendant 0 s.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminReviewRemaining(String duration) {
+    return 'L’examen de l’instantané expire dans $duration.';
+  }
+
+  @override
+  String adminDurationSeconds(int seconds, String secondsText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: '$secondsText s',
+      one: '1 s',
+      zero: '0 s',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminDurationMinutesSeconds(
+    int minutes,
+    String minutesText,
+    int seconds,
+    String secondsText,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: '$minutesText min',
+      one: '1 min',
+      zero: '0 min',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: '$secondsText s',
+      one: '1 s',
+      zero: '0 s',
+    );
+    return '$_temp0 $_temp1';
+  }
+
+  @override
+  String get adminErrorMutationUnknown =>
+      'Le résultat n’a pas pu être confirmé. Vérifiez son état enregistré avant tout nouvel envoi.';
 }

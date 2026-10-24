@@ -11,6 +11,7 @@ import 'package:mobi_app/features/biopay/application/biopay_providers.dart';
 import 'package:mobi_app/features/biopay/data/payment_discovery_service.dart';
 import 'package:mobi_app/features/biopay/domain/payment_discovery.dart';
 import 'package:mobi_app/features/biopay/presentation/payment_widgets.dart';
+import 'package:mobi_app/shared/widgets/mobi_bottom_sheet.dart';
 
 class PaymentMethodsScreen extends ConsumerStatefulWidget {
   const PaymentMethodsScreen({super.key});
@@ -27,6 +28,12 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
   int _revision = 0;
   BuildContext? _sharingContext;
   BuildContext? _grantContext;
+  final _sharingFocus = <String, FocusNode>{};
+
+  FocusNode _sharingFocusFor(String id) => _sharingFocus.putIfAbsent(
+    id,
+    () => FocusNode(debugLabel: 'Payment method sharing $id'),
+  );
   @override
   void initState() {
     super.initState();
@@ -38,6 +45,9 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
   void dispose() {
     _revision++;
     AccountContext.changes.removeListener(_accountChanged);
+    for (final focus in _sharingFocus.values) {
+      focus.dispose();
+    }
     super.dispose();
   }
 
@@ -112,6 +122,8 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
     final l = paymentCopy(context);
     final service = ref.read(paymentDiscoveryServiceProvider);
     final revision = _revision;
+    final triggerFocus = _sharingFocusFor(method.id);
+    var restoreTrigger = true;
     AccountSnapshot? account;
     try {
       account = service.captureAccount();
@@ -119,77 +131,69 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
       final sharingAccount = account;
       final info = await service.call('sharing', {'id': method.id});
       if (!_current(service, sharingAccount, revision)) return;
-      await showModalBottomSheet<void>(
+      await MobiBottomSheet.show<void>(
         context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
+        title: l.bpViewAsPayer,
+        closeLabel: MaterialLocalizations.of(context).closeButtonLabel,
+        header: MobiBottomSheetHeader.dismissibleTask,
+        tone: MobiBottomSheetTone.neutral,
+        maxHeightFraction: .8,
         builder: (context) {
           _sharingContext = context;
-          return ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.sizeOf(context).height * .8,
-            ),
-            child: ListView(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(24),
-              children: [
-                Text(
-                  l.bpViewAsPayer,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                PaymentDetail(
-                  l.bpProvider,
-                  paymentProviders[method.provider] ?? method.provider,
-                ),
-                PaymentDetail(l.bpIdentifier, method.identifier),
-                Text(
-                  method.phoneDiscoverable
-                      ? l.bpDiscoverable
-                      : l.bpPrivateDefault,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  l.bpSharing,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                for (final grant in info['grants'] as List? ?? const [])
-                  ListTile(
-                    title: Text(grant['member_id'] as String? ?? l.bpShared),
-                    trailing: IconButton(
-                      tooltip: l.bpRemove,
-                      icon: const Icon(Icons.close),
-                      onPressed: () async {
-                        if (!_current(service, sharingAccount, revision))
-                          return;
-                        Navigator.pop(context);
-                        await _grant(
-                          method,
-                          account: sharingAccount,
-                          memberId: grant['member_id'] as String?,
-                          remove: true,
-                        );
-                      },
-                    ),
+          return ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            children: [
+              PaymentDetail(
+                l.bpProvider,
+                paymentProviders[method.provider] ?? method.provider,
+              ),
+              PaymentDetail(l.bpIdentifier, method.identifier),
+              Text(
+                method.phoneDiscoverable
+                    ? l.bpDiscoverable
+                    : l.bpPrivateDefault,
+              ),
+              const SizedBox(height: 24),
+              Text(l.bpSharing, style: Theme.of(context).textTheme.titleLarge),
+              for (final grant in info['grants'] as List? ?? const [])
+                ListTile(
+                  title: Text(grant['member_id'] as String? ?? l.bpShared),
+                  trailing: IconButton(
+                    tooltip: l.bpRemove,
+                    icon: const Icon(Icons.close),
+                    onPressed: () async {
+                      if (!_current(service, sharingAccount, revision)) return;
+                      restoreTrigger = false;
+                      Navigator.pop(context);
+                      await _grant(
+                        method,
+                        account: sharingAccount,
+                        memberId: grant['member_id'] as String?,
+                        remove: true,
+                      );
+                    },
                   ),
-                for (final link in info['links'] as List? ?? const [])
-                  ListTile(
-                    title: Text(link['label'] as String),
-                    subtitle: Text(
-                      link['revoked_at'] == null
-                          ? '${l.bpExpiry} ${link['expires_at']}'
-                          : l.bpRevoked,
-                    ),
-                  ),
-                PaymentAction(
-                  label: l.bpGrant,
-                  onPressed: () {
-                    if (!_current(service, sharingAccount, revision)) return;
-                    Navigator.pop(context);
-                    unawaited(_grant(method, account: sharingAccount));
-                  },
                 ),
-              ],
-            ),
+              for (final link in info['links'] as List? ?? const [])
+                ListTile(
+                  title: Text(link['label'] as String),
+                  subtitle: Text(
+                    link['revoked_at'] == null
+                        ? '${l.bpExpiry} ${link['expires_at']}'
+                        : l.bpRevoked,
+                  ),
+                ),
+              PaymentAction(
+                label: l.bpGrant,
+                onPressed: () {
+                  if (!_current(service, sharingAccount, revision)) return;
+                  restoreTrigger = false;
+                  Navigator.pop(context);
+                  unawaited(_grant(method, account: sharingAccount));
+                },
+              ),
+            ],
           );
         },
       );
@@ -207,6 +211,13 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
       }
     } finally {
       _sharingContext = null;
+      if (restoreTrigger &&
+          mounted &&
+          account != null &&
+          _current(service, account, revision) &&
+          triggerFocus.context != null) {
+        triggerFocus.requestFocus();
+      }
     }
   }
 
@@ -359,6 +370,7 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
                 ),
                 if (method.canReceive)
                   TextButton(
+                    focusNode: _sharingFocusFor(method.id),
                     onPressed: () {
                       if (renderedCurrent()) unawaited(_sharing(method));
                     },

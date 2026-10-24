@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,7 +20,38 @@ import 'package:mobi_design_system/theme/app_theme.dart';
 
 import '../../helpers/payment_discovery_fixture.dart';
 
+/// Explicit review exports retain normal product fonts and DPR. They neither
+/// read nor accept a baseline; default test runs keep the real comparator.
+class _OrdinaryDiscoveryReviewExporter extends GoldenFileComparator {
+  _OrdinaryDiscoveryReviewExporter(this.directory);
+
+  final Directory directory;
+
+  @override
+  Future<bool> compare(Uint8List bytes, Uri golden) async {
+    await directory.create(recursive: true);
+    await File(
+      '${directory.path}/${golden.pathSegments.last}',
+    ).writeAsBytes(bytes, flush: true);
+    return true;
+  }
+
+  @override
+  Future<void> update(Uri golden, Uint8List imageBytes) =>
+      throw UnsupportedError('Review exports do not update baselines.');
+}
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  final reviewDirectory =
+      Platform.environment['MOBIO_DISCOVERY_GOLDEN_REVIEW_DIR'];
+  final previousComparator = goldenFileComparator;
+  if (reviewDirectory?.isNotEmpty ?? false) {
+    goldenFileComparator = _OrdinaryDiscoveryReviewExporter(
+      Directory(reviewDirectory!),
+    );
+  }
+  tearDownAll(() => goldenFileComparator = previousComparator);
   const writer = MethodChannel('rw.mobi.app/biopay_nfc_writer');
   const kit = MethodChannel('flutter_nfc_kit/method');
   setUp(() {
@@ -40,6 +74,18 @@ void main() {
     final material = FontLoader('MaterialIcons')
       ..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'));
     await material.load();
+    // The widget-test engine disables automatic font-asset loading.
+    final manifest =
+        jsonDecode(await rootBundle.loadString('FontManifest.json'))
+            as List<dynamic>;
+    final fonts =
+        manifest.singleWhere((entry) => entry['family'] == 'Inter')['fonts']
+            as List<dynamic>;
+    final inter = FontLoader('Inter');
+    for (final font in fonts) {
+      inter.addFont(rootBundle.load(font['asset'] as String));
+    }
+    await inter.load();
   });
   Future<void> open(
     WidgetTester tester,
@@ -181,11 +227,86 @@ void main() {
         find.byType(PaymentTaskScaffold),
         matchesGoldenFile('goldens/discovery_review_390x844.png'),
       );
+      await tester.scrollUntilVisible(
+        find.text(l.bpChange).hitTestable(),
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text(l.bpChange).hitTestable());
+      await tester.pumpAndSettle();
+      expect(find.text(l.bpReview), findsOneWidget);
+      expect(service.calls.where((x) => x == 'prepare'), isEmpty);
+      await tester.scrollUntilVisible(
+        find.text(l.bpReview).hitTestable(),
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text(l.bpReview).hitTestable());
+      await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(PaymentAction, l.bpOpenMomo));
       await tester.pumpAndSettle();
       expect(service.opens, 1);
       expect(service.calls.where((x) => x == 'prepare').length, 1);
       expect(find.text('Payment confirmed'), findsNothing);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+      expect(service.opens, 1);
+    },
+  );
+  testWidgets(
+    'review Change and handoff remain reachable at 320px and 200 percent text',
+    (tester) async {
+      final service = PaymentDiscoveryFixture();
+      final l = lookupAppLocalizations(const Locale('en'));
+      Future<void> reveal(Finder target) async {
+        // Scroll from the content gutter rather than selecting text by dragging
+        // from the centre of an enlarged amount field.
+        for (
+          var attempt = 0;
+          attempt < 40 && target.hitTestable().evaluate().isEmpty;
+          attempt++
+        ) {
+          final viewport = tester.getRect(find.byType(Scrollable).first);
+          await tester.dragFrom(
+            Offset(viewport.left + 8, viewport.center.dy),
+            const Offset(0, -150),
+          );
+          await tester.pumpAndSettle();
+        }
+        expect(target.hitTestable(), findsOneWidget);
+      }
+
+      await open(
+        tester,
+        const PaymentComposerScreen(entry: '+250788000002'),
+        service,
+        size: const Size(320, 740),
+        scale: 2,
+      );
+      await tester.enterText(find.byType(TextField).first, '1000');
+      await reveal(find.widgetWithText(PaymentAction, l.bpCompare));
+      await tester.tap(
+        find.widgetWithText(PaymentAction, l.bpCompare).hitTestable(),
+      );
+      await tester.pumpAndSettle();
+      await reveal(find.text(l.bpReview));
+      await tester.tap(find.text(l.bpReview).hitTestable());
+      await tester.pumpAndSettle();
+      await reveal(find.text(l.bpChange));
+      await tester.tap(find.text(l.bpChange).hitTestable());
+      await tester.pumpAndSettle();
+      expect(find.text(l.bpReview), findsOneWidget);
+      expect(service.calls.where((x) => x == 'prepare'), isEmpty);
+      await reveal(find.text(l.bpReview));
+      await tester.tap(find.text(l.bpReview).hitTestable());
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.widgetWithText(PaymentAction, l.bpOpenMomo).hitTestable(),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(service.opens, 1);
+      expect(service.calls.where((x) => x == 'prepare').length, 1);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       await tester.pumpAndSettle();
       expect(service.opens, 1);

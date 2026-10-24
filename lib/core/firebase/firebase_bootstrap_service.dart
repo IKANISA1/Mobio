@@ -16,7 +16,7 @@ class FirebaseBootstrapService {
 
   static final instance = FirebaseBootstrapService._();
 
-  bool _initializationAttempted = false;
+  Future<bool>? _initialization;
   bool _isReady = false;
   bool _crashlyticsCollectionEnabled = false;
 
@@ -31,12 +31,9 @@ class FirebaseBootstrapService {
         defaultTargetPlatform == TargetPlatform.iOS;
   }
 
-  Future<bool> initialize() async {
-    if (_initializationAttempted) {
-      return _isReady;
-    }
-    _initializationAttempted = true;
+  Future<bool> initialize() => _initialization ??= _initialize();
 
+  Future<bool> _initialize() async {
     final options = DefaultFirebaseOptions.currentPlatform;
     if (options == null) {
       AppLogger.warning(
@@ -48,10 +45,9 @@ class FirebaseBootstrapService {
 
     try {
       if (Firebase.apps.isEmpty) {
-        await RequestDeadline.read(
-          Firebase.initializeApp(options: options),
-          timeout: const Duration(seconds: 8),
-        );
+        // Only the optional observer has a deadline. Keep the SDK's real future
+        // so late success still attaches infra and never starts a second app.
+        await Firebase.initializeApp(options: options);
       }
 
       await FirebaseAuthService.instance.initialize();

@@ -22,6 +22,8 @@ void main() {
                   data: {
                     'success': true,
                     'deliveryMode': ?mode,
+                    if (mode == 'review_code')
+                      'challengeId': '44444444-4444-4444-8444-444444444444',
                     'retryAfterSeconds': 60,
                   },
                 ),
@@ -36,6 +38,10 @@ void main() {
         );
         expect(result.success, isTrue);
         expect(result.usesReviewCode, mode == 'review_code');
+        expect(
+          result.challengeId,
+          mode == 'review_code' ? '44444444-4444-4444-8444-444444444444' : null,
+        );
         expect(result.retryAfterSeconds, 60);
         expect(request?.path, '/send-login-otp');
         expect(request?.data, {
@@ -43,6 +49,41 @@ void main() {
           'countryCode': '+250',
           'role': 'driver',
         });
+      },
+    );
+  }
+
+  for (final challenge in [null, '', 'not-a-challenge']) {
+    test(
+      'review delivery without a valid opaque challenge is rejected ($challenge)',
+      () async {
+        final dio = Dio();
+        addTearDown(dio.close);
+        dio.interceptors.add(
+          InterceptorsWrapper(
+            onRequest: (request, handler) {
+              handler.resolve(
+                Response(
+                  requestOptions: request,
+                  statusCode: 200,
+                  data: {
+                    'success': true,
+                    'deliveryMode': 'review_code',
+                    'challengeId': challenge,
+                  },
+                ),
+              );
+            },
+          ),
+        );
+        final result = await WhatsAppLoginService(dio: dio).sendLoginOtp(
+          phone: '0789 000 123',
+          countryCode: '+250',
+          role: AppRole.driver,
+        );
+        expect(result.success, false);
+        expect(result.usesReviewCode, false);
+        expect(result.challengeId, null);
       },
     );
   }

@@ -1,0 +1,97 @@
+00:00 +0: loading /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/permissions/app_permission_deadline_test.dart
+00:00 +0: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/permissions/app_permission_deadline_test.dart: non-mobile default reads actual geolocation consent and revocation
+00:00 +1: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState maps denied permission state
+00:00 +2: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState maps denied permission state
+00:00 +3: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState maps denied permission state
+00:00 +4: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/permissions/app_permission_deadline_test.dart: MissingPluginException from non-mobile geolocation is unavailable
+00:00 +5: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState maps permanently denied permission state
+00:00 +6: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState maps permanently denied permission state
+00:00 +7: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState maps permanently denied permission state
+00:00 +8: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState maps permanently denied permission state
+00:00 +9: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/permissions/app_permission_deadline_test.dart: UnimplementedError does not authorize location or sharing
+00:00 +10: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState maps restricted permission state
+00:00 +11: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/permissions/app_permission_deadline_test.dart: UnimplementedError during prompt is not a grant
+00:00 +12: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/permissions/app_permission_deadline_test.dart: UnimplementedError during prompt is not a grant
+00:00 +13: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState reports service disabled and clears cached coordinates
+00:00 +14: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState reports service disabled and clears cached coordinates
+00:00 +15: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState reports service disabled and clears cached coordinates
+00:00 +16: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/permissions/app_permission_deadline_test.dart: UnsupportedError during prompt is not a grant
+00:00 +17: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState reports unavailable when platform access check fails
+00:00 +18: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState reports unavailable when platform access check fails
+00:00 +19: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState reports unavailable when platform access check fails
+00:00 +20: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState reports unavailable when platform access check fails
+[38;5;196m┌───────────────────────────────────────────────────────────────────────────────[0m
+[38;5;196m│ ⛔ Error checking location access state: Bad state: location service unavailable[0m
+[38;5;196m└───────────────────────────────────────────────────────────────────────────────[0m
+00:00 +21: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationAccessState unavailable access clears an earlier permitted cache
+[38;5;196m┌───────────────────────────────────────────────────────────────────────────────[0m
+[38;5;196m│ ⛔ Error checking location access state: Bad state: location service unavailable[0m
+[38;5;196m└───────────────────────────────────────────────────────────────────────────────[0m
+00:00 +22: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness unknown permission cannot use a previously permitted cache
+[38;5;196m┌───────────────────────────────────────────────────────────────────────────────[0m
+[38;5;196m│ ⛔ Error getting current position: Bad state: consent unavailable[0m
+[38;5;196m└───────────────────────────────────────────────────────────────────────────────[0m
+00:00 +23: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness cached fallback rechecks permission and disabled services
+00:00 +24: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness account replacement hides cached fix and discards late GPS fix
+00:00 +25: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness account replacement discards late OS last-known fix
+00:00 +26: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness retains the OS fix timestamp and expires from acquisition
+00:00 +27: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness old OS fix cannot become a current bias
+00:00 +28: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness future OS fix cannot become a current bias
+00:00 +29: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness inaccurate OS fix cannot become a current bias
+00:00 +30: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness negative accuracy OS fix cannot become a current bias
+00:00 +31: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness nonfinite accuracy OS fix cannot become a current bias
+00:00 +32: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness invalid coordinates OS fix cannot become a current bias
+00:00 +33: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness usable approximate fix and fresh fallback retain their true age
+[38;5;196m┌───────────────────────────────────────────────────────────────────────────────[0m
+[38;5;196m│ ⛔ Error getting current position: Bad state: no current position[0m
+[38;5;196m└───────────────────────────────────────────────────────────────────────────────[0m
+[38;5;196m┌───────────────────────────────────────────────────────────────────────────────[0m
+[38;5;196m│ ⛔ Error getting current position: Bad state: no current position[0m
+[38;5;196m└───────────────────────────────────────────────────────────────────────────────[0m
+[38;5;196m┌───────────────────────────────────────────────────────────────────────────────[0m
+[38;5;196m│ ⛔ Error getting current position: Bad state: no current position[0m
+[38;5;196m└───────────────────────────────────────────────────────────────────────────────[0m
+00:00 +34: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness does not expose stale cached coordinates
+00:00 +35: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/core/location/location_service_test.dart: LocationService cache freshness clears cache and returns null when permission is denied
+[38;5;208m┌───────────────────────────────────────────────────────────────────────────────[0m
+[38;5;208m│ ⚠️ Location permission not granted[0m
+[38;5;208m└───────────────────────────────────────────────────────────────────────────────[0m
+00:00 +36: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/nearby_discovery_service_test.dart: LocationAccessState.denied does not query drivers or request a position
+00:00 +37: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/nearby_discovery_service_test.dart: LocationAccessState.permanentlyDenied does not query drivers or request a position
+00:00 +38: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/nearby_discovery_service_test.dart: LocationAccessState.restricted does not query drivers or request a position
+00:00 +39: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/nearby_discovery_service_test.dart: LocationAccessState.serviceDisabled does not query drivers or request a position
+00:00 +40: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/nearby_discovery_service_test.dart: no position is unavailable, not a successful empty search
+00:00 +41: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/nearby_discovery_service_test.dart: a successful empty query stays ready and preserves its origin
+00:00 +42: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/nearby_discovery_service_test.dart: revoked access replaces populated results without stale coordinates
+00:00 +43: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/nearby_discovery_service_test.dart: lost position also replaces previously populated results
+00:00 +44: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/nearby_discovery_service_test.dart: permission revoked during the query discards its late results
+00:00 +45: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/nearby_discovery_service_test.dart: cached Home location is used only after checking current access
+00:00 +46: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/nearby_discovery_service_test.dart: backend errors propagate instead of becoming zero drivers
+00:00 +47: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/driver_location_sharing_service_test.dart: does not publish when driver profile is not eligible
+[38;5;208m┌───────────────────────────────────────────────────────────────────────────────[0m
+[38;5;208m│ ⚠️ Driver live sharing blocked for non-driver profile.[0m
+[38;5;208m└───────────────────────────────────────────────────────────────────────────────[0m
+00:00 +48: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/driver_location_sharing_service_test.dart: does not go online without a fresh first location
+[38;5;208m┌───────────────────────────────────────────────────────────────────────────────[0m
+[38;5;208m│ ⚠️ Driver live sharing could not get a fresh location.[0m
+[38;5;208m└───────────────────────────────────────────────────────────────────────────────[0m
+00:00 +49: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/driver_location_sharing_service_test.dart: publishes first fresh location and stops offline
+00:00 +50: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/driver_location_sharing_service_test.dart: account switch during eligibility cannot publish a location
+00:00 +51: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/driver_location_sharing_service_test.dart: stop during first publish compensates after late completion
+00:00 +52: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/driver_location_sharing_service_test.dart: older start cleanup finishes before a newer start publishes
+00:00 +53: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/driver_location_sharing_service_test.dart: start during a pending stop publishes after the offline write
+00:00 +54: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/driver_location_sharing_service_test.dart: queued stream positions cannot publish after stop
+00:00 +55: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/driver_location_sharing_service_test.dart: late old-account publication cannot take a new account offline
+00:00 +56: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/data/driver_location_sharing_service_test.dart: failed replacement start retires the previous live sharing
+[38;5;208m┌───────────────────────────────────────────────────────────────────────────────[0m
+[38;5;208m│ ⚠️ Driver live sharing blocked for non-driver profile.[0m
+[38;5;208m└───────────────────────────────────────────────────────────────────────────────[0m
+00:02 +57: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/nearby_location_notice_test.dart: LocationAccessState.denied shows recovery with no zero-results claim
+00:03 +58: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/nearby_location_notice_test.dart: LocationAccessState.denied shows recovery with no zero-results claim
+00:03 +59: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/nearby_location_notice_test.dart: LocationAccessState.denied shows recovery with no zero-results claim
+00:03 +60: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/nearby_location_notice_test.dart: LocationAccessState.denied shows recovery with no zero-results claim
+00:03 +61: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/nearby_location_notice_test.dart: LocationAccessState.denied shows recovery with no zero-results claim
+00:03 +62: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/nearby_location_notice_test.dart: LocationAccessState.denied shows recovery with no zero-results claim
+00:04 +63: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/nearby_location_notice_test.dart: LocationAccessState.unavailable shows recovery with no zero-results claim
+00:04 +64: /Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/nearby/nearby_location_notice_test.dart: Home distinguishes unknown count from a successful zero
+00:04 +65: All tests passed!

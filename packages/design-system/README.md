@@ -1,6 +1,6 @@
 # Design System Package Boundary
 
-The sole design authority is the [external `revolut-design` skill](</Volumes/PRO-G40/Application Data/Codex/Codex-Home/skills/revolut-design/SKILL.md>) and its bundled references, for app, web and admin. This package implements product adapters; it does not define a separate visual reference.
+The sole design authority is the [external `revolut-design` skill](</Volumes/PRO-G40/Projects/ChatGPT/Revolut/skill/revolut-design/SKILL.md>) and its bundled references, for app, web and admin. This package implements product adapters; it does not define a separate visual reference.
 
 Implementation boundaries:
 

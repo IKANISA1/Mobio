@@ -28,6 +28,7 @@ class AdminTripsScreen extends ConsumerStatefulWidget {
 
 class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
   final _actionToken = AccountActionToken.capture();
+  int _loadRevision = 0;
   bool get _actionIsCurrent => mounted && _actionToken.isCurrent;
 
   AdminService get _adminService => ref.read(adminServiceProvider);
@@ -56,12 +57,15 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
 
   @override
   void dispose() {
+    _loadRevision++;
     _searchController.dispose();
     super.dispose();
   }
 
   Future<void> _loadTrips({bool silent = false}) async {
     if (!_actionIsCurrent) return;
+    final revision = ++_loadRevision;
+    final rowsPerPage = _rowsPerPage;
     if (!silent) {
       setState(() {
         _isLoading = true;
@@ -74,19 +78,20 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
         status: _statusFilter,
         role: _roleFilter,
         search: _searchQuery,
-        limit: _rowsPerPage + 1,
-        offset: _page * _rowsPerPage,
+        limit: rowsPerPage + 1,
+        offset: _page * rowsPerPage,
       );
-      if (_actionIsCurrent) {
-        final hasNextPage = trips.length > _rowsPerPage;
+      if (_actionIsCurrent && revision == _loadRevision) {
+        final hasNextPage = trips.length > rowsPerPage;
         setState(() {
-          _trips = trips.take(_rowsPerPage).toList();
+          _trips = trips.take(rowsPerPage).toList();
           _hasNextPage = hasNextPage;
           _isLoading = false;
+          _error = null;
         });
       }
     } on Object catch (error) {
-      if (_actionIsCurrent) {
+      if (_actionIsCurrent && revision == _loadRevision) {
         setState(() {
           _isLoading = false;
           _error = error.toString();
@@ -273,7 +278,7 @@ class _AdminTripsScreenState extends ConsumerState<AdminTripsScreen> {
                 width: isWide ? 420 : double.infinity,
                 child: AdminSearchField(
                   controller: _searchController,
-                  hintText: 'Search trips, members, routes',
+                  hintText: 'Search trips',
                   onChanged: (value) {
                     setState(() {
                       _searchQuery = value;

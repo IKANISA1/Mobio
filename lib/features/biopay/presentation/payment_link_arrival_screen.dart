@@ -22,24 +22,46 @@ class PaymentLinkArrivalScreen extends ConsumerStatefulWidget {
 class _PaymentLinkArrivalScreenState
     extends ConsumerState<PaymentLinkArrivalScreen> {
   Map<String, dynamic>? _preview;
-  bool _loading = true;
+  bool _loading = false;
+  bool _loadFailed = false;
+  int _loadGeneration = 0;
   @override
   void initState() {
     super.initState();
     unawaited(_load());
   }
 
-  Future<void> _load() async {
+  @override
+  void didUpdateWidget(covariant PaymentLinkArrivalScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.token != widget.token) {
+      unawaited(_load(replaceCurrent: true));
+    }
+  }
+
+  Future<void> _load({bool replaceCurrent = false}) async {
+    if (!mounted || (_loading && !replaceCurrent)) return;
+    final generation = ++_loadGeneration;
+    setState(() {
+      _preview = null;
+      _loadFailed = false;
+      _loading = true;
+    });
+    Map<String, dynamic>? preview;
+    var failed = false;
     try {
-      final preview = await ref
+      preview = await ref
           .read(paymentDiscoveryServiceProvider)
           .previewLink(widget.token);
-      if (mounted) setState(() => _preview = preview);
     } on Object {
-      if (mounted) setState(() => _preview = null);
-    } finally {
-      if (mounted) setState(() => _loading = false);
+      failed = true;
     }
+    if (!mounted || generation != _loadGeneration) return;
+    setState(() {
+      _preview = preview;
+      _loadFailed = failed;
+      _loading = false;
+    });
   }
 
   @override
@@ -77,7 +99,12 @@ class _PaymentLinkArrivalScreenState
             ),
       children: [
         if (!_loading && !available) ...[
-          PaymentError(l.bpLinkUnavailable),
+          PaymentError(_loadFailed ? l.errorGeneric : l.bpLinkUnavailable),
+          if (_loadFailed)
+            PaymentAction(
+              label: l.tryAgain,
+              onPressed: () => unawaited(_load()),
+            ),
           PaymentAction(
             label: l.bpManual,
             onPressed: () => context.go('/biopay/send'),

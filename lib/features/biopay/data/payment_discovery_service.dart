@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/auth/admin_mutation_guard.dart';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -147,8 +148,9 @@ class PaymentDiscoveryService implements PaymentDiscoveryGateway {
     try {
       response = action == 'list'
           ? await RequestDeadline.read(request)
-          : await RequestDeadline.mutation(
+          : await AdminMutationGuard.run(
               request,
+              client: client!,
               operation: 'rpc_admin_biopay_routes:$action',
               operationId: data['id']?.toString(),
             );

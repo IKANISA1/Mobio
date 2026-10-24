@@ -63,6 +63,9 @@ select user_id, case name when 'A' then '+250700003001' when 'B' then '+25070000
   '{}', name = 'anonymous' from qa_identity_actors;
 insert into auth.sessions(id, user_id, created_at, not_after)
 select session_id, user_id, now(), now()+interval '1 hour' from qa_identity_actors;
+-- Explicit SQL-only positive OTP/session setup; no Admin lease or grant is added.
+select pg_temp.qa_seed_interactive_authority(array(select user_id from qa_identity_actors where name in ('A','B')));
+
 
 select pg_temp.qa_identity('A');
 select pg_temp.qa_check('live session resolves the exact user',
@@ -94,8 +97,16 @@ select pg_temp.qa_identity('anonymous', '{"is_anonymous":false}');
 select pg_temp.qa_check('anonymous database flag defeats a spoofed JWT flag', public.verified_app_user_id() is null);
 
 select pg_temp.qa_identity('unverified');
-select pg_temp.qa_check('unverified live session can bootstrap', public.live_auth_user_id() is not null);
-select public.enforce_live_api_session();
+select pg_temp.qa_check('unverified transport remains live without app authority', public.live_auth_user_id() is not null);
+do $$ begin
+  begin
+    perform public.enforce_live_api_session();
+    raise exception 'ASSERTION FAILED: unverified nonanonymous REST session admitted';
+  exception when sqlstate 'PT403' then
+    if sqlerrm <> 'Verified WhatsApp session required' then raise; end if;
+    perform pg_temp.qa_check('REST guard rejects unverified nonanonymous transport',true);
+  end;
+end $$;
 select pg_temp.qa_check('unverified session has no app identity', public.verified_app_user_id() is null);
 set local role authenticated;
 select pg_temp.qa_chat_denied('unverified SQL role cannot create a conversation');
@@ -114,7 +125,7 @@ select pg_temp.qa_check('removing phone verification revokes app identity', publ
 update auth.users set phone_confirmed_at = now(), raw_app_meta_data = '{"provider":"email"}' where id = auth.uid();
 select pg_temp.qa_check('untrusted server provider revokes app identity', public.verified_app_user_id() is null);
 update auth.users set raw_app_meta_data = '{"provider":"admin_whatsapp_otp"}' where id = auth.uid();
-select pg_temp.qa_check('trusted Admin provider retains verified identity', public.verified_app_user_id() = auth.uid());
+select pg_temp.qa_check('Admin metadata without exact Admin lease cannot retain app identity', public.verified_app_user_id() is null);
 update auth.users set raw_app_meta_data = '{"provider":"whatsapp_cloud_otp"}', banned_until = now()+interval '1 hour' where id = auth.uid();
 select pg_temp.qa_check('currently banned user has no live identity', public.live_auth_user_id() is null);
 select pg_temp.qa_authentication_denied('REST guard rejects a banned user');

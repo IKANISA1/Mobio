@@ -9,7 +9,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
@@ -24,62 +23,75 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.ScrollView
 
 class MainActivity : Activity() {
     private val logTag = "MoMobioBridge"
-    private val periwinkle = Color.rgb(136, 133, 240)
-    private val mintGreen = Color.rgb(60, 208, 112)
-    private val orangeRed = Color.rgb(255, 94, 67)
-    private val primaryWhite = Color.WHITE
-    private val neutralInk = Color.rgb(24, 17, 29)
-    private val neutralPanel = Color.rgb(36, 25, 45)
-    private val mutedText = Color.rgb(216, 207, 228)
+    // Quiet Revolut task/Business pattern; measured Mobio semantic adapters.
+    // The external revolut-design skill governs presentation, not collection.
+    private val infoColor = Color.rgb(111, 160, 255)
+    private val positiveColor = Color.rgb(26, 192, 151)
+    private val dangerColor = Color.rgb(255, 83, 99)
+    private val primaryTextColor = Color.rgb(244, 244, 244)
+    private val neutralInk = Color.BLACK
+    private val neutralPanel = Color.rgb(22, 22, 24)
+    private val mutedText = Color.rgb(161, 161, 163)
+    private val bodyFace by lazy { resources.getFont(R.font.inter_regular) }
+    private val labelFace by lazy { resources.getFont(R.font.inter_medium) }
+    private val headingFace by lazy { resources.getFont(R.font.inter_semibold) }
 
     private lateinit var status: TextView
     private lateinit var upload: TextView
     private lateinit var enableButton: Button
     private val queue: DurableSmsQueue get() = DurableSmsQueue(applicationContext)
     @Volatile private var syncInFlight = false
+    @Volatile private var activeSyncCancellation: UploadCancellation? = null
     private val retryDelayMillis = 15_000L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         status = statusLine()
         upload = supportLine()
-        enableButton = actionButton("Enable SMS access", periwinkle).apply {
+        enableButton = actionButton("Enable SMS access", primaryTextColor).apply {
             setOnClickListener { showCollectionNotice() }
         }
 
         setContentView(
-            LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                gravity = Gravity.TOP
-                setPadding(dp(20), dp(72), dp(20), dp(28))
+            ScrollView(this).apply {
+                isFillViewport = true
+                fitsSystemWindows = true
                 setBackgroundColor(neutralInk)
-                addView(brandLockup())
-                addView(spacer(18))
-                addView(panel())
-                addView(spacer(18))
-                addView(enableButton)
-                addView(spacer(12))
-                addView(actionButton("Pause collection", neutralPanel).apply {
-                    setOnClickListener {
-                        try {
-                            CollectorRuntime.revokeNotice(applicationContext)
-                            BridgeSupervisor.stop(applicationContext)
-                            refreshStatus()
-                        } catch (_: Exception) {
-                            upload.text = "Could not save the pause. Revoke SMS permission in Android settings."
+                addView(LinearLayout(this@MainActivity).apply {
+                    orientation = LinearLayout.VERTICAL
+                    gravity = Gravity.TOP
+                    setPadding(dp(16), dp(24), dp(16), dp(24))
+                    setBackgroundColor(neutralInk)
+                    addView(brandLockup())
+                    addView(spacer(18))
+                    addView(panel())
+                    addView(spacer(18))
+                    addView(enableButton)
+                    addView(spacer(12))
+                    addView(actionButton("Pause collection", neutralPanel).apply {
+                        setOnClickListener {
+                            try {
+                                CollectorRuntime.revokeNotice(applicationContext)
+                                activeSyncCancellation?.cancel()
+                                BridgeSupervisor.stop(applicationContext)
+                                refreshStatus()
+                            } catch (_: Exception) {
+                                upload.text = "Could not save the pause. Revoke SMS permission in Android settings."
+                            }
                         }
-                    }
-                })
-                addView(spacer(12))
-                addView(actionButton("Copy enrollment request", neutralPanel).apply {
-                    setOnClickListener {
-                        val enrollment = CollectorIdentity(applicationContext).enrollmentRequest()
-                        getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("Mo Mobio enrollment", enrollment))
-                        upload.text = "Public enrollment request copied. Ask your administrator to register this phone."
-                    }
+                    })
+                    addView(spacer(12))
+                    addView(actionButton("Copy enrollment request", neutralPanel).apply {
+                        setOnClickListener {
+                            val enrollment = CollectorIdentity(applicationContext).enrollmentRequest()
+                            getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("Mo Mobio enrollment", enrollment))
+                            upload.text = "Public enrollment request copied. Ask your administrator to register this phone."
+                        }
+                    })
                 })
             },
         )
@@ -113,16 +125,19 @@ class MainActivity : Activity() {
     private fun syncAutomatically(): Boolean {
         if (isFinishing || isDestroyed || !CollectorRuntime.ready(applicationContext) || syncInFlight) return false
         syncInFlight = true
-        status.setTextColor(periwinkle)
+        val cancellation = UploadCancellation()
+        activeSyncCancellation = cancellation
+        status.setTextColor(infoColor)
         status.text = "Syncing"
         upload.text = "Checking stored receipts…"
         Thread {
             val result = try {
-                CollectorSync.run(applicationContext)
+                CollectorSync.run(applicationContext, cancellation)
             } catch (error: Exception) {
                 Log.e(logTag, "SMS sync failed: ${error.javaClass.simpleName}")
                 UploadResult(false, message = "Queue or sync unavailable; receipts need review", outcome = "storage_error")
             } finally {
+                if (activeSyncCancellation === cancellation) activeSyncCancellation = null
                 syncInFlight = false
             }
             runOnUiThread {
@@ -189,7 +204,7 @@ class MainActivity : Activity() {
                 runOnUiThread {
                     if (isFinishing || isDestroyed) return@runOnUiThread
                     status.text = state
-                    status.setTextColor(if (state == "Server acknowledged") mintGreen else orangeRed)
+                    status.setTextColor(if (state == "Server acknowledged") positiveColor else dangerColor)
                     upload.text = (syncError?.let { it + "\n" } ?: "") + "Allocation policy: ${when (allocation) { true -> "enabled"; false -> "disabled"; else -> "not verified" }}\n" +
                         "Queued: ${health.pending}; overflow: ${health.overflowPending}; review: ${health.quarantined}; " +
                         "refusals: ${health.unreconciledRefusals}; historical blocks: ${health.capacityBlocked}\n" +
@@ -202,7 +217,7 @@ class MainActivity : Activity() {
                     if (!isFinishing && !isDestroyed) {
                         status.text = "Stored receipts need recovery"
                         upload.text = "Do not clear app data or reinstall. Contact the fleet administrator."
-                        status.setTextColor(orangeRed)
+                        status.setTextColor(dangerColor)
                     }
                 }
             } finally { refreshInFlight = false }
@@ -210,7 +225,8 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
-        // Delayed callbacks check isDestroyed before doing work.
+        // Stop only this activity's sender; delayed callbacks also check isDestroyed.
+        activeSyncCancellation?.cancel()
         super.onDestroy()
     }
 
@@ -263,9 +279,9 @@ class MainActivity : Activity() {
             })
             addView(TextView(this@MainActivity).apply {
                 text = "Mo Mobio"
-                setTextColor(primaryWhite)
+                setTextColor(primaryTextColor)
                 textSize = 20f
-                typeface = Typeface.DEFAULT_BOLD
+                typeface = headingFace
                 includeFontPadding = false
                 setPadding(0, dp(8), 0, 0)
             })
@@ -279,11 +295,12 @@ class MainActivity : Activity() {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
             )
-            background = rounded(neutralPanel, dp(18), periwinkle, 1)
+            background = rounded(neutralPanel, dp(24))
             addView(TextView(this@MainActivity).apply {
                 text = "Status"
                 setTextColor(mutedText)
                 textSize = 13f
+                typeface = labelFace
                 includeFontPadding = false
             })
             addView(status)
@@ -293,9 +310,9 @@ class MainActivity : Activity() {
 
     private fun statusLine(): TextView =
         TextView(this).apply {
-            setTextColor(mintGreen)
+            setTextColor(positiveColor)
             textSize = 24f
-            typeface = Typeface.DEFAULT_BOLD
+            typeface = headingFace
             includeFontPadding = false
         }
 
@@ -303,21 +320,23 @@ class MainActivity : Activity() {
         TextView(this).apply {
             setTextColor(mutedText)
             textSize = 15f
+            typeface = bodyFace
             setLineSpacing(0f, 1.08f)
         }
 
     private fun actionButton(label: String, color: Int): Button =
         Button(this).apply {
             text = label
-            setTextColor(primaryWhite)
+            setTextColor(if (color == primaryTextColor) neutralInk else primaryTextColor)
             textSize = 15f
             isAllCaps = false
-            typeface = Typeface.DEFAULT_BOLD
+            typeface = labelFace
             minHeight = dp(52)
-            background = rounded(color, dp(12))
+            background = rounded(color, dp(28))
+            setPadding(dp(24), dp(12), dp(24), dp(12))
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                dp(56),
+                ViewGroup.LayoutParams.WRAP_CONTENT,
             )
         }
 

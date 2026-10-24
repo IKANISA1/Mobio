@@ -1,0 +1,1 @@
+Full-schema rehearsal passed: 122 migrations; post-install catalog/invariants, BioPay, security, schema, provider, notification, realtime authority, permission expiry, live identity, profile identity authority, Admin login, driver discovery, organization permission authority, recent Admin authentication, store-review authority and OTP rate-limit assertions passed.

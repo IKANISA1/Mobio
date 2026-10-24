@@ -1,0 +1,28 @@
+{
+  "reviewed_at_utc": "2026-10-01T19:57:15.845361+00:00",
+  "before": "build/qa/readiness-20261001/goal/authority-before.json",
+  "after_entrypoint": {
+    "path": "/Volumes/PRO-G40/Application Data/Codex/Codex-Home/skills/revolut-design/SKILL.md",
+    "sha256": "0941cf390b2e77d605ee4877f960440688166534341ae2a3239a990d40127c50"
+  },
+  "after_references": [
+    {
+      "path": "/Volumes/PRO-G40/Application Data/Codex/Codex-Home/skills/revolut-design/references/brand-adaptation.md",
+      "sha256": "135a13f0672dc0384668b92c5ac88e77b9219c5760f10cdcaff8ec456501f9fd"
+    },
+    {
+      "path": "/Volumes/PRO-G40/Application Data/Codex/Codex-Home/skills/revolut-design/references/100-design-checks.md",
+      "sha256": "483285a5290bb63a51366b9e1aae75226b395fdf4d7a1853ef228b67668407c9"
+    },
+    {
+      "path": "/Volumes/PRO-G40/Application Data/Codex/Codex-Home/skills/revolut-design/references/quality-standard.md",
+      "sha256": "a0f199ecdbce21b573e07126a7c36dff254490ee154bea1cef3d85c42fccce92"
+    },
+    {
+      "path": "/Volumes/PRO-G40/Application Data/Codex/Codex-Home/skills/revolut-design/references/operational-checklist.md",
+      "sha256": "e5854f677f647b842519735a321a2a16f50b988f3e55b6a9147be91fb606315e"
+    }
+  ],
+  "trigger": "Current owner replacement instructions and changed external SKILL.md; prior check failed external authority hash.",
+  "visual_acceptance": "unverified"
+}

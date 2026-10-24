@@ -58,12 +58,12 @@ ported from the MEMORIES implementation:
 - `AWS_SECRET_ACCESS_KEY`
 - `AWS_REKOGNITION_COLLECTION_ID`
 
-The old Google ML Kit and TFLite/MobileFaceNet implementation may be used only
-as historical reference for UI flow and must not be restored as the production
-face authority.
-The MEMORIES face enrollment capture UI may be used as the interface reference
-for the front-camera preview, oval guide, and `Center`, `Turn`, `Hold` sequence,
-but its Google ML Kit frame validation is not part of the Mobio production path.
+The old Google ML Kit and TFLite/MobileFaceNet implementation is historical
+provider context and must not be restored as the production face authority.
+Mobio's approved capture workflow keeps the front-camera preview, oval guide,
+and `Center`, `Turn`, `Hold` sequence. Google ML Kit frame validation is not part
+of the Mobio production path. These are product interaction requirements; their
+visual treatment follows the external `revolut-design` skill.
 
 AWS Rekognition responsibilities:
 
@@ -76,9 +76,11 @@ AWS Rekognition responsibilities:
 - Face scan creates a USSD request only after AWS returns a matched provider
   face ID; the matched BioPay profile resolves the payee and USSD recipient.
 
-## Frontend Design Contract
+## Product Presentation Requirements
 
-The restored BioPay UI must fit the current Mobio Revolut-style shell:
+The [external `revolut-design` skill](</Volumes/PRO-G40/Projects/ChatGPT/Revolut/skill/revolut-design/SKILL.md>)
+is the sole design authority for Mobio app, web and admin. The restored BioPay
+UI preserves these approved product actions and workflows:
 
 - Bottom navigation includes `BioPay` as a first-class tab.
 - BioPay home uses four icon-first action tiles: `QR`, `Scan`, `Face`, `NFC`.

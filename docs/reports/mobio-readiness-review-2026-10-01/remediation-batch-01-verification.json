@@ -1,0 +1,954 @@
+{
+  "completed_at_utc": "2026-10-01T17:57:30.969254+00:00",
+  "decision": "NO-GO",
+  "local_findings_addressed": [
+    "CR01",
+    "CR04",
+    "CR07"
+  ],
+  "partially_addressed": [
+    "CR25"
+  ],
+  "head": "9aa98e8cf5173fe7e3565f52cae37b14b9560785",
+  "full_stage_checks": [
+    {
+      "check": "dart-analyze",
+      "command": [
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/dart",
+        "analyze"
+      ],
+      "started_at": "2026-10-01T17:34:11.895530+00:00",
+      "elapsed_seconds": 57.8,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/continuation/dart-analyze.log"
+    },
+    {
+      "check": "flutter-full",
+      "command": [
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/flutter",
+        "test",
+        "--no-pub",
+        "--reporter",
+        "expanded"
+      ],
+      "started_at": "2026-10-01T17:35:09.697468+00:00",
+      "elapsed_seconds": 601.01,
+      "exit_code": 1,
+      "log": "build/qa/readiness-20261001/continuation/flutter-full.log"
+    },
+    {
+      "check": "android-release",
+      "command": [
+        "bash",
+        "scripts/release/build_android_release.sh",
+        "apk"
+      ],
+      "started_at": "2026-10-01T17:45:10.774696+00:00",
+      "elapsed_seconds": 572.5,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/continuation/android-release.log"
+    },
+    {
+      "check": "pwa-release",
+      "command": [
+        "bash",
+        "scripts/web/prepare_pwa_bundles.sh",
+        "build/pwa-readiness-remediation-20261001"
+      ],
+      "started_at": "2026-10-01T17:54:43.331636+00:00",
+      "elapsed_seconds": 63.99,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/continuation/pwa-release.log"
+    }
+  ],
+  "focused_checks": [
+    {
+      "check": "otp-original-isolated",
+      "command": [
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/flutter",
+        "test",
+        "--no-pub",
+        "build/qa/readiness-20261001/continuation/otp-original-fixture_test.dart",
+        "--reporter",
+        "expanded"
+      ],
+      "started_at": "2026-10-01T17:55:49.226294+00:00",
+      "elapsed_seconds": 5.16,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/continuation/otp-original-isolated.log"
+    },
+    {
+      "check": "focused-final",
+      "command": [
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/flutter",
+        "test",
+        "--no-pub",
+        "--reporter",
+        "expanded",
+        "test/features/auth/data/otp_send_outcome_test.dart",
+        "test/features/admin/admin_query_race_test.dart",
+        "test/features/admin/admin_modal_account_guard_test.dart",
+        "test/release/admin_panel_production_readiness_contract_test.dart",
+        "test/release/scope_boundary_test.dart",
+        "test/release/mobile_readiness_contract_test.dart"
+      ],
+      "started_at": "2026-10-01T17:55:54.388172+00:00",
+      "elapsed_seconds": 17.28,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/continuation/focused-final.log"
+    }
+  ],
+  "focused_counts": {
+    "otp-original-isolated": 34,
+    "focused-final": 82
+  },
+  "full_suite": {
+    "passed": 1607,
+    "failed": 171,
+    "failure_counts_by_file": {
+      "test/features/auth/data/otp_send_outcome_test.dart": 2,
+      "test/features/biopay/payment_discovery_widgets_test.dart": 5,
+      "test/features/preview/revolut_reference_golden_test.dart": 163,
+      "test/release/admin_panel_production_readiness_contract_test.dart": 1
+    },
+    "failures": [
+      {
+        "file": "test/features/auth/data/otp_send_outcome_test.dart",
+        "test": "app preserves usable send metadata: true"
+      },
+      {
+        "file": "test/features/auth/data/otp_send_outcome_test.dart",
+        "test": "app send total deadline releases a hung callback"
+      },
+      {
+        "file": "test/features/biopay/payment_discovery_widgets_test.dart",
+        "test": "desktop public arrival offers safe phone continuation without an attempt"
+      },
+      {
+        "file": "test/features/biopay/payment_discovery_widgets_test.dart",
+        "test": "recipient design capture"
+      },
+      {
+        "file": "test/features/biopay/payment_discovery_widgets_test.dart",
+        "test": "methods design capture"
+      },
+      {
+        "file": "test/features/biopay/payment_discovery_widgets_test.dart",
+        "test": "requests design capture"
+      },
+      {
+        "file": "test/features/biopay/payment_discovery_widgets_test.dart",
+        "test": "request_editor design capture"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "light theme login"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "light theme biopay_home"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "light theme wallet"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "light theme home"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "light theme profile"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "light theme bookings"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "light theme biopay_qr"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "light theme biopay_scan"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "light theme admin_users"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 whatsapp_number_ready"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 whatsapp_sending"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 whatsapp_send_error"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 whatsapp_rate_limited"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 whatsapp_otp"
+      },
+      {
+        "file": "test/release/admin_panel_production_readiness_contract_test.dart",
+        "test": "admin panel production readiness contract admin workspaces use backend pagination for scalable queues"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 whatsapp_otp_invalid"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 whatsapp_otp_expired"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 whatsapp_verifying"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 whatsapp_resend_ready"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 login"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 home"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 bookings"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 schedule"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 trip_details"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 trip_edit"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 profile"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 wallet"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 edit_profile"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 profile_setup"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 notifications"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 chat"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 nearby"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 biopay_home"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 biopay_qr"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 biopay_scan"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 biopay_face_enroll"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 biopay_nfc"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 biopay_nfc_write_card"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_biopay_ops"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_auth"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_vehicle_types"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_subscriptions"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_agencies"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_reports_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_audit_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_users"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_trips"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_health"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_broadcasts"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 ev_locator"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 biopay_request"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 biopay_link_expired"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_ev_recovery"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_dashboard_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_health_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 admin_broadcasts_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 config_error"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 not_found"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 home_shell"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 bookings_shell"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 biopay_home_shell"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 390x844 profile_shell"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 whatsapp_number_ready"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 whatsapp_sending"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 whatsapp_send_error"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 whatsapp_rate_limited"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 whatsapp_otp"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 whatsapp_otp_invalid"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 whatsapp_otp_expired"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 whatsapp_verifying"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 whatsapp_resend_ready"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 login"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 home"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 bookings"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 schedule"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 trip_details"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 trip_edit"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 profile"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 wallet"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 edit_profile"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 profile_setup"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 notifications"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 chat"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 nearby"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 biopay_home"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 biopay_qr"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 biopay_scan"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 biopay_face_enroll"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 biopay_nfc"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 biopay_nfc_write_card"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_biopay_ops"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_auth"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_vehicle_types"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_subscriptions"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_agencies"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_reports_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_audit_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_users"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_trips"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_health"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_broadcasts"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 ev_locator"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 biopay_request"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 biopay_link_expired"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_ev_recovery"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_dashboard_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_health_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 admin_broadcasts_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 config_error"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 not_found"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 home_shell"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 bookings_shell"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 biopay_home_shell"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference golden 430x932 profile_shell"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_biopay_ops"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_auth"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_vehicle_types"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_subscriptions"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_agencies"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_reports_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_audit_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_users"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_trips"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_health"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_broadcasts"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_ev_recovery"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_dashboard_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_health_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 768x1024 admin_broadcasts_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_biopay_ops"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_auth"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_vehicle_types"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_subscriptions"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_agencies"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_reports_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_audit_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_users"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_trips"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_health"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_broadcasts"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_ev_recovery"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_dashboard_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_health_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1280x900 admin_broadcasts_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_biopay_ops"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_auth"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_vehicle_types"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_subscriptions"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_agencies"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_reports_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_audit_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_users"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_trips"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_health"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_broadcasts"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_ev_recovery"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_dashboard_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_health_actual"
+      },
+      {
+        "file": "test/features/preview/revolut_reference_golden_test.dart",
+        "test": "Revolut-reference admin desktop golden 1440x1000 admin_broadcasts_actual"
+      }
+    ],
+    "scope": "Full suite before follow-up OTP fixture and pagination-contract changes; these changes need focused verification."
+  },
+  "database": {
+    "forward_upgrade": {
+      "exit_code": 0,
+      "baseline_migrations": 119,
+      "upgraded_migrations": 120,
+      "new_regression_assertions": 121,
+      "log": "remediation-organization-upgrade.txt"
+    },
+    "fresh_replay": {
+      "exit_code": 0,
+      "migrations": 120,
+      "new_regression_assertions": 121,
+      "log": "remediation-organization-fresh-replay.txt"
+    },
+    "regression_before": {
+      "expected_failure": "real booking confirmation accepted ordinary member with consumer platform grant",
+      "log": "remediation-organization-before.txt"
+    },
+    "identity_and_http_limit": "SQL role/Auth-row/RLS/RPC fixture; PostgREST/Auth services excluded; no hosted acceptance"
+  },
+  "dart_full": {
+    "errors": 0,
+    "warnings": 0,
+    "info": 200
+  },
+  "focused_analyze": "No issues found",
+  "ios_config_verification": {
+    "finding": "CR04",
+    "changed_paths": [
+      "ios/Podfile"
+    ],
+    "podfile_sha256": "974beb058090f23818d67a19afb856e73427fb91e34d6ae61e73b8ea9382abda",
+    "dart_locked_package": "permission_handler_apple 9.4.7",
+    "locked_package_podspec_version": "9.3.0",
+    "ruby_syntax": "passed",
+    "post_install_hook_fixture": {
+      "result": "passed",
+      "invocations": 2,
+      "permission_plugin_configurations": [
+        "nil",
+        "array with inherited and custom flag",
+        "string with two custom flags",
+        "already enabled array"
+      ],
+      "inherited_existing_flags_preserved": true,
+      "location_macro_count": 1,
+      "unrelated_target_flags_preserved": true,
+      "other_permission_families_enabled": false,
+      "deployment_target": "15.5"
+    },
+    "focused_flutter_test": {
+      "command": "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/flutter test --no-pub --reporter expanded test/release/mobile_readiness_contract_test.dart",
+      "passed": 7,
+      "failed": 0
+    },
+    "diff_check": "passed",
+    "limits": [
+      "No pod install, clean iOS build, signing, physical-device permission, or Settings recovery validation was executed.",
+      "Focused source contract verifies existing location education/usage declarations; hook fixture verifies Ruby build-setting mutation only."
+    ]
+  },
+  "preservation": {
+    "baseline": "review inventory before remediation",
+    "checked_existing_files": 3247,
+    "changed": [
+      "ios/Podfile",
+      "lib/features/admin/presentation/admin_reports_screen.dart",
+      "lib/features/admin/presentation/admin_trips_screen.dart",
+      "scripts/qa/test_biopay_full_schema.sh",
+      "test/features/auth/data/otp_send_outcome_test.dart",
+      "test/release/admin_panel_production_readiness_contract_test.dart",
+      "test/release/scope_boundary_test.dart"
+    ],
+    "missing": [],
+    "unexpected_changes": [],
+    "allowed_boundaries": [
+      "ios/Podfile",
+      "lib/features/admin/presentation/admin_reports_screen.dart",
+      "lib/features/admin/presentation/admin_trips_screen.dart",
+      "scripts/qa/test_biopay_full_schema.sh",
+      "test/features/auth/data/otp_send_outcome_test.dart",
+      "test/release/admin_panel_production_readiness_contract_test.dart",
+      "test/release/scope_boundary_test.dart"
+    ]
+  },
+  "android": {
+    "path": "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/continuation/mobio-remediation-batch-01.apk",
+    "sha256": "562f0e613597992b152b0008b4f5e10995b22a59389c54295953fed02b1f201c",
+    "bytes": 94141343,
+    "package": "rw.mobi.app",
+    "version_code": "17",
+    "version_name": "1.0.0",
+    "target_sdk": "36",
+    "signature_verified": true,
+    "ui_source": {
+      "acceptance_effect": "none",
+      "file_count": 771,
+      "product": "Mobio",
+      "schema_version": 1,
+      "scope": [
+        "lib/",
+        "packages/",
+        "assets/",
+        "icon/",
+        "landing/",
+        "web/",
+        "android/app/src/",
+        "ios/Runner/",
+        "apps/momobio_sms_bridge/app/src/",
+        "tool/"
+      ],
+      "selection": "tracked and nonignored untracked UI sources; known secrets, documentation, tests and generated build output excluded",
+      "source_sha256": "545101f4acf6c6ba48f1a9fef78dc690f347630e819a905d5c2af70df00e4d7a"
+    },
+    "physical_device_acceptance": "unverified",
+    "store_release": "unverified"
+  },
+  "web": {
+    "output_directory": "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/pwa-readiness-remediation-20261001/site",
+    "file_count": 756,
+    "bundle_tree_sha256": "0a3bf92b1c4313bee6c68b96919b5429c3b959f6d93be4de0481ccea586c72c8",
+    "source_before_after_match": true,
+    "source": {
+      "acceptance_effect": "none",
+      "file_count": 771,
+      "product": "Mobio",
+      "schema_version": 1,
+      "scope": [
+        "lib/",
+        "packages/",
+        "assets/",
+        "icon/",
+        "landing/",
+        "web/",
+        "android/app/src/",
+        "ios/Runner/",
+        "apps/momobio_sms_bridge/app/src/",
+        "tool/"
+      ],
+      "selection": "tracked and nonignored untracked UI sources; known secrets, documentation, tests and generated build output excluded",
+      "source_sha256": "545101f4acf6c6ba48f1a9fef78dc690f347630e819a905d5c2af70df00e4d7a"
+    },
+    "bundle_verification": "passed",
+    "browser_acceptance": "unverified"
+  },
+  "limits": [
+    "Full suite was not repeated after test-only fixture/contract changes; all affected files retested successfully.",
+    "168 visual comparisons remain unresolved; passing build/tests are not visual acceptance.",
+    "No hosted SQL/PostgREST/Auth/provider, physical-device, store or deployment acceptance.",
+    "No Git commit, push, deployment or external publication."
+  ],
+  "source_hashes": "remediation-validated-source-hashes.json"
+}

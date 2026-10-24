@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/features/biopay/data/biopay_device_nfc_service.dart';
 import 'package:mobi_app/features/biopay/data/biopay_nfc_card_payload.dart';
@@ -73,40 +73,38 @@ class _BioPayNfcForegroundListenerState
     'rw.mobi.app/biopay_native_nfc_reader',
   );
 
-  final AppLinks _appLinks = AppLinks();
-  StreamSubscription<Uri>? _linkSubscription;
   bool _running = false;
   bool _disposed = false;
   bool _requestResolving = false;
   bool _nativeActive = true;
+  int _readRevision = 0;
+  Future<void>? _finishWork;
+  bool _pollActive = false;
   Future<void>? _nativeStartWork;
   DateTime? _lastLaunchAt;
-  Uri? _lastHandledUri;
-  DateTime? _lastHandledAt;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    AccountContext.changes.addListener(_accountChanged);
     _nativeReaderChannel.setMethodCallHandler(_handleNativeReaderCall);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _consumePendingNativePayload();
       _startNativeReader();
       _ensureLoop();
     });
-    if (!kIsWeb) {
-      unawaited(_ensureLinkListener());
-    }
   }
 
   @override
   void dispose() {
     _disposed = true;
+    _readRevision++;
     _nativeActive = false;
     _nativeReaderChannel.setMethodCallHandler(null);
     unawaited(_stopNativeReader());
-    unawaited(_linkSubscription?.cancel());
     WidgetsBinding.instance.removeObserver(this);
+    AccountContext.changes.removeListener(_accountChanged);
     unawaited(_finishSession());
     super.dispose();
   }
@@ -121,6 +119,7 @@ class _BioPayNfcForegroundListenerState
         state == AppLifecycleState.inactive ||
         state == AppLifecycleState.detached) {
       _nativeActive = false;
+      _readRevision++;
       unawaited(_stopNativeReader());
       unawaited(_finishSession());
     }
@@ -130,6 +129,7 @@ class _BioPayNfcForegroundListenerState
   Widget build(BuildContext context) {
     ref.listen<bool>(bioPayNfcForegroundSuspendedProvider, (_, suspended) {
       if (suspended) {
+        _readRevision++;
         unawaited(_stopNativeReader());
         unawaited(_finishSession());
       } else {
@@ -165,7 +165,7 @@ class _BioPayNfcForegroundListenerState
   }
 
   Future<void> _startNativeReader() async {
-    if (kIsWeb || !_canReadNative) return;
+    if (!_passiveAndroidReader || !_canReadNative) return;
     try {
       var work = _nativeStartWork;
       if (work == null) {
@@ -191,6 +191,16 @@ class _BioPayNfcForegroundListenerState
       _nativeActive &&
       !ref.read(bioPayNfcForegroundSuspendedProvider);
 
+  // CoreNFC poll opens a system sheet. The global listener is passive only on
+  // Android; iOS sessions belong to explicit write/lock task services.
+  bool get _passiveAndroidReader =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
+  void _accountChanged() {
+    _readRevision++;
+    unawaited(_finishSession());
+  }
+
   Future<void> _startNativeReaderWork() async {
     final status = await const BioPayDeviceNfcService().status();
     if (status.canAdvertise || !_canReadNative) return;
@@ -199,7 +209,7 @@ class _BioPayNfcForegroundListenerState
   }
 
   Future<void> _consumePendingNativePayload() async {
-    if (_disposed || kIsWeb) return;
+    if (_disposed || !_passiveAndroidReader) return;
     try {
       final pending = await RequestDeadline.mutation(
         _nativeReaderChannel.invokeMapMethod<String, String>(
@@ -218,7 +228,7 @@ class _BioPayNfcForegroundListenerState
   }
 
   Future<void> _stopNativeReader() async {
-    if (kIsWeb) return;
+    if (!_passiveAndroidReader) return;
     try {
       await RequestDeadline.mutation(
         _nativeReaderChannel.invokeMethod<Object?>('stop'),
@@ -231,55 +241,12 @@ class _BioPayNfcForegroundListenerState
   }
 
   void _ensureLoop() {
-    if (_disposed || _running || kIsWeb) return;
+    if (_disposed || _running || !_passiveAndroidReader || !_nativeActive)
+      return;
     final suspended = ref.read(bioPayNfcForegroundSuspendedProvider);
     if (suspended) return;
     _running = true;
     unawaited(_runLoop());
-  }
-
-  Future<void> _ensureLinkListener() async {
-    try {
-      final initial = await RequestDeadline.read(
-        _appLinks.getInitialLink(),
-        timeout: const Duration(seconds: 4),
-      );
-      if (initial != null) {
-        await _handleIncomingUri(initial);
-      }
-    } on Object {
-      // NFC app-link handling is best-effort; foreground polling still works.
-    }
-
-    if (_disposed) return;
-    _linkSubscription ??= _appLinks.uriLinkStream.listen(
-      (uri) => unawaited(_handleIncomingUri(uri)),
-      onError: (_) {
-        // Keep the NFC foreground loop alive even if app-link delivery fails.
-      },
-    );
-  }
-
-  Future<void> _handleIncomingUri(Uri uri) async {
-    if (_disposed ||
-        (uri == _lastHandledUri &&
-            _lastHandledAt != null &&
-            DateTime.now().difference(_lastHandledAt!) <
-                const Duration(seconds: 2))) {
-      return;
-    }
-    final payload = BioPayNfcCardPayload.fromUriValue(uri);
-    _lastHandledUri = uri;
-    _lastHandledAt = DateTime.now();
-    if (payload != null) {
-      await _launchPayload(payload);
-      return;
-    }
-
-    final token = bioPayTokenFromPayload(uri.toString());
-    if (token.isNotEmpty) {
-      await _launchRequestToken(token);
-    }
   }
 
   Future<void> _runLoop() async {
@@ -298,12 +265,14 @@ class _BioPayNfcForegroundListenerState
         }
 
         try {
+          final revision = _readRevision;
+          _pollActive = true;
           final tag = await FlutterNfcKit.poll(
             timeout: const Duration(seconds: 2),
             iosAlertMessage: 'Hold near a BioPay NFC card',
             androidPlatformSound: false,
           ).timeout(const Duration(seconds: 3));
-          if (_disposed || ref.read(bioPayNfcForegroundSuspendedProvider)) {
+          if (!_canReadNative || revision != _readRevision) {
             await _finishSession();
             return;
           }
@@ -312,7 +281,8 @@ class _BioPayNfcForegroundListenerState
               FlutterNfcKit.transceive<String>(bioPayDeviceNfcSelectApdu),
               timeout: const Duration(seconds: 4),
             );
-            await FlutterNfcKit.finish().timeout(const Duration(seconds: 4));
+            await _finishSession();
+            if (!_canReadNative || revision != _readRevision) return;
             final payload = deviceNfcPayloadFromApduResponse(response);
             if (payload != null && payload.isNotEmpty) {
               await _handleNativePayload(payload);
@@ -324,7 +294,8 @@ class _BioPayNfcForegroundListenerState
             FlutterNfcKit.readNDEFRecords(cached: false),
             timeout: const Duration(seconds: 4),
           );
-          await FlutterNfcKit.finish().timeout(const Duration(seconds: 4));
+          await _finishSession();
+          if (!_canReadNative || revision != _readRevision) return;
           final payload = bioPayNfcCardPayloadFromRecords(records);
           if (payload != null) {
             await _launchPayload(payload);
@@ -344,6 +315,7 @@ class _BioPayNfcForegroundListenerState
           // finish() after every timeout causes Android NFC service noise and
           // can race with explicit write flows; lifecycle/suspend paths still
           // finish active sessions.
+          _pollActive = false;
         }
 
         await Future<void>.delayed(const Duration(milliseconds: 350));
@@ -404,6 +376,20 @@ class _BioPayNfcForegroundListenerState
   }
 
   Future<void> _finishSession() async {
+    if (!_passiveAndroidReader || !_pollActive) return;
+    final pending = _finishWork;
+    if (pending != null) return pending;
+    _pollActive = false;
+    final work = _finishActiveSession();
+    _finishWork = work;
+    try {
+      await work;
+    } finally {
+      if (identical(_finishWork, work)) _finishWork = null;
+    }
+  }
+
+  Future<void> _finishActiveSession() async {
     try {
       await FlutterNfcKit.finish().timeout(const Duration(seconds: 4));
     } on Object {

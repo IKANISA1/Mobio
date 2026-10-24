@@ -108,10 +108,9 @@ void main() {
       referralAttributionService,
       contains('shouldCreateIosUniversalLinkInstallId'),
     );
-    expect(
-      referralAttributionService,
-      contains('await prefs.remove(_pendingInstallIdKey)'),
-    );
+    // Pending attribution now uses one atomic record. Its acknowledged cleanup,
+    // owner races and unknown-outcome replay prevention are exercised through
+    // the installed SDK in referral_attribution_race_test.dart.
     expect(
       sql,
       contains('revoke insert, update, delete on public.token_wallets'),
@@ -167,8 +166,15 @@ void main() {
     expect(walletRedemptionSql, contains('rpc_admin_adjust_user_tokens'));
     expect(walletRedemptionSql, contains('manual_token_credit'));
     expect(adminService, contains('adjustUserTokens'));
-    expect(adminUserSheet, contains('Add 3000 TOKENS'));
-    expect(adminUserSheet, contains('Motor insurance purchase reward'));
+    expect(
+      adminUserSheet,
+      contains('copy.messageRewardAction(copy.number(3000))'),
+    );
+    expect(adminUserSheet, contains('copy.messageRewardConfirm('));
+    expect(adminUserSheet, contains('await onAddInsuranceReward();'));
+    final englishCopy = File('lib/l10n/app_en.arb').readAsStringSync();
+    expect(englishCopy, contains('Add {amount} TOKENS'));
+    expect(englishCopy, contains('Motor insurance purchase reward'));
     expect(appRouter, contains('_safePopToProfile'));
   });
 

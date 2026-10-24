@@ -64,6 +64,9 @@ select user_id,
 from qa_discovery_actors;
 insert into auth.sessions(id,user_id,created_at,not_after)
 select session_id,user_id,now(),now()+interval '1 hour' from qa_discovery_actors;
+-- Explicit SQL-only positive OTP/session setup; no Admin lease or grant is added.
+select pg_temp.qa_seed_interactive_authority(array(select user_id from qa_discovery_actors where name in ('viewer','driver','offline','admin')));
+
 update public.profiles set role='driver',is_driver=true
 where id in (select user_id from qa_discovery_actors where name in ('driver','offline'));
 update public.profiles set role='admin'

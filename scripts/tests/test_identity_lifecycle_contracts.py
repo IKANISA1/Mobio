@@ -68,7 +68,10 @@ class AccountLifecycleTests(unittest.TestCase):
         auth = text.index('await AccountContext.signOutSdkLocally()', cleanup)
         context = (ROOT / 'lib/core/auth/account_context.dart').read_text()
         self.assertIn('auth.signOut(scope: SignOutScope.local)', context)
-        self.assertIn('_sdk(() => Supabase.instance.client.auth.signOut', context)
+        self.assertIn(
+            '_sdk(()=>Supabase.instance.client.auth.signOut(scope:SignOutScope.local)',
+            compact_source(context),
+        )
         self.assertIn('AccountContext.beginLogoutOperation()', text)
         self.assertIn('finally { AccountContext.endLogoutOperation(); }', text)
         self.assertLess(marker, cleanup)

@@ -23,19 +23,22 @@ class PaymentNfcLinkScreen extends ConsumerStatefulWidget {
       _PaymentNfcLinkScreenState();
 }
 
-class _PaymentNfcLinkScreenState extends ConsumerState<PaymentNfcLinkScreen> {
+class _PaymentNfcLinkScreenState extends ConsumerState<PaymentNfcLinkScreen>
+    with WidgetsBindingObserver {
   BioPayNfcService get _nfc => widget.nfcService;
   late final BioPayNfcForegroundSuspendedNotifier _foreground;
   AccountSnapshot? _viewAccount;
   int _revision = 0;
   int? _suspension;
   bool _accountLost = false;
+  bool _foregroundActive = true;
   List<Map<String, dynamic>> _links = const [];
   Map<String, dynamic>? _selected;
   bool _busy = false, _error = false, _written = false, _locked = false;
 
   bool _current(AccountSnapshot? account, int revision) =>
       mounted &&
+      _foregroundActive &&
       !_accountLost &&
       revision == _revision &&
       account != null &&
@@ -44,6 +47,7 @@ class _PaymentNfcLinkScreenState extends ConsumerState<PaymentNfcLinkScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _foreground = ref.read(bioPayNfcForegroundSuspendedProvider.notifier);
     AccountContext.changes.addListener(_accountChanged);
     unawaited(_load());
@@ -228,8 +232,26 @@ class _PaymentNfcLinkScreenState extends ConsumerState<PaymentNfcLinkScreen> {
   void dispose() {
     _revision++;
     AccountContext.changes.removeListener(_accountChanged);
+    WidgetsBinding.instance.removeObserver(this);
     unawaited(_cancelAndRelease(_suspension));
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      if (mounted) setState(() => _foregroundActive = true);
+      return;
+    }
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.detached) {
+      _foregroundActive = false;
+      _revision++;
+      if (mounted) setState(() => _busy = false);
+      unawaited(_cancelAndRelease(_suspension));
+    }
   }
 
   @override

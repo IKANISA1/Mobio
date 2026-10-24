@@ -1,0 +1,110 @@
+[
+  {
+    "url": "https://mobio.ikanisa.com/",
+    "status": 200,
+    "final_url": "https://mobio.ikanisa.com/",
+    "content_type": "text/html; charset=utf-8",
+    "bytes_read": 11568,
+    "headers": {
+      "Content-Security-Policy": null,
+      "Strict-Transport-Security": null,
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Permissions-Policy": "camera=(), geolocation=(), microphone=(), payment=()",
+      "Cache-Control": "no-store",
+      "X-Frame-Options": "DENY"
+    },
+    "elapsed_seconds": 1.13
+  },
+  {
+    "url": "https://mobio.ikanisa.com/privacy-policy.html",
+    "status": 200,
+    "final_url": "https://mobio.ikanisa.com/privacy-policy",
+    "content_type": "text/html; charset=utf-8",
+    "bytes_read": 12108,
+    "headers": {
+      "Content-Security-Policy": null,
+      "Strict-Transport-Security": null,
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Permissions-Policy": "camera=(), geolocation=(), microphone=(), payment=()",
+      "Cache-Control": "no-store",
+      "X-Frame-Options": "DENY"
+    },
+    "elapsed_seconds": 1.38
+  },
+  {
+    "url": "https://mobio.ikanisa.com/account-deletion.html",
+    "status": 200,
+    "final_url": "https://mobio.ikanisa.com/account-deletion",
+    "content_type": "text/html; charset=utf-8",
+    "bytes_read": 6089,
+    "headers": {
+      "Content-Security-Policy": null,
+      "Strict-Transport-Security": null,
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Permissions-Policy": "camera=(), geolocation=(), microphone=(), payment=()",
+      "Cache-Control": "no-store",
+      "X-Frame-Options": "DENY"
+    },
+    "elapsed_seconds": 0.96
+  },
+  {
+    "url": "https://mobio.ikanisa.com/app/",
+    "status": 200,
+    "final_url": "https://mobio.ikanisa.com/app/",
+    "content_type": "text/html; charset=utf-8",
+    "bytes_read": 11568,
+    "headers": {
+      "Content-Security-Policy": null,
+      "Strict-Transport-Security": null,
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Permissions-Policy": "camera=(), geolocation=(), microphone=(), payment=()",
+      "Cache-Control": "no-store",
+      "X-Frame-Options": "DENY"
+    },
+    "elapsed_seconds": 0.27
+  },
+  {
+    "url": "https://mobio.ikanisa.com/admin/",
+    "error": "HTTP Error 503: Service Unavailable",
+    "status": 503,
+    "elapsed_seconds": 0.7
+  },
+  {
+    "url": "https://mobio.ikanisa.com/.well-known/assetlinks.json",
+    "status": 200,
+    "final_url": "https://mobio.ikanisa.com/.well-known/assetlinks.json",
+    "content_type": "application/json; charset=utf-8",
+    "bytes_read": 438,
+    "headers": {
+      "Content-Security-Policy": null,
+      "Strict-Transport-Security": null,
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Permissions-Policy": "camera=(), geolocation=(), microphone=(), payment=()",
+      "Cache-Control": "no-cache, must-revalidate",
+      "X-Frame-Options": "DENY"
+    },
+    "elapsed_seconds": 0.35
+  },
+  {
+    "url": "https://mobio.ikanisa.com/.well-known/apple-app-site-association",
+    "status": 200,
+    "final_url": "https://mobio.ikanisa.com/.well-known/apple-app-site-association",
+    "content_type": "application/json; charset=utf-8",
+    "bytes_read": 511,
+    "headers": {
+      "Content-Security-Policy": null,
+      "Strict-Transport-Security": null,
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Permissions-Policy": "camera=(), geolocation=(), microphone=(), payment=()",
+      "Cache-Control": "no-cache, must-revalidate",
+      "X-Frame-Options": "DENY"
+    },
+    "elapsed_seconds": 1.26
+  }
+]

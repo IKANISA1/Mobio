@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1334,54 +1335,108 @@ class _WalletBalanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return MobiTonalCard(
-      padding: const EdgeInsets.all(24),
+    // LIVE-025's value overview is free-standing on the selected gradient.
+    // Keep Mobio's own balance, equivalent and earned/sent/received metrics.
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(LucideIcons.walletCards, color: cs.primary, size: 28),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            '${format.format(summary.balanceTokens)} TOKENS',
-            style: AppTypography.displayMd.copyWith(
-              color: cs.onSurface,
-              fontWeight: FontWeight.w600,
-            ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final amount = format.format(summary.balanceTokens);
+              final value = '$amount TOKENS';
+              final style = AppTypography.displayLg.copyWith(
+                color: cs.onSurface,
+                fontWeight: FontWeight.w600,
+              );
+              final separateUnit =
+                  _walletTextWidth(context, value, style) >
+                  constraints.maxWidth;
+              final amountNeedsReflow =
+                  _walletTextWidth(context, amount, style) >
+                  constraints.maxWidth;
+              // Keep enlarged amounts at their selected display size. When a
+              // number must reflow, break after a complete thousands group;
+              // never strand its comma at the start of the following line.
+              final displayedAmount = amountNeedsReflow
+                  ? amount.replaceAll(',', '\u2060,\u200B')
+                  : amount;
+              return Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(text: displayedAmount),
+                    TextSpan(
+                      text: ' TOKENS',
+                      style: separateUnit
+                          ? AppTypography.titleMd.copyWith(
+                              color: cs.onSurface,
+                              fontWeight: FontWeight.w600,
+                            )
+                          : null,
+                    ),
+                  ],
+                ),
+                key: const ValueKey('wallet-primary-balance'),
+                semanticsLabel: value,
+                textAlign: TextAlign.center,
+                style: style,
+              );
+            },
           ),
           const SizedBox(height: 4),
           Text(
             '${format.format(summary.rwfEquivalent)} RWF',
+            textAlign: TextAlign.center,
             style: AppTypography.bodyMd.copyWith(color: cs.onSurfaceVariant),
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
             '${summary.successfulReferrals} successful invites',
+            textAlign: TextAlign.center,
             style: AppTypography.labelLg.copyWith(color: cs.primary),
           ),
           const SizedBox(height: AppSpacing.lg),
-          Row(
-            children: [
-              Expanded(
-                child: _WalletMetric(
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final metrics = [
+                _WalletMetric(
                   label: 'Earned',
                   value: format.format(summary.lifetimeEarnedTokens),
                 ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: _WalletMetric(
+                _WalletMetric(
                   label: 'Sent',
                   value: format.format(summary.lifetimeSentTokens),
                 ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: _WalletMetric(
+                _WalletMetric(
                   label: 'Received',
                   value: format.format(summary.lifetimeReceivedTokens),
                 ),
-              ),
-            ],
+              ];
+              final columnWidth =
+                  (constraints.maxWidth - 2 * AppSpacing.sm) / 3;
+              if (metrics.every(
+                (metric) => metric.minimumWidth(context) <= columnWidth,
+              )) {
+                return Row(
+                  children: [
+                    for (var i = 0; i < metrics.length; i++) ...[
+                      if (i > 0) const SizedBox(width: AppSpacing.sm),
+                      Expanded(child: metrics[i]),
+                    ],
+                  ],
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var i = 0; i < metrics.length; i++) ...[
+                    if (i > 0) const SizedBox(height: AppSpacing.sm),
+                    metrics[i],
+                  ],
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -1394,6 +1449,24 @@ class _WalletMetric extends StatelessWidget {
 
   final String label;
   final String value;
+
+  TextStyle _labelStyle(ColorScheme cs) => AppTypography.labelSm.copyWith(
+    color: cs.onSurfaceVariant,
+    fontWeight: FontWeight.w700,
+  );
+
+  TextStyle _valueStyle(ColorScheme cs) => AppTypography.labelLg.copyWith(
+    color: cs.onSurface,
+    fontWeight: FontWeight.w600,
+  );
+
+  double minimumWidth(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final labelWidth = _walletTextWidth(context, label, _labelStyle(cs));
+    final valueWidth = _walletTextWidth(context, value, _valueStyle(cs));
+    return (labelWidth > valueWidth ? labelWidth : valueWidth).ceilToDouble() +
+        20;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1411,28 +1484,26 @@ class _WalletMetric extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTypography.labelSm.copyWith(
-              color: cs.onSurfaceVariant,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          Text(label, style: _labelStyle(cs)),
           const SizedBox(height: 2),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTypography.labelLg.copyWith(
-              color: cs.onSurface,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Text(value, style: _valueStyle(cs)),
         ],
       ),
     );
+  }
+}
+
+double _walletTextWidth(BuildContext context, String text, TextStyle style) {
+  final painter = TextPainter(
+    text: TextSpan(text: text, style: style),
+    textDirection: Directionality.of(context),
+    textScaler: MediaQuery.textScalerOf(context),
+    locale: Localizations.maybeLocaleOf(context),
+  )..layout();
+  try {
+    return painter.width;
+  } finally {
+    painter.dispose();
   }
 }
 
@@ -1453,40 +1524,52 @@ class _WalletActionRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _WalletActionTile(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final actions = [
+          _WalletActionTile(
             icon: LucideIcons.send,
             label: 'Send',
             onTap: isBusy ? null : onTransfer,
           ),
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: _WalletActionTile(
+          _WalletActionTile(
             icon: LucideIcons.banknote,
             label: 'Redeem',
             onTap: isBusy ? null : onRedeem,
           ),
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: _WalletActionTile(
+          _WalletActionTile(
             icon: LucideIcons.share2,
             label: 'Share',
             onTap: onShare,
           ),
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        Expanded(
-          child: _WalletActionTile(
+          _WalletActionTile(
             icon: LucideIcons.copy,
             label: 'Copy',
             onTap: onCopy,
           ),
-        ),
-      ],
+        ];
+        final columns = [4, 2, 1].firstWhere((count) {
+          final width =
+              (constraints.maxWidth - (count - 1) * AppSpacing.sm) / count;
+          return count == 1 ||
+              actions.every((action) => action.minimumWidth(context) <= width);
+        });
+        return Column(
+          children: [
+            for (var start = 0; start < actions.length; start += columns) ...[
+              if (start > 0) const SizedBox(height: AppSpacing.sm),
+              Row(
+                children: [
+                  for (var i = 0; i < columns; i++) ...[
+                    if (i > 0) const SizedBox(width: AppSpacing.sm),
+                    Expanded(child: actions[start + i]),
+                  ],
+                ],
+              ),
+            ],
+          ],
+        );
+      },
     );
   }
 }
@@ -1502,34 +1585,58 @@ class _WalletActionTile extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
 
+  TextStyle _labelStyle(ColorScheme cs) => AppTypography.labelLg.copyWith(
+    color: onTap == null ? cs.onSurfaceVariant : cs.onSurface,
+    fontWeight: FontWeight.w600,
+  );
+
+  double minimumWidth(BuildContext context) {
+    final width = _walletTextWidth(
+      context,
+      label,
+      _labelStyle(Theme.of(context).colorScheme),
+    ).ceilToDouble();
+    return width > 48 ? width : 48;
+  }
+
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return MobiTonalCard(
-      onTap: onTap,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
-      child: Column(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: cs.primary.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
+    return Semantics(
+      button: true,
+      enabled: onTap != null,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(24),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainerHigh,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    icon,
+                    color: onTap == null ? cs.onSurfaceVariant : cs.onSurface,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: _labelStyle(cs),
+                ),
+              ],
             ),
-            child: Icon(icon, color: cs.primary, size: 19),
           ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTypography.labelLg.copyWith(
-              color: cs.onSurface,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -1660,32 +1767,51 @@ class _InviteCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          Row(
-            children: [
-              Expanded(
-                child: MobiButton(
-                  variant: MobiButtonVariant.success,
-                  onPressed: onShare,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: AppSpacing.sm,
-                  ),
-                  child: const Text('Share invite'),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final share = MobiButton(
+                variant: MobiButtonVariant.primary,
+                onPressed: onShare,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
                 ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Expanded(
-                child: MobiButton(
-                  variant: MobiButtonVariant.ghost,
-                  onPressed: onCopy,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                    vertical: AppSpacing.sm,
-                  ),
-                  child: const Text('Copy link'),
+                child: const Text('Share invite'),
+              );
+              final copy = MobiButton(
+                variant: MobiButtonVariant.ghost,
+                onPressed: onCopy,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
                 ),
-              ),
-            ],
+                child: const Text('Copy link'),
+              );
+              final columnWidth = (constraints.maxWidth - AppSpacing.sm) / 2;
+              final fitSideBySide = ['Share invite', 'Copy link'].every(
+                (label) =>
+                    _walletTextWidth(context, label, AppTypography.titleMd) +
+                        AppSpacing.md * 2 <=
+                    columnWidth,
+              );
+              if (fitSideBySide) {
+                return Row(
+                  children: [
+                    Expanded(child: share),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(child: copy),
+                  ],
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  share,
+                  const SizedBox(height: AppSpacing.sm),
+                  copy,
+                ],
+              );
+            },
           ),
           const SizedBox(height: AppSpacing.sm),
           MobiButton(
@@ -1756,62 +1882,83 @@ class _LedgerRow extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     final isCredit = entry.direction == 'credit';
     final date = DateFormat('d MMM, HH:mm').format(entry.createdAt.toLocal());
+    final label = _walletLedgerLabel(entry.reason);
+    final details = [
+      date,
+      if (entry.note?.trim().isNotEmpty == true) entry.note!.trim(),
+    ].join(' - ');
+    final amount =
+        '${isCredit ? '+' : '-'}${format.format(entry.amountTokens)}';
+    final labelStyle = AppTypography.bodyMd.copyWith(
+      color: cs.onSurface,
+      fontWeight: FontWeight.w600,
+    );
+    final detailStyle = AppTypography.bodySm.copyWith(
+      color: cs.onSurfaceVariant,
+    );
+    final amountStyle = AppTypography.labelLg.copyWith(
+      color: isCredit ? cs.primary : cs.error,
+      fontWeight: FontWeight.w600,
+    );
+    final amountText = Text(amount, style: amountStyle);
     return MobiTonalCard(
       padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: (isCredit ? cs.primary : cs.error).withValues(alpha: 0.12),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              isCredit ? LucideIcons.arrowDownLeft : LucideIcons.arrowUpRight,
-              color: isCredit ? cs.primary : cs.error,
-              size: 19,
-            ),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _walletLedgerLabel(entry.reason),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.bodyMd.copyWith(
-                    color: cs.onSurface,
-                    fontWeight: FontWeight.w600,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final detailWidth = math.max(
+            _walletTextWidth(context, label, labelStyle),
+            _walletTextWidth(context, details, detailStyle),
+          );
+          final fitsRow =
+              42 +
+                  AppSpacing.sm * 2 +
+                  detailWidth +
+                  _walletTextWidth(context, amount, amountStyle) <=
+              constraints.maxWidth;
+          return Row(
+            crossAxisAlignment: fitsRow
+                ? CrossAxisAlignment.center
+                : CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: (isCredit ? cs.primary : cs.error).withValues(
+                    alpha: 0.12,
                   ),
+                  shape: BoxShape.circle,
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  [
-                    date,
-                    if (entry.note?.trim().isNotEmpty == true)
-                      entry.note!.trim(),
-                  ].join(' - '),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTypography.bodySm.copyWith(
-                    color: cs.onSurfaceVariant,
-                  ),
+                child: Icon(
+                  isCredit
+                      ? LucideIcons.arrowDownLeft
+                      : LucideIcons.arrowUpRight,
+                  color: isCredit ? cs.primary : cs.error,
+                  size: 19,
                 ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(label, style: labelStyle),
+                    const SizedBox(height: 2),
+                    Text(details, style: detailStyle),
+                    if (!fitsRow) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      amountText,
+                    ],
+                  ],
+                ),
+              ),
+              if (fitsRow) ...[
+                const SizedBox(width: AppSpacing.sm),
+                amountText,
               ],
-            ),
-          ),
-          const SizedBox(width: AppSpacing.sm),
-          Text(
-            '${isCredit ? '+' : '-'}${format.format(entry.amountTokens)}',
-            style: AppTypography.labelLg.copyWith(
-              color: isCredit ? cs.primary : cs.error,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }

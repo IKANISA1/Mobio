@@ -4,6 +4,10 @@
 > requires the candidate manifest, separate artifact-bound approval, eleven
 > reviewed receipts, and reviewer-controlled key documented in
 > [release/README.md](README.md#android-candidate-and-play-promotion).
+> Public reviewer credentials have been removed on 1 October 2026. Current
+> access belongs in the private store console. See the
+> [controlled review runbook](store-review-access.md); the historical video
+> and declarations below do not accept a current binary or its review flow.
 
 Package: `rw.mobi.app`
 
@@ -13,17 +17,10 @@ Name:
 
 `Google Play review account`
 
-Username, email address, or phone number:
-
-`+250788767816`
-
-Password:
-
-`123456`
-
-Any other information required for access:
-
-`Select Passenger, enter +250788767816, tap Send code, then enter OTP 123456. No WhatsApp message is required for this review account. To review Driver features, select Driver and use the same phone and OTP.`
+Current credentials and access instructions are provided privately in the
+store console by the release owner. This historical document contains no
+usable reviewer credentials. It must not be copied as current App Access
+instructions without verifying the submitted candidate and enabled window.
 
 ## Permission Matrix
 
@@ -131,7 +128,7 @@ Store listing and privacy policy must disclose:
 
 ## Required Play Console Work
 
-1. App access: use the review account above.
+1. App access: verify the candidate's controlled review journey, then provide current instructions privately in the store console.
 2. Foreground service / Location foreground service declaration: completed and sent for review with `https://mobio.ikanisa.com/play-review/foreground-location-demo`.
 3. Sensitive app permissions / Background location: complete or update if Play prompts after the v17 bundle is uploaded.
 4. Phone permission declaration: complete if Play prompts for `CALL_PHONE` after the v17 bundle is uploaded.

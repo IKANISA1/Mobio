@@ -7,7 +7,7 @@
 @font-face {
   font-family: Aeonik;
   src: url("assets/fonts/AeonikPro-Medium.woff2") format("woff2");
-  font-weight: 500 900;
+  font-weight: 500;
   font-display: swap;
 }
 @font-face {
@@ -83,7 +83,8 @@ body {
   margin: 0;
   background: var(--canvas);
   color: var(--ink);
-  font-family: Aeonik, Arial, sans-serif;
+  font-family: Aeonik, Inter, system-ui, sans-serif;
+  font-synthesis: none;
   -webkit-font-smoothing: antialiased;
 }
 a {

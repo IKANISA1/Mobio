@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "product": "Mobio",
+  "authority": {
+    "skill": "revolut-design",
+    "role": "sole_design_authority"
+  },
+  "evidence": "build/qa/design-review",
+  "output": "build/qa/design-review/review",
+  "inventory": "docs/design/routes-goal-20261001.json",
+  "source_fingerprint_command": [
+    "python3",
+    "scripts/qa/design_source_fingerprint.py"
+  ],
+  "component_report": "component-review/report.json",
+  "supplement_report": "responsive-review.json",
+  "native_evidence": "build/qa/current-native-evidence",
+  "website_report": "website/route_rendered_qa.json",
+  "behavior_report": "behavior-results.json",
+  "keyboard_report": "keyboard/report.json",
+  "matrix_report": "matrix/review.json"
+}

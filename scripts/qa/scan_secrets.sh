@@ -1,7 +1,17 @@
 #!/usr/bin/env bash
+if [ -z "${BASH_VERSION:-}" ]; then
+  printf '%s\n' 'Run scan_secrets.sh directly or with Bash.' >&2
+  exit 2
+fi
+
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+if [[ ! -f "$ROOT_DIR/pubspec.yaml" || ! -d "$ROOT_DIR/lib" ]]; then
+  printf '%s\n' 'Mobio repository root could not be verified; refusing to scan.' >&2
+  exit 2
+fi
 
 if ! command -v rg >/dev/null 2>&1; then
   echo "ripgrep (rg) is required" >&2

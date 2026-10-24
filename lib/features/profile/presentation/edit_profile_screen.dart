@@ -17,7 +17,7 @@ import 'package:mobi_app/features/profile/presentation/widgets/profile_vehicle_s
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
 import 'package:mobi_app/shared/widgets/mobi_async_state_view.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
-import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
+import 'package:mobi_app/shared/widgets/mobi_task_header.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
@@ -165,13 +165,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SoftGradient(
-        tone: SoftGradientTone.profile,
+        tone: SoftGradientTone.neutral,
         child: SafeArea(
           child: Column(
             children: [
-              MobiPageHeader(
+              MobiTaskHeader(
                 title: widget.isFirstRun ? 'Set up profile' : 'Profile',
                 onBack: widget.onBack,
+                showTitle: false,
               ),
               Expanded(
                 child: MobiAsyncStateView<EditProfileState>(
@@ -211,22 +212,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 720),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Center(
-                child: Column(
-                  children: [
-                    Text(
-                      widget.isFirstRun ? 'Set up profile' : 'Edit profile',
-                      textAlign: TextAlign.center,
-                      style: AppTypography.displayMd.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontSize: 36,
-                        height: 1.08,
-                      ),
-                    ),
-                  ],
-                ),
+              MobiTaskHeading(
+                title: widget.isFirstRun ? 'Set up profile' : 'Edit profile',
               ),
               const SizedBox(height: AppSpacing.sectionGap),
               if (widget.isFirstRun) ...[

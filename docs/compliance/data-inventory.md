@@ -1,40 +1,47 @@
-# Data Inventory
+# Mobio data inventory
 
-Last updated: 2026-05-24
+Updated: 2 October 2026. Boundary: current repository source and the independently replayed **128-migration** catalogue. Production configuration, processor accounts/regions, actual subject data, physical deletion and approved retention remain unverified. Source presence does not authorize feature activation or erasure.
 
-## Active Product Data
+The [effective catalogue and subject selector register](../reports/mobio-readiness-review-2026-10-01/implementation-plans/cr10-effective-inventory.md) supplies the detailed enumeration for this snapshot: 149 tables, 221 foreign keys, nine direct Auth/profile deletion blockers, 107 exact/joined selector scopes and 42 unresolved/shared/platform scopes. Its templates enumerate data; they are not deletion approval. Refresh it when later migrations change these inputs.
 
-| Data class | Examples | Purpose | Storage/processor | Retention note |
-| --- | --- | --- | --- | --- |
-| Account/auth | Supabase auth user ID, WhatsApp phone, role | Login, role guards, profile ownership | Supabase Auth and `profiles` | Keep while account is active; delete on account deletion where legally allowed. |
-| Profile | Display name/code, role, vehicle type, avatar/media URL where enabled | Discovery and user trust | Supabase `profiles`, storage buckets | User-editable; restrict sensitive fields via RLS/RPC. |
-| Location | Current/last driver/passenger snapshot, approximate radius search, driver live-sharing coordinates while explicitly online | Nearby discovery and driver live sharing | `driver_locations`, location RPCs, OS foreground location services | Store only while the driver is online; avoid route history and clear stale client cache when permission or device location is unavailable. Driver live sharing uses a prominent in-app disclosure and foreground location permission. |
-| Scheduled trip posts | Origin/destination labels, optional coordinates, date/time, vehicle type, note | Marketplace posting and discovery | `trips` | User can cancel; define cleanup for old posts. Route computation is disabled by product scope; `compute_route` returns 410 and no ETA, distance, duration, polyline, route matrix, fare-distance basis, fare, or dispatch decision is generated. |
-| Chat | Conversation participants, messages, read timestamps | In-app communication | `chat_conversations`, `chat_messages`, realtime | Participant-scoped RLS; moderation policy needed before public launch. |
-| Reports/blocks | Reporter/reported IDs, block pairs, report category/details, review status | Marketplace safety, abuse handling, and chat blocking | `user_blocks`, `user_reports`, admin report RPCs | Keep with audit/support retention; restrict direct client writes and admin review. |
-| WhatsApp handoff | WhatsApp URL/phone where user-provided | External contact | Profile fields and client handoff | Users negotiate manually outside Mobio. |
-| Notifications | Push token, unread counts, consent settings | App notifications and admin campaigns | Firebase/Supabase notification tables | Consent gates required for promotional sends. |
-| Admin/audit | Admin actions, access attempts, operational health | Accountability and support | Admin/audit tables and Edge Functions | Retain for audit/security period. |
-| Account deletion request | WhatsApp phone, Mobio member code where provided, support email thread, verification notes | User account deletion and data rights handling | Public `landing/account-deletion.html`, support mailbox, backend deletion workflow | Acknowledge within 7 days and complete eligible deletion within 30 days after verification. |
+## Scope and provenance
 
-## Out-Of-Scope Or Legacy Data
+Mobio retains nearby discovery, profile/vehicle browsing, WhatsApp/in-app chat, scheduled posts and basic moderation/admin. Preserve the [June public-transport expansion](../product/public_transport_tracking_booking_scope_2026-06-08.md) and [June BioPay scope](../product/biopay_ussd_aws_reactivation_scope_2026-06-12.md). The [20 September Face approval](../product/face-ussd-20260920/APPROVAL.md) supersedes the earlier AWS/liveness requirement for that feature with Cloudflare/OpenCV and an amount-free external USSD shortcut. Common manual/QR journeys and WhatsApp authentication retain their own scope.
 
-| Data class | Current repo state | Production stance |
+Implemented source, product approval, deployment, provider enablement and acceptance are separate facts. Wallet/token and collector/SMS data present in source require inventory even where activation remains gated. The May blanket statements that BioPay, camera, financial and SMS processing were removed must not drive current store disclosures.
+
+## Data classes and stores
+
+| Class | Source/store boundary | Erasure and retention requirement |
 | --- | --- | --- |
-| BioPay biometrics | Flutter BioPay feature files, models, tests, ML assets, and Android client dependencies were removed from the active app package. The BioPay Edge Function entrypoint now returns 410 scope unavailable. Forward cleanup migrations drop BioPay tables/functions and profile BioPay columns. Local Docker Desktop replay is proven through the final cleanup migration. | Keep out of Mobio production. Replay the cleanup migrations on linked staging before broad release. |
-| Payment intents/events | Flutter payment models and `packages/payments` were removed from the active app package. Legacy payment function entrypoints now return 410 scope unavailable. Forward cleanup migrations drop payment tables/functions. Local Docker Desktop replay is proven through the final cleanup migration. | Do not use for trip collection or automated settlement. Replay the cleanup migrations on linked staging before production. |
-| Native ledger/SMS ingestion | Native Android ledger/SMS source, receivers, generated bridge, and related dependencies were removed from the active app package. SMS parsing/reconciliation function entrypoints now return 410 scope unavailable. Forward cleanup migrations drop SMS ledger tables and the country SMS sender column; direct local schema checks confirm `transactions` and `sms_raw_queue` are absent from schema/realtime. | Keep inactive unless a separate Play-approved SMS/payment product is approved. |
-| Ride request/offer lifecycle | Flutter service/provider/model/sheet entry points have been removed. A forward cleanup migration drops historical `ride_requests` and `trip_requests` schema objects. Local Docker Desktop replay is proven. | Keep out of active app. Replay the cleanup migration on linked staging before production. |
+| Auth, identity and OTP | Supabase Auth UUID/identities/sessions/flow state; WhatsApp phone; profiles; contextual OTP; durable bindings and exact-session proofs; allowlist/access attempts/private Admin leases | Capture UUID, SIDs and verified aliases before deletion. Include identifying JSON/audit fields and exact phone buckets through privileged selectors; preserve shared IP/global controls. Profile deletion alone is not complete revocation. |
+| Store reviewer | Phoneless principal, opaque challenge, bounded generation/lease and permanent private reviewer registry | No ordinary profile/production authority. Preserve the permanent UUID denial registry and classify its minimal security retention separately; erasure must not restore access. |
+| Profile and discovery | Six-digit code, name/display, role, vehicle/country, contact/receiving identifiers and avatar/media references | Enumerate exact subject/object IDs. Public object/CDN byte absence requires independent proof; SQL metadata absence is insufficient. |
+| Location and places | Driver/location snapshots, approved bus tracking events, Google Places/Geocoding inputs/results, client permission/cache state and Maps quota | Classify coordinates/labels/metadata. Stale-data rules are not an approved retention schedule. Route computation stays disabled: compute_route=410; no route ETA/distance/polyline/matrix/fare-distance/dispatch work. |
+| Scheduled posts and public transport | trips and notes; passenger/ticket/booking/payment references, seat holds/inventory, agency/bus/schedule/tracking records | Cancellation is not erasure. Preserve counterpart tickets, shared agency data and seat reconciliation. Booking holds and legal retention holds are distinct. |
+| Chat, reports and blocks | Participants, content, delivery/read state, moderation details, local durable drafts/recovery | Classify both participants and copied content. Cascades can destroy another person's evidence. Fence late local writes and clear only attributed keys. |
+| BioPay manual/QR/NFC and external handoff | Receiving methods/grants, routes/evidence, links/drafts/shortcuts/templates, requests/attempts/claims/audit, opaque tokens and WhatsApp/tel routes | Include recipient/payer references and copied labels/metadata. A launch/user claim is not settlement. Preserve counterparty confirmation evidence; no MoMo PIN, bank/card credential or telecom-secret collection is authorized. External recipient/device/telecom data is separately controlled. |
+| Current Face and historical provider | Consent, current/pending/old revisions, exact vectors/model/provider-operation/cleanup IDs; Cloudflare Worker/Containers/Vectorize; device capture; historical AWS IDs | Capture identifiers before cascades; reconcile asynchronous deletion, independently probe absence and fence late upserts/replacements. Stateless inference/no durable raw-selfie storage is intent, not deployed logging/persistence proof. AWS IDs are not SFace vectors; exact legacy account/region/collection cleanup requires separate authorization. |
+| Financial/token records present in source | Wallet/token operations, ledger/transfers, redemption/top-up/payment evidence and profile-typed references | Restrict/cascade/SET NULL edges need approved detachment/redaction/retention while preserving accounting and counterpart facts. Do not invent refunds, trip settlement or a hidden retained active Auth account. |
+| Collector/SMS/AI processing | Separate Android bridge/collector queue, collector requests/events, raw SMS intake/budget/reconciliation and OpenAI parsing request | Include names/phones/references without owner FKs and actual device custody. Main-app and companion permissions differ. OpenAI store:false is a request flag, not processor erasure evidence. Retention/replay-safe tombstones and real cancellation remain open. |
+| Push, campaigns and Firebase/Google | fcm_tokens owner/SID/binding/device metadata, consent, notifications/attempts, private events/jobs/budgets, campaigns/promo assets; optional Firebase identity, Analytics/Crashlytics/Remote Config/App Check/Play Integrity, FCM/APNs/Maps | Current-session admission fences enqueue/final dispatch, with an explicit already-authorized external-send boundary. Include app-instance identifiers/exports; clearing Analytics user ID does not erase history. Preserve shared campaigns and reconcile unknown outcomes without replay. |
+| Admin, organizations and audit | Ten-minute copied query snapshots, frozen role tuples, durable operation/audit receipts, minimal recovery pointers; membership/permission/actor/health metadata | Release/expiry cannot cascade into receipts. Include another Admin's copied target PII and exact typed actor/target references. SET NULL retains copied JSON/text; preserve shared organization and audit integrity under approved disposition. |
+| Privacy case/evidence | Policy, owner/SID/notice/revision, action/evidence hashes, plan/inventory and retention exceptions | Case records intentionally survive Auth deletion. Current fulfillment records operator evidence; automatic_erasure_implemented=false. Ten hashes do not establish independent cross-store erasure. |
+| Storage, device/PWA and exports | avatars/media/promo-media bytes and CDN copies; secure sessions/preferences/journals, capture/QR exports and service-worker/browser caches | Use supported APIs for exact owned bytes and independent known-object/URL probes. Protect shared promo assets, another account and unattributed recovery. Offline devices, user exports and external recipients remain limits. |
+| Support, logs, processors and backups | Actual support threads/mailbox, platform/processor logs, database/Storage backups/PITR, exports/downstream copies | Capture actual tenant/account/region/copy IDs and scoped capability. Require accountable response/probe or approved retained disposition. The empty local catalogue fixture examines no physical backup/log/processor copy. |
 
-## Play Data Safety Notes
+Shared countries/vehicles, provider policies/routes, transport schedules/agencies, organizations, notification catalogues, budgets and platform settings require classification of identifying approval metadata. An actor reference does not authorize deleting the shared object or another person's data.
 
-- Location: used for nearby discovery; disclose approximate/precise location if
-  both permissions stay in Android.
-- Personal info: phone/profile details used for account and discovery.
-- Messages: in-app chat content is user-generated communication.
-- Photos/camera/SMS/payments: not active after this scope pass and should not be
-  claimed unless re-enabled.
-- Data deletion: public account-deletion instructions now exist locally at
-  `landing/account-deletion.html` and the app exposes them through
-  `ACCOUNT_DELETION_URL`; the live HTTPS URL was verified on 2026-05-23 and
-  should be rechecked before each Play production submission.
+## Controls and unresolved decisions
+
+The [CR10 execution plan](../reports/mobio-readiness-review-2026-10-01/implementation-plans/cr10-plan.md) remains implementation work: approved subject/environment/target manifest and category/hold decisions; durable ordinary Auth-UUID fence before destructive work; exact SQL/Storage/vector/provider/device adapters; fenced leases and unknown-outcome reconciliation; independently checked receipts and completion postconditions. A UUID fence does not imply a permanent phone-number ban.
+
+No numeric financial, security, privacy-case, raw-SMS, analytics, processor or backup retention period is approved here. Unknown/open-ended holds are not invented bounded exceptions. Approve processor/operator ownership, legal basis, regions/subprocessors, erasure channels and verified post-fence case recovery before representing live fulfillment as complete. The [Face runbook](../operations/face-ussd-runbook.md) records current model-specific and legacy-provider cleanup boundaries.
+
+The public [account-deletion notice](../../landing/account-deletion.html) states acknowledgement within seven days and eligible deletion within thirty days after verification/review. Those are published service targets, not statutory retention periods or proof of fulfillment. Current [privacy wording](../../landing/privacy-policy.html), support execution, processor disclosures and store submissions need content/legal acceptance and deployed readback.
+
+## Store disclosures and acceptance
+
+Reconcile the actual enabled build, backend and companion: account/contact, location/tracking, chat/reports, photos/camera/media, biometric templates, financial records, SMS, device identifiers, diagnostics/analytics and external processors. Do not reuse the May statement that photos/camera/SMS/payments were all inactive. No current store form or production processor configuration was inspected for this update.
+
+Catalogue/source hashes, builds, public links and synthetic fixtures do not establish store approval, physical deletion, real-user provider behavior, deployment or legal/content acceptance. This document enables no processing policy or automatic work.

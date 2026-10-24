@@ -4,15 +4,19 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/auth/account_context.dart';
+import 'package:mobi_app/core/auth/review_session_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_enums.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/utils/phone_number_normalizer.dart';
 import 'package:mobi_app/features/admin/data/otp_service.dart';
+import 'package:mobi_app/features/auth/data/store_review_session_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class WhatsAppLoginResult extends OtpResult {
   final AppRole? role;
   final bool usesReviewCode;
+  final String? challengeId;
 
   const WhatsAppLoginResult({
     required super.success,
@@ -22,6 +26,7 @@ class WhatsAppLoginResult extends OtpResult {
     super.attemptsRemaining,
     this.role,
     this.usesReviewCode = false,
+    this.challengeId,
   });
 }
 
@@ -39,6 +44,8 @@ class WhatsAppLoginService {
   final Duration _requestTimeout;
   LoginAttempt? _attempt;
   Object? _attemptOwner;
+  ({String phone, String country, AppRole role, String id})? _reviewChallenge;
+  int _sendRevision = 0;
   Future<void> cancelVerification({required Object owner}) async {
     if (identical(owner, _attemptOwner))
       await AccountContext.cancelPendingLogin(_attempt);
@@ -72,6 +79,8 @@ class WhatsAppLoginService {
       phone: phone,
       countryCode: countryCode,
     );
+    final sendRevision = ++_sendRevision;
+    _reviewChallenge = null;
 
     try {
       final playIntegrity = await _playIntegrityEvidence(
@@ -102,13 +111,40 @@ class WhatsAppLoginService {
       }
 
       if (body['success'] == true) {
+        final review = body['deliveryMode'] == 'review_code';
+        final challengeId = body['challengeId'];
+        if (review &&
+            (challengeId is! String ||
+                !RegExp(
+                  r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+                ).hasMatch(challengeId))) {
+          return const WhatsAppLoginResult(
+            success: false,
+            message:
+                'Review access could not be confirmed. Request a new code.',
+          );
+        }
+        if (sendRevision != _sendRevision) {
+          return const WhatsAppLoginResult(
+            success: false,
+            message: 'A newer code request is in progress.',
+          );
+        }
+        if (review)
+          _reviewChallenge = (
+            phone: normalizedPhone,
+            country: countryCode,
+            role: role,
+            id: challengeId as String,
+          );
         return WhatsAppLoginResult(
           success: true,
           message: body['message'] is String
               ? body['message'] as String
               : 'OTP sent to your WhatsApp',
           retryAfterSeconds: _extractInt(body, 'retryAfterSeconds'),
-          usesReviewCode: body['deliveryMode'] == 'review_code',
+          usesReviewCode: review,
+          challengeId: review ? challengeId as String : null,
         );
       }
 
@@ -159,14 +195,26 @@ class WhatsAppLoginService {
     LoginAttempt? ticket;
     var completed = false;
     try {
-      ticket = AccountContext.beginLoginAttempt(provider: 'whatsapp_cloud_otp');
-      _attempt = ticket;
-      _attemptOwner = owner;
-      await AccountContext.prepareLogin(ticket);
       final normalizedPhone = normalizePhoneForCountry(
         phone: phone,
         countryCode: countryCode,
       );
+      final challenge = _reviewChallenge;
+      if (challenge != null &&
+          (challenge.phone != normalizedPhone ||
+              challenge.country != countryCode ||
+              challenge.role != role)) {
+        return const WhatsAppLoginResult(
+          success: false,
+          message: 'Request a new code for this number and role.',
+        );
+      }
+      ticket = AccountContext.beginLoginAttempt(
+        provider: challenge == null ? 'whatsapp_cloud_otp' : 'store_review',
+      );
+      _attempt = ticket;
+      _attemptOwner = owner;
+      await AccountContext.prepareLogin(ticket);
       final playIntegrity = await _playIntegrityEvidence(
         'app_login_verify_otp',
       ).timeout(const Duration(seconds: 6));
@@ -176,6 +224,7 @@ class WhatsAppLoginService {
         'code': code,
         'role': _loginRoleValue(role),
         'countryCode': countryCode,
+        if (challenge != null) 'challengeId': challenge.id,
         if (playIntegrity != null) 'playIntegrity': playIntegrity,
       };
       final response = await _dio
@@ -195,15 +244,53 @@ class WhatsAppLoginService {
         ticket,
         Map<String, dynamic>.from(body['session'] as Map),
       );
-      await AccountContext.completeVerifiedLogin(
-        ticket,
-      ).timeout(const Duration(seconds: 8));
+      if (challenge != null) {
+        if (body['mode'] != 'synthetic_review' ||
+            body['reviewSession'] is! Map) {
+          throw const ReviewAccessUnavailable();
+        }
+        final session = Supabase.instance.client.auth.currentSession!;
+        final expected = ReviewTransportIdentity(
+          session.user.id,
+          AccountContext.sessionId(session)!,
+        );
+        final issued = ReviewSessionLease.parse(
+          body['reviewSession'],
+          expected: expected,
+          elapsed: Duration.zero,
+        );
+        final clock = Stopwatch()..start();
+        final status = await StoreReviewSessionService(dio: _dio).status();
+        AccountContext.requireLoginAttempt(ticket);
+        final checked = ReviewSessionLease.parse(
+          status,
+          expected: expected,
+          elapsed: clock.elapsed,
+        );
+        if (checked.generation != issued.generation ||
+            checked.role != issued.role) {
+          throw const ReviewAccessUnavailable();
+        }
+        await AccountContext.completeReviewLogin(
+          ticket,
+          status: status,
+          elapsedTime: () => clock.elapsed,
+        ).timeout(const Duration(seconds: 8));
+        _reviewChallenge = null;
+      } else {
+        await AccountContext.completeVerifiedLogin(
+          ticket,
+        ).timeout(const Duration(seconds: 8));
+      }
       final resolvedRole = AppRole.fromString(body['role'] as String?);
       completed = true;
       return WhatsAppLoginResult(
         success: true,
         message: 'Verified successfully',
-        role: resolvedRole.isAdmin ? AppRole.passenger : resolvedRole,
+        role: challenge != null
+            ? role
+            : (resolvedRole.isAdmin ? AppRole.passenger : resolvedRole),
+        usesReviewCode: challenge != null,
       );
     } on DioException catch (error) {
       return _fromDioException(

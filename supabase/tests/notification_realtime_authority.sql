@@ -46,6 +46,9 @@ with inserted as (
 ) insert into qa_notification_actors(name, user_id) select 'B', id from inserted;
 insert into auth.sessions(id, user_id, created_at, not_after)
 select session_id, user_id, now(), now()+interval '1 hour' from qa_notification_actors;
+-- Explicit SQL-only positive OTP/session setup; no Admin lease or grant is added.
+select pg_temp.qa_seed_interactive_authority(array(select user_id from qa_notification_actors));
+
 with inserted as (
   insert into public.notifications(user_id, title, type, metadata)
   select user_id, 'Synthetic owner notification', 'system_announcement',
@@ -60,7 +63,8 @@ select set_config('request.jwt.claim.sub',
 select set_config('request.jwt.claims', jsonb_build_object(
   'sub', (select user_id from qa_notification_actors where name = 'A'),
   'session_id', (select session_id from qa_notification_actors where name = 'A'),
-  'role', 'authenticated', 'is_anonymous', false)::text, true);
+  'role', 'authenticated', 'is_anonymous', false,
+  'app_metadata', jsonb_build_object('provider','whatsapp_cloud_otp'))::text, true);
 
 select pg_temp.qa_check('actor A can read only its own fixture', (
   select count(*) = 1 and bool_and(user_id = auth.uid())
@@ -103,7 +107,8 @@ select set_config('request.jwt.claim.sub',
 select set_config('request.jwt.claims', jsonb_build_object(
   'sub', (select user_id from qa_notification_actors where name = 'B'),
   'session_id', (select session_id from qa_notification_actors where name = 'B'),
-  'role', 'authenticated', 'is_anonymous', false)::text, true);
+  'role', 'authenticated', 'is_anonymous', false,
+  'app_metadata', jsonb_build_object('provider','whatsapp_cloud_otp'))::text, true);
 select pg_temp.qa_check('actor B can read only its own unchanged notification', (
   select count(*) = 1 and bool_and(user_id = auth.uid() and not is_read)
   from public.notifications where id in (select id from qa_notification_rows)

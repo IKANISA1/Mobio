@@ -1,0 +1,141 @@
+{
+  "repo": {
+    "exit_code": 0,
+    "data": {
+      "full_name": "IKANISA1/Mobio",
+      "private": true,
+      "default_branch": "main",
+      "archived": false,
+      "visibility": "private"
+    }
+  },
+  "runs": {
+    "exit_code": 0,
+    "data": {
+      "total_count": 239,
+      "runs": [
+        {
+          "id": 36838403089,
+          "name": "",
+          "head_sha": "515c75acd6caada5470cbc3c3933765b037c5660",
+          "status": "completed",
+          "conclusion": "startup_failure",
+          "event": "pull_request",
+          "created_at": "2026-10-01T08:46:15Z",
+          "html_url": "https://github.com/IKANISA1/Mobio/actions/runs/36838403089",
+          "path": "BuildFailed"
+        },
+        {
+          "id": 36838400426,
+          "name": "",
+          "head_sha": "515c75acd6caada5470cbc3c3933765b037c5660",
+          "status": "completed",
+          "conclusion": "startup_failure",
+          "event": "pull_request",
+          "created_at": "2026-10-01T08:46:13Z",
+          "html_url": "https://github.com/IKANISA1/Mobio/actions/runs/36838400426",
+          "path": "BuildFailed"
+        },
+        {
+          "id": 36838396503,
+          "name": "",
+          "head_sha": "515c75acd6caada5470cbc3c3933765b037c5660",
+          "status": "completed",
+          "conclusion": "startup_failure",
+          "event": "push",
+          "created_at": "2026-10-01T08:46:11Z",
+          "html_url": "https://github.com/IKANISA1/Mobio/actions/runs/36838396503",
+          "path": "BuildFailed"
+        },
+        {
+          "id": 36770930681,
+          "name": "",
+          "head_sha": "72b4c3695cc05e0979cac8d794893fdd813eebb6",
+          "status": "completed",
+          "conclusion": "startup_failure",
+          "event": "pull_request",
+          "created_at": "2026-09-30T20:12:00Z",
+          "html_url": "https://github.com/IKANISA1/Mobio/actions/runs/36770930681",
+          "path": "BuildFailed"
+        },
+        {
+          "id": 36770812490,
+          "name": "",
+          "head_sha": "72b4c3695cc05e0979cac8d794893fdd813eebb6",
+          "status": "completed",
+          "conclusion": "startup_failure",
+          "event": "pull_request",
+          "created_at": "2026-09-30T20:10:57Z",
+          "html_url": "https://github.com/IKANISA1/Mobio/actions/runs/36770812490",
+          "path": "BuildFailed"
+        },
+        {
+          "id": 36770811675,
+          "name": "",
+          "head_sha": "72b4c3695cc05e0979cac8d794893fdd813eebb6",
+          "status": "completed",
+          "conclusion": "startup_failure",
+          "event": "pull_request",
+          "created_at": "2026-09-30T20:10:57Z",
+          "html_url": "https://github.com/IKANISA1/Mobio/actions/runs/36770811675",
+          "path": "BuildFailed"
+        },
+        {
+          "id": 36770805808,
+          "name": "",
+          "head_sha": "72b4c3695cc05e0979cac8d794893fdd813eebb6",
+          "status": "completed",
+          "conclusion": "startup_failure",
+          "event": "push",
+          "created_at": "2026-09-30T20:10:54Z",
+          "html_url": "https://github.com/IKANISA1/Mobio/actions/runs/36770805808",
+          "path": "BuildFailed"
+        },
+        {
+          "id": 36768339577,
+          "name": "",
+          "head_sha": "913d06a8c6b4416a071bbd75240a146fa4cb1bf8",
+          "status": "completed",
+          "conclusion": "startup_failure",
+          "event": "pull_request",
+          "created_at": "2026-09-30T19:49:32Z",
+          "html_url": "https://github.com/IKANISA1/Mobio/actions/runs/36768339577",
+          "path": "BuildFailed"
+        }
+      ]
+    }
+  },
+  "protection": {
+    "exit_code": 1,
+    "data": {
+      "message": "Upgrade to GitHub Pro or make this repository public to enable this feature.",
+      "documentation_url": "https://docs.github.com/rest/branches/branch-protection#get-branch-protection",
+      "status": "403"
+    }
+  },
+  "rulesets": {
+    "exit_code": 1,
+    "data": {
+      "message": "Upgrade to GitHub Pro or make this repository public to enable this feature.",
+      "documentation_url": "https://docs.github.com/rest/repos/rules#get-all-repository-rulesets",
+      "status": "403"
+    }
+  },
+  "environments": {
+    "exit_code": 0,
+    "data": {
+      "environments": [
+        {
+          "name": "Mobio",
+          "protection_rules": [],
+          "can_admins_bypass": true
+        },
+        {
+          "name": "SUPABASE_URL",
+          "protection_rules": [],
+          "can_admins_bypass": true
+        }
+      ]
+    }
+  }
+}

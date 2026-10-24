@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/features/admin/presentation/admin_copy.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
 
@@ -19,13 +20,14 @@ class AdminUserFilterBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final copy = AdminCopy.of(context);
     return AdminPanel(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AdminSectionHeader(
-            title: 'Directory',
-            subtitle: 'Search and filter',
+          AdminSectionHeader(
+            title: copy.directory,
+            subtitle: copy.searchAndFilter,
           ),
           const SizedBox(height: AppSpacing.lg),
           LayoutBuilder(
@@ -35,11 +37,11 @@ class AdminUserFilterBar extends StatelessWidget {
                 spacing: AppSpacing.sm,
                 runSpacing: AppSpacing.sm,
                 children: [
-                  for (final filter in const [
-                    ('all', 'All', LucideIcons.list),
-                    ('admin', 'Admins', LucideIcons.shieldCheck),
-                    ('driver', 'Drivers', LucideIcons.car),
-                    ('passenger', 'Passengers', LucideIcons.user),
+                  for (final filter in [
+                    ('all', copy.filterAll, LucideIcons.list),
+                    ('admin', copy.filterAdmins, LucideIcons.shieldCheck),
+                    ('driver', copy.filterDrivers, LucideIcons.car),
+                    ('passenger', copy.filterPassengers, LucideIcons.user),
                   ])
                     AdminFilterChip(
                       label: filter.$2,
@@ -56,7 +58,7 @@ class AdminUserFilterBar extends StatelessWidget {
                     Expanded(
                       child: AdminSearchField(
                         controller: searchController,
-                        hintText: 'Search users',
+                        hintText: copy.searchUsers,
                         onChanged: onSearchChanged,
                       ),
                     ),
@@ -71,7 +73,7 @@ class AdminUserFilterBar extends StatelessWidget {
                 children: [
                   AdminSearchField(
                     controller: searchController,
-                    hintText: 'Search users',
+                    hintText: copy.searchUsers,
                     onChanged: onSearchChanged,
                   ),
                   const SizedBox(height: AppSpacing.md),

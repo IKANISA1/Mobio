@@ -1,55 +1,104 @@
 #!/usr/bin/env python3
-"""Build a local review gallery from synthetic Flutter baselines and web captures."""
+"""Launch the external revolut-design gallery with Mobio's evidence config."""
+
+from __future__ import annotations
+
 import argparse
-import html
-import shutil
+import json
 from pathlib import Path
+import subprocess
+import sys
 
 ROOT = Path(__file__).resolve().parents[2]
-parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--output', type=Path, default=ROOT / 'output/revolut-followup-20260905/gallery')
-parser.add_argument('--website-mobile', type=Path)
-parser.add_argument('--website-desktop', type=Path)
-args = parser.parse_args()
-args.output.mkdir(parents=True, exist_ok=True)
-source = ROOT / 'test/features/preview/goldens/revolut'
-priority = ['splash_390x844', 'light/splash_390x844', 'login_390x844', 'whatsapp_number_ready_390x844', 'whatsapp_sending_390x844', 'whatsapp_otp_390x844', 'whatsapp_otp_invalid_390x844', 'whatsapp_otp_expired_390x844', 'whatsapp_verifying_390x844', 'whatsapp_rate_limited_390x844', 'whatsapp_resend_ready_390x844', 'whatsapp_send_error_390x844', 'home_shell_390x844', 'biopay_home_shell_390x844', 'bookings_shell_390x844', 'profile_shell_390x844', 'wallet_390x844', 'mobio_plus_390x844']
+REPORT_KEYS = (
+    "component_report", "supplement_report", "website_report",
+    "behavior_report", "keyboard_report", "matrix_report",
+)
+ADMIN_REPORTS = {
+    "admin_browser_report": "exhaustive-admin/admin_browser_qa.json",
+    "admin_flow_report": "exhaustive-admin-flows/summary.json",
+}
 
-def order(path):
-    name = str(path.relative_to(source).with_suffix(''))
-    return (priority.index(name) if name in priority else len(priority), name)
 
-def title_for(path):
-    name = path.stem.replace('_390x844', '').replace('_430x932', '')
-    name = name.replace('whatsapp_', 'WhatsApp · ').replace('login', 'WhatsApp login')
-    name = name.replace('biopay', 'BioPay').replace('otp', 'OTP').replace('_', ' ')
-    return name[:1].upper() + name[1:]
+def preflight_reports(root: Path, config: dict, source_sha256: str) -> list[str]:
+    """Reject report media that predates any actual Mobio UI source change."""
+    evidence = Path(config.get("evidence", "build/qa/design-review"))
+    if not evidence.is_absolute():
+        evidence = root / evidence
+    missing = []
+    errors = []
+    reports = [(key, config.get(key)) for key in REPORT_KEYS]
+    reports.extend((key, evidence / value) for key, value in ADMIN_REPORTS.items())
+    for key, value in reports:
+        if not value:
+            continue
+        path = Path(value)
+        if not path.is_absolute():
+            base = root if path.parts[0] in {".cache", "docs", "assets", "output", "build"} else evidence
+            path = base / path
+        if not path.exists():
+            missing.append(key)
+            continue
+        try:
+            report = json.loads(path.read_text(encoding="utf-8"))
+            current = isinstance(report, dict) and report.get("source_sha256") == source_sha256
+        except (OSError, ValueError):
+            current = False
+        if not current:
+            errors.append(
+                f"{key} ({path}): missing or stale source_sha256. Rerun or recapture this review "
+                "against current Mobio sources and bind its top-level source_sha256 to the output "
+                "of scripts/qa/design_source_fingerprint.py."
+            )
+    if errors:
+        raise ValueError("\n".join(errors))
+    return missing
 
-cards = []
-for path in sorted(source.rglob('*.png'), key=order):
-    relative = path.relative_to(source)
-    target = args.output / 'screens' / relative
-    target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(path, target)
-    onboarding = path.stem.startswith(('splash', 'login', 'whatsapp'))
-    group = 'Onboarding' if onboarding else 'Admin' if path.stem.startswith('admin') else 'App'
-    if 'light' in relative.parts:
-        group = 'Light'
-    label = title_for(path)
-    state = f'{group} · {path.stem.rsplit("_", 1)[-1]}'
-    href = html.escape('screens/' + relative.as_posix())
-    cards.append(f'<a class="card" data-group="{group}" data-name="{html.escape(label)}" href="{href}" target="_blank"><img loading="lazy" src="{href}" alt="{html.escape(label)}"><h2>{html.escape(label)}</h2><p>{state}</p></a>')
-native_count = len(cards)
-for label, path in [('Website mobile', args.website_mobile), ('Website desktop', args.website_desktop)]:
-    if path:
-        target = args.output / (label.replace(' ', '-').lower() + path.suffix)
-        shutil.copyfile(path, target)
-        cards.append(f'<a class="card" data-group="Website" data-name="{label}" href="{target.name}" target="_blank"><img loading="lazy" src="{target.name}" alt="{label}"><h2>{label}</h2><p>Browser capture</p></a>')
-page = '''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mobio — Splash, login and colour review</title><style>
-*{box-sizing:border-box}body{margin:0;background:#080809;color:#f4f4f4;font:16px/1.5 system-ui,sans-serif;padding:clamp(16px,3vw,48px)}header{max-width:1100px;margin:auto}h1{font-size:clamp(32px,5vw,64px);line-height:1.05;letter-spacing:-.04em;margin:16px 0}p{color:#b9b9bf}a{color:#9bbcff}.palettes,.links{display:flex;gap:12px;flex-wrap:wrap;margin:24px 0}.palettes span{padding:10px 18px;border-radius:99px;color:white}label{display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 12px 8px 0}input,select{font:inherit;padding:12px;border:1px solid #717173;border-radius:12px;background:#161618;color:white;max-width:100%}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:24px;margin-top:24px}.card{display:block;padding:12px;background:#161618;border-radius:20px;text-decoration:none;color:white;min-width:0}.card img{width:100%;height:560px;object-fit:contain;object-position:top;display:block}.card h2{font-size:17px;margin:12px 0 4px}.card p{font-size:13px;margin:0}.card[hidden]{display:none}:focus-visible{outline:3px solid #6fa0ff;outline-offset:4px}.links a{padding:8px 0}small{display:block;color:#b9b9bf}
-</style></head><body><header><small>MOBIO · DESIGN REVIEW · 5 SEPTEMBER 2026</small><h1>Splash. Sign in.<br>Six colour families.</h1><p>The missing first steps are now included: light and dark launch, WhatsApp number entry, code verification, loading, errors and retry. Browse the app, website and admin below.</p><div class="palettes"><span style="background:#182be2">Home · blue</span><span style="background:#125063">BioPay · teal</span><span style="background:#673cdc">Trips · purple</span><span style="background:#405093">Wallet · slate</span><span style="background:#7351f3">Profile · violet</span><span style="background:#374c8d">Login · indigo</span></div><div class="links"><a href="http://127.0.0.1:62044/?screen=login" target="_blank">Try code entry (simulation)</a><a href="http://127.0.0.1:62221/" target="_blank">Local website</a><a href="http://127.0.0.1:62221/admin-auth" target="_blank">Local admin sign-in</a></div><small>__NATIVE_COUNT__ synthetic Flutter renders and current website captures. The simulation sends no messages and creates no session. Light washes are target adaptations. These views do not certify source pixel parity or provider completion.</small><label>Find a screen <input id="search" type="search" placeholder="Splash, WhatsApp, QR…"></label><label>Surface <select id="group"><option>All</option><option>Onboarding</option><option>App</option><option>Admin</option><option>Light</option><option>Website</option></select></label><p id="count" role="status"></p></header><main>'''
-page = page.replace('__NATIVE_COUNT__', str(native_count))
-page += ''.join(cards)
-page += '''</main><script>const q=document.querySelector('#search'),g=document.querySelector('#group');function filter(){let n=0;document.querySelectorAll('.card').forEach(c=>{c.hidden=!(c.dataset.name.toLowerCase().includes(q.value.toLowerCase())&&(g.value==='All'||c.dataset.group===g.value));if(!c.hidden)n++});document.querySelector('#count').textContent=n+' screens shown'}q.addEventListener('input',filter);g.addEventListener('change',filter);filter()</script></body></html>'''
-(args.output / 'index.html').write_text(page)
-print(f'Wrote {len(cards)} screens to {args.output / "index.html"}')
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--config", type=Path, default=Path("docs/design/review-gallery-config.json"))
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--website-mobile", type=Path, help=argparse.SUPPRESS)
+    parser.add_argument("--website-desktop", type=Path, help=argparse.SUPPRESS)
+    args = parser.parse_args()
+    if args.website_mobile or args.website_desktop:
+        parser.error("Loose website captures are no longer supported. Record current captures in the configured website_report with their review evidence.")
+
+    try:
+        binding = json.loads((ROOT / "docs/design/authority.json").read_text(encoding="utf-8"))["authority"]
+        if binding["skill_id"] != "revolut-design" or binding["role"] != "sole_design_authority":
+            raise ValueError("Mobio must bind revolut-design as sole_design_authority")
+        entrypoint = Path(binding["entrypoint"]["path"])
+        if not entrypoint.is_absolute() or entrypoint.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("The design skill must remain outside the repository")
+        if entrypoint.parent.name != "revolut-design" or entrypoint.name != "SKILL.md":
+            raise ValueError("Invalid revolut-design entrypoint")
+        generator = entrypoint.parent / "scripts/build_review_gallery.py"
+        if not entrypoint.is_file() or not generator.is_file():
+            raise ValueError(f"External revolut-design gallery unavailable: {generator}")
+        config_path = args.config if args.config.is_absolute() else ROOT / args.config
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        inventory = Path(config["inventory"])
+        inventory_path = inventory if inventory.is_absolute() else ROOT / inventory
+        if not inventory_path.is_file():
+            raise ValueError(f"Current product review inventory unavailable: {inventory_path}")
+        source_result = subprocess.run(
+            [sys.executable, str(ROOT / "scripts/qa/design_source_fingerprint.py")],
+            cwd=ROOT, check=True, capture_output=True, text=True,
+        )
+        source_sha256 = json.loads(source_result.stdout)["source_sha256"]
+        missing = preflight_reports(ROOT, config, source_sha256)
+    except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError) as error:
+        parser.error(str(error))
+
+    if missing:
+        print("Review evidence unverified; absent configured reports: " + ", ".join(missing), file=sys.stderr)
+    command = [sys.executable, str(generator), "--project-root", str(ROOT), "--config", str(config_path)]
+    if args.output:
+        command.extend(["--output", str(args.output.resolve())])
+    return subprocess.run(command, cwd=ROOT, check=False).returncode
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

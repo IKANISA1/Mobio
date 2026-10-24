@@ -49,16 +49,19 @@ class BioPayNfcWriteCardScreen extends ConsumerStatefulWidget {
 }
 
 class _BioPayNfcWriteCardScreenState
-    extends ConsumerState<BioPayNfcWriteCardScreen> {
+    extends ConsumerState<BioPayNfcWriteCardScreen>
+    with WidgetsBindingObserver {
   BioPayNfcService get _nfcService => widget.nfcService;
   late final BioPayNfcForegroundSuspendedNotifier _foreground;
   AccountSnapshot? _viewAccount;
   int _revision = 0;
   int? _suspension;
   bool _accountLost = false;
+  bool _foregroundActive = true;
 
   bool _current(AccountSnapshot? account, int revision) =>
       mounted &&
+      _foregroundActive &&
       !_accountLost &&
       revision == _revision &&
       (account == null
@@ -67,7 +70,12 @@ class _BioPayNfcWriteCardScreenState
                 AccountContext.isCurrent(account));
 
   void _accountChanged() {
-    if (_accountLost || _current(_viewAccount, _revision)) return;
+    final account = _viewAccount;
+    final current = account == null
+        ? SupabaseConfig.isLocalUiPreview && widget._captureOverride == null
+        : widget._isCurrentOverride?.call(account) ??
+              AccountContext.isCurrent(account);
+    if (_accountLost || current) return;
     _accountLost = true;
     _revision++;
     _receiverController.clear();
@@ -117,6 +125,7 @@ class _BioPayNfcWriteCardScreenState
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _foreground = ref.read(bioPayNfcForegroundSuspendedProvider.notifier);
     try {
       _viewAccount =
@@ -136,9 +145,27 @@ class _BioPayNfcWriteCardScreenState
   void dispose() {
     _revision++;
     AccountContext.changes.removeListener(_accountChanged);
+    WidgetsBinding.instance.removeObserver(this);
     unawaited(_cancelAndRelease(_suspension));
     _receiverController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      if (mounted) setState(() => _foregroundActive = true);
+      return;
+    }
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.hidden ||
+        state == AppLifecycleState.detached) {
+      _foregroundActive = false;
+      _revision++;
+      if (mounted) setState(() => _step = _NfcWriteStep.idle);
+      unawaited(_cancelAndRelease(_suspension));
+    }
   }
 
   void _onReceiverTypeChanged(BioPayNfcReceiverType receiverType) {

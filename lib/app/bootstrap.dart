@@ -7,9 +7,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobi_app/app/app.dart';
+import 'package:mobi_app/app/incoming_app_links.dart';
 import 'package:mobi_app/app/app_providers.dart';
 import 'package:mobi_app/app/launch_screen.dart';
 import 'package:mobi_app/app/theme_provider.dart';
+import 'package:mobi_app/core/async/eventual_startup_task.dart';
 import 'package:mobi_app/core/async/startup_task.dart';
 import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/auth/auth_session_storage.dart';
@@ -20,12 +22,28 @@ import 'package:mobi_app/core/firebase/firebase_bootstrap_service.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/core/utils/web_splash_cleanup.dart';
 import 'package:mobi_app/features/notifications/data/push_notification_service.dart';
-import 'package:mobi_app/features/profile/data/referral_attribution_service.dart';
-import 'package:mobi_app/features/profile/data/referral_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:mobi_app/shared/widgets/mobi_fatal_error_view.dart';
 
 bool _firebaseAvailable = false;
+final _optionalFirebase = EventualStartupTask<bool>(
+  initialize: FirebaseBootstrapService.instance.initialize,
+  install: (ready) async {
+    if (!ready) return;
+    _firebaseAvailable = true;
+    if (kIsWeb) return;
+    // Keep the actual push continuation, even when the optional UI wait expires.
+    // Push installs account/refresh/tap handlers once and captures current auth.
+    await PushNotificationService.instance.initialize();
+    await FirebaseAnalyticsService.instance.logAppOpen();
+    if (SupabaseConfig.isConfigured && AccountContext.hasVerifiedSession) {
+      await runStartupTask<void>(
+        () => PushNotificationService.instance.registerToken(),
+        const Duration(seconds: 6),
+      );
+    }
+  },
+);
 void _recordSanitizedFatal(String code) {
   AppLogger.error(code);
   if (_firebaseAvailable) {
@@ -37,9 +55,16 @@ void _recordSanitizedFatal(String code) {
 Future<void> bootstrap() async {
   runZonedGuarded<Future<void>>(() async {
     final binding=WidgetsFlutterBinding.ensureInitialized();
+    IncomingAppLinks.instance.start();
     usePathUrlStrategy();
     FlutterNativeSplash.preserve(widgetsBinding:binding);
     GoogleFonts.config.allowRuntimeFetching=false;
+    LicenseRegistry.addLicense(() async* {
+      yield LicenseEntryWithLineBreaks(
+        const ['Inter'],
+        await rootBundle.loadString('assets/google_fonts/OFL.txt'),
+      );
+    });
     runApp(const MobiLaunchApp());
     FlutterNativeSplash.remove();
     if (!kDebugMode) ErrorWidget.builder=(_)=>const MobiFatalErrorView();
@@ -93,27 +118,6 @@ void _removeSplash() {
 }
 Future<void> _optionalServices() async {
   final tasks=<Future<void>>[];
-  if(SupabaseConfig.isConfigured && !AccountContext.exitRequested) {
-    tasks.add(()async {
-      await runStartupTask<void>(()=>ReferralAttributionService(
-        referralService:ReferralService(supabase:Supabase.instance.client)).initialize(),
-        const Duration(seconds:6));
-    }());
-  }
-  tasks.add(()async {
-    final firebase=await runStartupTask<bool>(
-      ()=>FirebaseBootstrapService.instance.initialize(),const Duration(seconds:6));
-    if(!firebase.completed||firebase.value!=true)return;
-    _firebaseAvailable=true;
-    if(kIsWeb)return;
-    final push=await runStartupTask<void>(()=>PushNotificationService.instance.initialize(),
-      const Duration(seconds:6));
-    if(!push.completed)return;
-    await runStartupTask<void>(()=>FirebaseAnalyticsService.instance.logAppOpen(),const Duration(seconds:3));
-    if(SupabaseConfig.isConfigured && AccountContext.hasVerifiedSession) {
-      // Existing push implementation captures/rechecks its owner around tokens.
-      await runStartupTask<void>(()=>PushNotificationService.instance.registerToken(),const Duration(seconds:6));
-    }
-  }());
+  tasks.add(_optionalFirebase.observe(const Duration(seconds: 6)).then((_) {}));
   await Future.wait(tasks);
 }

@@ -1,0 +1,10 @@
+{
+  "consolidated_findings": 25,
+  "design_criteria": 100,
+  "operational_criteria": 60,
+  "system_criteria": 88,
+  "missing_links": [],
+  "trailing_whitespace": [],
+  "main_report_words": 6034,
+  "main_report_sha256": "f9b880f09bc778cbd43cb26c9c032f97fb65976be33ce3172040c082c0401813"
+}

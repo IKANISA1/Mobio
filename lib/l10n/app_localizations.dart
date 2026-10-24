@@ -1539,6 +1539,1036 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check setup status'**
   String get faceRefresh;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get adminUsersTitle;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Directory and roles.'**
+  String get adminUsersSubtitle;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get adminRefresh;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get adminClose;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get adminClear;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Directory'**
+  String get adminDirectory;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Search and filter'**
+  String get adminSearchAndFilter;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Search users'**
+  String get adminSearchUsers;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get adminFilterAll;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins'**
+  String get adminFilterAdmins;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Drivers'**
+  String get adminFilterDrivers;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Passengers'**
+  String get adminFilterPassengers;
+
+  /// Profile role label only. This does not confer trusted administrative access.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get adminRoleAdmin;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver'**
+  String get adminRoleDriver;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Passenger'**
+  String get adminRolePassenger;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Role unavailable'**
+  String get adminRoleUnknown;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Review {role}'**
+  String adminReviewRole(String role);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get adminUnavailable;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get adminOnline;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get adminOffline;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get adminPhone;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle'**
+  String get adminVehicle;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Not assigned'**
+  String get adminNotAssigned;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined'**
+  String get adminJoined;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver profile'**
+  String get adminDriverProfile;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Passenger profile'**
+  String get adminPassengerProfile;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Matching users'**
+  String get adminMatchingUsers;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin profiles'**
+  String get adminAdminProfiles;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This page at snapshot time'**
+  String get adminPageAtSnapshot;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact count unavailable'**
+  String get adminCountUnavailable;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Exact matching count unavailable'**
+  String get adminMatchingCountUnavailable;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Users unavailable'**
+  String get adminUsersUnavailable;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load users. Check your connection and try again.'**
+  String get adminUsersLoadFailed;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This account changed'**
+  String get adminAccountChangedTitle;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the user directory again with the current account.'**
+  String get adminAccountChangedBody;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This account changed. Close this panel.'**
+  String get adminAccountPanelChanged;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'No users'**
+  String get adminNoUsers;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another filter.'**
+  String get adminTryFilter;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to update the directory. Try again.'**
+  String get adminQueryFailed;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to update this user. Refresh and try again.'**
+  String get adminUserUpdateFailed;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This review is no longer available.'**
+  String get adminReviewUnavailable;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to show this review. Refresh users before reviewing again.'**
+  String get adminReviewShowFailed;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to continue this review. Check its recorded status before starting another.'**
+  String get adminReviewContinueFailed;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Status could not be confirmed. This batch remains unresolved.'**
+  String get adminStatusUnconfirmed;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Close this role change batch?'**
+  String get adminCloseBatchTitle;
+
+  /// Explicit server seal; confirmed effects stay. Cancellation of a local unsent review is a separate action.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop remaining changes and record final status. Confirmed changes remain. Another review becomes available after the server confirms closure.'**
+  String get adminCloseBatchBody;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Close batch'**
+  String get adminCloseBatch;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Close this batch'**
+  String get adminCloseThisBatch;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Closure could not be confirmed. Check this batch before starting another.'**
+  String get adminClosureUnconfirmed;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Review profile role changes'**
+  String get adminReviewTitle;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'These recipients and requested roles are fixed for this review. Changing the Admin profile role does not grant trusted admin access.'**
+  String get adminReviewDisclosure;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing the Admin profile role does not grant trusted admin access.'**
+  String get adminTrustedAccessDisclosure;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This snapshot has expired. Cancel and refresh users for a new review.'**
+  String get adminReviewExpired;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Every selected profile is excluded. No role changes will be submitted.'**
+  String get adminAllExcluded;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This review is no longer available. Cancel and refresh users.'**
+  String get adminReviewUnavailableRefresh;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirming…'**
+  String get adminConfirming;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Role change outcomes'**
+  String get adminOutcomesTitle;
+
+  /// Server proven seal-before-reserve. Zero operations submitted; do not use for unknown/missing batch.
+  ///
+  /// In en, this message translates to:
+  /// **'Reservation closed. No role changes were submitted.'**
+  String get adminReservationClosedEmpty;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This batch is closed. Its recorded outcomes remain available.'**
+  String get adminBatchClosed;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Some changes have an unknown outcome. Check their status and close this batch before starting another review. No change will be resent automatically.'**
+  String get adminUnknownGuidance;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Check this reservation’s status and close this batch before starting another review. No change will be resent automatically.'**
+  String get adminUnsealedGuidance;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Check status'**
+  String get adminCheckStatus;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Excluded: your own profile'**
+  String get adminOwnExcluded;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Excluded: already has the requested role'**
+  String get adminSameRoleExcluded;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own profile is excluded from role changes.'**
+  String get adminOwnProfileExcluded;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Review a profile role change'**
+  String get adminReviewProfileRole;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get adminEnabled;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get adminDisabled;
+
+  /// Authoritative server receipt confirms that this recipient change committed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get adminStatusConfirmed;
+
+  /// Authoritative rejection is known; distinguish from an uncertain network result.
+  ///
+  /// In en, this message translates to:
+  /// **'Known rejected'**
+  String get adminStatusKnownRejected;
+
+  /// Outcome may already have committed. Never translate this as rejected, pending-safe-retry or failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get adminStatusUnknown;
+
+  /// Target operation was not started, distinct from a self/no-op exclusion.
+  ///
+  /// In en, this message translates to:
+  /// **'Not started'**
+  String get adminStatusNotStarted;
+
+  /// Reviewed recipient intentionally excluded, such as self or same requested role.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get adminStatusSkipped;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting'**
+  String get adminStatusSubmitting;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking previous role changes…'**
+  String get adminPhaseChecking;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'The recorded outcomes are shown below.'**
+  String get adminPhaseReady;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing the confirmed batch…'**
+  String get adminPhaseReserving;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting the reviewed changes…'**
+  String get adminPhaseSubmitting;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking authoritative status…'**
+  String get adminPhaseReconciling;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Closing this batch…'**
+  String get adminPhaseSealing;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This batch still needs status checking and closure.'**
+  String get adminPhaseUnresolved;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Role changes are currently unavailable.'**
+  String get adminPhaseBlocked;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This profile changed after the snapshot. Refresh it for a new review.'**
+  String get adminRejectChanged;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'The reviewed profile is no longer available.'**
+  String get adminRejectMissing;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in again before reviewing another role change.'**
+  String get adminRejectReauthenticate;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'The server rejected this change. It was not confirmed.'**
+  String get adminRejectGeneric;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Snapshot expired. Refresh users before changing roles or opening another page.'**
+  String get adminSnapshotExpired;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Online first'**
+  String get adminSortOnline;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Name A-Z'**
+  String get adminSortNameAsc;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Name Z-A'**
+  String get adminSortNameDesc;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get adminSortRole;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest'**
+  String get adminSortNewest;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get adminMember;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get adminStatus;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear visible user selection'**
+  String get adminClearVisibleSelection;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Select visible users'**
+  String get adminSelectVisibleUsers;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get adminClearSearch;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort rows'**
+  String get adminSortRows;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Rows'**
+  String get adminRows;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous page'**
+  String get adminPreviousPage;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Next page'**
+  String get adminNextPage;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get adminBack;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Ops'**
+  String get adminNavOps;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Fleet'**
+  String get adminNavFleet;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Agencies'**
+  String get adminNavAgencies;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'EV'**
+  String get adminNavEv;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Plans'**
+  String get adminNavPlans;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Trips'**
+  String get adminNavTrips;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get adminNavReports;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
+  String get adminNavHealth;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit'**
+  String get adminNavAudit;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Broadcasts'**
+  String get adminNavBroadcasts;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get adminNavAccount;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Add insurance reward'**
+  String get adminRewardTitle;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {amount} TOKENS'**
+  String adminRewardAction(String amount);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit {amount} TOKENS to {name}. Motor insurance purchase reward.'**
+  String adminRewardConfirm(String amount, String name);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} TOKENS added to {name}.'**
+  String adminRewardAdded(String amount, String name);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Add TOKENS'**
+  String get adminRewardSubmit;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Account reference: {id}'**
+  String adminAccountReference(String id);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Member {id}'**
+  String adminMemberReference(String id);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{before} → {after}'**
+  String adminRoleChange(String before, String after);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed request: {before} → {after}'**
+  String adminReviewedRoleChange(String before, String after);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver profile: {before} → {after}'**
+  String adminDriverStateChange(String before, String after);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{status}: {count}'**
+  String adminStatusCount(String status, String count);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Snapshot {date}'**
+  String adminSnapshotAt(String date);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Snapshot {date} · expires {expiry}'**
+  String adminSnapshotRange(String date, String expiry);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by {label}'**
+  String adminSortBy(String label);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{start}-{end} of {total}'**
+  String adminPagination(String start, String end, String total);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear selection for {name}'**
+  String adminClearSelectionFor(String name);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Select {name}'**
+  String adminSelectPerson(String name);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}, {role}, {status}'**
+  String adminPersonSemantics(String name, String role, String status);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in again to load members.'**
+  String get adminErrorSignIn;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account session is unavailable.'**
+  String get adminErrorSessionUnavailable;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load members. Refresh and try again.'**
+  String get adminErrorLoadMembers;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account session changed. Sign in again.'**
+  String get adminErrorSessionChanged;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to release the previous member snapshot. Refresh to retry.'**
+  String get adminErrorReleaseSnapshot;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This member snapshot expired. Refresh to load current results.'**
+  String get adminErrorMemberSnapshotExpired;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh this member snapshot before navigating.'**
+  String get adminErrorPageExpired;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh or finish the current review before changing roles.'**
+  String get adminErrorReviewBusy;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Select members from this snapshot page.'**
+  String get adminErrorSelectPage;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This review expired. Close its reservation before a new review.'**
+  String get adminErrorReviewExpired;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery storage could not be verified. No role changes were submitted.'**
+  String get adminErrorJournalBefore;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'The reservation outcome is unknown. Reconcile or close it before another review.'**
+  String get adminErrorReserveUnknown;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'The reservation could not be completed. Reconcile or close it before another review.'**
+  String get adminErrorReserveFailed;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This batch expired. Close it before another review.'**
+  String get adminErrorBatchExpired;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery storage could not be verified. Remaining role changes were not submitted.'**
+  String get adminErrorJournalRemaining;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This role change is not confirmed. Reconcile or close the batch.'**
+  String get adminErrorChangeUnconfirmed;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This request was rejected. Close the batch before another review.'**
+  String get adminErrorRequestRejected;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'A role change outcome is unknown. Reconcile or close the batch.'**
+  String get adminErrorChangeUnknown;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the recipient outcomes, then close this batch before another review.'**
+  String get adminErrorReviewOutcomes;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'An earlier reservation is uncertain and another batch is open. Close the earlier reservation first.'**
+  String get adminErrorEarlierUncertain;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'The reservation outcome is unknown. Close it to prevent a delayed submission.'**
+  String get adminErrorDelayedReservation;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'An outstanding batch was found. Review its outcomes and close it before another review.'**
+  String get adminErrorOutstanding;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery could not be verified. No role changes will be replayed.'**
+  String get adminErrorRecoveryUnverified;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Closure could not be verified. Reconcile or close this reservation again.'**
+  String get adminErrorClosureUnverified;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait for the current member update.'**
+  String get adminErrorMemberBusy;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'This action could not be completed. Check the recorded status before continuing.'**
+  String get adminErrorGeneric;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to connect. Check your internet and try again.'**
+  String get adminErrorNetwork;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission for this action.'**
+  String get adminErrorForbidden;
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Confirm 0 changes} one{Confirm 1 change} other{Confirm {countText} changes}}'**
+  String adminConfirmCount(int count, String countText);
+
+  /// Independent eligible and excluded counts from the exact immutable reviewed recipients, not all query matches.
+  ///
+  /// In en, this message translates to:
+  /// **'{eligible, plural, =0{0 changes} one{1 change} other{{eligibleText} changes}} · {excluded, plural, =0{0 excluded} one{1 excluded} other{{excludedText} excluded}}'**
+  String adminReviewSummary(
+    int eligible,
+    String eligibleText,
+    int excluded,
+    String excludedText,
+  );
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 matching users} one{1 matching user} other{{countText} matching users}}'**
+  String adminMatchingCount(int count, String countText);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{0 selected on this page} one{1 selected on this page} other{{countText} selected on this page}}'**
+  String adminSelectedCount(int count, String countText);
+
+  /// Conservative age upper bound. Preserve up to / at most meaning; never minimum age.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds, plural, =0{Snapshot age up to 0s.} one{Snapshot age up to 1s.} other{Snapshot age up to {secondsText}s.}}'**
+  String adminSnapshotAgeUpper(int seconds, String secondsText);
+
+  /// Exact age wording only when caller explicitly supplies upperBound=false.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds, plural, =0{Snapshot age 0s.} one{Snapshot age 1s.} other{Snapshot age {secondsText}s.}}'**
+  String adminSnapshotAgeExact(int seconds, String secondsText);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds, plural, =0{Snapshot review remains available for 0s.} one{Snapshot review remains available for 1s.} other{Snapshot review remains available for {secondsText}s.}}'**
+  String adminSnapshotRemaining(int seconds, String secondsText);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Snapshot review expires in {duration}.'**
+  String adminReviewRemaining(String duration);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds, plural, =0{0s} one{1s} other{{secondsText}s}}'**
+  String adminDurationSeconds(int seconds, String secondsText);
+
+  /// Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =0{0m} one{1m} other{{minutesText}m}} {seconds, plural, =0{0s} one{1s} other{{secondsText}s}}'**
+  String adminDurationMinutesSeconds(
+    int minutes,
+    String minutesText,
+    int seconds,
+    String secondsText,
+  );
+
+  /// A mutation may already have committed. Never imply failure or safe resend; check recorded authoritative status first.
+  ///
+  /// In en, this message translates to:
+  /// **'The result could not be confirmed. Check its recorded status before another submission.'**
+  String get adminErrorMutationUnknown;
 }
 
 class _AppLocalizationsDelegate

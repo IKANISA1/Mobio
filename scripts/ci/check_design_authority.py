@@ -20,6 +20,7 @@ RETIRED_SPEC_NAMES = frozenset({
     "admin_design_system.md",
     "design_system_audit.md",
     "revolut_secondary_palette_critical_analysis_2026-06-09.md",
+    "biopay_reference_screen_gap_map_2026-06-12.md",
 })
 TEXT_SUFFIXES = frozenset({".md", ".dart", ".html", ".css", ".json", ".yaml", ".yml", ".sh"})
 # Source snapshots, hash inventories and raw release captures record prior facts.
@@ -32,7 +33,9 @@ COMPETING_INSPIRATION = re.compile(
     r"soft\s+liquid\s+glass|sovereign\s+architect|claymorph(?:ism|ic)?|neumorph(?:ism|ic)?"
     r"|(?:uber|bolt|stripe|apple|material)\s*[- ]\s*(?:style|inspired|like)"
     r"|(?:inspired\s+by|design\s+(?:reference|authority)\s*[:=])\s*(?:uber|bolt|stripe|apple|material)\b"
-    r"|material\s+design\s+(?:reference|authority|inspiration)",
+    r"|material\s+design\s+(?:reference|authority|inspiration)"
+    r"|memories[^\n]{0,100}(?:ui|interface)[^\n]{0,50}(?:reference|inspiration)"
+    r"|(?:ui|interface)\s+reference\s+repo[^\n]{0,100}(?:memories|/biopay)\b",
     re.I,
 )
 LOCAL_SPEC_INSTRUCTION = re.compile(
@@ -65,10 +68,10 @@ def authority_binding_errors(root: Path) -> list[str]:
                 continue
             if path.is_file() and hashlib.sha256(path.read_bytes()).hexdigest() != digest:
                 errors.append(f"docs/design/authority.json: external authority hash changed ({path.name})")
-        if not {"native_android", "native_ios", "consumer_web", "public_website", "admin_web"}.issubset(record["declared_surfaces"]):
+        if not {"native_android", "native_ios", "consumer_web", "public_website", "admin_web", "operator_android"}.issubset(record["declared_surfaces"]):
             errors.append("docs/design/authority.json: declared surfaces are incomplete")
-        if record["acceptance"]["mobile_rule"] != "MOBILE-DESIGN-100":
-            errors.append("docs/design/authority.json: mobile acceptance rule must remain MOBILE-DESIGN-100")
+        if "mobile_rule" in record["acceptance"]:
+            errors.append("docs/design/authority.json: must not impose a separate mobile acceptance rule")
     except (OSError, ValueError, KeyError, TypeError) as error:
         errors.append(f"docs/design/authority.json: missing or invalid authority binding ({error})")
     return errors
@@ -77,6 +80,13 @@ def authority_binding_errors(root: Path) -> list[str]:
 def authority_errors(root: Path, files: list[str]) -> list[str]:
     """Inspect live instructions and references while preserving factual records."""
     errors = authority_binding_errors(root)
+    launcher = root / "scripts/qa/build_design_gallery.py"
+    if launcher.is_file():
+        source = launcher.read_text(encoding="utf-8")
+        if "scripts/build_review_gallery.py" not in source or re.search(
+            r"<style|html\.escape|test/features/preview/goldens|#[a-fA-F0-9]{6}\b", source
+        ):
+            errors.append("scripts/qa/build_design_gallery.py: gallery generator and visual definitions must remain in the external skill")
     for relative in AUTHORITY_DOCUMENTS:
         path = root / relative
         if not path.is_file():

@@ -1,0 +1,72 @@
+{
+  "current-android-artifact.json": {
+    "recorded_at_utc": "2026-10-01T14:56:28.100174+00:00",
+    "ui_source_snapshot": {
+      "schema_version": 1,
+      "product": "Mobio",
+      "source_sha256": "77d2b7b029e20ed2430eb7c3d06d91da7bd84ebd4050420c268babd3c87038fa",
+      "file_count": 771,
+      "scope": [
+        "lib/",
+        "packages/",
+        "assets/",
+        "icon/",
+        "landing/",
+        "web/",
+        "android/app/src/",
+        "ios/Runner/",
+        "apps/momobio_sms_bridge/app/src/",
+        "tool/"
+      ],
+      "selection": "tracked and nonignored untracked UI sources; known secrets, documentation, tests and generated build output excluded",
+      "acceptance_effect": "none"
+    },
+    "source_before_after_match": true,
+    "script_exit_code": 0,
+    "acceptance_effect": null,
+    "browser_visual_acceptance": null,
+    "sanctioned_script": "scripts/release/build_android_release.sh apk",
+    "artifact": {
+      "path": "build/qa/design-review/goal-20261001/capability-batch/consumer-release-capability.apk",
+      "bytes": 94141343,
+      "sha256": "3cd9ed58ba0652a8d33f0c08149bcce5a032e8b23de89327a8a7fadde60a75b5",
+      "signature_verified": true,
+      "package": "rw.mobi.app",
+      "version_code": 17,
+      "target_sdk": 36
+    },
+    "actual_sha256": "3cd9ed58ba0652a8d33f0c08149bcce5a032e8b23de89327a8a7fadde60a75b5",
+    "actual_hash_matches": true
+  },
+  "current-web-artifact.json": {
+    "recorded_at_utc": "2026-10-01T14:50:03.295103+00:00",
+    "ui_source_snapshot": null,
+    "source_before_after_match": true,
+    "script_exit_code": null,
+    "acceptance_effect": "none",
+    "browser_visual_acceptance": "unverified",
+    "sanctioned_script": null,
+    "keys": [
+      "recorded_at_utc",
+      "product",
+      "source_sha256",
+      "source_file_count",
+      "pubspec_sha256",
+      "source_before_after_match",
+      "output_directory",
+      "entrypoint",
+      "mode",
+      "script",
+      "runtime_defines",
+      "build_status",
+      "bundle_verification",
+      "file_count",
+      "bundle_tree_sha256",
+      "files",
+      "browser_visual_acceptance",
+      "acceptance_effect",
+      "evidence_bindings"
+    ],
+    "file_entry_count": 756
+  }
+}

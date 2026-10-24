@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 	<dict>
+		<key>FlutterDeepLinkingEnabled</key>
+		<false/>
 		<key>CADisableMinimumFrameDurationOnPhone</key>
 		<true/>
 		<key>CFBundleDevelopmentRegion</key>
@@ -44,7 +46,7 @@
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>Mobio uses your location while the app is open to show nearby drivers and passengers and prepare Google Maps handoff.</string>
 		<key>NSCameraUsageDescription</key>
-		<string>Mobio uses the camera for BioPay QR scanning and AWS-backed face enrollment or identity check.</string>
+		<string>Mobio uses the camera for BioPay QR scanning and optional face enrollment or account lookup.</string>
 		<key>NSPhotoLibraryAddUsageDescription</key>
 		<string>Mobio saves BioPay QR codes to Photos when you choose Save.</string>
 		<key>NFCReaderUsageDescription</key>
@@ -67,7 +69,7 @@
 						<key>UISceneConfigurationName</key>
 						<string>flutter</string>
 						<key>UISceneDelegateClassName</key>
-						<string>FlutterSceneDelegate</string>
+						<string>$(PRODUCT_MODULE_NAME).MobioSceneDelegate</string>
 						<key>UISceneStoryboardFile</key>
 						<string>Main</string>
 					</dict>

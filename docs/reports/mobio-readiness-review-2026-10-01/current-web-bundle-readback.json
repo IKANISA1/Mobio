@@ -1,0 +1,16 @@
+{
+  "source_sha256": "77d2b7b029e20ed2430eb7c3d06d91da7bd84ebd4050420c268babd3c87038fa",
+  "source_file_count": 771,
+  "source_before_after_match": true,
+  "output_directory": "build/pwa-goal-capability-20261001/site",
+  "mode": "production_release",
+  "script": "scripts/web/build_cloudflare_pages.sh",
+  "build_status": "passed",
+  "bundle_verification": "scripts/web/verify_pwa_bundles.sh passed inside build",
+  "file_count": 756,
+  "bundle_tree_sha256": "5e0cfe514ac62fb830f133d1a626d9e0ef7af80ad5d7f3ea05f0bd64f4e03d20",
+  "browser_visual_acceptance": "unverified",
+  "acceptance_effect": "none",
+  "actual_file_checks": 756,
+  "mismatches": []
+}

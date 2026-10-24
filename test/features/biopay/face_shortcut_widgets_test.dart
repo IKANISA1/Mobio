@@ -68,6 +68,9 @@ class FaceFixture extends BioPayFaceService {
   final methodUpdates = <String>[];
   final pending = Completer<PreparedFaceUssdShortcut>();
   int scans = 0, enrolls = 0, handoffs = 0;
+  int preparations = 0;
+  Object? prepareError;
+  Completer<PreparedFaceUssdShortcut>? pendingPreparation;
   Completer<String>? pendingEnrollment;
   Completer<BioPayEnrollmentStatus>? pendingStatus;
   String? selected;
@@ -101,6 +104,13 @@ class FaceFixture extends BioPayFaceService {
   @override
   Future<void> recordHandoff(String requestId) async {
     handoffs++;
+  }
+
+  @override
+  Future<PreparedFaceUssdShortcut> prepareHandoff(String requestId) async {
+    preparations++;
+    if (prepareError != null) throw prepareError!;
+    return pendingPreparation?.future ?? await pending.future;
   }
 
   @override
@@ -708,6 +718,7 @@ void main() {
       expect(camera.stops, greaterThan(0));
       expect(gateway.launches, 1);
       expect(gateway.code, '*182*1*1*0788767816#');
+      expect(face.preparations, 1);
       expect(face.handoffs, 1);
       expect(find.text('Review'), findsNothing);
       expect(find.byType(TextField), findsNothing);
@@ -717,6 +728,148 @@ void main() {
       expect(gateway.launches, 1);
     },
   );
+  for (final code in [
+    'RECIPIENT_UNAVAILABLE',
+    'ADMIN_REAUTHENTICATION_REQUIRED',
+  ]) {
+    testWidgets('pre-launch $code rejection cannot open the dialer', (
+      tester,
+    ) async {
+      final face = FaceFixture()..prepareError = FaceServiceException(code);
+      final gateway = GatewayFixture();
+      await mount(tester, face, CaptureFixture(), gateway);
+      await scan(tester);
+      face.pending.complete(shortcut());
+      await tester.pumpAndSettle();
+      expect(face.preparations, 1);
+      expect(gateway.launches, 0);
+      expect(face.handoffs, 0);
+      if (code == 'ADMIN_REAUTHENTICATION_REQUIRED') {
+        expect(
+          find.widgetWithText(TextButton, 'Sign in again to continue.'),
+          findsOneWidget,
+        );
+      }
+    });
+  }
+  for (final reason in ['leave', 'background', 'account', 'generation']) {
+    testWidgets('$reason during preparation prevents external handoff', (
+      tester,
+    ) async {
+      final face = FaceFixture()
+        ..pendingPreparation = Completer<PreparedFaceUssdShortcut>();
+      final gateway = GatewayFixture();
+      await mount(tester, face, CaptureFixture(), gateway);
+      await scan(tester);
+      face.pending.complete(shortcut());
+      await tester.pump();
+      await tester.pump();
+      expect(face.preparations, 1);
+      expect(gateway.launches, 0);
+      if (reason == 'leave') await tester.pumpWidget(const SizedBox());
+      if (reason == 'background') {
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.inactive,
+        );
+      }
+      if (reason == 'account') face.account = 'another-user';
+      if (reason == 'generation') {
+        face.generation++;
+        AccountContext.changes.value++;
+      }
+      face.pendingPreparation!.complete(shortcut());
+      await tester.pumpAndSettle();
+      expect(gateway.launches, 0);
+      expect(face.handoffs, 0);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    });
+  }
+  for (final changed in [
+    'recipient',
+    'method_version',
+    'route_version',
+    'provider',
+    'code',
+    'expired',
+  ]) {
+    testWidgets(
+      'changed $changed preparation cannot launch the original route',
+      (tester) async {
+        final face = FaceFixture()
+          ..pendingPreparation = Completer<PreparedFaceUssdShortcut>();
+        final gateway = GatewayFixture();
+        await mount(tester, face, CaptureFixture(), gateway);
+        await scan(tester);
+        final original = shortcut();
+        face.pending.complete(original);
+        await tester.pump();
+        await tester.pump();
+        face.pendingPreparation!.complete(
+          PreparedFaceUssdShortcut(
+            requestId: original.requestId,
+            payeeId: changed == 'recipient'
+                ? '66666666-6666-4666-8666-666666666666'
+                : original.payeeId,
+            receivingMethodId: original.receivingMethodId,
+            receivingMethodVersion:
+                original.receivingMethodVersion +
+                (changed == 'method_version' ? 1 : 0),
+            provider: changed == 'provider' ? 'airtel_rw' : original.provider,
+            routeId: original.routeId,
+            routeVersion:
+                original.routeVersion + (changed == 'route_version' ? 1 : 0),
+            ussdCode: changed == 'code'
+                ? '*182*1*1*0700000000#'
+                : original.ussdCode,
+            expiresAt: changed == 'expired'
+                ? DateTime.now().subtract(const Duration(seconds: 1))
+                : original.expiresAt,
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(face.preparations, 1);
+        expect(gateway.launches, 0);
+        expect(face.handoffs, 0);
+      },
+    );
+  }
+  testWidgets('freshness recovery opens Admin OTP without repeating the scan', (
+    tester,
+  ) async {
+    final face = FaceFixture()
+      ..prepareError = const FaceServiceException(
+        'ADMIN_REAUTHENTICATION_REQUIRED',
+      );
+    final camera = CaptureFixture(), gateway = GatewayFixture();
+    final router = GoRouter(
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (_, _) => BioPayFaceScanScreen(onBack: () {}),
+        ),
+        GoRoute(
+          path: '/admin-auth',
+          builder: (_, _) => const Scaffold(body: Text('Admin OTP')),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await mount(tester, face, camera, gateway, router: router);
+    await scan(tester);
+    face.pending.complete(shortcut());
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(
+      find.widgetWithText(TextButton, 'Sign in again to continue.'),
+    );
+    await tester.tap(
+      find.widgetWithText(TextButton, 'Sign in again to continue.'),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Admin OTP'), findsOneWidget);
+    expect(face.scans, 1);
+    expect(gateway.launches, 0);
+    expect(camera.ready, isFalse);
+  });
   for (final reason in ['leave', 'background', 'account', 'generation']) {
     testWidgets('$reason while resolving cannot open dialer', (tester) async {
       final face = FaceFixture(),

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/auth/auth_session_storage.dart';
@@ -112,16 +113,43 @@ void main() {
     debugDefaultTargetPlatformOverride = null;
     await storage.persistence.initialize();
     await storage.persistence.lockAndClear();
+    const userId = '00000000-0000-4000-8000-000000000001';
+    const sessionId = '00000000-0000-4000-8000-000000000099';
+    late final String token;
+    var proofRequests = 0;
+    Object? rejectedRequest;
     await sb.Supabase.initialize(url:'https://chat-widget.invalid',anonKey:'synthetic-public-key',
-      httpClient:MockClient((request)async => throw StateError('Unexpected external request')),
+      httpClient:MockClient((request) async {
+        if (request.method != 'POST' ||
+            request.url != Uri.parse('https://chat-widget.invalid/rest/v1/rpc/rpc_verified_interactive_session') ||
+            request.headers['Authorization'] != 'Bearer $token' ||
+            request.body != 'null') {
+          rejectedRequest = {
+            'method': request.method,
+            'url': request.url.toString(),
+            'matching_bearer': request.headers['Authorization'] == 'Bearer $token',
+            'body': request.body,
+          };
+          throw StateError('Unexpected external request');
+        }
+        proofRequests++;
+        return http.Response(
+          jsonEncode({'user_id': userId, 'session_id': sessionId}),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
       authOptions:const sb.FlutterAuthClientOptions(autoRefreshToken:false,
         detectSessionInUri:false,localStorage:sb.EmptyLocalStorage()));
     addTearDown(sb.Supabase.instance.dispose);
     final expiry=DateTime.now().millisecondsSinceEpoch~/1000+3600;
     String enc(Object v)=>base64Url.encode(utf8.encode(jsonEncode(v))).replaceAll('=','');
-    final token='${enc({'alg':'none'})}.${enc({'iss':'https://chat-widget.invalid/auth/v1',
-      'sub':'00000000-0000-4000-8000-000000000001',
-      'session_id':'00000000-0000-4000-8000-000000000099','iat':expiry-3600,
+    // This unsigned JWT exercises the installed SDK and caller-bound RPC flow;
+    // it is not evidence of Auth signature validation or backend OTP acceptance.
+    token='${enc({'alg':'none'})}.${enc({'iss':'https://chat-widget.invalid/auth/v1',
+      'sub':userId,
+      'session_id':sessionId,'iat':expiry-3600,
       'exp':expiry,'role':'authenticated','is_anonymous':false})}.fixture';
     await sb.Supabase.instance.client.auth.recoverSession(jsonEncode({
       'access_token':token,'refresh_token':'synthetic-refresh','token_type':'bearer',
@@ -134,6 +162,10 @@ void main() {
       expectedGeneration: storage.persistence.generation,
     );
     await AccountContext.restoreExitFence();
+    final validated = await AccountContext.validateInteractiveSession();
+    expect(rejectedRequest, isNull);
+    expect(proofRequests, 1);
+    expect(validated, isTrue);
   });
 
   testWidgets('acknowledgement preserves a newer draft', (tester) async {

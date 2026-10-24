@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_nfc_kit/flutter_nfc_kit.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/biopay/data/biopay_nfc_card_payload.dart';
 import 'package:mobi_app/features/biopay/data/biopay_nfc_service.dart';
@@ -82,9 +83,107 @@ void main() {
         _service.writeCard(_payload),
         throwsA(isA<TimeoutException>()),
       );
-      expect(calls, ['getNFCAvailability', 'poll']);
+      expect(calls, ['getNFCAvailability', 'poll', 'finish']);
     },
   );
+
+  testWidgets(
+    'explicit iOS cancel finishes once and blocks late tag mutation',
+    (tester) async {
+      try {
+        const service = BioPayNfcService();
+        final tag = Completer<Object?>();
+        final calls = <String>[];
+        messenger.setMockMethodCallHandler(_kit, (call) {
+          calls.add(call.method);
+          return call.method == 'poll' ? tag.future : kitDefault(call);
+        });
+        Object? error;
+        final work = service
+            .writeCard(_payload)
+            .then<void>((_) {}, onError: (Object e) => error = e);
+        await tester.pump();
+        expect(calls, ['getNFCAvailability', 'poll']);
+        await service.cancelActiveSession();
+        await service.cancelActiveSession();
+        tag.complete(await kitDefault(const MethodCall('poll')));
+        await tester.pump();
+        await work;
+        expect(error, isA<StaleAccountWork>());
+        expect(calls, ['getNFCAvailability', 'poll', 'finish']);
+        expect(tester.takeException(), isNull);
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+      }
+    },
+  );
+
+  testWidgets(
+    'cancel during availability cannot open a late iOS reader sheet',
+    (tester) async {
+      try {
+        const service = BioPayNfcService();
+        final availability = Completer<Object?>();
+        final calls = <String>[];
+        messenger.setMockMethodCallHandler(_kit, (call) {
+          calls.add(call.method);
+          return availability.future;
+        });
+        Object? error;
+        final work = service
+            .writeCard(_payload)
+            .then<void>((_) {}, onError: (Object e) => error = e);
+        await tester.pump();
+        await service.cancelActiveSession();
+        availability.complete('available');
+        await tester.pump();
+        await work;
+        expect(error, isA<StaleAccountWork>());
+        expect(calls, ['getNFCAvailability']);
+        expect(tester.takeException(), isNull);
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+      }
+    },
+  );
+
+  testWidgets('a pending native finish fences replacement iOS sessions', (
+    tester,
+  ) async {
+    try {
+      const service = BioPayNfcService();
+      final finish = Completer<Object?>();
+      final tag = Completer<Object?>();
+      final calls = <String>[];
+      messenger.setMockMethodCallHandler(_kit, (call) {
+        calls.add(call.method);
+        return switch (call.method) {
+          'poll' => tag.future,
+          'finish' => finish.future,
+          _ => kitDefault(call),
+        };
+      });
+      final work = service
+          .writeCard(_payload)
+          .then<void>((_) {}, onError: (Object _) {});
+      await tester.pump();
+      unawaited(service.cancelActiveSession());
+      await tester.pump(const Duration(seconds: 9));
+      await expectLater(
+        service.writeCard(_payload),
+        throwsA(isA<BioPayNfcException>()),
+      );
+      expect(calls.where((c) => c == 'poll'), hasLength(1));
+      expect(calls.where((c) => c == 'finish'), hasLength(1));
+      tag.complete(await kitDefault(const MethodCall('poll')));
+      finish.complete();
+      await tester.pump();
+      await work;
+      expect(tester.takeException(), isNull);
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
 
   test('a lost physical write response is unknown and never retried', () async {
     var writes = 0;

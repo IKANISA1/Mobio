@@ -771,4 +771,713 @@ class AppLocalizationsRw extends AppLocalizations {
 
   @override
   String get faceRefresh => 'Reba uko kubika isura bigeze';
+
+  @override
+  String get adminUsersTitle => 'Abakoresha';
+
+  @override
+  String get adminUsersSubtitle => 'Urutonde n’inshingano.';
+
+  @override
+  String get adminRefresh => 'Vugurura';
+
+  @override
+  String get adminClose => 'Funga';
+
+  @override
+  String get adminClear => 'Siba';
+
+  @override
+  String get adminDirectory => 'Urutonde';
+
+  @override
+  String get adminSearchAndFilter => 'Shakisha kandi ushungure';
+
+  @override
+  String get adminSearchUsers => 'Shakisha abakoresha';
+
+  @override
+  String get adminFilterAll => 'Bose';
+
+  @override
+  String get adminFilterAdmins => 'Abayobozi';
+
+  @override
+  String get adminFilterDrivers => 'Abashoferi';
+
+  @override
+  String get adminFilterPassengers => 'Abagenzi';
+
+  @override
+  String get adminRoleAdmin => 'Umuyobozi';
+
+  @override
+  String get adminRoleDriver => 'Umushoferi';
+
+  @override
+  String get adminRolePassenger => 'Umugenzi';
+
+  @override
+  String get adminRoleUnknown => 'Inshingano ntiziboneka';
+
+  @override
+  String adminReviewRole(String role) {
+    return 'Suzuma inshingano: $role';
+  }
+
+  @override
+  String get adminUnavailable => 'Ntibiboneka';
+
+  @override
+  String get adminOnline => 'Ari ku murongo';
+
+  @override
+  String get adminOffline => 'Ntari ku murongo';
+
+  @override
+  String get adminPhone => 'Telefone';
+
+  @override
+  String get adminVehicle => 'Ikinyabiziga';
+
+  @override
+  String get adminNotAssigned => 'Ntibyagenwe';
+
+  @override
+  String get adminJoined => 'Yiyandikishije';
+
+  @override
+  String get adminDriverProfile => 'Umwirondoro w’umushoferi';
+
+  @override
+  String get adminPassengerProfile => 'Umwirondoro w’umugenzi';
+
+  @override
+  String get adminMatchingUsers => 'Abakoresha bahuye n’ishakisha';
+
+  @override
+  String get adminAdminProfiles => 'Imyirondoro y’abayobozi';
+
+  @override
+  String get adminPageAtSnapshot => 'Iyi paji igihe amakuru yabikwaga';
+
+  @override
+  String get adminCountUnavailable => 'Umubare nyawo ntuboneka';
+
+  @override
+  String get adminMatchingCountUnavailable =>
+      'Umubare nyawo w’abahuye n’ishakisha ntuboneka';
+
+  @override
+  String get adminUsersUnavailable => 'Abakoresha ntibaboneka';
+
+  @override
+  String get adminUsersLoadFailed =>
+      'Abakoresha ntibashoboye kuboneka. Reba ko ufite murandasi wongere ugerageze.';
+
+  @override
+  String get adminAccountChangedTitle => 'Konti yahindutse';
+
+  @override
+  String get adminAccountChangedBody =>
+      'Ongera ufungure urutonde rw’abakoresha ukoresheje konti iriho.';
+
+  @override
+  String get adminAccountPanelChanged => 'Konti yahindutse. Funga iyi paji.';
+
+  @override
+  String get adminNoUsers => 'Nta bakoresha';
+
+  @override
+  String get adminTryFilter => 'Gerageza ubundi buryo bwo gushungura.';
+
+  @override
+  String get adminQueryFailed =>
+      'Urutonde ntirushoboye kuvugururwa. Ongera ugerageze.';
+
+  @override
+  String get adminUserUpdateFailed =>
+      'Uyu mukoresha ntashoboye kuvugururwa. Vugurura wongere ugerageze.';
+
+  @override
+  String get adminReviewUnavailable => 'Iri suzuma ntirikiboneka.';
+
+  @override
+  String get adminReviewShowFailed =>
+      'Iri suzuma ntirishoboye kugaragara. Vugurura abakoresha mbere yo kongera gusuzuma.';
+
+  @override
+  String get adminReviewContinueFailed =>
+      'Iri suzuma ntirishoboye gukomeza. Reba uko ryanditse mbere yo gutangira irindi.';
+
+  @override
+  String get adminStatusUnconfirmed =>
+      'Uko iri tsinda rihagaze ntikwashoboye kwemezwa. Ntiryakemuwe.';
+
+  @override
+  String get adminCloseBatchTitle =>
+      'Usoze iri tsinda ry’impinduka z’inshingano?';
+
+  @override
+  String get adminCloseBatchBody =>
+      'Hagarika impinduka zisigaye wandike uko byarangiye. Impinduka zemejwe ziragumaho. Irindi suzuma rizaboneka seriveri yemeje ko iri tsinda ryasojwe.';
+
+  @override
+  String get adminCloseBatch => 'Soza itsinda';
+
+  @override
+  String get adminCloseThisBatch => 'Soza iri tsinda';
+
+  @override
+  String get adminClosureUnconfirmed =>
+      'Isozwa ntiryashoboye kwemezwa. Reba iri tsinda mbere yo gutangira irindi.';
+
+  @override
+  String get adminReviewTitle => 'Suzuma impinduka z’inshingano z’imyirondoro';
+
+  @override
+  String get adminReviewDisclosure =>
+      'Aba bantu n’inshingano zisabwe ntibihinduka muri iri suzuma. Guha umwirondoro inshingano z’umuyobozi ntibitanga uburenganzira bwizewe bwo kuyobora sisitemu.';
+
+  @override
+  String get adminTrustedAccessDisclosure =>
+      'Guha umwirondoro inshingano z’umuyobozi ntibitanga uburenganzira bwizewe bwo kuyobora sisitemu.';
+
+  @override
+  String get adminReviewExpired =>
+      'Aya makuru yabitswe yarengeje igihe. Hagarika uvugurure abakoresha kugira ngo utangire irindi suzuma.';
+
+  @override
+  String get adminAllExcluded =>
+      'Imyirondoro yose yatoranyijwe ntizahindurwa. Nta mpinduka y’inshingano izoherezwa.';
+
+  @override
+  String get adminReviewUnavailableRefresh =>
+      'Iri suzuma ntirikiboneka. Hagarika uvugurure abakoresha.';
+
+  @override
+  String get adminConfirming => 'Kwemeza…';
+
+  @override
+  String get adminOutcomesTitle => 'Ibyavuye mu mpinduka z’inshingano';
+
+  @override
+  String get adminReservationClosedEmpty =>
+      'Icyiciro cyabitswe cyasojwe. Nta mpinduka y’inshingano yoherejwe.';
+
+  @override
+  String get adminBatchClosed =>
+      'Iri tsinda ryasojwe. Ibyavuye mu mpinduka byanditswe biracyaboneka.';
+
+  @override
+  String get adminUnknownGuidance =>
+      'Ibyavuye mu mpinduka zimwe ntibiramenyekana. Reba uko zihagaze usoze iri tsinda mbere y’irindi suzuma. Nta mpinduka izongera koherezwa ubwayo.';
+
+  @override
+  String get adminUnsealedGuidance =>
+      'Reba uko iki cyiciro cyabitswe gihagaze usoze iri tsinda mbere y’irindi suzuma. Nta mpinduka izongera koherezwa ubwayo.';
+
+  @override
+  String get adminCheckStatus => 'Reba uko bihagaze';
+
+  @override
+  String get adminOwnExcluded => 'Ntizahindurwa: umwirondoro wawe bwite';
+
+  @override
+  String get adminSameRoleExcluded =>
+      'Ntizahindurwa: isanzwe ifite inshingano zisabwe';
+
+  @override
+  String get adminOwnProfileExcluded =>
+      'Umwirondoro wawe bwite ntuhindurirwa inshingano.';
+
+  @override
+  String get adminReviewProfileRole =>
+      'Suzuma impinduka y’inshingano z’umwirondoro';
+
+  @override
+  String get adminEnabled => 'Bikora';
+
+  @override
+  String get adminDisabled => 'Ntibikora';
+
+  @override
+  String get adminStatusConfirmed => 'Byemejwe';
+
+  @override
+  String get adminStatusKnownRejected => 'Kwanga byemejwe';
+
+  @override
+  String get adminStatusUnknown => 'Ntibiramenyekana';
+
+  @override
+  String get adminStatusNotStarted => 'Ntibyatangiye';
+
+  @override
+  String get adminStatusSkipped => 'Byasimbutswe';
+
+  @override
+  String get adminStatusSubmitting => 'Birimo koherezwa';
+
+  @override
+  String get adminPhaseChecking => 'Kureba impinduka z’inshingano zabanje…';
+
+  @override
+  String get adminPhaseReady => 'Ibyavuye mu mpinduka byanditswe biri hasi.';
+
+  @override
+  String get adminPhaseReserving => 'Gutegura itsinda ryemejwe…';
+
+  @override
+  String get adminPhaseSubmitting => 'Kohereza impinduka zasuzumwe…';
+
+  @override
+  String get adminPhaseReconciling =>
+      'Kureba uko bihagaze byemejwe na seriveri…';
+
+  @override
+  String get adminPhaseSealing => 'Gusoza iri tsinda…';
+
+  @override
+  String get adminPhaseUnresolved =>
+      'Uko iri tsinda rihagaze biracyakeneye kugenzurwa no kurisoza.';
+
+  @override
+  String get adminPhaseBlocked => 'Impinduka z’inshingano ntiziboneka ubu.';
+
+  @override
+  String get adminRejectChanged =>
+      'Uyu mwirondoro wahindutse nyuma yo kubika amakuru. Uwuvugurure kugira ngo wongere uwusuzume.';
+
+  @override
+  String get adminRejectMissing => 'Umwirondoro wasuzumwe ntukiboneka.';
+
+  @override
+  String get adminRejectReauthenticate =>
+      'Ongera winjire mbere yo gusuzuma indi mpinduka y’inshingano.';
+
+  @override
+  String get adminRejectGeneric => 'Seriveri yanze iyi mpinduka. Ntiyemejwe.';
+
+  @override
+  String get adminSnapshotExpired =>
+      'Amakuru yabitswe yarengeje igihe. Vugurura abakoresha mbere yo guhindura inshingano cyangwa gufungura indi paji.';
+
+  @override
+  String get adminSortOnline => 'Abari ku murongo babanze';
+
+  @override
+  String get adminSortNameAsc => 'Izina A–Z';
+
+  @override
+  String get adminSortNameDesc => 'Izina Z–A';
+
+  @override
+  String get adminSortRole => 'Inshingano';
+
+  @override
+  String get adminSortNewest => 'Abashya babanze';
+
+  @override
+  String get adminMember => 'Umunyamuryango';
+
+  @override
+  String get adminStatus => 'Uko bihagaze';
+
+  @override
+  String get adminClearVisibleSelection =>
+      'Kuraho itoranya ry’abakoresha bagaragara';
+
+  @override
+  String get adminSelectVisibleUsers => 'Toranya abakoresha bagaragara';
+
+  @override
+  String get adminClearSearch => 'Siba ishakisha';
+
+  @override
+  String get adminSortRows => 'Tondeka imirongo';
+
+  @override
+  String get adminRows => 'Imirongo';
+
+  @override
+  String get adminPreviousPage => 'Paji ibanza';
+
+  @override
+  String get adminNextPage => 'Paji ikurikira';
+
+  @override
+  String get adminBack => 'Subira inyuma';
+
+  @override
+  String get adminNavOps => 'Ibikorwa';
+
+  @override
+  String get adminNavFleet => 'Ibinyabiziga';
+
+  @override
+  String get adminNavAgencies => 'Ibigo';
+
+  @override
+  String get adminNavEv => 'Ibinyabiziga by’amashanyarazi';
+
+  @override
+  String get adminNavPlans => 'Gahunda';
+
+  @override
+  String get adminNavTrips => 'Ingendo';
+
+  @override
+  String get adminNavReports => 'Ibibazo byatanzwe';
+
+  @override
+  String get adminNavHealth => 'Uko sisitemu ikora';
+
+  @override
+  String get adminNavAudit => 'Igenzura';
+
+  @override
+  String get adminNavBroadcasts => 'Ubutumwa rusange';
+
+  @override
+  String get adminNavAccount => 'Konti';
+
+  @override
+  String get adminRewardTitle => 'Ongeraho ibihembo by’ubwishingizi';
+
+  @override
+  String adminRewardAction(String amount) {
+    return 'Ongeraho TOKENS $amount';
+  }
+
+  @override
+  String adminRewardConfirm(String amount, String name) {
+    return 'Ha $name TOKENS $amount. Ni ibihembo byo kugura ubwishingizi bw’ikinyabiziga.';
+  }
+
+  @override
+  String adminRewardAdded(String amount, String name) {
+    return '$name yahawe TOKENS $amount.';
+  }
+
+  @override
+  String get adminRewardSubmit => 'Ongeraho TOKENS';
+
+  @override
+  String adminAccountReference(String id) {
+    return 'Ikimenyetso cya konti: $id';
+  }
+
+  @override
+  String adminMemberReference(String id) {
+    return 'Umunyamuryango $id';
+  }
+
+  @override
+  String adminRoleChange(String before, String after) {
+    return '$before → $after';
+  }
+
+  @override
+  String adminReviewedRoleChange(String before, String after) {
+    return 'Icyasuzumwe: $before → $after';
+  }
+
+  @override
+  String adminDriverStateChange(String before, String after) {
+    return 'Umwirondoro w’umushoferi: $before → $after';
+  }
+
+  @override
+  String adminStatusCount(String status, String count) {
+    return '$status: $count';
+  }
+
+  @override
+  String adminSnapshotAt(String date) {
+    return 'Amakuru yabitswe $date';
+  }
+
+  @override
+  String adminSnapshotRange(String date, String expiry) {
+    return 'Amakuru yabitswe $date · igihe kirarangira $expiry';
+  }
+
+  @override
+  String adminSortBy(String label) {
+    return 'Tondeka hakurikijwe $label';
+  }
+
+  @override
+  String adminPagination(String start, String end, String total) {
+    return '$start–$end muri $total';
+  }
+
+  @override
+  String adminClearSelectionFor(String name) {
+    return 'Kuraho itoranya rya $name';
+  }
+
+  @override
+  String adminSelectPerson(String name) {
+    return 'Toranya $name';
+  }
+
+  @override
+  String adminPersonSemantics(String name, String role, String status) {
+    return '$name, $role, $status';
+  }
+
+  @override
+  String get adminErrorSignIn =>
+      'Ongera winjire kugira ngo ubone abanyamuryango.';
+
+  @override
+  String get adminErrorSessionUnavailable =>
+      'Igihe winjiriyemo muri konti ntikiboneka.';
+
+  @override
+  String get adminErrorLoadMembers =>
+      'Abanyamuryango ntibashoboye kuboneka. Vugurura wongere ugerageze.';
+
+  @override
+  String get adminErrorSessionChanged =>
+      'Igihe winjiriyemo muri konti cyahindutse. Ongera winjire.';
+
+  @override
+  String get adminErrorReleaseSnapshot =>
+      'Amakuru y’abanyamuryango yabitswe mbere ntashoboye gukurwaho. Vugurura wongere ugerageze.';
+
+  @override
+  String get adminErrorMemberSnapshotExpired =>
+      'Aya makuru y’abanyamuryango yarengeje igihe. Vugurura ubone amakuru agezweho.';
+
+  @override
+  String get adminErrorPageExpired =>
+      'Vugurura aya makuru y’abanyamuryango mbere yo guhindura paji.';
+
+  @override
+  String get adminErrorReviewBusy =>
+      'Vugurura cyangwa urangize isuzuma ririho mbere yo guhindura inshingano.';
+
+  @override
+  String get adminErrorSelectPage =>
+      'Toranya abanyamuryango kuri iyi paji y’amakuru yabitswe.';
+
+  @override
+  String get adminErrorReviewExpired =>
+      'Iri suzuma ryarengeje igihe. Soza icyiciro cyaryo cyabitswe mbere y’irindi suzuma.';
+
+  @override
+  String get adminErrorJournalBefore =>
+      'Ububiko bwo gukomeza igikorwa ntibwashoboye kugenzurwa. Nta mpinduka y’inshingano yoherejwe.';
+
+  @override
+  String get adminErrorReserveUnknown =>
+      'Ibyavuye mu kubika icyiciro ntibiramenyekana. Bigenzure cyangwa ugisoze mbere y’irindi suzuma.';
+
+  @override
+  String get adminErrorReserveFailed =>
+      'Kubika icyiciro ntibyashoboye kurangira. Bigenzure cyangwa ugisoze mbere y’irindi suzuma.';
+
+  @override
+  String get adminErrorBatchExpired =>
+      'Iri tsinda ryarengeje igihe. Risoze mbere y’irindi suzuma.';
+
+  @override
+  String get adminErrorJournalRemaining =>
+      'Ububiko bwo gukomeza igikorwa ntibwashoboye kugenzurwa. Impinduka z’inshingano zisigaye ntizoherejwe.';
+
+  @override
+  String get adminErrorChangeUnconfirmed =>
+      'Iyi mpinduka y’inshingano ntiyemejwe. Genzura uko bihagaze cyangwa usoze itsinda.';
+
+  @override
+  String get adminErrorRequestRejected =>
+      'Iki cyifuzo cyanzwe. Soza itsinda mbere y’irindi suzuma.';
+
+  @override
+  String get adminErrorChangeUnknown =>
+      'Ibyavuye mu mpinduka y’inshingano ntibiramenyekana. Genzura uko bihagaze cyangwa usoze itsinda.';
+
+  @override
+  String get adminErrorReviewOutcomes =>
+      'Suzuma ibyavuye mu mpinduka kuri buri muntu, hanyuma usoze iri tsinda mbere y’irindi suzuma.';
+
+  @override
+  String get adminErrorEarlierUncertain =>
+      'Icyiciro cyabitswe mbere ntikiramenyekana neza kandi hari irindi tsinda ritarasozwa. Banza usoze icyiciro cyabitswe mbere.';
+
+  @override
+  String get adminErrorDelayedReservation =>
+      'Ibyavuye mu kubika icyiciro ntibiramenyekana. Gisoze kugira ngo hatagira ibyoherezwa nyuma.';
+
+  @override
+  String get adminErrorOutstanding =>
+      'Hari itsinda ritarasozwa ryabonetse. Suzuma ibyavuye mu mpinduka urisoze mbere y’irindi suzuma.';
+
+  @override
+  String get adminErrorRecoveryUnverified =>
+      'Gukomeza igikorwa ntibyashoboye kugenzurwa. Nta mpinduka y’inshingano izongera koherezwa.';
+
+  @override
+  String get adminErrorClosureUnverified =>
+      'Isozwa ntiryashoboye kugenzurwa. Genzura uko bihagaze cyangwa wongere usoze iki cyiciro cyabitswe.';
+
+  @override
+  String get adminErrorMemberBusy =>
+      'Tegereza ko kuvugurura umunyamuryango birangira.';
+
+  @override
+  String get adminErrorGeneric =>
+      'Iki gikorwa nticyashoboye kurangira. Reba uko cyanditse mbere yo gukomeza.';
+
+  @override
+  String get adminErrorNetwork =>
+      'Ntibishoboye kwihuza. Reba murandasi wongere ugerageze.';
+
+  @override
+  String get adminErrorForbidden =>
+      'Nta burenganzira ufite bwo gukora iki gikorwa.';
+
+  @override
+  String adminConfirmCount(int count, String countText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Emeza impinduka $countText',
+      one: 'Emeza impinduka 1',
+      zero: 'Emeza impinduka 0',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminReviewSummary(
+    int eligible,
+    String eligibleText,
+    int excluded,
+    String excludedText,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      eligible,
+      locale: localeName,
+      other: 'Impinduka $eligibleText',
+      one: 'Impinduka 1',
+      zero: 'Impinduka 0',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      excluded,
+      locale: localeName,
+      other: 'Ntizihindurwa: $excludedText',
+      one: 'Ntizihindurwa: 1',
+      zero: 'Ntizihindurwa: 0',
+    );
+    return '$_temp0 · $_temp1';
+  }
+
+  @override
+  String adminMatchingCount(int count, String countText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Abakoresha bahuye n’ishakisha: $countText',
+      one: 'Abakoresha bahuye n’ishakisha: 1',
+      zero: 'Abakoresha bahuye n’ishakisha: 0',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminSelectedCount(int count, String countText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Abatoranyijwe kuri iyi paji: $countText',
+      one: 'Abatoranyijwe kuri iyi paji: 1',
+      zero: 'Abatoranyijwe kuri iyi paji: 0',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminSnapshotAgeUpper(int seconds, String secondsText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: 'Amakuru amaze igihe kitarenga amasegonda $secondsText.',
+      one: 'Amakuru amaze igihe kitarenga isegonda 1.',
+      zero: 'Amakuru amaze igihe kitarenga amasegonda 0.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminSnapshotAgeExact(int seconds, String secondsText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: 'Amakuru amaze amasegonda $secondsText.',
+      one: 'Amakuru amaze isegonda 1.',
+      zero: 'Amakuru amaze amasegonda 0.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminSnapshotRemaining(int seconds, String secondsText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: 'Isuzuma ry’amakuru riracyaboneka mu masegonda $secondsText.',
+      one: 'Isuzuma ry’amakuru riracyaboneka mu isegonda 1.',
+      zero: 'Isuzuma ry’amakuru riracyaboneka mu masegonda 0.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminReviewRemaining(String duration) {
+    return 'Igihe cyo gusuzuma amakuru kirarangira mu gihe cya $duration.';
+  }
+
+  @override
+  String adminDurationSeconds(int seconds, String secondsText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: 'Amasegonda $secondsText',
+      one: 'Isegonda 1',
+      zero: 'Amasegonda 0',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String adminDurationMinutesSeconds(
+    int minutes,
+    String minutesText,
+    int seconds,
+    String secondsText,
+  ) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'Iminota $minutesText',
+      one: 'Umunota 1',
+      zero: 'Iminota 0',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      seconds,
+      locale: localeName,
+      other: 'amasegonda $secondsText',
+      one: 'isegonda 1',
+      zero: 'amasegonda 0',
+    );
+    return '$_temp0 $_temp1';
+  }
+
+  @override
+  String get adminErrorMutationUnknown =>
+      'Ibyavuye mu gikorwa ntibyashoboye kwemezwa. Reba uko byanditse mbere yo kongera kohereza.';
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/shared/widgets/mobi_section_header.dart';
+import 'package:mobi_app/features/bookings/presentation/widgets/review_place_picker_field.dart';
 import 'package:mobi_app/shared/widgets/place_autocomplete_field.dart';
 import 'package:mobi_app/shared/widgets/route_map_card.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
@@ -26,8 +27,14 @@ class TripRouteForm extends StatelessWidget {
     required this.onFavoriteDestSelected,
     required this.onSaveFavoriteAddress,
     required this.onDeleteFavoriteAddress,
+    this.isReviewSession = false,
+    this.reviewPlaces = const [],
+    this.isReviewCurrent,
   });
 
+  final bool isReviewSession;
+  final List<PlaceDetails> reviewPlaces;
+  final bool Function()? isReviewCurrent;
   final PlaceDetails? originDetails;
   final PlaceDetails? destDetails;
   final bool isLoadingLocation;
@@ -75,25 +82,36 @@ class TripRouteForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PlaceAutocompleteField(
-          label: 'From',
-          initialValue: originDetails?.formattedAddress ?? '',
-          placeholder: 'Pick up location',
-          onPlaceSelected: onOriginSelected,
-          userLat: userLat,
-          userLng: userLng,
-          iconBg: showErrors && originDetails == null
-              ? Theme.of(context).colorScheme.errorContainer
-              : Theme.of(context).colorScheme.secondaryContainer,
-          iconColor: showErrors && originDetails == null
-              ? Theme.of(context).colorScheme.error
-              : Theme.of(context).colorScheme.onSecondaryContainer,
-          icon: LucideIcons.mapPin,
-          trailing: _CurrentLocationButton(
-            isLoading: isLoadingLocation,
-            onTap: onHandleCurrentLocation,
+        if (isReviewSession)
+          ReviewPlacePickerField(
+            label: 'From',
+            placeholder: 'Pick up location',
+            icon: LucideIcons.mapPin,
+            places: reviewPlaces,
+            value: originDetails,
+            isCurrent: isReviewCurrent ?? () => false,
+            onSelected: onOriginSelected,
+          )
+        else
+          PlaceAutocompleteField(
+            label: 'From',
+            initialValue: originDetails?.formattedAddress ?? '',
+            placeholder: 'Pick up location',
+            onPlaceSelected: onOriginSelected,
+            userLat: userLat,
+            userLng: userLng,
+            iconBg: showErrors && originDetails == null
+                ? Theme.of(context).colorScheme.errorContainer
+                : Theme.of(context).colorScheme.secondaryContainer,
+            iconColor: showErrors && originDetails == null
+                ? Theme.of(context).colorScheme.error
+                : Theme.of(context).colorScheme.onSecondaryContainer,
+            icon: LucideIcons.mapPin,
+            trailing: _CurrentLocationButton(
+              isLoading: isLoadingLocation,
+              onTap: onHandleCurrentLocation,
+            ),
           ),
-        ),
         if (showErrors && originDetails == null) const _RequiredLabel(),
         if (favoriteAddresses.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.sm),
@@ -110,21 +128,32 @@ class TripRouteForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PlaceAutocompleteField(
-          label: 'To',
-          initialValue: destDetails?.formattedAddress ?? '',
-          placeholder: 'Drop off location',
-          onPlaceSelected: onDestSelected,
-          userLat: userLat,
-          userLng: userLng,
-          iconBg: showErrors && destDetails == null
-              ? Theme.of(context).colorScheme.errorContainer
-              : Theme.of(context).colorScheme.secondaryContainer,
-          iconColor: showErrors && destDetails == null
-              ? Theme.of(context).colorScheme.error
-              : Theme.of(context).colorScheme.onSecondaryContainer,
-          icon: LucideIcons.flag,
-        ),
+        if (isReviewSession)
+          ReviewPlacePickerField(
+            label: 'To',
+            placeholder: 'Drop off location',
+            icon: LucideIcons.flag,
+            places: reviewPlaces,
+            value: destDetails,
+            isCurrent: isReviewCurrent ?? () => false,
+            onSelected: onDestSelected,
+          )
+        else
+          PlaceAutocompleteField(
+            label: 'To',
+            initialValue: destDetails?.formattedAddress ?? '',
+            placeholder: 'Drop off location',
+            onPlaceSelected: onDestSelected,
+            userLat: userLat,
+            userLng: userLng,
+            iconBg: showErrors && destDetails == null
+                ? Theme.of(context).colorScheme.errorContainer
+                : Theme.of(context).colorScheme.secondaryContainer,
+            iconColor: showErrors && destDetails == null
+                ? Theme.of(context).colorScheme.error
+                : Theme.of(context).colorScheme.onSecondaryContainer,
+            icon: LucideIcons.flag,
+          ),
         if (showErrors && destDetails == null) const _RequiredLabel(),
         if (favoriteAddresses.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.sm),
@@ -154,6 +183,7 @@ class TripRouteForm extends StatelessWidget {
           originPlaceId: originDetails!.placeId,
           destPlaceId: destDetails!.placeId,
           height: 180,
+          allowExternalMap: !isReviewSession,
         ),
       );
     }

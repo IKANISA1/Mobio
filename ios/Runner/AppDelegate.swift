@@ -1,4 +1,5 @@
 import Security
+import app_links
 import Flutter
 import UIKit
 import ContactsUI
@@ -260,5 +261,41 @@ private enum SecureSessionChannel {
     guard try Data(contentsOf: marker) == Data("mobio-auth-install-v1".utf8) else {
       throw StoreFailure.unavailable
     }
+  }
+}
+
+
+// The locked app_links 6.4.1 registers application callbacks only. Keep Flutter's
+// scene forwarding and explicitly bridge its existing public channel endpoint.
+@objc class MobioSceneDelegate: FlutterSceneDelegate {
+  private let links = MobioSceneLinkForwarder { AppLinks.shared.handleLink(url: $0) }
+
+  override func scene(_ scene: UIScene, willConnectTo session: UISceneSession,
+                      options connectionOptions: UIScene.ConnectionOptions) {
+    super.scene(scene, willConnectTo: session, options: connectionOptions)
+    links.forward(urls: connectionOptions.urlContexts.map { $0.url },
+                  activities: Array(connectionOptions.userActivities))
+  }
+
+  override func scene(_ scene: UIScene, openURLContexts contexts: Set<UIOpenURLContext>) {
+    super.scene(scene, openURLContexts: contexts)
+    links.forward(urls: contexts.map { $0.url }, activities: [])
+  }
+
+  override func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+    super.scene(scene, continue: userActivity)
+    links.forward(urls: [], activities: [userActivity])
+  }
+}
+
+final class MobioSceneLinkForwarder {
+  private let deliver: (URL) -> Void
+  init(deliver: @escaping (URL) -> Void) { self.deliver = deliver }
+
+  func forward(urls: [URL], activities: [NSUserActivity]) {
+    var seen = Set<URL>()
+    let webURLs = activities.filter { $0.activityType == NSUserActivityTypeBrowsingWeb }
+      .compactMap { $0.webpageURL }
+    for url in urls + webURLs where seen.insert(url).inserted { deliver(url) }
   }
 }

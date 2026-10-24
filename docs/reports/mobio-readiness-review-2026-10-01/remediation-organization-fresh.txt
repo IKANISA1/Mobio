@@ -1,0 +1,362 @@
+BEGIN
+SET
+SET
+CREATE TABLE
+INSERT 0 7
+INSERT 0 2
+CREATE TABLE
+INSERT 0 1
+CREATE TABLE
+INSERT 0 4
+CREATE TABLE
+GRANT
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+INSERT 0 9
+INSERT 0 9
+UPDATE 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+INSERT 0 6
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 4
+SELECT 2
+SELECT 1
+SELECT 1
+ qa_org_identity 
+-----------------
+ 
+(1 row)
+
+SET
+ qa_org_confirmation_denied 
+----------------------------
+ 
+(1 row)
+
+RESET
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+SET
+DO
+ qa_org_identity 
+-----------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+RESET
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_identity 
+-----------------
+ 
+(1 row)
+
+SET
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+RESET
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+UPDATE 1
+SET
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_confirmation_denied 
+----------------------------
+ 
+(1 row)
+
+RESET
+UPDATE 1
+UPDATE 1
+SET
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_confirmation_denied 
+----------------------------
+ 
+(1 row)
+
+RESET
+DELETE 0
+ qa_org_identity 
+-----------------
+ 
+(1 row)
+
+SET
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+RESET
+UPDATE 1
+SET
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_confirmation_denied 
+----------------------------
+ 
+(1 row)
+
+RESET
+UPDATE 1
+SET
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_confirmation_denied 
+----------------------------
+ 
+(1 row)
+
+RESET
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+ qa_org_check 
+--------------
+ 
+(1 row)
+
+                               passed_assertion                               
+------------------------------------------------------------------------------
+ actual confirmation succeeds for trusted explicit Admin grant
+ actual confirmation succeeds for trusted full Admin fallback
+ admin organization role: actual confirmation RPC denied
+ admin: actual membership RLS retains own row
+ admin: actual organization RLS hides unrelated root
+ admin: actual organization RLS retains own root
+ admin: default intent remains membership read
+ admin: membership alone cannot enumerate other members
+ admin: membership denies ev_chargers.manage
+ admin: membership denies platform.admin
+ admin: membership denies transport.agencies.manage
+ admin: membership denies transport.bookings.manage
+ admin: membership denies transport.tracking.ingest
+ admin: null intent permits own organization read
+ admin: other passenger booking hidden by real RLS
+ admin: real verified consumer identity retained
+ admin: unrelated organization read denied
+ all rejected authority transitions retain victim and owned bookings
+ all role denials leave held bookings unchanged
+ all role denials leave no fabricated receipt
+ all role denials retain exact seat inventory
+ denied confirmation leaves inventory byte-for-byte unchanged
+ denied confirmation leaves receipt rows unchanged
+ denied confirmation leaves victim and owned booking byte-for-byte unchanged
+ driver organization role: actual confirmation RPC denied
+ driver: actual membership RLS retains own row
+ driver: actual organization RLS hides unrelated root
+ driver: actual organization RLS retains own root
+ driver: default intent remains membership read
+ driver: membership alone cannot enumerate other members
+ driver: membership denies ev_chargers.manage
+ driver: membership denies platform.admin
+ driver: membership denies transport.agencies.manage
+ driver: membership denies transport.bookings.manage
+ driver: membership denies transport.tracking.ingest
+ driver: null intent permits own organization read
+ driver: other passenger booking hidden by real RLS
+ driver: real verified consumer identity retained
+ driver: unrelated organization read denied
+ expired delegated grant denies management despite live lease
+ expired delegated grant: actual confirmation RPC denied
+ expired full Admin lease: actual confirmation RPC denied
+ expired lease denies full-admin fallback
+ global explicit grant retains its existing cross-organization scope
+ manager organization role: actual confirmation RPC denied
+ manager: actual membership RLS retains own row
+ manager: actual organization RLS hides unrelated root
+ manager: actual organization RLS retains own root
+ manager: default intent remains membership read
+ manager: membership alone cannot enumerate other members
+ manager: membership denies ev_chargers.manage
+ manager: membership denies platform.admin
+ manager: membership denies transport.agencies.manage
+ manager: membership denies transport.bookings.manage
+ manager: membership denies transport.tracking.ingest
+ manager: null intent permits own organization read
+ manager: other passenger booking hidden by real RLS
+ manager: real verified consumer identity retained
+ manager: unrelated organization read denied
+ member organization role: actual confirmation RPC denied
+ member: actual membership RLS retains own row
+ member: actual organization RLS hides unrelated root
+ member: actual organization RLS retains own root
+ member: default intent remains membership read
+ member: membership alone cannot enumerate other members
+ member: membership denies ev_chargers.manage
+ member: membership denies platform.admin
+ member: membership denies transport.agencies.manage
+ member: membership denies transport.bookings.manage
+ member: membership denies transport.tracking.ingest
+ member: null intent permits own organization read
+ member: other passenger booking hidden by real RLS
+ member: real verified consumer identity retained
+ member: unrelated organization read denied
+ only the two trusted confirmations persist paid receipts
+ ordinary booking table and column write authority remains revoked
+ ordinary member with consumer platform grant: actual confirmation RPC denied
+ other passenger payment status is not returned by real RPC
+ owner organization role: actual confirmation RPC denied
+ owner retains own held booking through real RLS
+ owner retains own payment status through real RPC
+ owner: actual membership RLS retains own row
+ owner: actual organization RLS hides unrelated root
+ owner: actual organization RLS retains own root
+ owner: default intent remains membership read
+ owner: membership alone cannot enumerate other members
+ owner: membership denies ev_chargers.manage
+ owner: membership denies platform.admin
+ owner: membership denies transport.agencies.manage
+ owner: membership denies transport.bookings.manage
+ owner: membership denies transport.tracking.ingest
+ owner: null intent permits own organization read
+ owner: other passenger booking hidden by real RLS
+ owner: real verified consumer identity retained
+ owner: unrelated organization read denied
+ revoked Admin lease denies nonexpiring explicit grant
+ revoked delegated Admin lease: actual confirmation RPC denied
+ revoked full Admin lease: actual confirmation RPC denied
+ revoked lease denies full-admin fallback
+ seat inventory records exactly two trusted confirmations and conserves total
+ trusted delegated Admin is not granted agency management
+ trusted delegated Admin with lease retains exact booking permission
+ trusted delegated confirmation persists a bound paid receipt
+ trusted full Admin fallback retains other management authority
+ trusted full Admin fallback with active lease retains booking authority
+ trusted full Admin retains cross-organization null/read authority
+ viewer organization role: actual confirmation RPC denied
+ viewer: actual membership RLS retains own row
+ viewer: actual organization RLS hides unrelated root
+ viewer: actual organization RLS retains own root
+ viewer: default intent remains membership read
+ viewer: membership alone cannot enumerate other members
+ viewer: membership denies ev_chargers.manage
+ viewer: membership denies platform.admin
+ viewer: membership denies transport.agencies.manage
+ viewer: membership denies transport.bookings.manage
+ viewer: membership denies transport.tracking.ingest
+ viewer: null intent permits own organization read
+ viewer: other passenger booking hidden by real RLS
+ viewer: real verified consumer identity retained
+ viewer: unrelated organization read denied
+(121 rows)
+
+ passed_assertions 
+-------------------
+               121
+(1 row)
+
+ROLLBACK

@@ -9,7 +9,10 @@ import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/core/permissions/permission_providers.dart';
 import 'package:mobi_app/features/bookings/application/schedule_trip_provider.dart';
+import 'package:mobi_app/features/bookings/application/review_scheduled_post_providers.dart';
+import 'package:mobi_app/features/bookings/application/review_scheduled_posts.dart';
 import 'package:mobi_app/features/bookings/application/schedule_trip_state.dart';
+import 'package:mobi_app/features/store_review/domain/review_world_authority.dart';
 import 'package:mobi_app/features/bookings/presentation/widgets/trip_mode_selector.dart';
 import 'package:mobi_app/features/bookings/presentation/widgets/trip_repeat_picker.dart';
 import 'package:mobi_app/features/bookings/presentation/widgets/trip_route_form.dart';
@@ -49,8 +52,26 @@ class ScheduleTripScreen extends ConsumerStatefulWidget {
 }
 
 class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
-  final _formToken = AccountActionToken.capture();
-  bool get _isCurrent => mounted && _formToken.isCurrent;
+  AccountActionToken? _formToken;
+  bool _reviewSelected = false;
+  ReviewScheduledPostGateway? _reviewGateway;
+  ReviewScheduledPostIntent? _reviewFormIntent;
+  bool get _isCurrent =>
+      mounted &&
+      (_reviewSelected
+          ? _reviewFormIntent != null &&
+                _reviewGateway?.hasCurrentAuthority(_reviewFormIntent!) == true
+          : _formToken?.isCurrent == true);
+
+  void _onReviewChanged() {
+    if (!mounted) return;
+    scheduleMicrotask(() {
+      if (!mounted) return;
+      if (!_isCurrent) _noteController.clear();
+      setState(() {});
+    });
+  }
+
   late final TextEditingController _noteController;
   String? _noteSyncedTripId;
   bool _isNoteExpanded = false;
@@ -62,6 +83,20 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   void initState() {
     super.initState();
     _noteController = TextEditingController();
+    _reviewSelected = ref.read(reviewScheduledPostsSelectedProvider);
+    if (_reviewSelected) {
+      _reviewGateway = ref.read(reviewScheduledPostGatewayProvider);
+      try {
+        _reviewFormIntent = requireReviewScheduledPosts(
+          _reviewGateway,
+        ).capture(targetId: widget.editingTripId);
+      } on Object {
+        _reviewFormIntent = null;
+      }
+      _reviewGateway?.addListener(_onReviewChanged);
+    } else {
+      _formToken = AccountActionToken.capture();
+    }
     AccountContext.changes.addListener(_onAccountChanged);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -79,6 +114,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   @override
   void dispose() {
     AccountContext.changes.removeListener(_onAccountChanged);
+    _reviewGateway?.removeListener(_onReviewChanged);
     _noteController.dispose();
     super.dispose();
   }
@@ -97,7 +133,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
     if (!_isCurrent) return;
     AccountSnapshot? account;
     try {
-      account = SupabaseConfig.isLocalUiPreview
+      account = _reviewSelected || SupabaseConfig.isLocalUiPreview
           ? null
           : AccountContext.capture();
     } on Object {
@@ -203,6 +239,8 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   }
 
   Future<void> _handleCurrentLocation(ScheduleTripController controller) async {
+    if (_reviewSelected) return;
+
     if (!_isCurrent) return;
     final permissionService = ref.read(appPermissionServiceProvider);
     final hasAccess = await permissionService.hasLocationAccess();
@@ -229,7 +267,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
   }
 
   void _onAccountChanged() {
-    if (!mounted || _formToken.isCurrent) return;
+    if (!mounted || _isCurrent) return;
     _noteController.clear();
     setState(() {
       _noteSyncedTripId = null;
@@ -239,7 +277,7 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_formToken.isCurrent) {
+    if (!_isCurrent) {
       return Scaffold(
         body: SafeArea(
           child: Column(
@@ -283,7 +321,16 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
     _syncNoteController(state);
     _requestInitialPickupLocationIfNeeded(state, controller);
     final title = state.isEditMode ? 'Edit trip' : 'Schedule';
-    final canSubmit = state.canSubmit(DateTime.now());
+    final DateTime comparisonNow;
+    try {
+      comparisonNow = controller.comparisonNow;
+      if (!_isCurrent) {
+        return const Center(child: Text('Account changed. Close this view.'));
+      }
+    } on ReviewWorldUnavailable {
+      return const Center(child: Text('Account changed. Close this view.'));
+    }
+    final canSubmit = state.canSubmit(comparisonNow);
 
     return SoftGradient(
       child: Column(
@@ -338,11 +385,21 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                         onChanged: (role) {
                           if (!_isCurrent) return;
                           controller.setRole(role);
-                          widget.onModeChanged(role);
+                          if (!state.isReviewSession ||
+                              ref
+                                      .read(scheduleTripProvider)
+                                      .value
+                                      ?.selectedRole ==
+                                  role) {
+                            widget.onModeChanged(role);
+                          }
                         },
                       ),
                       const SizedBox(height: AppSpacing.xl),
                       TripRouteForm(
+                        isReviewSession: state.isReviewSession,
+                        reviewPlaces: state.reviewPlaces,
+                        isReviewCurrent: () => _isCurrent,
                         originDetails: state.originDetails,
                         destDetails: state.destDetails,
                         isLoadingLocation: state.isLoadingLocation,
@@ -386,6 +443,13 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
                       ),
                       const SizedBox(height: AppSpacing.xl),
                       TripTimingPicker(
+                        currentDate: state.isReviewSession
+                            ? comparisonNow
+                            : null,
+                        firstDate: state.isReviewSession ? comparisonNow : null,
+                        lastDate: state.isReviewSession
+                            ? comparisonNow.add(const Duration(days: 90))
+                            : null,
                         date: state.date,
                         time: state.time,
                         onDateChanged: (value) {
@@ -491,7 +555,8 @@ class _ScheduleTripScreenState extends ConsumerState<ScheduleTripScreen> {
     ScheduleTripState state,
     ScheduleTripController controller,
   ) {
-    if (_didRequestInitialPickupLocation ||
+    if (_reviewSelected ||
+        _didRequestInitialPickupLocation ||
         state.isEditMode ||
         state.originDetails != null ||
         state.isLoadingLocation) {

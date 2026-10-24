@@ -24,8 +24,8 @@ class DesignAuthorityTest(unittest.TestCase):
                 "entrypoint": {"path": "/unmounted-external/revolut-design/SKILL.md", "sha256": "a" * 64},
                 "bundled_references": [],
             },
-            "declared_surfaces": ["native_android", "native_ios", "consumer_web", "public_website", "admin_web"],
-            "acceptance": {"mobile_rule": "MOBILE-DESIGN-100"},
+            "declared_surfaces": ["native_android", "native_ios", "consumer_web", "public_website", "admin_web", "operator_android"],
+            "acceptance": {"status": "unverified"},
         }
         self.write("docs/design/authority.json", json.dumps(self.binding))
 
@@ -51,6 +51,18 @@ class DesignAuthorityTest(unittest.TestCase):
         self.write("docs/development/ui.md", "Material widgets use Mobio adapters; Apple platform signing and Stripe payment facts retain their technical meaning.\n")
         self.assertEqual(self.errors("docs/development/ui.md"), [])
 
+    def test_donor_interface_cannot_override_the_external_skill(self):
+        self.write("docs/product/capture.md", "The MEMORIES capture UI may be used as the interface reference.\n")
+        self.assertTrue(any("competing design" in error for error in self.errors("docs/product/capture.md")))
+        self.write("docs/product/capture.md", "AWS provider code has MEMORIES provenance. Mobio's approved workflow retains Center, Turn, Hold.\n")
+        self.assertEqual(self.errors("docs/product/capture.md"), [])
+
+    def test_gallery_must_delegate_instead_of_republishing_a_palette(self):
+        self.write("scripts/qa/build_design_gallery.py", 'generator = entrypoint.parent / "scripts/build_review_gallery.py"\n')
+        self.assertEqual(self.errors("scripts/qa/build_design_gallery.py"), [])
+        self.write("scripts/qa/build_design_gallery.py", 'generator = "scripts/build_review_gallery.py"\npage = "<style>body{background:#182be2}</style>"\n')
+        self.assertTrue(any("must remain in the external skill" in error for error in self.errors("scripts/qa/build_design_gallery.py")))
+
     def test_historical_hash_records_remain_factual(self):
         self.write("docs/reports/parity.md", "Historical hash for `design.md`: abc123\n")
         self.write("docs/release/evidence/prior.md", "Historical source: Soft Liquid Glass\n")
@@ -65,6 +77,16 @@ class DesignAuthorityTest(unittest.TestCase):
     def test_all_surfaces_are_required(self):
         self.write("docs/design/README.md", "External /skills/revolut-design/SKILL.md is the sole design authority for app and web.\n")
         self.assertTrue(any("cover app, web and admin" in error for error in self.errors()))
+
+    def test_operator_surface_cannot_be_omitted_from_whole_product_scope(self):
+        self.binding["declared_surfaces"].remove("operator_android")
+        self.write("docs/design/authority.json", json.dumps(self.binding))
+        self.assertTrue(any("declared surfaces are incomplete" in error for error in self.errors()))
+
+    def test_separate_mobile_acceptance_rule_is_rejected(self):
+        self.binding["acceptance"]["mobile_rule"] = "retired-mobile-rule"
+        self.write("docs/design/authority.json", json.dumps(self.binding))
+        self.assertTrue(any("separate mobile acceptance rule" in error for error in self.errors()))
 
     def test_authority_cannot_be_a_copied_local_spec(self):
         self.binding["authority"]["entrypoint"]["path"] = str(self.root / "revolut-design/SKILL.md")

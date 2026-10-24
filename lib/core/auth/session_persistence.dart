@@ -22,13 +22,20 @@ class InvalidStoredSession implements Exception {
 }
 
 class StoredSessionIdentity {
-  const StoredSessionIdentity(this.userId, this.sessionId, this.provider, this.issuedAt);
+  const StoredSessionIdentity(
+    this.userId,
+    this.sessionId,
+    this.provider,
+    this.issuedAt,
+  );
   final String userId;
   final String sessionId;
   final String provider;
   final int issuedAt;
   String get key => '$userId:$sessionId';
-  static final _uuid = RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
+  static final _uuid = RegExp(
+    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+  );
 
   /// This is a storage-shape/identity check, NOT JWT signature verification or
   /// server authorization. Only the real Auth exchange may create login trust.
@@ -36,28 +43,52 @@ class StoredSessionIdentity {
     try {
       if (utf8.encode(value).length > 65536) throw const InvalidStoredSession();
       final data = jsonDecode(value);
-      if (data is! Map || data['user'] is! Map) throw const InvalidStoredSession();
+      if (data is! Map || data['user'] is! Map)
+        throw const InvalidStoredSession();
       final user = data['user'] as Map;
       final token = data['access_token'];
       final refresh = data['refresh_token'];
       final uid = user['id'];
       final meta = user['app_metadata'];
       final provider = meta is Map ? meta['provider'] : null;
-      if (uid is! String || uid.length != 36 || !_uuid.hasMatch(uid) || user['is_anonymous'] == true ||
-          token is! String || token.isEmpty || refresh is! String || refresh.isEmpty ||
-          !const ['whatsapp_cloud_otp', 'admin_whatsapp_otp'].contains(provider)) {
+      if (uid is! String ||
+          uid.length != 36 ||
+          !_uuid.hasMatch(uid) ||
+          user['is_anonymous'] == true ||
+          token is! String ||
+          token.isEmpty ||
+          refresh is! String ||
+          refresh.isEmpty ||
+          !const [
+            'whatsapp_cloud_otp',
+            'admin_whatsapp_otp',
+            'store_review',
+          ].contains(provider)) {
         throw const InvalidStoredSession();
       }
       final parts = token.split('.');
       if (parts.length != 3) throw const InvalidStoredSession();
-      final claims = jsonDecode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
-      if (claims is! Map || claims['iss'] != issuer || claims['sub'] != uid ||
-          claims['role'] != 'authenticated' || claims['is_anonymous'] == true ||
-          claims['session_id'] is! String || (claims['session_id'] as String).length != 36 || !_uuid.hasMatch(claims['session_id'] as String) ||
-          claims['iat'] is! int || (claims['iat'] as int) < 0) {
+      final claims = jsonDecode(
+        utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))),
+      );
+      if (claims is! Map ||
+          claims['iss'] != issuer ||
+          claims['sub'] != uid ||
+          claims['role'] != 'authenticated' ||
+          claims['is_anonymous'] == true ||
+          claims['session_id'] is! String ||
+          (claims['session_id'] as String).length != 36 ||
+          !_uuid.hasMatch(claims['session_id'] as String) ||
+          claims['iat'] is! int ||
+          (claims['iat'] as int) < 0) {
         throw const InvalidStoredSession();
       }
-      return StoredSessionIdentity(uid, claims['session_id'] as String, provider as String, claims['iat'] as int);
+      return StoredSessionIdentity(
+        uid,
+        claims['session_id'] as String,
+        provider as String,
+        claims['iat'] as int,
+      );
     } on Object {
       // No token or decoded claim is included in any exception.
       throw const InvalidStoredSession();
@@ -68,7 +99,11 @@ class StoredSessionIdentity {
 /// Serializes SDK writes, explicit login commits, and credential removal. A
 /// deadline at the caller does not release this queue or cancel a native write.
 class SessionPersistence {
-  SessionPersistence({required this.store, required this.issuer, required this.purgeLegacy});
+  SessionPersistence({
+    required this.store,
+    required this.issuer,
+    required this.purgeLegacy,
+  });
   final SessionValueStore store;
   final String issuer;
   final Future<void> Function() purgeLegacy;
@@ -102,7 +137,9 @@ class SessionPersistence {
     onStateChanged?.call();
   }
 
-  Future<void> initialize({bool discardSavedSession = false}) => _initialization ??= _serial(() async {
+  Future<void> initialize({
+    bool discardSavedSession = false,
+  }) => _initialization ??= _serial(() async {
     try {
       final value = discardSavedSession ? null : await store.read();
       if (discardSavedSession) await store.clear();
@@ -130,13 +167,17 @@ class SessionPersistence {
   Future<void> persistRefresh(String value) {
     final revision = _generation;
     return _serial(() async {
-      if (!_ready || _failed || _accepted == null || revision != _generation) return;
+      if (!_ready || _failed || _accepted == null || revision != _generation)
+        return;
       try {
         final next = StoredSessionIdentity.parse(value, issuer: issuer);
-        if (next.key != _accepted!.key || next.provider != _accepted!.provider ||
-            next.issuedAt < _accepted!.issuedAt) return;
+        if (next.key != _accepted!.key ||
+            next.provider != _accepted!.provider ||
+            next.issuedAt < _accepted!.issuedAt)
+          return;
         await store.write(value);
-        if (revision != _generation) return; // A queued clear follows any in-flight write.
+        if (revision != _generation)
+          return; // A queued clear follows any in-flight write.
         if (await store.read() != value) throw const SessionStorageFailure();
         if (revision != _generation) return;
         _cached = value;
@@ -168,14 +209,20 @@ class SessionPersistence {
 
   /// Called only after a matching server-issued session has been restored by
   /// Auth and the corresponding login-attempt ticket is still current.
-  Future<void> acceptVerified(String value, {required int expectedGeneration}) => _serial(() async {
-    if (!_ready || _failed || expectedGeneration != _generation) throw const SessionStorageFailure();
+  Future<void> acceptVerified(
+    String value, {
+    required int expectedGeneration,
+  }) => _serial(() async {
+    if (!_ready || _failed || expectedGeneration != _generation)
+      throw const SessionStorageFailure();
     try {
       final next = StoredSessionIdentity.parse(value, issuer: issuer);
       await store.write(value);
-      if (expectedGeneration != _generation) throw const SessionStorageFailure();
+      if (expectedGeneration != _generation)
+        throw const SessionStorageFailure();
       if (await store.read() != value) throw const SessionStorageFailure();
-      if (expectedGeneration != _generation) throw const SessionStorageFailure();
+      if (expectedGeneration != _generation)
+        throw const SessionStorageFailure();
       _cached = value;
       _accepted = next;
       onStateChanged?.call();
@@ -207,8 +254,18 @@ class SessionPersistence {
 /// A page/process restart requires login; this is not an HttpOnly-cookie scheme.
 class MemorySessionValueStore implements SessionValueStore {
   String? _value;
-  @override Future<String?> read() async => _value;
-  @override Future<void> write(String value) async { _value = value; }
-  @override Future<void> clear() async { _value = null; }
-  @override Future<void> reset() => clear();
+  @override
+  Future<String?> read() async => _value;
+  @override
+  Future<void> write(String value) async {
+    _value = value;
+  }
+
+  @override
+  Future<void> clear() async {
+    _value = null;
+  }
+
+  @override
+  Future<void> reset() => clear();
 }

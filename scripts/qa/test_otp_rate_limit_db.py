@@ -29,12 +29,15 @@ class RateLimitDatabaseTests(unittest.TestCase):
         self.keys.append(key)
         return key
 
+    def psql_command(self):
+        return ['docker', 'exec', '-i', self.database_container, 'sh', '-c',
+                'PGPASSWORD="$POSTGRES_PASSWORD" exec psql "$@"', 'sh', '-X', '-qAt',
+                '-U', 'postgres', '-d', 'postgres', '-v', 'ON_ERROR_STOP=1']
+
     def sql(self, statement):
         started = time.monotonic()
         result = subprocess.run(
-            ['docker', 'exec', '-i', self.database_container, 'sh', '-c',
-             'PGPASSWORD="$POSTGRES_PASSWORD" exec psql "$@"', 'sh', '-X', '-qAt',
-             '-U', 'postgres', '-d', 'postgres', '-v', 'ON_ERROR_STOP=1'],
+            self.psql_command(),
             input=statement, text=True, capture_output=True, timeout=20,
         )
         self.evidence.append({'test': self.id().split('.')[-1], 'sql': statement,
@@ -94,7 +97,38 @@ class RateLimitDatabaseTests(unittest.TestCase):
 
     def test_two_first_requests_create_one_bucket_without_errors(self):
         key = self.key()
-        results = self.concurrent_requests(key, 2, 5, hold=0.4, observe_lock=True)
+        prefix = 'mobio-qa-first-' + uuid.uuid4().hex[:10]
+        # Hold the first real transaction until the second is observed waiting.
+        # A short pg_sleep cannot ensure overlap when Docker process startup is
+        # slower than the sleep; that would leave the race unverified.
+        statement = (f"begin; set local role service_role; set local application_name='{prefix}-first'; "
+                     f"select row_to_json(r) from public.consume_otp_rate_limit('{key}',60,5) r;\n")
+        started = time.monotonic()
+        first = subprocess.Popen(self.psql_command(), stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        try:
+            first.stdin.write(statement)
+            first.stdin.flush()
+            self.assertTrue(self.wait_for_activity(prefix + '-first', 'Client'),
+                            'First transaction never reached its held connection')
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+                second = pool.submit(self.sql,
+                    f"begin; set local role service_role; set local application_name='{prefix}-second'; "
+                    f"select row_to_json(r) from public.consume_otp_rate_limit('{key}',60,5) r; commit;")
+                waited = self.wait_for_activity(prefix + '-second', 'Lock')
+                stdout, stderr = first.communicate('commit;\n', timeout=20)
+                result = subprocess.CompletedProcess(self.psql_command(), first.returncode, stdout, stderr)
+                self.evidence.append({'test': self.id().split('.')[-1], 'sql': statement + 'commit;',
+                                      'exit_code': first.returncode, 'stdout': stdout, 'stderr': stderr,
+                                      'elapsed_seconds': round(time.monotonic() - started, 4),
+                                      'second_lock_wait_observed': waited})
+                results = [self.parsed(result)[0], self.parsed(second.result())[0]]
+            self.assertTrue(waited, 'No actual second lock wait was observed; concurrency is unverified')
+        finally:
+            if first.poll() is None:
+                # Closing this explicitly owned SQL pipe rolls back an unfinished
+                # transaction. No unrelated database connection is terminated.
+                first.communicate('rollback;\n', timeout=20)
         self.assertTrue(all(row['allowed'] for row in results))
         self.assertEqual(sorted(row['request_count'] for row in results), [1, 2])
         final = self.sql(f"select count(*),max(request_count) from public.otp_rate_limits where bucket_key='{key}';")

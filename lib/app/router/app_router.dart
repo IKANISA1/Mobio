@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobi_app/app/router/app_page_transitions.dart';
+import 'package:mobi_app/app/incoming_app_links.dart';
 import 'package:mobi_app/app/router/deferred_route_loader.dart';
 import 'package:mobi_app/app/router/error_screens.dart';
 import 'package:mobi_app/app/router/screen_wrappers.dart';
@@ -128,11 +130,18 @@ String? _adminRouteGuard(GoRouterState state) {
       return isProtectedAdminRoute ? '/admin-auth' : null;
     }
 
-    final hasAdminRole = user.appMetadata['role'] == 'admin' &&
+    final hasAdminRole =
+        user.appMetadata['role'] == 'admin' &&
         user.appMetadata['provider'] == 'admin_whatsapp_otp';
-    final hasAdminAccess = AccountContext.hasVerifiedSession && hasAdminRole &&
-        AdminSessionGuard.isAdminFor(user.id,
-          sessionId: AccountContext.sessionId(Supabase.instance.client.auth.currentSession));
+    final hasAdminAccess =
+        AccountContext.hasVerifiedSession &&
+        hasAdminRole &&
+        AdminSessionGuard.isAdminFor(
+          user.id,
+          sessionId: AccountContext.sessionId(
+            Supabase.instance.client.auth.currentSession,
+          ),
+        );
     if (isAdminAuthRoute) {
       return hasAdminAccess ? '/admin' : null;
     }
@@ -153,7 +162,11 @@ String? _adminRouteGuard(GoRouterState state) {
 
 bool _hasVerifiedWhatsAppSession() {
   if (!SupabaseConfig.isConfigured) return false;
-  try { return AccountContext.hasVerifiedSession; } on Object { return false; }
+  try {
+    return AccountContext.hasVerifiedSession;
+  } on Object {
+    return false;
+  }
 }
 
 String _loginLocationFor(GoRouterState state) {
@@ -184,15 +197,21 @@ String _safeRedirectTarget(String? raw) {
   return target;
 }
 
-String? _appRouteGuard(GoRouterState state) {
-  if (AccountContext.exitRequested && state.matchedLocation != AppRoutes.login &&
-      state.matchedLocation != AppRoutes.adminAuth) return AppRoutes.login;
+String? _appRouteGuard(
+  GoRouterState state, {
+  bool Function()? verifiedSession,
+}) {
+  if (AccountContext.exitRequested &&
+      !state.matchedLocation.startsWith('/invite/') &&
+      state.matchedLocation != AppRoutes.login &&
+      state.matchedLocation != AppRoutes.adminAuth)
+    return AppRoutes.login;
 
-  if (!SupabaseConfig.isConfigured) {
+  if (!SupabaseConfig.isConfigured && verifiedSession == null) {
     return null;
   }
 
-  if (SupabaseConfig.isLocalAuthBypass) {
+  if (SupabaseConfig.isLocalAuthBypass && verifiedSession == null) {
     return state.matchedLocation == AppRoutes.login
         ? _safeRedirectTarget(state.uri.queryParameters['redirect'])
         : null;
@@ -203,7 +222,7 @@ String? _appRouteGuard(GoRouterState state) {
     return null;
   }
 
-  if (path.startsWith('/biopay/pay/')) {
+  if (path.startsWith('/biopay/pay/') || path.startsWith('/invite/')) {
     return null;
   }
 
@@ -214,7 +233,8 @@ String? _appRouteGuard(GoRouterState state) {
   }
 
   final isLoginRoute = path == AppRoutes.login;
-  final hasVerifiedSession = _hasVerifiedWhatsAppSession();
+  final hasVerifiedSession =
+      verifiedSession?.call() ?? _hasVerifiedWhatsAppSession();
   if (isLoginRoute) {
     return hasVerifiedSession
         ? _safeRedirectTarget(state.uri.queryParameters['redirect'])
@@ -247,7 +267,7 @@ class _SupabaseAuthRefreshListenable extends ChangeNotifier {
 }
 
 /// Creates the app-level [GoRouter] instance.
-GoRouter createRouter() {
+GoRouter createRouter({bool Function()? verifiedSession}) {
   final rootNavigatorKey = GlobalKey<NavigatorState>();
 
   // Wire the navigator key to PushNotificationService so notification taps
@@ -263,7 +283,8 @@ GoRouter createRouter() {
     errorBuilder: (context, state) => const NotFoundScreen(),
     refreshListenable: _SupabaseAuthRefreshListenable(),
     redirect: (context, state) =>
-        _adminRouteGuard(state) ?? _appRouteGuard(state),
+        _adminRouteGuard(state) ??
+        _appRouteGuard(state, verifiedSession: verifiedSession),
     routes: [
       // Keep old app links usable while Home has a reloadable app URL.
       // The combined web deployment serves its public website at '/'.
@@ -274,6 +295,14 @@ GoRouter createRouter() {
           query: state.uri.hasQuery ? state.uri.query : null,
           fragment: state.uri.hasFragment ? state.uri.fragment : null,
         ).toString(),
+      ),
+      GoRoute(
+        path: '/invite/:code',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (context, state) => NoTransitionPage<void>(
+          key: state.pageKey,
+          child: _InviteLinkArrival(uri: state.uri),
+        ),
       ),
       // ── Config error (no nav bar) ──
       GoRoute(
@@ -789,4 +818,49 @@ GoRouter createRouter() {
       ),
     ],
   );
+}
+
+class _InviteLinkArrival extends ConsumerStatefulWidget {
+  const _InviteLinkArrival({required this.uri});
+  final Uri uri;
+  @override
+  ConsumerState<_InviteLinkArrival> createState() => _InviteLinkArrivalState();
+}
+
+class _InviteLinkArrivalState extends ConsumerState<_InviteLinkArrival> {
+  @override
+  void initState() {
+    super.initState();
+    _schedule();
+  }
+
+  @override
+  void didUpdateWidget(_InviteLinkArrival oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.uri != oldWidget.uri) _schedule();
+  }
+
+  void _schedule() {
+    final uri = widget.uri;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || uri != widget.uri) return;
+      final canonical = uri.hasAuthority || uri.hasScheme
+          ? uri
+          : Uri(
+              scheme: 'https',
+              host: 'mobio.ikanisa.com',
+              path: uri.path,
+              query: uri.hasQuery ? uri.query : null,
+              fragment: uri.hasFragment ? uri.fragment : null,
+            );
+      if (parseIncomingAppLink(canonical) is IncomingInvite) {
+        ref.read(incomingAppLinksProvider).receive(canonical);
+      } else {
+        context.go(AppRoutes.discover);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }

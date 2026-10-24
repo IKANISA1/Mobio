@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/auth/admin_mutation_guard.dart';
 import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
@@ -99,7 +100,7 @@ class PublicTransportService {
     String serviceArea = 'rwanda',
     bool isActive = true,
   }) async {
-    await RequestDeadline.mutation(
+    await AdminMutationGuard.run(
       _client.rpc(
         'rpc_admin_upsert_transport_agency',
         params: {
@@ -112,6 +113,7 @@ class PublicTransportService {
           'p_is_active': isActive,
         },
       ),
+      client: _client,
       operation: 'rpc_admin_upsert_transport_agency',
       operationId: id,
       timeout: _networkTimeout,
@@ -119,11 +121,12 @@ class PublicTransportService {
   }
 
   Future<void> setAgencyActive(String id, bool isActive) async {
-    await RequestDeadline.mutation(
+    await AdminMutationGuard.run(
       _client.rpc(
         'rpc_admin_set_transport_agency_active',
         params: {'p_agency_id': id, 'p_is_active': isActive},
       ),
+      client: _client,
       operation: 'rpc_admin_set_transport_agency_active',
       operationId: id,
       timeout: _networkTimeout,
@@ -131,11 +134,12 @@ class PublicTransportService {
   }
 
   Future<void> removeAgency(String id) async {
-    await RequestDeadline.mutation(
+    await AdminMutationGuard.run(
       _client.rpc(
         'rpc_admin_remove_transport_agency',
         params: {'p_agency_id': id},
       ),
+      client: _client,
       operation: 'rpc_admin_remove_transport_agency',
       operationId: id,
       timeout: _networkTimeout,
@@ -234,7 +238,7 @@ class PublicTransportService {
     Map<String, dynamic> metadata = const {},
   }) async {
     try {
-      final rows = await RequestDeadline.mutation(
+      final rows = await AdminMutationGuard.run(
         _client.rpc(
           'rpc_confirm_bus_booking',
           params: {
@@ -244,6 +248,7 @@ class PublicTransportService {
             'p_metadata': metadata,
           },
         ),
+        client: _client,
         operation: 'rpc_confirm_bus_booking',
         operationId: bookingId,
         timeout: _networkTimeout,

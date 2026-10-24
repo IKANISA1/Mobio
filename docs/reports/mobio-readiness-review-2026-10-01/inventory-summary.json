@@ -1,0 +1,236 @@
+{
+  "head": "9aa98e8cf5173fe7e3565f52cae37b14b9560785",
+  "inventoried_existing_files": 3247,
+  "top_level_counts": {
+    ".agents": 19,
+    ".firebaserc": 1,
+    ".flutter-version": 1,
+    ".gitattributes": 1,
+    ".github": 6,
+    ".gitignore": 1,
+    ".metadata": 1,
+    ".vscode": 2,
+    "AGENTS.md": 1,
+    "CRITICAL_RULES.md": 1,
+    "README.md": 1,
+    "analysis_options.yaml": 1,
+    "android": 93,
+    "apps": 63,
+    "assets": 260,
+    "cloudflare": 10,
+    "deno.lock": 1,
+    "docs": 1564,
+    "firebase.json": 1,
+    "flutter_launcher_icons.yaml": 1,
+    "icon": 4,
+    "ios": 49,
+    "l10n.yaml": 1,
+    "landing": 18,
+    "lib": 286,
+    "packages": 50,
+    "pubspec.lock": 1,
+    "pubspec.yaml": 1,
+    "scripts": 138,
+    "services": 17,
+    "skills-lock.json": 1,
+    "store_assets": 45,
+    "supabase": 226,
+    "test": 370,
+    "tool": 4,
+    "web": 7
+  },
+  "extension_counts": {
+    ".md": 283,
+    "[none]": 29,
+    ".yml": 20,
+    ".json": 108,
+    ".yaml": 10,
+    ".kts": 12,
+    ".pro": 1,
+    ".xml": 146,
+    ".kt": 74,
+    ".png": 531,
+    ".txt": 422,
+    ".properties": 3,
+    ".sql": 199,
+    ".ttf": 8,
+    ".sh": 59,
+    ".py": 155,
+    ".svg": 249,
+    ".ts": 135,
+    ".jsonc": 1,
+    ".lock": 6,
+    ".zip": 22,
+    ".xlsx": 15,
+    ".bin": 12,
+    ".docx": 4,
+    ".service": 4,
+    ".timer": 4,
+    ".mjs": 33,
+    ".toml": 4,
+    ".dart": 608,
+    ".swift": 3,
+    ".patch": 6,
+    ".csv": 19,
+    ".gitignore": 1,
+    ".exit": 4,
+    ".jsonl": 1,
+    ".tsv": 22,
+    ".plist": 4,
+    ".xcconfig": 2,
+    ".pbxproj": 1,
+    ".xcworkspacedata": 2,
+    ".xcsettings": 2,
+    ".xcscheme": 1,
+    ".storyboard": 2,
+    ".h": 1,
+    ".entitlements": 1,
+    ".html": 6,
+    ".woff2": 3,
+    ".jpg": 1,
+    ".mp4": 1,
+    ".js": 2,
+    ".css": 1,
+    ".arb": 3,
+    ".in": 1
+  },
+  "code_line_counts": {
+    "android": 1387,
+    "apps": 2583,
+    "cloudflare": 447,
+    "docs": 65029,
+    "ios": 276,
+    "landing": 2217,
+    "lib": 73953,
+    "packages": 4885,
+    "scripts": 14405,
+    "services": 627,
+    "supabase": 43959,
+    "test": 34256,
+    "tool": 1573,
+    "web": 192
+  },
+  "largest_code_files": [
+    [
+      2318,
+      "test/features/preview/revolut_reference_golden_test.dart"
+    ],
+    [
+      2187,
+      "supabase/migrations/20260614120000_wallet_referrals_driver_plus.sql"
+    ],
+    [
+      2187,
+      "docs/drive-imports/2026-09-28/snapshot/All_Conversation_Files_2026-09-28/020__20260614120000_wallet_referrals_driver_plus.sql"
+    ],
+    [
+      2044,
+      "lib/features/profile/presentation/wallet_screen.dart"
+    ],
+    [
+      1790,
+      "docs/drive-imports/2026-09-28/snapshot/Implementation_Increment_03_2026-09-28/mobio_increment_03_collector.py"
+    ],
+    [
+      1628,
+      "supabase/migrations/20260501120000_tenant_storage_campaign_final_hardening.sql"
+    ],
+    [
+      1628,
+      "docs/drive-imports/2026-09-28/snapshot/All_Conversation_Files_2026-09-28/059__20260501120000_tenant_storage_campaign_final_hardening.sql"
+    ],
+    [
+      1578,
+      "lib/l10n/app_localizations.dart"
+    ],
+    [
+      1531,
+      "docs/drive-imports/2026-09-28/snapshot/Implementation_Increment_05_2026-09-28/changed-files-flat/lib__features__profile__presentation__wallet_screen.dart"
+    ],
+    [
+      1510,
+      "lib/features/admin/presentation/admin_broadcasts_screen.dart"
+    ],
+    [
+      1491,
+      "lib/shared/data/phone_country_codes.dart"
+    ],
+    [
+      1481,
+      "lib/features/biopay/presentation/biopay_flow_shared.dart"
+    ],
+    [
+      1317,
+      "lib/features/chat/presentation/chat_screen.dart"
+    ],
+    [
+      1243,
+      "lib/features/admin/presentation/admin_subscriptions_screen.dart"
+    ],
+    [
+      1231,
+      "docs/drive-imports/2026-09-28/snapshot/Implementation_Increment_06_2026-09-28/changed-files-flat/lib__features__chat__presentation__chat_screen.dart"
+    ],
+    [
+      1211,
+      "packages/lucide_icons_compat/lib/lucide_icons.dart"
+    ],
+    [
+      1160,
+      "lib/features/admin/presentation/widgets/admin_ui.dart"
+    ],
+    [
+      1096,
+      "lib/features/bookings/presentation/schedule_trip_screen.dart"
+    ],
+    [
+      1094,
+      "docs/drive-imports/2026-09-28/snapshot/Implementation_Increment_08_2026-09-28/changed-files-flat/android__app__src__main__kotlin__rw__mobi__app__MainActivity.kt"
+    ],
+    [
+      1094,
+      "android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt"
+    ],
+    [
+      1093,
+      "docs/drive-imports/2026-09-28/snapshot/production-hardening/2026-09-28-increment03/changed-files/android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt"
+    ],
+    [
+      1093,
+      "docs/drive-imports/2026-09-28/snapshot/production-hardening/2026-09-28-increment03-complete/all-files-flat/changed-files__android__app__src__main__kotlin__rw__mobi__app__MainActivity.kt"
+    ],
+    [
+      1093,
+      "docs/drive-imports/2026-09-28/snapshot/production-hardening/2026-09-28-increment02/changed-files/android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt"
+    ],
+    [
+      1093,
+      "docs/drive-imports/2026-09-28/snapshot/Mobio_Implementation_2026-09-28/changed-files/android/app/src/main/kotlin/rw/mobi/app/MainActivity.kt"
+    ],
+    [
+      1087,
+      "landing/style.css"
+    ],
+    [
+      1068,
+      "lib/features/biopay/presentation/payment_library_screen.dart"
+    ],
+    [
+      1065,
+      "lib/features/biopay/presentation/biopay_nfc_write_card_screen.dart"
+    ],
+    [
+      1052,
+      "test/release/scope_boundary_test.dart"
+    ],
+    [
+      1048,
+      "lib/features/biopay/presentation/payment_composer_screen.dart"
+    ],
+    [
+      1032,
+      "lib/features/biopay/presentation/biopay_admin_console_screen.dart"
+    ]
+  ],
+  "notes": "Git tracked + nonignored untracked existing files; excludes sensitive-name configuration. Generated/third-party code counted separately by path; inventory is not semantic review."
+}

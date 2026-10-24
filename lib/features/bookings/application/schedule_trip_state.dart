@@ -29,6 +29,8 @@ String? normalizeRentalVehicleModel(String value) {
 }
 
 class ScheduleTripState {
+  final bool isReviewSession;
+  final List<PlaceDetails> reviewPlaces;
   final List<VehicleTypeModel> vehicleTypes;
   final List<String> transportAgencyNames;
   final String vehicleId;
@@ -58,6 +60,8 @@ class ScheduleTripState {
   final String clientRequestId;
 
   ScheduleTripState({
+    this.isReviewSession = false,
+    this.reviewPlaces = const [],
     this.vehicleTypes = const [],
     this.transportAgencyNames = const [],
     this.vehicleId = 'cab',
@@ -130,6 +134,8 @@ class ScheduleTripState {
   }
 
   ScheduleTripState copyWith({
+    bool? isReviewSession,
+    List<PlaceDetails>? reviewPlaces,
     List<VehicleTypeModel>? vehicleTypes,
     List<String>? transportAgencyNames,
     String? vehicleId,
@@ -159,6 +165,8 @@ class ScheduleTripState {
     String? clientRequestId,
   }) {
     return ScheduleTripState(
+      isReviewSession: isReviewSession ?? this.isReviewSession,
+      reviewPlaces: reviewPlaces ?? this.reviewPlaces,
       vehicleTypes: vehicleTypes ?? this.vehicleTypes,
       transportAgencyNames: transportAgencyNames ?? this.transportAgencyNames,
       vehicleId: vehicleId ?? this.vehicleId,
@@ -206,17 +214,19 @@ class ScheduleTripState {
 
   bool get isEditMode => editingTrip?.id?.isNotEmpty == true;
 
-  bool get requiresBusAgency => vehicleId == 'bus';
+  bool get requiresBusAgency => !isReviewSession && vehicleId == 'bus';
 
   String? get normalizedBusAgencyName =>
       normalizeBusAgencyName(busAgencyName, transportAgencyNames);
 
-  bool get requiresRentalVehicleModel => vehicleId == 'rentals';
+  bool get requiresRentalVehicleModel =>
+      !isReviewSession && vehicleId == 'rentals';
 
   bool get requiresVehicleModel =>
-      vehicleId == 'rentals' ||
-      vehicleId == 'private' ||
-      vehicleId == 'private_';
+      !isReviewSession &&
+      (vehicleId == 'rentals' ||
+          vehicleId == 'private' ||
+          vehicleId == 'private_');
 
   String? get normalizedRentalVehicleModel =>
       normalizeRentalVehicleModel(rentalVehicleModel);
@@ -224,7 +234,9 @@ class ScheduleTripState {
   bool canSubmit(DateTime now) => validateForSubmit(now) == null;
 
   DateTime get selectedDateTime {
-    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    return isReviewSession
+        ? DateTime.utc(date.year, date.month, date.day, time.hour, time.minute)
+        : DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
 
   String? validateForSubmit(DateTime now) {
@@ -251,7 +263,9 @@ class ScheduleTripState {
           ? 'Select the rental vehicle model.'
           : 'Select the vehicle model.';
     }
-    if (selectedDateTime.isBefore(now)) {
+    if (isReviewSession
+        ? !selectedDateTime.isAfter(now)
+        : selectedDateTime.isBefore(now)) {
       return 'Choose a future departure time.';
     }
     if (isRecurring && recurringDays.isEmpty) {

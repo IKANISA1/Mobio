@@ -1,0 +1,490 @@
+[
+  {
+    "path": "supabase/migrations/20260324125000_initial_schema.sql",
+    "sha256": "924ed28a110d193f200a7f4954eff3ca285832e5422e658caaa60b68ec875de0"
+  },
+  {
+    "path": "supabase/migrations/20260324125100_rls_policies.sql",
+    "sha256": "3f2254894f86043cdb42badcd1e7ead53190ccb5f01e52f3575a66a2ba0ff65c"
+  },
+  {
+    "path": "supabase/migrations/20260324125200_functions_triggers.sql",
+    "sha256": "54c5c81e986f8ae6dd51dceacc12755ef65f60f7062d110a39d789790916cd66"
+  },
+  {
+    "path": "supabase/migrations/20260324125300_storage.sql",
+    "sha256": "b05771a54d7dd0a11669564f38ac66305e3717477712afe36063bd3a54f4bf05"
+  },
+  {
+    "path": "supabase/migrations/20260324140000_profiles_additions.sql",
+    "sha256": "cd2d3cc1d4e2c0b6967e71954f9e1aabc128894d7a1a9468a0f3d278cd619b83"
+  },
+  {
+    "path": "supabase/migrations/20260324141000_biopay_schema.sql",
+    "sha256": "78f68a015d4006cb178fc8b3573b26a2001f4f4c6d9c789294de976ce369cf06"
+  },
+  {
+    "path": "supabase/migrations/20260324175000_comprehensive_rpcs.sql",
+    "sha256": "9dab633f926bc94f3f81cef778a1781834fc594ca407194cbb0ed32e70562541"
+  },
+  {
+    "path": "supabase/migrations/20260324193000_biopay_foundation_v2.sql",
+    "sha256": "b660a0c368847c0256ab540126d2e12930e5a7d47e2fe7061f34d289a31a8efc"
+  },
+  {
+    "path": "supabase/migrations/20260325000000_biopay_face_foundation.sql",
+    "sha256": "4a0086c695868b9866bd9a93689a2cb8581410d1442e485a152d1939febbff04"
+  },
+  {
+    "path": "supabase/migrations/20260325000001_biopay_v1_foundation.sql",
+    "sha256": "7152dc1ebcd703ab4c800ad4882f448cb3d23a4f8aee0f3158903531f340fc5e"
+  },
+  {
+    "path": "supabase/migrations/20260325010000_authenticated_trip_directory_policy.sql",
+    "sha256": "5acfa7915d5ae6734f4a99317923452e81a5fca03f4f9c9c2c3fab87e8ff0706"
+  },
+  {
+    "path": "supabase/migrations/20260325020000_countries_table.sql",
+    "sha256": "1f746aaae95546fda1608f861583e90fc148fdd0c5521ca3d9ed933b66298d3e"
+  },
+  {
+    "path": "supabase/migrations/20260325020500_profile_presence_indexes.sql",
+    "sha256": "54db3ed1a3beeeba2f89d575d60a06ef4e046899548969144a6eaeb321abe5b2"
+  },
+  {
+    "path": "supabase/migrations/20260325030000_expand_countries_ussd.sql",
+    "sha256": "cf3a281b1783126cdbbd8531f1df6c77b18d6aefbb90f12b8e764adfcb305035"
+  },
+  {
+    "path": "supabase/migrations/20260325030500_security_hardening.sql",
+    "sha256": "3ed41ccdd08a09a24ebcaba4c313bde48a674d8a59e449bffbe869b8dcae46be"
+  },
+  {
+    "path": "supabase/migrations/20260325032000_biopay_handle_preferences.sql",
+    "sha256": "1329aa2b5d0b6a28b4b0cbfd3edf122ef324a5bc4ac8fcc880c69e9c4bccc87e"
+  },
+  {
+    "path": "supabase/migrations/20260325100000_biopay_index_maintenance.sql",
+    "sha256": "57fd8f8f335c248285d9ba55612497f0eb45abdc23bb33c3ebe64cd68655be72"
+  },
+  {
+    "path": "supabase/migrations/20260325110000_driver_locations_table.sql",
+    "sha256": "d0b46dacfebe89a634f34766de68dd32d6f543caec3aa7acaf0713339901676d"
+  },
+  {
+    "path": "supabase/migrations/20260325132500_update_allowed_countries.sql",
+    "sha256": "312faba5da7be760defa1b7034d428471746a2c6e048540b92af23837ae8a51f"
+  },
+  {
+    "path": "supabase/migrations/20260325140000_biopay_phone_constraint_fix.sql",
+    "sha256": "da5b164db26f5a467d4c199d49f757f1c5436a8e4c562ae569c4bf4e975ce9b2"
+  },
+  {
+    "path": "supabase/migrations/20260325164500_create_promo_media_bucket.sql",
+    "sha256": "a4d0b6ce8d180e360204fee4f137468db840cc4dee9214fecd894fd6fe5de6c5"
+  },
+  {
+    "path": "supabase/migrations/20260327113000_in_app_chat_foundation.sql",
+    "sha256": "bd4d17c6c10e1182b5daae85019efe54d8b6e48b2046f19bdf9b74b832e12210"
+  },
+  {
+    "path": "supabase/migrations/20260327153000_admin_otp_biopay_compat.sql",
+    "sha256": "61fb264e737f74d5f5443f10501dd716a737d4551a70e42b2404e7f8a7e98d79"
+  },
+  {
+    "path": "supabase/migrations/20260327173000_postgrest_schema_reload.sql",
+    "sha256": "70f984df9e4ad0e6bd645c617aac82e29ac72e18f85e9ab102474d73b390d131"
+  },
+  {
+    "path": "supabase/migrations/20260327174500_fix_admin_list_users_ambiguity.sql",
+    "sha256": "b9a924a1bfec04f3faa6fae17a884e2313972aea0919ed9d90626a041a01c559"
+  },
+  {
+    "path": "supabase/migrations/20260327175000_reconcile_profile_display_name.sql",
+    "sha256": "08b740608d34b7554ede198b1f8cc145d4ebcb1387dd851d9e9fb2963d97d1f1"
+  },
+  {
+    "path": "supabase/migrations/20260327175500_fix_biopay_qr_ref_generation.sql",
+    "sha256": "9a1d74c5bb4ecef70c0c05661c64fe3aad408f3841b3e1f3dac1b1e9c0b10623"
+  },
+  {
+    "path": "supabase/migrations/20260327200000_admin_whatsapp_allowlist.sql",
+    "sha256": "85a92c31b462600bccf2cc173d9e48fbc1b63e64b7bd34a4255019c04d81151c"
+  },
+  {
+    "path": "supabase/migrations/20260327203000_notifications_and_admin_access_alerts.sql",
+    "sha256": "e5b7f24fc806c6fe9dfe2034d5571c7814c7d33020805e4752a66ea590b057a2"
+  },
+  {
+    "path": "supabase/migrations/20260327204000_admin_ops_hardening.sql",
+    "sha256": "bcaa215e1bebfeef22cfff93ffe747dc5b5fe4aeb1ef721a00354d93367d5a00"
+  },
+  {
+    "path": "supabase/migrations/20260327220000_seed_4th_admin_number.sql",
+    "sha256": "67669d8b73f5714208f8b72e4d3f1e30d1d8242ca9b7b65229f467b41c62070b"
+  },
+  {
+    "path": "supabase/migrations/20260411113000_driver_vehicle_number_plate.sql",
+    "sha256": "c9c992c71be7fc17f04ea4341c0ce885a624a0d314e9b1bedad657284e866034"
+  },
+  {
+    "path": "supabase/migrations/20260430000000_ledger_foundation.sql",
+    "sha256": "52336290043d5e51a79b98fcc853c88b9c006d85bb683e3faf2369c63e3c9c0a"
+  },
+  {
+    "path": "supabase/migrations/20260501000000_payment_intent_system.sql",
+    "sha256": "592e4717456f1eeb1546e814e564ad45af38b94c5ee1f118af737590901226cc"
+  },
+  {
+    "path": "supabase/migrations/20260501010000_remote_schema_lint_repair.sql",
+    "sha256": "3982f19c7796c696afd8cd40233d1cdc65dc2b4ac8715241df614a738d2abe93"
+  },
+  {
+    "path": "supabase/migrations/20260501020000_phase1_catalog_and_admin_trip_hardening.sql",
+    "sha256": "fd07c0122cd3c58926cfb347e1195428c673434a5789c634d6c9e14dacfb1d9b"
+  },
+  {
+    "path": "supabase/migrations/20260501030000_driver_entitlements_saved_places_and_intelligence.sql",
+    "sha256": "c3eb679ca7ac801e27d25ae05dd03a4a4df2e37c8437d87b552b07bbb03fc1a1"
+  },
+  {
+    "path": "supabase/migrations/20260501040000_whatsapp_login_otp_and_audit.sql",
+    "sha256": "3dae05ee9df3500f86ca282728bce02279b4d9e5d95b06d8d47030688820be83"
+  },
+  {
+    "path": "supabase/migrations/20260501050000_payment_session_resolvers_and_extension_lint.sql",
+    "sha256": "fd28bf57f6f181599cc9a0a5b9257a625edf8bb30c9cd245dfdf37133e3bdaa7"
+  },
+  {
+    "path": "supabase/migrations/20260501070000_admin_audit_finance_review_contracts.sql",
+    "sha256": "b638f03f5e4f25ffb00fd943358c96205473c75aa78a77940c9c60976f6d6325"
+  },
+  {
+    "path": "supabase/migrations/20260501080000_backend_security_payment_rls_hardening.sql",
+    "sha256": "fc3c0f4fb34c75a497f316bc616a6ff16aab48facc743b95e021da22b7695a71"
+  },
+  {
+    "path": "supabase/migrations/20260501090000_tenant_permissions_storage_realtime_hardening.sql",
+    "sha256": "b8d6c2baa6518a17e56f63696d2cfecd181202518d117924a3f61bb9e5ad0697"
+  },
+  {
+    "path": "supabase/migrations/20260501100000_admin_whatsapp_permission_rpc_fix.sql",
+    "sha256": "957f01d26b1e03a48b44c940c86883a9d99519563d8bd71cb762321a4a047c5f"
+  },
+  {
+    "path": "supabase/migrations/20260501110000_security_profile_chat_dashboard_hardening.sql",
+    "sha256": "66ffab461f311985b91781d5117f8a17eaa661216e3569de483c63e6009e1612"
+  },
+  {
+    "path": "supabase/migrations/20260501113000_security_lint_fixes.sql",
+    "sha256": "35358d962b65b29884f0cf9bc7670f514206f8a11aabd57cc2e2c0201b9ba0de"
+  },
+  {
+    "path": "supabase/migrations/20260501120000_tenant_storage_campaign_final_hardening.sql",
+    "sha256": "2e1c538f4242497d39ef6eac4e2eda74e5862221bbf3c3fe3273d4ba4720ccde"
+  },
+  {
+    "path": "supabase/migrations/20260501123000_campaign_approval_ui_contracts.sql",
+    "sha256": "11e2dc6eb21203d979c6554977572ffe3828e38a2a04266fed5d6657c1937500"
+  },
+  {
+    "path": "supabase/migrations/20260501124000_storage_media_bucket_limits.sql",
+    "sha256": "c64eb8ac17a9c6fc8f5abec296a40d255c57ebfc9d35b7d4376d9fc6f3f59957"
+  },
+  {
+    "path": "supabase/migrations/20260501125000_campaign_search_consent_analytics.sql",
+    "sha256": "5a5b665ef18d183b23ac41b161a8aa3c1db728afbdc2e8237159a5f27b0ed5d6"
+  },
+  {
+    "path": "supabase/migrations/20260501130000_campaign_detail_preview_hardening.sql",
+    "sha256": "2c60b6d8596c653dbc678282d4ab1b2b15168f8e6166f45797ec93464dc717c2"
+  },
+  {
+    "path": "supabase/migrations/20260501131000_campaign_audit_timeline_lint_fix.sql",
+    "sha256": "d040acb0ae843700d1b54d402edb24ee354fd6f8400828c44e2392beda98310d"
+  },
+  {
+    "path": "supabase/migrations/20260501132000_admin_revocation_and_operational_events.sql",
+    "sha256": "7cf7cca7a88259040299407ed5dab6c5cf4acb7125980c83a665c31326145141"
+  },
+  {
+    "path": "supabase/migrations/20260501133000_user_reports_blocks.sql",
+    "sha256": "39cde382f587f05c8faecf0fd9a7d3064f81642764e7081d41c768ddae197a8f"
+  },
+  {
+    "path": "supabase/migrations/20260501134000_scope_cleanup_legacy_trip_payment_biopay.sql",
+    "sha256": "69821c4012cdb582ee54e688c43d9281b590ed512c3a859f81451fe86aba2c6e"
+  },
+  {
+    "path": "supabase/migrations/20260501135000_scope_cleanup_scheduled_trip_post_status.sql",
+    "sha256": "748242e17956a8aeb5c8ac2b20de33d8196c097008a0752e87cf243fc4afb7cd"
+  },
+  {
+    "path": "supabase/migrations/20260524001000_final_scope_cleanup_after_linked_history.sql",
+    "sha256": "4abaf567ddaa09f0e8aa5235d0067e0e9dac958e0bbaada5bd06a7b8cf74cf9f"
+  },
+  {
+    "path": "supabase/migrations/20260608090000_public_transport_bus_vehicle_type.sql",
+    "sha256": "37ada8a36fa74eefb3154500d909d5a93f343b8cfd593484bb34aecda3c375db"
+  },
+  {
+    "path": "supabase/migrations/20260608093000_public_transport_booking_foundation.sql",
+    "sha256": "6f48cd5b49895283bdba3d372d699c424d5da62ffad4305d27dadd1323ea4c93"
+  },
+  {
+    "path": "supabase/migrations/20260611170000_public_transport_rpc_column_qualification.sql",
+    "sha256": "f575d76a1223c3d69e010ae435ae51fbab24023db029b2f0cd906ddc8066a188"
+  },
+  {
+    "path": "supabase/migrations/20260612100000_bus_driver_profile_onboarding.sql",
+    "sha256": "8436d564e1ba2ad1b8a9c14ef4b2d440a1acea3f31649ae7c13f9ace27f57e02"
+  },
+  {
+    "path": "supabase/migrations/20260612103000_full_stack_notification_delivery.sql",
+    "sha256": "1409d6d17f2b57ef22c940ab7ecfabe5fa8f7b9e8f2510d419b396a64a68f99e"
+  },
+  {
+    "path": "supabase/migrations/20260612104500_notification_trigger_vault_secret.sql",
+    "sha256": "e3265a55fc8bc7141e563414193506fbcce3433a4cd3081de0f3e443685d18a1"
+  },
+  {
+    "path": "supabase/migrations/20260612120000_admin_catalog_rpc_audit_hardening.sql",
+    "sha256": "edfc83eb8a06787a70873b35c4c6f0156ec95d2addfd632d7b9bc0980dedd9f8"
+  },
+  {
+    "path": "supabase/migrations/20260612133000_biopay_ussd_aws_reactivation.sql",
+    "sha256": "41add6e90c4b01c513be732989b009a643355c471785c3ce099d449676032dfb"
+  },
+  {
+    "path": "supabase/migrations/20260612143000_biopay_qr_optional_amount.sql",
+    "sha256": "7a92057e54605788d671d64b68ee523de17fe985d7afb85424b186ed11a4a957"
+  },
+  {
+    "path": "supabase/migrations/20260612203130_driver_vehicle_records.sql",
+    "sha256": "72822aae93256ad70859deafba5b7e63944d7c95b1283efcfea797a97b75e060"
+  },
+  {
+    "path": "supabase/migrations/20260612204806_profile_momo_receiver_fields.sql",
+    "sha256": "5b477068599d37b122a6f6027991cfa9f97344bd33e0f9034c30d996db83962a"
+  },
+  {
+    "path": "supabase/migrations/20260613121500_vehicle_type_display_order.sql",
+    "sha256": "7dcd484995cc105fdbba03a9fc8667028fdd71cb45f3520871504c13f9388874"
+  },
+  {
+    "path": "supabase/migrations/20260613143000_scheduling_rpc_production_hardening.sql",
+    "sha256": "bb8653c4761e4fa6f7b8349453976a2288ff1bb0811eb2ab55776624c4e919cc"
+  },
+  {
+    "path": "supabase/migrations/20260614120000_wallet_referrals_driver_plus.sql",
+    "sha256": "1ac4a639474d84bbde7b4e20c9d5b6feec5de7f2fe4e9b17cea5712ce1b34a60"
+  },
+  {
+    "path": "supabase/migrations/20260614124500_service_role_claim_compat.sql",
+    "sha256": "af0d4e16d99cf4f8919a555ba5e9776ea46f6d193f83f7e4b98da1ef859adcaf"
+  },
+  {
+    "path": "supabase/migrations/20260614153000_rentals_vehicle_type_onboarding.sql",
+    "sha256": "6793097f5a90396111cdbcb81f7829b580b4df441d0137197842f2c0d8df8069"
+  },
+  {
+    "path": "supabase/migrations/20260614165000_driver_subscription_momo_payer_phone_matching.sql",
+    "sha256": "c366b81e9f9adee45e8476dadaeb0bed83ab105659f9dab7cbf632e95ebd65e2"
+  },
+  {
+    "path": "supabase/migrations/20260614170000_driver_passenger_scheduled_chat_privacy.sql",
+    "sha256": "d0ba6d9bb75f60b8892b42aa0848fd3a97be5fbeffc3cbc195cd8758a737ae28"
+  },
+  {
+    "path": "supabase/migrations/20260614171500_driver_plus_helper_function_grants.sql",
+    "sha256": "0f048f5be1d27b81216849a358e306d352657f1010b52fe2a28bf6b219a39423"
+  },
+  {
+    "path": "supabase/migrations/20260614172000_driver_subscription_start_idempotency.sql",
+    "sha256": "08cc84bac80993bda3a574081b0d3aae613642f67c77001ebb876dd6aa459e65"
+  },
+  {
+    "path": "supabase/migrations/20260614173000_restore_chat_block_enforcement.sql",
+    "sha256": "1ede7da636f862e1c062051b6bc2d3e3be2820f2ede1d30fb49fee3bc80cf832"
+  },
+  {
+    "path": "supabase/migrations/20260614221500_driver_subscription_momo_openai_transactions.sql",
+    "sha256": "2586fa0bf8af2b5429aa21716057a313285258a111f370139458cb509714882c"
+  },
+  {
+    "path": "supabase/migrations/20260615090000_transport_agency_admin_management.sql",
+    "sha256": "8a4b3285169d5c0a865e1b764533d1522bf656de3e4b7f99ee40ee3716e36b23"
+  },
+  {
+    "path": "supabase/migrations/20260615103000_wallet_subscription_production_readiness.sql",
+    "sha256": "2a01f0fdef1f56cbd69b7a0814e8d8f8f393c12ba1c47ff6783db8060f7d0c14"
+  },
+  {
+    "path": "supabase/migrations/20260615123000_admin_trip_search_pagination.sql",
+    "sha256": "7d04de6a6bb0c32e5844827ba6dc7b4880917f1e5057ff4f54bf6cf06d1f4bf5"
+  },
+  {
+    "path": "supabase/migrations/20260615124500_referral_invitee_reward_and_manual_code.sql",
+    "sha256": "0f671814f5e1fa7ac5adb135b5b8985cb2f7256bc4dcb1329868d87a7d1f08cf"
+  },
+  {
+    "path": "supabase/migrations/20260615133000_ev_charger_locator.sql",
+    "sha256": "8851d3bc376d83df4fd01d94bf8a251ebcb351f633c5c40a3050180f866c506b"
+  },
+  {
+    "path": "supabase/migrations/20260615135000_biopay_payment_request_links.sql",
+    "sha256": "1bea69e42c056a4b38df09b616891c9d76e49b081934aa63f2c3bee7e3f25402"
+  },
+  {
+    "path": "supabase/migrations/20260616002000_driver_plan_caps_rentals_and_moto_allowance.sql",
+    "sha256": "4382363368fbbd363d7eaa2ee1cb62fa7bbcac0536b55a4cd7fd04c0296f2734"
+  },
+  {
+    "path": "supabase/migrations/20260616004500_driver_vehicle_policy_enforcement.sql",
+    "sha256": "350f940f39f0e531e7649566eebecba98387ea67f9d2bf05a664e78609e74396"
+  },
+  {
+    "path": "supabase/migrations/20260616110000_wallet_redemptions_and_insurance_config.sql",
+    "sha256": "e88bb1fa3a6de006376f24cdccdecec1b061b3f9503a96fd206050e1d324fb07"
+  },
+  {
+    "path": "supabase/migrations/20260616120000_seed_kigali_ev_chargers.sql",
+    "sha256": "8b2ea125af88f861a843892ca050e87919497a3e00a1c39c78d075f71afe1179"
+  },
+  {
+    "path": "supabase/migrations/20260616142000_biopay_direct_ussd_payment_links.sql",
+    "sha256": "528999d69ad4be9970f8bf131b88200ec91bda754fab4ec65654a91f76d5227f"
+  },
+  {
+    "path": "supabase/migrations/20260906143000_biopay_provider_authority.sql",
+    "sha256": "3576c6461fc9414b6530ff1cd804b15479d4d6e3bcd1085eebae9884af8b1a6b"
+  },
+  {
+    "path": "supabase/migrations/20260906144000_momobio_collector_authority.sql",
+    "sha256": "e1e927ca471f013644ffa4283e8f8afcd5ade3b0750924e8c8710ee6bcd35868"
+  },
+  {
+    "path": "supabase/migrations/20260906145000_subscription_receipt_integrity.sql",
+    "sha256": "89911c67ba5b02ff43d259b3417e792949ddeb401b388c9ff410baef2bf61c0d"
+  },
+  {
+    "path": "supabase/migrations/20260908090000_biopay_payment_discovery.sql",
+    "sha256": "d733c9502c71e031364d345d52c4c949f6a07f49de44f8221a2c44c7bb1cc122"
+  },
+  {
+    "path": "supabase/migrations/20260908091000_biopay_discovery_rpc.sql",
+    "sha256": "e2851455b746bdbc3676e714c7c117b3156a7f72fb1dd25aa317814624557917"
+  },
+  {
+    "path": "supabase/migrations/20260908092000_biopay_discovery_admin.sql",
+    "sha256": "13bace17c074a8b4d4d2147c258432b002626a7a4452dbb29665600212ba7365"
+  },
+  {
+    "path": "supabase/migrations/20260908093000_biopay_discovery_evidence.sql",
+    "sha256": "5eb15f02a8233de302d67fd3ebf430ce294cb4bbe457f7e59d1283d16c69d93c"
+  },
+  {
+    "path": "supabase/migrations/20260914203214_harden_otp_rate_limit_concurrency.sql",
+    "sha256": "590d07a8c3c7dccb19372465792da89881f25577cfeaa019fffe32de9e94c3bc"
+  },
+  {
+    "path": "supabase/migrations/20260914203228_repair_notification_trigger_http_dispatch.sql",
+    "sha256": "287e50c046b5c4276cb6c3c91b29a868b227715a45bb973eea13ad4d69380aaf"
+  },
+  {
+    "path": "supabase/migrations/20260914205549_publish_user_notifications_realtime.sql",
+    "sha256": "a7d0d25ff7ac36ba6c9a1b4ce73a971117969d596f031abe9b53f3c77d7f51c5"
+  },
+  {
+    "path": "supabase/migrations/20260914213843_harden_permission_expiry_instant.sql",
+    "sha256": "788012c949d80bff5992e84c08268722233d0dd05110284b355a86efb3a42c09"
+  },
+  {
+    "path": "supabase/migrations/20260914214407_enforce_live_verified_database_identity.sql",
+    "sha256": "bf1d4336ce5239ba2b46e7ca4c02c1cf64c4aaa32a4053fdc001e435d936b855"
+  },
+  {
+    "path": "supabase/migrations/20260914222140_enforce_admin_login_authority.sql",
+    "sha256": "97cdfaf30966833173b010acaac4b62a1fba4ff762602b23076b86ce656fe542"
+  },
+  {
+    "path": "supabase/migrations/20260915003031_harden_driver_discovery_identity.sql",
+    "sha256": "f956dd954cc5bc2da680f79f8f01d0f4000185bf4150526dbbf1a0c611db2075"
+  },
+  {
+    "path": "supabase/migrations/20260920120000_expand_transport_agency_catalog.sql",
+    "sha256": "931869efef9583b9758e9145d3a88383b6722d1d30a8749953b592044bbba995"
+  },
+  {
+    "path": "supabase/migrations/20260920150000_biopay_face_shortcut.sql",
+    "sha256": "efd164fc8db2e06f8b583500e50ea241a1c6f26f46392d7751a46a181396003b"
+  },
+  {
+    "path": "supabase/migrations/20260920150100_biopay_face_readiness.sql",
+    "sha256": "b9d599ab3500b685884c75279d093268004acb20c45dc14290b13a0b5965dc4e"
+  },
+  {
+    "path": "supabase/migrations/20260920150200_biopay_face_maintenance_schedule.sql",
+    "sha256": "66263811df204dc82af19224e428c4cb069ee1c6456f2e235c6b96c7af719312"
+  },
+  {
+    "path": "supabase/migrations/20260929215430_mobio_hardening_booking_write_authority.sql",
+    "sha256": "647f997ea8ec787274b784ed5c0c201ca19f0c05c19ad8590d47b498ad213588"
+  },
+  {
+    "path": "supabase/migrations/20260929215431_mobio_hardening_verified_phone_authority.sql",
+    "sha256": "a204d55887264fdcde3f2030699dfdb9401bee6131546553b5dcd22c1cb553f9"
+  },
+  {
+    "path": "supabase/migrations/20260929215432_mobio_hardening_strict_receipt_allocation.sql",
+    "sha256": "5cfdb8ee79eae3071de0c6f8c6330cdd229c211f952ac838f4a99ff3fefffa24"
+  },
+  {
+    "path": "supabase/migrations/20260929215433_mobio_hardening_canonical_member_id.sql",
+    "sha256": "f5bc3d7cc1aad14a6087e351bc0db7043ce761e8b949ad72e2c374fab8cd2cd0"
+  },
+  {
+    "path": "supabase/migrations/20260929215434_mobio_hardening_transport_hold_receipt_integrity.sql",
+    "sha256": "23c82ab27a2c09072cfa8ddf71e8b5909c82d75d45d56010d3dafea6dc83794d"
+  },
+  {
+    "path": "supabase/migrations/20260929215435_mobio_hardening_bounded_driver_discovery.sql",
+    "sha256": "d2d8f01dd1e29cf8297156863c4bbdc16888489b6a63b259951eda08956c7d35"
+  },
+  {
+    "path": "supabase/migrations/20260929215436_mobio_hardening_durable_sms_intake.sql",
+    "sha256": "d393634f47686034862361568de6530fc832cbed1a80506718533019224fd0d7"
+  },
+  {
+    "path": "supabase/migrations/20260929215438_mobio_hardening_admin_session_leases.sql",
+    "sha256": "1e3e18b3c4de2dd41ec51aed00e45c10871df0450ad7a743d7beafa10346345b"
+  },
+  {
+    "path": "supabase/migrations/20260929215439_mobio_hardening_wallet_operation_journal.sql",
+    "sha256": "076aeda3a8c29ab91f6e8e789b2a7e36a3caafd6bc588b3edb17f838fcd78800"
+  },
+  {
+    "path": "supabase/migrations/20260929215440_mobio_hardening_chat_delivery_and_pagination.sql",
+    "sha256": "24422690f6d4738d4a71561b56b8f641b4735b496496fb5277fb4fdb07920777"
+  },
+  {
+    "path": "supabase/migrations/20260929215441_mobio_hardening_notification_outbox.sql",
+    "sha256": "6cc9206583ae5df27dee0a216c558da288c7536d3f61a82495bbc3540d28404a"
+  },
+  {
+    "path": "supabase/migrations/20260929215442_mobio_hardening_privacy_request_workflow.sql",
+    "sha256": "ef252a85845524ab2252df2fcf67391eb9f0b3e42b4d37248b5b91fae7c446ff"
+  },
+  {
+    "path": "supabase/migrations/20261001173018_organization_permission_authority.sql",
+    "sha256": "e0102ef0a8b59fd1a91c08e696e4ff0ea3cfa59de4839587d45cdb90ff656d0c"
+  },
+  {
+    "path": "supabase/migrations/20261001183000_sensitive_admin_recent_auth.sql",
+    "sha256": "4419a00ea417848b0c90e44e743ed257f0dea3a9cc5bc26a19a57ba429df3b94"
+  },
+  {
+    "path": "supabase/migrations/20261001193000_store_review_authority.sql",
+    "sha256": "858d9358099b09312f9918841fe7f47af1d2b3e901ab5fe279378f626b00f305"
+  }
+]

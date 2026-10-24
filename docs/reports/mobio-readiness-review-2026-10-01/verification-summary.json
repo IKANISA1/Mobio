@@ -1,0 +1,208 @@
+{
+  "review_date": "2026-10-01",
+  "timezone": "Africa/Kigali",
+  "completed_at_utc": "2026-10-01T17:18:11.988761+00:00",
+  "workspace": "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio",
+  "head": "9aa98e8cf5173fe7e3565f52cae37b14b9560785",
+  "reviewed_ui_source": {
+    "acceptance_effect": "none",
+    "file_count": 771,
+    "product": "Mobio",
+    "schema_version": 1,
+    "scope": [
+      "lib/",
+      "packages/",
+      "assets/",
+      "icon/",
+      "landing/",
+      "web/",
+      "android/app/src/",
+      "ios/Runner/",
+      "apps/momobio_sms_bridge/app/src/",
+      "tool/"
+    ],
+    "selection": "tracked and nonignored untracked UI sources; known secrets, documentation, tests and generated build output excluded",
+    "source_sha256": "77d2b7b029e20ed2430eb7c3d06d91da7bd84ebd4050420c268babd3c87038fa"
+  },
+  "existing_inventoried_files_changed_during_review": [],
+  "application_source_modified_by_review": false,
+  "checks": [
+    {
+      "check": "dart-analyze",
+      "command": [
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/dart",
+        "analyze"
+      ],
+      "started_at": "2026-10-01T17:05:00.728629+00:00",
+      "elapsed_seconds": 82.94,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/dart-analyze.log"
+    },
+    {
+      "check": "flutter-full",
+      "command": [
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/flutter",
+        "test",
+        "--no-pub",
+        "--reporter",
+        "expanded"
+      ],
+      "started_at": "2026-10-01T17:06:23.666693+00:00",
+      "elapsed_seconds": 533.37,
+      "exit_code": 1,
+      "log": "build/qa/readiness-20261001/flutter-full.log"
+    },
+    {
+      "check": "design-authority",
+      "command": [
+        "python3",
+        "scripts/ci/check_design_authority.py"
+      ],
+      "started_at": "2026-10-01T17:05:11.580765+00:00",
+      "elapsed_seconds": 7.35,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/design-authority.log"
+    },
+    {
+      "check": "helper-tests",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests",
+        "-v"
+      ],
+      "started_at": "2026-10-01T17:05:18.933819+00:00",
+      "elapsed_seconds": 132.79,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/helper-tests.log"
+    },
+    {
+      "check": "migration-hashes",
+      "command": [
+        "python3",
+        "scripts/ci/prepare_hardening_migrations.py",
+        "--check"
+      ],
+      "started_at": "2026-10-01T17:07:31.727805+00:00",
+      "elapsed_seconds": 0.06,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/migration-hashes.log"
+    },
+    {
+      "check": "actions-pins",
+      "command": [
+        "python3",
+        "scripts/ci/check_github_actions_pinned.py"
+      ],
+      "started_at": "2026-10-01T17:07:31.787909+00:00",
+      "elapsed_seconds": 0.08,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/actions-pins.log"
+    },
+    {
+      "check": "secret-history",
+      "command": [
+        "bash",
+        "scripts/qa/check_secret_history.sh"
+      ],
+      "started_at": "2026-10-01T17:07:31.868720+00:00",
+      "elapsed_seconds": 0.08,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/secret-history.log"
+    },
+    {
+      "check": "diff-whitespace",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "started_at": "2026-10-01T17:07:31.952514+00:00",
+      "elapsed_seconds": 0.04,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/diff-whitespace.log"
+    },
+    {
+      "check": "backend-local",
+      "command": [
+        "bash",
+        "scripts/ci/verify_backend.sh"
+      ],
+      "started_at": "2026-10-01T17:05:11.662176+00:00",
+      "elapsed_seconds": 58.63,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/backend-local.log"
+    },
+    {
+      "check": "worker-tests",
+      "command": [
+        "node",
+        "--test",
+        "scripts/tests/pages_worker.test.mjs",
+        "scripts/tests/admin_service_worker.test.mjs"
+      ],
+      "started_at": "2026-10-01T17:06:10.300170+00:00",
+      "elapsed_seconds": 0.5,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/worker-tests.log"
+    },
+    {
+      "check": "payment-worker",
+      "command": [
+        "deno",
+        "test",
+        "--allow-read",
+        "test/web/payment_link_worker_test.ts"
+      ],
+      "started_at": "2026-10-01T17:06:10.805650+00:00",
+      "elapsed_seconds": 1.59,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/payment-worker.log"
+    },
+    {
+      "check": "public-site-local",
+      "exit_code": 0,
+      "elapsed_seconds": 0.19
+    }
+  ],
+  "flutter_counts": {
+    "passed": 1595,
+    "failed": 169,
+    "reference_golden_failures": 163,
+    "payment_discovery_golden_failures": 5,
+    "stale_scope_contract_failures": 1
+  },
+  "dart_counts": {
+    "errors": 0,
+    "warnings": 0,
+    "informational": 200
+  },
+  "python_passed": 483,
+  "deno": {
+    "passed": 116,
+    "failed": 0,
+    "ignored": 1,
+    "linked_checks": "skipped"
+  },
+  "pages_admin_worker_passed": 69,
+  "payment_worker_passed": 3,
+  "face_service_worker_passed": 7,
+  "face_checks_provenance": "Independently reported backend reviewer command node --experimental-transform-types --test test/*.test.ts in cloudflare/face-service",
+  "repository_structure": "Passed by independent mobile reviewer, 3252 indexed files before report additions",
+  "decision": "NO-GO",
+  "limits": "Inventory and risk-based source review plus named local checks and point-in-time readbacks; no production mutation, physical-device/provider/store test, deployment or legal acceptance.",
+  "report_final_checks": {
+    "design_authority": "passed after report creation; 3275 indexed paths,3/3 external authority hashes",
+    "relative_links": "all resolve",
+    "criterion_counts": {
+      "consolidated_findings": 25,
+      "design": 100,
+      "operational": 60,
+      "whole_system": 88
+    },
+    "application_source_and_preexisting_files": "unchanged against initial hash inventory"
+  }
+}

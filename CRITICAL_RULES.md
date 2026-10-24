@@ -1,9 +1,8 @@
-# Mobio — Critical Rules (Non-Negotiable)
+# Mobio — Critical Product Rules
 
 > [!CAUTION]
-> **These rules are absolute laws of the Mobio codebase.**
-> They must ALWAYS be followed — no exceptions, no overrides, no "temporary" workarounds.
-> Any agent, contributor, or process that violates these rules is producing invalid output.
+> These are current product and security invariants, subject to current human/runtime instructions.
+> Correct an offending agent-owned change while preserving unrelated work and evidence; never bypass real authorization or release controls.
 
 ---
 
@@ -32,13 +31,13 @@
 
 ## Rule 3: App, Web and Admin Must Follow `revolut-design` Exactly
 
-- The **sole design authority** is the [external `revolut-design` skill](</Volumes/PRO-G40/Application Data/Codex/Codex-Home/skills/revolut-design/SKILL.md>) and its bundled references. Its selected visual typologies and full applicable colour system govern every Mobio app, web, public website and admin screen and state.
+- The **sole design authority** is the [external `revolut-design` skill](</Volumes/PRO-G40/Projects/ChatGPT/Revolut/skill/revolut-design/SKILL.md>) and its bundled references. Its selected visual typologies and full applicable colour system govern every Mobio app, web, public website and admin screen and state.
 - Preserve Mobio's own name, logo, app icon, supported features, navigation, workflows, content and backend behavior.
 - Do not introduce ad-hoc colours, fonts, spacing, shadows, radii or component styles from another reference. Framework controls must use the shared reference-adapted semantic roles rather than leaking default library styling.
 - Repository tokens, product mappings, dated comparisons, screenshots and acceptance records are implementation evidence. They are not a second design authority. [The product evidence index](docs/design/README.md) locates them.
 - For a missing pattern, consult the applicable skill reference and record its cohort, comparator or explicit adaptation before implementing the shared role. Unknown source values remain explicitly unverified.
 - Do not restore deleted local design specifications or introduce competing inspiration. Run `python3 scripts/ci/check_design_authority.py` for design or instruction changes.
-- A 100% fidelity result requires complete visual and workflow evidence for the declared scope. Mobile release acceptance additionally follows the skill's `MOBILE-DESIGN-100` rule; build/test success cannot substitute for acceptance.
+- A 100% fidelity result requires complete visual and workflow evidence for the declared scope under the current external skill. Do not introduce a separately named mandatory mobile design checklist or its gates. Build/test success cannot substitute for observed comparison and task evidence.
 
 ### Shared Implementation Adapters
 
@@ -63,29 +62,13 @@
 
 ---
 
-## Rule 5: All Four Public Runtime Defines Must Be Set for Every Build
+## Rule 5: Configured Builds Require Four Public Values
 
-> [!CAUTION]
-> **This is the #1 production blocker.** An APK/AAB built without these flags ships a dead app — no auth, no data, no BioPay, nothing works.
-
-- **Every** `flutter build apk`, `flutter build appbundle`, and `flutter run` command **MUST** include all four defines: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `PRIVACY_POLICY_URL` and `ACCOUNT_DELETION_URL`.
-- **Never run bare `flutter build appbundle`** — it produces an AAB that crashes on the config-error screen in production.
-- The **only** sanctioned way to build a release binary is via the release script:
-  ```bash
-  ./scripts/release/build_android_release.sh appbundle   # AAB for Play Store
-  ./scripts/release/build_android_release.sh apk         # APK for sideloading
-  ```
-- The script sources `.env` automatically and **hard-fails** if any of the four required public values are missing.
-- If building manually (not recommended), the full command is:
-  ```bash
-  flutter build appbundle --release \
-    --dart-define=SUPABASE_URL=https://your-project.supabase.co \
-    --dart-define=SUPABASE_ANON_KEY=your-anon-key \
-    --dart-define=PRIVACY_POLICY_URL=https://your-domain/privacy-policy.html \
-    --dart-define=ACCOUNT_DELETION_URL=https://your-domain/account-deletion.html
-  ```
-- **Agent enforcement**: Any AI agent or CI pipeline that calls `flutter build apk` or `flutter build appbundle` **without** these `--dart-define` flags is producing **invalid output** and must be stopped immediately.
-- Runtime guard: `lib/app/bootstrap.dart` throws `StateError` in release mode if `SupabaseConfig.isConfigured` is `false`. This is intentional — it is better to crash on launch than to ship a silently broken app.
+- Configured APK/AAB builds and runs require `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `PRIVACY_POLICY_URL` and `ACCOUNT_DELETION_URL` through controlled Dart defines. Missing values invalidate release readiness and leave protected functionality unavailable.
+- Use `./scripts/release/build_android_release.sh appbundle` or `apk` for a release. The script parses public dotenv values with `scripts/lib/runtime_defines.py`, validates them and supplies `--dart-define-from-file`; it does not execute `.env` as shell code. Keep signing/build metadata and Java checks intact.
+- Individual `--dart-define` arguments and a public-only JSON `--dart-define-from-file` are valid configuration interfaces. The controlled wrapper remains the sanctioned release path. Read [docs/BUILDING.md](docs/BUILDING.md) for debug/build guidance and [docs/LOCAL_TOOLCHAIN.md](docs/LOCAL_TOOLCHAIN.md) for matching SDK selection.
+- `lib/app/bootstrap.dart` catches mandatory startup/configuration failure and mounts `AuthStorageRecoveryView`. Do not claim an unconditional release-process crash or successful startup from a build alone. Actual configured artifact, signing, provider and physical-device startup evidence remain required.
+- Never commit `.env`, signing credentials or server secrets, and never put service-role values in a Flutter client.
 
 ---
 
@@ -109,5 +92,5 @@
 | **2. Default Country** | Rwanda (RW) — always pre-selected, never prompted |
 | **3. UI Integrity** | External `revolut-design` skill only — app, web, public website and admin |
 | **4. Auth Method** | WhatsApp OTP required for passenger/driver app access; admin OTP is separate and allowlisted |
-| **5. Build Env Vars** | All four public runtime defines are mandatory on every APK/AAB build — use `./scripts/release/build_android_release.sh` |
+| **5. Build Env Vars** | All four public values are mandatory for configured APK/AAB builds — use `./scripts/release/build_android_release.sh` |
 | **6. Route Scope** | No route ETA, distance, polyline, matrix, fare-distance, dispatch, or Google Routes API in active marketplace |

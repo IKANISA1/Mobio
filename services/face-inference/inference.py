@@ -53,7 +53,7 @@ class FaceModel:
         try:
             with warnings.catch_warnings():
                 warnings.simplefilter('error', Image.DecompressionBombWarning)
-                with Image.open(io.BytesIO(data)) as source:
+                with Image.open(io.BytesIO(data), formats=("JPEG", "PNG", "WEBP")) as source:
                     if source.format not in ('JPEG','PNG','WEBP') or getattr(source,'n_frames',1) != 1:
                         raise CaptureError('INVALID_IMAGE')
                     if source.width * source.height > MAX_PIXELS or min(source.size)<112:

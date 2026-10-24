@@ -55,7 +55,7 @@ void main() {
       }
       expect(actions, ['users', 'refresh']);
       final busy = tester.getSemantics(find.bySemanticsLabel('Saving'));
-      expect(busy.value, 'Loading');
+      expect(busy.value, 'Loading…');
       expect(busy.getSemanticsData().hasAction(SemanticsAction.tap), isFalse);
     } finally {
       semantics.dispose();

@@ -17,6 +17,7 @@ class RouteMapCard extends StatelessWidget {
   final String? originPlaceId;
   final String? destPlaceId;
   final double height;
+  final bool allowExternalMap;
 
   const RouteMapCard({
     super.key,
@@ -29,6 +30,7 @@ class RouteMapCard extends StatelessWidget {
     this.originPlaceId,
     this.destPlaceId,
     this.height = 200,
+    this.allowExternalMap = true,
   });
 
   @override
@@ -97,7 +99,9 @@ class RouteMapCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed: () => _openGoogleMaps(context),
+                    onPressed: allowExternalMap
+                        ? () => _openGoogleMaps(context)
+                        : null,
                     icon: const Icon(Icons.map_outlined, size: 18),
                     label: const Text('Open in Google Maps'),
                   ),

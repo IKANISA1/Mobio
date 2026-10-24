@@ -1,4 +1,4 @@
-import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/admin_mutation_guard.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_shared_types/models/subscription_plan_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -86,10 +86,11 @@ class SubscriptionPlanService {
 
   Future<int> expireStalePaymentRequests() async {
     try {
-      final response = await RequestDeadline.mutation(
+      final response = await AdminMutationGuard.run(
         supabase.rpc<dynamic>(
           'rpc_admin_expire_driver_subscription_payment_requests',
         ),
+        client: supabase,
         operation: 'rpc_admin_expire_driver_subscription_payment_requests',
         timeout: _networkTimeout,
       );
@@ -110,11 +111,12 @@ class SubscriptionPlanService {
     String? reviewNote,
   }) async {
     try {
-      await RequestDeadline.mutation(
+      await AdminMutationGuard.run(
         supabase.rpc<dynamic>(
           'rpc_admin_confirm_momo_sms_receipt',
           params: {'p_receipt_id': receiptId, 'p_review_note': reviewNote},
         ),
+        client: supabase,
         operation: 'rpc_admin_confirm_momo_sms_receipt',
         operationId: receiptId,
         timeout: _networkTimeout,
@@ -151,7 +153,7 @@ class SubscriptionPlanService {
     bool isActive = true,
   }) async {
     try {
-      await RequestDeadline.mutation(
+      await AdminMutationGuard.run(
         supabase.rpc(
           'rpc_admin_upsert_subscription_plan',
           params: {
@@ -163,6 +165,7 @@ class SubscriptionPlanService {
             'p_is_active': isActive,
           },
         ),
+        client: supabase,
         operation: 'rpc_admin_upsert_subscription_plan',
         operationId: '$vehicleTypeId:$countryId:$intervalDays',
         timeout: _networkTimeout,
@@ -178,11 +181,12 @@ class SubscriptionPlanService {
   /// Toggle active state.
   Future<void> toggleActive(String id, bool isActive) async {
     try {
-      await RequestDeadline.mutation(
+      await AdminMutationGuard.run(
         supabase.rpc(
           'rpc_admin_set_subscription_plan_active',
           params: {'p_plan_id': id, 'p_is_active': isActive},
         ),
+        client: supabase,
         operation: 'rpc_admin_set_subscription_plan_active',
         operationId: id,
         timeout: _networkTimeout,
@@ -198,11 +202,12 @@ class SubscriptionPlanService {
   /// Admin delete.
   Future<void> delete(String id) async {
     try {
-      await RequestDeadline.mutation(
+      await AdminMutationGuard.run(
         supabase.rpc(
           'rpc_admin_delete_subscription_plan',
           params: {'p_plan_id': id},
         ),
+        client: supabase,
         operation: 'rpc_admin_delete_subscription_plan',
         operationId: id,
         timeout: _networkTimeout,

@@ -12,6 +12,8 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import java.util.concurrent.Executors
+import java.util.concurrent.RejectedExecutionException
+import java.util.concurrent.atomic.AtomicReference
 
 class BridgeForegroundService : Service() {
     private val logTag = "MoMobioBridge"
@@ -19,6 +21,7 @@ class BridgeForegroundService : Service() {
     private val handler = Handler(Looper.getMainLooper())
     @Volatile private var syncInFlight = false
     @Volatile private var destroyed = false
+    private val activeUpload = AtomicReference<UploadCancellation?>(null)
 
     override fun onCreate() {
         super.onCreate()
@@ -41,6 +44,7 @@ class BridgeForegroundService : Service() {
     override fun onDestroy() {
         destroyed = true
         handler.removeCallbacksAndMessages(null)
+        activeUpload.get()?.cancel()
         executor.shutdownNow()
         BridgeSupervisor.enqueueImmediate(applicationContext)
         super.onDestroy()
@@ -48,32 +52,42 @@ class BridgeForegroundService : Service() {
 
     private fun runSync() {
         if (syncInFlight || destroyed || !CollectorRuntime.ready(applicationContext)) return
+        val cancellation = UploadCancellation()
+        if (!activeUpload.compareAndSet(null, cancellation)) return
         syncInFlight = true
-        executor.execute {
-            val result = try {
-                syncOnce()
-            } catch (error: Exception) {
-                Log.e(logTag, "Foreground sync failed: ${error.javaClass.simpleName}")
-                UploadResult(false, message = "Sync unavailable; queued messages will be retried")
-            } finally {
-                syncInFlight = false
-            }
-
-            if (!destroyed) {
-                try {
-                    updateNotification(result)
-                } catch (_: Exception) {
-                    // A queue failure must not silently terminate the sync executor.
-                    getSystemService(NotificationManager::class.java).notify(notificationId,
-                        notification("Mo Mobio recovery required", "Do not clear app data. Contact the fleet administrator."))
+        try {
+            executor.execute {
+                val result = try {
+                    syncOnce(cancellation)
+                } catch (error: Exception) {
+                    Log.e(logTag, "Foreground sync failed: ${error.javaClass.simpleName}")
+                    UploadResult(false, message = "Sync unavailable; queued messages will be retried")
+                } finally {
+                    activeUpload.compareAndSet(cancellation, null)
+                    syncInFlight = false
                 }
-                handler.postDelayed({ runSync() }, retryDelayMillis)
+
+                if (!destroyed) {
+                    try {
+                        updateNotification(result)
+                    } catch (_: Exception) {
+                        // A queue failure must not silently terminate the sync executor.
+                        getSystemService(NotificationManager::class.java).notify(notificationId,
+                            notification("Mo Mobio recovery required", "Do not clear app data. Contact the fleet administrator."))
+                    }
+                    handler.postDelayed({ runSync() }, retryDelayMillis)
+                }
             }
+        } catch (_: RejectedExecutionException) {
+            // Destruction may win after admission but before the executor starts.
+            cancellation.cancel()
+            activeUpload.compareAndSet(cancellation, null)
+            syncInFlight = false
         }
     }
 
-    private fun syncOnce(): UploadResult {
-        return CollectorSync.run(applicationContext)
+    private fun syncOnce(cancellation: UploadCancellation): UploadResult {
+        return CollectorSync.run(applicationContext, cancellation)
     }
 
     private fun updateNotification(result: UploadResult) {

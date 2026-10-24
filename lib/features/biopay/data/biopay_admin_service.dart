@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/auth/admin_mutation_guard.dart';
 import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/features/biopay/data/biopay_face_service.dart';
@@ -129,7 +130,7 @@ class BioPayAdminService {
       );
     }
 
-    final response = await RequestDeadline.mutation(
+    final response = await AdminMutationGuard.run(
       _requireSupabase().rpc<dynamic>(
         'rpc_admin_biopay_confirm_external',
         params: {
@@ -137,6 +138,7 @@ class BioPayAdminService {
           'p_confirmation_source': confirmationSource,
         },
       ),
+      client: _requireSupabase(),
       operation: 'rpc_admin_biopay_confirm_external',
       operationId: request.id,
     );

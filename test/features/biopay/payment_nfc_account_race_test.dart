@@ -118,6 +118,28 @@ void main() {
     await tester.pump();
   }
 
+  testWidgets('background cancels explicit NFC and resume never retries it', (
+    tester,
+  ) async {
+    final gateway = _Gateway();
+    final nfc = _Nfc()..pendingWrite = Completer();
+    await mount(tester, PaymentNfcLinkScreen(nfcService: nfc), gateway);
+    await selectLink(tester);
+    await tester.tap(find.text('Write NFC card').last);
+    await tester.pump();
+    expect(nfc.writes, 1);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    await tester.pump();
+    expect(nfc.cancels, 1);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    nfc.pendingWrite!.complete(written(nfc.payload!));
+    await tester.pumpAndSettle();
+    expect(nfc.writes, 1);
+    expect(nfc.locks, 0);
+    expect(find.text('Card written and read back successfully'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('late NFC-link workspace cannot reveal the old account links', (
     tester,
   ) async {

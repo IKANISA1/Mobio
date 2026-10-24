@@ -1,0 +1,14 @@
+{
+  "consolidated_findings": 25,
+  "design_criteria": 100,
+  "operational_criteria": 60,
+  "system_criteria": 88,
+  "missing_links": [],
+  "trailing_whitespace": [],
+  "main_report_words": 6063,
+  "main_report_sha256": "fe5a184fe1e3f9cc9b53f0cfb62944e1e396b6dadafd511745142c8d0372e230",
+  "baseline_body_preserved": true,
+  "continuation": "remediation-batch-02.md",
+  "remediation_verification": "remediation-batch-02-verification.json",
+  "implementation_goal": "implementation-goal.md"
+}

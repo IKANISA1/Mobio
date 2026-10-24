@@ -1,0 +1,1364 @@
+{
+  "passed": 1682,
+  "failed": 168,
+  "counts": {
+    "success": 1682,
+    "error": 168
+  },
+  "done": {
+    "success": false,
+    "type": "done",
+    "time": 425251
+  },
+  "failure_counts_by_file": {
+    "test/features/biopay/payment_discovery_widgets_test.dart": 5,
+    "test/features/preview/revolut_reference_golden_test.dart": 163
+  },
+  "pixel_mismatches": 168,
+  "failures": [
+    {
+      "file": "test/features/biopay/payment_discovery_widgets_test.dart",
+      "test": "desktop public arrival offers safe phone continuation without an attempt",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: desktop public arrival offers safe phone continuation without an attempt",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/discovery_public_link_1280x900.png\": Pixel test failed, 10.22%, 117713px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/biopay/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/biopay/payment_discovery_widgets_test.dart",
+      "test": "recipient design capture",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: recipient design capture",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/discovery_recipient_390x844.png\": Pixel test failed, 30.66%, 100933px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/biopay/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/biopay/payment_discovery_widgets_test.dart",
+      "test": "methods design capture",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: methods design capture",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/discovery_methods_390x844.png\": Pixel test failed, 26.25%, 86400px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/biopay/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/biopay/payment_discovery_widgets_test.dart",
+      "test": "requests design capture",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: requests design capture",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/discovery_requests_390x844.png\": Pixel test failed, 23.99%, 78970px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/biopay/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/biopay/payment_discovery_widgets_test.dart",
+      "test": "request_editor design capture",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: request_editor design capture",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/discovery_request_editor_390x844.png\": Pixel test failed, 43.76%, 144049px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/biopay/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "light theme login",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: light theme login",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/light/login_390x844.png\": Pixel test failed, 0.05%, 1343px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "light theme biopay_home",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: light theme biopay_home",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/light/biopay_home_390x844.png\": Pixel test failed, 54.88%, 1625760px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "light theme wallet",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: light theme wallet",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/light/wallet_390x844.png\": Pixel test failed, 61.40%, 1818838px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "light theme home",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: light theme home",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/light/home_390x844.png\": Pixel test failed, 8.09%, 239745px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "light theme profile",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: light theme profile",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/light/profile_390x844.png\": Pixel test failed, 14.62%, 433093px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "light theme bookings",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: light theme bookings",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/light/bookings_390x844.png\": Pixel test failed, 19.11%, 566237px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "light theme biopay_qr",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: light theme biopay_qr",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/light/biopay_qr_390x844.png\": Pixel test failed, 25.66%, 760040px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "light theme biopay_scan",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: light theme biopay_scan",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/light/biopay_scan_390x844.png\": Pixel test failed, 19.69%, 583302px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "light theme admin_users",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: light theme admin_users",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/light/admin_users_390x844.png\": Pixel test failed, 24.96%, 739372px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 whatsapp_number_ready",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_number_ready",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_number_ready_390x844.png\": Pixel test failed, 0.05%, 1338px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 whatsapp_sending",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_sending",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_sending_390x844.png\": Pixel test failed, 0.05%, 1338px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 whatsapp_send_error",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_send_error",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_send_error_390x844.png\": Pixel test failed, 0.05%, 1338px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 whatsapp_rate_limited",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_rate_limited",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_rate_limited_390x844.png\": Pixel test failed, 0.05%, 1338px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 whatsapp_otp",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_otp",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_otp_390x844.png\": Pixel test failed, 0.94%, 27990px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 whatsapp_otp_invalid",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_otp_invalid",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_otp_invalid_390x844.png\": Pixel test failed, 1.37%, 40584px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 whatsapp_otp_expired",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_otp_expired",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_otp_expired_390x844.png\": Pixel test failed, 0.05%, 1338px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 whatsapp_verifying",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_verifying",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_verifying_390x844.png\": Pixel test failed, 1.37%, 40579px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 whatsapp_resend_ready",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_resend_ready",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_resend_ready_390x844.png\": Pixel test failed, 0.94%, 27990px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 login",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: login",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/login_390x844.png\": Pixel test failed, 0.05%, 1338px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 home",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: home",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/home_390x844.png\": Pixel test failed, 8.51%, 252127px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 bookings",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: bookings",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/bookings_390x844.png\": Pixel test failed, 19.12%, 566297px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 schedule",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: schedule",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/schedule_390x844.png\": Pixel test failed, 3.85%, 114013px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 trip_details",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: trip_details",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/trip_details_390x844.png\": Pixel test failed, 28.13%, 833258px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 trip_edit",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: trip_edit",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/trip_edit_390x844.png\": Pixel test failed, 3.29%, 97558px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 profile",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: profile",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/profile_390x844.png\": Pixel test failed, 15.04%, 445424px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 wallet",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: wallet",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/wallet_390x844.png\": Pixel test failed, 63.27%, 1874453px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 edit_profile",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: edit_profile",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/edit_profile_390x844.png\": Pixel test failed, 59.08%, 1750257px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 profile_setup",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: profile_setup",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/profile_setup_390x844.png\": Pixel test failed, 65.45%, 1938820px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 notifications",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: notifications",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/notifications_390x844.png\": Pixel test failed, 26.06%, 771992px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 chat",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: chat",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/chat_390x844.png\": Pixel test failed, 9.50%, 281438px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 nearby",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: nearby",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/nearby_390x844.png\": Pixel test failed, 6.98%, 206691px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 biopay_home",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_home",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_home_390x844.png\": Pixel test failed, 55.29%, 1637785px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 biopay_qr",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_qr",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_qr_390x844.png\": Pixel test failed, 25.65%, 759973px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 biopay_scan",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_scan",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_scan_390x844.png\": Pixel test failed, 19.70%, 583478px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 biopay_face_enroll",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_face_enroll",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_face_enroll_390x844.png\": Pixel test failed, 0.45%, 13189px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 biopay_nfc",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_nfc",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_nfc_390x844.png\": Pixel test failed, 25.65%, 759928px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 biopay_nfc_write_card",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_nfc_write_card",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_nfc_write_card_390x844.png\": Pixel test failed, 17.75%, 525761px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_biopay_ops",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_biopay_ops",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_biopay_ops_390x844.png\": Pixel test failed, 1.46%, 43239px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_auth",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_auth",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_auth_390x844.png\": Pixel test failed, 1.08%, 31943px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_vehicle_types",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_vehicle_types",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_vehicle_types_390x844.png\": Pixel test failed, 19.99%, 592241px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_subscriptions",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_subscriptions",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_subscriptions_390x844.png\": Pixel test failed, 21.44%, 635239px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_agencies",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_agencies",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_agencies_390x844.png\": Pixel test failed, 21.86%, 647505px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_reports_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_reports_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_reports_actual_390x844.png\": Pixel test failed, 20.31%, 601697px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_audit_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_audit_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_audit_actual_390x844.png\": Pixel test failed, 19.85%, 588178px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_390x844.png\": Pixel test failed, 33.93%, 1005207px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_users",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_users",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_users_390x844.png\": Pixel test failed, 18.97%, 562006px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_trips",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_trips",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_trips_390x844.png\": Pixel test failed, 18.74%, 555194px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_health",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_health",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_health_390x844.png\": Pixel test failed, 34.02%, 1007757px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_broadcasts",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_broadcasts",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_broadcasts_390x844.png\": Pixel test failed, 35.15%, 1041416px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 ev_locator",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: ev_locator",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/ev_locator_390x844.png\": Pixel test failed, 25.69%, 761072px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 biopay_request",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_request",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_request_390x844.png\": Pixel test failed, 25.97%, 769455px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 biopay_link_expired",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_link_expired",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_link_expired_390x844.png\": Pixel test failed, 10.20%, 302168px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_ev_recovery",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_ev_recovery",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_ev_recovery_390x844.png\": Pixel test failed, 23.76%, 703961px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_dashboard_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_dashboard_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_dashboard_actual_390x844.png\": Pixel test failed, 10.94%, 324195px\ndiff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_health_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_health_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_health_actual_390x844.png\": Pixel test failed, 20.96%, 620798px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 admin_broadcasts_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_broadcasts_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_broadcasts_actual_390x844.png\": Pixel test failed, 10.37%, 307344px\ndiff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 config_error",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: config_error",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/config_error_390x844.png\": Pixel test failed, 0.64%, 19009px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 not_found",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: not_found",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/not_found_390x844.png\": Pixel test failed, 0.45%, 13381px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 home_shell",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: home_shell",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/home_shell_390x844.png\": Pixel test failed, 8.11%, 240400px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 bookings_shell",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: bookings_shell",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/bookings_shell_390x844.png\": Pixel test failed, 19.12%, 566297px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 biopay_home_shell",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_home_shell",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_home_shell_390x844.png\": Pixel test failed, 51.20%, 1516854px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 390x844 profile_shell",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: profile_shell",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/profile_shell_390x844.png\": Pixel test failed, 14.58%, 431857px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 whatsapp_number_ready",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_number_ready",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_number_ready_430x932.png\": Pixel test failed, 0.04%, 1338px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 whatsapp_sending",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_sending",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_sending_430x932.png\": Pixel test failed, 0.04%, 1338px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 whatsapp_send_error",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_send_error",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_send_error_430x932.png\": Pixel test failed, 0.04%, 1338px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 whatsapp_rate_limited",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_rate_limited",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_rate_limited_430x932.png\": Pixel test failed, 0.04%, 1338px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 whatsapp_otp",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_otp",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_otp_430x932.png\": Pixel test failed, 0.78%, 27978px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 whatsapp_otp_invalid",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_otp_invalid",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_otp_invalid_430x932.png\": Pixel test failed, 1.12%, 40572px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 whatsapp_otp_expired",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_otp_expired",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_otp_expired_430x932.png\": Pixel test failed, 0.04%, 1338px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 whatsapp_verifying",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_verifying",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_verifying_430x932.png\": Pixel test failed, 1.12%, 40569px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 whatsapp_resend_ready",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: whatsapp_resend_ready",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/whatsapp_resend_ready_430x932.png\": Pixel test failed, 0.78%, 27978px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 login",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: login",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/login_430x932.png\": Pixel test failed, 0.04%, 1338px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 home",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: home",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/home_430x932.png\": Pixel test failed, 9.71%, 350197px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 bookings",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: bookings",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/bookings_430x932.png\": Pixel test failed, 16.85%, 607780px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 schedule",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: schedule",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/schedule_430x932.png\": Pixel test failed, 3.24%, 116766px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 trip_details",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: trip_details",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/trip_details_430x932.png\": Pixel test failed, 25.11%, 905583px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 trip_edit",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: trip_edit",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/trip_edit_430x932.png\": Pixel test failed, 2.78%, 100243px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 profile",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: profile",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/profile_430x932.png\": Pixel test failed, 16.70%, 602257px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 wallet",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: wallet",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/wallet_430x932.png\": Pixel test failed, 69.94%, 2522468px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 edit_profile",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: edit_profile",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/edit_profile_430x932.png\": Pixel test failed, 60.70%, 2189327px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 profile_setup",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: profile_setup",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/profile_setup_430x932.png\": Pixel test failed, 61.00%, 2200209px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 notifications",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: notifications",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/notifications_430x932.png\": Pixel test failed, 23.88%, 861272px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 chat",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: chat",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/chat_430x932.png\": Pixel test failed, 8.98%, 323726px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 nearby",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: nearby",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/nearby_430x932.png\": Pixel test failed, 5.99%, 216030px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 biopay_home",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_home",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_home_430x932.png\": Pixel test failed, 49.13%, 1772116px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 biopay_qr",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_qr",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_qr_430x932.png\": Pixel test failed, 23.46%, 846013px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 biopay_scan",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_scan",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_scan_430x932.png\": Pixel test failed, 17.36%, 626018px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 biopay_face_enroll",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_face_enroll",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_face_enroll_430x932.png\": Pixel test failed, 0.37%, 13189px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 biopay_nfc",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_nfc",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_nfc_430x932.png\": Pixel test failed, 23.45%, 845968px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 biopay_nfc_write_card",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_nfc_write_card",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_nfc_write_card_430x932.png\": Pixel test failed, 16.22%, 585161px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_biopay_ops",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_biopay_ops",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_biopay_ops_430x932.png\": Pixel test failed, 3.37%, 121620px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_auth",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_auth",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_auth_430x932.png\": Pixel test failed, 0.89%, 31943px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_vehicle_types",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_vehicle_types",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_vehicle_types_430x932.png\": Pixel test failed, 20.85%, 752178px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_subscriptions",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_subscriptions",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_subscriptions_430x932.png\": Pixel test failed, 20.63%, 744065px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_agencies",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_agencies",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_agencies_430x932.png\": Pixel test failed, 27.24%, 982379px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_reports_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_reports_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_reports_actual_430x932.png\": Pixel test failed, 20.19%, 728156px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_audit_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_audit_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_audit_actual_430x932.png\": Pixel test failed, 18.47%, 666204px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_430x932.png\": Pixel test failed, 31.72%, 1144214px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_users",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_users",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_users_430x932.png\": Pixel test failed, 20.00%, 721277px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_trips",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_trips",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_trips_430x932.png\": Pixel test failed, 19.84%, 715629px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_health",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_health",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_health_430x932.png\": Pixel test failed, 31.83%, 1148012px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_broadcasts",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_broadcasts",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_broadcasts_430x932.png\": Pixel test failed, 32.87%, 1185609px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 ev_locator",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: ev_locator",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/ev_locator_430x932.png\": Pixel test failed, 30.82%, 1111791px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 biopay_request",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_request",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_request_430x932.png\": Pixel test failed, 23.72%, 855495px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 biopay_link_expired",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_link_expired",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_link_expired_430x932.png\": Pixel test failed, 7.75%, 279416px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_ev_recovery",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_ev_recovery",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_ev_recovery_430x932.png\": Pixel test failed, 21.75%, 784622px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_dashboard_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_dashboard_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_dashboard_actual_430x932.png\": Pixel test failed, 10.37%, 373878px\ndiff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_health_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_health_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_health_actual_430x932.png\": Pixel test failed, 21.25%, 766564px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 admin_broadcasts_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_broadcasts_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_broadcasts_actual_430x932.png\": Pixel test failed, 11.36%, 409857px\ndiff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 config_error",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: config_error",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/config_error_430x932.png\": Pixel test failed, 0.53%, 19009px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 not_found",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: not_found",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/not_found_430x932.png\": Pixel test failed, 0.37%, 13381px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 home_shell",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: home_shell",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/home_shell_430x932.png\": Pixel test failed, 7.83%, 282507px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 bookings_shell",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: bookings_shell",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/bookings_shell_430x932.png\": Pixel test failed, 16.85%, 607780px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 biopay_home_shell",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: biopay_home_shell",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/biopay_home_shell_430x932.png\": Pixel test failed, 49.13%, 1772116px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference golden 430x932 profile_shell",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: profile_shell",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/profile_shell_430x932.png\": Pixel test failed, 16.08%, 580110px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_biopay_ops",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_biopay_ops",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_biopay_ops_768x1024.png\": Pixel test failed, 2.60%,\n183854px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_auth",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_auth",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_auth_768x1024.png\": Pixel test failed, 0.45%, 31943px\ndiff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_vehicle_types",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_vehicle_types",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_vehicle_types_768x1024.png\": Pixel test failed, 20.65%,\n1461251px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_subscriptions",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_subscriptions",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_subscriptions_768x1024.png\": Pixel test failed, 20.33%,\n1439008px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_agencies",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_agencies",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_agencies_768x1024.png\": Pixel test failed, 17.05%,\n1206897px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_reports_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_reports_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_reports_actual_768x1024.png\": Pixel test failed, 21.40%,\n1514370px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_audit_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_audit_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_audit_actual_768x1024.png\": Pixel test failed, 17.43%,\n1234021px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_768x1024.png\": Pixel test failed, 31.69%, 2243207px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_users",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_users",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_users_768x1024.png\": Pixel test failed, 20.17%,\n1427757px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_trips",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_trips",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_trips_768x1024.png\": Pixel test failed, 19.71%,\n1395006px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_health",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_health",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_health_768x1024.png\": Pixel test failed, 31.68%,\n2242492px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_broadcasts",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_broadcasts",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_broadcasts_768x1024.png\": Pixel test failed, 32.22%,\n2280172px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_ev_recovery",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_ev_recovery",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_ev_recovery_768x1024.png\": Pixel test failed, 18.14%,\n1283933px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_dashboard_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_dashboard_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_dashboard_actual_768x1024.png\": Pixel test failed,\n8.55%, 605332px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_health_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_health_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_health_actual_768x1024.png\": Pixel test failed, 21.42%,\n1515831px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 768x1024 admin_broadcasts_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_broadcasts_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_broadcasts_actual_768x1024.png\": Pixel test failed,\n10.92%, 772577px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_biopay_ops",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_biopay_ops",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_biopay_ops_1280x900.png\": Pixel test failed, 1.47%,\n152117px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_auth",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_auth",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_auth_1280x900.png\": Pixel test failed, 0.31%, 31943px\ndiff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_vehicle_types",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_vehicle_types",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_vehicle_types_1280x900.png\": Pixel test failed, 3.60%,\n373076px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_subscriptions",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_subscriptions",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_subscriptions_1280x900.png\": Pixel test failed, 7.11%,\n737313px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_agencies",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_agencies",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_agencies_1280x900.png\": Pixel test failed, 6.79%,\n703947px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_reports_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_reports_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_reports_actual_1280x900.png\": Pixel test failed, 2.23%,\n231640px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_audit_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_audit_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_audit_actual_1280x900.png\": Pixel test failed, 6.49%,\n672732px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_1280x900.png\": Pixel test failed, 27.64%, 2865206px diff\ndetected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_users",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_users",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_users_1280x900.png\": Pixel test failed, 4.09%, 423753px\ndiff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_trips",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_trips",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_trips_1280x900.png\": Pixel test failed, 11.08%,\n1148344px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_health",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_health",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_health_1280x900.png\": Pixel test failed, 27.73%,\n2874938px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_broadcasts",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_broadcasts",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_broadcasts_1280x900.png\": Pixel test failed, 28.32%,\n2936368px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_ev_recovery",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_ev_recovery",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_ev_recovery_1280x900.png\": Pixel test failed, 5.27%,\n546657px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_dashboard_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_dashboard_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_dashboard_actual_1280x900.png\": Pixel test failed,\n1.52%, 157569px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_health_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_health_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_health_actual_1280x900.png\": Pixel test failed, 16.82%,\n1743401px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1280x900 admin_broadcasts_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_broadcasts_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_broadcasts_actual_1280x900.png\": Pixel test failed,\n0.38%, 39329px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_biopay_ops",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_biopay_ops",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_biopay_ops_1440x1000.png\": Pixel test failed, 1.17%,\n152107px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_auth",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_auth",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_auth_1440x1000.png\": Pixel test failed, 0.25%, 31944px\ndiff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_vehicle_types",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_vehicle_types",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_vehicle_types_1440x1000.png\": Pixel test failed, 4.31%,\n558697px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_subscriptions",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_subscriptions",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_subscriptions_1440x1000.png\": Pixel test failed, 7.59%,\n983437px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_agencies",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_agencies",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_agencies_1440x1000.png\": Pixel test failed, 9.39%,\n1217208px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_reports_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_reports_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_reports_actual_1440x1000.png\": Pixel test failed, 3.51%,\n454677px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_audit_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_audit_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_audit_actual_1440x1000.png\": Pixel test failed, 7.15%,\n927037px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_1440x1000.png\": Pixel test failed, 26.01%, 3370644px\ndiff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_users",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_users",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_users_1440x1000.png\": Pixel test failed, 4.34%, 562197px\ndiff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_trips",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_trips",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_trips_1440x1000.png\": Pixel test failed, 9.84%,\n1275076px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_health",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_health",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_health_1440x1000.png\": Pixel test failed, 26.08%,\n3380376px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_broadcasts",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_broadcasts",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_broadcasts_1440x1000.png\": Pixel test failed, 26.56%,\n3441806px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_ev_recovery",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_ev_recovery",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_ev_recovery_1440x1000.png\": Pixel test failed, 7.38%,\n956443px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_dashboard_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_dashboard_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_dashboard_actual_1440x1000.png\": Pixel test failed,\n1.32%, 170528px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_health_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_health_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_health_actual_1440x1000.png\": Pixel test failed, 27.62%,\n3579060px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    },
+    {
+      "file": "test/features/preview/revolut_reference_golden_test.dart",
+      "test": "Revolut-reference admin desktop golden 1440x1000 admin_broadcasts_actual",
+      "result": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: admin_broadcasts_actual",
+      "golden_diagnostic": "\u2550\u2550\u2561 EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK \u255e\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nThe following assertion was thrown while running async test code:\nGolden \"goldens/revolut/admin_desktop/admin_broadcasts_actual_1440x1000.png\": Pixel test failed,\n0.32%, 41582px diff detected.\nFailure feedback can be found at\n/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/test/features/preview/failures",
+      "pixel_mismatch": true
+    }
+  ]
+}

@@ -16,7 +16,7 @@ class AdminBroadcastService extends AdminBaseService {
     Map<String, dynamic>? metadata,
   }) async {
     try {
-      final result = await RequestDeadline.mutation(
+      final result = await mutate(
         supabaseClient.rpc(
           'rpc_admin_request_campaign_approval',
           params: {
@@ -170,7 +170,7 @@ class AdminBroadcastService extends AdminBaseService {
     String? notes,
   }) async {
     try {
-      await RequestDeadline.mutation(
+      await mutate(
         supabaseClient.rpc(
           'rpc_admin_approve_campaign',
           params: {
@@ -190,7 +190,7 @@ class AdminBroadcastService extends AdminBaseService {
 
   Future<int> sendApprovedCampaign({required String campaignId}) async {
     try {
-      final count = await RequestDeadline.mutation(
+      final count = await mutate(
         supabaseClient.rpc(
           'rpc_admin_send_approved_campaign',
           params: {'p_campaign_id': campaignId},
@@ -215,7 +215,7 @@ class AdminBroadcastService extends AdminBaseService {
     Map<String, dynamic>? metadata,
   }) async {
     try {
-      final count = await RequestDeadline.mutation(
+      final count = await mutate(
         supabaseClient.rpc(
           'rpc_admin_send_promo',
           params: {
@@ -242,7 +242,7 @@ class AdminBroadcastService extends AdminBaseService {
     Map<String, dynamic>? metadata,
   }) async {
     try {
-      final count = await RequestDeadline.mutation(
+      final count = await mutate(
         supabaseClient.rpc(
           'rpc_admin_send_announcement',
           params: {

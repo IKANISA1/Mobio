@@ -7,6 +7,7 @@ import 'package:mobi_design_system/theme/app_typography.dart';
 class MobiFeatureTile extends StatelessWidget {
   final IconData icon;
   final String title;
+  final int? titleMaxLines;
   final String? subtitle;
   final Color? accent;
   final Color? accentBackground;
@@ -25,6 +26,7 @@ class MobiFeatureTile extends StatelessWidget {
     super.key,
     required this.icon,
     required this.title,
+    this.titleMaxLines = 2,
     this.subtitle,
     this.accent,
     this.accentBackground,
@@ -87,8 +89,10 @@ class MobiFeatureTile extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                  maxLines: titleMaxLines,
+                  overflow: titleMaxLines == null
+                      ? TextOverflow.visible
+                      : TextOverflow.ellipsis,
                   style:
                       (compact ? AppTypography.bodySm : AppTypography.titleMd)
                           .copyWith(

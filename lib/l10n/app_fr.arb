@@ -239,5 +239,892 @@
   "faceDone": "Terminé",
   "faceWorking": "Veuillez patienter…",
   "faceSetUp": "Configurer",
-  "faceRefresh": "Vérifier l’enregistrement"
+  "faceRefresh": "Vérifier l’enregistrement",
+  "adminUsersTitle": "Utilisateurs",
+  "@adminUsersTitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminUsersSubtitle": "Répertoire et rôles.",
+  "@adminUsersSubtitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRefresh": "Actualiser",
+  "@adminRefresh": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminClose": "Fermer",
+  "@adminClose": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminClear": "Effacer",
+  "@adminClear": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminDirectory": "Répertoire",
+  "@adminDirectory": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSearchAndFilter": "Rechercher et filtrer",
+  "@adminSearchAndFilter": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSearchUsers": "Rechercher des utilisateurs",
+  "@adminSearchUsers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminFilterAll": "Tous",
+  "@adminFilterAll": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminFilterAdmins": "Administrateurs",
+  "@adminFilterAdmins": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminFilterDrivers": "Chauffeurs",
+  "@adminFilterDrivers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminFilterPassengers": "Passagers",
+  "@adminFilterPassengers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRoleAdmin": "Administrateur",
+  "@adminRoleAdmin": {
+    "description": "Profile role label only. This does not confer trusted administrative access."
+  },
+  "adminRoleDriver": "Chauffeur",
+  "@adminRoleDriver": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRolePassenger": "Passager",
+  "@adminRolePassenger": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRoleUnknown": "Rôle indisponible",
+  "@adminRoleUnknown": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewRole": "Examiner le rôle {role}",
+  "@adminReviewRole": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUnavailable": "Indisponible",
+  "@adminUnavailable": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminOnline": "En ligne",
+  "@adminOnline": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminOffline": "Hors ligne",
+  "@adminOffline": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhone": "Téléphone",
+  "@adminPhone": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminVehicle": "Véhicule",
+  "@adminVehicle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNotAssigned": "Non attribué",
+  "@adminNotAssigned": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminJoined": "Inscription",
+  "@adminJoined": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminDriverProfile": "Profil chauffeur",
+  "@adminDriverProfile": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPassengerProfile": "Profil passager",
+  "@adminPassengerProfile": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminMatchingUsers": "Utilisateurs correspondants",
+  "@adminMatchingUsers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminAdminProfiles": "Profils administrateurs",
+  "@adminAdminProfiles": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPageAtSnapshot": "Cette page au moment de l’instantané",
+  "@adminPageAtSnapshot": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminCountUnavailable": "Nombre exact indisponible",
+  "@adminCountUnavailable": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminMatchingCountUnavailable": "Nombre exact de correspondances indisponible",
+  "@adminMatchingCountUnavailable": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminUsersUnavailable": "Utilisateurs indisponibles",
+  "@adminUsersUnavailable": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminUsersLoadFailed": "Impossible de charger les utilisateurs. Vérifiez votre connexion et réessayez.",
+  "@adminUsersLoadFailed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminAccountChangedTitle": "Le compte a changé",
+  "@adminAccountChangedTitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminAccountChangedBody": "Rouvrez le répertoire avec le compte actuel.",
+  "@adminAccountChangedBody": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminAccountPanelChanged": "Le compte a changé. Fermez ce panneau.",
+  "@adminAccountPanelChanged": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNoUsers": "Aucun utilisateur",
+  "@adminNoUsers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminTryFilter": "Essayez un autre filtre.",
+  "@adminTryFilter": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminQueryFailed": "Impossible d’actualiser le répertoire. Réessayez.",
+  "@adminQueryFailed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminUserUpdateFailed": "Impossible de modifier cet utilisateur. Actualisez et réessayez.",
+  "@adminUserUpdateFailed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewUnavailable": "Cet examen n’est plus disponible.",
+  "@adminReviewUnavailable": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewShowFailed": "Impossible d’afficher cet examen. Actualisez les utilisateurs avant de recommencer.",
+  "@adminReviewShowFailed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewContinueFailed": "Impossible de poursuivre cet examen. Vérifiez son état enregistré avant d’en commencer un autre.",
+  "@adminReviewContinueFailed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminStatusUnconfirmed": "L’état n’a pas pu être confirmé. Ce lot reste non résolu.",
+  "@adminStatusUnconfirmed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminCloseBatchTitle": "Clore ce lot de changements de rôle ?",
+  "@adminCloseBatchTitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminCloseBatchBody": "Arrêtez les changements restants et enregistrez l’état final. Les changements confirmés sont conservés. Un autre examen sera possible après confirmation de la clôture par le serveur.",
+  "@adminCloseBatchBody": {
+    "description": "Explicit server seal; confirmed effects stay. Cancellation of a local unsent review is a separate action."
+  },
+  "adminCloseBatch": "Clore le lot",
+  "@adminCloseBatch": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminCloseThisBatch": "Clore ce lot",
+  "@adminCloseThisBatch": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminClosureUnconfirmed": "La clôture n’a pas pu être confirmée. Vérifiez ce lot avant d’en commencer un autre.",
+  "@adminClosureUnconfirmed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewTitle": "Examiner les changements de rôle des profils",
+  "@adminReviewTitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewDisclosure": "Les destinataires et rôles demandés sont figés pour cet examen. Le rôle Administrateur d’un profil n’accorde pas l’accès administrateur de confiance.",
+  "@adminReviewDisclosure": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminTrustedAccessDisclosure": "Le rôle Administrateur d’un profil n’accorde pas l’accès administrateur de confiance.",
+  "@adminTrustedAccessDisclosure": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewExpired": "Cet instantané a expiré. Annulez et actualisez les utilisateurs pour un nouvel examen.",
+  "@adminReviewExpired": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminAllExcluded": "Tous les profils sélectionnés sont exclus. Aucun changement de rôle ne sera envoyé.",
+  "@adminAllExcluded": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewUnavailableRefresh": "Cet examen n’est plus disponible. Annulez et actualisez les utilisateurs.",
+  "@adminReviewUnavailableRefresh": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminConfirming": "Confirmation…",
+  "@adminConfirming": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminOutcomesTitle": "Résultats des changements de rôle",
+  "@adminOutcomesTitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReservationClosedEmpty": "Réservation close. Aucun changement de rôle n’a été envoyé.",
+  "@adminReservationClosedEmpty": {
+    "description": "Server proven seal-before-reserve. Zero operations submitted; do not use for unknown/missing batch."
+  },
+  "adminBatchClosed": "Ce lot est clos. Ses résultats enregistrés restent disponibles.",
+  "@adminBatchClosed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminUnknownGuidance": "Le résultat de certains changements est inconnu. Vérifiez leur état et clôturez ce lot avant un autre examen. Aucun changement ne sera renvoyé automatiquement.",
+  "@adminUnknownGuidance": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminUnsealedGuidance": "Vérifiez l’état de cette réservation et clôturez ce lot avant un autre examen. Aucun changement ne sera renvoyé automatiquement.",
+  "@adminUnsealedGuidance": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminCheckStatus": "Vérifier l’état",
+  "@adminCheckStatus": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminOwnExcluded": "Exclu : votre propre profil",
+  "@adminOwnExcluded": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSameRoleExcluded": "Exclu : possède déjà le rôle demandé",
+  "@adminSameRoleExcluded": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminOwnProfileExcluded": "Votre propre profil est exclu des changements de rôle.",
+  "@adminOwnProfileExcluded": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewProfileRole": "Examiner un changement de rôle du profil",
+  "@adminReviewProfileRole": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminEnabled": "Activé",
+  "@adminEnabled": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminDisabled": "Désactivé",
+  "@adminDisabled": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminStatusConfirmed": "Confirmé",
+  "@adminStatusConfirmed": {
+    "description": "Authoritative server receipt confirms that this recipient change committed."
+  },
+  "adminStatusKnownRejected": "Rejet confirmé",
+  "@adminStatusKnownRejected": {
+    "description": "Authoritative rejection is known; distinguish from an uncertain network result."
+  },
+  "adminStatusUnknown": "Inconnu",
+  "@adminStatusUnknown": {
+    "description": "Outcome may already have committed. Never translate this as rejected, pending-safe-retry or failed."
+  },
+  "adminStatusNotStarted": "Non commencé",
+  "@adminStatusNotStarted": {
+    "description": "Target operation was not started, distinct from a self/no-op exclusion."
+  },
+  "adminStatusSkipped": "Ignoré",
+  "@adminStatusSkipped": {
+    "description": "Reviewed recipient intentionally excluded, such as self or same requested role."
+  },
+  "adminStatusSubmitting": "Envoi en cours",
+  "@adminStatusSubmitting": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseChecking": "Vérification des changements précédents…",
+  "@adminPhaseChecking": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseReady": "Les résultats enregistrés figurent ci-dessous.",
+  "@adminPhaseReady": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseReserving": "Préparation du lot confirmé…",
+  "@adminPhaseReserving": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseSubmitting": "Envoi des changements examinés…",
+  "@adminPhaseSubmitting": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseReconciling": "Vérification de l’état faisant autorité…",
+  "@adminPhaseReconciling": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseSealing": "Clôture de ce lot…",
+  "@adminPhaseSealing": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseUnresolved": "L’état de ce lot doit encore être vérifié, puis le lot clôturé.",
+  "@adminPhaseUnresolved": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseBlocked": "Les changements de rôle sont actuellement indisponibles.",
+  "@adminPhaseBlocked": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRejectChanged": "Ce profil a changé depuis l’instantané. Actualisez-le pour un nouvel examen.",
+  "@adminRejectChanged": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRejectMissing": "Le profil examiné n’est plus disponible.",
+  "@adminRejectMissing": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRejectReauthenticate": "Reconnectez-vous avant d’examiner un autre changement de rôle.",
+  "@adminRejectReauthenticate": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRejectGeneric": "Le serveur a rejeté ce changement. Il n’a pas été confirmé.",
+  "@adminRejectGeneric": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSnapshotExpired": "L’instantané a expiré. Actualisez les utilisateurs avant de changer les rôles ou d’ouvrir une autre page.",
+  "@adminSnapshotExpired": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSortOnline": "En ligne d’abord",
+  "@adminSortOnline": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSortNameAsc": "Nom A–Z",
+  "@adminSortNameAsc": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSortNameDesc": "Nom Z–A",
+  "@adminSortNameDesc": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSortRole": "Rôle",
+  "@adminSortRole": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSortNewest": "Les plus récents",
+  "@adminSortNewest": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminMember": "Membre",
+  "@adminMember": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminStatus": "État",
+  "@adminStatus": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminClearVisibleSelection": "Effacer la sélection des utilisateurs visibles",
+  "@adminClearVisibleSelection": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSelectVisibleUsers": "Sélectionner les utilisateurs visibles",
+  "@adminSelectVisibleUsers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminClearSearch": "Effacer la recherche",
+  "@adminClearSearch": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSortRows": "Trier les lignes",
+  "@adminSortRows": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRows": "Lignes",
+  "@adminRows": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPreviousPage": "Page précédente",
+  "@adminPreviousPage": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNextPage": "Page suivante",
+  "@adminNextPage": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminBack": "Retour",
+  "@adminBack": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavOps": "Opérations",
+  "@adminNavOps": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavFleet": "Véhicules",
+  "@adminNavFleet": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavAgencies": "Agences",
+  "@adminNavAgencies": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavEv": "Véhicules électriques",
+  "@adminNavEv": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavPlans": "Formules",
+  "@adminNavPlans": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavTrips": "Trajets",
+  "@adminNavTrips": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavReports": "Signalements",
+  "@adminNavReports": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavHealth": "État du système",
+  "@adminNavHealth": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavAudit": "Audit",
+  "@adminNavAudit": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavBroadcasts": "Diffusions",
+  "@adminNavBroadcasts": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavAccount": "Compte",
+  "@adminNavAccount": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRewardTitle": "Ajouter la récompense d’assurance",
+  "@adminRewardTitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRewardAction": "Ajouter {amount} TOKENS",
+  "@adminRewardAction": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRewardConfirm": "Créditer {amount} TOKENS à {name}. Récompense pour l’achat d’une assurance automobile.",
+  "@adminRewardConfirm": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRewardAdded": "{amount} TOKENS ajoutés à {name}.",
+  "@adminRewardAdded": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRewardSubmit": "Ajouter des TOKENS",
+  "@adminRewardSubmit": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminAccountReference": "Référence du compte : {id}",
+  "@adminAccountReference": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "adminMemberReference": "Membre {id}",
+  "@adminMemberReference": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRoleChange": "{before} → {after}",
+  "@adminRoleChange": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "adminReviewedRoleChange": "Demande examinée : {before} → {after}",
+  "@adminReviewedRoleChange": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "adminDriverStateChange": "Profil chauffeur : {before} → {after}",
+  "@adminDriverStateChange": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "adminStatusCount": "{status} : {count}",
+  "@adminStatusCount": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSnapshotAt": "Instantané du {date}",
+  "@adminSnapshotAt": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSnapshotRange": "Instantané du {date} · expire le {expiry}",
+  "@adminSnapshotRange": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "expiry": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSortBy": "Trier par {label}",
+  "@adminSortBy": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "adminPagination": "{start}–{end} sur {total}",
+  "@adminPagination": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "adminClearSelectionFor": "Désélectionner {name}",
+  "@adminClearSelectionFor": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSelectPerson": "Sélectionner {name}",
+  "@adminSelectPerson": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "adminPersonSemantics": "{name}, {role}, {status}",
+  "@adminPersonSemantics": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "adminErrorSignIn": "Reconnectez-vous pour charger les membres.",
+  "@adminErrorSignIn": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorSessionUnavailable": "La session de votre compte est indisponible.",
+  "@adminErrorSessionUnavailable": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorLoadMembers": "Impossible de charger les membres. Actualisez et réessayez.",
+  "@adminErrorLoadMembers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorSessionChanged": "La session de votre compte a changé. Reconnectez-vous.",
+  "@adminErrorSessionChanged": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorReleaseSnapshot": "Impossible de libérer l’instantané précédent. Actualisez pour réessayer.",
+  "@adminErrorReleaseSnapshot": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorMemberSnapshotExpired": "Cet instantané des membres a expiré. Actualisez pour obtenir les résultats actuels.",
+  "@adminErrorMemberSnapshotExpired": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorPageExpired": "Actualisez cet instantané avant de changer de page.",
+  "@adminErrorPageExpired": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorReviewBusy": "Actualisez ou terminez l’examen actuel avant de changer les rôles.",
+  "@adminErrorReviewBusy": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorSelectPage": "Sélectionnez les membres sur cette page de l’instantané.",
+  "@adminErrorSelectPage": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorReviewExpired": "Cet examen a expiré. Clôturez sa réservation avant un nouvel examen.",
+  "@adminErrorReviewExpired": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorJournalBefore": "Le stockage de reprise n’a pas pu être vérifié. Aucun changement de rôle n’a été envoyé.",
+  "@adminErrorJournalBefore": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorReserveUnknown": "Le résultat de la réservation est inconnu. Vérifiez-le ou clôturez la réservation avant un autre examen.",
+  "@adminErrorReserveUnknown": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorReserveFailed": "La réservation n’a pas pu être terminée. Vérifiez-la ou clôturez-la avant un autre examen.",
+  "@adminErrorReserveFailed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorBatchExpired": "Ce lot a expiré. Clôturez-le avant un autre examen.",
+  "@adminErrorBatchExpired": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorJournalRemaining": "Le stockage de reprise n’a pas pu être vérifié. Les changements restants n’ont pas été envoyés.",
+  "@adminErrorJournalRemaining": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorChangeUnconfirmed": "Ce changement de rôle n’est pas confirmé. Vérifiez l’état ou clôturez le lot.",
+  "@adminErrorChangeUnconfirmed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorRequestRejected": "Cette demande a été rejetée. Clôturez le lot avant un autre examen.",
+  "@adminErrorRequestRejected": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorChangeUnknown": "Le résultat d’un changement de rôle est inconnu. Vérifiez l’état ou clôturez le lot.",
+  "@adminErrorChangeUnknown": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorReviewOutcomes": "Examinez les résultats par destinataire, puis clôturez ce lot avant un autre examen.",
+  "@adminErrorReviewOutcomes": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorEarlierUncertain": "Une réservation précédente est incertaine et un autre lot est ouvert. Clôturez d’abord la réservation précédente.",
+  "@adminErrorEarlierUncertain": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorDelayedReservation": "Le résultat de la réservation est inconnu. Clôturez-la pour empêcher un envoi tardif.",
+  "@adminErrorDelayedReservation": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorOutstanding": "Un lot non clos a été trouvé. Examinez ses résultats et clôturez-le avant un autre examen.",
+  "@adminErrorOutstanding": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorRecoveryUnverified": "La reprise n’a pas pu être vérifiée. Aucun changement de rôle ne sera renvoyé.",
+  "@adminErrorRecoveryUnverified": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorClosureUnverified": "La clôture n’a pas pu être vérifiée. Vérifiez l’état ou clôturez à nouveau cette réservation.",
+  "@adminErrorClosureUnverified": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorMemberBusy": "Attendez la fin de la modification du membre.",
+  "@adminErrorMemberBusy": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorGeneric": "Cette action n’a pas pu être terminée. Vérifiez l’état enregistré avant de continuer.",
+  "@adminErrorGeneric": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorNetwork": "Connexion impossible. Vérifiez Internet et réessayez.",
+  "@adminErrorNetwork": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorForbidden": "Vous n’avez pas l’autorisation d’effectuer cette action.",
+  "@adminErrorForbidden": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminConfirmCount": "{count, plural, =0{Confirmer 0 changement} one{Confirmer 1 changement} other{Confirmer {countText} changements}}",
+  "@adminConfirmCount": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "countText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminReviewSummary": "{eligible, plural, =0{0 changement} one{1 changement} other{{eligibleText} changements}} · {excluded, plural, =0{0 exclu} one{1 exclu} other{{excludedText} exclus}}",
+  "@adminReviewSummary": {
+    "description": "Independent eligible and excluded counts from the exact immutable reviewed recipients, not all query matches.",
+    "placeholders": {
+      "eligible": {
+        "type": "int"
+      },
+      "eligibleText": {
+        "type": "String"
+      },
+      "excluded": {
+        "type": "int"
+      },
+      "excludedText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminMatchingCount": "{count, plural, =0{0 utilisateur correspondant} one{1 utilisateur correspondant} other{{countText} utilisateurs correspondants}}",
+  "@adminMatchingCount": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "countText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSelectedCount": "{count, plural, =0{0 sélectionné sur cette page} one{1 sélectionné sur cette page} other{{countText} sélectionnés sur cette page}}",
+  "@adminSelectedCount": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "countText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSnapshotAgeUpper": "{seconds, plural, =0{Âge maximal de l’instantané : 0 s.} one{Âge maximal de l’instantané : 1 s.} other{Âge maximal de l’instantané : {secondsText} s.}}",
+  "@adminSnapshotAgeUpper": {
+    "description": "Conservative age upper bound. Preserve up to / at most meaning; never minimum age.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "secondsText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSnapshotAgeExact": "{seconds, plural, =0{Âge de l’instantané : 0 s.} one{Âge de l’instantané : 1 s.} other{Âge de l’instantané : {secondsText} s.}}",
+  "@adminSnapshotAgeExact": {
+    "description": "Exact age wording only when caller explicitly supplies upperBound=false.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "secondsText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSnapshotRemaining": "{seconds, plural, =0{L’examen de l’instantané reste disponible pendant 0 s.} one{L’examen de l’instantané reste disponible pendant 1 s.} other{L’examen de l’instantané reste disponible pendant {secondsText} s.}}",
+  "@adminSnapshotRemaining": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "secondsText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminReviewRemaining": "L’examen de l’instantané expire dans {duration}.",
+  "@adminReviewRemaining": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "adminDurationSeconds": "{seconds, plural, =0{0 s} one{1 s} other{{secondsText} s}}",
+  "@adminDurationSeconds": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "secondsText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminDurationMinutesSeconds": "{minutes, plural, =0{0 min} one{1 min} other{{minutesText} min}} {seconds, plural, =0{0 s} one{1 s} other{{secondsText} s}}",
+  "@adminDurationMinutesSeconds": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "minutesText": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "int"
+      },
+      "secondsText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminErrorMutationUnknown": "Le résultat n’a pas pu être confirmé. Vérifiez son état enregistré avant tout nouvel envoi.",
+  "@adminErrorMutationUnknown": {
+    "description": "A mutation may already have committed. Never imply failure or safe resend; check recorded authoritative status first."
+  }
 }

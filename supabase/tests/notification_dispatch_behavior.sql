@@ -50,6 +50,9 @@ with inserted as (
 insert into qa_push_context select id, gen_random_uuid() from inserted;
 insert into auth.sessions(id, user_id, created_at, not_after)
 select session_id, user_id, now(), now() + interval '1 hour' from qa_push_context;
+-- Explicit SQL-only positive OTP/session setup; no Admin lease or grant is added.
+select pg_temp.qa_seed_interactive_authority(array(select user_id from qa_push_context));
+
 
 do $$
 declare v_id uuid; v_user uuid := (select user_id from pg_temp.qa_push_context);

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobi_app/features/biopay/domain/payment_discovery.dart';
 import 'package:mobi_app/l10n/app_localizations.dart';
-import 'package:mobi_design_system/theme/app_typography.dart';
+import 'package:mobi_app/shared/widgets/mobi_task_header.dart';
 
 AppLocalizations paymentCopy(BuildContext context) =>
     AppLocalizations.of(context) ?? lookupAppLocalizations(const Locale('en'));
@@ -15,6 +15,57 @@ const paymentProviders = <String, String>{
   'access_rw': 'Access Bank',
   'equity_rw': 'Equity Bank',
 };
+
+/// Resting quiet-task roles observed in LIVE-058/060/063, Dark · Glow.
+/// These are colour-managed capture approximations, not exported native tokens.
+abstract final class _PaymentTaskColors {
+  static const backSurface = Color(0xFF151515);
+  static const restingField = Color(0xFF1C1C1E);
+  static const disabledAction = Color(0xFF4D4D50);
+  // The captured label cores are approximately #222225; retain the existing
+  // neutral #222224 approximation rather than assert an exact native face/alpha.
+  static const disabledActionLabel = Color(0xFF222224);
+}
+
+ThemeData _paymentTaskTheme(ThemeData theme) {
+  if (theme.brightness != Brightness.dark) return theme;
+  final input = theme.inputDecorationTheme;
+  final originalFill = input.fillColor ?? theme.colorScheme.surfaceContainerLow;
+  final action = theme.filledButtonTheme.style ?? const ButtonStyle();
+  return theme.copyWith(
+    inputDecorationTheme: input.copyWith(
+      fillColor: WidgetStateColor.resolveWith((states) {
+        if (states.any(
+          (state) => const {
+            WidgetState.focused,
+            WidgetState.error,
+            WidgetState.disabled,
+            WidgetState.hovered,
+          }.contains(state),
+        )) {
+          return WidgetStateProperty.resolveAs<Color>(originalFill, states);
+        }
+        return _PaymentTaskColors.restingField;
+      }),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: action.copyWith(
+        backgroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.disabled)) {
+            return _PaymentTaskColors.disabledAction;
+          }
+          return action.backgroundColor?.resolve(states);
+        }),
+        foregroundColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.disabled)) {
+            return _PaymentTaskColors.disabledActionLabel;
+          }
+          return action.foregroundColor?.resolve(states);
+        }),
+      ),
+    ),
+  );
+}
 
 class PaymentTaskScaffold extends StatelessWidget {
   const PaymentTaskScaffold({
@@ -32,42 +83,49 @@ class PaymentTaskScaffold extends StatelessWidget {
   final bool busy;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => Theme(
+    data: _paymentTaskTheme(Theme.of(context)),
+    child: Builder(builder: _buildScaffold),
+  );
+
+  Widget _buildScaffold(BuildContext context) => Scaffold(
     backgroundColor: Theme.of(context).colorScheme.surface,
-    appBar: AppBar(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      surfaceTintColor: Colors.transparent,
-      leading: IconButton(
-        onPressed: onBack,
-        tooltip: paymentCopy(context).bpBack,
-        icon: const Icon(Icons.arrow_back_rounded),
-      ),
-      title: Text(
-        title,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-        style: AppTypography.headlineLg.copyWith(fontSize: 24),
-      ),
-      toolbarHeight: MediaQuery.textScalerOf(context).scale(24) > 32
-          ? (MediaQuery.textScalerOf(context).scale(24) * 2.4 + 16)
-                .clamp(64, 160)
-                .toDouble()
-          : 64,
-    ),
-    body: Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 600),
-        child: ListView(
-          key: ValueKey(title),
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-          children: [
-            if (busy)
-              Semantics(
-                liveRegion: true,
-                child: const LinearProgressIndicator(),
+    body: SafeArea(
+      bottom: false,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: ListView(
+            key: ValueKey(title),
+            padding: EdgeInsets.zero,
+            children: [
+              MobiTaskHeader(
+                title: title,
+                onBack: onBack,
+                backLabel: paymentCopy(context).bpBack,
+                backSurfaceColor:
+                    Theme.of(context).brightness == Brightness.dark
+                    ? _PaymentTaskColors.backSurface
+                    : null,
               ),
-            ...children.expand((w) => [w, const SizedBox(height: 16)]),
-          ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (busy) ...[
+                      Semantics(
+                        liveRegion: true,
+                        child: const LinearProgressIndicator(),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                    ...children.expand((w) => [w, const SizedBox(height: 16)]),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     ),
@@ -89,6 +147,20 @@ class PaymentTaskScaffold extends StatelessWidget {
             ),
           ),
   );
+}
+
+/// Present the server instant in the viewer's device-local timezone, keeping
+/// the date, year and their preferred 12/24-hour time convention together.
+/// Equivalent ISO offsets resolve to the same local date and clock time.
+String paymentDateTimeLabel(BuildContext context, DateTime instant) {
+  final local = instant.toLocal();
+  final copy = MaterialLocalizations.of(context);
+  final date = copy.formatShortDate(local);
+  final time = copy.formatTimeOfDay(
+    TimeOfDay.fromDateTime(local),
+    alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+  );
+  return '$date · $time';
 }
 
 class PaymentPanel extends StatelessWidget {

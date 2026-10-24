@@ -75,6 +75,17 @@ class ForbiddenException extends AppException {
   });
 }
 
+/// The current admin Auth session must be replaced by a new verification.
+class AdminReauthenticationRequiredException extends ForbiddenException {
+  const AdminReauthenticationRequiredException({
+    super.message =
+        'Your admin session needs verification. Verify again to continue.',
+    super.debugMessage,
+    super.originalError,
+    super.stackTrace,
+  });
+}
+
 /// Resource not found (e.g. profile, trip).
 class NotFoundException extends AppException {
   const NotFoundException({

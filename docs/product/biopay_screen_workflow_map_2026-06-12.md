@@ -1,26 +1,29 @@
-# BioPay Reference Screen Gap Map
+# BioPay Product Screen And Workflow Map
 
 Date: 2026-06-12
-Reference repo: `/Volumes/PRO-G40/BioPay`
-Face enrollment UI reference repo: `/Volumes/PRO-G40/MEMORIES`
-Target repo: `/Volumes/PRO-G40/MOBI/mobi_app`
+Authority clarification: 2026-09-30
+Product scope: [approved BioPay USSD and AWS recovery](biopay_ussd_aws_reactivation_scope_2026-06-12.md)
+
+The [external `revolut-design` skill](</Volumes/PRO-G40/Projects/ChatGPT/Revolut/skill/revolut-design/SKILL.md>)
+and its bundled references are the sole design authority for Mobio app, web
+and admin. This map retains product actions, supported screens and workflow
+boundaries; it supplies no competing visual reference or acceptance.
 
 ## Boundary
 
-The BioPay repo is a screen and interaction reference, not a payment authority
-to copy into MOBI. MOBI payment remains a USSD dialer handoff. The payment is
-completed outside the app by the telecom USSD flow. MOBI stores request,
-dialer-opened, user-marked-paid, and externally-confirmed audit state only.
+Mobio payment remains a USSD dialer handoff. The payment is completed outside
+the app by the telecom USSD flow. Mobio stores request, dialer-opened,
+user-marked-paid, and externally-confirmed audit state only.
 
 Face enrollment and face scan must use the AWS provider path. The Google ML Kit,
-TFLite, MobileFaceNet, local-auth, and MoMo-credential parts of the reference
-repo are historical context and must not become the restored production path.
-The MEMORIES face capture interface is used only as a UI reference for camera
-fit, face guide, and `Center`, `Turn`, `Hold` pose sequencing.
+TFLite, MobileFaceNet, local-auth, and MoMo-credential approaches are historical
+provider context and must not become the restored production path. The approved
+Mobio capture workflow retains a fitted front-camera preview, oval face guide,
+and `Center`, `Turn`, `Hold` pose sequence.
 
 ## Screen Mapping
 
-| BioPay reference surface | MOBI fit | Restoration decision |
+| Product surface | Mobio route or context | Approved workflow boundary |
 | --- | --- | --- |
 | Splash/Auth | Existing MOBI app shell and auth | Do not add a separate BioPay auth app. |
 | Home | `BioPay` bottom-tab action grid | Restored as QR, Scan, Face, and NFC. User activity page is removed as unsupported. |
@@ -37,7 +40,7 @@ fit, face guide, and `Center`, `Turn`, `Hold` pose sequencing.
 | Admin System Status | `/admin/biopay` Status section | Restored with AWS provider, database, USSD handoff, and audit readiness. |
 | Admin Activity | Not supported in MOBI | Do not restore as a MOBI screen. External confirmation belongs in the BioPay Ops `Confirmations` section. |
 
-## Reference Contracts Adopted
+## Product Workflow Requirements
 
 - QR card exposes `Share QR Code`, copies the same safe structured token payload
   used by the QR image, and avoids expiry-heavy UI copy.
@@ -63,8 +66,8 @@ fit, face guide, and `Center`, `Turn`, `Hold` pose sequencing.
 
 ## Restored Admin Slice
 
-The BioPay reference admin screens are restored in MOBI as one role-gated
-operations console instead of a separate legacy app shell:
+Mobio's approved BioPay admin workflows live in one role-gated operations
+console:
 
 - `/admin/biopay` opens `BioPay Ops` for platform admins.
 - `/admin/finance` remains a compatibility redirect for old admin links and should not be used in new UI copy.

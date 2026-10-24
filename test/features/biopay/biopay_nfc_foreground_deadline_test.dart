@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,64 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobi_app/features/biopay/presentation/biopay_nfc_foreground_listener.dart';
 
 void main() {
+  testWidgets('iOS launch, every routed child and resume stay NFC passive', (
+    tester,
+  ) async {
+    const reader = MethodChannel('rw.mobi.app/biopay_native_nfc_reader');
+    const device = MethodChannel('rw.mobi.app/biopay_device_nfc');
+    const kit = MethodChannel('flutter_nfc_kit/method');
+    const links = MethodChannel('com.llfbandit.app_links/messages');
+    const events = MethodChannel('com.llfbandit.app_links/events');
+    final calls = <String>[];
+    final messenger = tester.binding.defaultBinaryMessenger;
+    for (final channel in [reader, device, kit]) {
+      messenger.setMockMethodCallHandler(channel, (call) async {
+        calls.add('${channel.name}:${call.method}');
+        return null;
+      });
+    }
+    messenger.setMockMethodCallHandler(links, (_) async => null);
+    messenger.setMockMethodCallHandler(events, (_) async => null);
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    try {
+      for (final route in [
+        '/login',
+        '/home',
+        '/profile',
+        '/admin',
+        '/biopay',
+      ]) {
+        await tester.pumpWidget(
+          ProviderScope(
+            child: MaterialApp(
+              home: BioPayNfcForegroundListener(child: Text(route)),
+            ),
+          ),
+        );
+        await tester.pump();
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.inactive,
+        );
+        await tester.pump();
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
+        await tester.pump();
+        expect(find.text(route), findsOneWidget);
+        expect(calls, isEmpty);
+      }
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpAndSettle();
+      expect(calls, isEmpty);
+      expect(tester.takeException(), isNull);
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+      for (final channel in [reader, device, kit, links, events]) {
+        messenger.setMockMethodCallHandler(channel, null);
+      }
+    }
+  });
+
   test('old route cleanup cannot release a newer NFC suspension', () {
     final container = ProviderContainer();
     addTearDown(container.dispose);

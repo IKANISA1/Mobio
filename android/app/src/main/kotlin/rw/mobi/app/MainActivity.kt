@@ -38,6 +38,7 @@ import java.io.IOException
 
 class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
     private val mainHandler = Handler(Looper.getMainLooper())
+    private var accessibilityFocusChannel: AccessibilityFocusChannel? = null
     private var nativeNfcReaderChannel: MethodChannel? = null
     private var nativeReaderRequested = false
     private var pendingNativeNfcPayload: Map<String, String>? = null
@@ -50,6 +51,8 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        accessibilityFocusChannel?.dispose()
+        accessibilityFocusChannel = AccessibilityFocusChannel(this, flutterEngine)
         SecureSessionChannel.register(applicationContext, flutterEngine.dartExecutor.binaryMessenger)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger,
             "rw.mobi.app/biopay_discovery").setMethodCallHandler { call, result ->
@@ -210,6 +213,12 @@ class MainActivity : FlutterActivity(), NfcAdapter.ReaderCallback {
             }
         }
         handleBioPayLaunchIntent(intent)
+    }
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        accessibilityFocusChannel?.dispose()
+        accessibilityFocusChannel = null
+        super.cleanUpFlutterEngine(flutterEngine)
     }
 
     private fun requestPlayIntegrityToken(call: MethodCall, result: MethodChannel.Result) {

@@ -8,6 +8,7 @@ void main() {
       expect(
         ReferralAttributionService.shouldCreateIosUniversalLinkInstallId(
           platform: TargetPlatform.iOS,
+          universalLink: true,
           source: 'initial_app_link',
           kIsWeb: false,
         ),
@@ -16,6 +17,7 @@ void main() {
       expect(
         ReferralAttributionService.shouldCreateIosUniversalLinkInstallId(
           platform: TargetPlatform.iOS,
+          universalLink: true,
           source: 'app_link_stream',
           kIsWeb: false,
         ),
@@ -24,6 +26,7 @@ void main() {
       expect(
         ReferralAttributionService.shouldCreateIosUniversalLinkInstallId(
           platform: TargetPlatform.android,
+          universalLink: true,
           source: 'initial_app_link',
           kIsWeb: false,
         ),
@@ -32,6 +35,7 @@ void main() {
       expect(
         ReferralAttributionService.shouldCreateIosUniversalLinkInstallId(
           platform: TargetPlatform.iOS,
+          universalLink: true,
           source: 'play_install_referrer',
           kIsWeb: false,
         ),
@@ -40,6 +44,7 @@ void main() {
       expect(
         ReferralAttributionService.shouldCreateIosUniversalLinkInstallId(
           platform: TargetPlatform.iOS,
+          universalLink: true,
           source: 'initial_app_link',
           kIsWeb: true,
         ),

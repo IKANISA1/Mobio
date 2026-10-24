@@ -1,4 +1,4 @@
-import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/admin_mutation_guard.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/errors/app_exception_mapper.dart';
@@ -105,7 +105,7 @@ class EvChargerService {
     String? placeId,
     bool isActive = true,
   }) async {
-    final result = await RequestDeadline.mutation(
+    final result = await AdminMutationGuard.run(
       _client.rpc(
         'rpc_admin_upsert_ev_charger',
         params: {
@@ -123,6 +123,7 @@ class EvChargerService {
           'p_is_active': isActive,
         },
       ),
+      client: _client,
       operation: 'rpc_admin_upsert_ev_charger',
       operationId: id,
       timeout: _networkTimeout,
@@ -138,11 +139,12 @@ class EvChargerService {
   }
 
   Future<void> setChargerActive(String id, bool isActive) async {
-    await RequestDeadline.mutation(
+    await AdminMutationGuard.run(
       _client.rpc(
         'rpc_admin_set_ev_charger_active',
         params: {'p_charger_id': id, 'p_is_active': isActive},
       ),
+      client: _client,
       operation: 'rpc_admin_set_ev_charger_active',
       operationId: id,
       timeout: _networkTimeout,

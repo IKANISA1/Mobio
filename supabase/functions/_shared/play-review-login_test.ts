@@ -1,67 +1,92 @@
 import {
+  assertEquals,
+  assertNotEquals,
+  assertRejects,
+  assertThrows,
+} from "https://deno.land/std@0.208.0/assert/mod.ts";
+import {
+  activeStoreReviewConfiguration,
   appLoginOtpDelivery,
-  GOOGLE_PLAY_REVIEW_OTP,
-  GOOGLE_PLAY_REVIEW_PHONE,
-  googlePlayReviewMetadata,
-  isGooglePlayReviewOtp,
   isGooglePlayReviewPhone,
+  storeReviewChallengeHashes,
+  storeReviewCredentials,
 } from "./play-review-login.ts";
-
-Deno.test("Google Play review login constants match Play Console credentials", () => {
-  if (GOOGLE_PLAY_REVIEW_PHONE != "+250788767816") {
-    throw new Error("Unexpected Google Play review phone.");
-  }
-  if (GOOGLE_PLAY_REVIEW_OTP != "123456") {
-    throw new Error("Unexpected Google Play review OTP.");
-  }
-});
-
-Deno.test("Google Play review login only accepts exact phone and OTP", () => {
-  if (!isGooglePlayReviewPhone("+250788767816")) {
-    throw new Error("Expected reviewer phone to be accepted.");
-  }
-  if (isGooglePlayReviewPhone("+250788767817")) {
-    throw new Error("Non-reviewer phone must not be accepted.");
-  }
-  if (!isGooglePlayReviewOtp("+250788767816", "123456")) {
-    throw new Error("Expected reviewer OTP to be accepted.");
-  }
-  if (isGooglePlayReviewOtp("+250788767816", "000000")) {
-    throw new Error("Wrong reviewer OTP must not be accepted.");
+import { HttpError } from "./validation.ts";
+import {
+  reviewConfiguration,
+  reviewEnvironment,
+} from "./store-review-test-fixture.ts";
+Deno.test("review credentials are default disabled with no literal fallback", () => {
+  const before = Deno.env.get("STORE_REVIEW_ENABLED");
+  Deno.env.delete("STORE_REVIEW_ENABLED");
+  try {
+    assertThrows(() => storeReviewCredentials(), HttpError);
+  } finally {
+    if (before !== undefined) Deno.env.set("STORE_REVIEW_ENABLED", before);
   }
 });
-
-Deno.test("Google Play review metadata is explicit for audit logs", () => {
-  const metadata = googlePlayReviewMetadata();
-  if (metadata.google_play_review_login != true) {
-    throw new Error("Expected audit metadata marker.");
-  }
-  if (metadata.review_account_phone != GOOGLE_PLAY_REVIEW_PHONE) {
-    throw new Error("Expected audit metadata phone.");
-  }
-});
-
-Deno.test("review delivery instructions never claim a WhatsApp send or expose the code", () => {
-  const response = appLoginOtpDelivery(true);
-  if (
-    response.deliveryMode != "review_code" ||
-    !response.message.includes("No WhatsApp message is sent")
-  ) {
-    throw new Error("Review-only login needs truthful delivery instructions.");
-  }
-  if (JSON.stringify(response).includes(GOOGLE_PLAY_REVIEW_OTP)) {
-    throw new Error(
-      "Delivery instructions must not disclose the review credential.",
+Deno.test("configured review phone is fenced even when configuration is disabled", () =>
+  reviewEnvironment(async () => {
+    const c = storeReviewCredentials();
+    Deno.env.set("STORE_REVIEW_ENABLED", "false");
+    assertEquals(isGooglePlayReviewPhone(c.phone), true);
+    assertThrows(() => storeReviewCredentials(), HttpError);
+  }));
+Deno.test("review config must bind exact Supabase environment and generation", () =>
+  reviewEnvironment(async () => {
+    Deno.env.set(
+      "STORE_REVIEW_SUPABASE_URL",
+      "https://different-fixture.invalid",
     );
-  }
-});
-
-Deno.test("ordinary login retains WhatsApp delivery instructions", () => {
-  const response = appLoginOtpDelivery(false);
-  if (
-    response.deliveryMode != "whatsapp" ||
-    response.message != "OTP sent to your WhatsApp"
-  ) {
-    throw new Error("Ordinary login must keep WhatsApp delivery instructions.");
-  }
-});
+    assertThrows(() => storeReviewCredentials(), HttpError);
+    Deno.env.set("STORE_REVIEW_SUPABASE_URL", Deno.env.get("SUPABASE_URL")!);
+    const c = storeReviewCredentials();
+    await assertRejects(
+      () =>
+        activeStoreReviewConfiguration({
+          rpc: () =>
+            Promise.resolve({
+              data: { ...reviewConfiguration(), generation: 3 },
+              error: null,
+            }),
+        }, c),
+      HttpError,
+    );
+  }));
+Deno.test("review hash binds challenge principal generation role phone and code", () =>
+  reviewEnvironment(async () => {
+    const c = storeReviewCredentials(),
+      s = reviewConfiguration(),
+      id = crypto.randomUUID();
+    const original = await storeReviewChallengeHashes(c, s, id, c.code);
+    for (
+      const [x, y, z, k] of [
+        [c, s, crypto.randomUUID(), c.code],
+        [{ ...c, userId: crypto.randomUUID() }, s, id, c.code],
+        [{ ...c, generation: 3 }, s, id, c.code],
+        [c, { ...s, role: "passenger" as const }, id, c.code],
+        [{ ...c, phone: "+250700008812" }, s, id, c.code],
+        [c, s, id, c.code === "999999" ? "888888" : "999999"],
+      ] as const
+    ) {
+      assertNotEquals(
+        (await storeReviewChallengeHashes(x, y, z, k)).codeHash,
+        original.codeHash,
+      );
+    }
+    Deno.env.delete("OTP_HASH_SECRET");
+    await assertRejects(
+      () => storeReviewChallengeHashes(c, s, id, c.code),
+      HttpError,
+    );
+  }));
+Deno.test("review delivery is truthful and does not disclose its credential", () =>
+  reviewEnvironment(async () => {
+    const c = storeReviewCredentials();
+    assertEquals(
+      JSON.stringify(appLoginOtpDelivery(true)).includes(c.code),
+      false,
+    );
+    assertEquals(appLoginOtpDelivery(true).deliveryMode, "review_code");
+    assertEquals(appLoginOtpDelivery(false).deliveryMode, "whatsapp");
+  }));

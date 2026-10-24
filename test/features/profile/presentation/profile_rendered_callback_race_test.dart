@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,6 +15,7 @@ import 'package:mobi_app/features/profile/presentation/profile_screen.dart';
 import 'package:mobi_app/shared/widgets/mobi_feature_tile.dart';
 import 'package:mobi_app/shared/widgets/tappable_icon_button.dart';
 import 'package:mobi_design_system/theme/app_theme.dart';
+import 'package:mobi_design_system/theme/mobi_theme_extension.dart';
 import 'package:mobi_shared_types/models/profile.dart';
 
 class _Profiles extends Fake implements ProfileService {
@@ -46,7 +48,19 @@ void main() {
   Future<bool> Function(String) launch = (_) async => true;
   Future<void> Function()? enroll;
 
-  setUpAll(() => GoogleFonts.config.allowRuntimeFetching = false);
+  setUpAll(() async {
+    GoogleFonts.config.allowRuntimeFetching = false;
+    final inter = FontLoader('Inter');
+    for (final asset in [
+      'assets/google_fonts/Inter-Regular.ttf',
+      'assets/google_fonts/Inter-500.ttf',
+      'assets/google_fonts/Inter-600.ttf',
+      'assets/google_fonts/Inter-700.ttf',
+    ]) {
+      inter.addFont(rootBundle.load(asset));
+    }
+    await inter.load();
+  });
   setUp(() {
     generation = 0;
     profiles = _Profiles();
@@ -74,8 +88,11 @@ void main() {
     WidgetTester tester, {
     bool admin = false,
     bool nativeShare = false,
+    Size size = const Size(430, 932),
+    double textScale = 1,
+    bool dark = true,
   }) async {
-    await tester.binding.setSurfaceSize(const Size(430, 932));
+    await tester.binding.setSurfaceSize(size);
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       ProviderScope(
@@ -84,10 +101,16 @@ void main() {
           biopayFaceServiceProvider.overrideWithValue(face),
         ],
         child: MaterialApp(
-          theme: AppTheme.darkTheme,
+          theme: dark ? AppTheme.darkTheme : AppTheme.lightTheme,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(textScale)),
+            child: child!,
+          ),
           home: Scaffold(
             body: ProfileScreen.test(
-              isDarkMode: true,
+              isDarkMode: dark,
               onDarkModeChanged: (_) => record('theme'),
               onEditProfile: () => record('edit'),
               onWallet: () => record('wallet'),
@@ -130,6 +153,149 @@ void main() {
     generation++;
     AccountContext.changes.value++;
   }
+
+  void expectCompleteText(WidgetTester tester, Finder finder) {
+    expect(finder, findsOneWidget);
+    final paragraph = tester.renderObject<RenderParagraph>(finder);
+    final text = paragraph.text.toPlainText();
+    expect(paragraph.didExceedMaxLines, isFalse, reason: text);
+    // Selection-run boxes can overhang a tight line height without clipping.
+    // Check the same layout overflow conditions as RenderParagraph instead.
+    expect(
+      paragraph.textSize.width,
+      lessThanOrEqualTo(paragraph.size.width),
+      reason: text,
+    );
+    expect(
+      paragraph.textSize.height,
+      lessThanOrEqualTo(paragraph.size.height),
+      reason: text,
+    );
+    expect(paragraph.debugHasOverflowShader, isFalse, reason: text);
+    expect(
+      paragraph.getBoxesForSelection(
+        TextSelection(baseOffset: 0, extentOffset: text.length),
+      ),
+      isNotEmpty,
+      reason: text,
+    );
+    final rect = tester.getRect(finder);
+    final viewport = MediaQuery.sizeOf(tester.element(finder));
+    expect(rect.left, greaterThanOrEqualTo(-0.5));
+    expect(rect.right, lessThanOrEqualTo(viewport.width + 0.5));
+    expect(rect.top, greaterThanOrEqualTo(-0.5));
+    expect(rect.bottom, lessThanOrEqualTo(viewport.height + 0.5));
+  }
+
+  double contrast(Color first, Color second) {
+    final a = first.computeLuminance();
+    final b = second.computeLuminance();
+    return a > b ? (a + 0.05) / (b + 0.05) : (b + 0.05) / (a + 0.05);
+  }
+
+  testWidgets('Profile identity signals retain their normal side-by-side row', (
+    tester,
+  ) async {
+    await mount(tester, size: const Size(390, 844));
+    await tester.pumpAndSettle();
+    expectCompleteText(tester, find.text('Member'));
+    expectCompleteText(tester, find.text('004321').last);
+    expectCompleteText(tester, find.text('BioPay'));
+    expectCompleteText(tester, find.text('Set up').first);
+    expect(
+      tester.getRect(find.text('Member')).center.dy,
+      closeTo(tester.getRect(find.text('BioPay')).center.dy, 0.5),
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'large-text Profile keeps identity and essential actions complete',
+    (tester) async {
+      await mount(
+        tester,
+        admin: true,
+        size: const Size(320, 640),
+        textScale: 2,
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('004321'), findsNWidgets(2));
+      for (final finder in [
+        find.text('004321').first,
+        find.text('Member'),
+        find.text('004321').last,
+        find.text('BioPay'),
+        find.text('Set up').first,
+      ]) {
+        expectCompleteText(tester, finder);
+      }
+
+      final deletion = find.text('Request account deletion');
+      final scrollable = find.byType(Scrollable).first;
+      await tester.scrollUntilVisible(deletion, 250, scrollable: scrollable);
+      await tester.pumpAndSettle();
+      expectCompleteText(tester, deletion);
+      final exit = find.text('Exit Admin');
+      await tester.scrollUntilVisible(exit, 250, scrollable: scrollable);
+      await tester.pumpAndSettle();
+      expectCompleteText(tester, exit);
+      expect(exit.hitTestable(), findsOneWidget);
+      expect(find.byType(TappableIconButton), findsNothing);
+      await tester.tap(exit);
+      await tester.pumpAndSettle();
+      expect(calls, {'exitAdmin': 1});
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('Light Profile theme indicator has distinct track and thumb', (
+    tester,
+  ) async {
+    await mount(tester, dark: false, size: const Size(390, 844));
+    await tester.pumpAndSettle();
+    final themeTile = find.widgetWithText(MobiFeatureTile, 'Theme');
+    final widget = tester.widget<MobiFeatureTile>(themeTile);
+    final track = widget.trailing! as AnimatedContainer;
+    final trackColor = (track.decoration! as BoxDecoration).color!;
+    final thumb = (track.child! as AnimatedAlign).child as Container;
+    final thumbColor = (thumb.decoration! as BoxDecoration).color!;
+    final background = Theme.of(
+      tester.element(themeTile),
+    ).extension<MobiThemeExtension>()!.surfaceContainer;
+    expect(contrast(trackColor, background), greaterThanOrEqualTo(3));
+    expect(contrast(thumbColor, trackColor), greaterThanOrEqualTo(3));
+    await tester.ensureVisible(themeTile);
+    await tester.tap(themeTile);
+    await tester.pumpAndSettle();
+    expect(calls, {'theme': 1});
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Dark Profile theme indicator retains its appearance', (
+    tester,
+  ) async {
+    await mount(tester);
+    await tester.pumpAndSettle();
+    final themeTile = find.widgetWithText(MobiFeatureTile, 'Theme');
+    final track =
+        tester.widget<MobiFeatureTile>(themeTile).trailing!
+            as AnimatedContainer;
+    final theme = Theme.of(tester.element(themeTile));
+    expect(
+      (track.decoration! as BoxDecoration).color,
+      theme.colorScheme.primary,
+    );
+    expect(track.constraints!.maxWidth, 48);
+    expect(track.constraints!.maxHeight, 24);
+    final alignment = track.child! as AnimatedAlign;
+    expect(alignment.alignment, Alignment.centerRight);
+    final thumb = alignment.child as Container;
+    expect(
+      (thumb.decoration! as BoxDecoration).color,
+      theme.extension<MobiThemeExtension>()!.surfaceContainerLowest,
+    );
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('retained Profile actions cannot acquire a replacement session', (
     tester,

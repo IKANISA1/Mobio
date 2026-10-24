@@ -1,4 +1,4 @@
-import { createAnonClient } from "./supabase.ts";
+import { createAnonClient, createUserClient } from "./supabase.ts";
 import { HttpError } from "./validation.ts";
 
 export type AppUser = { id: string; sessionId: string };
@@ -23,6 +23,7 @@ export async function requireAppUser(request: Request): Promise<AppUser> {
   }
   // getUser above validates this exact bearer token at Auth. Decode its session
   // only after that validation; the database also checks ownership/revocation.
+  let sessionId: string;
   try {
     const part = match[1].split(".")[1];
     const claims = JSON.parse(atob(part.replace(/-/g, "+").replace(/_/g, "/")));
@@ -35,8 +36,30 @@ export async function requireAppUser(request: Request): Promise<AppUser> {
     ) {
       throw new Error("invalid session");
     }
-    return { id: user.id, sessionId: claims.session_id };
+    sessionId = claims.session_id;
   } catch {
     throw new HttpError("Authentication session required", 401);
   }
+  const { data: proof, error: proofError } = await createUserClient(
+    authorization,
+  )
+    .rpc("rpc_verified_interactive_session").abortSignal(
+      AbortSignal.timeout(5000),
+    );
+  if (
+    provider === "admin_whatsapp_otp" &&
+    proofError?.code === "42501" &&
+    proofError.message === "ADMIN_REAUTHENTICATION_REQUIRED"
+  ) {
+    throw new HttpError("Admin sign-in must be verified again", 403, {
+      code: "ADMIN_REAUTHENTICATION_REQUIRED",
+    });
+  }
+  if (
+    proofError || !proof || proof.user_id !== user.id ||
+    proof.session_id !== sessionId
+  ) {
+    throw new HttpError("Verified WhatsApp session required", 403);
+  }
+  return { id: user.id, sessionId };
 }

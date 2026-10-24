@@ -11,6 +11,10 @@ Release source of truth currently lives in:
 
 Every release must run Flutter verification, backend verification, migration/lint checks, signing validation, and artifact generation before deployment.
 
+Store reviewer access is operated through the [controlled review runbook](store-review-access.md).
+Keep its credentials in the private store console and secret store; public documentation
+contains instructions and evidence references only.
+
 ## Android candidate and Play promotion
 
 The tag and manual GitHub workflows now build a **candidate only**. They do not

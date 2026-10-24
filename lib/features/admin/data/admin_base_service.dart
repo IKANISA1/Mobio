@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/auth/admin_mutation_guard.dart';
 import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -15,8 +16,9 @@ abstract class AdminBaseService {
     Future<T> request, {
     required String operation,
     String? operationId,
-  }) => RequestDeadline.mutation(
+  }) => AdminMutationGuard.run(
     request,
+    client: supabaseClient,
     operation: operation,
     operationId: operationId,
   );

@@ -1,0 +1,17 @@
+{
+  "status": "LOCAL_SERVER_IMPLEMENTED_AND_FOCUSED_SQL_VERIFIED",
+  "migrations_replayed": 121,
+  "behavior_assertions": 130,
+  "sensitive_rpc_entries": 31,
+  "original_privileged_write_policies": 41,
+  "guarded_relations": 30,
+  "restrictive_write_policies": 90,
+  "files": {
+    "supabase/migrations/20261001183000_sensitive_admin_recent_auth.sql": "4419a00ea417848b0c90e44e743ed257f0dea3a9cc5bc26a19a57ba429df3b94",
+    "supabase/tests/admin_recent_auth_authority.sql": "5ab9420bf23f2436e489a0b89d0bd47b7b948a411335b280ff4feeb12b6c281d"
+  },
+  "passing_log": "build/qa/readiness-20261001/goal/cr03/run-91214/admin-recent.log",
+  "command": "SUPABASE_BIN=/Volumes/PRO-G40/Development/User-Developer/supabase_2_84_2_codex/supabase bash build/qa/readiness-20261001/goal/cr03/run-isolated.sh",
+  "scope": "unique disposable DB-only fixture, cron disabled, all synthetic changes rolled back, fixture removed",
+  "external_gates": "root combined suite, client reauthentication response handling, signed JWT/PostgREST/provider acceptance, hosted deployment remain outside this slice"
+}

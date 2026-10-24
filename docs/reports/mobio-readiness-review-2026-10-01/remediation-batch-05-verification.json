@@ -1,0 +1,437 @@
+{
+  "checkpoint_utc": "2026-10-02T00:49:23.180107+00:00",
+  "production_ready": false,
+  "verification": {
+    "batch-05-focused-result.json": {
+      "started_at_utc": "2026-10-02T00:01:01.759676+00:00",
+      "elapsed_seconds": 35.54,
+      "exit_code": 1,
+      "bound_inputs": 576,
+      "changed_bound_inputs": [],
+      "success": false,
+      "scope": "Executed reviewer core/domain/composition and all Admin tests; no full-product or visual acceptance",
+      "log": "build/qa/readiness-20261001/goal/batch-05-focused.log"
+    },
+    "batch-05-localized-outcomes-result.json": {
+      "started_at_utc": "2026-10-02T00:04:07.280580+00:00",
+      "elapsed_seconds": 17.36,
+      "exit_code": 0,
+      "bound_inputs": 576,
+      "changed_bound_inputs": [],
+      "success": true,
+      "scope": "Executed all Admin outcome/query locale cases after causal test fixes; no full-product or visual acceptance",
+      "log": "build/qa/readiness-20261001/goal/batch-05-localized-outcomes.log"
+    },
+    "batch-05-full-schema-04-result.json": {
+      "started_at_utc": "2026-10-02T00:04:06.053353+00:00",
+      "elapsed_seconds": 38.29,
+      "exit_code": 0,
+      "bound_inputs": 174,
+      "changed_bound_inputs": [],
+      "owned_project": "mobio_replay_60377",
+      "remaining_owned_resources": {
+        "containers": [],
+        "volumes": [],
+        "networks": []
+      },
+      "log": "build/qa/readiness-20261001/goal/batch-05-full-schema-04.log",
+      "success": true
+    }
+  },
+  "whole_analysis": {
+    "exit_code": 0,
+    "error": 0,
+    "warning": 0,
+    "info": 289,
+    "log": "build/qa/readiness-20261001/goal/batch-05-whole-analyze-01.log"
+  },
+  "full_flutter": {
+    "passed": 1898,
+    "failed": 175,
+    "pixel_failures": 169,
+    "other_failures": 6,
+    "exit_code": 1,
+    "source_stable": false,
+    "changed_canonical_source": [
+      "lib/features/biopay/presentation/payment_link_arrival_screen.dart"
+    ],
+    "source_result": "build/qa/readiness-20261001/goal/batch-05-whole-flutter-source.json",
+    "failure_register": "build/qa/readiness-20261001/goal/batch-05-whole-flutter-failures.json",
+    "acceptance": false
+  },
+  "new_platform_candidates": "Completed exact3409snapshot locally; batch06 runtime/QA additions excluded",
+  "review_routes_connected": false,
+  "signed_http_privacy_fence": "Subsequent batch06 passes212 actual signed HTTP assertions; not part of this platform snapshot",
+  "physical_erasure": "NOT_EXECUTED",
+  "policy_enabled": false,
+  "limitations": [
+    "Focused overlapping runs are not summed",
+    "129 installed SQL context is not genuine signed HTTP",
+    "RW neutral numeric formatting and English platform fallback need acceptance",
+    "Reviewer routes/gateways remain private proposals",
+    "Collector JVM sockets do not prove Android/OEM TLS/DNS/native cancellation",
+    "Per-dispatch Face admission cannot retract an external request dispatched before a later fence"
+  ],
+  "pending_face": {
+    "implemented": true,
+    "migrations": 130,
+    "assertions": 34,
+    "deno_tests_passed": 16,
+    "deno_typecheck_exit_code": 0,
+    "full_schema": {
+      "started_at_utc": "2026-10-02T00:17:37.607175+00:00",
+      "elapsed_seconds": 39.02,
+      "exit_code": 0,
+      "bound_inputs": 176,
+      "changed_bound_inputs": [],
+      "owned_project": "mobio_replay_79385",
+      "remaining_owned_resources": {
+        "containers": [],
+        "volumes": [],
+        "networks": []
+      },
+      "log": "build/qa/readiness-20261001/goal/batch-05-full-schema-07.log",
+      "success": true
+    },
+    "causal_failed_runs": [
+      "batch-05-full-schema-05-result.json",
+      "batch-05-full-schema-06-result.json"
+    ],
+    "provider_calls": 0,
+    "signed_http": false
+  },
+  "collector": {
+    "implemented": true,
+    "source_activation": "build/qa/readiness-20261001/goal/batch-05-collector-activation/activation.json",
+    "isolated_qa": {
+      "started_at_utc": "2026-10-02T00:13:50.459273+00:00",
+      "elapsed_seconds": 85.52,
+      "exit_code": 0,
+      "changed_copied_sources": [],
+      "changed_active_sources": [],
+      "primary_activated": false,
+      "scope": "QA-only Kotlin/JVM/component-package compile; no Android instrumentation/device/provider run"
+    },
+    "jvm_tests_passed": 49,
+    "qa_packages_verified": true,
+    "activity_cancellation_recompile": {
+      "started_at_utc": "2026-10-02T00:19:27.593971+00:00",
+      "elapsed_seconds": 53.46,
+      "exit_code": 0,
+      "changed_copied_sources": [],
+      "scope": "Exact activated seven files plus root Activity-handle change; QA/JVM/compile only"
+    },
+    "android_instrumentation": false,
+    "device_acceptance": false,
+    "current_qa_packages": {
+      "result": "pass",
+      "scope": "Isolated component-test APKs; not operational collector acceptance",
+      "artifacts": [
+        {
+          "kind": "app",
+          "path": "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/batch-05-collector-verification/qa-artifacts-02/app-qa.apk",
+          "package": "com.momobio.app.qa",
+          "sha256": "c73ffb5b48834b4d216bac534ca86f767b40993507aa315d8b714adb8c412036",
+          "size": 3413635,
+          "requested_permissions": [],
+          "components": []
+        },
+        {
+          "kind": "tests",
+          "path": "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/batch-05-collector-verification/qa-artifacts-02/app-qa-androidTest.apk",
+          "package": "com.momobio.app.qa.test",
+          "sha256": "e84cd596e8ba9f78b0e9bbc9b65ec0612410e805afa6b2e16203b03aee3dc495",
+          "size": 371035,
+          "requested_permissions": [],
+          "components": [
+            "activity",
+            "activity",
+            "activity"
+          ]
+        }
+      ]
+    }
+  },
+  "ci_python": {
+    "exit_code": 0,
+    "passed": 495,
+    "elapsed_seconds": 63.786,
+    "log": "build/qa/readiness-20261001/goal/batch-05-whole-python-01.log"
+  },
+  "isolated_current_candidate": {
+    "source_paths": 3409,
+    "snapshot": "build/qa/readiness-20261001/goal/batch-05-isolated-source-snapshot.json",
+    "copy_readback_matches": true,
+    "checks": "COMPLETE",
+    "future_private_proposals_included": false,
+    "whole_analysis": {
+      "exit_code": 0,
+      "errors": 0,
+      "warnings": 0,
+      "info": 290
+    },
+    "affected_tests": {
+      "passed": 426,
+      "failed": 0,
+      "canonical_ui_files": 792,
+      "canonical_ui_sha256": "9d5b6c4ca74fcde1bedbe160378e21b9254878f1327aaf3bb282e738b8e3d26f",
+      "source_stable": true,
+      "acceptance_effect": "none"
+    }
+  },
+  "isolated_platform_status": "Complete: bootstrap, analysis,426focused, PWA, signedAPK/AAB and unsignediOS terminal0 with3409copiedinputs unchanged",
+  "isolated_platform_checks": [
+    {
+      "check": "bootstrap",
+      "command": [
+        "bash",
+        "scripts/ci/bootstrap_flutter.sh"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-02T00:21:33.305224+00:00",
+      "elapsed_seconds": 9.69,
+      "exit_code": 0,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-05-isolated-bootstrap.log"
+    },
+    {
+      "check": "whole-analysis",
+      "command": [
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/dart",
+        "analyze"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-02T00:21:43.215988+00:00",
+      "elapsed_seconds": 25.09,
+      "exit_code": 0,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-05-isolated-whole-analysis.log"
+    },
+    {
+      "check": "affected-foundation",
+      "command": [
+        "python3",
+        "scripts/qa/run_flutter_tests.py",
+        "--flutter-bin",
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/flutter",
+        "--source-result",
+        "/Volumes/PRO-G40/Projects/Recovered-G-PRO/Mobio/build/qa/readiness-20261001/goal/batch-05-isolated-affected-ui-source.json",
+        "--",
+        "test/core/auth/review_session_context_test.dart",
+        "test/features/store_review",
+        "test/features/admin",
+        "test/release/wallet_driver_plus_contract_test.dart",
+        "test/release/scope_boundary_test.dart",
+        "test/shared/widgets/accessibility_controls_test.dart",
+        "test/features/preview/current_country_sheet_capture_test.dart",
+        "test/features/preview/current_payment_route_capture_test.dart",
+        "--reporter",
+        "expanded"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-02T00:22:08.489510+00:00",
+      "elapsed_seconds": 97.07,
+      "exit_code": 0,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-05-isolated-affected-foundation.log"
+    },
+    {
+      "check": "pwa-release",
+      "command": [
+        "bash",
+        "scripts/web/prepare_pwa_bundles.sh",
+        "build/pwa-readiness-goal-batch05-isolated-20261002"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-02T00:23:45.782951+00:00",
+      "elapsed_seconds": 56.08,
+      "exit_code": 0,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-05-isolated-pwa-release.log"
+    },
+    {
+      "check": "android-apk-release",
+      "command": [
+        "bash",
+        "scripts/release/build_android_release.sh",
+        "apk"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-02T00:24:42.138312+00:00",
+      "elapsed_seconds": 0.3,
+      "exit_code": 1,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-05-isolated-android-apk-release.log"
+    },
+    {
+      "check": "pwa-release",
+      "command": [
+        "bash",
+        "scripts/web/prepare_pwa_bundles.sh",
+        "build/pwa-readiness-goal-batch05-isolated-20261002"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-02T00:26:28.712207+00:00",
+      "elapsed_seconds": 58.54,
+      "exit_code": 0,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-05-isolated-pwa-release-retry-01.log"
+    },
+    {
+      "check": "android-apk-release",
+      "command": [
+        "bash",
+        "scripts/release/build_android_release.sh",
+        "apk"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-02T00:27:27.502585+00:00",
+      "elapsed_seconds": 289.14,
+      "exit_code": 0,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-05-isolated-android-apk-release-retry-01.log"
+    },
+    {
+      "check": "android-aab-release",
+      "command": [
+        "bash",
+        "scripts/release/build_android_release.sh",
+        "appbundle"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-02T00:32:16.988949+00:00",
+      "elapsed_seconds": 497.25,
+      "exit_code": 0,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-05-isolated-android-aab-release.log"
+    },
+    {
+      "check": "ios-unsigned-release",
+      "command": [
+        "bash",
+        "scripts/ci/verify_ios_release.sh"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-02T00:40:34.404924+00:00",
+      "elapsed_seconds": 117.72,
+      "exit_code": 0,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-05-isolated-ios-unsigned-release.log"
+    }
+  ],
+  "isolated_candidate_artifacts": {
+    "apk": {
+      "captured_at_utc": "2026-10-02T00:40:40.943440+00:00",
+      "artifact": "build/qa/readiness-20261001/goal/mobio-remediation-batch-05-isolated.apk",
+      "bytes": 94927815,
+      "sha256": "877de6560cd14be7b10af84e53986cafa05179ca344d78edc91bb4a035f84dc7",
+      "package": "rw.mobi.app",
+      "version_name": "1.0.0",
+      "version_code": "17",
+      "sdk": {
+        "{http://schemas.android.com/apk/res/android}minSdkVersion": "24",
+        "{http://schemas.android.com/apk/res/android}targetSdkVersion": "36"
+      },
+      "signature_verified": true,
+      "signer_certificate_sha256": [
+        "da9e5eab50d08505bf0b787ceab5db5b40778ebe77629572168a7237d77981c0"
+      ],
+      "source_snapshot": "batch-05-isolated-source-snapshot.json",
+      "scope": "Local exact3409source candidate; subsequent batch06 source, hosted/device/store acceptance excluded"
+    },
+    "aab": {
+      "captured_at_utc": "2026-10-02T00:41:36.803602+00:00",
+      "artifact": "build/qa/readiness-20261001/goal/mobio-remediation-batch-05-isolated.aab",
+      "bytes": 86127165,
+      "sha256": "482d0fcda45f9f1ed81ebd12e554340b797c578e417ed9da1142cdff135794e4",
+      "jarsigner_exit_code": 0,
+      "jar_verified": true,
+      "keytool_exit_code": 0,
+      "certificate_sha256": "da9e5eab50d08505bf0b787ceab5db5b40778ebe77629572168a7237d77981c0",
+      "certificate_matches_verified_apk": true,
+      "zip_integrity_passed": true,
+      "bundle_entries": 798,
+      "base_manifest_present": true,
+      "four_public_build_definitions_hash_bound": true,
+      "source_snapshot": "batch-05-isolated-source-snapshot.json",
+      "scope": "Local exact3409source signed bundle; subsequentbatch06, hosted/device/store acceptance excluded"
+    },
+    "web": {
+      "captured_at_utc": "2026-10-02T00:43:07.380286+00:00",
+      "root": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio/build/pwa-readiness-goal-batch05-isolated-20261002/site",
+      "file_count": 748,
+      "bytes": 101866769,
+      "tree_sha256": "9f5cb4d6cb176e227b2166952c48ac5d25564ddc8753e8419b69acdd5779991a",
+      "algorithm": "SHA256 of canonical sorted JSON file records (path,bytes,sha256), compact UTF8; regular files only",
+      "source_snapshot": "batch-05-isolated-source-snapshot.json",
+      "scope": "Local exact3409source candidate; subsequentbatch06 source and hosted/device/store acceptance excluded"
+    },
+    "unsigned_ios": {
+      "captured_at_utc": "2026-10-02T00:43:07.501939+00:00",
+      "root": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio/build/ios/iphoneos/Runner.app",
+      "file_count": 446,
+      "bytes": 44047383,
+      "tree_sha256": "25de4d6fe883efb8f663c4e760ef13cfccca1c271e324af8bb72e961bd094527",
+      "algorithm": "SHA256 of canonical sorted JSON file records (path,bytes,sha256), compact UTF8; regular files only",
+      "source_snapshot": "batch-05-isolated-source-snapshot.json",
+      "scope": "Local exact3409source candidate; subsequentbatch06 source and hosted/device/store acceptance excluded",
+      "app_info": {
+        "CFBundleIdentifier": "rw.mobi.app",
+        "CFBundleShortVersionString": "1.0.0",
+        "CFBundleVersion": "17",
+        "MinimumOSVersion": "15.5",
+        "DTPlatformName": "iphoneos"
+      },
+      "signing": "Unsigned; no signed archive/TestFlight or physical iOS acceptance"
+    },
+    "archives": {
+      "at_utc": "2026-10-02T00:44:32.444468+00:00",
+      "elapsed_seconds": 9.13,
+      "archives": [
+        {
+          "path": "build/qa/readiness-20261001/goal/mobio-remediation-batch-05-isolated-source.zip",
+          "bytes": 151324709,
+          "sha256": "a88d23332209a1543128d6e4263352d371c65ef1ef92da0f7efe83cc757c2a19",
+          "entries": 3409,
+          "readback_hashes_match": true
+        },
+        {
+          "path": "build/qa/readiness-20261001/goal/mobio-remediation-batch-05-isolated-ios-unsigned.zip",
+          "bytes": 18555338,
+          "sha256": "76f4cbca3c30afb98c23f266a0ecdcf8599651a255d3f3095e5027a69a8a440d",
+          "entries": 446,
+          "readback_hashes_match": true
+        }
+      ],
+      "source_paths": 3409,
+      "source_unchanged": true,
+      "archive_readback_hashes_match": true,
+      "scope": "Recoverable exact3409source and unsigned iOS candidate; Git/private config/caches/generated ignored outputs excluded from source ZIP; subsequent batch06 excluded"
+    }
+  },
+  "browser_signed_out_only": {
+    "scope": "Local compiled3409source batch05 candidate; signed-out startup and protected reauthentication only; no OTP sent, signed operator journey, hosted deployment, device/store or full Revolut acceptance",
+    "siteTree": "9f5cb4d6cb176e227b2166952c48ac5d25564ddc8753e8419b69acdd5779991a",
+    "url": "http://127.0.0.1:54780",
+    "limitations": [
+      "Browser resize initially yielded500px; mobile emulation corrected to actual390px with readback.",
+      "Mobile emulation reset semantics; placeholder tool click timed out; actual Flutter placeholder click then restored semantics.",
+      "Roboto font uses external gstatic; local Inter loads200. Offline full typography remains unverified.",
+      "No full protected directory/localization operator journey or provider/device/store acceptance."
+    ],
+    "captured_at_utc": "2026-10-02T00:36:57.178710+00:00",
+    "screenshots": [
+      {
+        "path": "batch-05-browser-admin-auth-1280x900-native.png",
+        "bytes": 59362,
+        "sha256": "89133813dd14c5e0aca1e21cfa25af3990904cdf9162354313307483d7e15853"
+      },
+      {
+        "path": "batch-05-browser-login-390x844-native.png",
+        "bytes": 290150,
+        "sha256": "2eed23d76c609c7e5083fcb8ea38b3e21269d64fb051adc06152611e4e5d19ef"
+      }
+    ]
+  },
+  "batch06_source_excluded": true
+}

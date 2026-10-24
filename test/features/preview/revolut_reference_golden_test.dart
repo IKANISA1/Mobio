@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:mobi_app/app/launch_screen.dart';
 import 'package:mobi_app/app/router/error_screens.dart';
@@ -56,23 +59,34 @@ import 'package:mobi_app/features/home/presentation/home_screen.dart';
 import 'package:mobi_app/features/nearby/presentation/nearby_screen.dart';
 import 'package:mobi_app/features/notifications/presentation/notifications_screen.dart';
 import 'package:mobi_app/features/profile/application/profile_services.dart';
+import 'package:mobi_app/features/profile/data/profile_service.dart';
 import 'package:mobi_app/features/profile/data/subscription_plan_service.dart';
 import 'package:mobi_app/features/profile/data/vehicle_type_service.dart';
+import 'package:mobi_app/features/profile/data/wallet_service.dart';
+import 'package:mobi_app/features/profile/domain/wallet.dart';
+import 'package:mobi_app/features/profile/domain/wallet_operation.dart';
 import 'package:mobi_app/features/profile/presentation/driver_plus_screen.dart';
 import 'package:mobi_app/features/profile/presentation/edit_profile_screen.dart';
 import 'package:mobi_app/features/profile/presentation/profile_screen.dart';
 import 'package:mobi_app/features/profile/presentation/wallet_screen.dart';
 import 'package:mobi_app/shared/models/vehicle_type_model.dart';
 import 'package:mobi_app/shared/widgets/mobi_bottom_nav.dart';
+import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_design_system/theme/app_theme.dart';
 import 'package:mobi_shared_types/models/country.dart';
+import 'package:mobi_shared_types/models/profile.dart';
 import 'package:mobi_shared_types/models/subscription_plan_model.dart';
 import 'package:mobi_shared_types/models/trip.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../tool/face_receiving_preview_service.dart';
+import '../../../tool/preview_admin_user_contract.dart'
+    show PreviewAdminUserContract;
 import '../../helpers/biopay_nfc_test_channels.dart';
+import '../../helpers/design_capture_fonts.dart';
 import '../../helpers/mobile_scanner_test_channel.dart';
+import '../../helpers/ordinary_golden_fonts.dart';
 import '../../helpers/scrolled_tap_target_guideline.dart';
 import '../../helpers/whatsapp_login_fixture.dart';
 
@@ -85,22 +99,287 @@ void main() {
 void registerVisualSurfaceTests({bool accessibilityAudit = false}) {
   TestWidgetsFlutterBinding.ensureInitialized();
   final captureDirectory = Platform.environment['MOBIO_CAPTURE_DIR'];
+  final ordinaryCandidateDirectory =
+      Platform.environment['MOBIO_ORDINARY_GOLDEN_CANDIDATE_DIR'];
+  final previousComparator = goldenFileComparator;
+  final currentWalletProfileChecks = <Map<String, Object?>>[];
   if (captureDirectory != null && captureDirectory.isNotEmpty) {
+    if (ordinaryCandidateDirectory?.isNotEmpty ?? false) {
+      throw StateError('Choose one explicit export mode.');
+    }
     goldenFileComparator = _DesignCaptureComparator(
       Directory(captureDirectory),
+    );
+  } else if (ordinaryCandidateDirectory?.isNotEmpty ?? false) {
+    // Stage ordinary-engine renders for review. Preserve existing baselines,
+    // default DPR and the declared ordinary font contract; this mode accepts
+    // no comparison.
+    goldenFileComparator = _DesignCaptureComparator(
+      Directory(ordinaryCandidateDirectory!),
     );
   }
 
   setUpAll(() async {
     installMobileScannerTestChannel();
-    final loader = FontLoader('packages/lucide_icons/Lucide')
-      ..addFont(rootBundle.load('packages/lucide_icons/assets/lucide.ttf'));
-    await loader.load();
+    if (captureDirectory != null && captureDirectory.isNotEmpty) {
+      await loadDesignCaptureFonts();
+      enableDesignCaptureTypographyFallbacks();
+      final fontRecord = File('$captureDirectory/font-provenance.json');
+      await fontRecord.parent.create(recursive: true);
+      await fontRecord.writeAsString(
+        jsonEncode({
+          'capture_only': true,
+          'fonts': designCaptureFontProvenance,
+          'typography_fallbacks': designCaptureTypographyFallbackProvenance,
+          'limitations': designCaptureFontLimitations,
+          'record_stage': 'fonts_ready_before_exports',
+          'acceptance_effect': 'none',
+        }),
+      );
+    } else {
+      final loader = FontLoader('packages/lucide_icons/Lucide')
+        ..addFont(rootBundle.load('packages/lucide_icons/assets/lucide.ttf'));
+      await loader.load();
+      final materialIcons = FontLoader('MaterialIcons')
+        ..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'));
+      await materialIcons.load();
+      // The test engine disables automatic asset-font loading. Ordinary
+      // comparisons retain the product's faces before loading their explicit
+      // portable test-only fallback families.
+      final manifest =
+          jsonDecode(await rootBundle.loadString('FontManifest.json'))
+              as List<dynamic>;
+      final fonts =
+          manifest.singleWhere((entry) => entry['family'] == 'Inter')['fonts']
+              as List<dynamic>;
+      final inter = FontLoader('Inter');
+      for (final font in fonts) {
+        inter.addFont(rootBundle.load(font['asset'] as String));
+      }
+      await inter.load();
+      await loadOrdinaryGoldenFallbackFonts();
+      if (ordinaryCandidateDirectory?.isNotEmpty ?? false) {
+        final fontRecord = File(
+          '$ordinaryCandidateDirectory/font-provenance.json',
+        );
+        await fontRecord.parent.create(recursive: true);
+        await fontRecord.writeAsString(
+          const JsonEncoder.withIndent('  ').convert({
+            'ordinary_test_only': true,
+            'fonts': ordinaryGoldenFontProvenance,
+            'fallback_families': ordinaryGoldenFallbackFamilies,
+            'limitations': ordinaryGoldenFontLimitations,
+            'record_stage': 'fonts_ready_before_candidate_exports',
+            'native_font_equivalence': 'unverified',
+            'acceptance_effect': 'none',
+          }),
+          flush: true,
+        );
+      }
+    }
   });
 
-  tearDownAll(uninstallMobileScannerTestChannel);
+  tearDownAll(() async {
+    try {
+      restoreDesignCaptureTypographyFallbacks();
+      if (captureDirectory != null && captureDirectory.isNotEmpty) {
+        await File('$captureDirectory/font-provenance.json').writeAsString(
+          jsonEncode({
+            'capture_only': true,
+            'fonts': designCaptureFontProvenance,
+            'typography_fallbacks': designCaptureTypographyFallbackProvenance,
+            'logo_decode': designCaptureLogoDecodeProvenance,
+            'logo_paints': designCaptureLogoPaintProvenance,
+            'limitations': designCaptureFontLimitations,
+            'record_stage': 'suite_teardown_original_styles_restored',
+            'acceptance_effect': 'none',
+          }),
+          flush: true,
+        );
+        await File(
+          '$captureDirectory/current-wallet-profile-state-checks.json',
+        ).writeAsString(
+          const JsonEncoder.withIndent('  ').convert({
+            'schema_version': 1,
+            'fixture': 'Local-only current production wallet/profile widgets',
+            'viewport': {'width': 320, 'height': 640},
+            'text_scale': 2,
+            'locale': 'English fixture',
+            'safe_area': 'Zero system padding in widget-test capture',
+            'checks': currentWalletProfileChecks,
+            'whole_text_paint_checks': _currentWholeTextPaintChecks,
+            'limitations': [
+              'WalletScreen.test provides a synthetic stable AccountSnapshot and a read-only WalletService fixture; no authenticated session or backend is exercised.',
+              'Profile uses its existing local UI preview fixture. A Save callback validates local UI dispatch, not stored profile persistence.',
+              'QR paint payload equivalence and mocked clipboard/share dispatch are local checks, not camera scanning, native clipboard, system sharing or provider outcome evidence.',
+              'Scrollable content is visited with actual margin drags. Each PNG shows a viewport at its recorded scroll state, not a stitched full-page image.',
+              'The displayed invite URL may use its existing ellipsis treatment. Full URL retention is checked through the QR painter and clipboard payload.',
+            ],
+            'visual_acceptance': 'unverified',
+            'acceptance_effect': 'none',
+          }),
+          flush: true,
+        );
+      }
+    } finally {
+      restoreDesignCaptureTypographyFallbacks();
+      goldenFileComparator = previousComparator;
+      uninstallMobileScannerTestChannel();
+    }
+  });
   setUp(installBioPayNfcTestChannels);
   tearDown(uninstallBioPayNfcTestChannels);
+
+  if (!accessibilityAudit && !_isDesignCapture) {
+    test(
+      'ordinary reference harness loads bundled Inter before fixtures',
+      () async {
+        final manifest =
+            jsonDecode(await rootBundle.loadString('FontManifest.json'))
+                as List<dynamic>;
+        final fonts =
+            manifest.singleWhere((entry) => entry['family'] == 'Inter')['fonts']
+                as List<dynamic>;
+        expect(
+          fonts.map((font) => font['weight']),
+          unorderedEquals([400, 500, 600, 700]),
+        );
+        final widths = <double>[];
+        for (final font in fonts) {
+          final weight = FontWeight.values[(font['weight'] as int) ~/ 100 - 1];
+          final expectedFamily = 'ReferenceHarnessExpectedInter${weight.value}';
+          final expected = FontLoader(expectedFamily)
+            ..addFont(rootBundle.load(font['asset'] as String));
+          await expected.load();
+          Size dimensions(TextStyle style) {
+            final painter = TextPainter(
+              text: TextSpan(text: 'MW Hamburg 12345 éç', style: style),
+              textDirection: ui.TextDirection.ltr,
+            )..layout();
+            final result = Size(painter.width, painter.height);
+            painter.dispose();
+            return result;
+          }
+
+          final primaryStyle = TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 24,
+            fontWeight: weight,
+          );
+          final actual = dimensions(primaryStyle);
+          final expectedMetrics = dimensions(
+            primaryStyle.copyWith(fontFamily: expectedFamily),
+          );
+          expect(actual.width, closeTo(expectedMetrics.width, 0.01));
+          expect(actual.height, closeTo(expectedMetrics.height, 0.01));
+          for (final productionTheme in [
+            AppTheme.lightTheme,
+            AppTheme.darkTheme,
+          ]) {
+            final ordinaryTheme = ordinaryGoldenTheme(productionTheme);
+            final fallbackStyle = primaryStyle.copyWith(
+              fontFamilyFallback:
+                  ordinaryTheme.textTheme.bodyMedium!.fontFamilyFallback,
+            );
+            final fallbackMetrics = dimensions(fallbackStyle);
+            expect(
+              fallbackMetrics.width,
+              closeTo(actual.width, 0.01),
+              reason: 'Fallbacks must retain Inter ${weight.value} metrics.',
+            );
+            expect(fallbackMetrics.height, closeTo(actual.height, 0.01));
+          }
+          widths.add(actual.width);
+        }
+        expect(widths.toSet(), hasLength(4));
+        List<TextStyle?> styles(TextTheme theme) => [
+          theme.displayLarge,
+          theme.displayMedium,
+          theme.displaySmall,
+          theme.headlineLarge,
+          theme.headlineMedium,
+          theme.headlineSmall,
+          theme.titleLarge,
+          theme.titleMedium,
+          theme.titleSmall,
+          theme.bodyLarge,
+          theme.bodyMedium,
+          theme.bodySmall,
+          theme.labelLarge,
+          theme.labelMedium,
+          theme.labelSmall,
+        ];
+        for (final production in [AppTheme.lightTheme, AppTheme.darkTheme]) {
+          final original = styles(production.textTheme);
+          final originalPrimary = styles(production.primaryTextTheme);
+          final ordinary = ordinaryGoldenTheme(production);
+          for (final pair in [
+            (original, styles(ordinary.textTheme)),
+            (originalPrimary, styles(ordinary.primaryTextTheme)),
+          ]) {
+            for (var i = 0; i < pair.$1.length; i++) {
+              final sourceStyle = pair.$1[i];
+              final fallbackStyle = pair.$2[i];
+              expect(
+                fallbackStyle,
+                sourceStyle?.copyWith(
+                  fontFamilyFallback: <String>{
+                    ...?sourceStyle.fontFamilyFallback,
+                    ...ordinaryGoldenFallbackFamilies,
+                  }.toList(growable: false),
+                ),
+                reason: 'Only the explicit fallback list may change.',
+              );
+            }
+          }
+          expect(styles(production.textTheme), original);
+          expect(styles(production.primaryTextTheme), originalPrimary);
+          expect(
+            ordinary.copyWith(
+              textTheme: production.textTheme,
+              primaryTextTheme: production.primaryTextTheme,
+            ),
+            production,
+          );
+        }
+        expect(ordinaryGoldenFontProvenance, hasLength(2));
+        if (!(ordinaryCandidateDirectory?.isNotEmpty ?? false)) {
+          expect(goldenFileComparator, same(previousComparator));
+        }
+        await expectOrdinaryGoldenGlyphPaint();
+      },
+    );
+  }
+
+  test('Reports preview respects status, search and pagination', () async {
+    final service = _PreviewAdminService();
+    expect((await service.listUserReports()).map((report) => report.id), [
+      'report-1',
+    ]);
+    expect(
+      (await service.listUserReports(
+        status: 'resolved',
+      )).map((report) => report.id),
+      ['report-2'],
+    );
+    expect(await service.listUserReports(status: 'all'), hasLength(2));
+    expect(
+      (await service.listUserReports(
+        status: 'all',
+        search: ' ALINE ',
+      )).map((report) => report.id),
+      ['report-2'],
+    );
+    expect(
+      (await service.listUserReports(
+        status: 'all',
+        limit: 1,
+        offset: 1,
+      )).map((report) => report.id),
+      ['report-2'],
+    );
+    expect(await service.listUserReports(status: 'all', limit: 0), isEmpty);
+  });
 
   const compact = Size(390, 844);
   const large = Size(430, 932);
@@ -443,6 +722,168 @@ void registerVisualSurfaceTests({bool accessibilityAudit = false}) {
   ];
   cases.addAll(shellCases);
 
+  // Export only the changed states; these do not create or accept baselines.
+  if (!accessibilityAudit && _isDesignCapture) {
+    for (final (size, scale, light) in [
+      (compact, 1.0, false),
+      (compact, 1.0, true),
+      (desktop, 1.0, false),
+      (const Size(320, 640), 2.0, false),
+    ]) {
+      final theme = light ? 'light' : 'dark';
+      final suffix =
+          '${size.width.toInt()}x${size.height.toInt()}_${scale}x_$theme';
+      testWidgets('current admin Profile Exit Admin full scroll $suffix', (
+        tester,
+      ) async {
+        var exits = 0;
+        await _pumpGolden(
+          tester,
+          size,
+          ProviderScope(
+            overrides: [
+              profileServiceProvider.overrideWithValue(
+                _AdminProfileCaptureService(),
+              ),
+              biopayFaceServiceProvider.overrideWithValue(_GoldenFaceService()),
+            ],
+            child: ProfileScreen.test(
+              isDarkMode: !light,
+              onDarkModeChanged: (_) {},
+              onEditProfile: () {},
+              onWallet: () {},
+              onInviteAndEarn: () {},
+              onMobioPlus: () {},
+              onBioPayEnroll: () {},
+              onNfcWriteCard: () {},
+              onAdminGateway: () {},
+              onExitAdmin: () => exits++,
+              onSignOut: () {},
+              captureAccount: () => _GoldenFaceService._account,
+              isCurrent: (account) =>
+                  account.identity == _GoldenFaceService._account.identity,
+            ),
+          ),
+          light: light,
+          textScale: scale,
+        );
+        // The loaded identity is shown in the title and identity strip.
+        expect(find.text('004321'), findsNWidgets(2));
+        for (final label in ['Member', 'BioPay']) {
+          await _expectCompleteParagraph(tester, find.text(label));
+        }
+        expect(find.text('Set up'), findsNWidgets(2));
+        await _expectCompleteParagraph(tester, find.text('Set up').first);
+        for (var index = 0; index < 2; index++) {
+          await _expectCompleteParagraph(tester, find.text('004321').at(index));
+        }
+        expect(find.bySemanticsLabel('Admin sign in'), findsNothing);
+        await _expectGoldenCapture(
+          tester,
+          'goldens/revolut/admin_profile/current_${suffix}_top.png',
+        );
+        final list = find.descendant(
+          of: find.byType(ProfileScreen),
+          matching: find.byType(SingleChildScrollView),
+        );
+        expect(list, findsOneWidget);
+        final page = find.descendant(
+          of: list,
+          matching: find.byType(Scrollable),
+        );
+        final exit = find.text('Exit Admin');
+        final deletion = find.text('Request account deletion');
+        await _dragCurrentPageUntilVisible(
+          tester,
+          exit,
+          page,
+          visibleStart: deletion,
+        );
+        await _expectCompleteParagraph(tester, deletion);
+        await _expectCompleteParagraph(tester, exit);
+        final target = find
+            .ancestor(of: exit, matching: find.byType(InkWell))
+            .first;
+        expect(target.hitTestable(), findsOneWidget);
+        expect(tester.getRect(target).height, greaterThanOrEqualTo(48));
+        await _expectGoldenCapture(
+          tester,
+          'goldens/revolut/admin_profile/current_${suffix}_exit.png',
+        );
+        await tester.tap(target);
+        await tester.pumpAndSettle();
+        expect(exits, 1);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('current Home selection correction batch', (tester) async {
+      for (final mode in ['passenger', 'driver']) {
+        await _pumpGolden(
+          tester,
+          compact,
+          HomeScreen(
+            mode: mode,
+            onModeChanged: (_) {},
+            onChat: (_) {},
+            onChatPerson: (_) {},
+            onTripDetails: (_) {},
+            onViewNearby: () {},
+            onViewBookings: () {},
+            onSchedule: () {},
+          ),
+          light: true,
+        );
+        await _expectGoldenCapture(
+          tester,
+          'goldens/revolut/corrections/home_${mode}_light_390x844.png',
+        );
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pumpAndSettle();
+      }
+    });
+
+    testWidgets('current Reports filter and contact correction batch', (
+      tester,
+    ) async {
+      await _pumpGolden(tester, wideDesktop, AdminReportsScreen(onBack: () {}));
+      expect(find.text('Patrick Passenger'), findsNothing);
+      final detailsOnly =
+          Platform.environment['MOBIO_CAPTURE_REPORT_DETAILS_ONLY'] == 'true';
+      if (!detailsOnly) {
+        await _expectGoldenCapture(
+          tester,
+          'goldens/revolut/corrections/reports_open_1440x1000.png',
+        );
+      }
+      await tester.tap(find.text('All'));
+      await tester.pumpAndSettle();
+      expect(find.text('Unavailable'), findsNWidgets(2));
+      expect(find.text('u3'), findsNothing);
+      expect(find.text('u4'), findsNothing);
+      if (!detailsOnly) {
+        await _expectGoldenCapture(
+          tester,
+          'goldens/revolut/corrections/reports_all_1440x1000.png',
+        );
+      }
+      final details = find.text('Details').last;
+      await tester.ensureVisible(details);
+      await tester.pumpAndSettle();
+      expect(details.hitTestable(), findsOneWidget);
+      await tester.tap(details);
+      await tester.pumpAndSettle();
+      expect(find.text('Report details'), findsOneWidget);
+      expect(find.text('Unavailable'), findsNWidgets(4));
+      expect(find.text('u3'), findsNothing);
+      expect(find.text('u4'), findsNothing);
+      await _expectGoldenCapture(
+        tester,
+        'goldens/revolut/corrections/reports_details_1440x1000.png',
+      );
+    });
+  }
+
   if (accessibilityAudit) {
     cases.add(
       _GoldenCase(
@@ -554,9 +995,9 @@ void registerVisualSurfaceTests({bool accessibilityAudit = false}) {
     testWidgets('light theme $name', (tester) async {
       final item = cases.firstWhere((item) => item.name == name);
       await _pumpGolden(tester, compact, item.builder(), light: true);
-      await expectLater(
-        find.byType(MaterialApp),
-        matchesGoldenFile('goldens/revolut/light/${name}_390x844.png'),
+      await _expectGoldenCapture(
+        tester,
+        'goldens/revolut/light/${name}_390x844.png',
       );
     });
   }
@@ -570,9 +1011,9 @@ void registerVisualSurfaceTests({bool accessibilityAudit = false}) {
           await _pumpGolden(tester, size, item.builder());
           await item.prepare?.call(tester);
 
-          await expectLater(
-            find.byType(MaterialApp),
-            matchesGoldenFile('goldens/revolut/${item.name}_$suffix.png'),
+          await _expectGoldenCapture(
+            tester,
+            'goldens/revolut/${item.name}_$suffix.png',
           );
           await tester.pumpWidget(const SizedBox.shrink());
           await tester.pumpAndSettle();
@@ -591,16 +1032,701 @@ void registerVisualSurfaceTests({bool accessibilityAudit = false}) {
           await _pumpGolden(tester, size, item.builder());
           await item.prepare?.call(tester);
 
-          await expectLater(
-            find.byType(MaterialApp),
-            matchesGoldenFile(
-              'goldens/revolut/admin_desktop/${item.name}_$suffix.png',
-            ),
+          await _expectGoldenCapture(
+            tester,
+            'goldens/revolut/admin_desktop/${item.name}_$suffix.png',
           );
         });
       }
     });
   }
+
+  // Additional current-state evidence has no historical golden baseline. It is
+  // exported only in explicit capture mode; existing cases/exclusions remain.
+  if (_isDesignCapture) {
+    const narrow = Size(320, 640);
+    for (final light in [false, true]) {
+      final theme = light ? 'light' : 'dark';
+      testWidgets('current wallet 320px 200 percent full scroll $theme', (
+        tester,
+      ) async {
+        // testWidgets owns its automatic semantics handle on the pinned SDK.
+        final service = _CurrentWalletCaptureService(balance: 8200);
+        final native = _mockCurrentInviteDispatches();
+        await _pumpGolden(
+          tester,
+          narrow,
+          _currentWalletFixture(service),
+          light: light,
+          textScale: 2,
+        );
+        expect(tester.takeException(), isNull);
+        await _expectCompleteParagraph(tester, find.text('8,200 TOKENS'));
+        final screenshots = <String>[];
+        Future<void> captureState(String state) async {
+          final path =
+              'goldens/revolut/wallet_200pct_${theme}_${state}_320x640.png';
+          await _expectGoldenCapture(tester, path);
+          screenshots.add(path.replaceFirst('goldens/revolut/', ''));
+        }
+
+        await captureState('top');
+        // The fixed page header owns a separate scrollable title. Exercise
+        // the actual wallet ListView, rather than dragging that title window.
+        final list = find.descendant(
+          of: find.byType(WalletScreen),
+          matching: find.byType(ListView),
+        );
+        expect(list, findsOneWidget);
+        final page = find.descendant(
+          of: list,
+          matching: find.byType(Scrollable),
+        );
+        expect(page, findsOneWidget);
+        await _dragCurrentPageUntilVisible(
+          tester,
+          find.text('900'),
+          page,
+          visibleStart: find.text('Earned'),
+        );
+        for (final metric in [
+          'Earned',
+          'Sent',
+          'Received',
+          '10,200',
+          '1,400',
+          '900',
+        ]) {
+          final text = find.text(metric);
+          await _expectCompleteParagraph(tester, text);
+          _expectOneVisualLine(tester, text);
+        }
+        _expectBalanceUnitAndCommas(tester);
+        await captureState('metrics');
+        final firstAction = find.ancestor(
+          of: find.text('Send'),
+          matching: find.byType(InkWell),
+        );
+        final lastAction = find.ancestor(
+          of: find.text('Copy'),
+          matching: find.byType(InkWell),
+        );
+        await _dragCurrentPageUntilVisible(
+          tester,
+          lastAction,
+          page,
+          visibleStart: firstAction,
+        );
+        for (final action in ['Send', 'Redeem', 'Share', 'Copy']) {
+          final text = find.text(action);
+          await _expectCompleteParagraph(tester, text);
+          _expectOneVisualLine(tester, text);
+        }
+        await captureState('actions');
+        final qr = find.byType(QrImageView);
+        await _dragCurrentPageUntilVisible(tester, qr, page);
+        expect(find.text(_currentInviteUrl), findsOneWidget);
+        await _expectCurrentInviteQrPayload(tester, qr);
+        await captureState('invitation');
+
+        final share = find.widgetWithText(MobiButton, 'Share invite');
+        final copy = find.widgetWithText(MobiButton, 'Copy link');
+        final enter = find.widgetWithText(MobiButton, 'Enter invite code');
+        for (final action in [share, copy, enter]) {
+          await _dragCurrentPageUntilVisible(tester, action, page);
+          expect(action.hitTestable(), findsOneWidget);
+          expect(tester.getRect(action).height, greaterThanOrEqualTo(48));
+        }
+        for (final label in ['Share invite', 'Copy link']) {
+          final text = find.text(label);
+          await _expectCompleteParagraph(tester, text);
+          _expectOneVisualLine(tester, text);
+        }
+        await _dragCurrentPageUntilVisible(
+          tester,
+          find.text('Activity'),
+          page,
+          visibleStart: share,
+        );
+        await captureState('bottom');
+        final activityDetails = find.text(
+          '${DateFormat('d MMM, HH:mm').format(DateTime.utc(2026, 6, 15, 16, 30).toLocal())} - Synthetic referral reward',
+        );
+        await _dragCurrentPageUntilVisible(
+          tester,
+          activityDetails,
+          page,
+          visibleStart: find.text('Successful invite'),
+        );
+        await _expectCompleteParagraph(tester, find.text('Successful invite'));
+        await _expectCompleteParagraph(tester, activityDetails);
+        await _expectCompleteParagraph(tester, find.text('+100'));
+        await captureState('activity');
+
+        // Prove the complete URL survives display ellipsis and that the real
+        // button callbacks dispatch once into controlled platform stubs.
+        await _dragCurrentPageUntilVisible(tester, copy, page);
+        await tester.tap(copy);
+        await tester.pumpAndSettle();
+        expect(native.copied, [_currentInviteUrl]);
+        expect(find.text('Invite link copied.'), findsOneWidget);
+        await _dragCurrentPageUntilVisible(tester, share, page);
+        await tester.tap(share);
+        await tester.pumpAndSettle();
+        expect(native.shared, hasLength(1));
+        expect(native.shared.single, contains(_currentInviteUrl));
+        expect(tester.takeException(), isNull);
+        currentWalletProfileChecks.add({
+          'test': 'current wallet 320px 200 percent full scroll $theme',
+          'widget': 'WalletScreen.test',
+          'theme': theme,
+          'balance_tokens': 8200,
+          'screenshots': screenshots,
+          'full_value_layout_checked': true,
+          'margin_scroll_to_invitation_qr_actions_activity': true,
+          'qr_paint_matches_complete_invite_url': true,
+          'clipboard_stub_payload': native.copied,
+          'share_stub_dispatch_count': native.shared.length,
+          'wallet_service_reads': service.reads,
+          'native_clipboard_share_and_camera_outcome': 'unverified',
+        });
+      });
+      testWidgets('current wallet large balance 320px 200 percent $theme', (
+        tester,
+      ) async {
+        final service = _CurrentWalletCaptureService(balance: 123456789);
+        await _pumpGolden(
+          tester,
+          narrow,
+          _currentWalletFixture(service),
+          light: light,
+          textScale: 2,
+        );
+        expect(tester.takeException(), isNull);
+        final primary = find.byKey(const ValueKey('wallet-primary-balance'));
+        expect(
+          tester.widget<Text>(primary).semanticsLabel,
+          '123,456,789 TOKENS',
+        );
+        final displayed = tester
+            .widget<Text>(primary)
+            .textSpan!
+            .toPlainText()
+            .replaceAll('\u2060', '')
+            .replaceAll('\u200B', '');
+        expect(displayed, '123,456,789 TOKENS');
+        await _expectCompleteParagraph(tester, primary);
+        _expectBalanceUnitAndCommas(tester);
+        await _expectCompleteParagraph(tester, find.text('123,456,789 RWF'));
+        final path =
+            'goldens/revolut/wallet_large_balance_200pct_${theme}_320x640.png';
+        await _expectGoldenCapture(tester, path);
+        currentWalletProfileChecks.add({
+          'test': 'current wallet large balance 320px 200 percent $theme',
+          'widget': 'WalletScreen.test',
+          'theme': theme,
+          'balance_tokens': 123456789,
+          'screenshots': [path.replaceFirst('goldens/revolut/', '')],
+          'whole_balance_and_equivalent_layout_checked': true,
+          'wallet_service_reads': service.reads,
+          'backend_balance_or_operation_verification': false,
+        });
+      });
+      testWidgets(
+        'current edit profile 320px 200 percent full scroll Save $theme',
+        (tester) async {
+          // testWidgets owns its automatic semantics handle on the pinned SDK.
+          var saved = 0;
+          await _pumpGolden(
+            tester,
+            narrow,
+            EditProfileScreen(onBack: () => saved++),
+            light: light,
+            textScale: 2,
+          );
+          expect(tester.takeException(), isNull);
+          await _expectCompleteParagraph(tester, find.text('Edit profile'));
+          _expectNamedEditableFields(tester);
+          final top =
+              'goldens/revolut/edit_profile_200pct_${theme}_top_320x640.png';
+          await _expectGoldenCapture(tester, top);
+          final page = find
+              .descendant(
+                of: find.byType(EditProfileScreen),
+                matching: find.byType(Scrollable),
+              )
+              .first;
+          final save = find.widgetWithText(MobiButton, 'Save changes');
+          await _dragCurrentPageUntilVisible(
+            tester,
+            save,
+            page,
+            checkEditableFields: true,
+          );
+          expect(save.hitTestable(), findsOneWidget);
+          expect(tester.getRect(save).height, greaterThanOrEqualTo(48));
+          final bottom =
+              'goldens/revolut/edit_profile_200pct_${theme}_save_320x640.png';
+          await _expectGoldenCapture(tester, bottom);
+          await tester.tap(save);
+          await tester.pumpAndSettle();
+          expect(saved, 1, reason: 'The reached Save action must dispatch.');
+          expect(find.text('Profile saved.'), findsOneWidget);
+          expect(tester.takeException(), isNull);
+          currentWalletProfileChecks.add({
+            'test':
+                'current edit profile 320px 200 percent full scroll Save $theme',
+            'widget': 'EditProfileScreen',
+            'theme': theme,
+            'screenshots': [
+              top.replaceFirst('goldens/revolut/', ''),
+              bottom.replaceFirst('goldens/revolut/', ''),
+            ],
+            'whole_title_and_editable_line_layout_checked': true,
+            'margin_scroll_to_hit_testable_Save': true,
+            'local_preview_save_callback_count': saved,
+            'stored_profile_persistence': 'unverified',
+          });
+        },
+      );
+    }
+  }
+}
+
+Future<void> _expectGoldenCapture(WidgetTester tester, String path) async {
+  if (_isDesignCapture) {
+    await settleDesignCaptureFonts(tester);
+    await verifyDesignCaptureLogoPaints(tester, capture: path);
+    expect(tester.takeException(), isNull);
+  } else {
+    expectOrdinaryGoldenGlyphFallbacks(tester);
+  }
+  await expectLater(find.byType(MaterialApp), matchesGoldenFile(path));
+}
+
+bool get _isDesignCapture =>
+    Platform.environment['MOBIO_CAPTURE_DIR']?.isNotEmpty ?? false;
+
+const _currentInviteUrl = 'https://mobio.ikanisa.com/invite/482913';
+const _currentWalletAccount = AccountSnapshot(
+  '11111111-1111-4111-8111-111111111111',
+  'current-wallet-capture-session',
+  0,
+);
+
+class _CurrentWalletCaptureService extends Fake implements WalletService {
+  _CurrentWalletCaptureService({required this.balance});
+  final int balance;
+  final reads = <String>[];
+
+  @override
+  Future<WalletSummary> getSummary() async {
+    reads.add('summary');
+    return WalletSummary(
+      profileId: _currentWalletAccount.userId,
+      balanceTokens: balance,
+      rwfEquivalent: balance,
+      lifetimeEarnedTokens: balance + 2000,
+      lifetimeSentTokens: 1400,
+      lifetimeReceivedTokens: 900,
+      successfulReferrals: 8,
+      referralCode: '482913',
+      shareUrl: _currentInviteUrl,
+    );
+  }
+
+  @override
+  Future<List<TokenLedgerEntry>> listLedger({int limit = 50}) async {
+    reads.add('ledger');
+    return [
+      TokenLedgerEntry(
+        id: '22222222-2222-4222-8222-222222222222',
+        direction: 'credit',
+        amountTokens: 100,
+        reason: 'successful invite',
+        note: 'Synthetic referral reward',
+        createdAt: DateTime.utc(2026, 6, 15, 16, 30),
+      ),
+    ];
+  }
+
+  @override
+  Future<WalletOperationRecord?> activeOperation() async {
+    reads.add('active_operation');
+    return null;
+  }
+}
+
+Widget _currentWalletFixture(_CurrentWalletCaptureService service) =>
+    ProviderScope(
+      overrides: [walletServiceProvider.overrideWithValue(service)],
+      child: WalletScreen.test(
+        onBack: () {},
+        captureAccount: () => _currentWalletAccount,
+        isCurrent: (account) =>
+            account.identity == _currentWalletAccount.identity &&
+            account.generation == _currentWalletAccount.generation,
+      ),
+    );
+
+class _CurrentInviteDispatches {
+  final copied = <String>[];
+  final shared = <String>[];
+}
+
+_CurrentInviteDispatches _mockCurrentInviteDispatches() {
+  const shareChannel = MethodChannel('dev.fluttercommunity.plus/share');
+  final record = _CurrentInviteDispatches();
+  final messenger =
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+  messenger
+    ..setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.setData') {
+        record.copied.add(
+          (call.arguments as Map<Object?, Object?>)['text']! as String,
+        );
+      }
+      return null;
+    })
+    ..setMockMethodCallHandler(shareChannel, (call) async {
+      if (call.method != 'share') {
+        throw StateError('Unexpected share fixture method: ${call.method}');
+      }
+      record.shared.add(
+        (call.arguments as Map<Object?, Object?>)['text']! as String,
+      );
+      return 'success';
+    });
+  addTearDown(() {
+    messenger
+      ..setMockMethodCallHandler(SystemChannels.platform, null)
+      ..setMockMethodCallHandler(shareChannel, null);
+  });
+  return record;
+}
+
+final _currentWholeTextPaintChecks = <Map<String, Object?>>[];
+
+class _CurrentTextPaintingContext extends PaintingContext {
+  _CurrentTextPaintingContext(OffsetLayer layer, Rect bounds)
+    : super(layer, bounds);
+
+  void finishRecording() => stopRecordingIfNeeded();
+}
+
+Future<void> _expectCompleteParagraph(WidgetTester tester, Finder text) async {
+  final paragraph = _currentParagraph(tester, text);
+  expect(
+    paragraph.didExceedMaxLines,
+    isFalse,
+    reason: 'The whole value or heading must remain in the text layout.',
+  );
+  // Match RenderParagraph.performLayout's actual overflow conditions. A
+  // selection-run box may overhang the paragraph without creating a clip.
+  expect(paragraph.textSize.width, lessThanOrEqualTo(paragraph.size.width));
+  expect(paragraph.textSize.height, lessThanOrEqualTo(paragraph.size.height));
+  expect(paragraph.debugHasOverflowShader, isFalse);
+  final boxes = paragraph.getBoxesForSelection(
+    TextSelection(
+      baseOffset: 0,
+      extentOffset: paragraph.text.toPlainText().length,
+    ),
+  );
+  expect(boxes, isNotEmpty);
+
+  // Paint the existing RenderParagraph unchanged into an isolated layer. This
+  // measures actual ink, not advance/selection metrics, and does not replace
+  // pixels in the production tree or in the exported screenshot.
+  final padding =
+      paragraph.textScaler.scale(paragraph.text.style?.fontSize ?? 14) * 2;
+  final expanded = paragraph.paintBounds.inflate(padding);
+  final rasterBounds = Rect.fromLTRB(
+    expanded.left.floorToDouble(),
+    expanded.top.floorToDouble(),
+    expanded.right.ceilToDouble(),
+    expanded.bottom.ceilToDouble(),
+  );
+  final handle = LayerHandle<OffsetLayer>(OffsetLayer());
+  final context = _CurrentTextPaintingContext(handle.layer!, rasterBounds);
+  paragraph.paint(context, Offset.zero);
+  context.finishRecording();
+  Rect? ink;
+  try {
+    ink = await tester.runAsync(() async {
+      final frame = await handle.layer!
+          .toImage(rasterBounds)
+          .timeout(const Duration(seconds: 30));
+      try {
+        final pixels = await frame
+            .toByteData(format: ui.ImageByteFormat.rawRgba)
+            .timeout(const Duration(seconds: 30));
+        expect(pixels, isNotNull);
+        var left = frame.width;
+        var top = frame.height;
+        var right = -1;
+        var bottom = -1;
+        for (var y = 0; y < frame.height; y++) {
+          for (var x = 0; x < frame.width; x++) {
+            if (pixels!.getUint8((y * frame.width + x) * 4 + 3) == 0) continue;
+            if (x < left) left = x;
+            if (x > right) right = x;
+            if (y < top) top = y;
+            if (y > bottom) bottom = y;
+          }
+        }
+        expect(
+          right,
+          greaterThanOrEqualTo(left),
+          reason: 'Whole text must paint ink.',
+        );
+        // Overscan is measurement space, not a clipping tolerance. Empty outer
+        // edges are required so this measurement cannot cut off unknown ink.
+        expect(left, greaterThan(0));
+        expect(top, greaterThan(0));
+        expect(right, lessThan(frame.width - 1));
+        expect(bottom, lessThan(frame.height - 1));
+        return Rect.fromLTRB(
+          rasterBounds.left + left,
+          rasterBounds.top + top,
+          rasterBounds.left + right + 1,
+          rasterBounds.top + bottom + 1,
+        );
+      } finally {
+        frame.dispose();
+      }
+    });
+  } finally {
+    handle.layer = null;
+  }
+  expect(ink, isNotNull);
+  final actualInk = ink!;
+  final clips = <Map<String, Object?>>[];
+  final verticalScroller =
+      Scrollable.maybeOf(tester.element(text))?.position.axis == Axis.vertical;
+  RenderObject child = paragraph;
+  for (var ancestor = child.parent; ancestor != null; ancestor = child.parent) {
+    final clip = ancestor.describeApproximatePaintClip(child);
+    if (clip != null) {
+      final extent = MatrixUtils.transformRect(
+        paragraph.getTransformTo(ancestor),
+        actualInk,
+      );
+      expect(extent.left, greaterThanOrEqualTo(clip.left - 0.01));
+      expect(extent.right, lessThanOrEqualTo(clip.right + 0.01));
+      final scrollWindow =
+          ancestor is RenderAbstractViewport && verticalScroller;
+      if (!scrollWindow) {
+        expect(extent.top, greaterThanOrEqualTo(clip.top - 0.01));
+        expect(extent.bottom, lessThanOrEqualTo(clip.bottom + 0.01));
+      }
+      clips.add({
+        'ancestor': ancestor.runtimeType.toString(),
+        'clip': clip.toString(),
+        'actual_ink_extent': extent.toString(),
+        'vertical_scroll_window': scrollWindow,
+      });
+    }
+    child = ancestor;
+  }
+  final globalInk = MatrixUtils.transformRect(
+    paragraph.getTransformTo(null),
+    actualInk,
+  );
+  final viewport = MediaQuery.sizeOf(tester.element(text));
+  expect(globalInk.left, greaterThanOrEqualTo(-0.01));
+  expect(globalInk.right, lessThanOrEqualTo(viewport.width + 0.01));
+  _currentWholeTextPaintChecks.add({
+    'text': paragraph.text.toPlainText(),
+    'text_size': paragraph.textSize.toString(),
+    'render_size': paragraph.size.toString(),
+    'selection_boxes': [for (final box in boxes) box.toRect().toString()],
+    'actual_ink_bounds': actualInk.toString(),
+    'clip_ancestors': clips,
+    'whole_text_no_truncation_or_paragraph_overflow': true,
+    'actual_ink_within_horizontal_viewport_and_non_scroll_clips': true,
+    'vertical_scroll_visibility':
+        'Offscreen ink in a vertical scroll window requires separate margin-scroll verification',
+    'isolated_measurement_pixels_used_in_capture': false,
+  });
+}
+
+void _expectOneVisualLine(WidgetTester tester, Finder text) {
+  final paragraph = _currentParagraph(tester, text);
+  final boxes = paragraph.getBoxesForSelection(
+    TextSelection(
+      baseOffset: 0,
+      extentOffset: paragraph.text.toPlainText().length,
+    ),
+  );
+  expect(boxes, isNotEmpty);
+  for (final box in boxes) {
+    expect(
+      box.top,
+      closeTo(boxes.first.top, 0.01),
+      reason: 'A metric label or amount must not split across visual lines.',
+    );
+  }
+}
+
+void _expectBalanceUnitAndCommas(WidgetTester tester) {
+  final paragraph = _currentParagraph(
+    tester,
+    find.byKey(const ValueKey('wallet-primary-balance')),
+  );
+  final text = paragraph.text.toPlainText();
+  final unitStart = text.lastIndexOf('TOKENS');
+  expect(unitStart, greaterThanOrEqualTo(0));
+  final unit = paragraph.getBoxesForSelection(
+    TextSelection(baseOffset: unitStart, extentOffset: unitStart + 6),
+  );
+  expect(unit, isNotEmpty);
+  for (final box in unit) {
+    expect(
+      box.top,
+      closeTo(unit.first.top, 0.01),
+      reason: 'TOKENS must remain a complete word.',
+    );
+  }
+  for (var i = 0; i < text.length; i++) {
+    if (text[i] != ',') continue;
+    var previousDigit = i - 1;
+    while (previousDigit >= 0 &&
+        !RegExp('[0-9]').hasMatch(text[previousDigit])) {
+      previousDigit--;
+    }
+    expect(previousDigit, greaterThanOrEqualTo(0));
+    final digit = paragraph.getBoxesForSelection(
+      TextSelection(baseOffset: previousDigit, extentOffset: previousDigit + 1),
+    );
+    final comma = paragraph.getBoxesForSelection(
+      TextSelection(baseOffset: i, extentOffset: i + 1),
+    );
+    expect(digit, isNotEmpty);
+    expect(comma, isNotEmpty);
+    expect(
+      comma.first.top,
+      closeTo(digit.last.top, 0.01),
+      reason: 'A grouping comma must stay with its preceding digit.',
+    );
+  }
+}
+
+RenderParagraph _currentParagraph(WidgetTester tester, Finder text) {
+  expect(text, findsOneWidget);
+  final richText = find.descendant(of: text, matching: find.byType(RichText));
+  expect(richText, findsOneWidget);
+  return tester.renderObject<RenderParagraph>(richText);
+}
+
+/// Drag from page padding, away from fields, so large editable text does not
+/// receive a selection gesture. Reaching a target requires its actual painted
+/// rect to fit the scroll viewport; no programmatic jump fabricates visibility.
+Future<void> _dragCurrentPageUntilVisible(
+  WidgetTester tester,
+  Finder target,
+  Finder page, {
+  bool checkEditableFields = false,
+  Finder? visibleStart,
+}) async {
+  final scrollable = tester.state<ScrollableState>(page);
+  for (var step = 0; step < 64; step++) {
+    final viewport = tester.getRect(page);
+    Rect? targetRect;
+    if (target.evaluate().isNotEmpty) {
+      expect(target, findsOneWidget);
+      targetRect = tester.getRect(target);
+      if (visibleStart != null && visibleStart.evaluate().isNotEmpty) {
+        expect(visibleStart, findsOneWidget);
+        targetRect = targetRect.expandToInclude(tester.getRect(visibleStart));
+      }
+      if (targetRect.left >= viewport.left - 0.01 &&
+          targetRect.right <= viewport.right + 0.01 &&
+          targetRect.top >= viewport.top - 0.01 &&
+          targetRect.bottom <= viewport.bottom + 0.01) {
+        expect(tester.takeException(), isNull);
+        return;
+      }
+    }
+    final previous = scrollable.position.pixels;
+    final moveDown = targetRect != null && targetRect.top < viewport.top;
+    var distance = viewport.height * (moveDown ? 0.55 : -0.55);
+    if (targetRect != null) {
+      distance = moveDown
+          ? viewport.top - targetRect.top + 8
+          : viewport.bottom - targetRect.bottom - 8;
+      final maximum = viewport.height * 0.55;
+      distance = distance.clamp(-maximum, maximum).toDouble();
+      final minimum = viewport.height * 0.1;
+      if (distance.abs() < minimum) {
+        distance = distance < 0 ? -minimum : minimum;
+      }
+    }
+    await tester.dragFrom(
+      Offset(
+        checkEditableFields ? viewport.left + 4 : viewport.center.dx,
+        viewport.center.dy,
+      ),
+      Offset(0, distance),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    if (checkEditableFields) _expectNamedEditableFields(tester);
+    expect(
+      (scrollable.position.pixels - previous).abs(),
+      greaterThan(0.01),
+      reason:
+          'The target is not fully visible and the real scroll made no progress.',
+    );
+  }
+  fail(
+    'The current fixture target was not reached within 64 real margin drags.',
+  );
+}
+
+Future<void> _expectCurrentInviteQrPayload(
+  WidgetTester tester,
+  Finder qr,
+) async {
+  expect(qr, findsOneWidget);
+  final paint = find.descendant(of: qr, matching: find.byType(CustomPaint));
+  expect(paint, findsOneWidget);
+  final actual = tester.widget<CustomPaint>(paint).painter;
+  expect(actual, isA<QrPainter>());
+  final painter = actual! as QrPainter;
+  final expected = QrPainter(
+    data: _currentInviteUrl,
+    version: painter.version,
+    errorCorrectionLevel: painter.errorCorrectionLevel,
+    gapless: painter.gapless,
+    eyeStyle: painter.eyeStyle,
+    dataModuleStyle: painter.dataModuleStyle,
+  );
+  final matchesPayload = await tester.runAsync(() async {
+    final size = tester.getSize(paint).width;
+    final rendered = await painter
+        .toImageData(size, format: ui.ImageByteFormat.png)
+        .timeout(const Duration(seconds: 30));
+    final expectedPaint = await expected
+        .toImageData(size, format: ui.ImageByteFormat.png)
+        .timeout(const Duration(seconds: 30));
+    expect(rendered, isNotNull);
+    expect(expectedPaint, isNotNull);
+    expect(
+      rendered!.buffer.asUint8List(
+        rendered.offsetInBytes,
+        rendered.lengthInBytes,
+      ),
+      orderedEquals(
+        expectedPaint!.buffer.asUint8List(
+          expectedPaint.offsetInBytes,
+          expectedPaint.lengthInBytes,
+        ),
+      ),
+      reason: 'The painted QR must encode the complete own invitation URL.',
+    );
+    return true;
+  });
+  expect(matchesPayload, isTrue);
 }
 
 void _expectNamedEditableFields(WidgetTester tester) {
@@ -646,15 +1772,29 @@ Future<void> _pumpGolden(
     ..clear()
     ..clearLiveImages();
 
+  if (_isDesignCapture) {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = size;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+  }
   await tester.binding.setSurfaceSize(size);
   addTearDown(() => tester.binding.setSurfaceSize(null));
+
+  if (_isDesignCapture) await preloadDesignCaptureLogo(tester);
 
   await tester.pumpWidget(
     ProviderScope(
       overrides: _baseOverrides,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: light ? AppTheme.lightTheme : AppTheme.darkTheme,
+        theme: _isDesignCapture
+            ? designCaptureTheme(
+                light ? AppTheme.lightTheme : AppTheme.darkTheme,
+              )
+            : ordinaryGoldenTheme(
+                light ? AppTheme.lightTheme : AppTheme.darkTheme,
+              ),
         home: MediaQuery(
           data: MediaQueryData(
             size: size,
@@ -666,13 +1806,18 @@ Future<void> _pumpGolden(
       ),
     ),
   );
-  await tester.runAsync(
-    () => precacheImage(
-      const AssetImage('icon/mobi_logo_transparent.png'),
-      tester.element(find.byType(MaterialApp)),
-    ),
-  );
+  if (!_isDesignCapture) {
+    await tester.runAsync(
+      () => precacheImage(
+        const AssetImage('icon/mobi_logo_transparent.png'),
+        tester.element(find.byType(MaterialApp)),
+      ),
+    );
+  }
   await tester.pumpAndSettle();
+  if (_isDesignCapture) {
+    await settleDesignCaptureFonts(tester);
+  }
 }
 
 Widget _adminPreview({
@@ -783,6 +1928,17 @@ class _GoldenCase {
     this.includeDesktop = false,
     this.prepare,
   });
+}
+
+/// Local account hooks exercise conditional admin Profile presentation only;
+/// they never establish a verified admin session or a real sign-out outcome.
+class _AdminProfileCaptureService extends Fake implements ProfileService {
+  @override
+  Future<Profile?> getMyProfile() async => const Profile(
+    id: '11111111-1111-4111-8111-111111111111',
+    memberId: '004321',
+    role: 'admin',
+  );
 }
 
 final _previewCountries = Country.fallbackCountries
@@ -1119,8 +2275,38 @@ class _PreviewTripService implements TripService {
 }
 
 class _PreviewAdminService implements AdminService {
+  final _memberContract = PreviewAdminUserContract();
   @override
-  String? get currentUserId => 'preview-admin';
+  String? get currentSessionId => PreviewAdminUserContract.sessionId;
+  @override
+  AdminRoleRecoveryOwner get roleRecoveryOwner => _memberContract.owner;
+  @override
+  Future<AdminUserPage> listUsersPage(AdminUserQuery query) =>
+      _memberContract.page(query);
+  @override
+  Future<AdminUserSnapshotRelease> releaseUsersSnapshot(String snapshotId) =>
+      _memberContract.release(snapshotId);
+  @override
+  Future<AdminRoleBatchEnvelope> reserveRoleChange(AdminRoleReview review) =>
+      _memberContract.reserve(review);
+  @override
+  Future<AdminRoleBatchEnvelope> executeRoleChange({
+    required AdminRoleBatchEnvelope envelope,
+    required String operationId,
+  }) => _memberContract.execute(envelope, operationId);
+  @override
+  Future<AdminRoleBatchEnvelope> roleChangeStatus({
+    String? batchId,
+    String? reservationId,
+  }) => _memberContract.status(batchId: batchId, reservationId: reservationId);
+  @override
+  Future<AdminRoleBatchEnvelope> sealRoleChange({
+    String? batchId,
+    String? reservationId,
+  }) => _memberContract.seal(batchId: batchId, reservationId: reservationId);
+
+  @override
+  String? get currentUserId => PreviewAdminUserContract.actorId;
 
   @override
   Future<bool> checkAdminAccess(String phoneE164) async => true;
@@ -1477,35 +2663,55 @@ class _PreviewAdminService implements AdminService {
     String? search,
     int limit = 50,
     int offset = 0,
-  }) async => const [
-    AdminUserReportItem(
-      id: 'report-1',
-      reporterId: 'u1',
-      reporterName: 'Chantal Rider',
-      reporterPhone: '+250788111222',
-      reportedId: 'u2',
-      reportedName: 'Jean Driver',
-      reportedPhone: '+250788333444',
-      conversationId: 'conversation-1',
-      tripId: 'trip-1',
-      category: 'unsafe_behavior',
-      details: 'Driver requested an off-platform payment before pickup.',
-      status: 'open',
-      createdAt: '2026-06-13T07:30:00Z',
-    ),
-    AdminUserReportItem(
-      id: 'report-2',
-      reporterId: 'u3',
-      reporterName: 'Patrick Passenger',
-      reportedId: 'u4',
-      reportedName: 'Aline Driver',
-      category: 'route_mismatch',
-      details: 'Pickup location changed without confirmation.',
-      status: 'resolved',
-      resolutionNotes: 'Driver warned and route note updated.',
-      createdAt: '2026-06-12T15:00:00Z',
-    ),
-  ];
+  }) async {
+    const reports = [
+      AdminUserReportItem(
+        id: 'report-1',
+        reporterId: 'u1',
+        reporterName: 'Chantal Rider',
+        reporterPhone: '+250788111222',
+        reportedId: 'u2',
+        reportedName: 'Jean Driver',
+        reportedPhone: '+250788333444',
+        conversationId: 'conversation-1',
+        tripId: 'trip-1',
+        category: 'unsafe_behavior',
+        details: 'Driver requested an off-platform payment before pickup.',
+        status: 'open',
+        createdAt: '2026-06-13T07:30:00Z',
+      ),
+      AdminUserReportItem(
+        id: 'report-2',
+        reporterId: 'u3',
+        reporterName: 'Patrick Passenger',
+        reportedId: 'u4',
+        reportedName: 'Aline Driver',
+        category: 'route_mismatch',
+        details: 'Pickup location changed without confirmation.',
+        status: 'resolved',
+        resolutionNotes: 'Driver warned and route note updated.',
+        createdAt: '2026-06-12T15:00:00Z',
+      ),
+    ];
+    final query = search?.trim().toLowerCase() ?? '';
+    final filtered = reports.where((report) {
+      if (status != 'all' && report.status != status) return false;
+      if (query.isEmpty) return true;
+      return [
+        report.reporterName,
+        report.reporterPhone,
+        report.reportedName,
+        report.reportedPhone,
+        report.category,
+        report.details,
+        report.resolutionNotes,
+      ].whereType<String>().any((value) => value.toLowerCase().contains(query));
+    });
+    return filtered
+        .skip(offset < 0 ? 0 : offset)
+        .take(limit < 0 ? 0 : limit)
+        .toList(growable: false);
+  }
 
   @override
   Future<void> reviewUserReport({

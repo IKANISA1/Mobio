@@ -12,7 +12,6 @@ import 'package:mobi_app/features/profile/data/wallet_service.dart';
 import 'package:mobi_app/features/profile/domain/wallet.dart';
 import 'package:mobi_app/features/profile/domain/wallet_operation.dart';
 import 'package:mobi_app/features/profile/presentation/wallet_screen.dart';
-import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/mobi_button.dart';
 import 'package:mobi_app/shared/widgets/mobi_error_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_page_header.dart';
@@ -205,9 +204,9 @@ Finder _field(String label) => find.byWidgetPredicate(
   (widget) => widget is TextField && widget.decoration?.labelText == label,
 );
 VoidCallback _railCallback(WidgetTester tester, String label) => tester
-    .widget<MobiTonalCard>(
+    .widget<InkWell>(
       find
-          .ancestor(of: find.text(label), matching: find.byType(MobiTonalCard))
+          .ancestor(of: find.text(label), matching: find.byType(InkWell))
           .first,
     )
     .onTap!;

@@ -12,37 +12,56 @@ class FirebaseAnalyticsService {
   static final instance = FirebaseAnalyticsService._();
 
   FirebaseAnalytics? _analytics;
+  bool _collectionEnabled = false;
+  bool _contextReady = false;
+  String? _desiredUserId;
+  String? _desiredRole;
   String? _lastScreenName;
   int _contextRevision = 0;
+  int _collectionRevision = 0;
   Future<void> _contextTail = Future<void>.value();
+  Future<void> _collectionTail = Future<void>.value();
+  late final _observer = _BoundedAnalyticsObserver(this);
 
   bool get isReady => _analytics != null;
 
   void attach(FirebaseAnalytics analytics) {
     _analytics = analytics;
+    _collectionEnabled = false;
+    _contextReady = false;
     _lastScreenName = null;
     _contextRevision++;
+    _collectionRevision++;
+    // The shell may establish or clear account context before the SDK arrives.
+    // Apply that latest intent before current-route telemetry can be emitted.
+    unawaited(setUserContext(userId: _desiredUserId, role: _desiredRole));
   }
 
-  List<NavigatorObserver> get observers {
-    final analytics = _analytics;
-    if (analytics == null) {
-      return const <NavigatorObserver>[];
-    }
-
-    return <NavigatorObserver>[_BoundedAnalyticsObserver(this)];
-  }
+  List<NavigatorObserver> get observers => <NavigatorObserver>[_observer];
 
   Future<void> setCollectionEnabled(bool enabled) async {
+    final revision = ++_collectionRevision;
+    _collectionEnabled = false;
     final analytics = _analytics;
     if (analytics == null) {
       return;
     }
 
-    await RequestDeadline.read(
-      analytics.setAnalyticsCollectionEnabled(enabled),
-      timeout: const Duration(seconds: 4),
-    );
+    final work = _collectionTail.then((_) async {
+      if (revision != _collectionRevision ||
+          !identical(analytics, _analytics)) {
+        return;
+      }
+      await analytics.setAnalyticsCollectionEnabled(enabled);
+      if (revision != _collectionRevision ||
+          !identical(analytics, _analytics)) {
+        return;
+      }
+      _collectionEnabled = enabled;
+      if (enabled && _contextReady) _observer.onAttached();
+    });
+    _collectionTail = work.then<void>((_) {}, onError: (Object _) {});
+    await RequestDeadline.read(work, timeout: const Duration(seconds: 4));
   }
 
   Future<void> logAppOpen() async {
@@ -59,7 +78,10 @@ class FirebaseAnalyticsService {
     String? screenClass,
   }) async {
     final analytics = _analytics;
-    if (analytics == null || _lastScreenName == screenName) {
+    if (analytics == null ||
+        !_collectionEnabled ||
+        !_contextReady ||
+        _lastScreenName == screenName) {
       return;
     }
 
@@ -74,12 +96,19 @@ class FirebaseAnalyticsService {
   }
 
   Future<void> setUserContext({String? userId, String? role}) async {
+    if (_contextReady && userId == _desiredUserId && role == _desiredRole) {
+      return;
+    }
+    _desiredUserId = userId;
+    _desiredRole = role;
+    _contextReady = false;
+    _lastScreenName = null;
+    final revision = ++_contextRevision;
     final analytics = _analytics;
     if (analytics == null) {
       return;
     }
 
-    final revision = ++_contextRevision;
     // Preserve actual completion ordering: a timeout cannot let an old native
     // ID/role update race the next account context. Newer work skips stale role
     // writes and follows any already-dispatched native ID update.
@@ -89,6 +118,9 @@ class FirebaseAnalyticsService {
           await analytics.setUserId(id: userId);
           if (revision != _contextRevision) return;
           await analytics.setUserProperty(name: 'supabase_role', value: role);
+          if (revision != _contextRevision) return;
+          _contextReady = true;
+          if (_collectionEnabled) _observer.onAttached();
         })
         .catchError((Object _) {
           AppLogger.warning('Analytics context update was not confirmed.');
@@ -132,10 +164,17 @@ class FirebaseAnalyticsService {
 class _BoundedAnalyticsObserver extends RouteObserver<ModalRoute<dynamic>> {
   _BoundedAnalyticsObserver(this.service);
   final FirebaseAnalyticsService service;
+  Route<dynamic>? _currentRoute;
+
+  void onAttached() {
+    final route = _currentRoute;
+    if (route != null) _send(route);
+  }
 
   void _send(Route<dynamic> route) {
     final name = route.settings.name;
     if (route is PageRoute && name != null) {
+      _currentRoute = route;
       unawaited(service.logScreenView(screenName: name));
     }
   }

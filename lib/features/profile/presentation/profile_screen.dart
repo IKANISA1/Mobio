@@ -279,6 +279,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final isLightOffTheme =
+        !widget.isDarkMode && Theme.of(context).brightness == Brightness.light;
 
     if (_isLoading) {
       return SoftGradient(
@@ -520,6 +522,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           decoration: BoxDecoration(
                             color: widget.isDarkMode
                                 ? cs.primary
+                                : isLightOffTheme
+                                ? cs.onSurfaceVariant
                                 : ext.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -535,7 +539,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                               height: 16,
                               margin: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: ext.surfaceContainerLowest,
+                                color: isLightOffTheme
+                                    ? cs.surface
+                                    : ext.surfaceContainerLowest,
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -610,6 +616,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       }),
                       icon: LucideIcons.userX,
                       title: 'Request account deletion',
+                      titleMaxLines: null,
                       accent: cs.error,
                       accentBackground: cs.error.withValues(alpha: 0.12),
                       compact: true,
@@ -664,30 +671,44 @@ class _ProfileIdentityStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
+    final member = _ProfileSignal(
+      icon: LucideIcons.badgeCheck,
+      label: 'Member',
+      value: memberId ?? 'Unavailable',
+      accent: cs.primary,
+    );
+    final bioPay = _ProfileSignal(
+      icon: LucideIcons.scanFace,
+      label: 'BioPay',
+      value: bioPayEnrollment.label,
+      accent: bioPayEnrollment.isEnrolled ? ext.aqua : cs.secondary,
+    );
 
     return MobiTonalCard(
       padding: const EdgeInsets.all(AppSpacing.sm),
       borderRadius: 28,
-      child: Row(
-        children: [
-          Expanded(
-            child: _ProfileSignal(
-              icon: LucideIcons.badgeCheck,
-              label: 'Member',
-              value: memberId ?? 'Unavailable',
-              accent: cs.primary,
-            ),
-          ),
-          const SizedBox(width: AppSpacing.xs),
-          Expanded(
-            child: _ProfileSignal(
-              icon: LucideIcons.scanFace,
-              label: 'BioPay',
-              value: bioPayEnrollment.label,
-              accent: bioPayEnrollment.isEnrolled ? ext.aqua : cs.secondary,
-            ),
-          ),
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final signalWidth = (constraints.maxWidth - AppSpacing.xs) / 2;
+          if (member.preferredWidth(context) > signalWidth ||
+              bioPay.preferredWidth(context) > signalWidth) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                member,
+                const SizedBox(height: AppSpacing.xs),
+                bioPay,
+              ],
+            );
+          }
+          return Row(
+            children: [
+              Expanded(child: member),
+              const SizedBox(width: AppSpacing.xs),
+              Expanded(child: bioPay),
+            ],
+          );
+        },
       ),
     );
   }
@@ -705,6 +726,29 @@ class _ProfileSignal extends StatelessWidget {
   final String label;
   final String value;
   final Color accent;
+
+  double preferredWidth(BuildContext context) {
+    double textWidth(String text, TextStyle style) {
+      final painter = TextPainter(
+        text: TextSpan(text: text, style: style),
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout();
+      final width = painter.width;
+      painter.dispose();
+      return width;
+    }
+
+    final labelWidth = textWidth(label, AppTypography.labelSm);
+    final valueWidth = textWidth(
+      value,
+      AppTypography.labelMd.copyWith(fontWeight: FontWeight.w600),
+    );
+    return AppSpacing.sm * 2 +
+        16 +
+        AppSpacing.xs +
+        (labelWidth > valueWidth ? labelWidth : valueWidth);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -731,14 +775,10 @@ class _ProfileSignal extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                     style: AppTypography.labelSm.copyWith(color: cs.onSurface),
                   ),
                   Text(
                     value,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                     style: AppTypography.labelMd.copyWith(
                       color: cs.onSurface,
                       fontWeight: FontWeight.w600,

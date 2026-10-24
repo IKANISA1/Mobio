@@ -13,6 +13,8 @@ import 'package:mobi_shared_types/models/subscription_plan_model.dart';
 import 'package:mobi_shared_types/models/trip.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'preview_admin_user_contract.dart';
+
 final revolutPreviewOverrides = [
   countryServiceProvider.overrideWithValue(_PreviewCountryService()),
   vehicleTypeServiceProvider.overrideWithValue(_PreviewVehicleTypeService()),
@@ -325,8 +327,38 @@ class _PreviewTripService implements TripService {
 }
 
 class _PreviewAdminService implements AdminService {
+  final _memberContract = PreviewAdminUserContract();
   @override
-  String? get currentUserId => 'preview-admin';
+  String? get currentSessionId => PreviewAdminUserContract.sessionId;
+  @override
+  AdminRoleRecoveryOwner get roleRecoveryOwner => _memberContract.owner;
+  @override
+  Future<AdminUserPage> listUsersPage(AdminUserQuery query) =>
+      _memberContract.page(query);
+  @override
+  Future<AdminUserSnapshotRelease> releaseUsersSnapshot(String snapshotId) =>
+      _memberContract.release(snapshotId);
+  @override
+  Future<AdminRoleBatchEnvelope> reserveRoleChange(AdminRoleReview review) =>
+      _memberContract.reserve(review);
+  @override
+  Future<AdminRoleBatchEnvelope> executeRoleChange({
+    required AdminRoleBatchEnvelope envelope,
+    required String operationId,
+  }) => _memberContract.execute(envelope, operationId);
+  @override
+  Future<AdminRoleBatchEnvelope> roleChangeStatus({
+    String? batchId,
+    String? reservationId,
+  }) => _memberContract.status(batchId: batchId, reservationId: reservationId);
+  @override
+  Future<AdminRoleBatchEnvelope> sealRoleChange({
+    String? batchId,
+    String? reservationId,
+  }) => _memberContract.seal(batchId: batchId, reservationId: reservationId);
+
+  @override
+  String? get currentUserId => PreviewAdminUserContract.actorId;
 
   @override
   Future<bool> checkAdminAccess(String phoneE164) async => true;

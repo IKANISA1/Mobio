@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=MOBI Rwanda, OU=Mobile, O=MOBI, L=Kigali, ST=Kigali, C=RW
+Signer #1 certificate SHA-256 digest: da9e5eab50d08505bf0b787ceab5db5b40778ebe77629572168a7237d77981c0
+Signer #1 certificate SHA-1 digest: 0c6766ceb1d5ef0fd4d7a8cdfd609635b5a3a0fb
+Signer #1 certificate MD5 digest: d607dd3bbbd9172318d0d403b21d6e03
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 2048
+Signer #1 public key SHA-256 digest: 4cd03d86513b7473fca144994ea9ba7a2c247a5f4296b5f6f8a198ffa220365a
+Signer #1 public key SHA-1 digest: 65a3abc8c9ddae9504906fb7bcf3cee843355351
+Signer #1 public key MD5 digest: 47a208d0b58ae010847c13ee89b9da22

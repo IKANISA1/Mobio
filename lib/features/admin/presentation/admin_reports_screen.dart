@@ -7,6 +7,7 @@ import 'package:mobi_app/core/auth/account_action_token.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/features/admin/application/admin_services.dart';
 import 'package:mobi_app/features/admin/data/admin_service.dart';
+import 'package:mobi_app/features/admin/presentation/admin_copy.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_dashboard_utils.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
@@ -28,6 +29,7 @@ class AdminReportsScreen extends ConsumerStatefulWidget {
 
 class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
   final _actionToken = AccountActionToken.capture();
+  int _loadRevision = 0;
   bool get _actionIsCurrent => mounted && _actionToken.isCurrent;
 
   AdminService get _adminService => ref.read(adminServiceProvider);
@@ -52,12 +54,15 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
 
   @override
   void dispose() {
+    _loadRevision++;
     _searchController.dispose();
     super.dispose();
   }
 
   Future<void> _loadReports({bool silent = false}) async {
     if (!_actionIsCurrent) return;
+    final revision = ++_loadRevision;
+    final rowsPerPage = _rowsPerPage;
     if (!silent) {
       setState(() {
         _isLoading = true;
@@ -69,18 +74,19 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
       final reports = await _adminService.listUserReports(
         status: _statusFilter,
         search: _searchQuery,
-        limit: _rowsPerPage + 1,
-        offset: _page * _rowsPerPage,
+        limit: rowsPerPage + 1,
+        offset: _page * rowsPerPage,
       );
-      if (!_actionIsCurrent) return;
-      final hasNextPage = reports.length > _rowsPerPage;
+      if (!_actionIsCurrent || revision != _loadRevision) return;
+      final hasNextPage = reports.length > rowsPerPage;
       setState(() {
-        _reports = reports.take(_rowsPerPage).toList();
+        _reports = reports.take(rowsPerPage).toList();
         _hasNextPage = hasNextPage;
         _isLoading = false;
+        _error = null;
       });
     } on Object catch (error) {
-      if (!_actionIsCurrent) return;
+      if (!_actionIsCurrent || revision != _loadRevision) return;
       setState(() {
         _isLoading = false;
         _error = error.toString();
@@ -248,11 +254,17 @@ class _AdminReportsScreenState extends ConsumerState<AdminReportsScreen> {
                     final fields = [
                       AdminFieldPair(
                         label: 'Reporter',
-                        value: report.reporterPhone ?? report.reporterId,
+                        value: _reportUserContact(
+                          context,
+                          report.reporterPhone,
+                        ),
                       ),
                       AdminFieldPair(
                         label: 'Reported',
-                        value: report.reportedPhone ?? report.reportedId,
+                        value: _reportUserContact(
+                          context,
+                          report.reportedPhone,
+                        ),
                       ),
                       AdminFieldPair(
                         label: 'Trip',
@@ -702,11 +714,11 @@ class _ReportTile extends StatelessWidget {
                 final fields = [
                   AdminFieldPair(
                     label: 'Reporter',
-                    value: report.reporterPhone ?? report.reporterId,
+                    value: _reportUserContact(context, report.reporterPhone),
                   ),
                   AdminFieldPair(
                     label: 'Reported',
-                    value: report.reportedPhone ?? report.reportedId,
+                    value: _reportUserContact(context, report.reportedPhone),
                   ),
                   AdminFieldPair(label: 'Trip', value: report.tripId ?? 'None'),
                   AdminFieldPair(
@@ -790,6 +802,13 @@ class _ReportTile extends StatelessWidget {
       ),
     );
   }
+}
+
+String _reportUserContact(BuildContext context, String? phone) {
+  final value = phone?.trim();
+  return value == null || value.isEmpty
+      ? AdminCopy.of(context).unavailable
+      : value;
 }
 
 MobiStatusBadgeTone _statusTone(String status) {

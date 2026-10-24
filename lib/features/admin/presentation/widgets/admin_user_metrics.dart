@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:mobi_app/features/admin/data/admin_service.dart';
+import 'package:mobi_app/features/admin/presentation/admin_copy.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
+import 'package:mobi_shared_types/models/admin/admin_models.dart';
 
 class AdminUserMetrics extends StatelessWidget {
   const AdminUserMetrics({
     super.key,
     required this.users,
     required this.roleFilter,
+    required this.totalExact,
+    this.asOf,
   });
 
   final List<AdminUserListItem> users;
   final String roleFilter;
+  final int? totalExact;
+  final DateTime? asOf;
 
   @override
   Widget build(BuildContext context) {
+    final copy = AdminCopy.of(context);
     final totalAdmins = users.where((user) => user.role == 'admin').length;
     final onlineUsers = users.where((user) => user.isOnline).length;
     final drivers = users.where((user) => user.isDriver).length;
@@ -37,11 +43,13 @@ class AdminUserMetrics extends StatelessWidget {
             _MetricSizedCard(
               width: cardWidth,
               child: AdminMetricCard(
-                label: 'Results',
-                value: '${users.length}',
-                hint: roleFilter == 'all'
-                    ? 'Visible now'
-                    : '${roleFilter[0].toUpperCase()}${roleFilter.substring(1)} only',
+                label: copy.matchingUsers,
+                value: totalExact == null
+                    ? copy.unavailable
+                    : copy.number(totalExact!),
+                hint: asOf == null
+                    ? copy.countUnavailable
+                    : copy.messageSnapshotAt(copy.timestamp(asOf!)),
                 icon: LucideIcons.users,
                 tone: MobiStatusBadgeTone.brand,
               ),
@@ -49,9 +57,9 @@ class AdminUserMetrics extends StatelessWidget {
             _MetricSizedCard(
               width: cardWidth,
               child: AdminMetricCard(
-                label: 'Admins',
-                value: '$totalAdmins',
-                hint: 'Role coverage',
+                label: copy.adminProfiles,
+                value: copy.number(totalAdmins),
+                hint: copy.pageAtSnapshot,
                 icon: LucideIcons.shieldCheck,
                 tone: MobiStatusBadgeTone.info,
               ),
@@ -59,9 +67,9 @@ class AdminUserMetrics extends StatelessWidget {
             _MetricSizedCard(
               width: cardWidth,
               child: AdminMetricCard(
-                label: 'Online',
-                value: '$onlineUsers',
-                hint: 'Live now',
+                label: copy.online,
+                value: copy.number(onlineUsers),
+                hint: copy.pageAtSnapshot,
                 icon: LucideIcons.activity,
                 tone: MobiStatusBadgeTone.positive,
               ),
@@ -69,9 +77,9 @@ class AdminUserMetrics extends StatelessWidget {
             _MetricSizedCard(
               width: cardWidth,
               child: AdminMetricCard(
-                label: 'Drivers',
-                value: '$drivers',
-                hint: 'Discovery supply',
+                label: copy.filterDrivers,
+                value: copy.number(drivers),
+                hint: copy.pageAtSnapshot,
                 icon: LucideIcons.car,
                 tone: MobiStatusBadgeTone.info,
               ),

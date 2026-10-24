@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/features/admin/presentation/admin_copy.dart';
 import 'package:mobi_app/features/admin/presentation/widgets/admin_ui.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_design_system/theme/app_spacing.dart';
@@ -10,22 +11,25 @@ class AdminUserBulkActions extends StatelessWidget {
     super.key,
     required this.selectedCount,
     required this.bulkUpdatingRole,
-    required this.onApplyRole,
+    required this.onReviewRole,
     required this.onClear,
+    this.reviewEnabled = true,
   });
 
   final int selectedCount;
   final String? bulkUpdatingRole;
-  final ValueChanged<String> onApplyRole;
+  final ValueChanged<String> onReviewRole;
   final VoidCallback onClear;
+  final bool reviewEnabled;
 
   @override
   Widget build(BuildContext context) {
+    final copy = AdminCopy.of(context);
     return AdminPanel(
       child: LayoutBuilder(
         builder: (context, constraints) {
           final summary = Text(
-            '$selectedCount selected',
+            copy.selectedCount(selectedCount),
             style: AppTypography.titleLg.copyWith(
               color: Theme.of(context).colorScheme.onSurface,
             ),
@@ -35,34 +39,34 @@ class AdminUserBulkActions extends StatelessWidget {
             runSpacing: AppSpacing.sm,
             children: [
               AdminActionChip(
-                label: 'Admin',
+                label: copy.reviewRole('admin'),
                 tone: MobiStatusBadgeTone.brand,
                 isBusy: bulkUpdatingRole == 'admin',
-                onTap: bulkUpdatingRole == null
-                    ? () => onApplyRole('admin')
+                onTap: reviewEnabled && bulkUpdatingRole == null
+                    ? () => onReviewRole('admin')
                     : null,
               ),
               AdminActionChip(
-                label: 'Driver',
+                label: copy.reviewRole('driver'),
                 tone: MobiStatusBadgeTone.info,
                 isBusy: bulkUpdatingRole == 'driver',
-                onTap: bulkUpdatingRole == null
-                    ? () => onApplyRole('driver')
+                onTap: reviewEnabled && bulkUpdatingRole == null
+                    ? () => onReviewRole('driver')
                     : null,
               ),
               AdminActionChip(
-                label: 'Passenger',
+                label: copy.reviewRole('passenger'),
                 tone: MobiStatusBadgeTone.neutral,
                 isBusy: bulkUpdatingRole == 'passenger',
-                onTap: bulkUpdatingRole == null
-                    ? () => onApplyRole('passenger')
+                onTap: reviewEnabled && bulkUpdatingRole == null
+                    ? () => onReviewRole('passenger')
                     : null,
               ),
               AdminActionChip(
-                label: 'Clear',
+                label: copy.clear,
                 icon: LucideIcons.x,
                 tone: MobiStatusBadgeTone.danger,
-                onTap: onClear,
+                onTap: bulkUpdatingRole == null ? onClear : null,
               ),
             ],
           );

@@ -35,15 +35,29 @@ export function adminEmailForPhone(phone: string): string {
 export async function findAdminAuthUserByPhone(
   supabase: ReturnType<typeof createAdminClient>,
   phone: string,
+  otpReference?: string,
 ) {
-  const {data:owner,error:lookupError}=await supabase.rpc('rpc_lookup_verified_phone_owner',{p_phone:phone});
-  if(lookupError)throw new Error('PHONE_DIRECTORY_UNAVAILABLE');
-  if(owner===null)return null;
-  if(typeof owner!=='string')throw new Error('PHONE_IDENTITY_UNAVAILABLE');
-  const {data,error}=await supabase.auth.admin.getUserById(owner);
-  const user=data?.user;
-  if(error||!user||user.id!==owner||user.is_anonymous||!user.phone_confirmed_at||
-    user.phone?.replace(/\D/g,'')!==phone.replace(/\D/g,''))throw new Error('PHONE_IDENTITY_UNAVAILABLE');
+  const { data: owner, error: lookupError } = await supabase.rpc(
+    otpReference
+      ? "rpc_lookup_whatsapp_otp_phone_owner"
+      : "rpc_lookup_verified_phone_owner",
+    {
+      p_phone: phone,
+      ...(otpReference
+        ? { p_otp_reference: otpReference, p_purpose: "admin_login" }
+        : {}),
+    },
+  );
+  if (lookupError) throw new Error("PHONE_DIRECTORY_UNAVAILABLE");
+  if (owner === null) return null;
+  if (typeof owner !== "string") throw new Error("PHONE_IDENTITY_UNAVAILABLE");
+  const { data, error } = await supabase.auth.admin.getUserById(owner);
+  const user = data?.user;
+  if (
+    error || !user || user.id !== owner || user.is_anonymous ||
+    !user.phone_confirmed_at ||
+    user.phone?.replace(/\D/g, "") !== phone.replace(/\D/g, "")
+  ) throw new Error("PHONE_IDENTITY_UNAVAILABLE");
   return user;
 }
 

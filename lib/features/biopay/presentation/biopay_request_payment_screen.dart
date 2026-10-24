@@ -405,7 +405,7 @@ class _PaymentLinkPanel extends StatelessWidget {
             SelectableText(
               link,
               style: AppTypography.bodySm.copyWith(
-                color: Colors.white.withValues(alpha: 0.72),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w700,
               ),
             ),

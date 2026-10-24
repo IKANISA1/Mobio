@@ -28,8 +28,8 @@ export async function handleMaintenance(request: Request): Promise<Response> {
     const provider = new FaceProvider(40_000);
     const authority = new BioPayAuthority(client);
     const deadline = Date.now() + 40_000;
-    // Poll only bounded, still-authorized pending revisions; cancellation and
-    // replacement are rechecked transactionally when activating each result.
+    // Bound discovery and re-admit every exact tuple before provider probing.
+    // Activation rechecks cancellation/replacement and authority afterward.
     const { data: pending, error } = await client.from("biopay_face_revisions")
       .select("vector_id,owner_id,operation_id").eq("state", "pending").gt(
         "expires_at",
@@ -37,19 +37,56 @@ export async function handleMaintenance(request: Request): Promise<Response> {
       ).limit(10);
     if (error) throw error;
     let activated = 0;
-    for (const revision of pending ?? []) {
+    for (const revision of (pending ?? []).slice(0, 10)) {
       if (Date.now() > deadline - 12_000) break;
-      const { data: operation } = await client.from(
-        "biopay_provider_operations",
-      ).select("auth_session_id").eq("id", revision.operation_id).single();
-      if (!operation) continue;
       try {
+        // This service-only check binds the current pending vector/operation to
+        // canonical subject authority BEFORE probing the provider. It grants no
+        // cleanup authority and cannot retract a previously dispatched request.
+        const admissionStarted = performance.now();
+        const { data: admission, error: admissionError } = await client.rpc(
+          "rpc_biopay_face_pending_admission",
+          {
+            p_vector_id: revision.vector_id,
+            p_operation_id: revision.operation_id,
+          },
+        );
+        const admissionReceived = performance.now();
+        const uuid =
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+        if (
+          admissionError || !admission ||
+          admission.protocol !== "mobio.face-pending-admission.v1" ||
+          admission.admitted !== true ||
+          admission.vector_id !== revision.vector_id ||
+          admission.operation_id !== revision.operation_id ||
+          admission.user_id !== revision.owner_id ||
+          typeof admission.user_id !== "string" ||
+          !uuid.test(admission.user_id) ||
+          typeof admission.session_id !== "string" ||
+          !uuid.test(admission.session_id) ||
+          admission.model_version !== FACE_MODEL ||
+          !Number.isSafeInteger(admission.revision) || admission.revision < 1 ||
+          typeof admission.server_now !== "string" ||
+          typeof admission.expires_at !== "string" ||
+          !Number.isFinite(Date.parse(admission.server_now)) ||
+          !Number.isFinite(Date.parse(admission.expires_at)) ||
+          Date.parse(admission.expires_at) <= Date.parse(admission.server_now)
+        ) continue;
+        // Database time describes a lease at the server. Subtract the entire
+        // round trip conservatively; device wall clock cannot extend the lease.
+        const remaining = Date.parse(admission.expires_at) -
+          Date.parse(admission.server_now) -
+          (admissionReceived - admissionStarted);
+        if (remaining <= 0) continue;
+        if (Date.now() > deadline - 12_000) break;
+        if (remaining - (performance.now() - admissionReceived) <= 0) continue;
         const visible = await provider.call("searchable", {
           vector_id: revision.vector_id,
         });
         if (visible.searchable === true) {
           const result = await authority.call(
-            { id: revision.owner_id, sessionId: operation.auth_session_id },
+            { id: admission.user_id, sessionId: admission.session_id },
             "activate",
             { vector_id: revision.vector_id },
           );

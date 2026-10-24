@@ -239,5 +239,892 @@
   "faceDone": "Byarangiye",
   "faceWorking": "Tegereza…",
   "faceSetUp": "Tangira",
-  "faceRefresh": "Reba uko kubika isura bigeze"
+  "faceRefresh": "Reba uko kubika isura bigeze",
+  "adminUsersTitle": "Abakoresha",
+  "@adminUsersTitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminUsersSubtitle": "Urutonde n’inshingano.",
+  "@adminUsersSubtitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRefresh": "Vugurura",
+  "@adminRefresh": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminClose": "Funga",
+  "@adminClose": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminClear": "Siba",
+  "@adminClear": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminDirectory": "Urutonde",
+  "@adminDirectory": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSearchAndFilter": "Shakisha kandi ushungure",
+  "@adminSearchAndFilter": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSearchUsers": "Shakisha abakoresha",
+  "@adminSearchUsers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminFilterAll": "Bose",
+  "@adminFilterAll": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminFilterAdmins": "Abayobozi",
+  "@adminFilterAdmins": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminFilterDrivers": "Abashoferi",
+  "@adminFilterDrivers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminFilterPassengers": "Abagenzi",
+  "@adminFilterPassengers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRoleAdmin": "Umuyobozi",
+  "@adminRoleAdmin": {
+    "description": "Profile role label only. This does not confer trusted administrative access."
+  },
+  "adminRoleDriver": "Umushoferi",
+  "@adminRoleDriver": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRolePassenger": "Umugenzi",
+  "@adminRolePassenger": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRoleUnknown": "Inshingano ntiziboneka",
+  "@adminRoleUnknown": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewRole": "Suzuma inshingano: {role}",
+  "@adminReviewRole": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUnavailable": "Ntibiboneka",
+  "@adminUnavailable": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminOnline": "Ari ku murongo",
+  "@adminOnline": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminOffline": "Ntari ku murongo",
+  "@adminOffline": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhone": "Telefone",
+  "@adminPhone": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminVehicle": "Ikinyabiziga",
+  "@adminVehicle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNotAssigned": "Ntibyagenwe",
+  "@adminNotAssigned": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminJoined": "Yiyandikishije",
+  "@adminJoined": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminDriverProfile": "Umwirondoro w’umushoferi",
+  "@adminDriverProfile": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPassengerProfile": "Umwirondoro w’umugenzi",
+  "@adminPassengerProfile": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminMatchingUsers": "Abakoresha bahuye n’ishakisha",
+  "@adminMatchingUsers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminAdminProfiles": "Imyirondoro y’abayobozi",
+  "@adminAdminProfiles": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPageAtSnapshot": "Iyi paji igihe amakuru yabikwaga",
+  "@adminPageAtSnapshot": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminCountUnavailable": "Umubare nyawo ntuboneka",
+  "@adminCountUnavailable": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminMatchingCountUnavailable": "Umubare nyawo w’abahuye n’ishakisha ntuboneka",
+  "@adminMatchingCountUnavailable": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminUsersUnavailable": "Abakoresha ntibaboneka",
+  "@adminUsersUnavailable": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminUsersLoadFailed": "Abakoresha ntibashoboye kuboneka. Reba ko ufite murandasi wongere ugerageze.",
+  "@adminUsersLoadFailed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminAccountChangedTitle": "Konti yahindutse",
+  "@adminAccountChangedTitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminAccountChangedBody": "Ongera ufungure urutonde rw’abakoresha ukoresheje konti iriho.",
+  "@adminAccountChangedBody": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminAccountPanelChanged": "Konti yahindutse. Funga iyi paji.",
+  "@adminAccountPanelChanged": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNoUsers": "Nta bakoresha",
+  "@adminNoUsers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminTryFilter": "Gerageza ubundi buryo bwo gushungura.",
+  "@adminTryFilter": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminQueryFailed": "Urutonde ntirushoboye kuvugururwa. Ongera ugerageze.",
+  "@adminQueryFailed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminUserUpdateFailed": "Uyu mukoresha ntashoboye kuvugururwa. Vugurura wongere ugerageze.",
+  "@adminUserUpdateFailed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewUnavailable": "Iri suzuma ntirikiboneka.",
+  "@adminReviewUnavailable": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewShowFailed": "Iri suzuma ntirishoboye kugaragara. Vugurura abakoresha mbere yo kongera gusuzuma.",
+  "@adminReviewShowFailed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewContinueFailed": "Iri suzuma ntirishoboye gukomeza. Reba uko ryanditse mbere yo gutangira irindi.",
+  "@adminReviewContinueFailed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminStatusUnconfirmed": "Uko iri tsinda rihagaze ntikwashoboye kwemezwa. Ntiryakemuwe.",
+  "@adminStatusUnconfirmed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminCloseBatchTitle": "Usoze iri tsinda ry’impinduka z’inshingano?",
+  "@adminCloseBatchTitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminCloseBatchBody": "Hagarika impinduka zisigaye wandike uko byarangiye. Impinduka zemejwe ziragumaho. Irindi suzuma rizaboneka seriveri yemeje ko iri tsinda ryasojwe.",
+  "@adminCloseBatchBody": {
+    "description": "Explicit server seal; confirmed effects stay. Cancellation of a local unsent review is a separate action."
+  },
+  "adminCloseBatch": "Soza itsinda",
+  "@adminCloseBatch": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminCloseThisBatch": "Soza iri tsinda",
+  "@adminCloseThisBatch": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminClosureUnconfirmed": "Isozwa ntiryashoboye kwemezwa. Reba iri tsinda mbere yo gutangira irindi.",
+  "@adminClosureUnconfirmed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewTitle": "Suzuma impinduka z’inshingano z’imyirondoro",
+  "@adminReviewTitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewDisclosure": "Aba bantu n’inshingano zisabwe ntibihinduka muri iri suzuma. Guha umwirondoro inshingano z’umuyobozi ntibitanga uburenganzira bwizewe bwo kuyobora sisitemu.",
+  "@adminReviewDisclosure": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminTrustedAccessDisclosure": "Guha umwirondoro inshingano z’umuyobozi ntibitanga uburenganzira bwizewe bwo kuyobora sisitemu.",
+  "@adminTrustedAccessDisclosure": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewExpired": "Aya makuru yabitswe yarengeje igihe. Hagarika uvugurure abakoresha kugira ngo utangire irindi suzuma.",
+  "@adminReviewExpired": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminAllExcluded": "Imyirondoro yose yatoranyijwe ntizahindurwa. Nta mpinduka y’inshingano izoherezwa.",
+  "@adminAllExcluded": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewUnavailableRefresh": "Iri suzuma ntirikiboneka. Hagarika uvugurure abakoresha.",
+  "@adminReviewUnavailableRefresh": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminConfirming": "Kwemeza…",
+  "@adminConfirming": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminOutcomesTitle": "Ibyavuye mu mpinduka z’inshingano",
+  "@adminOutcomesTitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReservationClosedEmpty": "Icyiciro cyabitswe cyasojwe. Nta mpinduka y’inshingano yoherejwe.",
+  "@adminReservationClosedEmpty": {
+    "description": "Server proven seal-before-reserve. Zero operations submitted; do not use for unknown/missing batch."
+  },
+  "adminBatchClosed": "Iri tsinda ryasojwe. Ibyavuye mu mpinduka byanditswe biracyaboneka.",
+  "@adminBatchClosed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminUnknownGuidance": "Ibyavuye mu mpinduka zimwe ntibiramenyekana. Reba uko zihagaze usoze iri tsinda mbere y’irindi suzuma. Nta mpinduka izongera koherezwa ubwayo.",
+  "@adminUnknownGuidance": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminUnsealedGuidance": "Reba uko iki cyiciro cyabitswe gihagaze usoze iri tsinda mbere y’irindi suzuma. Nta mpinduka izongera koherezwa ubwayo.",
+  "@adminUnsealedGuidance": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminCheckStatus": "Reba uko bihagaze",
+  "@adminCheckStatus": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminOwnExcluded": "Ntizahindurwa: umwirondoro wawe bwite",
+  "@adminOwnExcluded": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSameRoleExcluded": "Ntizahindurwa: isanzwe ifite inshingano zisabwe",
+  "@adminSameRoleExcluded": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminOwnProfileExcluded": "Umwirondoro wawe bwite ntuhindurirwa inshingano.",
+  "@adminOwnProfileExcluded": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminReviewProfileRole": "Suzuma impinduka y’inshingano z’umwirondoro",
+  "@adminReviewProfileRole": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminEnabled": "Bikora",
+  "@adminEnabled": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminDisabled": "Ntibikora",
+  "@adminDisabled": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminStatusConfirmed": "Byemejwe",
+  "@adminStatusConfirmed": {
+    "description": "Authoritative server receipt confirms that this recipient change committed."
+  },
+  "adminStatusKnownRejected": "Kwanga byemejwe",
+  "@adminStatusKnownRejected": {
+    "description": "Authoritative rejection is known; distinguish from an uncertain network result."
+  },
+  "adminStatusUnknown": "Ntibiramenyekana",
+  "@adminStatusUnknown": {
+    "description": "Outcome may already have committed. Never translate this as rejected, pending-safe-retry or failed."
+  },
+  "adminStatusNotStarted": "Ntibyatangiye",
+  "@adminStatusNotStarted": {
+    "description": "Target operation was not started, distinct from a self/no-op exclusion."
+  },
+  "adminStatusSkipped": "Byasimbutswe",
+  "@adminStatusSkipped": {
+    "description": "Reviewed recipient intentionally excluded, such as self or same requested role."
+  },
+  "adminStatusSubmitting": "Birimo koherezwa",
+  "@adminStatusSubmitting": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseChecking": "Kureba impinduka z’inshingano zabanje…",
+  "@adminPhaseChecking": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseReady": "Ibyavuye mu mpinduka byanditswe biri hasi.",
+  "@adminPhaseReady": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseReserving": "Gutegura itsinda ryemejwe…",
+  "@adminPhaseReserving": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseSubmitting": "Kohereza impinduka zasuzumwe…",
+  "@adminPhaseSubmitting": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseReconciling": "Kureba uko bihagaze byemejwe na seriveri…",
+  "@adminPhaseReconciling": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseSealing": "Gusoza iri tsinda…",
+  "@adminPhaseSealing": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseUnresolved": "Uko iri tsinda rihagaze biracyakeneye kugenzurwa no kurisoza.",
+  "@adminPhaseUnresolved": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPhaseBlocked": "Impinduka z’inshingano ntiziboneka ubu.",
+  "@adminPhaseBlocked": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRejectChanged": "Uyu mwirondoro wahindutse nyuma yo kubika amakuru. Uwuvugurure kugira ngo wongere uwusuzume.",
+  "@adminRejectChanged": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRejectMissing": "Umwirondoro wasuzumwe ntukiboneka.",
+  "@adminRejectMissing": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRejectReauthenticate": "Ongera winjire mbere yo gusuzuma indi mpinduka y’inshingano.",
+  "@adminRejectReauthenticate": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRejectGeneric": "Seriveri yanze iyi mpinduka. Ntiyemejwe.",
+  "@adminRejectGeneric": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSnapshotExpired": "Amakuru yabitswe yarengeje igihe. Vugurura abakoresha mbere yo guhindura inshingano cyangwa gufungura indi paji.",
+  "@adminSnapshotExpired": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSortOnline": "Abari ku murongo babanze",
+  "@adminSortOnline": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSortNameAsc": "Izina A–Z",
+  "@adminSortNameAsc": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSortNameDesc": "Izina Z–A",
+  "@adminSortNameDesc": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSortRole": "Inshingano",
+  "@adminSortRole": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSortNewest": "Abashya babanze",
+  "@adminSortNewest": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminMember": "Umunyamuryango",
+  "@adminMember": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminStatus": "Uko bihagaze",
+  "@adminStatus": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminClearVisibleSelection": "Kuraho itoranya ry’abakoresha bagaragara",
+  "@adminClearVisibleSelection": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSelectVisibleUsers": "Toranya abakoresha bagaragara",
+  "@adminSelectVisibleUsers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminClearSearch": "Siba ishakisha",
+  "@adminClearSearch": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminSortRows": "Tondeka imirongo",
+  "@adminSortRows": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRows": "Imirongo",
+  "@adminRows": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminPreviousPage": "Paji ibanza",
+  "@adminPreviousPage": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNextPage": "Paji ikurikira",
+  "@adminNextPage": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminBack": "Subira inyuma",
+  "@adminBack": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavOps": "Ibikorwa",
+  "@adminNavOps": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavFleet": "Ibinyabiziga",
+  "@adminNavFleet": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavAgencies": "Ibigo",
+  "@adminNavAgencies": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavEv": "Ibinyabiziga by’amashanyarazi",
+  "@adminNavEv": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavPlans": "Gahunda",
+  "@adminNavPlans": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavTrips": "Ingendo",
+  "@adminNavTrips": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavReports": "Ibibazo byatanzwe",
+  "@adminNavReports": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavHealth": "Uko sisitemu ikora",
+  "@adminNavHealth": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavAudit": "Igenzura",
+  "@adminNavAudit": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavBroadcasts": "Ubutumwa rusange",
+  "@adminNavBroadcasts": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminNavAccount": "Konti",
+  "@adminNavAccount": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRewardTitle": "Ongeraho ibihembo by’ubwishingizi",
+  "@adminRewardTitle": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminRewardAction": "Ongeraho TOKENS {amount}",
+  "@adminRewardAction": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRewardConfirm": "Ha {name} TOKENS {amount}. Ni ibihembo byo kugura ubwishingizi bw’ikinyabiziga.",
+  "@adminRewardConfirm": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRewardAdded": "{name} yahawe TOKENS {amount}.",
+  "@adminRewardAdded": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRewardSubmit": "Ongeraho TOKENS",
+  "@adminRewardSubmit": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminAccountReference": "Ikimenyetso cya konti: {id}",
+  "@adminAccountReference": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "adminMemberReference": "Umunyamuryango {id}",
+  "@adminMemberReference": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRoleChange": "{before} → {after}",
+  "@adminRoleChange": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "adminReviewedRoleChange": "Icyasuzumwe: {before} → {after}",
+  "@adminReviewedRoleChange": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "adminDriverStateChange": "Umwirondoro w’umushoferi: {before} → {after}",
+  "@adminDriverStateChange": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "adminStatusCount": "{status}: {count}",
+  "@adminStatusCount": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSnapshotAt": "Amakuru yabitswe {date}",
+  "@adminSnapshotAt": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSnapshotRange": "Amakuru yabitswe {date} · igihe kirarangira {expiry}",
+  "@adminSnapshotRange": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "expiry": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSortBy": "Tondeka hakurikijwe {label}",
+  "@adminSortBy": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "adminPagination": "{start}–{end} muri {total}",
+  "@adminPagination": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "adminClearSelectionFor": "Kuraho itoranya rya {name}",
+  "@adminClearSelectionFor": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSelectPerson": "Toranya {name}",
+  "@adminSelectPerson": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "adminPersonSemantics": "{name}, {role}, {status}",
+  "@adminPersonSemantics": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "adminErrorSignIn": "Ongera winjire kugira ngo ubone abanyamuryango.",
+  "@adminErrorSignIn": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorSessionUnavailable": "Igihe winjiriyemo muri konti ntikiboneka.",
+  "@adminErrorSessionUnavailable": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorLoadMembers": "Abanyamuryango ntibashoboye kuboneka. Vugurura wongere ugerageze.",
+  "@adminErrorLoadMembers": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorSessionChanged": "Igihe winjiriyemo muri konti cyahindutse. Ongera winjire.",
+  "@adminErrorSessionChanged": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorReleaseSnapshot": "Amakuru y’abanyamuryango yabitswe mbere ntashoboye gukurwaho. Vugurura wongere ugerageze.",
+  "@adminErrorReleaseSnapshot": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorMemberSnapshotExpired": "Aya makuru y’abanyamuryango yarengeje igihe. Vugurura ubone amakuru agezweho.",
+  "@adminErrorMemberSnapshotExpired": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorPageExpired": "Vugurura aya makuru y’abanyamuryango mbere yo guhindura paji.",
+  "@adminErrorPageExpired": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorReviewBusy": "Vugurura cyangwa urangize isuzuma ririho mbere yo guhindura inshingano.",
+  "@adminErrorReviewBusy": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorSelectPage": "Toranya abanyamuryango kuri iyi paji y’amakuru yabitswe.",
+  "@adminErrorSelectPage": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorReviewExpired": "Iri suzuma ryarengeje igihe. Soza icyiciro cyaryo cyabitswe mbere y’irindi suzuma.",
+  "@adminErrorReviewExpired": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorJournalBefore": "Ububiko bwo gukomeza igikorwa ntibwashoboye kugenzurwa. Nta mpinduka y’inshingano yoherejwe.",
+  "@adminErrorJournalBefore": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorReserveUnknown": "Ibyavuye mu kubika icyiciro ntibiramenyekana. Bigenzure cyangwa ugisoze mbere y’irindi suzuma.",
+  "@adminErrorReserveUnknown": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorReserveFailed": "Kubika icyiciro ntibyashoboye kurangira. Bigenzure cyangwa ugisoze mbere y’irindi suzuma.",
+  "@adminErrorReserveFailed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorBatchExpired": "Iri tsinda ryarengeje igihe. Risoze mbere y’irindi suzuma.",
+  "@adminErrorBatchExpired": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorJournalRemaining": "Ububiko bwo gukomeza igikorwa ntibwashoboye kugenzurwa. Impinduka z’inshingano zisigaye ntizoherejwe.",
+  "@adminErrorJournalRemaining": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorChangeUnconfirmed": "Iyi mpinduka y’inshingano ntiyemejwe. Genzura uko bihagaze cyangwa usoze itsinda.",
+  "@adminErrorChangeUnconfirmed": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorRequestRejected": "Iki cyifuzo cyanzwe. Soza itsinda mbere y’irindi suzuma.",
+  "@adminErrorRequestRejected": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorChangeUnknown": "Ibyavuye mu mpinduka y’inshingano ntibiramenyekana. Genzura uko bihagaze cyangwa usoze itsinda.",
+  "@adminErrorChangeUnknown": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorReviewOutcomes": "Suzuma ibyavuye mu mpinduka kuri buri muntu, hanyuma usoze iri tsinda mbere y’irindi suzuma.",
+  "@adminErrorReviewOutcomes": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorEarlierUncertain": "Icyiciro cyabitswe mbere ntikiramenyekana neza kandi hari irindi tsinda ritarasozwa. Banza usoze icyiciro cyabitswe mbere.",
+  "@adminErrorEarlierUncertain": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorDelayedReservation": "Ibyavuye mu kubika icyiciro ntibiramenyekana. Gisoze kugira ngo hatagira ibyoherezwa nyuma.",
+  "@adminErrorDelayedReservation": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorOutstanding": "Hari itsinda ritarasozwa ryabonetse. Suzuma ibyavuye mu mpinduka urisoze mbere y’irindi suzuma.",
+  "@adminErrorOutstanding": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorRecoveryUnverified": "Gukomeza igikorwa ntibyashoboye kugenzurwa. Nta mpinduka y’inshingano izongera koherezwa.",
+  "@adminErrorRecoveryUnverified": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorClosureUnverified": "Isozwa ntiryashoboye kugenzurwa. Genzura uko bihagaze cyangwa wongere usoze iki cyiciro cyabitswe.",
+  "@adminErrorClosureUnverified": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorMemberBusy": "Tegereza ko kuvugurura umunyamuryango birangira.",
+  "@adminErrorMemberBusy": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorGeneric": "Iki gikorwa nticyashoboye kurangira. Reba uko cyanditse mbere yo gukomeza.",
+  "@adminErrorGeneric": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorNetwork": "Ntibishoboye kwihuza. Reba murandasi wongere ugerageze.",
+  "@adminErrorNetwork": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminErrorForbidden": "Nta burenganzira ufite bwo gukora iki gikorwa.",
+  "@adminErrorForbidden": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics."
+  },
+  "adminConfirmCount": "{count, plural, =0{Emeza impinduka 0} one{Emeza impinduka 1} other{Emeza impinduka {countText}}}",
+  "@adminConfirmCount": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "countText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminReviewSummary": "{eligible, plural, =0{Impinduka 0} one{Impinduka 1} other{Impinduka {eligibleText}}} · {excluded, plural, =0{Ntizihindurwa: 0} one{Ntizihindurwa: 1} other{Ntizihindurwa: {excludedText}}}",
+  "@adminReviewSummary": {
+    "description": "Independent eligible and excluded counts from the exact immutable reviewed recipients, not all query matches.",
+    "placeholders": {
+      "eligible": {
+        "type": "int"
+      },
+      "eligibleText": {
+        "type": "String"
+      },
+      "excluded": {
+        "type": "int"
+      },
+      "excludedText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminMatchingCount": "{count, plural, =0{Abakoresha bahuye n’ishakisha: 0} one{Abakoresha bahuye n’ishakisha: 1} other{Abakoresha bahuye n’ishakisha: {countText}}}",
+  "@adminMatchingCount": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "countText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSelectedCount": "{count, plural, =0{Abatoranyijwe kuri iyi paji: 0} one{Abatoranyijwe kuri iyi paji: 1} other{Abatoranyijwe kuri iyi paji: {countText}}}",
+  "@adminSelectedCount": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "countText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSnapshotAgeUpper": "{seconds, plural, =0{Amakuru amaze igihe kitarenga amasegonda 0.} one{Amakuru amaze igihe kitarenga isegonda 1.} other{Amakuru amaze igihe kitarenga amasegonda {secondsText}.}}",
+  "@adminSnapshotAgeUpper": {
+    "description": "Conservative age upper bound. Preserve up to / at most meaning; never minimum age.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "secondsText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSnapshotAgeExact": "{seconds, plural, =0{Amakuru amaze amasegonda 0.} one{Amakuru amaze isegonda 1.} other{Amakuru amaze amasegonda {secondsText}.}}",
+  "@adminSnapshotAgeExact": {
+    "description": "Exact age wording only when caller explicitly supplies upperBound=false.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "secondsText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminSnapshotRemaining": "{seconds, plural, =0{Isuzuma ry’amakuru riracyaboneka mu masegonda 0.} one{Isuzuma ry’amakuru riracyaboneka mu isegonda 1.} other{Isuzuma ry’amakuru riracyaboneka mu masegonda {secondsText}.}}",
+  "@adminSnapshotRemaining": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "secondsText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminReviewRemaining": "Igihe cyo gusuzuma amakuru kirarangira mu gihe cya {duration}.",
+  "@adminReviewRemaining": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "adminDurationSeconds": "{seconds, plural, =0{Amasegonda 0} one{Isegonda 1} other{Amasegonda {secondsText}}}",
+  "@adminDurationSeconds": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "secondsText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminDurationMinutesSeconds": "{minutes, plural, =0{Iminota 0} one{Umunota 1} other{Iminota {minutesText}}} {seconds, plural, =0{amasegonda 0} one{isegonda 1} other{amasegonda {secondsText}}}",
+  "@adminDurationMinutesSeconds": {
+    "description": "Admin users/review/recovery presentation. Translate copy only; preserve immutable IDs, role/status/sort protocol and no-replay/explicit closure semantics.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "minutesText": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "int"
+      },
+      "secondsText": {
+        "type": "String"
+      }
+    }
+  },
+  "adminErrorMutationUnknown": "Ibyavuye mu gikorwa ntibyashoboye kwemezwa. Reba uko byanditse mbere yo kongera kohereza.",
+  "@adminErrorMutationUnknown": {
+    "description": "A mutation may already have committed. Never imply failure or safe resend; check recorded authoritative status first."
+  }
 }

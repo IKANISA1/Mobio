@@ -1,0 +1,41 @@
+BEGIN
+SET
+SET
+CREATE TABLE
+INSERT 0 7
+INSERT 0 2
+CREATE TABLE
+INSERT 0 1
+CREATE TABLE
+INSERT 0 4
+CREATE TABLE
+GRANT
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+INSERT 0 9
+INSERT 0 9
+UPDATE 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+INSERT 0 6
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 4
+SELECT 2
+SELECT 1
+SELECT 1
+ qa_org_identity 
+-----------------
+ 
+(1 row)
+
+SET
+ERROR:  ASSERTION FAILED: real booking confirmation accepted ordinary member with consumer platform grant
+CONTEXT:  PL/pgSQL function pg_temp_28.qa_org_confirmation_denied(text) line 7 at RAISE

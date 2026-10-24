@@ -31,6 +31,9 @@ from qa_profile_actors;
 insert into auth.sessions(id, user_id, created_at, not_after)
 select session_id, user_id, now(), now() + interval '1 hour'
 from qa_profile_actors;
+-- Explicit SQL-only positive OTP/session setup; no Admin lease or grant is added.
+select pg_temp.qa_seed_interactive_authority(array(select user_id from qa_profile_actors));
+
 create temp table qa_profile_baseline as
 select id, role, is_driver, organization_id, member_id, whatsapp_verified_at,
   phone, whatsapp_e164, auth_provider, created_at

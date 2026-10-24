@@ -1,144 +1,342 @@
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:mobi_app/core/links/incoming_app_link.dart';
+import 'package:mobi_app/core/async/account_epoch.dart';
 import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/config/supabase_config.dart';
+import 'package:mobi_app/core/errors/app_exception.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/profile/data/referral_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ReferralAttributionService {
-  ReferralAttributionService({required this.referralService});
+  ReferralAttributionService({
+    required this.referralService,
+    Future<SharedPreferences> Function()? preferences,
+    bool Function()? enabled,
+    bool Function()? verified,
+    AccountSnapshot Function()? captureAccount,
+    void Function(AccountSnapshot)? requireCurrent,
+    Listenable? accountChanges,
+  }) : _preferences = preferences ?? SharedPreferences.getInstance,
+       _enabled = enabled ?? (() => SupabaseConfig.isConfigured),
+       _verified = verified ?? (() => AccountContext.hasVerifiedSession),
+       _capture = captureAccount ?? AccountContext.capture,
+       _require = requireCurrent ?? AccountContext.requireCurrent,
+       _accountChanges = accountChanges ?? AccountContext.changes {
+    _accountChanges.addListener(_accountChanged);
+  }
 
   final ReferralService referralService;
-  final AppLinks _appLinks = AppLinks();
-  StreamSubscription<Uri>? _linkSubscription;
-
+  final Future<SharedPreferences> Function() _preferences;
+  final bool Function() _enabled, _verified;
+  final AccountSnapshot Function() _capture;
+  final void Function(AccountSnapshot) _require;
+  final Listenable _accountChanges;
   static const _platform = MethodChannel('rw.mobi.app/install_referrer');
-  static const _pendingCodeKey = 'mobio.pending_referral_code';
-  static const _pendingInstallIdKey = 'mobio.pending_referral_install_id';
-  static const _pendingAttributionSourceKey =
-      'mobio.pending_referral_attribution_source';
-  static const _installMarkerKey = 'mobio.install_marker';
+  static const _pendingKey = 'mobio.pending_referral.v2';
+  static const _legacyCode = 'mobio.pending_referral_code';
+  static const _legacyInstall = 'mobio.pending_referral_install_id';
+  static const _legacySource = 'mobio.pending_referral_attribution_source';
+  static const _installMarker = 'mobio.install_marker';
+  Future<void> _diskTail = Future<void>.value();
+  Future<void>? _initialization;
+  final _completing = <String, Future<void>>{};
+  int _arrivalRevision = 0;
+  bool _disposed = false;
 
-  Future<void> initialize() async {
-    if (!SupabaseConfig.isConfigured) return;
-
-    await _captureInstallReferrer();
-    await _captureInitialUri();
-    _linkSubscription ??= _appLinks.uriLinkStream.listen(
-      (uri) => unawaited(_handleUri(uri, source: 'app_link_stream')),
-      onError: (error, stackTrace) {
-        AppLogger.error('Referral app link stream failed: $error\n$stackTrace');
-      },
+  Future<T> _disk<T>(Future<T> Function(SharedPreferences) work) {
+    final result = _diskTail.then((_) async => work(await _preferences()));
+    _diskTail = result.then<void>(
+      (_) {},
+      onError: (Object _, StackTrace __) {},
     );
+    return result;
+  }
+
+  Future<void> initialize() => _initialization ??= _initialize();
+  Future<void> _initialize() async {
+    await _captureInstallReferrer();
+    if (!_disposed && _verified()) unawaited(completePendingSignup());
   }
 
   Future<void> dispose() async {
-    await _linkSubscription?.cancel();
-    _linkSubscription = null;
+    _disposed = true;
+    _accountChanges.removeListener(_accountChanged);
   }
 
-  Future<void> completePendingSignup() async {
-    if (!SupabaseConfig.isConfigured || !AccountContext.hasVerifiedSession) return;
-    final account = AccountContext.capture();
+  void _accountChanged() => unawaited(completePendingSignup());
 
-    final prefs = await SharedPreferences.getInstance();
-    AccountContext.requireCurrent(account);
-    final code = prefs.getString(_pendingCodeKey);
-    if (code == null || code.isEmpty) return;
-    final installId = prefs.getString(_pendingInstallIdKey);
-    final attributionSource = prefs.getString(_pendingAttributionSourceKey);
-
-    try {
-      final metadata = <String, dynamic>{'source': 'post_login_attribution'};
-      if (attributionSource != null) {
-        metadata['attribution_source'] = attributionSource;
+  /// A validated arrival is persisted before navigation. Network work does not
+  /// block routing, first frame, or capture of the next link.
+  Future<void> captureInvite(
+    IncomingInvite invite, {
+    String source = 'app_link_stream',
+  }) async {
+    if (_disposed || !_enabled()) return;
+    final arrivalAccount = _verified() ? _capture() : null;
+    final revision = ++_arrivalRevision;
+    final stored = await _disk((prefs) async {
+      if (_disposed || revision != _arrivalRevision) return false;
+      String? installId;
+      if (shouldCreateIosUniversalLinkInstallId(
+        platform: defaultTargetPlatform,
+        source: source,
+        kIsWeb: kIsWeb,
+        universalLink: invite.universalLink,
+      )) {
+        installId =
+            'iosul_${_stableInstallId('ios-universal-link|${invite.code}|${await _marker(prefs)}')}';
       }
-      if (installId != null && installId.startsWith('iosul_')) {
-        metadata['install_proof'] = 'ios_universal_link_first_open';
+      await _save(prefs, {
+        'id': '${DateTime.now().microsecondsSinceEpoch}:$revision',
+        'code': invite.code,
+        'source': source,
+        'install_id': installId,
+        if (arrivalAccount != null) 'claimed_by': arrivalAccount.userId,
+      });
+      return true;
+    });
+    if (!stored || _disposed) return;
+    unawaited(
+      referralService
+          .recordOpen(
+            code: invite.code,
+            platform: defaultTargetPlatform.name,
+            metadata: {
+              'source': source,
+              if (invite.universalLink) 'link_kind': 'universal',
+            },
+          )
+          .catchError((Object _) {
+            AppLogger.warning('REFERRAL_OPEN_UNAVAILABLE');
+          }),
+    );
+    if (_verified()) {
+      if (arrivalAccount != null) {
+        try {
+          _require(arrivalAccount);
+        } on Object {
+          return;
+        }
       }
-
-      await referralService.completeSignup(
-        code: code,
-        installId: installId,
-        metadata: metadata,
-      );
-      AccountContext.requireCurrent(account);
-      await prefs.remove(_pendingCodeKey);
-      await prefs.remove(_pendingInstallIdKey);
-      await prefs.remove(_pendingAttributionSourceKey);
-    } on Object catch (error, stackTrace) {
-      AppLogger.error('Referral signup completion failed: $error\n$stackTrace');
+      unawaited(completePendingSignup());
     }
   }
 
-  Future<void> _captureInitialUri() async {
+  Future<void> completePendingSignup() async {
     try {
-      final uri = await RequestDeadline.read(_appLinks.getInitialLink());
-      if (uri != null) {
-        await _handleUri(uri, source: 'initial_app_link');
+      if (_disposed || !_enabled() || !_verified()) return;
+      final account = _capture();
+      final revision = _arrivalRevision;
+      final pending = await _disk(_read);
+      _require(account);
+      if (_disposed ||
+          pending == null ||
+          pending['unknown_outcome'] == true ||
+          (pending['claimed_by'] != null &&
+              pending['claimed_by'] != account.userId) ||
+          revision != _arrivalRevision)
+        return;
+      final key = '${account.identity}:${account.generation}:${pending['id']}';
+      final existing = _completing[key];
+      if (existing != null) return existing;
+      final work = _complete(account, pending, revision);
+      _completing[key] = work;
+      try {
+        await work;
+      } finally {
+        if (identical(_completing[key], work)) _completing.remove(key);
       }
-    } on Object catch (error, stackTrace) {
-      AppLogger.error('Initial referral app link failed: $error\n$stackTrace');
+    } on Object {
+      AppLogger.warning('REFERRAL_COMPLETION_UNAVAILABLE');
+    }
+  }
+
+  Future<void> _complete(
+    AccountSnapshot account,
+    Map<String, dynamic> pending,
+    int revision,
+  ) async {
+    var requestStarted = false;
+    try {
+      final admitted = await _disk((prefs) async {
+        _require(account);
+        if (_disposed ||
+            revision != _arrivalRevision ||
+            (await _read(prefs))?['id'] != pending['id'])
+          return false;
+        // Write uncertainty before dispatch, so process exit while the RPC is
+        // in flight cannot turn a later restore into an automatic write replay.
+        await _save(prefs, {
+          ...pending,
+          'claimed_by': account.userId,
+          'unknown_outcome': true,
+        });
+        return true;
+      });
+      if (!admitted) return;
+      _require(account);
+      final installId = pending['install_id'] as String?;
+      requestStarted = true;
+      await referralService.completeSignup(
+        code: pending['code'] as String,
+        installId: installId,
+        metadata: {
+          'source': 'post_login_attribution',
+          'attribution_source': pending['source'],
+          if (installId?.startsWith('iosul_') == true)
+            'install_proof': 'ios_universal_link_first_open',
+        },
+      );
+      await _disk((prefs) async {
+        _require(account);
+        if (_disposed ||
+            revision != _arrivalRevision ||
+            (await _read(prefs))?['id'] != pending['id'])
+          return;
+        if (!await prefs.remove(_pendingKey))
+          throw StateError('REFERRAL_STORAGE_FAILED');
+      });
+    } on MutationOutcomeUnknownException {
+      // A lost response requires reconciliation, not another automatic reward
+      // mutation on a token refresh, login retry, or process restart.
+      await _markUnknownPending(account, pending, revision);
+      AppLogger.warning('REFERRAL_COMPLETION_UNKNOWN');
+    } on StaleAccountWork {
+      if (requestStarted) await _markUnknownPending(account, pending, revision);
+      AppLogger.warning('REFERRAL_COMPLETION_UNAVAILABLE');
+    } on PostgrestException {
+      // RequestDeadline already separates transport/proxy uncertainty. An
+      // explicit SQL rejection is known and can retain ordinary retry state.
+      try {
+        await _disk((prefs) async {
+          _require(account);
+          final current = await _read(prefs);
+          if (!_disposed &&
+              revision == _arrivalRevision &&
+              current?['id'] == pending['id'] &&
+              current?['claimed_by'] == account.userId) {
+            await _save(prefs, {...current!, 'unknown_outcome': false});
+          }
+        });
+      } on Object {
+        /* Retain uncertainty if its owner is no longer current. */
+      }
+      AppLogger.warning('REFERRAL_COMPLETION_REJECTED');
+    } on Object {
+      AppLogger.warning('REFERRAL_COMPLETION_UNAVAILABLE');
+    }
+  }
+
+  Future<void> _markUnknownPending(
+    AccountSnapshot account,
+    Map<String, dynamic> pending,
+    int revision,
+  ) async {
+    try {
+      await _disk((prefs) async {
+        // This is pending-record bookkeeping, not work for the replacement
+        // account. Keep uncertainty durable even if its original owner exits.
+        final current = await _read(prefs);
+        if (!_disposed &&
+            revision == _arrivalRevision &&
+            current?['id'] == pending['id'] &&
+            current?['claimed_by'] == account.userId) {
+          await _save(prefs, {...current!, 'unknown_outcome': true});
+        }
+      });
+    } on Object {
+      /* Keep the durable claimed owner if storage is unavailable. */
+    }
+  }
+
+  Future<Map<String, dynamic>?> _read(SharedPreferences prefs) async {
+    final raw = prefs.getString(_pendingKey);
+    if (raw != null) return Map<String, dynamic>.from(jsonDecode(raw) as Map);
+    final code = prefs.getString(_legacyCode);
+    if (code == null || code.isEmpty) return null;
+    final pending = <String, dynamic>{
+      'id': 'legacy:$code',
+      'code': code,
+      'install_id': prefs.getString(_legacyInstall),
+      'source': prefs.getString(_legacySource),
+    };
+    await _save(prefs, pending);
+    // Migration is complete only after the atomic replacement was acknowledged.
+    for (final key in [_legacyCode, _legacyInstall, _legacySource]) {
+      if (!await prefs.remove(key)) throw StateError('REFERRAL_STORAGE_FAILED');
+    }
+    return pending;
+  }
+
+  Future<void> _save(
+    SharedPreferences prefs,
+    Map<String, dynamic> pending,
+  ) async {
+    if (!await prefs.setString(_pendingKey, jsonEncode(pending))) {
+      throw StateError('REFERRAL_STORAGE_FAILED');
     }
   }
 
   Future<void> _captureInstallReferrer() async {
-    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
-
+    if (_disposed ||
+        !_enabled() ||
+        kIsWeb ||
+        defaultTargetPlatform != TargetPlatform.android)
+      return;
+    final revision = _arrivalRevision;
     try {
       final response = await RequestDeadline.read(
         _platform.invokeMethod<dynamic>('getInstallReferrer'),
       );
-      final raw = _installReferrerValue(response);
-      if (raw == null || raw.isEmpty) return;
-
-      final uri = Uri.tryParse('https://mobio.ikanisa.com/?$raw');
-      final code = _extractCode(uri);
-      if (code == null) return;
-
-      final installMarker = await _getOrCreateInstallMarker();
-      final installId = _stableInstallId(
-        [
-          raw,
-          installMarker,
-          if (response is Map) response['installBeginTimestampSeconds'],
-          if (response is Map) response['referrerClickTimestampSeconds'],
-        ].whereType<Object>().join('|'),
+      final raw = response is String
+          ? response
+          : response is Map
+          ? response['installReferrer']
+          : null;
+      if (raw is! String || raw.isEmpty) return;
+      final intent = parseIncomingInvite(
+        Uri.parse('https://mobio.ikanisa.com/?$raw'),
       );
-
-      await _persistPendingCode(
-        code,
-        source: 'play_install_referrer',
-        installId: installId,
-      );
-    } on MissingPluginException {
-      return;
-    } on Object catch (error, stackTrace) {
-      AppLogger.error('Install referrer capture failed: $error\n$stackTrace');
+      if (intent is! IncomingInvite) return;
+      await _disk((prefs) async {
+        if (_disposed ||
+            revision != _arrivalRevision ||
+            await _read(prefs) != null)
+          return;
+        final marker = await _marker(prefs);
+        final installId = _stableInstallId(
+          [
+            raw,
+            marker,
+            if (response is Map) response['installBeginTimestampSeconds'],
+            if (response is Map) response['referrerClickTimestampSeconds'],
+          ].whereType<Object>().join('|'),
+        );
+        await _save(prefs, {
+          'id': 'play:$installId',
+          'code': intent.code,
+          'source': 'play_install_referrer',
+          'install_id': installId,
+        });
+      });
+    } on Object {
+      AppLogger.warning('REFERRAL_INSTALL_SOURCE_UNAVAILABLE');
     }
   }
 
-  String? _installReferrerValue(dynamic response) {
-    if (response is String) return response;
-    if (response is Map) {
-      final value = response['installReferrer'];
-      return value is String ? value : null;
-    }
-    return null;
-  }
-
-  Future<String> _getOrCreateInstallMarker() async {
-    final prefs = await SharedPreferences.getInstance();
-    final existing = prefs.getString(_installMarkerKey);
+  Future<String> _marker(SharedPreferences prefs) async {
+    final existing = prefs.getString(_installMarker);
     if (existing != null && existing.isNotEmpty) return existing;
-
     final marker = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
-    await prefs.setString(_installMarkerKey, marker);
+    if (!await prefs.setString(_installMarker, marker))
+      throw StateError('REFERRAL_STORAGE_FAILED');
     return marker;
   }
 
@@ -151,82 +349,17 @@ class ReferralAttributionService {
     return hash.toRadixString(16).padLeft(8, '0');
   }
 
-  Future<void> _handleUri(Uri uri, {required String source}) async {
-    final code = _extractCode(uri);
-    if (code == null) return;
-
-    final installId = await _installIdForUniversalLink(code, source: source);
-    await _persistPendingCode(code, source: source, installId: installId);
-    try {
-      await referralService.recordOpen(
-        code: code,
-        platform: defaultTargetPlatform.name,
-        metadata: {
-          'source': source,
-          'uri': uri.toString(),
-          if (installId != null && installId.startsWith('iosul_'))
-            'install_proof': 'ios_universal_link_first_open',
-        },
-      );
-    } on Object catch (error, stackTrace) {
-      AppLogger.error('Referral open recording failed: $error\n$stackTrace');
-    }
-  }
-
-  Future<String?> _installIdForUniversalLink(
-    String code, {
-    required String source,
-  }) async {
-    if (!shouldCreateIosUniversalLinkInstallId(
-      platform: defaultTargetPlatform,
-      source: source,
-      kIsWeb: kIsWeb,
-    )) {
-      return null;
-    }
-
-    final installMarker = await _getOrCreateInstallMarker();
-    return 'iosul_${_stableInstallId('ios-universal-link|$code|$installMarker')}';
-  }
-
   @visibleForTesting
   static bool shouldCreateIosUniversalLinkInstallId({
     required TargetPlatform platform,
     required String source,
     required bool kIsWeb,
-  }) {
-    return !kIsWeb &&
-        platform == TargetPlatform.iOS &&
-        (source == 'initial_app_link' || source == 'app_link_stream');
-  }
-
-  Future<void> _persistPendingCode(
-    String code, {
-    required String source,
-    String? installId,
-  }) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_pendingCodeKey, code);
-    await prefs.setString(_pendingAttributionSourceKey, source);
-    if (installId != null && installId.isNotEmpty) {
-      await prefs.setString(_pendingInstallIdKey, installId);
-    } else {
-      await prefs.remove(_pendingInstallIdKey);
-    }
-    AppLogger.info('Stored pending referral code from $source.');
-  }
-
-  String? _extractCode(Uri? uri) {
-    if (uri == null) return null;
-    final direct = uri.queryParameters['ref'] ?? uri.queryParameters['code'];
-    if (direct != null && direct.trim().isNotEmpty) {
-      return direct.trim().toUpperCase();
-    }
-
-    final segments = uri.pathSegments;
-    if (segments.length >= 2 && segments.first.toLowerCase() == 'invite') {
-      return segments[1].trim().toUpperCase();
-    }
-    return null;
-  }
+    required bool universalLink,
+  }) =>
+      universalLink &&
+      !kIsWeb &&
+      platform == TargetPlatform.iOS &&
+      (source == 'initial_app_link' ||
+          source == 'app_link_stream' ||
+          source == 'web_route');
 }

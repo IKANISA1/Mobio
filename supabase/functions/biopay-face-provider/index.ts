@@ -171,7 +171,13 @@ export async function handleBiopayFaceProviderRequest(
             });
             result = await authority.call(user, "status");
           }
-        } catch {
+        } catch (error) {
+          if (
+            error instanceof FaceError &&
+            error.code === "ADMIN_REAUTHENTICATION_REQUIRED"
+          ) {
+            throw error;
+          }
           /* keep processing, never infer success from accepted upsert */
         }
       }
@@ -181,8 +187,8 @@ export async function handleBiopayFaceProviderRequest(
       result = await authority.call(user, action, {
         method_id: body.method_id,
       });
-    } else if (action === "handoff") {
-      result = await authority.call(user, "handoff", {
+    } else if (action === "prepare_handoff" || action === "handoff") {
+      result = await authority.call(user, action, {
         operation_id: body.request_id,
       });
     } else if (action === "enroll" || action === "resolve") {
@@ -258,7 +264,12 @@ export async function handleBiopayFaceProviderRequest(
     const code = error instanceof FaceError
       ? error.code
       : error instanceof HttpError
-      ? "AUTH_EXPIRED"
+      ? error.status === 403 && error.details &&
+          typeof error.details === "object" && !Array.isArray(error.details) &&
+          "code" in error.details &&
+          error.details.code === "ADMIN_REAUTHENTICATION_REQUIRED"
+        ? "ADMIN_REAUTHENTICATION_REQUIRED"
+        : "AUTH_EXPIRED"
       : "SERVICE_UNAVAILABLE";
     return jsonResponse(
       { success: false, status: "error", code },

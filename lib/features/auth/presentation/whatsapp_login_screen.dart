@@ -316,149 +316,157 @@ class _WhatsAppLoginScreenState extends ConsumerState<WhatsAppLoginScreen> {
               bottom: false,
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 104, 16, 28),
-                    child: Center(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: 560,
-                          minHeight: (constraints.maxHeight - 132).clamp(
-                            0.0,
-                            double.infinity,
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            _LoginHero(
-                              title: _otpRequested
-                                  ? 'Enter code'
-                                  : 'WhatsApp login',
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 104),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 28),
+                      child: Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: 560,
+                            minHeight: (constraints.maxHeight - 132).clamp(
+                              0.0,
+                              double.infinity,
                             ),
-                            const SizedBox(height: 32),
-                            _AuthFormBody(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _otpRequested
-                                        ? (_usesReviewCode
-                                              ? 'Use your review code'
-                                              : 'Check your WhatsApp')
-                                        : 'Your account',
-                                    style: AppTypography.headlineSm.copyWith(
-                                      color: cs.onSurface,
-                                      letterSpacing: 0,
-                                    ),
-                                  ),
-                                  const SizedBox(height: AppSpacing.lg),
-                                  if (_otpRequested) ...[
-                                    _PhoneAnchor(
-                                      value: _maskedPhone,
-                                      role: _role == AppRole.driver
-                                          ? 'Driver'
-                                          : 'Passenger',
+                          ),
+                          child: Column(
+                            children: [
+                              _LoginHero(
+                                title: _otpRequested
+                                    ? 'Enter code'
+                                    : 'WhatsApp login',
+                              ),
+                              const SizedBox(height: 32),
+                              _AuthFormBody(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _otpRequested
+                                          ? (_usesReviewCode
+                                                ? 'Use your review code'
+                                                : 'Check your WhatsApp')
+                                          : 'Your account',
+                                      style: AppTypography.headlineSm.copyWith(
+                                        color: cs.onSurface,
+                                        letterSpacing: 0,
+                                      ),
                                     ),
                                     const SizedBox(height: AppSpacing.lg),
-                                    if (_usesReviewCode) ...[
-                                      Text(
-                                        'No WhatsApp message is sent. Use the code supplied for store review.',
-                                        style: AppTypography.bodyMd.copyWith(
-                                          color: cs.onSurfaceVariant,
-                                        ),
+                                    if (_otpRequested) ...[
+                                      _PhoneAnchor(
+                                        value: _maskedPhone,
+                                        role: _role == AppRole.driver
+                                            ? 'Driver'
+                                            : 'Passenger',
                                       ),
                                       const SizedBox(height: AppSpacing.lg),
-                                    ],
-                                    MobiOtpCodeField(
-                                      controller: _otpController,
-                                      enabled: !_isBusy,
-                                      hasError: _error != null,
-                                      onChanged: (_) => setState(() {
-                                        _error = null;
-                                        _attemptsRemaining = null;
-                                      }),
-                                    ),
-                                  ] else ...[
-                                    MobiToggle(
-                                      labels: const ['Passenger', 'Driver'],
-                                      selectedIndex: _role == AppRole.passenger
-                                          ? 0
-                                          : 1,
-                                      onChanged: _isBusy
-                                          ? (_) {}
-                                          : (index) => _updateRole(
-                                              index == 0
-                                                  ? AppRole.passenger
-                                                  : AppRole.driver,
-                                            ),
-                                    ),
-                                    const SizedBox(height: AppSpacing.lg),
-                                    WhatsAppInput(
-                                      value: _number,
-                                      onChanged: _updateNumber,
-                                      countryCode: _countryCode,
-                                      onCountryCodeChanged: _updateCountryCode,
-                                      label: 'WhatsApp',
-                                      enabled: !_isBusy,
-                                    ),
-                                  ],
-                                  if (_shouldShowNotice) ...[
-                                    const SizedBox(height: AppSpacing.lg),
-                                    _buildNotice(context),
-                                  ],
-                                  const SizedBox(height: AppSpacing.lg),
-                                  MobiButton(
-                                    onPressed: _otpRequested
-                                        ? (_canVerifyCode ? _verifyCode : null)
-                                        : (_canSendCode ? _sendCode : null),
-                                    isLoading: _isBusy,
-                                    variant: MobiButtonVariant.primary,
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: AppSpacing.lg,
-                                      vertical: 18,
-                                    ),
-                                    child: Text(ctaLabel),
-                                  ),
-                                  if (_otpRequested) ...[
-                                    const SizedBox(height: AppSpacing.sm),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: MobiButton(
-                                            onPressed:
-                                                _resendCooldown > 0 || _isBusy
-                                                ? null
-                                                : () =>
-                                                      _sendCode(isResend: true),
-                                            variant: MobiButtonVariant.ghost,
-                                            width: double.infinity,
-                                            child: Text(
-                                              _resendCooldown > 0
-                                                  ? '${_usesReviewCode ? 'Retry' : 'Resend'} in ${_resendCooldown}s'
-                                                  : (_usesReviewCode
-                                                        ? 'Request again'
-                                                        : 'Resend'),
-                                            ),
+                                      if (_usesReviewCode) ...[
+                                        Text(
+                                          'No WhatsApp message is sent. Use the code supplied for store review.',
+                                          style: AppTypography.bodyMd.copyWith(
+                                            color: cs.onSurfaceVariant,
                                           ),
                                         ),
-                                        const SizedBox(width: AppSpacing.sm),
-                                        Expanded(
-                                          child: MobiButton(
-                                            onPressed: _isBusy
-                                                ? null
-                                                : _resetOtpFlow,
-                                            variant: MobiButtonVariant.ghost,
-                                            width: double.infinity,
-                                            child: const Text('Change number'),
-                                          ),
-                                        ),
+                                        const SizedBox(height: AppSpacing.lg),
                                       ],
+                                      MobiOtpCodeField(
+                                        controller: _otpController,
+                                        enabled: !_isBusy,
+                                        hasError: _error != null,
+                                        onChanged: (_) => setState(() {
+                                          _error = null;
+                                          _attemptsRemaining = null;
+                                        }),
+                                      ),
+                                    ] else ...[
+                                      MobiToggle(
+                                        labels: const ['Passenger', 'Driver'],
+                                        selectedIndex:
+                                            _role == AppRole.passenger ? 0 : 1,
+                                        onChanged: _isBusy
+                                            ? (_) {}
+                                            : (index) => _updateRole(
+                                                index == 0
+                                                    ? AppRole.passenger
+                                                    : AppRole.driver,
+                                              ),
+                                      ),
+                                      const SizedBox(height: AppSpacing.lg),
+                                      WhatsAppInput(
+                                        value: _number,
+                                        onChanged: _updateNumber,
+                                        countryCode: _countryCode,
+                                        onCountryCodeChanged:
+                                            _updateCountryCode,
+                                        label: 'WhatsApp',
+                                        enabled: !_isBusy,
+                                      ),
+                                    ],
+                                    if (_shouldShowNotice) ...[
+                                      const SizedBox(height: AppSpacing.lg),
+                                      _buildNotice(context),
+                                    ],
+                                    const SizedBox(height: AppSpacing.lg),
+                                    MobiButton(
+                                      onPressed: _otpRequested
+                                          ? (_canVerifyCode
+                                                ? _verifyCode
+                                                : null)
+                                          : (_canSendCode ? _sendCode : null),
+                                      isLoading: _isBusy,
+                                      variant: MobiButtonVariant.primary,
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: AppSpacing.lg,
+                                        vertical: 18,
+                                      ),
+                                      child: Text(ctaLabel),
                                     ),
+                                    if (_otpRequested) ...[
+                                      const SizedBox(height: AppSpacing.sm),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: MobiButton(
+                                              onPressed:
+                                                  _resendCooldown > 0 || _isBusy
+                                                  ? null
+                                                  : () => _sendCode(
+                                                      isResend: true,
+                                                    ),
+                                              variant: MobiButtonVariant.ghost,
+                                              width: double.infinity,
+                                              child: Text(
+                                                _resendCooldown > 0
+                                                    ? '${_usesReviewCode ? 'Retry' : 'Resend'} in ${_resendCooldown}s'
+                                                    : (_usesReviewCode
+                                                          ? 'Request again'
+                                                          : 'Resend'),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: AppSpacing.sm),
+                                          Expanded(
+                                            child: MobiButton(
+                                              onPressed: _isBusy
+                                                  ? null
+                                                  : _resetOtpFlow,
+                                              variant: MobiButtonVariant.ghost,
+                                              width: double.infinity,
+                                              child: const Text(
+                                                'Change number',
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ],
-                                ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),

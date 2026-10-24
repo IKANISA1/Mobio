@@ -1,0 +1,24 @@
+{
+  "baseline": "review inventory before remediation",
+  "checked_existing_files": 3247,
+  "changed": [
+    "ios/Podfile",
+    "lib/features/admin/presentation/admin_reports_screen.dart",
+    "lib/features/admin/presentation/admin_trips_screen.dart",
+    "scripts/qa/test_biopay_full_schema.sh",
+    "test/features/auth/data/otp_send_outcome_test.dart",
+    "test/release/admin_panel_production_readiness_contract_test.dart",
+    "test/release/scope_boundary_test.dart"
+  ],
+  "missing": [],
+  "unexpected_changes": [],
+  "allowed_boundaries": [
+    "ios/Podfile",
+    "lib/features/admin/presentation/admin_reports_screen.dart",
+    "lib/features/admin/presentation/admin_trips_screen.dart",
+    "scripts/qa/test_biopay_full_schema.sh",
+    "test/features/auth/data/otp_send_outcome_test.dart",
+    "test/release/admin_panel_production_readiness_contract_test.dart",
+    "test/release/scope_boundary_test.dart"
+  ]
+}

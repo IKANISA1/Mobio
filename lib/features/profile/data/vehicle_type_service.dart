@@ -1,3 +1,4 @@
+import 'package:mobi_app/core/auth/admin_mutation_guard.dart';
 import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/shared/models/vehicle_type_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -105,7 +106,7 @@ class VehicleTypeService {
 
   /// Update a vehicle type (admin only).
   Future<void> update(VehicleTypeModel model) async {
-    await RequestDeadline.mutation(
+    await AdminMutationGuard.run(
       _supabase.rpc(
         'rpc_admin_update_vehicle_type',
         params: {
@@ -117,6 +118,7 @@ class VehicleTypeService {
           'p_is_active': model.isActive,
         },
       ),
+      client: _supabase,
       operation: 'rpc_admin_update_vehicle_type',
       operationId: model.id,
     );
@@ -128,7 +130,7 @@ class VehicleTypeService {
     String vehicleTypeId,
     List<String> countryIds,
   ) async {
-    await RequestDeadline.mutation(
+    await AdminMutationGuard.run(
       _supabase.rpc(
         'rpc_admin_set_vehicle_type_countries',
         params: {
@@ -136,6 +138,7 @@ class VehicleTypeService {
           'p_country_ids': countryIds,
         },
       ),
+      client: _supabase,
       operation: 'rpc_admin_set_vehicle_type_countries',
       operationId: vehicleTypeId,
     );
@@ -145,11 +148,12 @@ class VehicleTypeService {
 
   /// Toggle active status for a vehicle type (admin only).
   Future<void> toggleActive(String vehicleTypeId, bool isActive) async {
-    await RequestDeadline.mutation(
+    await AdminMutationGuard.run(
       _supabase.rpc(
         'rpc_admin_set_vehicle_type_active',
         params: {'p_vehicle_type_id': vehicleTypeId, 'p_is_active': isActive},
       ),
+      client: _supabase,
       operation: 'rpc_admin_set_vehicle_type_active',
       operationId: vehicleTypeId,
     );

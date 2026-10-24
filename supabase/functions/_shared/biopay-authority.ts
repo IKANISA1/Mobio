@@ -25,7 +25,7 @@ export class BioPayAuthority {
         p_request_digest: digest,
       },
     );
-    if (error) this.fail(error.message);
+    if (error) this.fail(error);
     return String(data);
   }
   async call(
@@ -39,7 +39,7 @@ export class BioPayAuthority {
       p_action: action,
       p_data: data,
     });
-    if (result.error) this.fail(result.error.message);
+    if (result.error) this.fail(result.error);
     return result.data as FaceRecord;
   }
   async readiness(): Promise<FaceRecord> {
@@ -47,7 +47,14 @@ export class BioPayAuthority {
     if (error) throw new FaceError("DATABASE_UNAVAILABLE", 503);
     return data;
   }
-  private fail(message: string): never {
+  private fail(error: { message: string; code?: string }): never {
+    if (
+      error.code === "42501" &&
+      error.message === "ADMIN_REAUTHENTICATION_REQUIRED"
+    ) {
+      throw new FaceError("ADMIN_REAUTHENTICATION_REQUIRED", 403);
+    }
+    const message = error.message;
     const codes = [
       "BIOPAY_SESSION_INVALID",
       "BIOPAY_RATE_LIMIT",

@@ -1,13 +1,20 @@
 import 'package:mobi_app/core/async/request_deadline.dart';
+import 'package:mobi_app/core/auth/account_context.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 import 'package:mobi_app/features/admin/data/admin_broadcast_service.dart';
 import 'package:mobi_app/features/admin/data/admin_compliance_service.dart';
 import 'package:mobi_app/features/admin/data/admin_dashboard_service.dart';
 import 'package:mobi_app/features/admin/data/admin_trip_service.dart';
 import 'package:mobi_app/features/admin/data/admin_user_service.dart';
+import 'package:mobi_app/features/admin/domain/admin_role_change.dart';
+import 'package:mobi_app/features/admin/domain/admin_role_recovery.dart';
+import 'package:mobi_app/features/admin/domain/admin_user_query.dart';
 import 'package:mobi_shared_types/models/admin/admin_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+export 'package:mobi_app/features/admin/domain/admin_role_change.dart';
+export 'package:mobi_app/features/admin/domain/admin_role_recovery.dart';
+export 'package:mobi_app/features/admin/domain/admin_user_query.dart';
 export 'package:mobi_shared_types/models/admin/admin_models.dart';
 
 class AdminService {
@@ -36,6 +43,37 @@ class AdminService {
   final AdminComplianceService _complianceService;
 
   String? get currentUserId => _supabase.auth.currentUser?.id;
+  String? get currentSessionId =>
+      AccountContext.sessionId(_supabase.auth.currentSession);
+  AdminRoleRecoveryOwner get roleRecoveryOwner =>
+      _userService.roleRecoveryOwner;
+  Future<AdminUserPage> listUsersPage(AdminUserQuery query) =>
+      _userService.listUsersPage(query);
+  Future<AdminUserSnapshotRelease> releaseUsersSnapshot(String snapshotId) =>
+      _userService.releaseUsersSnapshot(snapshotId);
+  Future<AdminRoleBatchEnvelope> reserveRoleChange(AdminRoleReview review) =>
+      _userService.reserveRoleChange(review);
+  Future<AdminRoleBatchEnvelope> executeRoleChange({
+    required AdminRoleBatchEnvelope envelope,
+    required String operationId,
+  }) => _userService.executeRoleChange(
+    envelope: envelope,
+    operationId: operationId,
+  );
+  Future<AdminRoleBatchEnvelope> roleChangeStatus({
+    String? batchId,
+    String? reservationId,
+  }) => _userService.roleChangeStatus(
+    batchId: batchId,
+    reservationId: reservationId,
+  );
+  Future<AdminRoleBatchEnvelope> sealRoleChange({
+    String? batchId,
+    String? reservationId,
+  }) => _userService.sealRoleChange(
+    batchId: batchId,
+    reservationId: reservationId,
+  );
 
   Future<bool> checkAdminAccess(String phoneE164) async {
     try {

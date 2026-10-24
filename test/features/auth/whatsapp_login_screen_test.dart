@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobi_app/core/constants/app_enums.dart';
@@ -224,6 +225,83 @@ void main() {
     await tester.pump();
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'enlarged login scroll clips below pinned controls with the keyboard open',
+    (tester) async {
+      final service = FakeWhatsAppLoginService();
+      await pumpLogin(
+        tester,
+        service,
+        scale: 2,
+        keyboardInset: 300,
+        size: const Size(390, 640),
+      );
+
+      final heading = find.text('WhatsApp login');
+      final scrollable = find.ancestor(
+        of: heading,
+        matching: find.byType(Scrollable),
+      );
+      expect(scrollable, findsOneWidget);
+      final back = find.byTooltip('Back');
+      final message = find.byTooltip('WhatsApp login');
+      final pinnedBackRect = tester.getRect(back);
+      final pinnedMessageRect = tester.getRect(message);
+
+      await tester.drag(
+        scrollable,
+        Offset(0, pinnedBackRect.center.dy - tester.getCenter(heading).dy),
+      );
+      await tester.pumpAndSettle();
+
+      // The heading's un-clipped layout crosses the chrome while scrolling.
+      // The actual viewport paint clip must keep those pixels below it.
+      expect(tester.getRect(heading).overlaps(pinnedBackRect), isTrue);
+      final headingBox = tester.renderObject<RenderBox>(heading);
+      final viewport = RenderAbstractViewport.of(headingBox) as RenderBox;
+      final localClip = viewport.describeApproximatePaintClip(headingBox);
+      expect(localClip, isNotNull);
+      final globalClip = Rect.fromPoints(
+        viewport.localToGlobal(localClip!.topLeft),
+        viewport.localToGlobal(localClip.bottomRight),
+      );
+      for (final pinnedRect in [pinnedBackRect, pinnedMessageRect]) {
+        expect(globalClip.top, greaterThanOrEqualTo(pinnedRect.bottom));
+        expect(globalClip.overlaps(pinnedRect), isFalse);
+      }
+      expect(tester.getRect(back), pinnedBackRect);
+      expect(tester.getRect(message), pinnedMessageRect);
+
+      final phone = find.byType(TextField);
+      await tester.drag(
+        scrollable,
+        Offset(0, globalClip.center.dy - tester.getCenter(phone).dy),
+      );
+      await tester.pumpAndSettle();
+      expect(globalClip.contains(tester.getCenter(phone)), isTrue);
+      expect(phone.hitTestable(), findsOneWidget);
+      await tester.enterText(phone, '789000123');
+      await tester.pumpAndSettle();
+
+      final send = find.ancestor(
+        of: find.text('Send code'),
+        matching: find.byType(MobiButton),
+      );
+      await tester.drag(
+        scrollable,
+        Offset(0, globalClip.center.dy - tester.getCenter(send).dy),
+      );
+      await tester.pumpAndSettle();
+      expect(globalClip.contains(tester.getCenter(send)), isTrue);
+      expect(send.hitTestable(), findsOneWidget);
+      expect(tester.widget<MobiButton>(send).onPressed, isNotNull);
+      expect(tester.testTextInput.isVisible, isTrue);
+      expect(service.sendCount, 0);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    },
+  );
 
   testWidgets(
     'OTP recovery remains reachable with enlarged text and keyboard',

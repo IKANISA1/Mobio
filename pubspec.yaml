@@ -99,7 +99,20 @@ flutter:
     - assets/vehicles/
     - assets/google_fonts/
     - assets/icons/
+    - assets/country_flags/
     - icon/
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/google_fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: assets/google_fonts/Inter-500.ttf
+          weight: 500
+        - asset: assets/google_fonts/Inter-600.ttf
+          weight: 600
+        - asset: assets/google_fonts/Inter-700.ttf
+          weight: 700
 
 flutter_launcher_icons:
   android: true

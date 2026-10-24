@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "assertions": 60,
+  "migration_count": 122,
+  "helper_owner_acl_search_path_unchanged": true,
+  "migration_inputs_unchanged": true,
+  "test_input_unchanged": true,
+  "test_sha256": "ac0c0b72a60f066f9af9b13f408a023fcaf6a8558cf33a2842a40b5d7be930f9",
+  "auth_issuance_http_realtime_or_hosted_acceptance": false,
+  "complete_store_review_integration": false
+}

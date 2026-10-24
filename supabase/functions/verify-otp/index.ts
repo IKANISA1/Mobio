@@ -113,12 +113,17 @@ export async function ensureAdminUserSession(
   anonClient: ReturnType<typeof createAnonClient>,
   adminNumber: AdminWhatsappNumberRow,
   normalizedPhone: string,
+  otpReference?: string,
 ) {
   const displayName = adminDisplayName(adminNumber);
   const email = adminEmailForPhone(normalizedPhone);
   const password = `${crypto.randomUUID()}${crypto.randomUUID()}`;
 
-  let authUser = await findAdminAuthUserByPhone(supabase, normalizedPhone);
+  let authUser = await findAdminAuthUserByPhone(
+    supabase,
+    normalizedPhone,
+    otpReference,
+  );
 
   if (!authUser) {
     const { data, error } = await supabase.auth.admin.createUser({
@@ -337,10 +342,9 @@ export async function handleVerifyAdminOtp(
     const codeHash = otpRecord.code_hash
       ? await hashOtpCode(code, { phone, purpose })
       : null;
-    const legacyCodeHash = otpRecord.code_hash ? await hashOtpCode(code) : null;
     const isValidCode = otpRecord.code_hash
-      ? codeHash == otpRecord.code_hash || legacyCodeHash == otpRecord.code_hash
-      : otpRecord.code == code;
+      ? codeHash == otpRecord.code_hash
+      : false;
 
     const claimed = await claimOtpVerificationAttempt(supabase, {
       id: otpRecord.id,
@@ -393,13 +397,18 @@ export async function handleVerifyAdminOtp(
         anonClient,
         adminNumber,
         phone,
+        String(otpRecord.id),
       );
 
     // No credentials leave this endpoint before the server lease is committed.
     // Failure consumes the OTP but fails closed; request a new OTP to retry login.
-    const lease = await (dependencies.registerLease ?? registerIssuedAdminLease)(
-      supabase, userId, session.access_token, String(otpRecord.id),
-    );
+    const lease =
+      await (dependencies.registerLease ?? registerIssuedAdminLease)(
+        supabase,
+        userId,
+        session.access_token,
+        String(otpRecord.id),
+      );
 
     await tryRecordAdminAccessAttempt({
       supabase,

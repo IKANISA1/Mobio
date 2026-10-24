@@ -36,7 +36,14 @@ const assets = {
     if (path !== root && !path.startsWith(root + sep))
       return new Response("Not found", { status: 404 });
     try {
-      if ((await stat(path)).isDirectory()) path = resolve(path, "index.html");
+      try {
+        if ((await stat(path)).isDirectory()) path = resolve(path, "index.html");
+      } catch {
+        // Pages resolves extensionless public HTML paths through ASSETS.
+        if (extname(path) || !(await stat(path + ".html")).isFile())
+          throw new Error("Not found");
+        path += ".html";
+      }
       return new Response(await readFile(path), {
         headers: {
           "Content-Type": ["__admin_shell", "__app_shell"].some(name => path.endsWith(sep + name))

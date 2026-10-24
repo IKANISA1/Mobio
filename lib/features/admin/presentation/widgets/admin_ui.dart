@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:mobi_app/features/admin/presentation/admin_copy.dart';
 import 'package:mobi_app/shared/widgets/mobi_status_badge.dart';
 import 'package:mobi_app/shared/widgets/soft_gradient.dart';
 import 'package:mobi_design_system/theme/app_radii.dart';
@@ -66,6 +67,7 @@ class AdminWorkspaceFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final copy = AdminCopy.of(context);
     final cs = Theme.of(context).colorScheme;
     return SoftGradient(
       child: LayoutBuilder(
@@ -89,7 +91,7 @@ class AdminWorkspaceFrame extends StatelessWidget {
                             if (onBack != null) ...[
                               AdminIconButton(
                                 icon: LucideIcons.chevronLeft,
-                                label: 'Back',
+                                label: copy.back,
                                 onPressed: onBack,
                               ),
                               const SizedBox(width: 12),
@@ -228,7 +230,7 @@ class AdminWorkspaceFrame extends StatelessWidget {
                                           size: 20,
                                         ),
                                         title: Text(
-                                          entry.value.label,
+                                          copy.navigation(entry.value.route),
                                           style: AppTypography.bodySm,
                                         ),
                                         onTap: () =>
@@ -453,6 +455,7 @@ class AdminSearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final copy = AdminCopy.of(context);
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
@@ -480,7 +483,7 @@ class AdminSearchField extends StatelessWidget {
             suffixIcon: value.text.isEmpty
                 ? null
                 : IconButton(
-                    tooltip: 'Clear search',
+                    tooltip: copy.clearSearch,
                     onPressed: () {
                       controller.clear();
                       onChanged?.call('');
@@ -600,6 +603,7 @@ class AdminActionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final copy = AdminCopy.of(context);
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final enabled = onTap != null && !isBusy;
@@ -610,7 +614,7 @@ class AdminActionChip extends StatelessWidget {
     return Semantics(
       button: true,
       enabled: enabled,
-      value: isBusy ? 'Loading' : null,
+      value: isBusy ? copy.loading : null,
       liveRegion: isBusy,
       child: Material(
         color: Colors.transparent,
@@ -762,6 +766,7 @@ class AdminSortMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final copy = AdminCopy.of(context);
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final selected = options.firstWhere(
@@ -770,7 +775,7 @@ class AdminSortMenu extends StatelessWidget {
     );
 
     return PopupMenuButton<String>(
-      tooltip: 'Sort rows',
+      tooltip: copy.sortRows,
       onSelected: onChanged,
       itemBuilder: (context) => [
         for (final option in options)
@@ -791,7 +796,7 @@ class AdminSortMenu extends StatelessWidget {
       ],
       child: Semantics(
         button: true,
-        label: 'Sort by ${selected.label}',
+        label: copy.messageSortBy(selected.label),
         excludeSemantics: true,
         child: Container(
           constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
@@ -851,6 +856,7 @@ class AdminPaginationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final copy = AdminCopy.of(context);
     final cs = Theme.of(context).colorScheme;
     final safeRowsPerPage = rowsPerPage <= 0 ? 25 : rowsPerPage;
     final maxPage = totalItems == 0
@@ -871,7 +877,11 @@ class AdminPaginationBar extends StatelessWidget {
         alignment: WrapAlignment.spaceBetween,
         children: [
           Text(
-            '$start-$end of $totalItems',
+            copy.messagePagination(
+              copy.number(start),
+              copy.number(end),
+              copy.number(totalItems),
+            ),
             style: AppTypography.labelMd.copyWith(color: cs.onSurfaceVariant),
           ),
           Wrap(
@@ -881,7 +891,7 @@ class AdminPaginationBar extends StatelessWidget {
             children: [
               if (onRowsPerPageChanged != null) ...[
                 Text(
-                  'Rows',
+                  copy.rows,
                   style: AppTypography.labelMd.copyWith(
                     color: cs.onSurfaceVariant,
                   ),
@@ -898,7 +908,7 @@ class AdminPaginationBar extends StatelessWidget {
                     for (final option in rowsPerPageOptions)
                       DropdownMenuItem<int>(
                         value: option,
-                        child: Text('$option'),
+                        child: Text(copy.number(option)),
                       ),
                   ],
                   onChanged: (value) {
@@ -909,7 +919,7 @@ class AdminPaginationBar extends StatelessWidget {
               ],
               AdminIconButton(
                 icon: LucideIcons.chevronLeft,
-                label: 'Previous page',
+                label: copy.previousPage,
                 onPressed: currentPage > 0
                     ? () => onPageChanged(currentPage - 1)
                     : null,
@@ -917,7 +927,7 @@ class AdminPaginationBar extends StatelessWidget {
               const SizedBox(width: AppSpacing.xs),
               AdminIconButton(
                 icon: LucideIcons.chevronRight,
-                label: 'Next page',
+                label: copy.nextPage,
                 onPressed: currentPage < maxPage
                     ? () => onPageChanged(currentPage + 1)
                     : null,
@@ -976,83 +986,61 @@ class _AdminWorkspaceTabs extends StatelessWidget {
 
   const _AdminWorkspaceTabs({required this.currentTab});
 
-  static const _tabs =
-      <AdminWorkspaceTab, ({String label, IconData icon, String route})>{
-        AdminWorkspaceTab.overview: (
-          label: 'Ops',
-          icon: LucideIcons.layoutDashboard,
-          route: '/admin',
-        ),
-        AdminWorkspaceTab.users: (
-          label: 'Users',
-          icon: LucideIcons.users,
-          route: '/admin/users',
-        ),
-        AdminWorkspaceTab.fleet: (
-          label: 'Fleet',
-          icon: LucideIcons.car,
-          route: '/admin/vehicle-types',
-        ),
-        AdminWorkspaceTab.agencies: (
-          label: 'Agencies',
-          icon: LucideIcons.building2,
-          route: '/admin/agencies',
-        ),
-        AdminWorkspaceTab.evChargers: (
-          label: 'EV',
-          icon: LucideIcons.plugZap,
-          route: '/admin/ev-chargers',
-        ),
-        AdminWorkspaceTab.subscriptions: (
-          label: 'Plans',
-          icon: LucideIcons.creditCard,
-          route: '/admin/subscriptions',
-        ),
-        AdminWorkspaceTab.trips: (
-          label: 'Trips',
-          icon: LucideIcons.mapPin,
-          route: '/admin/trips',
-        ),
-        AdminWorkspaceTab.reports: (
-          label: 'Reports',
-          icon: LucideIcons.flag,
-          route: '/admin/reports',
-        ),
-        AdminWorkspaceTab.biopayOps: (
-          label: 'BioPay',
-          icon: LucideIcons.scanFace,
-          route: '/admin/biopay',
-        ),
-        AdminWorkspaceTab.health: (
-          label: 'Health',
-          icon: LucideIcons.activity,
-          route: '/admin/health',
-        ),
-        AdminWorkspaceTab.audit: (
-          label: 'Audit',
-          icon: LucideIcons.clipboardList,
-          route: '/admin/audit',
-        ),
-        AdminWorkspaceTab.broadcasts: (
-          label: 'Broadcasts',
-          icon: LucideIcons.radio,
-          route: '/admin/broadcasts',
-        ),
-        AdminWorkspaceTab.account: (
-          label: 'Account',
-          icon: LucideIcons.user,
-          route: '/profile',
-        ),
-      };
+  static const _tabs = <AdminWorkspaceTab, ({IconData icon, String route})>{
+    AdminWorkspaceTab.overview: (
+      icon: LucideIcons.layoutDashboard,
+      route: '/admin',
+    ),
+    AdminWorkspaceTab.users: (icon: LucideIcons.users, route: '/admin/users'),
+    AdminWorkspaceTab.fleet: (
+      icon: LucideIcons.car,
+      route: '/admin/vehicle-types',
+    ),
+    AdminWorkspaceTab.agencies: (
+      icon: LucideIcons.building2,
+      route: '/admin/agencies',
+    ),
+    AdminWorkspaceTab.evChargers: (
+      icon: LucideIcons.plugZap,
+      route: '/admin/ev-chargers',
+    ),
+    AdminWorkspaceTab.subscriptions: (
+      icon: LucideIcons.creditCard,
+      route: '/admin/subscriptions',
+    ),
+    AdminWorkspaceTab.trips: (icon: LucideIcons.mapPin, route: '/admin/trips'),
+    AdminWorkspaceTab.reports: (
+      icon: LucideIcons.flag,
+      route: '/admin/reports',
+    ),
+    AdminWorkspaceTab.biopayOps: (
+      icon: LucideIcons.scanFace,
+      route: '/admin/biopay',
+    ),
+    AdminWorkspaceTab.health: (
+      icon: LucideIcons.activity,
+      route: '/admin/health',
+    ),
+    AdminWorkspaceTab.audit: (
+      icon: LucideIcons.clipboardList,
+      route: '/admin/audit',
+    ),
+    AdminWorkspaceTab.broadcasts: (
+      icon: LucideIcons.radio,
+      route: '/admin/broadcasts',
+    ),
+    AdminWorkspaceTab.account: (icon: LucideIcons.user, route: '/profile'),
+  };
 
   @override
   Widget build(BuildContext context) {
+    final copy = AdminCopy.of(context);
     return LayoutBuilder(
       builder: (context, constraints) {
         final tabButtons = _tabs.keys.map((tab) {
           final config = _tabs[tab]!;
           return AdminFilterChip(
-            label: config.label,
+            label: copy.navigation(config.route),
             icon: config.icon,
             isSelected: tab == currentTab,
             onTap: () => context.go(config.route),

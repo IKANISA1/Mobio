@@ -34,6 +34,14 @@ abstract final class AppExceptionMapper {
 
     // Supabase Postgrest errors (RPC / table operations)
     if (error is supa.PostgrestException) {
+      if (error.code == '42501' &&
+          error.message == 'ADMIN_REAUTHENTICATION_REQUIRED') {
+        return AdminReauthenticationRequiredException(
+          debugMessage: error.message,
+          originalError: error,
+          stackTrace: stackTrace,
+        );
+      }
       final domainError = _mapPostgrestDomainError(error, stackTrace);
       if (domainError != null) return domainError;
 

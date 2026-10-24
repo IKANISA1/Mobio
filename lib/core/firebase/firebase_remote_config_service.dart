@@ -4,11 +4,15 @@ import 'package:mobi_app/core/async/request_deadline.dart';
 import 'package:mobi_app/core/utils/app_logger.dart';
 
 class FirebaseRemoteConfigService {
-  FirebaseRemoteConfigService._();
+  FirebaseRemoteConfigService._() : _remoteConfigOverride = null;
+  @visibleForTesting
+  FirebaseRemoteConfigService.forTesting(FirebaseRemoteConfig remoteConfig)
+    : _remoteConfigOverride = remoteConfig;
 
   static final instance = FirebaseRemoteConfigService._();
 
   FirebaseRemoteConfig? _remoteConfig;
+  final FirebaseRemoteConfig? _remoteConfigOverride;
 
   bool get isReady => _remoteConfig != null;
 
@@ -17,7 +21,7 @@ class FirebaseRemoteConfigService {
       return;
     }
 
-    final remoteConfig = FirebaseRemoteConfig.instance;
+    final remoteConfig = _remoteConfigOverride ?? FirebaseRemoteConfig.instance;
     await RequestDeadline.read(
       remoteConfig.setConfigSettings(
         RemoteConfigSettings(

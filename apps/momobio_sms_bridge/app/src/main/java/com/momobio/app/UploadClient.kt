@@ -1,6 +1,8 @@
 package com.momobio.app
 
+import android.os.SystemClock
 import android.util.Log
+import java.io.Closeable
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
@@ -21,6 +23,9 @@ class UploadClient internal constructor(
     private val anonKey: String,
     private val openConnection: (String) -> HttpURLConnection,
     private val logFailure: (String) -> Unit,
+    private val monotonicMillis: () -> Long = { System.nanoTime() / 1_000_000 },
+    private val deadlinePolicy: UploadDeadlinePolicy = UploadDeadlinePolicy(),
+    private val watchDeadline: (Long, () -> Unit) -> Closeable = ::pollingUploadWatchdog,
 ) {
     constructor(
         identity: CollectorIdentity,
@@ -28,89 +33,128 @@ class UploadClient internal constructor(
         anonKey: String = BuildConfig.SUPABASE_ANON_KEY,
     ) : this(identity::headers, supabaseUrl, anonKey,
         { URL(it).openConnection() as HttpURLConnection },
-        { Log.e("MoMobioBridge", it) })
+        { Log.e("MoMobioBridge", it) }, monotonicMillis = SystemClock::elapsedRealtime)
 
     private val batchSize = 50
 
+    // Preserve the existing callers and trailing durable-acknowledgement lambda.
     fun upload(
         messages: List<MomoSms>,
+        onUploaded: ((Set<String>) -> Unit)? = null,
+    ): UploadResult = upload(messages, UploadCancellation(), { true }, onUploaded)
+
+    fun upload(
+        messages: List<MomoSms>,
+        cancellation: UploadCancellation,
+        mayStartRequest: () -> Boolean = { true },
         onUploaded: ((Set<String>) -> Unit)? = null,
     ): UploadResult {
         if (!CollectorTransportPolicy.validEndpoint(supabaseUrl) || anonKey.isBlank()) {
             return UploadResult(ok = false, message = "Secure upload config missing", outcome = "configuration_missing")
         }
-
         val endpoint = "${supabaseUrl.trimEnd('/')}/functions/v1/momobio-sms-ingest"
-        if (messages.isEmpty()) return uploadBatch(endpoint, emptyList())
         val uploaded = mutableSetOf<String>()
-        for (chunk in messages.chunked(batchSize)) {
-            val result = uploadBatch(endpoint, chunk)
-            uploaded += result.uploadedHashes
-            if (result.uploadedHashes.isNotEmpty()) {
-                try {
-                    onUploaded?.invoke(result.uploadedHashes)
-                } catch (error: Exception) {
-                    logFailure("Queue acknowledgement failed: ${error.javaClass.simpleName}")
-                    return UploadResult(
-                        ok = false,
+        var serverAcknowledged = false
+        val deadline = UploadDeadline(cancellation, deadlinePolicy, monotonicMillis, watchDeadline)
+        return try {
+            if (messages.isEmpty()) {
+                val health = uploadBatch(endpoint, emptyList(), 0, deadline, mayStartRequest, onUploaded)
+                serverAcknowledged = health.serverAcknowledged
+                deadline.checkpoint()
+                health
+            } else {
+                for ((index, chunk) in messages.asSequence().chunked(batchSize).withIndex()) {
+                    val result = uploadBatch(endpoint, chunk, index, deadline, mayStartRequest, onUploaded)
+                    uploaded += result.uploadedHashes
+                    serverAcknowledged = serverAcknowledged || result.serverAcknowledged
+                    deadline.checkpoint()
+                    if (!result.ok) return result.copy(
                         uploadedHashes = uploaded.toSet(),
-                        message = "Server acknowledged ${uploaded.size}/${messages.size}; local queue save failed",
+                        message = "Uploaded ${uploaded.size}/${messages.size}; ${result.message}",
+                        serverAcknowledged = serverAcknowledged,
                     )
                 }
-            }
-            if (!result.ok) {
-                return result.copy(
-                    uploadedHashes = uploaded,
-                    message = "Uploaded ${uploaded.size}/${messages.size}; ${result.message}",
+                deadline.checkpoint()
+                UploadResult(
+                    ok = true,
+                    uploadedHashes = uploaded.toSet(),
+                    message = "Uploaded ${uploaded.size}",
+                    serverAcknowledged = true,
                 )
             }
+        } catch (stopped: UploadStopped) {
+            UploadResult(false, uploadedHashes = uploaded.toSet(),
+                message = "Uploaded ${uploaded.size}/${messages.size}; ${stopped.reason.safeMessage}",
+                outcome = stopped.reason.outcome, serverAcknowledged = serverAcknowledged)
+        } finally {
+            // Actual request sender and abort cleanup are terminal before the lease owner returns.
+            deadline.close()
         }
-        return UploadResult(
-            ok = true,
-            uploadedHashes = uploaded,
-            message = "Uploaded ${uploaded.size}",
-            serverAcknowledged = true,
-        )
     }
 
-    private fun uploadBatch(endpoint: String, messages: List<MomoSms>): UploadResult {
-        val body = if (messages.isEmpty()) """{"action":"health"}""" else
-            """{"messages":[${messages.joinToString(",") { it.toJson() }}]}"""
-        val bytes = body.toByteArray(Charsets.UTF_8)
-        if (bytes.size > 512_000) return UploadResult(false, message = "Batch exceeds upload limit", outcome = "oversized_batch")
-        var connection: HttpURLConnection? = null
+    private fun uploadBatch(
+        endpoint: String,
+        messages: List<MomoSms>,
+        index: Int,
+        deadline: UploadDeadline,
+        mayStartRequest: () -> Boolean,
+        onUploaded: ((Set<String>) -> Unit)?,
+    ): UploadResult {
+        val request = deadline.startRequest(index, mayStartRequest)
         return try {
+            val body = if (messages.isEmpty()) """{"action":"health"}""" else
+                """{"messages":[${messages.joinToString(",") { it.toJson() }}]}"""
+            val bytes = body.toByteArray(Charsets.UTF_8)
+            deadline.checkpoint(request)
+            if (bytes.size > 512_000) return UploadResult(false, message = "Batch exceeds upload limit", outcome = "oversized_batch")
             val activeConnection = openConnection(endpoint)
             // Keep the opened connection before configuration/signing can fail.
-            connection = activeConnection
+            request.ownConnection(activeConnection)
+            deadline.checkpoint(request)
             activeConnection.apply {
                 instanceFollowRedirects = false
                 requestMethod = "POST"
-                connectTimeout = 15_000
-                readTimeout = 60_000
+                connectTimeout = deadline.phaseTimeout(request, 15_000)
+                readTimeout = deadline.phaseTimeout(request, 60_000)
                 doOutput = true
                 setRequestProperty("content-type", "application/json")
                 setRequestProperty("apikey", anonKey)
                 setRequestProperty("authorization", "Bearer $anonKey")
                 for ((name, value) in signHeaders(bytes)) setRequestProperty(name, value)
             }
-            activeConnection.outputStream.use { it.write(bytes) }
+            deadline.beforeSend(request, mayStartRequest)
+            activeConnection.connectTimeout = deadline.phaseTimeout(request, 15_000)
+            activeConnection.readTimeout = deadline.phaseTimeout(request, 60_000)
+            val output = activeConnection.outputStream
+            val closeOutput = request.ownStream(output)
+            try {
+                deadline.checkpoint(request)
+                output.write(bytes)
+                deadline.checkpoint(request)
+            } finally { closeOutput() }
+            deadline.checkpoint(request)
+            activeConnection.readTimeout = deadline.phaseTimeout(request, 60_000)
             val responseCode = activeConnection.responseCode
+            deadline.checkpoint(request)
             val retryAfter = CollectorTransportPolicy.retryAfterMillis(
                 activeConnection.getHeaderField("Retry-After"), System.currentTimeMillis())
+            deadline.checkpoint(request)
             val responseText = if (responseCode in 200..299) {
-                readBoundedResponse(activeConnection.inputStream)
+                readBoundedResponse(activeConnection.inputStream, request, deadline)
             } else {
                 // Do not echo provider bodies (which may contain sensitive information).
-                activeConnection.errorStream?.close()
+                activeConnection.errorStream?.let { request.ownStream(it).invoke() }
                 ""
             }
+            deadline.checkpoint(request)
             if (responseCode in 200..299) {
                 val response = JSONObject(responseText)
+                deadline.checkpoint(request)
                 if (messages.isEmpty()) {
                     val healthy = response.optBoolean("success") &&
                         response.optString("kind") == "collector_health" && response.optBoolean("collector_enrolled") &&
                         response.opt("automatic_allocation_enabled") is Boolean
+                    if (healthy) deadline.claimAcknowledgement(request)
                     return UploadResult(healthy, message = if (healthy) "Server verified collector; no queued receipts"
                         else "Collector health not acknowledged", outcome = if (healthy) "healthy" else "invalid_acknowledgement",
                         serverAcknowledged = healthy,
@@ -124,6 +168,17 @@ class UploadClient internal constructor(
                         val row = results.optJSONObject(index) ?: continue
                         val hash = row.optString("message_hash")
                         if (hash in expected && row.optString("status") in setOf("matched", "duplicate", "unmatched", "ambiguous", "ignored", "accepted")) acknowledged += hash
+                    }
+                }
+                if (acknowledged.isNotEmpty()) {
+                    deadline.claimAcknowledgement(request)
+                    try {
+                        onUploaded?.invoke(acknowledged.toSet())
+                    } catch (error: Exception) {
+                        logFailure("Queue acknowledgement failed: ${error.javaClass.simpleName}")
+                        return UploadResult(false, uploadedHashes = acknowledged.toSet(),
+                            message = "Server acknowledged ${acknowledged.size}/${messages.size}; local queue save failed",
+                            serverAcknowledged = true)
                     }
                 }
                 UploadResult(
@@ -146,23 +201,34 @@ class UploadClient internal constructor(
                     else -> "http_error"
                 }, retryAfterMillis = retryAfter)
             }
+        } catch (stopped: UploadStopped) {
+            throw stopped
         } catch (error: Exception) {
+            deadline.checkpoint(request)
             logFailure("Upload failed: ${error.javaClass.simpleName}")
             UploadResult(ok = false, message = "Sync unavailable; messages remain queued")
         } finally {
-            connection?.disconnect()
+            deadline.finishRequest(request)
         }
     }
-    private fun readBoundedResponse(input: java.io.InputStream): String = input.use { stream ->
-        val output = java.io.ByteArrayOutputStream()
-        val buffer = ByteArray(4096)
-        while (true) {
-            val n = stream.read(buffer)
-            if (n < 0) break
-            check(output.size() + n <= 262_144) { "Response size exceeded" }
-            output.write(buffer, 0, n)
-        }
-        output.toString("UTF-8")
+    private fun readBoundedResponse(
+        input: java.io.InputStream,
+        request: OwnedUploadRequest,
+        deadline: UploadDeadline,
+    ): String {
+        val closeInput = request.ownStream(input)
+        return try {
+            val output = java.io.ByteArrayOutputStream()
+            val buffer = ByteArray(4096)
+            while (true) {
+                deadline.checkpoint(request)
+                val n = input.read(buffer)
+                deadline.checkpoint(request)
+                if (n < 0) break
+                check(output.size() + n <= 262_144) { "Response size exceeded" }
+                output.write(buffer, 0, n)
+            }
+            output.toString("UTF-8")
+        } finally { closeInput() }
     }
-
 }

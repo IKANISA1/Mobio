@@ -1,0 +1,161 @@
+{
+  "recorded_at_utc": "2026-10-01T20:08:54.193318+00:00",
+  "decision": "NO-GO",
+  "goal_status": "active",
+  "local_implementation": [
+    "CR03 RPC/direct-write and client slice",
+    "CR05",
+    "CR06",
+    "CR13 factual account copy",
+    "CR20"
+  ],
+  "partial_foundations": [
+    "CR02 review authority without OTP/client integration"
+  ],
+  "full_stage_checks": [
+    {
+      "check": "dart-analyze",
+      "command": [
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/dart",
+        "analyze"
+      ],
+      "started_at": "2026-10-01T19:57:41.923354+00:00",
+      "elapsed_seconds": 9.94,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/goal/dart-analyze.log"
+    },
+    {
+      "check": "flutter-full",
+      "command": [
+        "/Volumes/PRO-G40/Development/Flutter/flutter_3_44_codex/bin/flutter",
+        "test",
+        "--no-pub",
+        "--reporter",
+        "json"
+      ],
+      "started_at": "2026-10-01T19:57:51.859518+00:00",
+      "elapsed_seconds": 427.75,
+      "exit_code": 1,
+      "log": "build/qa/readiness-20261001/goal/flutter-full.log"
+    }
+  ],
+  "full_suite": {
+    "passed": 1682,
+    "failed": 168,
+    "counts": {
+      "success": 1682,
+      "error": 168
+    },
+    "done": {
+      "success": false,
+      "type": "done",
+      "time": 425251
+    },
+    "failure_counts_by_file": {
+      "test/features/biopay/payment_discovery_widgets_test.dart": 5,
+      "test/features/preview/revolut_reference_golden_test.dart": 163
+    },
+    "pixel_mismatches": 168,
+    "failure_details": "remediation-batch-02-flutter-failures.json"
+  },
+  "focused_counts": {
+    "admin_server_assertions": 130,
+    "review_server_assertions": 60,
+    "nfc_startup_behavior_tests": 53,
+    "admin_client_behavior_tests": 56,
+    "location_affected_behavior_tests": 65,
+    "design_authority_tests": 12
+  },
+  "focused_counts_overlap_full_suite": true,
+  "schema_replay_migrations": 122,
+  "analyze": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 214
+  },
+  "source_freeze": "remediation-batch-02-source-hashes.json",
+  "preservation": "remediation-batch-02-preservation.json",
+  "ui_source": "remediation-batch-02-ui-source-fingerprint.json",
+  "build_status": "local_builds_passed_acceptance_open",
+  "external_acceptance": false,
+  "source_commit_push_deployment_or_publication": false,
+  "completed_at_utc": "2026-10-01T20:14:04.390612+00:00",
+  "build_stage_checks": [
+    {
+      "check": "android-release",
+      "command": [
+        "bash",
+        "scripts/release/build_android_release.sh",
+        "apk"
+      ],
+      "started_at": "2026-10-01T20:05:16.790785+00:00",
+      "elapsed_seconds": 377.51,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/goal/android-release.log"
+    },
+    {
+      "check": "pwa-release",
+      "command": [
+        "bash",
+        "scripts/web/prepare_pwa_bundles.sh",
+        "build/pwa-readiness-goal-batch02-20261001"
+      ],
+      "started_at": "2026-10-01T20:11:34.352653+00:00",
+      "elapsed_seconds": 54.13,
+      "exit_code": 0,
+      "log": "build/qa/readiness-20261001/goal/pwa-release.log"
+    }
+  ],
+  "artifacts": "remediation-batch-02-artifacts.json",
+  "schema_replay_command": [
+    "bash",
+    "scripts/qa/test_biopay_full_schema.sh"
+  ],
+  "schema_replay_tool": "/Volumes/PRO-G40/Development/User-Developer/supabase_2_84_2_codex/supabase",
+  "artifact_summary": {
+    "apk": {
+      "path": "build/qa/readiness-20261001/goal/mobio-remediation-batch-02.apk",
+      "sha256": "a2602c2731d871ba99e56a8bff6db6b0123a2f9e1f8d8f1b2df2e3d291488373",
+      "bytes": 94157727,
+      "signature_v2_verified": true,
+      "certificate_matches_bundled_assetlinks": true,
+      "package_name": "rw.mobi.app",
+      "version_code": 17,
+      "version_name": "1.0.0",
+      "min_sdk": 24,
+      "target_sdk": 36,
+      "manifest_readback": "Android SDK apkanalyzer manifest print exit 0; separate aapt badging emitted package/SDK then aborted with exit 134, retained as partial failed tool output."
+    },
+    "web": {
+      "path": "build/pwa-readiness-goal-batch02-20261001/site",
+      "file_count": 756,
+      "tree_sha256": "8d8ab5ccae470196436a5a5c17715a573b69a76914c883aaa1143ade58e6bfca"
+    },
+    "source_freeze_paths_unchanged": 52,
+    "ui_source_sha256": "d0f8dd478908104eb91b03c596945c9721c9a8c5841147d4f75354ec6859fcb7"
+  },
+  "technical_check_logs": {
+    "repository_structure": "build/qa/readiness-20261001/goal/structure-final.txt",
+    "design_authority": "build/qa/readiness-20261001/goal/design-authority-final.txt",
+    "design_authority_tests": "build/qa/readiness-20261001/goal/design-authority-tests.txt",
+    "secrets": "build/qa/readiness-20261001/goal/secrets-final.txt",
+    "diff_check": "build/qa/readiness-20261001/goal/diff-check-final.txt"
+  },
+  "final_preservation_check": {
+    "existing_files": 3247,
+    "declared_changed": 47,
+    "missing": 0,
+    "unexpected": 0,
+    "frozen_paths_unchanged": 52,
+    "baseline_body_preserved": true,
+    "report_links_valid": true
+  },
+  "final_boundary_checks": {
+    "structure": true,
+    "design_authority": true,
+    "external_authority_hashes_verified": 5,
+    "secret_pattern_scan": true,
+    "diff_whitespace": true
+  },
+  "finalized_at_utc": "2026-10-01T20:15:42.698798+00:00"
+}

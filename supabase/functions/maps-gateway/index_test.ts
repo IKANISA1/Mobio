@@ -2,6 +2,7 @@ import {
   assertEquals,
   assertStringIncludes,
 } from "https://deno.land/std@0.208.0/assert/mod.ts";
+import { HttpError as AuthorityHttpError } from "../_shared/validation.ts";
 import { handleMapsGatewayRequest } from "./index.ts";
 
 type FetchCall = {
@@ -45,6 +46,15 @@ function jsonRequest(body: Record<string, unknown>) {
     },
     body: JSON.stringify(body),
   });
+}
+
+async function allowedQuota() {
+  return {
+    allowed: true,
+    remaining: 99,
+    retry_after_seconds: 0,
+    window_ends_at: new Date(Date.now() + 300000).toISOString(),
+  };
 }
 
 function auth(userId = `maps-test-${crypto.randomUUID()}`) {
@@ -94,6 +104,7 @@ Deno.test("compute_route remains permanently unavailable", async () => {
     }),
     {
       authenticate: auth(),
+      consumeQuota: allowedQuota,
       fetchImpl,
       recordFailure: async () => {},
     },
@@ -142,6 +153,7 @@ Deno.test("autocomplete uses Places only, forwards session token, and ignores qu
       }),
       {
         authenticate: auth(),
+        consumeQuota: allowedQuota,
         fetchImpl,
         recordFailure: async () => {},
       },
@@ -190,6 +202,7 @@ Deno.test("place_details forwards session token and returns Rwanda coordinates",
       }),
       {
         authenticate: auth(),
+        consumeQuota: allowedQuota,
         fetchImpl,
         recordFailure: async () => {},
       },
@@ -232,6 +245,7 @@ Deno.test("geocode resolves typed Rwanda addresses through Google Geocoding API"
       }),
       {
         authenticate: auth(),
+        consumeQuota: allowedQuota,
         fetchImpl,
         recordFailure: async () => {},
       },
@@ -273,6 +287,7 @@ Deno.test("reverse_geocode uses Geocoding API and rejects outside Rwanda before 
       }),
       {
         authenticate: auth(),
+        consumeQuota: allowedQuota,
         fetchImpl,
         recordFailure: async () => {},
       },
@@ -294,6 +309,7 @@ Deno.test("reverse_geocode uses Geocoding API and rejects outside Rwanda before 
       }),
       {
         authenticate: auth(),
+        consumeQuota: allowedQuota,
         fetchImpl,
         recordFailure: async () => {},
       },
@@ -322,6 +338,7 @@ Deno.test("maps-gateway accepts only GOOGLE_MAPS_SERVER_API_KEY for Google calls
       }),
       {
         authenticate: auth(),
+        consumeQuota: allowedQuota,
         fetchImpl: recordCalls({}).fetchImpl,
         recordFailure: async () => {},
       },
@@ -335,42 +352,286 @@ Deno.test("maps-gateway accepts only GOOGLE_MAPS_SERVER_API_KEY for Google calls
   }
 });
 
-Deno.test("maps-gateway rate limits abusive authenticated callers", async () => {
+Deno.test("durable quota denial returns its actual retry delay without provider access", async () => {
+  const { fetchImpl, calls } = recordCalls({});
+  const response = await handleMapsGatewayRequest(
+    jsonRequest({ action: "autocomplete", query: "Quota refusal" }),
+    {
+      authenticate: auth(),
+      consumeQuota: async () => ({
+        allowed: false,
+        remaining: 0,
+        retry_after_seconds: 217,
+        window_ends_at: new Date(Date.now() + 217000).toISOString(),
+      }),
+      fetchImpl,
+      recordFailure: async () => {},
+    },
+  );
+  assertEquals(response.status, 429);
+  assertEquals(response.headers.get("Retry-After"), "217");
+  assertEquals((await response.json()).details.retryAfterSeconds, 217);
+  assertEquals(calls.length, 0);
+});
+
+Deno.test("invalid actions and payloads consume neither quota nor provider", async () => {
+  let quotaCalls = 0;
+  const { fetchImpl, calls } = recordCalls({});
+  for (
+    const body of [
+      { action: "unknown" },
+      { action: "autocomplete", query: 7 },
+      { action: "place_details" },
+    ]
+  ) {
+    const response = await handleMapsGatewayRequest(jsonRequest(body), {
+      authenticate: auth(),
+      consumeQuota: async () => {
+        quotaCalls++;
+        return allowedQuota();
+      },
+      fetchImpl,
+      recordFailure: async () => {},
+    });
+    assertEquals(response.status, 400);
+    await response.body?.cancel();
+  }
+  assertEquals(quotaCalls, 0);
+  assertEquals(calls.length, 0);
+});
+
+Deno.test("shared authority denial retains 401 and never reaches quota or Google", async () => {
+  let quotaCalls = 0;
+  const { fetchImpl, calls } = recordCalls({});
+  const response = await handleMapsGatewayRequest(
+    jsonRequest({ action: "autocomplete", query: "Kigali" }),
+    {
+      authenticate: async () => {
+        throw new AuthorityHttpError("Authentication required", 401);
+      },
+      consumeQuota: async () => {
+        quotaCalls++;
+        return allowedQuota();
+      },
+      fetchImpl,
+      recordFailure: async () => {
+        throw new Error(
+          "Expected authority denial must not be reported as an internal failure",
+        );
+      },
+    },
+  );
+  assertEquals(response.status, 401);
+  await response.body?.cancel();
+  assertEquals(quotaCalls, 0);
+  assertEquals(calls.length, 0);
+});
+
+Deno.test("quota is charged before a shared cached response", async () => {
   const snapshot = snapshotEnv();
+  let charges = 0;
   try {
     Deno.env.set("GOOGLE_MAPS_SERVER_API_KEY", "maps-server-key");
-    const { fetchImpl } = recordCalls({ suggestions: [] });
-    const userId = `rate-limit-${crypto.randomUUID()}`;
+    const { fetchImpl, calls } = recordCalls({ suggestions: [] });
+    const payload = {
+      action: "autocomplete",
+      query: `Kigali ${crypto.randomUUID()}`,
+    };
     const deps = {
-      authenticate: auth(userId),
+      authenticate: auth(),
+      consumeQuota: async () => {
+        charges++;
+        return allowedQuota();
+      },
       fetchImpl,
       recordFailure: async () => {},
     };
-
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 2; i++) {
       const response = await handleMapsGatewayRequest(
-        jsonRequest({
-          action: "autocomplete",
-          query: `Kigali ${i}`,
-        }),
+        jsonRequest(payload),
         deps,
       );
       assertEquals(response.status, 200);
+      const body = await response.json();
+      assertEquals(body.cached === true, i === 1);
     }
-
-    const limited = await handleMapsGatewayRequest(
-      jsonRequest({
-        action: "autocomplete",
-        query: "Kigali limited",
-      }),
-      deps,
-    );
-    const body = await limited.json();
-
-    assertEquals(limited.status, 429);
-    assertEquals(body.success, false);
-    assertEquals(body.details.retryAfterSeconds, 60);
+    assertEquals(charges, 2);
+    assertEquals(calls.length, 1);
   } finally {
     restoreEnv(snapshot);
   }
+});
+
+Deno.test("text_search keeps approved Places and Rwanda coordinates", async () => {
+  const snapshot = snapshotEnv();
+  try {
+    Deno.env.set("GOOGLE_MAPS_SERVER_API_KEY", "maps-server-key");
+    const { fetchImpl, calls } = recordCalls({
+      places: [{
+        id: "text-place",
+        displayName: { text: "Kigali Market" },
+        formattedAddress: "Kigali, Rwanda",
+        location: { latitude: -1.94, longitude: 30.06 },
+      }],
+    });
+    const response = await handleMapsGatewayRequest(
+      jsonRequest({ action: "text_search", query: "Kigali Market" }),
+      {
+        authenticate: auth(),
+        consumeQuota: allowedQuota,
+        fetchImpl,
+        recordFailure: async () => {},
+      },
+    );
+    assertEquals(response.status, 200);
+    assertEquals((await response.json()).places[0].placeId, "text-place");
+    assertEquals(calls.length, 1);
+    assertEquals(
+      calls[0].url,
+      "https://places.googleapis.com/v1/places:searchText",
+    );
+  } finally {
+    restoreEnv(snapshot);
+  }
+});
+
+Deno.test("default durable quota RPC fails closed on outage or malformed response", async () => {
+  const names = ["SUPABASE_URL", "SUPABASE_ANON_KEY"];
+  const previousEnv = names.map((name) => Deno.env.get(name));
+  const previousFetch = globalThis.fetch;
+  let googleCalls = 0, quotaCalls = 0;
+  try {
+    Deno.env.set("SUPABASE_URL", "https://quota.fixture.invalid");
+    Deno.env.set("SUPABASE_ANON_KEY", "synthetic-public-fixture-key");
+    for (
+      const [status, data] of [[503, { message: "unavailable" }], [200, null], [
+        200,
+        { allowed: true, remaining: 100 },
+      ]] as const
+    ) {
+      globalThis.fetch = async (input, init) => {
+        const request = new Request(input, init);
+        assertEquals(new URL(request.url).host, "quota.fixture.invalid");
+        assertStringIncludes(request.url, "/rpc/rpc_consume_maps_quota");
+        assertEquals(request.headers.get("Authorization"), "Bearer test-token");
+        quotaCalls++;
+        return Response.json(data, { status });
+      };
+      const response = await handleMapsGatewayRequest(
+        jsonRequest({ action: "autocomplete", query: "Uncertain quota" }),
+        {
+          authenticate: auth(),
+          fetchImpl: async () => {
+            googleCalls++;
+            return Response.json({});
+          },
+          recordFailure: async () => {
+            throw new Error("Expected quota outage is a controlled503");
+          },
+        },
+      );
+      assertEquals(response.status, 503);
+      await response.body?.cancel();
+    }
+    assertEquals(quotaCalls, 3);
+    assertEquals(googleCalls, 0);
+  } finally {
+    globalThis.fetch = previousFetch;
+    names.forEach((name, index) =>
+      previousEnv[index] === undefined
+        ? Deno.env.delete(name)
+        : Deno.env.set(name, previousEnv[index]!)
+    );
+  }
+});
+
+Deno.test("quota preserves exact Admin reauth after admission and denies other authority errors generically", async () => {
+  const names = ["SUPABASE_URL", "SUPABASE_ANON_KEY"];
+  const previousEnv = names.map((name) => Deno.env.get(name));
+  const previousFetch = globalThis.fetch;
+  let googleCalls = 0, quotaCalls = 0;
+  try {
+    Deno.env.set("SUPABASE_URL", "https://quota.fixture.invalid");
+    Deno.env.set("SUPABASE_ANON_KEY", "synthetic-public-fixture-key");
+    for (
+      const [code, message, expectedStatus, expectedDetails] of [
+        ["42501", "ADMIN_REAUTHENTICATION_REQUIRED", 403, {
+          code: "ADMIN_REAUTHENTICATION_REQUIRED",
+        }],
+        ["42501", "INTERACTIVE_SESSION_REQUIRED", 401, undefined],
+        ["42501", "ADMIN_REAUTHENTICATION_REQUIRED_EXTRA", 401, undefined],
+        ["P0001", "ADMIN_REAUTHENTICATION_REQUIRED", 503, undefined],
+      ] as const
+    ) {
+      globalThis.fetch = async (input, init) => {
+        const request = new Request(input, init);
+        assertStringIncludes(request.url, "/rpc/rpc_consume_maps_quota");
+        assertEquals(request.headers.get("Authorization"), "Bearer test-token");
+        quotaCalls++;
+        return Response.json({ code, message }, { status: 403 });
+      };
+      const response = await handleMapsGatewayRequest(
+        jsonRequest({
+          action: "autocomplete",
+          query: "After admitted session",
+        }),
+        {
+          authenticate: auth(),
+          fetchImpl: async () => {
+            googleCalls++;
+            return Response.json({});
+          },
+          recordFailure: async () => {
+            throw new Error(
+              "Controlled quota denial is not an internal failure",
+            );
+          },
+        },
+      );
+      assertEquals(response.status, expectedStatus);
+      assertEquals((await response.json()).details, expectedDetails);
+    }
+    assertEquals(quotaCalls, 4);
+    assertEquals(googleCalls, 0);
+  } finally {
+    globalThis.fetch = previousFetch;
+    names.forEach((name, index) =>
+      previousEnv[index] === undefined
+        ? Deno.env.delete(name)
+        : Deno.env.set(name, previousEnv[index]!)
+    );
+  }
+});
+
+Deno.test("Maps preserves trusted Admin lease admission error before quota or Google", async () => {
+  let quotaCalls = 0, googleCalls = 0;
+  const response = await handleMapsGatewayRequest(
+    jsonRequest({ action: "autocomplete", query: "Denied Admin" }),
+    {
+      authenticate: async () => {
+        throw new AuthorityHttpError(
+          "Admin sign-in must be verified again",
+          403,
+          { code: "ADMIN_REAUTHENTICATION_REQUIRED" },
+        );
+      },
+      consumeQuota: async () => {
+        quotaCalls++;
+        return allowedQuota();
+      },
+      fetchImpl: async () => {
+        googleCalls++;
+        return Response.json({});
+      },
+      recordFailure: async () => {
+        throw new Error("Known authority denial is not an internal failure");
+      },
+    },
+  );
+  assertEquals(response.status, 403);
+  assertEquals((await response.json()).details, {
+    code: "ADMIN_REAUTHENTICATION_REQUIRED",
+  });
+  assertEquals(quotaCalls, 0);
+  assertEquals(googleCalls, 0);
 });

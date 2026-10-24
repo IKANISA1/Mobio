@@ -11,6 +11,8 @@ import 'package:mobi_app/core/config/supabase_config.dart';
 import 'package:mobi_app/core/constants/app_constants.dart';
 import 'package:mobi_app/core/errors/app_error_utils.dart';
 import 'package:mobi_app/features/bookings/application/booking_services.dart';
+import 'package:mobi_app/features/bookings/application/review_scheduled_post_providers.dart';
+import 'package:mobi_app/features/bookings/application/review_scheduled_posts.dart';
 import 'package:mobi_app/shared/widgets/ai_empty_state.dart';
 import 'package:mobi_app/shared/widgets/mobi_tonal_card.dart';
 import 'package:mobi_app/shared/widgets/loading_skeleton.dart';
@@ -54,6 +56,38 @@ class BookingsScreen extends ConsumerStatefulWidget {
 }
 
 class _BookingsScreenState extends ConsumerState<BookingsScreen> {
+  bool _reviewSelected = false;
+  ReviewScheduledPostGateway? _reviewGateway;
+  ReviewScheduledPostPage? _reviewPage;
+  DateTime? _reviewCalendar;
+  bool _reviewRefreshQueued = false;
+
+  ScheduledPostUiAction _actionToken({String? targetId}) => _reviewSelected
+      ? ScheduledPostUiAction.review(
+          _reviewGateway,
+          targetId == null ? _reviewPage?.intent : _reviewPage?.rows[targetId],
+        )
+      : ScheduledPostUiAction.ordinary(AccountActionToken.capture());
+
+  void _onReviewChanged() {
+    if (!mounted) return;
+    if (_reviewPage == null ||
+        _reviewGateway?.hasCurrentAuthority(_reviewPage!.intent) != true) {
+      _loadRevision++;
+      _reviewPage = null;
+      _reviewCalendar = null;
+      _myTrips = [];
+      _nearbyTrips = [];
+      _isLoading = false;
+    }
+    if (_reviewRefreshQueued) return;
+    _reviewRefreshQueued = true;
+    scheduleMicrotask(() {
+      _reviewRefreshQueued = false;
+      if (mounted) unawaited(_loadTrips());
+    });
+  }
+
   int _loadRevision = 0;
   AccountSnapshot? _viewAccount;
   int _activeToggle = 0; // 0 = mine, 1 = nearby
@@ -66,12 +100,18 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   @override
   void initState() {
     super.initState();
+    _reviewSelected = ref.read(reviewScheduledPostsSelectedProvider);
+    _reviewGateway = _reviewSelected
+        ? ref.read(reviewScheduledPostGatewayProvider)
+        : null;
+    _reviewGateway?.addListener(_onReviewChanged);
     _viewAccount = _currentAccount();
     AccountContext.changes.addListener(_onAccountChanged);
     unawaited(_loadTrips());
   }
 
   AccountSnapshot? _currentAccount() {
+    if (_reviewSelected) return null;
     if (!SupabaseConfig.isConfigured || SupabaseConfig.isLocalUiPreview) {
       return null;
     }
@@ -84,6 +124,10 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
 
   void _onAccountChanged() {
     if (!mounted) return;
+    if (_reviewSelected) {
+      _onReviewChanged();
+      return;
+    }
     final current = _currentAccount();
     if (current?.identity == _viewAccount?.identity &&
         current?.generation == _viewAccount?.generation) {
@@ -96,6 +140,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   @override
   void dispose() {
     AccountContext.changes.removeListener(_onAccountChanged);
+    _reviewGateway?.removeListener(_onReviewChanged);
     _loadRevision++;
     super.dispose();
   }
@@ -109,6 +154,11 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   }
 
   Future<void> _loadTrips() async {
+    if (_reviewSelected) {
+      _loadReviewTrips();
+      return;
+    }
+
     final revision = ++_loadRevision;
     final account = _currentAccount();
     setState(() {
@@ -189,6 +239,39 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
     }
   }
 
+  void _loadReviewTrips() {
+    final revision = ++_loadRevision;
+    try {
+      final gateway = requireReviewScheduledPosts(_reviewGateway);
+      final page = gateway.page(widget.mode);
+      final calendar = gateway.calendarNow(page.intent);
+      if (!mounted ||
+          revision != _loadRevision ||
+          !gateway.hasCurrentAuthority(page.intent))
+        return;
+      setState(() {
+        _reviewPage = page;
+        _reviewCalendar = calendar;
+        _myTrips = page.own;
+        _nearbyTrips = page.counterpart;
+        _isLoading = false;
+        _authRequired = false;
+        _error = null;
+      });
+    } on Object {
+      if (!mounted || revision != _loadRevision) return;
+      setState(() {
+        _reviewPage = null;
+        _reviewCalendar = null;
+        _myTrips = [];
+        _nearbyTrips = [];
+        _isLoading = false;
+        _authRequired = false;
+        _error = 'Review access is unavailable. Sign in again.';
+      });
+    }
+  }
+
   void _switchToggle(int index) {
     setState(() => _activeToggle = index);
   }
@@ -197,7 +280,9 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
 
   /// Groups trips into TODAY, TOMORROW, LATER sections based on departure_date.
   Map<String, List<Trip>> _groupTrips(List<Trip> trips) {
-    final now = DateTime.now();
+    final now = _reviewSelected
+        ? (_reviewCalendar ?? DateTime.utc(1970))
+        : DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final tomorrow = today.add(const Duration(days: 1));
 
@@ -238,7 +323,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   );
 
   Widget _buildContent(BuildContext context) {
-    final actionToken = AccountActionToken.capture();
+    final actionToken = _actionToken();
     final mediaPadding = MediaQuery.paddingOf(context);
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
     final grouped = _groupTrips(_currentTrips);
@@ -388,7 +473,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   }
 
   Widget _buildErrorState() {
-    final actionToken = AccountActionToken.capture();
+    final actionToken = _actionToken();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
       child: MobiErrorState(
@@ -404,7 +489,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   }
 
   Widget _buildAuthRequiredState() {
-    final actionToken = AccountActionToken.capture();
+    final actionToken = _actionToken();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
       child: AiEmptyState(
@@ -422,7 +507,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   }
 
   Widget _buildEmptyState() {
-    final actionToken = AccountActionToken.capture();
+    final actionToken = _actionToken();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenPadding),
       child: AiEmptyState(
@@ -481,7 +566,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   }
 
   Widget _buildTripCard(Trip trip) {
-    final actionToken = AccountActionToken.capture();
+    final actionToken = _actionToken(targetId: trip.id);
     final isNearby = _activeToggle == 1;
     final route = '${trip.origin} → ${trip.destination}';
     final timeDisplay = trip.departureTime.isNotEmpty
@@ -623,8 +708,44 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
     );
   }
 
-  Future<void> _cancelTrip(Trip trip, AccountActionToken actionToken) async {
+  Future<void> _cancelReviewTrip(
+    Trip trip,
+    ScheduledPostUiAction action,
+  ) async {
+    final gateway = action.gateway;
+    final intent = action.intent;
+    if (gateway == null || intent == null || !action.isCurrent) return;
+    final confirmed = await MobiConfirmDialog.show(
+      context: context,
+      title: 'Cancel trip?',
+      body: 'This cannot be undone.',
+      confirmLabel: 'Cancel trip',
+      isDestructive: true,
+    );
+    if (!mounted || confirmed != true || !action.isCurrent) return;
+    try {
+      gateway.cancel(intent);
+      if (!mounted || !action.hasAuthority) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Trip cancelled.')));
+    } on Object {
+      if (mounted && action.hasAuthority) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('This post changed. Refresh before cancelling it.'),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _cancelTrip(Trip trip, ScheduledPostUiAction actionToken) async {
     if (!mounted || !actionToken.isCurrent) return;
+    if (_reviewSelected) {
+      await _cancelReviewTrip(trip, actionToken);
+      return;
+    }
     if (SupabaseConfig.isLocalUiPreview) {
       if (mounted) {
         setState(() {

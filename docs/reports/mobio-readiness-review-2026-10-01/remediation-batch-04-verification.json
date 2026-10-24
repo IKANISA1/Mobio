@@ -1,0 +1,172 @@
+{
+  "checkpoint_utc": "2026-10-02T00:09:24.494470+00:00",
+  "production_ready": false,
+  "subsequent_batch_05_source_included": false,
+  "copied_source_paths": 3387,
+  "checks": [
+    {
+      "check": "bootstrap",
+      "command": [
+        "bash",
+        "scripts/ci/bootstrap_flutter.sh"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-01T23:39:35.976932+00:00",
+      "elapsed_seconds": 11.25,
+      "exit_code": 0,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-04-isolated-bootstrap.log"
+    },
+    {
+      "check": "pwa-release",
+      "command": [
+        "bash",
+        "scripts/web/prepare_pwa_bundles.sh",
+        "build/pwa-readiness-goal-batch04-isolated-20261002"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-01T23:39:47.770846+00:00",
+      "elapsed_seconds": 71.11,
+      "exit_code": 0,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-04-isolated-pwa-release.log"
+    },
+    {
+      "check": "android-apk-release",
+      "command": [
+        "bash",
+        "scripts/release/build_android_release.sh",
+        "apk"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-01T23:40:59.115109+00:00",
+      "elapsed_seconds": 503.6,
+      "exit_code": 0,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-04-isolated-android-apk-release.log"
+    },
+    {
+      "check": "android-aab-release",
+      "command": [
+        "bash",
+        "scripts/release/build_android_release.sh",
+        "appbundle"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-01T23:49:22.780932+00:00",
+      "elapsed_seconds": 296.09,
+      "exit_code": 0,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-04-isolated-android-aab-release.log"
+    },
+    {
+      "check": "ios-unsigned-release",
+      "command": [
+        "bash",
+        "scripts/ci/verify_ios_release.sh"
+      ],
+      "checkout": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio",
+      "started_at_utc": "2026-10-01T23:54:19.126081+00:00",
+      "elapsed_seconds": 79.3,
+      "exit_code": 0,
+      "changed_copied_source": [],
+      "log": "build/qa/readiness-20261001/goal/batch-04-isolated-ios-unsigned-release.log"
+    }
+  ],
+  "artifacts": {
+    "apk": {
+      "artifact": "build/qa/readiness-20261001/goal/mobio-remediation-batch-04-isolated.apk",
+      "bytes": 94714823,
+      "sha256": "a2a28127bcad064796b584c04be9b979fd6ed04e59a9a1debb54d6b6185fea63",
+      "package": "rw.mobi.app",
+      "version_name": "1.0.0",
+      "version_code": "17",
+      "sdk": {
+        "{http://schemas.android.com/apk/res/android}minSdkVersion": "24",
+        "{http://schemas.android.com/apk/res/android}targetSdkVersion": "36"
+      },
+      "signature_verified": true,
+      "signature_schemes": [
+        "Verified using v1 scheme (JAR signing): false",
+        "Verified using v2 scheme (APK Signature Scheme v2): true",
+        "Verified using v3 scheme (APK Signature Scheme v3): false",
+        "Verified using v3.1 scheme (APK Signature Scheme v3.1): false",
+        "Verified using v4 scheme (APK Signature Scheme v4): false"
+      ],
+      "signer_certificate_sha256": [
+        "da9e5eab50d08505bf0b787ceab5db5b40778ebe77629572168a7237d77981c0"
+      ],
+      "source_snapshot": "batch-04-isolated-source-snapshot.json",
+      "acceptance_effect": "Local exact-snapshot APK candidate; subsequent batch05 source, hosted/device/store acceptance excluded"
+    },
+    "aab": {
+      "artifact": "build/qa/readiness-20261001/goal/mobio-remediation-batch-04-isolated.aab",
+      "bytes": 85881664,
+      "sha256": "09aa67ce585aa2cf182ba89ed06aeadd91c9022a449ddb508cfd6b5e3dc94f4c",
+      "jarsigner_exit_code": 0,
+      "jar_verified": true,
+      "keytool_exit_code": 0,
+      "certificate_sha256": "da9e5eab50d08505bf0b787ceab5db5b40778ebe77629572168a7237d77981c0",
+      "certificate_matches_verified_apk": true,
+      "zip_integrity_passed": true,
+      "bundle_entries": 798,
+      "base_manifest_present": true,
+      "source_snapshot": "batch-04-isolated-source-snapshot.json",
+      "scope": "Locally signed source-bound bundle; subsequent batch05 source, Play upload, device run and production domain/provider acceptance excluded"
+    },
+    "web": {
+      "captured_at_utc": "2026-10-01T23:58:15.074233+00:00",
+      "root": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio/build/pwa-readiness-goal-batch04-isolated-20261002/site",
+      "file_count": 738,
+      "bytes": 101707465,
+      "tree_sha256": "cd0061bf24550a1fb2ca46af501fedc1e8981c1b831e7d41b82d8d292b19a9bf",
+      "algorithm": "SHA256 of canonical sorted JSON file records (path,bytes,sha256), compact UTF8; regular files only",
+      "source_snapshot": "batch-04-isolated-source-snapshot.json",
+      "scope": "Local source-bound candidate; subsequent batch05 source and hosted/device/provider/store acceptance excluded"
+    },
+    "ios_unsigned": {
+      "captured_at_utc": "2026-10-01T23:58:15.175167+00:00",
+      "root": "/Users/jeanbosco/.codex/worktrees/mobio-readiness-verification/Mobio/build/ios/iphoneos/Runner.app",
+      "file_count": 446,
+      "bytes": 43948311,
+      "tree_sha256": "bde96bb13ed2f8eea95e75b561eaaa17cdfff6f957d9b0db5494d555b6406524",
+      "algorithm": "SHA256 of canonical sorted JSON file records (path,bytes,sha256), compact UTF8; regular files only",
+      "source_snapshot": "batch-04-isolated-source-snapshot.json",
+      "scope": "Local source-bound candidate; subsequent batch05 source and hosted/device/provider/store acceptance excluded",
+      "app_info": {
+        "CFBundleIdentifier": "rw.mobi.app",
+        "CFBundleShortVersionString": "1.0.0",
+        "CFBundleVersion": "17",
+        "MinimumOSVersion": "15.5",
+        "DTPlatformName": "iphoneos"
+      },
+      "signing": "unsigned"
+    }
+  },
+  "recoverable_archives": {
+    "at_utc": "2026-10-02T00:03:09.884851+00:00",
+    "archives": [
+      {
+        "path": "build/qa/readiness-20261001/goal/mobio-remediation-batch-04-isolated-source.zip",
+        "bytes": 152150095,
+        "sha256": "eac5d40eb72f5f9674c94dea6d2bd2a22afa7b5d8d2cc7c8b36ae79f227cca0a"
+      },
+      {
+        "path": "build/qa/readiness-20261001/goal/mobio-remediation-batch-04-isolated-ios-unsigned.zip",
+        "bytes": 19884560,
+        "sha256": "9c0eeffe0d2ad89136b62a6e444337413deb6c9c4a63077574bab2124c8a05fa"
+      }
+    ],
+    "source_paths": 3387,
+    "source_unchanged": true,
+    "archive_readback_hashes_match": true,
+    "scope": "Recoverable source and unsigned iOS candidate; Git/private config/caches/generated ignored outputs excluded from source ZIP"
+  },
+  "limits": [
+    "No signed iOS archive or physical-device execution",
+    "No hosted deployment, provider delivery, store upload or publication",
+    "Signed-out Admin recovery only; no signed browser operator task",
+    "Whole visual acceptance remains open",
+    "Batch 05 changes require new candidates"
+  ]
+}

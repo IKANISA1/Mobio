@@ -21,11 +21,13 @@ import {
   whatsappCloudDeliveryErrorMetadata,
 } from "../_shared/whatsapp-cloud.ts";
 import {
-  GOOGLE_PLAY_REVIEW_OTP,
+  activeStoreReviewConfiguration,
   appLoginOtpDelivery,
-  googlePlayReviewMetadata,
   isGooglePlayReviewPhone,
+  storeReviewChallengeHashes,
+  storeReviewCredentials,
 } from "../_shared/play-review-login.ts";
+import { HttpError } from "../_shared/validation.ts";
 import { checkPlayIntegrityEvidence } from "../_shared/play-integrity.ts";
 
 type AppLoginRole = "passenger" | "driver";
@@ -34,7 +36,11 @@ function normalizeRole(value: unknown): AppLoginRole {
   return value == "driver" ? "driver" : "passenger";
 }
 
-Deno.serve(async (req: Request) => {
+export async function handleSendLoginOtp(req: Request, dependencies: {
+  createAdmin?: typeof createAdminClient;
+  sendWhatsapp?: typeof sendWhatsappCloudOtp;
+  checkIntegrity?: typeof checkPlayIntegrityEvidence;
+} = {}): Promise<Response> {
   const corsResponse = handleCors(req);
   if (corsResponse) {
     return corsResponse;
@@ -55,19 +61,20 @@ Deno.serve(async (req: Request) => {
       "Valid WhatsApp number required",
     );
     requestedRole = normalizeRole(body?.role);
-    const supabase = createAdminClient();
+    const supabase = (dependencies.createAdmin ?? createAdminClient)();
 
     const isReviewLogin = isGooglePlayReviewPhone(phone);
-    const integrityCheck = await checkPlayIntegrityEvidence(
-      body,
-      "app_login_send_otp",
-      req,
-      isReviewLogin,
-    );
+    const integrityCheck =
+      await (dependencies.checkIntegrity ?? checkPlayIntegrityEvidence)(
+        body,
+        "app_login_send_otp",
+        req,
+        isReviewLogin,
+      );
     if (!integrityCheck.ok && integrityCheck.response) {
       return integrityCheck.response;
     }
-    if (!isReviewLogin) {
+    {
       const sourceFingerprint = requestSourceFingerprint(req);
       const rateLimit = await consumeOtpRateLimits(supabase, [
         {
@@ -156,7 +163,45 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    const code = isReviewLogin ? GOOGLE_PLAY_REVIEW_OTP : generateOtpCode();
+    if (isReviewLogin) {
+      const credentials = storeReviewCredentials();
+      const configuration = await activeStoreReviewConfiguration(
+        supabase,
+        credentials,
+      );
+      const challengeId = crypto.randomUUID();
+      const hashes = await storeReviewChallengeHashes(
+        credentials,
+        configuration,
+        challengeId,
+        credentials.code,
+      );
+      const { data, error } = await supabase.rpc(
+        "rpc_create_store_review_challenge",
+        {
+          p_challenge_id: challengeId,
+          p_user_id: credentials.userId,
+          p_generation: credentials.generation,
+          p_role: configuration.role,
+          p_phone_hash: hashes.phoneHash,
+          p_code_hash: hashes.codeHash,
+        },
+      );
+      if (error || !data || data.challenge_id !== challengeId) {
+        throw new Error("STORE_REVIEW_CHALLENGE_UNAVAILABLE");
+      }
+      return jsonResponse(
+        {
+          success: true,
+          ...appLoginOtpDelivery(true),
+          challengeId,
+          retryAfterSeconds: 60,
+        },
+        200,
+        req,
+      );
+    }
+    const code = generateOtpCode();
     const purpose = "app_login";
     const codeHash = await hashOtpCode(code, { phone, purpose });
     const expiresAt = new Date(Date.now() + 5 * 60_000).toISOString();
@@ -179,7 +224,7 @@ Deno.serve(async (req: Request) => {
 
     if (!isReviewLogin) {
       try {
-        await sendWhatsappCloudOtp({
+        await (dependencies.sendWhatsapp ?? sendWhatsappCloudOtp)({
           code,
           recipientPhone: phone,
         });
@@ -232,7 +277,6 @@ Deno.serve(async (req: Request) => {
       metadata: {
         stage: "send_login_otp",
         ...integrityCheck.metadata,
-        ...(isReviewLogin ? googlePlayReviewMetadata() : {}),
       },
       request: req,
     });
@@ -265,7 +309,12 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    console.error("send-login-otp error:", error);
+    if (error instanceof HttpError) {
+      return errorResponse(error.message, error.status, undefined, req);
+    }
+    console.error("send-login-otp: OTP operation failed");
     return errorResponse("Internal error", 500, undefined, req);
   }
-});
+}
+
+if (import.meta.main) Deno.serve((request) => handleSendLoginOtp(request));

@@ -14,10 +14,16 @@ class TripTimingPicker extends StatelessWidget {
     required this.time,
     required this.onDateChanged,
     required this.onTimeChanged,
+    this.firstDate,
+    this.lastDate,
+    this.currentDate,
   });
 
   final DateTime date;
   final TimeOfDay time;
+  final DateTime? firstDate;
+  final DateTime? lastDate;
+  final DateTime? currentDate;
   final ValueChanged<DateTime> onDateChanged;
   final ValueChanged<TimeOfDay> onTimeChanged;
 
@@ -43,8 +49,11 @@ class TripTimingPicker extends StatelessWidget {
                   final picked = await showDatePicker(
                     context: context,
                     initialDate: date,
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                    currentDate: currentDate,
+                    firstDate: firstDate ?? DateTime.now(),
+                    lastDate:
+                        lastDate ??
+                        DateTime.now().add(const Duration(days: 365)),
                   );
                   if (picked != null) onDateChanged(picked);
                 },

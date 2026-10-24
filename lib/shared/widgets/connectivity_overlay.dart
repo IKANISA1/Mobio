@@ -109,16 +109,22 @@ class _ConnectivityOverlayState extends State<ConnectivityOverlay>
     final cs = Theme.of(context).colorScheme;
     final ext = Theme.of(context).extension<MobiThemeExtension>()!;
 
-    return Stack(
+    return Column(
+      verticalDirection: VerticalDirection.up,
       children: [
-        widget.child,
-
+        Expanded(
+          child: MediaQuery.removePadding(
+            context: context,
+            removeTop: _isOffline,
+            child: widget.child,
+          ),
+        ),
         if (_isOffline)
-          // Use SafeArea so the banner doesn't overlap the status bar text on newer OS versions.
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
+          // Reserve the banner height so enlarged text cannot cover app controls.
+          // Paint after Navigator so its modal semantics cannot hide the status.
+          Semantics(
+            container: true,
+            liveRegion: true,
             child: SafeArea(
               bottom: false,
               child: SlideTransition(
