@@ -1,0 +1,160 @@
+{
+  "schema": "local-repository-retirement-backup-v1",
+  "project": "Mobio",
+  "date": "2026-10-24",
+  "source_main": "2fe5e858ed342b2bb1c36d470abec501d6d2519e",
+  "source_evidence": {
+    "repo": "IKANISA1/Mobio",
+    "tag": "local-retirement-20261024-complete-mobio",
+    "release_id": 422689727,
+    "release_url": "https://github.com/IKANISA1/Mobio/releases/tag/untagged-87b478bb4a08aa7113f4",
+    "target_before_manifest": "2fe5e858ed342b2bb1c36d470abec501d6d2519e",
+    "roots": [
+      {
+        "root": "/Volumes/T7/01 Projects/Mobio",
+        "archive_prefix": "0000-Mobio"
+      },
+      {
+        "root": "/Volumes/T7/01 Projects/Mobio_Face_USSD",
+        "archive_prefix": "0001-Mobio_Face_USSD"
+      },
+      {
+        "root": "/Volumes/T7/Recovered-G-PRO/Mobio",
+        "archive_prefix": "0002-Mobio"
+      },
+      {
+        "root": "/Volumes/T7/Recovered-G-PRO/Mobio-sync-safety-20260923T101008Z",
+        "archive_prefix": "0003-Mobio-sync-safety-20260923T101008Z"
+      },
+      {
+        "root": "/Volumes/T7/T7-Root/Mobio",
+        "archive_prefix": "0004-Mobio"
+      },
+      {
+        "root": "/Volumes/T7/pro-g40-emergency-recovery-2026-09-08 2/mobio-copy-errors.jsonl",
+        "archive_prefix": "0005-mobio-copy-errors.jsonl"
+      },
+      {
+        "root": "/Volumes/T7/pro-g40-emergency-recovery-2026-09-08/mobio-copy-errors.jsonl",
+        "archive_prefix": "0006-mobio-copy-errors.jsonl"
+      },
+      {
+        "root": "/Users/jeanbosco/local-opencode/backups/mobio-validation-20261007",
+        "archive_prefix": "0007-mobio-validation-20261007"
+      },
+      {
+        "root": "/Volumes/T7/01 Projects/G-PRO-Recovered-2026-09-22-core/Mobio",
+        "archive_prefix": "0008-Mobio"
+      },
+      {
+        "root": "/Volumes/T7/G-PRO-Recovered-2026-09-22-partial-cache/Recovery-Conflicts/Mobio",
+        "archive_prefix": "0009-Mobio"
+      },
+      {
+        "root": "/Volumes/T7/G-PRO-Recovered-2026-09-22-partial-cache/drive-zip-backup-2026-09-18/mobio-supplement",
+        "archive_prefix": "0010-mobio-supplement"
+      },
+      {
+        "root": "/Volumes/T7/pro-g40-emergency-recovery-2026-09-08 2/Selected/mobio",
+        "archive_prefix": "0011-mobio"
+      },
+      {
+        "root": "/Volumes/T7/pro-g40-emergency-recovery-2026-09-08/Selected/mobio",
+        "archive_prefix": "0012-mobio"
+      },
+      {
+        "root": "/Users/jeanbosco/Documents/Codex/2026-10-24/mobio-checks-fixes",
+        "archive_prefix": "0013-mobio-checks-fixes"
+      },
+      {
+        "root": "/Users/jeanbosco/Documents/Codex/2026-10-24/mobio-main-sync",
+        "archive_prefix": "0014-mobio-main-sync"
+      },
+      {
+        "root": "/Volumes/T7/01 Projects/Codexx/2026-09-08/mobio-biopay-implementation",
+        "archive_prefix": "0015-mobio-biopay-implementation"
+      },
+      {
+        "root": "/Users/jeanbosco/local-opencode/reports/development/project-baselines-1791458289276489000/mobio",
+        "archive_prefix": "0016-mobio"
+      },
+      {
+        "root": "/Users/jeanbosco/local-opencode/reports/development/project-baselines-1791458874592828000/mobio",
+        "archive_prefix": "0017-mobio"
+      },
+      {
+        "root": "/Users/jeanbosco/local-opencode/reports/development/project-baselines-1791487298538175000/mobio",
+        "archive_prefix": "0018-mobio"
+      }
+    ],
+    "counts": {
+      "files": 4838,
+      "symlinks": 76,
+      "deduplicated": 2690,
+      "source_bytes": 1306283667,
+      "unique_bytes": 553037426,
+      "excluded": 9463,
+      "generated_trees": 45,
+      "remote_reused_files": 10350,
+      "remote_reused_bytes": 708149106
+    },
+    "parts": [
+      {
+        "name": "source-evidence-optimized.tar.gz.part0001",
+        "bytes": 268435456,
+        "sha256": "78bb4142b21a340e241430d7d47ed0ce030415808186e67c6366239f1165f90b",
+        "asset_id": 672249955,
+        "url": "https://github.com/IKANISA1/Mobio/releases/download/untagged-87b478bb4a08aa7113f4/source-evidence-optimized.tar.gz.part0001",
+        "verified_server_digest": true
+      },
+      {
+        "name": "source-evidence-optimized.tar.gz.part0002",
+        "bytes": 159969388,
+        "sha256": "63cd53a26c6f2eb1e91f653f1943da1c1b7901ffc8dadb7568cae96cf39169a4",
+        "asset_id": 672272020,
+        "url": "https://github.com/IKANISA1/Mobio/releases/download/untagged-87b478bb4a08aa7113f4/source-evidence-optimized.tar.gz.part0002",
+        "verified_server_digest": true
+      }
+    ],
+    "manifest_sha256": "f6eaddc406194ffca46a071a2593023a53525d1da910a76289ec0c8c22d1b23a",
+    "remote_blob_proof": "/Users/jeanbosco/Documents/Codex/2026-10-24/the-following-repos-must-be-fully/work/mobio-remote-blob-proof.json",
+    "missing_roots": [],
+    "changed_during_archive": [],
+    "errors": [],
+    "complete": true
+  },
+  "private_backups": [
+    {
+      "repo": "IKANISA1/Mobio",
+      "release_url": "https://github.com/IKANISA1/Mobio/releases/tag/untagged-87b478bb4a08aa7113f4",
+      "tag": "local-retirement-20261024-complete-mobio",
+      "label": "mobio-private-final",
+      "files": 128,
+      "source_bytes": 12472335,
+      "cipher_sha256": "7ff83d33909590d9f137906d320c59e788549d443559dcfd101c0251e6fe5081",
+      "cipher_hmac_sha256": "7f6139c73bc5fd33bc70278cc41d6de55422fe6341ce57934dedc2e23cacd94f",
+      "hmac_key_derivation": "SHA256(UTF8(\"codex-local-retirement-hmac-v1\") + NUL + UTF8(recovery_passphrase))",
+      "encryption": "OpenSSL AES-256-CBC salted PBKDF2-HMAC-SHA256 600000 iterations, then HMAC-SHA256 of ciphertext; verify HMAC BEFORE decryption",
+      "plaintext_gzip_sha256": "7907b14eaf71f2f2a2d7fb9a837e35cf4c4ea3bedaee5c47a975e8979dda2c46",
+      "roundtrip_verified": true,
+      "parts": [
+        {
+          "name": "private-data-mobio-private-final.enc.tar.gz.part0001",
+          "bytes": 1613472,
+          "sha256": "7ff83d33909590d9f137906d320c59e788549d443559dcfd101c0251e6fe5081",
+          "asset_id": 672287880,
+          "url": "https://github.com/IKANISA1/Mobio/releases/download/untagged-87b478bb4a08aa7113f4/private-data-mobio-private-final.enc.tar.gz.part0001",
+          "verified_server_digest": true
+        }
+      ],
+      "complete": true
+    }
+  ],
+  "local_status_before_removal": {
+    "root": "/Volumes/T7/Recovered-G-PRO/Mobio",
+    "code": 0,
+    "status": [],
+    "error": ""
+  },
+  "restore": "Join source/evidence tar.gz parts in numeric order. Private recovery uses RESTORE_PRIVATE.py with the separately supplied passphrase. The passphrase is not stored in GitHub."
+}
