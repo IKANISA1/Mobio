@@ -1,0 +1,32 @@
+{
+  "project_snapshot": "mobio",
+  "original_archive": "/Volumes/PRO-G40/T7-Work-Recovery-2026-10-18/selected-work.tar.gz",
+  "original_archive_sha256": "448246980d705815ee2b1a7061706cd6c28738ed94ea7994e19a8982fc11b4c7",
+  "original_regular_files": 3458,
+  "backup": {
+    "repo": "IKANISA1/Mobio",
+    "release_url": "https://github.com/IKANISA1/Mobio/releases/tag/untagged-87b478bb4a08aa7113f4",
+    "tag": "local-retirement-20261024-complete-mobio",
+    "label": "mixed-snapshot-mobio",
+    "files": 3459,
+    "source_bytes": 200371669,
+    "cipher_sha256": "a144596b18ac16584073152643a17d471f25bb001bd7eeda45f5b66a1af25ee7",
+    "cipher_hmac_sha256": "63b417208f7618b38718f86ab7ff42e944d6b8d626ad71bc08ccd94e7bcd88cb",
+    "hmac_key_derivation": "SHA256(UTF8(\"codex-local-retirement-hmac-v1\") + NUL + UTF8(recovery_passphrase))",
+    "encryption": "OpenSSL AES-256-CBC salted PBKDF2-HMAC-SHA256 600000 iterations, then HMAC-SHA256 of ciphertext; verify HMAC BEFORE decryption",
+    "plaintext_gzip_sha256": "471c0b94786bcc5709b0a64586f9c41973f6188864b6823b7dfce900127994a7",
+    "roundtrip_verified": true,
+    "parts": [
+      {
+        "name": "private-data-mixed-snapshot-mobio.enc.tar.gz.part0001",
+        "bytes": 149576384,
+        "sha256": "a144596b18ac16584073152643a17d471f25bb001bd7eeda45f5b66a1af25ee7",
+        "asset_id": 672273149,
+        "url": "https://github.com/IKANISA1/Mobio/releases/download/untagged-87b478bb4a08aa7113f4/private-data-mixed-snapshot-mobio.enc.tar.gz.part0001",
+        "verified_server_digest": true
+      }
+    ],
+    "complete": true
+  },
+  "provenance": "Original member paths, modes, timestamps and file SHA-256 values are retained in ORIGINAL_ARCHIVE_PROVENANCE.json inside the encrypted snapshot. The original archive stored partial Git metadata without object directories; it was not a standalone complete Git clone."
+}
