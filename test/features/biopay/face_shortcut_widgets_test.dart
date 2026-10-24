@@ -227,6 +227,14 @@ Future<void> scan(WidgetTester tester) async {
   await tester.pump();
 }
 
+Future<void> _tapVisibleControl(WidgetTester tester, Finder target) async {
+  expect(target, findsOneWidget);
+  await tester.ensureVisible(target);
+  await tester.pumpAndSettle();
+  expect(target.hitTestable(), findsOneWidget);
+  await tester.tap(target.hitTestable());
+}
+
 void main() {
   testWidgets(
     'retained scan button cannot start capture in a replaced session',
@@ -360,7 +368,8 @@ void main() {
         face.statusUnavailable = true;
         // A confirmed action refreshes status; failure cannot invent enrollment
         // absence or hide the already-confirmed recovery controls.
-        await tester.tap(
+        await _tapVisibleControl(
+          tester,
           find.text(
             prior == 'paused' ? 'Resume face lookup' : 'Pause face lookup',
           ),
@@ -471,7 +480,7 @@ void main() {
         enroll: true,
       );
       face.statusUnavailable = true;
-      await tester.tap(find.text('Pause face lookup'));
+      await _tapVisibleControl(tester, find.text('Pause face lookup'));
       await tester.pumpAndSettle();
       final oldRemove = tester
           .widget<TextButton>(find.widgetWithText(TextButton, 'Remove my face'))
@@ -604,7 +613,7 @@ void main() {
         enroll: true,
       );
       face.actionError = const FaceServiceException('OUTCOME_UNKNOWN');
-      await tester.tap(find.text('Pause face lookup'));
+      await _tapVisibleControl(tester, find.text('Pause face lookup'));
       await tester.pumpAndSettle();
       expect(face.actions, ['pause']);
       expect(
@@ -648,7 +657,7 @@ void main() {
         isNull,
       );
       face.statusUnavailable = false;
-      await tester.tap(find.text('Check setup status'));
+      await _tapVisibleControl(tester, find.text('Check setup status'));
       await tester.pumpAndSettle();
       expect(
         find.text(

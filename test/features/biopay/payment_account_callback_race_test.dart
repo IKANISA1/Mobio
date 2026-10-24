@@ -37,8 +37,10 @@ void main() {
     Widget child,
     _HeldGateway service,
   ) async {
-    await tester.binding.setSurfaceSize(const Size(390, 844));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.view
+      ..devicePixelRatio = 1
+      ..physicalSize = const Size(390, 844);
+    addTearDown(tester.view.reset);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [paymentDiscoveryServiceProvider.overrideWithValue(service)],
@@ -152,10 +154,25 @@ void main() {
     final service = _HeldGateway(null);
     await mount(tester, const PaymentLibraryScreen(), service);
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('View as payer'));
-    await tester.tap(find.text('View as payer'));
+    final viewAsPayer = find.text('View as payer');
+    await tester.ensureVisible(viewAsPayer);
+    await tester.pumpAndSettle();
+    expect(viewAsPayer.hitTestable(), findsOneWidget);
+    await tester.tap(viewAsPayer.hitTestable());
+    await tester.pumpAndSettle();
+    final shareList = find.descendant(
+      of: find.byType(BottomSheet),
+      matching: find.byType(ListView),
+    );
+    expect(shareList, findsOneWidget);
+    await tester.dragUntilVisible(
+      find.byType(SelectableText),
+      shareList,
+      const Offset(0, -180),
+    );
     await tester.pumpAndSettle();
     expect(find.byType(SelectableText), findsOneWidget);
+    expect(find.byType(SelectableText).hitTestable(), findsOneWidget);
     replace(service);
     await tester.pumpAndSettle();
     expect(find.byType(SelectableText), findsNothing);

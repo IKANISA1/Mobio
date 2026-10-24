@@ -21,6 +21,7 @@ function isAdminPath(pathname) {
 function isAppPath(pathname) {
   return APP_PATHS.has(pathname) || pathname.startsWith("/biopay/") ||
     pathname.startsWith("/profile/") || /^\/trip\/[^/]+(?:\/edit)?\/?$/.test(pathname) ||
+    /^\/invite\/[^/]+\/?$/.test(pathname) ||
     pathname === "/__app_shell";
 }
 

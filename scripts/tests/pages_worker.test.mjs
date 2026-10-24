@@ -103,7 +103,7 @@ const routes = [...routeSource.matchAll(/path:\s*['"]([^'"]+)/g)].flatMap(match 
   match[1].includes('$section') ? ['requests', 'activity', 'recents', 'templates'].map(section => match[1].replace('$section', section)) : [match[1]]);
 for (const route of routes.filter(route => route !== '/')) {
   test(`router destination ${route} receives its own Flutter shell`, async () => {
-    const path = route.replace(':id', 'synthetic-trip').replace(':token', 'synthetic-token');
+    const path = route.replace(':id', 'synthetic-trip').replace(':token', 'synthetic-token').replace(':code', 'synthetic-invite');
     const expectedAdmin = route.startsWith('/admin');
     const html = expectedAdmin ? adminHtml : '<html><title>Mobio</title></html>';
     let requested;
@@ -119,6 +119,25 @@ for (const route of routes.filter(route => route !== '/')) {
     if (!expectedAdmin) assert.match(response.headers.get('permissions-policy'), /geolocation=\(self\)/);
   });
 }
+
+test('invite links serve only a single code segment through the private app shell', async () => {
+  for (const path of ['/invite/synthetic-code', '/invite/synthetic-code/', '/invite/synthetic-code?source=share']) {
+    const env = { ASSETS: { async fetch(request) {
+      const url = new URL(request.url);
+      assert.equal(url.pathname, '/__app_shell');
+      assert.equal(url.search, '');
+      return new Response('<html><title>Mobio</title></html>', { headers: { 'content-type': 'text/html' } });
+    } } };
+    const response = await worker.fetch(new Request('https://mobio.ikanisa.com' + path), env);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('x-mobio-surface'), 'app');
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+  }
+  for (const path of ['/invite', '/invite/', '/invite/synthetic-code/extra']) {
+    const response = await worker.fetch(new Request('https://mobio.ikanisa.com' + path), assets());
+    assert.equal(response.headers.get('x-mobio-surface'), 'website');
+  }
+});
 
 test('private query, cookies and authorization do not enter the static shell request', async () => {
   const env = { ASSETS: { async fetch(request) {

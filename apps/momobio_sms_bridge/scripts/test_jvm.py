@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Run Kotlin collector component tests using already cached, pinned JUnit.
 
-No Gradle daemon, Android artifact, runtime configuration or network calls.
+No Gradle daemon, Android artifact, runtime configuration or external network calls.
 The JVM org.json implementation is a test oracle; Android uses its platform API.
 The queue uses a preference double implementing the actual Android SDK interface.
-Upload tests inject a synthetic signer/connection; no socket or key is created.
+Upload tests inject a synthetic signer/connection. The socket deadline fixture
+uses loopback HTTP only; no provider endpoint or key is used.
 This does not test Android disk persistence, permissions or device behavior.
 """
 import argparse
@@ -57,8 +58,12 @@ def main():
         app / "app/src/main/java/com/momobio/app/SmsQueue.kt",
         app / "app/src/test/java/com/momobio/app/SmsQueueTest.kt",
         app / "app/src/main/java/com/momobio/app/UploadClient.kt",
+        app / "app/src/main/java/com/momobio/app/UploadCancellation.kt",
         app / "app/src/main/java/com/momobio/app/CollectorPolicy.kt",
+        app / "app/src/main/java/com/momobio/app/CollectorLease.kt",
         app / "app/src/test/java/com/momobio/app/UploadClientTest.kt",
+        app / "app/src/test/java/com/momobio/app/UploadDeadlineTest.kt",
+        app / "app/src/test/java/com/momobio/app/UploadSocketDeadlineTest.kt",
         app / "app/src/main/java/com/momobio/app/CollectorIdentity.kt",
         app / "app/src/main/java/com/momobio/app/SmsReceiptDecoder.kt",
         app / "app/src/test/java/com/momobio/app/SmsReceiptDecoderTest.kt",
@@ -74,7 +79,7 @@ def main():
     classes = output / "classes"
     classes.mkdir(exist_ok=True)
     manifest = {
-        "scope": "Actual codec, queue and upload orchestration on JVM/JUnit with preference/transport/signing doubles; not Android runtime/provider acceptance",
+        "scope": "Actual codec, queue and upload orchestration on JVM/JUnit with preference/transport/signing doubles and loopback socket deadline fixtures; not Android runtime/provider acceptance",
         "kotlin": "2.2.20",
         "files": [
             {"path": str(p), "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}
@@ -91,7 +96,7 @@ def main():
     subprocess.run(command, check=True)
     result = subprocess.run([
         "java", "-Xmx128m", "-cp", os.pathsep.join(map(str, [classes, *runtime])),
-        "org.junit.runner.JUnitCore", "com.momobio.app.MomoSmsTest", "com.momobio.app.SmsQueueTest", "com.momobio.app.UploadClientTest", "com.momobio.app.SmsReceiptDecoderTest",
+        "org.junit.runner.JUnitCore", "com.momobio.app.MomoSmsTest", "com.momobio.app.SmsQueueTest", "com.momobio.app.UploadClientTest", "com.momobio.app.SmsReceiptDecoderTest", "com.momobio.app.UploadDeadlineTest", "com.momobio.app.UploadSocketDeadlineTest",
     ])
     raise SystemExit(result.returncode)
 

@@ -601,13 +601,17 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(driverFilter);
     await tester.ensureVisible(find.byType(AdminSortMenu));
-    await tester.tap(find.byType(AdminSortMenu));
+    await tester.pumpAndSettle();
+    expect(find.byType(AdminSortMenu).hitTestable(), findsOneWidget);
+    await tester.tap(find.byType(AdminSortMenu).hitTestable());
     await tester.pumpAndSettle();
     await tester.tap(find.text('Name A-Z'));
     await tester.pumpAndSettle();
     final pageSize = find.byType(DropdownButton<int>);
     await tester.ensureVisible(pageSize);
-    await tester.tap(pageSize);
+    await tester.pumpAndSettle();
+    expect(pageSize.hitTestable(), findsOneWidget);
+    await tester.tap(pageSize.hitTestable());
     await tester.pumpAndSettle();
     await tester.tap(find.text('25').last);
     await tester.pumpAndSettle();
@@ -615,8 +619,11 @@ void main() {
     await tester.ensureVisible(previousPage);
     await tester.pumpAndSettle();
     await tester.tap(previousPage);
-    await tester.ensureVisible(find.text('Refresh'));
-    await tester.tap(find.text('Refresh'));
+    final refresh = find.text('Refresh');
+    await tester.ensureVisible(refresh);
+    await tester.pumpAndSettle();
+    expect(refresh.hitTestable(), findsOneWidget);
+    await tester.tap(refresh.hitTestable());
     await tester.pump();
     expect(controller.queryActions, [
       'search:Amina',

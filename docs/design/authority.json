@@ -7,7 +7,7 @@
     "role": "sole_design_authority",
     "entrypoint": {
       "path": "/Volumes/PRO-G40/Projects/ChatGPT/Revolut/skill/revolut-design/SKILL.md",
-      "sha256": "e593550503309fe1ea94642e8cdc1065d112573b572c11cdbabdd8811f4dc346"
+      "sha256": "e57cec94ab98fe431c21afb6caf071eafcf1dcbea9f0b2a4362ab428c9b86119"
     },
     "bundled_references": [
       {
@@ -16,7 +16,7 @@
       },
       {
         "path": "/Volumes/PRO-G40/Projects/ChatGPT/Revolut/skill/revolut-design/references/100-design-checks.md",
-        "sha256": "483285a5290bb63a51366b9e1aae75226b395fdf4d7a1853ef228b67668407c9"
+        "sha256": "31ac2a0c101885ad985670b89dc2f51427770ec19b97a13aec02bebd495701b1"
       },
       {
         "path": "/Volumes/PRO-G40/Projects/ChatGPT/Revolut/skill/revolut-design/references/quality-standard.md",
@@ -65,7 +65,7 @@
     "This registry binds source authority and status; it does not supply a competing visual specification.",
     "A source hash or passing technical check does not establish visual fidelity or release acceptance."
   ],
-  "refreshed_at_utc": "2026-10-01T19:57:15.845361+00:00",
+  "refreshed_at_utc": "2026-10-24T10:36:04.673162+00:00",
   "entrypoint_binding_history": [
     {
       "prior_recorded_sha256": "59ed494b2dd61684a8f2f516385ba601cfa549b7541bc1e9706df50e28fe3e1a",
@@ -78,6 +78,20 @@
       "current_reviewed_sha256": "0941cf390b2e77d605ee4877f960440688166534341ae2a3239a990d40127c50",
       "review_evidence": "build/qa/readiness-20261001/goal/authority-refresh.json",
       "boundary": "Owner replacement instructions and reread current external skill supersede the separately named mobile checklist/gates. Dated evidence retains its original provenance. No visual acceptance is inferred."
+    },
+    {
+      "reviewed_on": "2026-10-24",
+      "prior_recorded_sha256": "e593550503309fe1ea94642e8cdc1065d112573b572c11cdbabdd8811f4dc346",
+      "current_reviewed_sha256": "e57cec94ab98fe431c21afb6caf071eafcf1dcbea9f0b2a4362ab428c9b86119",
+      "review_evidence": "docs/design/authority-refresh-20261024.md",
+      "bundled_reference_changes": [
+        {
+          "path": "/Volumes/PRO-G40/Projects/ChatGPT/Revolut/skill/revolut-design/references/100-design-checks.md",
+          "prior_recorded_sha256": "483285a5290bb63a51366b9e1aae75226b395fdf4d7a1853ef228b67668407c9",
+          "current_reviewed_sha256": "31ac2a0c101885ad985670b89dc2f51427770ec19b97a13aec02bebd495701b1"
+        }
+      ],
+      "boundary": "Current maintained entrypoint and all four bound references were reread under the consolidated Jean Bosco Skills provider. Only the two stale bindings were refreshed; original recorded dates, historical evidence and all unverified visual acceptance remain unchanged."
     }
   ]
 }

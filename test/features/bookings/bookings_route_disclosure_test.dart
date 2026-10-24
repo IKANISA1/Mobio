@@ -348,15 +348,17 @@ Future<void> _expectChatVisibleThroughBodyDrag(
   required String path,
 }) async {
   final details = find.byType(TripDetailsScreen);
-  final view = find.descendant(
-    of: details,
-    matching: find.byType(SingleChildScrollView),
-  );
-  expect(view, findsOneWidget, reason: '$path actual Details scroll body');
   const noticeText =
       'Coordinate pick up, timing, luggage, and seats directly via chat.';
   final notice = find.descendant(of: details, matching: find.text(noticeText));
   expect(notice, findsOneWidget, reason: '$path full marketplace notice');
+  // The pushed-page header has its own enlarged-title scroll view. The
+  // marketplace notice identifies the actual Details body instead.
+  final view = find.ancestor(
+    of: notice,
+    matching: find.byType(SingleChildScrollView),
+  );
+  expect(view, findsOneWidget, reason: '$path actual Details scroll body');
   _expectWholeText(tester, notice, noticeText);
   final chat = find.descendant(of: details, matching: find.text('Chat'));
   expect(chat, findsOneWidget, reason: '$path lower Chat control');

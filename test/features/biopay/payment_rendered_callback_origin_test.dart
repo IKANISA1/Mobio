@@ -114,8 +114,10 @@ void main() {
     Widget child,
     _Gateway service,
   ) async {
-    await tester.binding.setSurfaceSize(const Size(390, 2400));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.view
+      ..devicePixelRatio = 1
+      ..physicalSize = const Size(390, 2400);
+    addTearDown(tester.view.reset);
     final navigation = _Navigation();
     final router = GoRouter(
       observers: [navigation],
@@ -508,7 +510,20 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
       expect(service.dispatches.last.$3, 'create_link');
+      final shareList = find.descendant(
+        of: find.byType(BottomSheet),
+        matching: find.byType(ListView),
+      );
+      expect(shareList, findsOneWidget);
+      await tester.dragUntilVisible(
+        find.byType(SelectableText),
+        shareList,
+        const Offset(0, -180),
+      );
+      // The editor stays busy while the sharing sheet is open.
+      await tester.pump();
       expect(find.byType(SelectableText), findsOneWidget);
+      expect(find.byType(SelectableText).hitTestable(), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

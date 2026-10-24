@@ -41,7 +41,8 @@ def main() -> int:
     expected=validate_dsn(dsn)
     env={**os.environ,'PGDATABASE':dsn,'PGCONNECT_TIMEOUT':'5','PGOPTIONS':'-c statement_timeout=30000 -c lock_timeout=10000'}
     def run(sql: str | None=None, file: Path | None=None) -> str:
-        argv=['psql','-X','-A','-t','--set','ON_ERROR_STOP=1']
+        # psql treats a URI in PGDATABASE as a literal database name.
+        argv=['psql','--dbname',dsn,'-X','-A','-t','--set','ON_ERROR_STOP=1']
         argv+=['--file',str(file)] if file else ['--command',sql or '']
         completed=subprocess.run(argv,env=env,text=True,capture_output=True,timeout=60)
         if completed.returncode:

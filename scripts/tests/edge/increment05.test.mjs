@@ -7,8 +7,11 @@ globalThis.fetch=async()=>{throw new Error('NETWORK_FORBIDDEN_IN_TEST');};
 const {issuedSessionId,validateAdminLease,registerIssuedAdminLease}=await import('../../../supabase/functions/_shared/admin-lease.ts');
 const {handleVerifyAdminOtp,ensureAdminUserSession}=await import('../../../supabase/functions/verify-otp/index.ts');
 const {findAdminAuthUserByPhone}=await import('../../../supabase/functions/_shared/admin-whatsapp.ts');
+const {hashOtpCode}=await import('../../../supabase/functions/_shared/otp-security.ts');
 const userId='11111111-1111-4111-8111-111111111111',sid='22222222-2222-4222-8222-222222222222';
 const other='33333333-3333-4333-8333-333333333333',phone='+250700000019';
+const adminCodeHash=await hashOtpCode('123456',{phone,purpose:'admin_login'});
+const appCodeHash=await hashOtpCode('123456',{phone,purpose:'app_login'});
 const claims={sub:userId,session_id:sid,role:'authenticated',is_anonymous:false,app_metadata:{provider:'admin_whatsapp_otp'}};
 function jwt(c=claims){return `e30.${Buffer.from(JSON.stringify(c)).toString('base64url')}.fixture`;}
 function lease(overrides={}){return {active:true,user_id:userId,session_id:sid,server_now:'2026-09-28T10:00:00Z',authenticated_at:'2026-09-28T10:00:00Z',idle_expires_at:'2026-09-28T10:15:00Z',absolute_expires_at:'2026-09-28T18:00:00Z',...overrides};}
@@ -50,7 +53,7 @@ function fixture(options={}){
     events.push(['table',structuredClone(state)]);
     if(table==='admin_whatsapp_numbers')return {data:options.allowlisted===false?null:{id:'allowlist-fixture',phone_e164:phone,country_code:'+250',display_name:'Fixture admin',is_active:true},error:null};
     if(table==='otp_codes'&&state.action==='update')return {data:options.claimed===false?[]:[{id:'otp-fixture'}],error:null};
-    if(table==='otp_codes')return {data:options.noOtp?[]:[{id:'otp-fixture',code:'123456',code_hash:null,attempts:options.attempts??0,expires_at:'2099-01-01T00:00:00Z'}],error:null};
+    if(table==='otp_codes')return {data:options.noOtp?[]:[{id:'otp-fixture',code:'123456',code_hash:Object.hasOwn(options,'codeHash')?options.codeHash:adminCodeHash,attempts:options.attempts??0,expires_at:'2099-01-01T00:00:00Z'}],error:null};
     if(table==='profiles')return {data:options.noProfile?null:{id:userId,name:'Own profile'},error:null};
     if(table==='platform_permissions')return {data:[{permission_key:'platform.admin'}],error:null};
     return {data:null,error:null};
@@ -73,9 +76,12 @@ test('actual OTP handler commits lease before returning any credentials',async()
  const claim=f.events.findIndex(x=>x[0]==='table'&&x[1].table==='otp_codes'&&x[1].action==='update');
  const issue=f.events.findIndex(x=>x[0]==='issue');const register=f.events.findIndex(x=>x[1]==='rpc_register_admin_session');
  assert.ok(claim>=0&&claim<issue&&issue<register);
+ assert.deepEqual(f.events[claim][1].payload,{attempts:1,verified:true});
+ assert.ok(f.events[claim][1].filters.some(([key,value])=>key==='purpose'&&value==='admin_login'));
 });
 for(const [name,options,status] of [
  ['unapproved',{allowlisted:false},403],['missing OTP',{noOtp:true},400],['consumed OTP',{claimed:false},409],['locked OTP',{attempts:5},429],
+ ['plaintext-only OTP',{codeHash:null},400],['app-login OTP',{codeHash:appCodeHash},400],
  ['lease outage',{leaseError:{message:'SECRET_PROVIDER_BODY'}},500],['invalid issued token',{token:'bad'},500],['wrong returned lease',{leaseData:lease({session_id:other})},500],
 ])test(`actual handler fails closed for ${name}`,async()=>{
  const f=fixture(options);const response=await handleVerifyAdminOtp(request(),f.dependencies);const body=await response.text();

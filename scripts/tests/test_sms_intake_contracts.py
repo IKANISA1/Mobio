@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import subprocess
 import unittest
+from unittest import mock
 
 ROOT=Path(__file__).resolve().parents[2]
 
@@ -58,6 +59,18 @@ class DatabaseHarnessGuardTests(unittest.TestCase):
                     'postgresql://localhost/mobio_intake_test_component?host=remote.invalid',
                     'postgresql://localhost/mobio_intake_test_component#ignored','postgresql://localhost/mobio_intake_test_../x']:
             with self.subTest(dsn=dsn),self.assertRaises(ValueError):pg.validate_dsn(dsn)
+    def test_runner_selects_validated_connection_uri_explicitly(self):
+        dsn='postgresql://127.0.0.1:5432/mobio_intake_test_component'
+        class ConnectionSelected(Exception): pass
+        def capture(arguments,**kwargs):
+            self.assertIn('--dbname',arguments)
+            self.assertEqual(arguments[arguments.index('--dbname')+1],dsn)
+            raise ConnectionSelected
+        with mock.patch.object(pg.sys,'argv',['test_sms_intake_postgres.py']), \
+             mock.patch.object(pg.shutil,'which',return_value='/controlled/psql'), \
+             mock.patch.dict(pg.os.environ,{'MOBIO_INTAKE_TEST_DSN':dsn}), \
+             mock.patch.object(pg.subprocess,'run',side_effect=capture):
+            with self.assertRaises(ConnectionSelected):pg.main()
 
 class SqlSourceContractTests(unittest.TestCase):
     def test_private_queue_tables(self):
