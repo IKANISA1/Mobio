@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
 
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
@@ -65,7 +65,7 @@ jobs:
     timeout-minutes: 35
 
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
 
       - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
         with:
@@ -90,7 +90,7 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
 
       - name: Install pinned CI parser
         run: python3 -m pip install --disable-pip-version-check -r scripts/ci/requirements.txt
@@ -182,7 +182,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # existing reviewed v4 pin
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # existing reviewed v4 pin
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: '22.23.3' # current 22.x maintenance release; local evidence records 22.16.0 separately
@@ -247,7 +247,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # existing reviewed v4 pin
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # existing reviewed v4 pin
       - name: Assert Android/JDK tools and install explicit platform
         run: |
           export JAVA_HOME="${JAVA_HOME_17_X64:?Hosted runner must provide JDK 17}"
