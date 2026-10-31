@@ -101,7 +101,7 @@ kotlin {
 
 dependencies {
     // Core library desugaring (required by flutter_local_notifications for java.time APIs)
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 
     // Modular Play libraries
     implementation("com.google.android.play:feature-delivery:2.1.0")
